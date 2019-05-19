@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates if JDA successfully re-established its connection to the gateway.
  * <br>All Objects have been replaced when this is fired and events were likely missed in the downtime.
@@ -26,7 +28,7 @@ import net.dv8tion.jda.api.JDA;
  */
 public class ReconnectedEvent extends Event
 {
-    public ReconnectedEvent(JDA api, long responseNumber)
+    public ReconnectedEvent(@Nonnull JDA api, long responseNumber)
     {
         super(api, responseNumber);
     }

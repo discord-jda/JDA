@@ -16,45 +16,51 @@
 
 package net.dv8tion.jda.internal.utils.config.sharding;
 
+import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.IntFunction;
 
 public class ShardingMetaConfig extends MetaConfig
 {
-    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(null, null, false, true, true);
-    private final boolean enableCompression;
+    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(null, null, false, true, Compression.ZLIB);
+    private final Compression compression;
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
     public ShardingMetaConfig(
-            IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
-            EnumSet<CacheFlag> cacheFlags, boolean enableMDC,
-            boolean useShutdownHook, boolean enableCompression)
+            @Nullable IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
+            @Nullable EnumSet<CacheFlag> cacheFlags, boolean enableMDC,
+            boolean useShutdownHook, Compression compression)
     {
         super(null, cacheFlags, enableMDC, useShutdownHook);
 
-        this.enableCompression = enableCompression;
+        this.compression = compression;
         this.contextProvider = contextProvider;
     }
 
+    @Nullable
     public ConcurrentMap<String, String> getContextMap(int shardId)
     {
         return contextProvider == null ? null : contextProvider.apply(shardId);
     }
 
-    public boolean isEnableCompression()
+    public Compression getCompression()
     {
-        return enableCompression;
+        return compression;
     }
 
+    @Nullable
     public IntFunction<? extends ConcurrentMap<String, String>> getContextProvider()
     {
         return contextProvider;
     }
 
+    @Nonnull
     public static ShardingMetaConfig getDefault()
     {
         return defaultConfig;

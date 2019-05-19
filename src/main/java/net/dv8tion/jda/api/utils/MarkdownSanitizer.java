@@ -266,7 +266,7 @@ public class MarkdownSanitizer
     {
         if (isEscape(region))
             return -1;
-        int lastMatch = afterIndex;
+        int lastMatch = afterIndex + getDelta(region) + 1;
         while (lastMatch != -1)
         {
             switch (region)
@@ -363,24 +363,23 @@ public class MarkdownSanitizer
         {
             case ESCAPED_BLOCK:
             case ESCAPED_BOLD | ITALICS_A:
-                return 4;
             case BLOCK:
             case BOLD | ITALICS_A:
+                return 3;
             case ESCAPED_MONO_TWO:
             case ESCAPED_BOLD:
             case ESCAPED_UNDERLINE:
             case ESCAPED_SPOILER:
             case ESCAPED_STRIKE:
-                return 3;
             case MONO_TWO:
             case BOLD:
             case UNDERLINE:
             case SPOILER:
             case STRIKE:
+                return 2;
             case ESCAPED_ITALICS_A:
             case ESCAPED_ITALICS_U:
             case ESCAPED_MONO:
-                return 2;
             case ITALICS_A:
             case ITALICS_U:
             case MONO:
@@ -459,7 +458,7 @@ public class MarkdownSanitizer
                 continue;
             }
 
-            int endRegion = findEndIndex(i + 1, nextRegion, sequence);
+            int endRegion = findEndIndex(i, nextRegion, sequence);
             if (isIgnored(nextRegion) || endRegion == -1)
             {
                 int delta = getDelta(nextRegion);

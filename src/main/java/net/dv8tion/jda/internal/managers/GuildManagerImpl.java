@@ -24,13 +24,14 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 
 public class GuildManagerImpl extends ManagerBase<GuildManager> implements GuildManager
 {
@@ -56,12 +57,14 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             checkPermissions();
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild.get();
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildManagerImpl reset(long fields)
@@ -82,6 +85,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildManagerImpl reset(long... fields)
@@ -90,6 +94,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildManagerImpl reset()
@@ -104,9 +109,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setName(String name)
+    public GuildManagerImpl setName(@Nonnull String name)
     {
         Checks.notNull(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
@@ -115,9 +121,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setRegion(Region region)
+    public GuildManagerImpl setRegion(@Nonnull Region region)
     {
         Checks.notNull(region, "Region");
         Checks.check(region != Region.UNKNOWN, "Region must not be UNKNOWN");
@@ -127,6 +134,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildManagerImpl setIcon(Icon icon)
@@ -136,6 +144,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildManagerImpl setSplash(Icon splash)
@@ -146,6 +155,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildManagerImpl setAfkChannel(VoiceChannel afkChannel)
@@ -156,6 +166,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildManagerImpl setSystemChannel(TextChannel systemChannel)
@@ -166,9 +177,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setAfkTimeout(Guild.Timeout timeout)
+    public GuildManagerImpl setAfkTimeout(@Nonnull Guild.Timeout timeout)
     {
         Checks.notNull(timeout, "Timeout");
         this.afkTimeout = timeout.getSeconds();
@@ -176,9 +188,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setVerificationLevel(Guild.VerificationLevel level)
+    public GuildManagerImpl setVerificationLevel(@Nonnull Guild.VerificationLevel level)
     {
         Checks.notNull(level, "Level");
         Checks.check(level != Guild.VerificationLevel.UNKNOWN, "Level must not be UNKNOWN");
@@ -187,9 +200,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setDefaultNotificationLevel(Guild.NotificationLevel level)
+    public GuildManagerImpl setDefaultNotificationLevel(@Nonnull Guild.NotificationLevel level)
     {
         Checks.notNull(level, "Level");
         Checks.check(level != Guild.NotificationLevel.UNKNOWN, "Level must not be UNKNOWN");
@@ -198,9 +212,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setRequiredMFALevel(Guild.MFALevel level)
+    public GuildManagerImpl setRequiredMFALevel(@Nonnull Guild.MFALevel level)
     {
         Checks.notNull(level, "Level");
         Checks.check(level != Guild.MFALevel.UNKNOWN, "Level must not be UNKNOWN");
@@ -209,9 +224,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildManagerImpl setExplicitContentLevel(Guild.ExplicitContentLevel level)
+    public GuildManagerImpl setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level)
     {
         Checks.notNull(level, "Level");
         Checks.check(level != Guild.ExplicitContentLevel.UNKNOWN, "Level must not be UNKNOWN");
@@ -223,7 +239,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject body = new JSONObject().put("name", getGuild().getName());
+        DataObject body = DataObject.empty().put("name", getGuild().getName());
         if (shouldUpdate(NAME))
             body.put("name", name);
         if (shouldUpdate(REGION))
@@ -231,13 +247,13 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         if (shouldUpdate(AFK_TIMEOUT))
             body.put("afk_timeout", afkTimeout);
         if (shouldUpdate(ICON))
-            body.put("icon", icon == null ? JSONObject.NULL : icon.getEncoding());
+            body.put("icon", icon == null ? null : icon.getEncoding());
         if (shouldUpdate(SPLASH))
-            body.put("splash", splash == null ? JSONObject.NULL : splash.getEncoding());
+            body.put("splash", splash == null ? null : splash.getEncoding());
         if (shouldUpdate(AFK_CHANNEL))
-            body.put("afk_channel_id", opt(afkChannel));
+            body.put("afk_channel_id", afkChannel);
         if (shouldUpdate(SYSTEM_CHANNEL))
-            body.put("system_channel_id", opt(systemChannel));
+            body.put("system_channel_id", systemChannel);
         if (shouldUpdate(VERIFICATION_LEVEL))
             body.put("verification_level", verificationLevel);
         if (shouldUpdate(NOTIFICATION_LEVEL))

@@ -23,14 +23,15 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
 public class PermissionOverrideActionImpl
@@ -75,12 +76,14 @@ public class PermissionOverrideActionImpl
         };
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideActionImpl setCheck(BooleanSupplier checks)
     {
         return (PermissionOverrideActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideAction resetAllow()
     {
@@ -89,6 +92,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     public PermissionOverrideAction resetDeny()
     {
@@ -97,6 +101,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     public GuildChannel getChannel()
     {
@@ -145,6 +150,7 @@ public class PermissionOverrideActionImpl
         return permissionHolder instanceof Role;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setAllow(long allowBits)
@@ -157,6 +163,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setDeny(long denyBits)
@@ -169,6 +176,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setPermissions(long allowBits, long denyBits)
@@ -195,7 +203,7 @@ public class PermissionOverrideActionImpl
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
         object.put("type", isRole() ? "role" : "member");
         object.put("allow", allowSet ? allow : getCurrentAllow());
         object.put("deny", denySet ? deny : getCurrentDeny());
@@ -207,7 +215,7 @@ public class PermissionOverrideActionImpl
     protected void handleSuccess(Response response, Request<PermissionOverride> request)
     {
         long id = permissionHolder.getIdLong();
-        JSONObject object = (JSONObject) request.getRawBody();
+        DataObject object = (DataObject) request.getRawBody();
         PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, permissionHolder);
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));

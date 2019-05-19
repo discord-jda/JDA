@@ -36,5 +36,9 @@ public enum CacheFlag
     /**
      * Enables cache for {@link Guild#getEmoteCache()}
      */
-    EMOTE
+    EMOTE,
+    /**
+     * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
+     */
+    CLIENT_STATUS,
 }

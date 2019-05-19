@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.audio.factory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -41,6 +43,7 @@ public interface IPacketProvider
      *
      * @return Never-null String unique to this audio connection.
      */
+    @Nonnull
     String getIdentifier();
 
     /**
@@ -48,6 +51,7 @@ public interface IPacketProvider
      *
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that this connection is sending to.
      */
+    @Nonnull
     VoiceChannel getConnectedChannel();
 
     /**
@@ -59,6 +63,7 @@ public interface IPacketProvider
      *
      * @return The UDP socket connection used for audio sending.
      */
+    @Nonnull
     DatagramSocket getUdpSocket();
 
     /**
@@ -67,6 +72,7 @@ public interface IPacketProvider
      *
      * @return {@link InetSocketAddress} of the current UDP connection
      */
+    @Nonnull
     InetSocketAddress getSocketAddress();
 
     /**
@@ -94,6 +100,7 @@ public interface IPacketProvider
      * @return Possibly-null {@link ByteBuffer} containing an encoded and encrypted packet
      *         of audio data ready to be sent to discord.
      */
+    @Nullable
     ByteBuffer getNextPacketRaw(boolean changeTalking);
 
     /**
@@ -115,6 +122,7 @@ public interface IPacketProvider
      * @return Possibly-null {@link java.net.DatagramPacket DatagramPacket} containing an encoded and encrypted packet
      *         of audio data ready to be sent to discord.
      */
+    @Nullable
     DatagramPacket getNextPacket(boolean changeTalking);
 
     /**
@@ -125,7 +133,7 @@ public interface IPacketProvider
      *         The {@link net.dv8tion.jda.api.audio.hooks.ConnectionStatus ConnectionStatus} being reported to JDA
      *         indicating an error with connection.
      */
-    void onConnectionError(ConnectionStatus status);
+    void onConnectionError(@Nonnull ConnectionStatus status);
 
     /**
      * This method is used to indicate to JDA that the UDP connection has been lost, whether that be due internet loss

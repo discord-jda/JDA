@@ -16,12 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class GuildMembersChunkHandler extends SocketHandler
 {
@@ -31,10 +31,10 @@ public class GuildMembersChunkHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("guild_id");
-        JSONArray members = content.getJSONArray("members");
+        DataArray members = content.getArray("members");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild != null)
         {
@@ -42,7 +42,7 @@ public class GuildMembersChunkHandler extends SocketHandler
             EntityBuilder builder = getJDA().getEntityBuilder();
             for (int i = 0; i < members.length(); i++)
             {
-                JSONObject object = members.getJSONObject(i);
+                DataObject object = members.getObject(i);
                 builder.createMember(guild, object);
             }
         }

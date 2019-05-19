@@ -22,14 +22,15 @@ import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -57,12 +58,14 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         this.roles.add(new RoleData(0));
     }
 
+    @Nonnull
     @Override
     public GuildActionImpl setCheck(BooleanSupplier checks)
     {
         return (GuildActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildActionImpl setRegion(Region region)
@@ -72,6 +75,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildActionImpl setIcon(Icon icon)
@@ -80,9 +84,10 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl setName(String name)
+    public GuildActionImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -91,6 +96,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildActionImpl setVerificationLevel(Guild.VerificationLevel level)
@@ -99,6 +105,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildActionImpl setNotificationLevel(Guild.NotificationLevel level)
@@ -107,6 +114,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public GuildActionImpl setExplicitContentLevel(Guild.ExplicitContentLevel level)
@@ -117,15 +125,17 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
 
     // Channels
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl addChannel(ChannelData channel)
+    public GuildActionImpl addChannel(@Nonnull ChannelData channel)
     {
         Checks.notNull(channel, "Channel");
         this.channels.add(channel);
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelData getChannel(int index)
@@ -133,6 +143,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this.channels.get(index);
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelData removeChannel(int index)
@@ -140,17 +151,19 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this.channels.remove(index);
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl removeChannel(ChannelData data)
+    public GuildActionImpl removeChannel(@Nonnull ChannelData data)
     {
         this.channels.remove(data);
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelData newChannel(ChannelType type, String name)
+    public ChannelData newChannel(@Nonnull ChannelType type, @Nonnull String name)
     {
         ChannelData data = new ChannelData(type, name);
         addChannel(data);
@@ -159,6 +172,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
 
     // Roles
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleData getPublicRole()
@@ -166,6 +180,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this.roles.get(0);
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleData getRole(int index)
@@ -173,6 +188,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
         return this.roles.get(index);
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleData newRole()
@@ -185,11 +201,11 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Override
     protected RequestBody finalizeData()
     {
-        final JSONObject object = new JSONObject();
+        final DataObject object = DataObject.empty();
         object.put("name", name);
-        object.put("roles", new JSONArray(roles));
+        object.put("roles", DataArray.fromCollection(roles));
         if (!channels.isEmpty())
-            object.put("channels", new JSONArray(channels));
+            object.put("channels", DataArray.fromCollection(channels));
         if (icon != null)
             object.put("icon", icon.getEncoding());
         if (verificationLevel != null)

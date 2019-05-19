@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Category Category} was updated.
  * <br>Every category update event derived from this event and can be casted.
@@ -34,8 +37,8 @@ public abstract class GenericCategoryUpdateEvent<T> extends GenericCategoryEvent
     protected final String identifier;
 
     public GenericCategoryUpdateEvent(
-        JDA api, long responseNumber, Category category,
-        T previous, T next, String identifier)
+        @Nonnull JDA api, long responseNumber, @Nonnull Category category,
+        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
     {
         super(api, responseNumber, category);
         this.previous = previous;
@@ -43,24 +46,28 @@ public abstract class GenericCategoryUpdateEvent<T> extends GenericCategoryEvent
         this.identifier = identifier;
     }
 
+    @Nonnull
     @Override
     public Category getEntity()
     {
         return getCategory();
     }
 
+    @Nonnull
     @Override
     public String getPropertyIdentifier()
     {
         return identifier;
     }
 
+    @Nullable
     @Override
     public T getOldValue()
     {
         return previous;
     }
 
+    @Nullable
     @Override
     public T getNewValue()
     {

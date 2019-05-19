@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
@@ -70,6 +71,7 @@ public enum ActivityFlag
      * @see    RichPresence#getFlags()
      * @see    EnumSet EnumSet
      */
+    @Nonnull
     public static EnumSet<ActivityFlag> getFlags(int raw)
     {
         EnumSet<ActivityFlag> set = EnumSet.noneOf(ActivityFlag.class);

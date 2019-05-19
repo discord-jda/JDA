@@ -17,26 +17,27 @@
 package net.dv8tion.jda.internal.requests.restaction.order;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
-public class ChannelOrderActionImpl<T extends GuildChannel>
-    extends OrderActionImpl<T, ChannelOrderAction<T>>
-    implements ChannelOrderAction<T>
+public class ChannelOrderActionImpl
+    extends OrderActionImpl<GuildChannel, ChannelOrderAction>
+    implements ChannelOrderAction
 {
     protected final Guild guild;
-    protected final ChannelType type;
+    protected final int bucket;
 
     /**
      * Creates a new ChannelOrderAction instance
@@ -44,18 +45,12 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
      * @param  guild
      *         The target {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         of which to order the channels defined by the specified type
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} corresponding
-     *         to the generic type of {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} which
-     *         defines the type of channel that will be ordered.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If one of the specified Guild has no channels of the ChannelType.
+     * @param  bucket
+     *         The sorting bucket
      */
-    @SuppressWarnings("unchecked")
-    public ChannelOrderActionImpl(Guild guild, ChannelType type)
+    public ChannelOrderActionImpl(Guild guild, int bucket)
     {
-        this(guild, type, (Collection<T>) getChannelsOfType(guild, type));
+        this(guild, bucket, getChannelsOfType(guild, bucket));
     }
 
     /**
@@ -66,10 +61,8 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
      * @param  guild
      *         The target {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         of which to order the channels defined by the specified type
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} corresponding
-     *         to the generic type of {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} which
-     *         defines the type of channel that will be ordered.
+     * @param  bucket
+     *         The sorting bucket
      * @param  channels
      *         The {@link net.dv8tion.jda.api.entities.GuildChannel Channels} to order, all of which
      *         are on the same Guild specified, and all of which are of the same generic type of GuildChannel
@@ -80,7 +73,7 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
      *         or any of them do not have the same ChannelType as the one
      *         provided.
      */
-    public ChannelOrderActionImpl(Guild guild, ChannelType type, Collection<T> channels)
+    public ChannelOrderActionImpl(Guild guild, int bucket, Collection<? extends GuildChannel> channels)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
 
@@ -88,14 +81,15 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
         Checks.notEmpty(channels, "Channels to order");
         Checks.check(channels.stream().allMatch(c -> guild.equals(c.getGuild())),
             "One or more channels are not from the correct guild");
-        Checks.check(channels.stream().allMatch(c -> c.getType().equals(type)),
-            "One or more channels did not match the expected type of " + type.name());
+        Checks.check(channels.stream().allMatch(c -> c.getType().getSortBucket() == bucket),
+            "One or more channels did not match the expected bucket " + bucket);
 
         this.guild = guild;
-        this.type = type;
+        this.bucket = bucket;
         this.orderList.addAll(channels);
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -103,9 +97,9 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
     }
 
     @Override
-    public ChannelType getChannelType()
+    public int getSortBucket()
     {
-        return type;
+        return bucket;
     }
 
     @Override
@@ -114,11 +108,11 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
             throw new InsufficientPermissionException(guild, null, Permission.MANAGE_CHANNEL);
-        JSONArray array = new JSONArray();
+        DataArray array = DataArray.empty();
         for (int i = 0; i < orderList.size(); i++)
         {
             GuildChannel chan = orderList.get(i);
-            array.put(new JSONObject()
+            array.add(DataObject.empty()
                     .put("id", chan.getId())
                     .put("position", i));
         }
@@ -127,24 +121,17 @@ public class ChannelOrderActionImpl<T extends GuildChannel>
     }
 
     @Override
-    protected void validateInput(T entity)
+    protected void validateInput(GuildChannel entity)
     {
         Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    private static Collection<? extends GuildChannel> getChannelsOfType(Guild guild, ChannelType type)
+    protected static Collection<GuildChannel> getChannelsOfType(Guild guild, int bucket)
     {
-        switch(type)
-        {
-            case TEXT:
-                return guild.getTextChannels();
-            case VOICE:
-                return guild.getVoiceChannels();
-            case CATEGORY:
-                return guild.getCategories();
-            default:
-                throw new IllegalArgumentException("Cannot order specified channel type " + type);
-        }
+        return guild.getChannels().stream()
+            .filter(it -> it.getType().getSortBucket() == bucket)
+            .sorted()
+            .collect(Collectors.toList());
     }
 }

@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.handle;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.utils.CacheConsumer;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.CacheConsumer;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -71,7 +71,7 @@ public class EventCache
             LOG.debug("Removed {} events from cache that were too old to be recycled", amount);
     }
 
-    public synchronized void cache(Type type, long triggerId, long responseTotal, JSONObject event, CacheConsumer handler)
+    public synchronized void cache(Type type, long triggerId, long responseTotal, DataObject event, CacheConsumer handler)
     {
         TLongObjectMap<List<CacheNode>> triggerCache =
                 eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
@@ -134,10 +134,10 @@ public class EventCache
     private class CacheNode
     {
         private final long responseTotal;
-        private final JSONObject event;
+        private final DataObject event;
         private final CacheConsumer callback;
 
-        public CacheNode(long responseTotal, JSONObject event, CacheConsumer callback)
+        public CacheNode(long responseTotal, DataObject event, CacheConsumer callback)
         {
             this.responseTotal = responseTotal;
             this.event = event;

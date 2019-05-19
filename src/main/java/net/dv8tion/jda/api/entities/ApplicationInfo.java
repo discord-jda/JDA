@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -32,7 +34,6 @@ import java.util.Collection;
  */
 public interface ApplicationInfo extends ISnowflake
 {
-
     /**
      * Whether the bot requires code grant to invite or not. 
      * 
@@ -49,6 +50,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The description of the bot's application or an empty {@link String} if no description is defined
      */
+    @Nonnull
     String getDescription();
 
     /**
@@ -57,6 +59,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The icon id of the bot's application or null if no icon is defined
      */
+    @Nullable
     String getIconId();
 
     /**
@@ -65,6 +68,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The icon-url of the bot's application or null if no icon is defined
      */
+    @Nullable
     String getIconUrl();
 
     /**
@@ -73,13 +77,15 @@ public interface ApplicationInfo extends ISnowflake
      * <p>The link is provided in the following format:
      * <br>{@code https://discordapp.com/oauth2/authorize?client_id=APPLICATION_ID&scope=bot&permissions=PERMISSIONS}
      * <br>Unnecessary query parameters are stripped.
+     *
      * @param  permissions
      *         Possibly empty {@link java.util.Collection Collection} of {@link net.dv8tion.jda.api.Permission Permissions}
      *         that should be requested via invite.
      * 
      * @return The link used to invite the bot
      */
-    default String getInviteUrl(Collection<Permission> permissions)
+    @Nonnull
+    default String getInviteUrl(@Nullable Collection<Permission> permissions)
     {
         return getInviteUrl(null, permissions);
     }
@@ -96,7 +102,8 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    default String getInviteUrl(Permission... permissions)
+    @Nonnull
+    default String getInviteUrl(@Nullable Permission... permissions)
     {
         return getInviteUrl(null, permissions);
     }
@@ -119,7 +126,8 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    String getInviteUrl(String guildId, Collection<Permission> permissions);
+    @Nonnull
+    String getInviteUrl(@Nullable String guildId, @Nullable Collection<Permission> permissions);
 
     /**
      * Creates a OAuth invite-link used to invite the bot.
@@ -136,7 +144,8 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @return The link used to invite the bot
      */
-    default String getInviteUrl(long guildId, Collection<Permission> permissions)
+    @Nonnull
+    default String getInviteUrl(long guildId, @Nullable Collection<Permission> permissions)
     {
         return getInviteUrl(Long.toUnsignedString(guildId), permissions);
     }
@@ -159,9 +168,10 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The link used to invite the bot
      */
-    default String getInviteUrl(String guildId, Permission... permissions)
+    @Nonnull
+    default String getInviteUrl(@Nullable String guildId, @Nullable Permission... permissions)
     {
-        return getInviteUrl(guildId, Arrays.asList(permissions));
+        return getInviteUrl(guildId, permissions == null ? null : Arrays.asList(permissions));
     }
 
     /**
@@ -179,7 +189,8 @@ public interface ApplicationInfo extends ISnowflake
      *
      * @return The link used to invite the bot
      */
-    default String getInviteUrl(long guildId, Permission... permissions)
+    @Nonnull
+    default String getInviteUrl(long guildId, @Nullable Permission... permissions)
     {
         return getInviteUrl(Long.toUnsignedString(guildId), permissions);
     }
@@ -190,6 +201,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The JDA instance of this ApplicationInfo
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -198,6 +210,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The name of the bot's application.
      */
+    @Nonnull
     String getName();
 
     /**
@@ -205,6 +218,7 @@ public interface ApplicationInfo extends ISnowflake
      * 
      * @return The owner of the bot's application
      */
+    @Nonnull
     User getOwner();
 
     /**

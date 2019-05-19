@@ -18,17 +18,17 @@ package net.dv8tion.jda.internal.requests.ratelimit;
 
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.Route.RateLimit;
 import okhttp3.Headers;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
@@ -88,12 +88,12 @@ public class BotRateLimiter extends RateLimiter
                 {
                     try (InputStream in = Requester.getBody(response))
                     {
-                        JSONObject limitObj = new JSONObject(new JSONTokener(in));
+                        DataObject limitObj = DataObject.fromJson(in);
                         retry = limitObj.get("retry_after").toString();
                     }
                     catch (IOException e)
                     {
-                        throw new IllegalStateException(e);
+                        throw new UncheckedIOException(e);
                     }
                 }
                 long retryAfter = Long.parseLong(retry);

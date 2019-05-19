@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.guild.voice;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} (un-)deafened itself.
  *
@@ -28,7 +30,7 @@ public class GuildVoiceSelfDeafenEvent extends GenericGuildVoiceEvent
 {
     protected final boolean selfDeafened;
 
-    public GuildVoiceSelfDeafenEvent(JDA api, long responseNumber, Member member)
+    public GuildVoiceSelfDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
     {
         super(api, responseNumber, member);
         this.selfDeafened = member.getVoiceState().isSelfDeafened();

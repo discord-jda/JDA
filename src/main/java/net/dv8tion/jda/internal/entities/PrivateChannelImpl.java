@@ -21,10 +21,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -44,6 +46,7 @@ public class PrivateChannelImpl implements PrivateChannel
         this.user = new UpstreamReference<>(user);
     }
 
+    @Nonnull
     @Override
     public User getUser()
     {
@@ -65,24 +68,28 @@ public class PrivateChannelImpl implements PrivateChannel
         return lastMessageId > 0;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
         return getUser().getName();
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.PRIVATE;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return getUser().getJDA();
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> close()
     {
@@ -90,8 +97,9 @@ public class PrivateChannelImpl implements PrivateChannel
         return new RestActionImpl<>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
-    public List<CompletableFuture<Void>> purgeMessages(List<? extends Message> messages)
+    public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
@@ -116,32 +124,34 @@ public class PrivateChannelImpl implements PrivateChannel
         return fake;
     }
 
+    @Nonnull
     @Override
-    public MessageAction sendMessage(CharSequence text)
+    public MessageAction sendMessage(@Nonnull CharSequence text)
     {
         checkBot();
         return PrivateChannel.super.sendMessage(text);
     }
 
     @Override
-    public MessageAction sendMessage(MessageEmbed embed)
+    public MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
         checkBot();
         return PrivateChannel.super.sendMessage(embed);
     }
 
     @Override
-    public MessageAction sendMessage(Message msg)
+    public MessageAction sendMessage(@Nonnull Message msg)
     {
         checkBot();
         return PrivateChannel.super.sendMessage(msg);
     }
 
+    @Nonnull
     @Override
-    public MessageAction sendFile(InputStream data, String fileName)
+    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkBot();
-        return PrivateChannel.super.sendFile(data, fileName);
+        return PrivateChannel.super.sendFile(data, fileName, options);
     }
 
     public PrivateChannelImpl setFake(boolean fake)

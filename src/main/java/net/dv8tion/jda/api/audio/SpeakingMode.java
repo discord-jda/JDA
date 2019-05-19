@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.audio;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -51,6 +53,7 @@ public enum SpeakingMode
      *
      * @return {@link EnumSet EnumSet} containing the speaking modes
      */
+    @Nonnull
     public static EnumSet<SpeakingMode> getModes(int mask)
     {
         final EnumSet<SpeakingMode> modes = EnumSet.noneOf(SpeakingMode.class);
@@ -74,7 +77,7 @@ public enum SpeakingMode
      *
      * @return The bitmask for the provided speaking modes
      */
-    public static int getRaw(SpeakingMode... modes)
+    public static int getRaw(@Nullable SpeakingMode... modes)
     {
         if (modes == null || modes.length == 0)
             return 0;
@@ -93,7 +96,7 @@ public enum SpeakingMode
      *
      * @return The bitmask for the provided speaking modes
      */
-    public static int getRaw(Collection<SpeakingMode> modes)
+    public static int getRaw(@Nullable Collection<SpeakingMode> modes)
     {
         if (modes == null)
             return 0;

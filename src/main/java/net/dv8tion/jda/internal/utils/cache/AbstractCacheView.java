@@ -102,6 +102,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
+    @Nonnull
     @Override
     public LockIterator<T> lockedIterator()
     {
@@ -119,6 +120,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
+    @Nonnull
     @Override
     public List<T> asList()
     {
@@ -135,6 +137,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
+    @Nonnull
     @Override
     public Set<T> asSet()
     {
@@ -163,8 +166,9 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         return elements.isEmpty();
     }
 
+    @Nonnull
     @Override
-    public List<T> getElementsByName(String name, boolean ignoreCase)
+    public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
         if (elements.isEmpty())
@@ -192,12 +196,14 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
+    @Nonnull
     @Override
     public Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
 
+    @Nonnull
     @Override
     public Stream<T> parallelStream()
     {

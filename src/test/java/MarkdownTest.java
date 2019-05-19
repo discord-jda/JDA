@@ -36,6 +36,14 @@ class MarkdownTest
     }
 
     @Test
+    public void testTrivial()
+    {
+        Assertions.assertEquals("", markdown.compute(""));
+        Assertions.assertEquals("Hello World ~~~~", markdown.compute("Hello World ~~~~"));
+        Assertions.assertEquals("Hello World ~", markdown.compute("Hello World ~~~~~"));
+    }
+
+    @Test
     public void testBold()
     {
         Assertions.assertEquals("Hello", markdown.compute("**Hello**"));

@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.Event;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class MessageBulkDeleteEvent extends Event
     protected final TextChannel channel;
     protected final List<String> messageIds;
 
-    public MessageBulkDeleteEvent(JDA api, long responseNumber, TextChannel channel, List<String> messageIds)
+    public MessageBulkDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull List<String> messageIds)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -46,6 +47,7 @@ public class MessageBulkDeleteEvent extends Event
      *
      * @return The TextChannel
      */
+    @Nonnull
     public TextChannel getChannel()
     {
         return channel;
@@ -56,6 +58,7 @@ public class MessageBulkDeleteEvent extends Event
      *
      * @return The Guild
      */
+    @Nonnull
     public Guild getGuild()
     {
         return channel.getGuild();
@@ -66,6 +69,7 @@ public class MessageBulkDeleteEvent extends Event
      *
      * @return The list of message ids
      */
+    @Nonnull
     public List<String> getMessageIds()
     {
         return messageIds;

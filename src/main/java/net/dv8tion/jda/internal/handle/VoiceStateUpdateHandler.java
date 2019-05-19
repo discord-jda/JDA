@@ -19,12 +19,12 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
-import org.json.JSONObject;
 
 import java.util.Objects;
 
@@ -36,7 +36,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final Long guildId = content.isNull("guild_id") ? null : content.getLong("guild_id");
         if (guildId == null)
@@ -47,7 +47,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         return null;
     }
 
-    private void handleGuildVoiceState(JSONObject content)
+    private void handleGuildVoiceState(DataObject content)
     {
         final long userId = content.getLong("user_id");
         final long guildId = content.getLong("guild_id");
@@ -160,7 +160,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
             else
             {
                 AudioManagerImpl mng = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
-
                 //If the currently connected account is the one that is being moved
                 if (isSelf && mng != null && voiceInterceptor == null)
                 {

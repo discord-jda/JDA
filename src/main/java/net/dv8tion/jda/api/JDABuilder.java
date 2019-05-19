@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -35,6 +36,8 @@ import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
@@ -81,7 +84,7 @@ public class JDABuilder
     protected boolean autoReconnect = true;
     protected boolean idle = false;
     protected boolean requestTimeoutRetry = true;
-    protected boolean enableCompression = true;
+    protected Compression compression = Compression.ZLIB;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -105,7 +108,7 @@ public class JDABuilder
      *
      * @see   #setToken(String)
      */
-    public JDABuilder(String token)
+    public JDABuilder(@Nullable String token)
     {
         this();
         setToken(token);
@@ -126,7 +129,7 @@ public class JDABuilder
      * @incubating Due to policy changes for the discord API this method may not be provided in a future version
      */
     @Incubating
-    public JDABuilder(AccountType accountType)
+    public JDABuilder(@Nonnull AccountType accountType)
     {
         Checks.notNull(accountType, "accountType");
 
@@ -147,7 +150,8 @@ public class JDABuilder
      *
      * @see    #setDisabledCacheFlags(EnumSet)
      */
-    public JDABuilder setEnabledCacheFlags(EnumSet<CacheFlag> flags)
+    @Nonnull
+    public JDABuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
         return this;
@@ -162,9 +166,10 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setDisabledCacheFlags(EnumSet<CacheFlag> flags)
+    @Nonnull
+    public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
-        return setEnabledCacheFlags(EnumSet.complementOf(flags));
+        return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
     }
 
     /**
@@ -183,7 +188,8 @@ public class JDABuilder
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      * @see    #setContextEnabled(boolean)
      */
-    public JDABuilder setContextMap(ConcurrentMap<String, String> map)
+    @Nonnull
+    public JDABuilder setContextMap(@Nullable ConcurrentMap<String, String> map)
     {
         this.contextMap = map;
         if (map != null)
@@ -203,6 +209,7 @@ public class JDABuilder
      * @see    <a href="https://www.slf4j.org/api/org/slf4j/MDC.html" target="_blank">MDC Javadoc</a>
      * @see    #setContextMap(java.util.concurrent.ConcurrentMap)
      */
+    @Nonnull
     public JDABuilder setContextEnabled(boolean enable)
     {
         this.enableContext = enable;
@@ -210,24 +217,30 @@ public class JDABuilder
     }
 
     /**
-     * Enable stream-compression on the gateway connection,
+     * Sets the compression algorithm used with the gateway connection,
      * this will decrease the amount of used bandwidth for the running bot instance
      * for the cost of a few extra cycles for decompression.
-     * <br><b>Default: true</b>
+     * Compression can be entirely disabled by setting this to {@link net.dv8tion.jda.api.utils.Compression#NONE}.
+     * <br><b>Default: {@link net.dv8tion.jda.api.utils.Compression#ZLIB}</b>
      *
-     * <p><b>We recommend to keep this enabled unless you have issues with the decompression</b>
+     * <p><b>We recommend to keep this on the default unless you have issues with the decompression.</b>
      * <br>This mode might become obligatory in a future version, do not rely on this switch to stay.
      *
-     * @param  enable
-     *         True, if the gateway connection should use compression
+     * @param  compression
+     *         The compression algorithm to use with the gateway connection
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
      *
      * @return The JDABuilder instance. Useful for chaining
      *
      * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
-    public JDABuilder setCompressionEnabled(boolean enable)
+    @Nonnull
+    public JDABuilder setCompression(@Nonnull Compression compression)
     {
-        this.enableCompression = enable;
+        Checks.notNull(compression, "Compression");
+        this.compression = compression;
         return this;
     }
 
@@ -243,6 +256,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
+    @Nonnull
     public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
         this.requestTimeoutRetry = retryOnTimeout;
@@ -266,7 +280,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setToken(String token)
+    @Nonnull
+    public JDABuilder setToken(@Nullable String token)
     {
         this.token = token;
         return this;
@@ -281,7 +296,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setHttpClientBuilder(OkHttpClient.Builder builder)
+    @Nonnull
+    public JDABuilder setHttpClientBuilder(@Nullable OkHttpClient.Builder builder)
     {
         this.httpClientBuilder = builder;
         return this;
@@ -296,7 +312,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setHttpClient(OkHttpClient client)
+    @Nonnull
+    public JDABuilder setHttpClient(@Nullable OkHttpClient client)
     {
         this.httpClient = client;
         return this;
@@ -311,7 +328,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setWebsocketFactory(WebSocketFactory factory)
+    @Nonnull
+    public JDABuilder setWebsocketFactory(@Nullable WebSocketFactory factory)
     {
         this.wsFactory = factory;
         return this;
@@ -335,7 +353,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setRateLimitPool(ScheduledExecutorService pool)
+    @Nonnull
+    public JDABuilder setRateLimitPool(@Nullable ScheduledExecutorService pool)
     {
         return setRateLimitPool(pool, pool == null);
     }
@@ -358,7 +377,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setRateLimitPool(ScheduledExecutorService pool, boolean automaticShutdown)
+    @Nonnull
+    public JDABuilder setRateLimitPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
     {
         this.rateLimitPool = pool;
         this.shutdownRateLimitPool = automaticShutdown;
@@ -391,7 +411,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setGatewayPool(ScheduledExecutorService pool)
+    @Nonnull
+    public JDABuilder setGatewayPool(@Nullable ScheduledExecutorService pool)
     {
         return setGatewayPool(pool, pool == null);
     }
@@ -422,7 +443,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setGatewayPool(ScheduledExecutorService pool, boolean automaticShutdown)
+    @Nonnull
+    public JDABuilder setGatewayPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
     {
         this.mainWsPool = pool;
         this.shutdownMainWsPool = automaticShutdown;
@@ -447,7 +469,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setCallbackPool(ExecutorService executor)
+    @Nonnull
+    public JDABuilder setCallbackPool(@Nullable ExecutorService executor)
     {
         return setCallbackPool(executor, executor == null);
     }
@@ -470,7 +493,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setCallbackPool(ExecutorService executor, boolean automaticShutdown)
+    @Nonnull
+    public JDABuilder setCallbackPool(@Nullable ExecutorService executor, boolean automaticShutdown)
     {
         this.callbackPool = executor;
         this.shutdownCallbackPool = automaticShutdown;
@@ -488,6 +512,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
+    @Nonnull
     public JDABuilder setAudioEnabled(boolean enabled)
     {
         this.enableVoice = enabled;
@@ -506,6 +531,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
+    @Nonnull
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
         this.enableBulkDeleteSplitting = enabled;
@@ -524,6 +550,7 @@ public class JDABuilder
      *
      * @return Return the {@link net.dv8tion.jda.api.JDABuilder JDABuilder } instance. Useful for chaining.
      */
+    @Nonnull
     public JDABuilder setEnableShutdownHook(boolean enable)
     {
         this.enableShutdownHook = enable;
@@ -541,6 +568,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
+    @Nonnull
     public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
         this.autoReconnect = autoReconnect;
@@ -565,7 +593,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setEventManager(IEventManager manager)
+    @Nonnull
+    public JDABuilder setEventManager(@Nullable IEventManager manager)
     {
         this.eventManager = manager;
         return this;
@@ -582,7 +611,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
-    public JDABuilder setAudioSendFactory(IAudioSendFactory factory)
+    @Nonnull
+    public JDABuilder setAudioSendFactory(@Nullable IAudioSendFactory factory)
     {
         this.audioSendFactory = factory;
         return this;
@@ -599,6 +629,7 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean) Presence#setIdle(boolean)
      */
+    @Nonnull
     public JDABuilder setIdle(boolean idle)
     {
         this.idle = idle;
@@ -619,7 +650,8 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.api.managers.Presence#setActivity(net.dv8tion.jda.api.entities.Activity)  Presence.setActivity(Activity)
      */
-    public JDABuilder setActivity(Activity activity)
+    @Nonnull
+    public JDABuilder setActivity(@Nullable Activity activity)
     {
         this.activity = activity;
         return this;
@@ -642,7 +674,8 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.api.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
-    public JDABuilder setStatus(OnlineStatus status)
+    @Nonnull
+    public JDABuilder setStatus(@Nullable OnlineStatus status)
     {
         if (status == null || status == OnlineStatus.UNKNOWN)
             throw new IllegalArgumentException("OnlineStatus cannot be null or unknown!");
@@ -669,7 +702,8 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.api.JDA#addEventListener(Object...) JDA.addEventListeners(Object...)
      */
-    public JDABuilder addEventListeners(Object... listeners)
+    @Nonnull
+    public JDABuilder addEventListeners(@Nonnull Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -690,7 +724,8 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.api.JDA#removeEventListener(Object...) JDA.removeEventListeners(Object...)
      */
-    public JDABuilder removeEventListeners(Object... listeners)
+    @Nonnull
+    public JDABuilder removeEventListeners(@Nonnull Object... listeners)
     {
         Checks.noneNull(listeners, "listeners");
 
@@ -710,6 +745,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      */
+    @Nonnull
     public JDABuilder setMaxReconnectDelay(int maxReconnectDelay)
     {
         Checks.check(maxReconnectDelay >= 32, "Max reconnect delay must be 32 seconds or greater. You provided %d.", maxReconnectDelay);
@@ -744,6 +780,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.JDA#getShardInfo() JDA.getShardInfo()
      * @see    net.dv8tion.jda.api.sharding.ShardManager ShardManager
      */
+    @Nonnull
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
         AccountTypeException.check(accountType, AccountType.BOT);
@@ -770,7 +807,8 @@ public class JDABuilder
      *
      * @see    net.dv8tion.jda.api.utils.SessionControllerAdapter SessionControllerAdapter
      */
-    public JDABuilder setSessionController(SessionController controller)
+    @Nonnull
+    public JDABuilder setSessionController(@Nullable SessionController controller)
     {
         this.controller = controller;
         return this;
@@ -786,7 +824,8 @@ public class JDABuilder
      *
      * @see    VoiceDispatchInterceptor
      */
-    public JDABuilder setVoiceDispatchInterceptor(VoiceDispatchInterceptor interceptor)
+    @Nonnull
+    public JDABuilder setVoiceDispatchInterceptor(@Nullable VoiceDispatchInterceptor interceptor)
     {
         this.voiceDispatchInterceptor = interceptor;
         return this;
@@ -812,6 +851,7 @@ public class JDABuilder
      * @return A {@link net.dv8tion.jda.api.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
      */
+    @Nonnull
     public JDA build() throws LoginException
     {
         OkHttpClient httpClient = this.httpClient;
@@ -851,7 +891,7 @@ public class JDABuilder
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(shardInfo, enableCompression, true);
+        jda.login(shardInfo, compression, true);
         return jda;
     }
 }

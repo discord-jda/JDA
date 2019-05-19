@@ -21,16 +21,9 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import okio.BufferedSink;
-import okio.Okio;
-import okio.Source;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.io.UncheckedIOException;
 import java.util.Formatter;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
@@ -105,42 +98,6 @@ public class MiscUtil
     public static <T> TLongObjectMap<T> newLongMap()
     {
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
-    }
-
-    /**
-     * URL-Encodes the given String to UTF-8 after
-     * form-data specifications (space {@literal ->} +)
-     *
-     * @param  chars
-     *         The characters to encode
-     *
-     * @return The encoded String
-     */
-    public static String encodeUTF8(String chars)
-    {
-        try
-        {
-            return URLEncoder.encode(chars, "UTF-8");
-        }
-        catch (UnsupportedEncodingException e)
-        {
-            throw new AssertionError(e); // thanks JDK 1.4
-        }
-    }
-
-    public static String encodeCodePointsUTF8(String input)
-    {
-        if (!input.startsWith("U+"))
-            throw new IllegalArgumentException("Invalid format");
-        String[] codePoints = input.substring(2).split("\\s*U\\+\\s*");
-        StringBuilder encoded = new StringBuilder();
-        for (String part : codePoints)
-        {
-            int codePoint = Integer.parseUnsignedInt(part, 16);
-            char[] chars = Character.toChars(codePoint);
-            encoded.append(encodeUTF8(String.valueOf(chars)));
-        }
-        return encoded.toString();
     }
 
     public static long parseSnowflake(String input)
@@ -228,38 +185,7 @@ public class MiscUtil
         }
         catch (IOException e)
         {
-            throw new AssertionError(e);
+            throw new UncheckedIOException(e);
         }
-    }
-
-    /**
-     * Creates a new request body that transmits the provided {@link java.io.InputStream InputStream}.
-     *  
-     * @param  contentType
-     *         The {@link okhttp3.MediaType MediaType} of the data
-     * @param  stream
-     *         The {@link java.io.InputStream InputStream} to be transmitted
-     *
-     * @return RequestBody capable of transmitting the provided InputStream of data
-     */
-    public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
-    {
-        return new RequestBody()
-        {
-            @Override
-            public MediaType contentType()
-            {
-                return contentType;
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException
-            {
-                try (Source source = Okio.source(stream))
-                {
-                    sink.writeAll(source);
-                }
-            }
-        };
     }
 }

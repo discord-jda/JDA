@@ -19,6 +19,9 @@ package net.dv8tion.jda.api.utils;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Controls states and behaviour of one or multiple {@link net.dv8tion.jda.api.JDA JDA} instances.
  * <br>One instance of this should be used when sharding a bot account in order to keep track of session information
@@ -89,7 +92,7 @@ public interface SessionController
      * @param  node
      *         The {@link net.dv8tion.jda.api.utils.SessionController.SessionConnectNode SessionConnectNode}
      */
-    void appendSession(SessionConnectNode node);
+    void appendSession(@Nonnull SessionConnectNode node);
 
     /**
      * Called by {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} when
@@ -100,7 +103,7 @@ public interface SessionController
      * @param node
      *        The {@link net.dv8tion.jda.api.utils.SessionController.SessionConnectNode SessionConnectNode} to remove from the queue.
      */
-    void removeSession(SessionConnectNode node);
+    void removeSession(@Nonnull SessionConnectNode node);
 
     /**
      * Provides the cross-session global REST ratelimit it received through {@link #setGlobalRatelimit(long)}.
@@ -128,7 +131,8 @@ public interface SessionController
      *
      * @return The gateway endpoint
      */
-    String getGateway(JDA api);
+    @Nonnull
+    String getGateway(@Nonnull JDA api);
 
     /**
      * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
@@ -142,7 +146,8 @@ public interface SessionController
      *
      * @see    #getGateway(net.dv8tion.jda.api.JDA)
      */
-    Pair<String, Integer> getGatewayBot(JDA api);
+    @Nonnull
+    Pair<String, Integer> getGatewayBot(@Nonnull JDA api);
 
     /**
      * Represents a WebSocketClient request to start a session.
@@ -164,6 +169,7 @@ public interface SessionController
          *
          * @return The JDA instance
          */
+        @Nonnull
         JDA getJDA();
 
         /**
@@ -172,6 +178,7 @@ public interface SessionController
          *
          * @return The ShardInfo
          */
+        @Nullable
         JDA.ShardInfo getShardInfo();
 
         /**

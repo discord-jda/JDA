@@ -24,14 +24,14 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.RestFuture;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.util.concurrent.CompletableFuture;
@@ -107,7 +107,7 @@ public class RestActionImpl<T> implements RestAction<T>
         this(api, route, (RequestBody) null, null);
     }
 
-    public RestActionImpl(JDA api, Route.CompiledRoute route, JSONObject data)
+    public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data)
     {
         this(api, route, data, null);
     }
@@ -122,7 +122,7 @@ public class RestActionImpl<T> implements RestAction<T>
         this(api, route, (RequestBody) null, handler);
     }
 
-    public RestActionImpl(JDA api, Route.CompiledRoute route, JSONObject data, BiFunction<Response, Request<T>, T> handler)
+    public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
     {
         this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), handler);
         this.rawData = data;
@@ -206,14 +206,14 @@ public class RestActionImpl<T> implements RestAction<T>
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
     protected BooleanSupplier finalizeChecks() { return null; }
 
-    protected RequestBody getRequestBody(JSONObject object)
+    protected RequestBody getRequestBody(DataObject object)
     {
         this.rawData = object;
 
         return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
     }
 
-    protected RequestBody getRequestBody(JSONArray array)
+    protected RequestBody getRequestBody(DataArray array)
     {
         this.rawData = array;
 

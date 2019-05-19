@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents the different types of {@link net.dv8tion.jda.api.entities.Message Messages} that can be received from Discord.
  * <br>A normal text based message is {@link #DEFAULT}.
@@ -67,6 +69,7 @@ public enum MessageType
     UNKNOWN(-1);
 
     protected final int id;
+
     MessageType(int id)
     {
         this.id = id;
@@ -91,6 +94,7 @@ public enum MessageType
      *
      * @return A MessageType with the same Discord id key as the one provided, or {@link #UNKNOWN}.
      */
+    @Nonnull
     public static MessageType fromId(int id)
     {
         for (MessageType type : values())

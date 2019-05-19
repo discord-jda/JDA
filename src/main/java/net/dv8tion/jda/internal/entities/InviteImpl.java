@@ -23,15 +23,16 @@ import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
@@ -86,6 +87,7 @@ public class InviteImpl implements Invite
                 jda.getEntityBuilder().createInvite(response.getObject()));
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -94,6 +96,7 @@ public class InviteImpl implements Invite
         return new AuditableRestActionImpl<>(this.api, route);
     }
 
+    @Nonnull
     @Override
     public RestAction<Invite> expand()
     {
@@ -132,10 +135,10 @@ public class InviteImpl implements Invite
         return new RestActionImpl<>(this.api, route, (response, request) ->
         {
             final EntityBuilder entityBuilder = this.api.getEntityBuilder();
-            final JSONArray array = response.getArray();
+            final DataArray array = response.getArray();
             for (int i = 0; i < array.length(); i++)
             {
-                final JSONObject object = array.getJSONObject(i);
+                final DataObject object = array.getObject(i);
                 if (InviteImpl.this.code.equals(object.getString("code")))
                 {
                     return entityBuilder.createInvite(object);
@@ -145,6 +148,7 @@ public class InviteImpl implements Invite
         });
     }
 
+    @Nonnull
     @Override
     public Invite.InviteType getType()
     {
@@ -157,12 +161,14 @@ public class InviteImpl implements Invite
         return this.channel;
     }
 
+    @Nonnull
     @Override
     public String getCode()
     {
         return this.code;
     }
 
+    @Nonnull
     @Override
     public OffsetDateTime getCreationTime()
     {
@@ -189,6 +195,7 @@ public class InviteImpl implements Invite
         return this.inviter;
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
@@ -275,12 +282,14 @@ public class InviteImpl implements Invite
             return id;
         }
 
+        @Nonnull
         @Override
         public String getName()
         {
             return this.name;
         }
 
+        @Nonnull
         @Override
         public ChannelType getType()
         {
@@ -329,6 +338,7 @@ public class InviteImpl implements Invite
             return id;
         }
 
+        @Nonnull
         @Override
         public String getName()
         {
@@ -348,6 +358,7 @@ public class InviteImpl implements Invite
                     : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
         }
 
+        @Nonnull
         @Override
         public VerificationLevel getVerificationLevel()
         {
@@ -366,6 +377,7 @@ public class InviteImpl implements Invite
             return memberCount;
         }
 
+        @Nonnull
         @Override
         public Set<String> getFeatures()
         {

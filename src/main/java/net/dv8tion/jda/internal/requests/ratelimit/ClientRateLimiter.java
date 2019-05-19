@@ -18,16 +18,16 @@ package net.dv8tion.jda.internal.requests.ratelimit;
 
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.Route.RateLimit;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -75,10 +75,10 @@ public class ClientRateLimiter extends RateLimiter
             {
                 try (InputStream in = Requester.getBody(response))
                 {
-                    JSONObject limitObj = new JSONObject(new JSONTokener(in));
+                    DataObject limitObj = DataObject.fromJson(in);
                     long retryAfter = limitObj.getLong("retry_after");
 
-                    if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
+                    if (limitObj.hasKey("global") && limitObj.getBoolean("global"))    //Global ratelimit
                         globalCooldown = now + retryAfter;
                     else
                         bucket.retryAfter = now + retryAfter;
@@ -87,7 +87,7 @@ public class ClientRateLimiter extends RateLimiter
                 }
                 catch (IOException e)
                 {
-                    throw new IllegalStateException(e);
+                    throw new UncheckedIOException(e);
                 }
             }
             else

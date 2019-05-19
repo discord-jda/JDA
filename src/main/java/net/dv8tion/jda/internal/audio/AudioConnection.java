@@ -32,14 +32,15 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
+import javax.annotation.Nonnull;
 import java.net.*;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -427,7 +428,7 @@ public class AudioConnection
                             {
                                 receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
                             }
-                            if (receiveHandler.canReceiveCombined())
+                            if (receiveHandler.canReceiveCombined() && receiveHandler.includeUserInCombinedAudio(user))
                             {
                                 Queue<AudioData> queue = combinedQueue.get(user);
                                 if (queue == null)
@@ -597,7 +598,7 @@ public class AudioConnection
     private void setSpeaking(int raw)
     {
         this.speaking = raw != 0;
-        JSONObject obj = new JSONObject()
+        DataObject obj = DataObject.empty()
                 .put("speaking", raw)
                 .put("ssrc", webSocket.getSSRC())
                 .put("delay", 0);
@@ -631,24 +632,28 @@ public class AudioConnection
             this.boxer = boxer;
         }
 
+        @Nonnull
         @Override
         public String getIdentifier()
         {
             return threadIdentifier;
         }
 
+        @Nonnull
         @Override
         public VoiceChannel getConnectedChannel()
         {
             return getChannel();
         }
 
+        @Nonnull
         @Override
         public DatagramSocket getUdpSocket()
         {
             return udpSocket;
         }
 
+        @Nonnull
         @Override
         public InetSocketAddress getSocketAddress()
         {
@@ -811,7 +816,7 @@ public class AudioConnection
         }
 
         @Override
-        public void onConnectionError(ConnectionStatus status)
+        public void onConnectionError(@Nonnull ConnectionStatus status)
         {
             LOG.warn("IAudioSendSystem reported a connection error of: {}", status);
             LOG.warn("Shutting down AudioConnection.");
