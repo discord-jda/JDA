@@ -113,18 +113,6 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return "VC:" + getName() + '(' + id + ')';
     }
 
-    @Override
-    public int compareTo(@Nonnull VoiceChannel chan)
-    {
-        Checks.notNull(chan, "Other VoiceChannel");
-        if (this == chan)
-            return 0;
-        Checks.check(getGuild().equals(chan.getGuild()), "Cannot compare VoiceChannels that aren't from the same guild!");
-        if (this.getPositionRaw() == chan.getPositionRaw())
-            return Long.compare(id, chan.getIdLong());
-        return Integer.compare(rawPosition, chan.getPositionRaw());
-    }
-
     // -- Setters --
 
     public VoiceChannelImpl setUserLimit(int userLimit)

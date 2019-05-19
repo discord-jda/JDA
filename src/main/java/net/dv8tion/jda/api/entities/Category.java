@@ -31,18 +31,28 @@ import java.util.List;
  *
  * @since 3.4.0
  */
-public interface Category extends GuildChannel, Comparable<Category>
+public interface Category extends GuildChannel
 {
     /**
      * All {@link GuildChannel Channels} listed
      * for this Category
-     * <br>This may contain both {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * <br>This may contain {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
+     * {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels},
      * and {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}!
      *
      * @return Immutable list of all child channels
      */
     @Nonnull
     List<GuildChannel> getChannels();
+
+    /**
+     * All {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}
+     * listed for this Category
+     *
+     * @return Immutable list of all child StoreChannels
+     */
+    @Nonnull
+    List<StoreChannel> getStoreChannels();
 
     /**
      * All {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
@@ -127,12 +137,12 @@ public interface Category extends GuildChannel, Comparable<Category>
     ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name);
 
     /**
-     * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels}.
+     * Modifies the positional order of this Category's nested {@link #getTextChannels() TextChannels} and {@link #getStoreChannels() StoreChannels}.
      * <br>This uses an extension of {@link ChannelOrderAction ChannelOrderAction}
-     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this
-     * {@link net.dv8tion.jda.api.entities.Category Category}.
-     * <br>Like {@code ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
-     * can be used to move TextChannels {@link OrderAction#moveUp(int) up},
+     * specialized for ordering the nested {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
+     * and {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} of this {@link net.dv8tion.jda.api.entities.Category Category}.
+     * <br>Like {@link ChannelOrderAction}, the returned {@link CategoryOrderAction CategoryOrderAction}
+     * can be used to move TextChannels/StoreChannels {@link OrderAction#moveUp(int) up},
      * {@link OrderAction#moveDown(int) down}, or
      * {@link OrderAction#moveTo(int) to} a specific position.
      * <br>This uses <b>ascending</b> order with a 0 based index.
@@ -147,11 +157,12 @@ public interface Category extends GuildChannel, Comparable<Category>
      * </ul>
      *
      * @return A {@link CategoryOrderAction CategoryOrderAction} for
-     *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
+     *         ordering the Category's {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
+     *         and {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
      */
     @Nonnull
     @CheckReturnValue
-    CategoryOrderAction<TextChannel> modifyTextChannelPositions();
+    CategoryOrderAction modifyTextChannelPositions();
 
     /**
      * Modifies the positional order of this Category's nested {@link #getVoiceChannels() VoiceChannels}.
@@ -178,11 +189,11 @@ public interface Category extends GuildChannel, Comparable<Category>
      */
     @Nonnull
     @CheckReturnValue
-    CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions();
+    CategoryOrderAction modifyVoiceChannelPositions();
 
     @Nonnull
     @Override
-    ChannelAction<Category> createCopy(Guild guild);
+    ChannelAction<Category> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override

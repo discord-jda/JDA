@@ -41,7 +41,7 @@ import java.util.List;
  * @see VoiceChannel
  * @see Category
  */
-public interface TextChannel extends GuildChannel, MessageChannel, Comparable<TextChannel>, IMentionable
+public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
 {
     /**
      * The topic set for this TextChannel.

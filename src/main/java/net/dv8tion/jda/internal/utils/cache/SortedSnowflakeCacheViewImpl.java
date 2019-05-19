@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<T>>
+public class SortedSnowflakeCacheViewImpl<T extends ISnowflake & Comparable<? super T>>
         extends SnowflakeCacheViewImpl<T> implements SortedSnowflakeCacheView<T>
 {
     protected static final int SPLIT_CHARACTERISTICS = Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.NONNULL;

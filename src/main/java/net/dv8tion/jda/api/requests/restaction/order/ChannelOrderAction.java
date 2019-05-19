@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.managers.GuildController;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 
 /**
  * Implementation of {@link OrderAction OrderAction}
@@ -31,10 +32,6 @@ import javax.annotation.Nonnull;
  * <p>Before you can use any of the {@code move} methods
  * you must use either {@link #selectPosition(Object) selectPosition(GuildChannel)} or {@link #selectPosition(int)}!
  *
- * @param <T>
- *        The type of {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} defining
- *        which channels to order
- *
  * @since 3.0
  *
  * @see   GuildController
@@ -43,7 +40,7 @@ import javax.annotation.Nonnull;
  * @see   GuildController#modifyCategoryPositions()
  * @see   CategoryOrderAction
  */
-public interface ChannelOrderAction<T extends GuildChannel> extends OrderAction<T, ChannelOrderAction<T>>
+public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrderAction>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} which holds
@@ -55,11 +52,24 @@ public interface ChannelOrderAction<T extends GuildChannel> extends OrderAction<
     Guild getGuild();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of
-     * all channels that are ordered by this ChannelOrderAction
+     * The sorting bucket for this order action.
+     * <br>Multiple different {@link net.dv8tion.jda.api.entities.ChannelType ChannelTypes} can
+     * share a common sorting bucket.
      *
-     * @return The corresponding {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
+     * @return The sorting bucket
+     */
+    int getSortBucket();
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelTypes} for the {@link #getSortBucket() sorting bucket}.
+     *
+     * @return The channel types
+     *
+     * @see    net.dv8tion.jda.api.entities.ChannelType#fromSortBucket(int)
      */
     @Nonnull
-    ChannelType getChannelType();
+    default EnumSet<ChannelType> getChannelTypes()
+    {
+        return ChannelType.fromSortBucket(getSortBucket());
+    }
 }
