@@ -282,10 +282,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelsView because
         // getTextChannels does the sorting logic.
-        List<TextChannel> channels = getGuild().getTextChannels();
+        List<GuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
+        channels.addAll(getGuild().getStoreChannels());
+        Collections.sort(channels);
         for (int i = 0; i < channels.size(); i++)
         {
-            if (channels.get(i) == this)
+            if (equals(channels.get(i)))
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
@@ -506,18 +508,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public String toString()
     {
         return "TC:" + getName() + '(' + id + ')';
-    }
-
-    @Override
-    public int compareTo(@Nonnull TextChannel chan)
-    {
-        Checks.notNull(chan, "Other TextChannel");
-        if (this == chan)
-            return 0;
-        Checks.check(getGuild().equals(chan.getGuild()), "Cannot compare TextChannels that aren't from the same guild!");
-        if (this.getPositionRaw() == chan.getPositionRaw())
-            return Long.compare(id, chan.getIdLong());
-        return Integer.compare(rawPosition, chan.getPositionRaw());
     }
 
     // -- Setters --

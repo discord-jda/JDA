@@ -19,10 +19,12 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelCreateEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class ChannelCreateHandler extends SocketHandler
@@ -38,52 +40,63 @@ public class ChannelCreateHandler extends SocketHandler
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
         long guildId = 0;
+        JDAImpl jda = getJDA();
         if (type.isGuild())
         {
             guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId))
+            if (jda.getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 
+        EntityBuilder builder = jda.getEntityBuilder();
         switch (type)
         {
+            case STORE:
+            {
+                builder.createStoreChannel(content, guildId);
+                jda.getEventManager().handle(
+                    new StoreChannelCreateEvent(
+                        jda, responseNumber,
+                        builder.createStoreChannel(content, guildId)));
+                break;
+            }
             case TEXT:
             {
-                getJDA().getEventManager().handle(
+                jda.getEventManager().handle(
                     new TextChannelCreateEvent(
-                        getJDA(), responseNumber,
-                        getJDA().getEntityBuilder().createTextChannel(content, guildId)));
+                        jda, responseNumber,
+                        builder.createTextChannel(content, guildId)));
                 break;
             }
             case VOICE:
             {
-                getJDA().getEventManager().handle(
+                jda.getEventManager().handle(
                     new VoiceChannelCreateEvent(
-                        getJDA(), responseNumber,
-                        getJDA().getEntityBuilder().createVoiceChannel(content, guildId)));
+                        jda, responseNumber,
+                        builder.createVoiceChannel(content, guildId)));
                 break;
             }
             case CATEGORY:
             {
-                getJDA().getEventManager().handle(
+                jda.getEventManager().handle(
                     new CategoryCreateEvent(
-                        getJDA(), responseNumber,
-                        getJDA().getEntityBuilder().createCategory(content, guildId)));
+                        jda, responseNumber,
+                        builder.createCategory(content, guildId)));
                 break;
             }
             case PRIVATE:
             {
-                getJDA().getEventManager().handle(
+                jda.getEventManager().handle(
                     new PrivateChannelCreateEvent(
-                        getJDA(), responseNumber,
-                        getJDA().getEntityBuilder().createPrivateChannel(content)));
+                        jda, responseNumber,
+                        builder.createPrivateChannel(content)));
                 break;
             }
             case GROUP:
                 WebSocketClient.LOG.warn("Received a CREATE_CHANNEL for a group which is not supported");
                 return null;
             default:
-                throw new IllegalArgumentException("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: " + content);
+                WebSocketClient.LOG.debug("Discord provided an CREATE_CHANNEL event with an unknown channel type! JSON: {}", content);
         }
         return null;
     }

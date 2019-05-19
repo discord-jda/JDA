@@ -25,6 +25,13 @@ import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePosition
 import net.dv8tion.jda.api.events.channel.category.update.GenericCategoryUpdateEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.store.update.GenericStoreChannelUpdateEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
@@ -130,7 +137,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
 
     //Message Events
-    //Guild (@Nonnull TextChannel) Message Events
+    //Guild (TextChannel) Message Events
     public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {}
     public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent event) {}
     public void onGuildMessageDelete(@Nonnull GuildMessageDeleteEvent event) {}
@@ -147,7 +154,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onPrivateMessageReactionAdd(@Nonnull PrivateMessageReactionAddEvent event) {}
     public void onPrivateMessageReactionRemove(@Nonnull PrivateMessageReactionRemoveEvent event) {}
 
-    //Combined Message Events (@Nonnull Combines Guild and Private message into 1 event)
+    //Combined Message Events (Combines Guild and Private message into 1 event)
     public void onMessageReceived(@Nonnull MessageReceivedEvent event) {}
     public void onMessageUpdate(@Nonnull MessageUpdateEvent event) {}
     public void onMessageDelete(@Nonnull MessageDeleteEvent event) {}
@@ -156,6 +163,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {}
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
+
+    //StoreChannel Events
+    public void onStoreChannelDelete(@Nonnull StoreChannelDeleteEvent event) {}
+    public void onStoreChannelUpdateName(@Nonnull StoreChannelUpdateNameEvent event) {}
+    public void onStoreChannelUpdatePosition(@Nonnull StoreChannelUpdatePositionEvent event) {}
+    public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
+    public void onStoreChannelCreate(@Nonnull StoreChannelCreateEvent event) {}
 
     //TextChannel Events
     public void onTextChannelDelete(@Nonnull TextChannelDeleteEvent event) {}
@@ -269,6 +283,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericUser(@Nonnull GenericUserEvent event) {}
     public void onGenericUserPresence(@Nonnull GenericUserPresenceEvent event) {}
     public void onGenericSelfUpdate(@Nonnull GenericSelfUpdateEvent event) {}
+    public void onGenericStoreChannel(@Nonnull GenericStoreChannelEvent event) {}
+    public void onGenericStoreChannelUpdate(@Nonnull GenericStoreChannelUpdateEvent event) {}
     public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(@Nonnull GenericTextChannelUpdateEvent event) {}
     public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {}
@@ -385,6 +401,18 @@ public abstract class ListenerAdapter implements EventListener
             onSelfUpdateName((SelfUpdateNameEvent) event);
         else if (event instanceof SelfUpdateVerifiedEvent)
             onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
+
+        //StoreChannel Events
+        else if (event instanceof StoreChannelCreateEvent)
+            onStoreChannelCreate((StoreChannelCreateEvent) event);
+        else if (event instanceof StoreChannelDeleteEvent)
+            onStoreChannelDelete((StoreChannelDeleteEvent) event);
+        else if (event instanceof StoreChannelUpdateNameEvent)
+            onStoreChannelUpdateName((StoreChannelUpdateNameEvent) event);
+        else if (event instanceof StoreChannelUpdatePositionEvent)
+            onStoreChannelUpdatePosition((StoreChannelUpdatePositionEvent) event);
+        else if (event instanceof StoreChannelUpdatePermissionsEvent)
+            onStoreChannelUpdatePermissions((StoreChannelUpdatePermissionsEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -570,6 +598,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericMessageReaction((GenericMessageReactionEvent) event);
         else if (event instanceof GenericPrivateMessageReactionEvent)
             onGenericPrivateMessageReaction((GenericPrivateMessageReactionEvent) event);
+        else if (event instanceof GenericStoreChannelUpdateEvent)
+            onGenericStoreChannelUpdate((GenericStoreChannelUpdateEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericCategoryUpdateEvent)
@@ -604,6 +634,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericUser((GenericUserEvent) event);
         else if (event instanceof GenericSelfUpdateEvent)
             onGenericSelfUpdate((GenericSelfUpdateEvent) event);
+        else if (event instanceof GenericStoreChannelEvent)
+            onGenericStoreChannel((GenericStoreChannelEvent) event);
         else if (event instanceof GenericTextChannelEvent)
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)
