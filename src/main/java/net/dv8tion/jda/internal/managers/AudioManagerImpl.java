@@ -120,7 +120,7 @@ public class AudioManagerImpl implements AudioManager
     {
         EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, self));
         if (!perms.contains(Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(getGuild(), channel, Permission.VOICE_CONNECT);
+            throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
         final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
         if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR))
         {
@@ -133,7 +133,7 @@ public class AudioManagerImpl implements AudioManager
             if (userLimit <= channel.getMembers().size()
                 && !perms.contains(Permission.VOICE_MOVE_OTHERS))
             {
-                throw new InsufficientPermissionException(getGuild(), channel, Permission.VOICE_MOVE_OTHERS,
+                throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS,
                     "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
         }

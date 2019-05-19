@@ -706,7 +706,7 @@ public class ReceivedMessage extends AbstractMessage
                 throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
             else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(getGuild(), getTextChannel(), Permission.MESSAGE_MANAGE);
+                throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
     }

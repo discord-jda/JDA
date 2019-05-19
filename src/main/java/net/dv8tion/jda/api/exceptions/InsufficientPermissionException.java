@@ -18,53 +18,136 @@ package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class InsufficientPermissionException extends PermissionException
 {
     private final long guildId;
     private final long channelId;
+    private final ChannelType channelType;
 
-    public InsufficientPermissionException(Guild guild, GuildChannel channel, Permission permission)
+    public InsufficientPermissionException(@Nonnull Guild guild, @Nonnull Permission permission)
+    {
+        this(guild, null, permission);
+    }
+
+    public InsufficientPermissionException(@Nonnull Guild guild, @Nonnull Permission permission, @Nonnull String reason)
+    {
+        this(guild, null, permission, reason);
+    }
+
+    public InsufficientPermissionException(@Nonnull GuildChannel channel, @Nonnull Permission permission)
+    {
+        this(channel.getGuild(), channel, permission);
+    }
+
+    public InsufficientPermissionException(@Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
+    {
+        this(channel.getGuild(), channel, permission, reason);
+    }
+
+    private InsufficientPermissionException(@Nonnull Guild guild, @Nullable GuildChannel channel, @Nonnull Permission permission)
     {
         super(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
         this.guildId = guild.getIdLong();
         this.channelId = channel == null ? 0 : channel.getIdLong();
+        this.channelType = channel == null ? ChannelType.UNKNOWN : channel.getType();
     }
 
-    public InsufficientPermissionException(Guild guild, GuildChannel channel, Permission permission, String reason)
+    private InsufficientPermissionException(@Nonnull Guild guild, @Nullable GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
     {
         super(permission, reason);
         this.guildId = guild.getIdLong();
         this.channelId = channel == null ? 0 : channel.getIdLong();
+        this.channelType = channel == null ? ChannelType.UNKNOWN : channel.getType();
     }
 
+    /**
+     * The id for the responsible {@link net.dv8tion.jda.api.entities.Guild} instance.
+     *
+     * @return The ID as a long
+     *
+     * @see    net.dv8tion.jda.api.JDA#getGuildById(long)
+     */
     public long getGuildId()
     {
         return guildId;
     }
 
+    /**
+     * The id for the responsible {@link net.dv8tion.jda.api.entities.GuildChannel} instance.
+     *
+     * @return The ID as a long or 0
+     *
+     * @see    #getChannel(net.dv8tion.jda.api.JDA)
+     */
     public long getChannelId()
     {
         return channelId;
     }
 
-    public Guild getGuild(JDA api)
+    /**
+     * The {@link net.dv8tion.jda.api.entities.ChannelType} for the {@link #getChannelId() channel id}.
+     *
+     * @return The channel type or {@link net.dv8tion.jda.api.entities.ChannelType#UNKNOWN}.
+     */
+    @Nonnull
+    public ChannelType getChannelType()
+    {
+        return channelType;
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Guild} instance for the {@link #getGuildId() guild id}.
+     *
+     * @param  api
+     *         The shard to perform the lookup in
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided JDA instance is null
+     *
+     * @return The Guild instance or null
+     */
+    @Nullable
+    public Guild getGuild(@Nonnull JDA api)
     {
         Checks.notNull(api, "JDA");
         return api.getGuildById(guildId);
     }
 
-    public GuildChannel getChannel(JDA api)
+    /**
+     * The {@link net.dv8tion.jda.api.entities.GuildChannel} instance for the {@link #getChannelId() channel id}.
+     *
+     * @param  api
+     *         The shard to perform the lookup in
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided JDA instance is null
+     *
+     * @return The GuildChannel instance or null
+     */
+    @Nullable
+    public GuildChannel getChannel(@Nonnull JDA api)
     {
         Checks.notNull(api, "JDA");
-        GuildChannel channel = api.getTextChannelById(channelId);
-        if (channel == null)
-            channel = api.getVoiceChannelById(channelId);
-        if (channel == null)
-            channel = api.getCategoryById(channelId);
-        return channel;
+        GuildChannel channel;
+        switch (getChannelType())
+        {
+            case TEXT:
+                return api.getTextChannelById(channelId);
+            case CATEGORY:
+                return api.getCategoryById(channelId);
+            case VOICE:
+                return api.getVoiceChannelById(channelId);
+            case STORE:
+                return api.getStoreChannelById(channelId);
+        }
+        return null;
     }
 }

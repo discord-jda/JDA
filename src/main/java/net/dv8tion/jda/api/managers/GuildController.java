@@ -166,11 +166,11 @@ public class GuildController
         VoiceChannel channel = vState.getChannel();
         Guild guild = getGuild();
         if (!PermissionUtil.checkPermission(channel, guild.getSelfMember(), Permission.VOICE_MOVE_OTHERS))
-            throw new InsufficientPermissionException(guild, channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
+            throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (!PermissionUtil.checkPermission(voiceChannel, guild.getSelfMember(), Permission.VOICE_CONNECT)
                 && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(guild, channel, Permission.VOICE_CONNECT,
+            throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT,
                     "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                             "for the destination VoiceChannel, so the move cannot be done.");
 
@@ -236,7 +236,7 @@ public class GuildController
         {
             if(!member.hasPermission(Permission.NICKNAME_CHANGE)
                     && !member.hasPermission(Permission.NICKNAME_MANAGE))
-                throw new InsufficientPermissionException(guild, null, Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+                throw new InsufficientPermissionException(guild, Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
         }
         else
         {
@@ -2146,7 +2146,7 @@ public class GuildController
     {
         Guild guild = getGuild();
         if (!guild.getSelfMember().hasPermission(perm))
-            throw new InsufficientPermissionException(guild, null, perm);
+            throw new InsufficientPermissionException(guild, perm);
     }
 
     protected void checkPosition(Member member)

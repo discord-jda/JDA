@@ -381,7 +381,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (!hasPermission(perm))
         {
             TextChannel channel = (TextChannel) this.channel;
-            throw new InsufficientPermissionException(channel.getGuild(), channel, perm);
+            throw new InsufficientPermissionException(channel, perm);
         }
     }
 

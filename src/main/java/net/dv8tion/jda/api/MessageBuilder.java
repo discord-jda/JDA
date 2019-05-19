@@ -824,9 +824,9 @@ public class MessageBuilder implements Appendable
                 final TextChannel text = (TextChannel) channel;
                 final Member self = text.getGuild().getSelfMember();
                 if (!self.hasPermission(text, Permission.MESSAGE_READ))
-                    throw new InsufficientPermissionException(text.getGuild(), text, Permission.MESSAGE_READ);
+                    throw new InsufficientPermissionException(text, Permission.MESSAGE_READ);
                 if (!self.hasPermission(text, Permission.MESSAGE_WRITE))
-                    throw new InsufficientPermissionException(text.getGuild(), text, Permission.MESSAGE_WRITE);
+                    throw new InsufficientPermissionException(text, Permission.MESSAGE_WRITE);
                 break;
             case PRIVATE:
                 final PrivateChannel priv = (PrivateChannel) channel;

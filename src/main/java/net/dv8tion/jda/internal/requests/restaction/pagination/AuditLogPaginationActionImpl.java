@@ -52,7 +52,7 @@ public class AuditLogPaginationActionImpl
     {
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
-            throw new InsufficientPermissionException(guild, null, Permission.VIEW_AUDIT_LOGS);
+            throw new InsufficientPermissionException(guild, Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
     }
 
