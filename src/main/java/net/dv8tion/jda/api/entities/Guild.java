@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MemberAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -612,6 +613,95 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     MemberCacheView getMemberCache();
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull String id)
+    {
+        return getGuildChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(long id)
+    {
+        GuildChannel channel = getTextChannelById(id);
+        if (channel == null)
+            channel = getVoiceChannelById(id);
+        if (channel == null)
+            channel = getStoreChannelById(id);
+        if (channel == null)
+            channel = getCategoryById(id);
+        return channel;
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    {
+        return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    {
+        Checks.notNull(type, "ChannelType");
+        switch (type)
+        {
+            case TEXT:
+                return getTextChannelById(id);
+            case VOICE:
+                return getVoiceChannelById(id);
+            case STORE:
+                return getStoreChannelById(id);
+            case CATEGORY:
+                return getCategoryById(id);
+        }
+        return null;
+    }
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category} from this guild that matches the provided id.
