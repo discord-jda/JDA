@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.GuildChannel;
 
 import javax.annotation.Nonnull;
 
@@ -29,17 +28,12 @@ import javax.annotation.Nonnull;
  * <p>Before you can use any of the {@code move} methods
  * you must use either {@link #selectPosition(Object) selectPosition(GuildChannel)} or {@link #selectPosition(int)}!
  *
- * @param  <T>
- *         The type of {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} to move
- *         using this CategoryOrderAction, either {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
- *         or {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
- *
  * @author Kaidan Gustave
  *
  * @see    Category#modifyTextChannelPositions()
  * @see    Category#modifyVoiceChannelPositions()
  */
-public interface CategoryOrderAction<T extends GuildChannel> extends ChannelOrderAction<T>
+public interface CategoryOrderAction extends ChannelOrderAction
 {
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category}

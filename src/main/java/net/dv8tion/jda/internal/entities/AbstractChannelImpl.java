@@ -69,6 +69,17 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         this.api = new UpstreamReference<>(guild.getJDA());
     }
 
+    @Override
+    public int compareTo(@Nonnull GuildChannel o)
+    {
+        Checks.notNull(o, "Channel");
+        if (getType().getSortBucket() != o.getType().getSortBucket()) // if bucket matters
+            return Integer.compare(getType().getSortBucket(), o.getType().getSortBucket());
+        if (getPositionRaw() != o.getPositionRaw())                   // if position matters
+            return Integer.compare(getPositionRaw(), o.getPositionRaw());
+        return Long.compareUnsigned(id, o.getIdLong());               // last resort by id
+    }
+
     @Nonnull
     @Override
     public abstract ChannelAction<T> createCopy(@Nonnull Guild guild);

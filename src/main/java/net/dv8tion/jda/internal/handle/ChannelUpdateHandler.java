@@ -24,6 +24,9 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -65,6 +68,42 @@ public class ChannelUpdateHandler extends SocketHandler
         DataArray permOverwrites = content.getArray("permission_overwrites");
         switch (type)
         {
+            case STORE:
+            {
+                StoreChannelImpl storeChannel = (StoreChannelImpl) getJDA().getStoreChannelById(channelId);
+                if (storeChannel == null)
+                {
+                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to update a StoreChannel that does not exist. JSON: {}", content);
+                    return null;
+                }
+                final String oldName = storeChannel.getName();
+                final int oldPositon = storeChannel.getPositionRaw();
+
+                if (!Objects.equals(oldName, name))
+                {
+                    storeChannel.setName(name);
+                    getJDA().getEventManager().handle(
+                        new StoreChannelUpdateNameEvent(
+                            getJDA(), responseNumber,
+                            storeChannel, oldName));
+                }
+                if (!Objects.equals(oldPositon, position))
+                {
+                    storeChannel.setPosition(position);
+                    getJDA().getEventManager().handle(
+                        new StoreChannelUpdatePositionEvent(
+                            getJDA(), responseNumber,
+                            storeChannel, oldPositon));
+                }
+
+                applyPermissions(storeChannel, content, permOverwrites, contained, changed);
+                getJDA().getEventManager().handle(
+                    new StoreChannelUpdatePermissionsEvent(
+                        getJDA(), responseNumber,
+                        storeChannel, changed));
+                break;
+            }
             case TEXT:
             {
                 String topic = content.getString("topic", null);

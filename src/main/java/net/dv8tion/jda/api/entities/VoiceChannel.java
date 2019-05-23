@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  * @see TextChannel
  * @see Category
  */
-public interface VoiceChannel extends GuildChannel, Comparable<VoiceChannel>
+public interface VoiceChannel extends GuildChannel
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this

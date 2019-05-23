@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -786,11 +787,13 @@ public interface JDA
      * over all {@link net.dv8tion.jda.api.entities.Guild Guilds} and check whether a Role from that Guild is assigned
      * to the specified ID and will return the first that can be found.
      *
-     * @param id
+     * @param  id
      *         The id of the searched Role
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} for the specified ID
+     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} for the specified ID
      */
     @Nullable
     default Role getRoleById(@Nonnull String id)
@@ -803,8 +806,9 @@ public interface JDA
      * over all {@link net.dv8tion.jda.api.entities.Guild Guilds} and check whether a Role from that Guild is assigned
      * to the specified ID and will return the first that can be found.
      *
-     * @param id
+     * @param  id
      *         The id of the searched Role
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} for the specified ID
      */
     @Nullable
@@ -822,12 +826,140 @@ public interface JDA
      *         The name for the Roles
      * @param  ignoreCase
      *         Whether to use {@link String#equalsIgnoreCase(String)}
+     *
      * @return Immutable List of all Roles matching the parameters provided.
      */
     @Nonnull
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull String id)
+    {
+        return getGuildChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(long id)
+    {
+        GuildChannel channel = getTextChannelById(id);
+        if (channel == null)
+            channel = getVoiceChannelById(id);
+        if (channel == null)
+            channel = getStoreChannelById(id);
+        if (channel == null)
+            channel = getCategoryById(id);
+        return channel;
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    {
+        return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    {
+        Checks.notNull(type, "ChannelType");
+        switch (type)
+        {
+            case TEXT:
+                return getTextChannelById(id);
+            case VOICE:
+                return getVoiceChannelById(id);
+            case STORE:
+                return getStoreChannelById(id);
+            case CATEGORY:
+                return getCategoryById(id);
+        }
+        return null;
     }
 
     /**
@@ -840,14 +972,16 @@ public interface JDA
     SnowflakeCacheView<Category> getCategoryCache();
 
     /**
-     * Gets the {@link net.dv8tion.jda.api.entities.Category Category} that matches the provided id. <br>If there is no
-     * matching {@link net.dv8tion.jda.api.entities.Category Category} this returns {@code null}.
+     * Gets the {@link net.dv8tion.jda.api.entities.Category Category} that matches the provided id.
+     * <br>If there is no matching {@link net.dv8tion.jda.api.entities.Category Category} this returns {@code null}.
      *
-     * @param id
+     * @param  id
      *         The snowflake ID of the wanted Category
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
     default Category getCategoryById(@Nonnull String id)
@@ -859,8 +993,9 @@ public interface JDA
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category} that matches the provided id. <br>If there is no
      * matching {@link net.dv8tion.jda.api.entities.Category Category} this returns {@code null}.
      *
-     * @param id
+     * @param  id
      *         The snowflake ID of the wanted Category
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
@@ -889,18 +1024,101 @@ public interface JDA
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Category Categories} that have the same name as the one
      * provided. <br>If there are no matching categories this will return an empty list.
      *
-     * @param name
+     * @param  name
      *         The name to check
-     * @param ignoreCase
+     * @param  ignoreCase
      *         Whether to ignore case on name checking
-     * @return Immutable list of all categories matching the provided name
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
      */
     @Nonnull
     default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getCategoryCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} visible to this JDA session.
+     * <br>TextChannels are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    @Nonnull
+    SnowflakeCacheView<StoreChannel> getStoreChannelCache();
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} that has the same id as the
+     * one provided.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     */
+    @Nullable
+    default StoreChannel getStoreChannelById(@Nonnull String id)
+    {
+        return getStoreChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} that has the same id as the
+     * one provided.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     */
+    @Nullable
+    default StoreChannel getStoreChannelById(long id)
+    {
+        return getStoreChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getStoreChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return Possibly-empty immutable List of all known {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
+     */
+    @Nonnull
+    default List<StoreChannel> getStoreChannels()
+    {
+        return getStoreChannelCache().asList();
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
+     */
+    @Nonnull
+    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getStoreChannelCache().getElementsByName(name, ignoreCase);
     }
 
     /**
@@ -1182,12 +1400,14 @@ public interface JDA
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
-     * @param id
+     * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
-     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
-     *         our cache.
+     *
      * @throws java.lang.NumberFormatException
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
+     *         our cache.
      */
     @Nullable
     default Emote getEmoteById(@Nonnull String id)
@@ -1201,8 +1421,9 @@ public interface JDA
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
-     * @param id
+     * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.Emote}.
+     *
      * @return An {@link net.dv8tion.jda.api.entities.Emote Emote} represented by this id or null if none is found in
      *         our cache.
      */
@@ -1220,11 +1441,12 @@ public interface JDA
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
-     * @param name
+     * @param  name
      *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}.
-     * @param ignoreCase
+     * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.api.entities.Emote#getName()}.
+     *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Emote Emotes} that all have the same
      *         name as the provided name.
      */

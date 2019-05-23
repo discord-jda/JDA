@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MemberAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -614,16 +615,145 @@ public interface Guild extends ISnowflake
     MemberCacheView getMemberCache();
 
     /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull String id)
+    {
+        return getGuildChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(long id)
+    {
+        GuildChannel channel = getTextChannelById(id);
+        if (channel == null)
+            channel = getVoiceChannelById(id);
+        if (channel == null)
+            channel = getStoreChannelById(id);
+        if (channel == null)
+            channel = getCategoryById(id);
+        return channel;
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    {
+        return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    {
+        Checks.notNull(type, "ChannelType");
+        switch (type)
+        {
+            case TEXT:
+                return getTextChannelById(id);
+            case VOICE:
+                return getVoiceChannelById(id);
+            case STORE:
+                return getStoreChannelById(id);
+            case CATEGORY:
+                return getCategoryById(id);
+        }
+        return null;
+    }
+
+    /**
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category} from this guild that matches the provided id.
      * This method is similar to {@link net.dv8tion.jda.api.JDA#getCategoryById(String)}, but it only checks in this
      * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.api.entities.Category Category} this returns
      * {@code null}.
      *
-     * @param id
+     * @param  id
      *         The snowflake ID of the wanted Category
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided ID is not a valid {@code long}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
     default Category getCategoryById(@Nonnull String id)
@@ -637,8 +767,9 @@ public interface Guild extends ISnowflake
      * specific Guild. <br>If there is no matching {@link net.dv8tion.jda.api.entities.Category Category} this returns
      * {@code null}.
      *
-     * @param id
+     * @param  id
      *         The snowflake ID of the wanted Category
+     *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
@@ -668,13 +799,15 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Category Categories} in this Guild that have the same
      * name as the one provided. <br>If there are no matching categories this will return an empty list.
      *
-     * @param name
+     * @param  name
      *         The name to check
-     * @param ignoreCase
+     * @param  ignoreCase
      *         Whether to ignore case on name checking
-     * @return Immutable list of all categories matching the provided name
+     *
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is {@code null}
+     *
+     * @return Immutable list of all categories matching the provided name
      */
     @Nonnull
     default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
@@ -687,10 +820,94 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.Category Categories} of this Guild.
      * <br>Categories are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<Category> getCategoryCache();
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getStoreChannelById(String)}, but it only
+     * checks this specific Guild for a StoreChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     */
+    @Nullable
+    default StoreChannel getStoreChannelById(@Nonnull String id)
+    {
+        return getStoreChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getStoreChannelById(long)}, but it only
+     * checks this specific Guild for a StoreChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     */
+    @Nullable
+    default StoreChannel getStoreChannelById(long id)
+    {
+        return getStoreChannelCache().getElementById(id);
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>The channels returned will be sorted according to their position.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getStoreChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return An immutable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in this Guild.
+     */
+    @Nonnull
+    default List<StoreChannel> getStoreChannels()
+    {
+        return getStoreChannelCache().asList();
+    }
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
+     */
+    @Nonnull
+    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getStoreChannelCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} of this Guild.
+     * <br>TextChannels are sorted according to their position.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     */
+    @Nonnull
+    SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} from this guild that has the same id as the
@@ -771,7 +988,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} of this Guild.
      * <br>TextChannels are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<TextChannel> getTextChannelCache();
@@ -855,7 +1072,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this Guild.
      * <br>VoiceChannels are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
@@ -867,11 +1084,11 @@ public interface Guild extends ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel without parent</li>
+     *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel with category as parent</li>
+     *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *         </ol>
      *     </li>
@@ -893,11 +1110,11 @@ public interface Guild extends ISnowflake
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
      * <ol>
-     *     <li>TextChannel without parent</li>
+     *     <li>TextChannel and StoreChannel without parent</li>
      *     <li>VoiceChannel without parent</li>
      *     <li>Categories
      *         <ol>
-     *             <li>TextChannel with category as parent</li>
+     *             <li>TextChannel and StoreChannel with category as parent</li>
      *             <li>VoiceChannel with category as parent</li>
      *         </ol>
      *     </li>
@@ -992,7 +1209,7 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.Role Roles} of this Guild.
      * <br>Roles are sorted according to their position.
      *
-     * @return Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
     @Nonnull
     SortedSnowflakeCacheView<Role> getRoleCache();

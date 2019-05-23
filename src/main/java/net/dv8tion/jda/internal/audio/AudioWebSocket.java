@@ -160,10 +160,10 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
             JDAImpl api = getJDA();
-            if (status == ConnectionStatus.ERROR_LOST_CONNECTION)
+            if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 //Get guild from JDA, don't use [guild] field to make sure that we don't have
-               // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
+                // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
                 Guild connGuild = api.getGuildById(guild.getIdLong());
                 if (connGuild != null)
                 {
@@ -192,7 +192,7 @@ class AudioWebSocket extends WebSocketAdapter
                 //Remove audio manager as we are no longer in the guild
                 api.getAudioManagersView().remove(guild.getIdLong());
             }
-            else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
+            else if (status != ConnectionStatus.AUDIO_REGION_CHANGE && status != ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 api.getDirectAudioController().disconnect(guild);
             }
@@ -296,6 +296,9 @@ class AudioWebSocket extends WebSocketAdapter
                     break;
                 case AUTHENTICATION_FAILED:
                     this.close(ConnectionStatus.DISCONNECTED_AUTHENTICATION_FAILURE);
+                    break;
+                case DISCONNECTED:
+                    this.close(ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL);
                     break;
                 default:
                     this.reconnect();
