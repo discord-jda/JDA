@@ -121,22 +121,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     public GuildChannel getChannel()
     {
         JDAImpl jda = api.get();
-        GuildChannel channel;
-        switch (channelType)
-        {
-            case TEXT:
-                channel = jda.getTextChannelById(channelId);
-                break;
-            case VOICE:
-                channel = jda.getVoiceChannelById(channelId);
-                break;
-            case CATEGORY:
-                channel = jda.getCategoryById(channelId);
-                break;
-                //TODO: STORE
-            default:
-                throw new IllegalStateException("Unknown channel type " + channelType);
-        }
+        GuildChannel channel = jda.getGuildChannelById(channelType, channelId);
         if (channel == null)
             throw new IllegalStateException("Cannot get reference to upstream " + channelType.name() + " Channel with id: " + Long.toUnsignedString(channelId));
         return channel;
