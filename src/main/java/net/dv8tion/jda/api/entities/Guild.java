@@ -621,7 +621,7 @@ public interface Guild extends ISnowflake
      * <br>To get more specific channel types you can use one of the following:
      * <ul>
      *     <li>{@link #getTextChannelById(String)}</li>
-     *     <lI>{@link #getVoiceChannelById(String)}</lI>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
      *     <li>{@link #getStoreChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
@@ -649,7 +649,7 @@ public interface Guild extends ISnowflake
      * <br>To get more specific channel types you can use one of the following:
      * <ul>
      *     <li>{@link #getTextChannelById(long)}</li>
-     *     <lI>{@link #getVoiceChannelById(long)}</lI>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
      *     <li>{@link #getStoreChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
@@ -680,7 +680,7 @@ public interface Guild extends ISnowflake
      * To get more specific channel types you can use one of the following:
      * <ul>
      *     <li>{@link #getTextChannelById(String)}</li>
-     *     <lI>{@link #getVoiceChannelById(String)}</lI>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
      *     <li>{@link #getStoreChannelById(String)}</li>
      *     <li>{@link #getCategoryById(String)}</li>
      * </ul>
@@ -711,7 +711,7 @@ public interface Guild extends ISnowflake
      * To get more specific channel types you can use one of the following:
      * <ul>
      *     <li>{@link #getTextChannelById(long)}</li>
-     *     <lI>{@link #getVoiceChannelById(long)}</lI>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
      *     <li>{@link #getStoreChannelById(long)}</li>
      *     <li>{@link #getCategoryById(long)}</li>
      * </ul>
