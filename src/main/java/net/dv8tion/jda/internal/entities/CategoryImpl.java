@@ -69,7 +69,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         List<Category> channels = getGuild().getCategories();
         for (int i = 0; i < channels.size(); i++)
         {
-            if (channels.get(i) == this)
+            if (equals(channels.get(i)))
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");

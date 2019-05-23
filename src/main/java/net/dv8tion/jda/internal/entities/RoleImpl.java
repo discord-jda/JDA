@@ -70,14 +70,14 @@ public class RoleImpl implements Role
     public int getPosition()
     {
         Guild guild = getGuild();
-        if (this == guild.getPublicRole())
+        if (equals(guild.getPublicRole()))
             return -1;
 
         //Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
         int i = guild.getRoles().size() - 2;
         for (Role r : guild.getRoles())
         {
-            if (r == this)
+            if (equals(r))
                 return i;
             i--;
         }

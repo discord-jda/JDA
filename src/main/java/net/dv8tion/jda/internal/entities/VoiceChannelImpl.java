@@ -70,7 +70,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         List<VoiceChannel> channels = getGuild().getVoiceChannels();
         for (int i = 0; i < channels.size(); i++)
         {
-            if (channels.get(i) == this)
+            if (equals(channels.get(i)))
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
