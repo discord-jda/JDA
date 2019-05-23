@@ -136,18 +136,6 @@ public class InsufficientPermissionException extends PermissionException
     public GuildChannel getChannel(@Nonnull JDA api)
     {
         Checks.notNull(api, "JDA");
-        GuildChannel channel;
-        switch (getChannelType())
-        {
-            case TEXT:
-                return api.getTextChannelById(channelId);
-            case CATEGORY:
-                return api.getCategoryById(channelId);
-            case VOICE:
-                return api.getVoiceChannelById(channelId);
-            case STORE:
-                return api.getStoreChannelById(channelId);
-        }
-        return null;
+        return api.getGuildChannelById(channelType, channelId);
     }
 }
