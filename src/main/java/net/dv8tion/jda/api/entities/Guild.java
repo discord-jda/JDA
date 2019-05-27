@@ -1846,7 +1846,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> setNickname(@Nonnull Member member, @Nullable String nickname);
+    AuditableRestAction<Void> modifyNickname(@Nonnull Member member, @Nullable String nickname);
 
     /**
      * This method will prune (kick) all members who were offline for at least <i>days</i> days.
@@ -2447,7 +2447,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> setDeafen(@Nonnull Member member, boolean deafen);
+    AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen);
 
     /**
      * Sets the Guild Muted state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
@@ -2490,7 +2490,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> setMute(@Nonnull Member member, boolean mute);
+    AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute);
 
     /**
      * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified {@link net.dv8tion.jda.api.entities.Member Member}.

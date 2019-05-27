@@ -750,7 +750,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> setNickname(@Nonnull Member member, String nickname)
+    public AuditableRestAction<Void> modifyNickname(@Nonnull Member member, String nickname)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -877,7 +877,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> setDeafen(@Nonnull Member member, boolean deafen)
+    public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -892,7 +892,7 @@ public class GuildImpl implements Guild
         if (voiceState != null)
         {
             if (voiceState.getChannel() == null)
-                throw new IllegalStateException("Can only deafen members who are current in a voice channel");
+                throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
             if (voiceState.isGuildDeafened() == deafen)
                 return new EmptyRestAction<>(getJDA(), null);
         }
@@ -904,7 +904,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> setMute(@Nonnull Member member, boolean mute)
+    public AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -919,7 +919,7 @@ public class GuildImpl implements Guild
         if (voiceState != null)
         {
             if (voiceState.getChannel() == null)
-                throw new IllegalStateException("Can only mute members who are current in a voice channel");
+                throw new IllegalStateException("Can only mute members who are currently in a voice channel");
             if (voiceState.isGuildMuted() == mute)
                 return new EmptyRestAction<>(getJDA(), null);
         }
