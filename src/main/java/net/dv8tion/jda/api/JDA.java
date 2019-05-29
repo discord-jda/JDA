@@ -288,16 +288,6 @@ public interface JDA
     List<String> getCloudflareRays();
 
     /**
-     * Receives all valid {@code _trace} lines that have been sent to us
-     * in this session.
-     * <br>These values reset on every reconnect! (not resume)
-     *
-     * @return List of all websocket traces
-     */
-    @Nonnull
-    List<String> getWebSocketTrace();
-
-    /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
      * executions. This is also used in other parts of JDA related to http requests.
      *

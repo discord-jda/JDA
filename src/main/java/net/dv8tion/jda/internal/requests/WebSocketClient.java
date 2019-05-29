@@ -77,7 +77,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = ConcurrentHashMap.newKeySet();
-    protected final Set<String> traces = ConcurrentHashMap.newKeySet();
     protected final Compression compression;
 
     public WebSocket socket;
@@ -149,19 +148,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public Set<String> getCfRays()
     {
         return cfRays;
-    }
-
-    public Set<String> getTraces()
-    {
-        return traces;
-    }
-
-    protected void updateTraces(DataArray arr, String type, int opCode)
-    {
-        WebSocketClient.LOG.debug("Received a _trace for {} (OP: {}) with {}", type, opCode, arr);
-        traces.clear();
-        for (Object o : arr)
-            traces.add(String.valueOf(o));
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -779,8 +765,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
                 final DataObject data = content.getObject("d");
                 setupKeepAlive(data.getLong("heartbeat_interval"));
-                if (!data.isNull("_trace"))
-                    updateTraces(data.getArray("_trace"), "HELLO", WebSocketCode.HELLO);
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
@@ -829,8 +813,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     processingReady = true;
                     handleIdentifyRateLimit = false;
                     sessionId = content.getString("session_id");
-                    if (!content.isNull("_trace"))
-                        updateTraces(content.getArray("_trace"), "READY", WebSocketCode.DISPATCH);
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
@@ -845,8 +827,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         LOG.debug("Resumed while still processing initial ready");
                         jda.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                     }
-                    if (!content.isNull("_trace"))
-                        updateTraces(content.getArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
                     break;
                 default:
                     SocketHandler handler = handlers.get(type);

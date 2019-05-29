@@ -477,14 +477,6 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public List<String> getWebSocketTrace()
-    {
-        WebSocketClient client = getClient();
-        return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
-    }
-
-    @Nonnull
-    @Override
     public List<Guild> getMutualGuilds(@Nonnull User... users)
     {
         Checks.notNull(users, "users");
