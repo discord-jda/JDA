@@ -276,18 +276,6 @@ public interface JDA
     }
 
     /**
-     * Contains all {@code cf-ray} headers that JDA received in this session.
-     * <br>These receive a new value whenever the WebSockedClient reconnects to the gateway.
-     *
-     * <p>This is useful to monitor cloudflare activity from the Discord Developer perspective.
-     * <br>Use this list to report connection issues.
-     *
-     * @return Immutable list of all cf-ray values for this session
-     */
-    @Nonnull
-    List<String> getCloudflareRays();
-
-    /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
      * executions. This is also used in other parts of JDA related to http requests.
      *

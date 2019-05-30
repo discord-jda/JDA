@@ -76,7 +76,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDAImpl api;
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
-    protected final Set<String> cfRays = ConcurrentHashMap.newKeySet();
     protected final Compression compression;
 
     public WebSocket socket;
@@ -143,11 +142,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public JDA getJDA()
     {
         return api;
-    }
-
-    public Set<String> getCfRays()
-    {
-        return cfRays;
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -343,16 +337,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             LOG.info("Connected to WebSocket");
         else
             LOG.debug("Connected to WebSocket");
-        if (headers.containsKey("cf-ray"))
-        {
-            List<String> values = headers.get("cf-ray");
-            if (!values.isEmpty())
-            {
-                String ray = values.get(0);
-                cfRays.add(ray);
-                LOG.trace("Received new CF-RAY: {}", ray);
-            }
-        }
         connected = true;
         reconnectTimeoutS = 2;
         messagesSent.set(0);
