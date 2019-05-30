@@ -81,7 +81,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     public ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<VoiceChannel> action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
+        ChannelAction<VoiceChannel> action = guild.createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();

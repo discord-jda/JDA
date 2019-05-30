@@ -71,9 +71,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
-    api("club.minnced:opus-java:1.0.4@pom") {
-        isTransitive = true
-    }
+    api("club.minnced:opus-java:1.0.4")
 
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
@@ -166,11 +164,11 @@ tasks.withType<JavaCompile> {
     val arguments = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
     options.encoding = "UTF-8"
     options.isIncremental = true
-    if (JavaVersion.current().isJava9Compatible) doLast {
-        arguments += "release"
+    if (JavaVersion.current().isJava9Compatible) doFirst {
+        arguments += "--release"
         arguments += "8"
     }
-    doLast {
+    doFirst {
         options.compilerArgs = arguments
     }
 }

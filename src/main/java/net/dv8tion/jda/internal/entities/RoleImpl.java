@@ -202,7 +202,7 @@ public class RoleImpl implements Role
     public RoleAction createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        return guild.getController().createRole()
+        return guild.createRole()
                     .setColor(color)
                     .setHoisted(hoisted)
                     .setMentionable(mentionable)
