@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,7 +27,7 @@ import java.util.concurrent.ConcurrentMap;
 
 public class MetaConfig
 {
-    private static final MetaConfig defaultConfig = new MetaConfig(null, EnumSet.allOf(CacheFlag.class), SessionConfig.FLAG_DEFAULTS);
+    private static final MetaConfig defaultConfig = new MetaConfig(null, EnumSet.allOf(CacheFlag.class), ConfigFlag.getDefault());
     private final ConcurrentMap<String, String> mdcContextMap;
     private final EnumSet<CacheFlag> cacheFlags;
     private final boolean enableMDC;
@@ -34,15 +35,15 @@ public class MetaConfig
 
     public MetaConfig(
             @Nullable ConcurrentMap<String, String> mdcContextMap,
-            @Nullable EnumSet<CacheFlag> cacheFlags, int flags)
+            @Nullable EnumSet<CacheFlag> cacheFlags, EnumSet<ConfigFlag> flags)
     {
         this.cacheFlags = cacheFlags == null ? EnumSet.allOf(CacheFlag.class) : cacheFlags;
-        this.enableMDC = (flags & SessionConfig.FLAG_CONTEXT_ENABLED) == SessionConfig.FLAG_CONTEXT_ENABLED;
+        this.enableMDC = flags.contains(ConfigFlag.MDC_CONTEXT);
         if (enableMDC)
             this.mdcContextMap = mdcContextMap == null ? new ConcurrentHashMap<>() : null;
         else
             this.mdcContextMap = null;
-        this.useShutdownHook = (flags & SessionConfig.FLAG_SHUTDOWN_HOOK) == SessionConfig.FLAG_SHUTDOWN_HOOK;
+        this.useShutdownHook = flags.contains(ConfigFlag.SHUTDOWN_HOOK);
     }
 
     @Nullable

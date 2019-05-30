@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
@@ -79,7 +80,7 @@ public class JDABuilder
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected boolean idle = false;
     protected int maxReconnectDelay = 900;
-    protected int flags = SessionConfig.FLAG_DEFAULTS;
+    protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
 
     /**
      * Creates a completely empty JDABuilder.
@@ -135,12 +136,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setRawEventsEnabled(boolean enable)
     {
-        int flag = SessionConfig.FLAG_RAW_EVENTS;
-        if (enable)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.RAW_EVENTS, enable);
     }
 
     /**
@@ -199,7 +195,7 @@ public class JDABuilder
     {
         this.contextMap = map;
         if (map != null)
-            this.flags |= SessionConfig.FLAG_MDC_CONTEXT;
+            setContextEnabled(true);
         return this;
     }
 
@@ -218,12 +214,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setContextEnabled(boolean enable)
     {
-        int flag = SessionConfig.FLAG_MDC_CONTEXT;
-        if (enable)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.MDC_CONTEXT, enable);
     }
 
     /**
@@ -269,12 +260,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
-        int flag = SessionConfig.FLAG_RETRY_TIMEOUT;
-        if (retryOnTimeout)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.RETRY_TIMEOUT, retryOnTimeout);
     }
 
     /**
@@ -530,12 +516,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
-        int flag = SessionConfig.FLAG_BULK_DELETE_SPLIT;
-        if (enabled)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.BULK_DELETE_SPLIT, enabled);
     }
 
     /**
@@ -553,12 +534,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setEnableShutdownHook(boolean enable)
     {
-        int flag = SessionConfig.FLAG_SHUTDOWN_HOOK;
-        if (enable)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.SHUTDOWN_HOOK, enable);
     }
 
     /**
@@ -575,12 +551,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
-        int flag = SessionConfig.FLAG_AUTO_RECONNECT;
-        if (autoReconnect)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.AUTO_RECONNECT, autoReconnect);
     }
 
     /**
@@ -901,5 +872,14 @@ public class JDABuilder
                 .setCacheStatus(status);
         jda.login(shardInfo, compression, true);
         return jda;
+    }
+
+    private JDABuilder setFlag(ConfigFlag flag, boolean enable)
+    {
+        if (enable)
+            this.flags.add(flag);
+        else
+            this.flags.remove(flag);
+        return this;
     }
 }

@@ -20,38 +20,26 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 public class SessionConfig
 {
-    public static final int FLAG_CONTEXT_ENABLED   = 1;
-    public static final int FLAG_RETRY_TIMEOUT     = 1 << 1;
-    public static final int FLAG_RAW_EVENTS        = 1 << 2;
-    public static final int FLAG_BULK_DELETE_SPLIT = 1 << 3;
-    public static final int FLAG_SHUTDOWN_HOOK     = 1 << 4;
-    public static final int FLAG_MDC_CONTEXT       = 1 << 5;
-    public static final int FLAG_AUTO_RECONNECT    = 1 << 6;
-
-    public static final int FLAG_DEFAULTS = FLAG_CONTEXT_ENABLED
-                                          | FLAG_AUTO_RECONNECT
-                                          | FLAG_BULK_DELETE_SPLIT
-                                          | FLAG_SHUTDOWN_HOOK
-                                          | FLAG_RETRY_TIMEOUT;
-
     private final SessionController sessionController;
     private final OkHttpClient httpClient;
     private final WebSocketFactory webSocketFactory;
     private final VoiceDispatchInterceptor interceptor;
-    private int flags;
+    private EnumSet<ConfigFlag> flags;
     private int maxReconnectDelay;
 
     public SessionConfig(
         @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
         @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
-        int flags, int maxReconnectDelay)
+        EnumSet<ConfigFlag> flags, int maxReconnectDelay)
     {
         this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
         this.httpClient = httpClient;
@@ -63,7 +51,10 @@ public class SessionConfig
 
     public void setAutoReconnect(boolean autoReconnect)
     {
-        this.flags |= autoReconnect ? FLAG_AUTO_RECONNECT : ~FLAG_AUTO_RECONNECT;
+        if (autoReconnect)
+            flags.add(ConfigFlag.AUTO_RECONNECT);
+        else
+            flags.remove(ConfigFlag.AUTO_RECONNECT);
     }
 
     @Nonnull
@@ -92,22 +83,22 @@ public class SessionConfig
 
     public boolean isAutoReconnect()
     {
-        return (flags & FLAG_AUTO_RECONNECT) == FLAG_AUTO_RECONNECT;
+        return flags.contains(ConfigFlag.AUTO_RECONNECT);
     }
 
     public boolean isRetryOnTimeout()
     {
-        return (flags & FLAG_RETRY_TIMEOUT) == FLAG_RETRY_TIMEOUT;
+        return flags.contains(ConfigFlag.RETRY_TIMEOUT);
     }
 
     public boolean isBulkDeleteSplittingEnabled()
     {
-        return (flags & FLAG_BULK_DELETE_SPLIT) == FLAG_BULK_DELETE_SPLIT;
+        return flags.contains(ConfigFlag.BULK_DELETE_SPLIT);
     }
 
     public boolean isRawEvents()
     {
-        return (flags & FLAG_RAW_EVENTS) == FLAG_RAW_EVENTS;
+        return flags.contains(ConfigFlag.RAW_EVENTS);
     }
 
     public int getMaxReconnectDelay()
@@ -115,7 +106,7 @@ public class SessionConfig
         return maxReconnectDelay;
     }
 
-    public int getFlags()
+    public EnumSet<ConfigFlag> getFlags()
     {
         return flags;
     }
@@ -123,6 +114,6 @@ public class SessionConfig
     @Nonnull
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, null, null, null, FLAG_DEFAULTS, 900);
+        return new SessionConfig(null, null, null, null, ConfigFlag.getDefault(), 900);
     }
 }

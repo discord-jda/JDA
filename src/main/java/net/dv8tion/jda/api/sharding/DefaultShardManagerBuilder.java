@@ -28,7 +28,8 @@ import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.config.SessionConfig;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
+import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
 import okhttp3.OkHttpClient;
 
@@ -56,7 +57,8 @@ public class  DefaultShardManagerBuilder
     protected SessionController sessionController = null;
     protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
-    protected long flags = ShardingSessionConfig.FLAG_DEFAULTS;
+    protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
+    protected EnumSet<ShardingConfigFlag> shardingFlags = ShardingConfigFlag.getDefault();
     protected Compression compression = Compression.ZLIB;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
@@ -103,12 +105,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setRawEventsEnabled(boolean enable)
     {
-        int flag = SessionConfig.FLAG_RAW_EVENTS;
-        if (enable)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.RAW_EVENTS, enable);
     }
 
     /**
@@ -201,7 +198,7 @@ public class  DefaultShardManagerBuilder
     {
         this.contextProvider = provider;
         if (provider != null)
-            this.flags |= SessionConfig.FLAG_MDC_CONTEXT;
+            setContextEnabled(true);
         return this;
     }
 
@@ -220,12 +217,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setContextEnabled(boolean enable)
     {
-        int flag = SessionConfig.FLAG_MDC_CONTEXT;
-        if (enable)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.MDC_CONTEXT, enable);
     }
 
     /**
@@ -450,12 +442,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setAutoReconnect(final boolean autoReconnect)
     {
-        int flag = SessionConfig.FLAG_AUTO_RECONNECT;
-        if (autoReconnect)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.AUTO_RECONNECT, autoReconnect);
     }
 
     /**
@@ -473,12 +460,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setBulkDeleteSplittingEnabled(final boolean enabled)
     {
-        int flag = SessionConfig.FLAG_BULK_DELETE_SPLIT;
-        if (enabled)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.BULK_DELETE_SPLIT, enabled);
     }
 
     /**
@@ -496,12 +478,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setEnableShutdownHook(final boolean enable)
     {
-        int flag = SessionConfig.FLAG_SHUTDOWN_HOOK;
-        if (enable)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.SHUTDOWN_HOOK, enable);
     }
 
     /**
@@ -1014,12 +991,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
-        int flag = SessionConfig.FLAG_RETRY_TIMEOUT;
-        if (retryOnTimeout)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ConfigFlag.RETRY_TIMEOUT, retryOnTimeout);
     }
 
     /**
@@ -1177,12 +1149,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setUseShutdownNow(final boolean useShutdownNow)
     {
-        long flag = ShardingSessionConfig.FLAG_SHUTDOWN_NOW;
-        if (useShutdownNow)
-            this.flags |= flag;
-        else
-            this.flags &= ~flag;
-        return this;
+        return setFlag(ShardingConfigFlag.SHUTDOWN_NOW, useShutdownNow);
     }
 
     /**
@@ -1221,7 +1188,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
-        boolean useShutdownNow = (flags & ShardingSessionConfig.FLAG_SHUTDOWN_NOW) == ShardingSessionConfig.FLAG_SHUTDOWN_NOW;
+        boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
         final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow);
         final EventConfig eventConfig = new EventConfig(eventManagerProvider);
         listeners.forEach(eventConfig::addEventListener);
@@ -1231,13 +1198,31 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
-        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, maxReconnectDelay);
+        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, flags, compression);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
 
         manager.login();
 
         return manager;
+    }
+
+    private DefaultShardManagerBuilder setFlag(ConfigFlag flag, boolean enable)
+    {
+        if (enable)
+            this.flags.add(flag);
+        else
+            this.flags.remove(flag);
+        return this;
+    }
+
+    private DefaultShardManagerBuilder setFlag(ShardingConfigFlag flag, boolean enable)
+    {
+        if (enable)
+            this.shardingFlags.add(flag);
+        else
+            this.shardingFlags.remove(flag);
+        return this;
     }
 
     //Avoid having multiple anonymous classes
