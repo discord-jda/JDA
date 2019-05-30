@@ -703,7 +703,7 @@ public class GuildImpl implements Guild
     public RestAction<List<Invite>> retrieveInvites()
     {
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 
@@ -730,16 +730,17 @@ public class GuildImpl implements Guild
         GuildVoiceState vState = member.getVoiceState();
         if (vState == null)
             throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
-        if (!vState.inVoiceChannel())
+        VoiceChannel channel = vState.getChannel();
+        if (channel == null)
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
-        if (!PermissionUtil.checkPermission(vState.getChannel(), getSelfMember(), Permission.VOICE_MOVE_OTHERS))
-            throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
+        if (!PermissionUtil.checkPermission(channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+            throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (voiceChannel != null
             && !PermissionUtil.checkPermission(voiceChannel, getSelfMember(), Permission.VOICE_CONNECT)
             && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(Permission.VOICE_CONNECT,
+            throw new InsufficientPermissionException(voiceChannel, Permission.VOICE_CONNECT,
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                                                       "for the destination VoiceChannel, so the move cannot be done.");
 
@@ -755,11 +756,10 @@ public class GuildImpl implements Guild
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
 
-        if(member.equals(getSelfMember()))
+        if (member.equals(getSelfMember()))
         {
-            if(!member.hasPermission(Permission.NICKNAME_CHANGE)
-               && !member.hasPermission(Permission.NICKNAME_MANAGE))
-                throw new InsufficientPermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+            if (!member.hasPermission(Permission.NICKNAME_CHANGE) && !member.hasPermission(Permission.NICKNAME_MANAGE))
+                throw new InsufficientPermissionException(this, Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
         }
         else
         {
@@ -1165,7 +1165,7 @@ public class GuildImpl implements Guild
     protected void checkPermission(Permission perm)
     {
         if (!getSelfMember().hasPermission(perm))
-            throw new InsufficientPermissionException(perm);
+            throw new InsufficientPermissionException(this, perm);
     }
 
     protected void checkPosition(Member member)
