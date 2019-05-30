@@ -84,7 +84,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public ChannelAction<Category> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<Category> action = guild.getController().createCategory(name);
+        ChannelAction<Category> action = guild.createCategory(name);
         if (guild.equals(getGuild()))
         {
             for (PermissionOverride o : overrides.valueCollection())
@@ -155,7 +155,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
-        ChannelAction<TextChannel> action = getGuild().getController().createTextChannel(name).setParent(this);
+        ChannelAction<TextChannel> action = getGuild().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
@@ -164,7 +164,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
-        ChannelAction<VoiceChannel> action = getGuild().getController().createVoiceChannel(name).setParent(this);
+        ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
@@ -173,14 +173,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public CategoryOrderAction modifyTextChannelPositions()
     {
-        return getGuild().getController().modifyTextChannelPositions(this);
+        return getGuild().modifyTextChannelPositions(this);
     }
 
     @Nonnull
     @Override
     public CategoryOrderAction modifyVoiceChannelPositions()
     {
-        return getGuild().getController().modifyVoiceChannelPositions(this);
+        return getGuild().modifyVoiceChannelPositions(this);
     }
 
     @Override

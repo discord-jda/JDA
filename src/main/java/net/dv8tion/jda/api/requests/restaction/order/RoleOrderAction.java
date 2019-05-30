@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.managers.GuildController;
 
 import javax.annotation.Nonnull;
 
@@ -35,8 +34,8 @@ import javax.annotation.Nonnull;
  *
  * @since 3.0
  *
- * @see   GuildController#modifyRolePositions()
- * @see   GuildController#modifyRolePositions(boolean)
+ * @see   net.dv8tion.jda.api.entities.Guild#modifyRolePositions()
+ * @see   net.dv8tion.jda.api.entities.Guild#modifyRolePositions(boolean)
  */
 public interface RoleOrderAction extends OrderAction<Role, RoleOrderAction>
 {
