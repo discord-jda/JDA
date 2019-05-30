@@ -102,6 +102,15 @@ public class  DefaultShardManagerBuilder
         this.setToken(token);
     }
 
+    /**
+     * Whether JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent} for every discord event.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent}.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public DefaultShardManagerBuilder setRawEventsEnabled(boolean enable)
     {

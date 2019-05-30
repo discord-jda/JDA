@@ -133,6 +133,15 @@ public class JDABuilder
         this.listeners = new LinkedList<>();
     }
 
+    /**
+     * Whether JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent} for every discord event.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent}.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
     @Nonnull
     public JDABuilder setRawEventsEnabled(boolean enable)
     {
