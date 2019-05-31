@@ -71,7 +71,9 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
-    api("club.minnced:opus-java:1.0.4")
+    api("club.minnced:opus-java:1.0.4@pom") {
+        isTransitive = true
+    }
 
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
