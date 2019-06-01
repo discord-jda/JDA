@@ -70,6 +70,8 @@ public interface GuildPresence
 
     class Empty implements GuildPresence
     {
+        private Empty() {}
+
         @Nonnull
         @Override
         public List<Activity> getActivities()
