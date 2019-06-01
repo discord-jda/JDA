@@ -80,6 +80,16 @@ public interface Member extends IMentionable, IPermissionHolder
     GuildVoiceState getVoiceState();
 
     /**
+     * The {@link net.dv8tion.jda.api.entities.GuildPresence GuildPresence} for this member.
+     * <br>This will return {@link net.dv8tion.jda.api.entities.GuildPresence#EMPTY} when {@link net.dv8tion.jda.api.utils.cache.CacheFlag#GUILD_PRESENCE}
+     * is disabled.
+     *
+     * @return The GuildPresence instance
+     */
+    @Nonnull
+    GuildPresence getPresence();
+
+    /**
      * The activities of the user.
      * <br>If the user does not currently have any activity, this returns an empty list.
      *

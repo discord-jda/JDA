@@ -113,7 +113,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //Now that we've update the User's info, lets see if we need to set the specific Presence information.
             // This is stored in the Member or Relation objects.
-            final DataArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.PRESENCE) || content.isNull("activities") ? null : content.getArray("activities");
+            final DataArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.ACTIVITY) || content.isNull("activities") ? null : content.getArray("activities");
             List<Activity> newActivities = new ArrayList<>();
             boolean parsedGame = false;
             try

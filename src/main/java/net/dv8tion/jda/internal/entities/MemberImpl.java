@@ -42,12 +42,10 @@ public class MemberImpl implements Member
     private final User user;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
-    private final Map<ClientType, OnlineStatus> clientStatus;
+    private final GuildPresenceImpl presence;
 
     private String nickname;
     private long joinDate;
-    private List<Activity> activities = null;
-    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -55,9 +53,13 @@ public class MemberImpl implements Member
         this.user = user;
         JDAImpl jda = (JDAImpl) getJDA();
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
-        boolean cacheOnline = jda.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
+        boolean cachePresence = jda.isCacheFlagSet(CacheFlag.GUILD_PRESENCE);
+
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
-        this.clientStatus = cacheOnline ? new ConcurrentHashMap<>(5) : null;
+        if (cachePresence)
+            this.presence = new GuildPresenceImpl(jda.getCacheFlags());
+        else
+            this.presence = null;
     }
 
     @Nonnull
@@ -96,27 +98,30 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
+    public GuildPresence getPresence()
+    {
+        return presence == null ? GuildPresence.EMPTY : presence;
+    }
+
+    @Nonnull
+    @Override
     public List<Activity> getActivities()
     {
-        return activities == null || activities.isEmpty() ? Collections.emptyList() : activities;
+        return getPresence().getActivities();
     }
 
     @Nonnull
     @Override
     public OnlineStatus getOnlineStatus()
     {
-        return onlineStatus;
+        return getPresence().getOnlineStatus();
     }
 
     @Nonnull
     @Override
     public OnlineStatus getOnlineStatus(@Nonnull ClientType type)
     {
-        Checks.notNull(type, "Type");
-        if (this.clientStatus == null || this.clientStatus.isEmpty())
-            return OnlineStatus.OFFLINE;
-        OnlineStatus status = this.clientStatus.get(type);
-        return status == null ? OnlineStatus.OFFLINE : status;
+        return getPresence().getOnlineStatus(type);
     }
 
     @Override
@@ -250,24 +255,22 @@ public class MemberImpl implements Member
 
     public MemberImpl setActivities(List<Activity> activities)
     {
-        this.activities = Collections.unmodifiableList(activities);
+        if (presence != null)
+            presence.setActivities(activities);
         return this;
     }
 
     public MemberImpl setOnlineStatus(ClientType type, OnlineStatus status)
     {
-        if (this.clientStatus == null || type == ClientType.UNKNOWN || type == null)
-            return this;
-        if (status == null || status == OnlineStatus.UNKNOWN || status == OnlineStatus.OFFLINE)
-            this.clientStatus.remove(type);
-        else
-            this.clientStatus.put(type, status);
+        if (presence != null)
+            presence.setOnlineStatus(type, status);
         return this;
     }
 
     public MemberImpl setOnlineStatus(OnlineStatus onlineStatus)
     {
-        this.onlineStatus = onlineStatus;
+        if (presence != null)
+            presence.setOnlineStatus(onlineStatus);
         return this;
     }
 

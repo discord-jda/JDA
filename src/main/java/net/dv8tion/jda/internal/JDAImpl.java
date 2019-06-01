@@ -141,6 +141,11 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
     }
 
+    public EnumSet<CacheFlag> getCacheFlags()
+    {
+        return metaConfig.getCacheFlags();
+    }
+
     public boolean isCacheFlagSet(CacheFlag flag)
     {
         return metaConfig.getCacheFlags().contains(flag);
