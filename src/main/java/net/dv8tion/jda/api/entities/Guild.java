@@ -2748,7 +2748,7 @@ public interface Guild extends ISnowflake
      *     List<Role> pleb = guild.getRolesByName("Pleb", true); // remove all roles named "pleb"
      *     List<Role> knight = guild.getRolesByName("Knight", true); // add all roles named "knight"
      *     // update roles in single request
-     *     guild.modifyMemberRoles(member, pleb, knight).queue();
+     *     guild.modifyMemberRoles(member, knight, pleb).queue();
      * }
      * }</pre>
      *
