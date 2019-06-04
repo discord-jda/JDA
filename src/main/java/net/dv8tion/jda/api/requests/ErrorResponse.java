@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,6 +48,7 @@ public enum ErrorResponse
     MAX_ROLES_PER_GUILD(30005, "Maximum number of guild roles reached (250)"),
     TOO_MANY_REACTIONS( 30010, "Too many reactions"),
     UNAUTHORIZED(       40001, "Unauthorized"),
+    USER_NOT_CONNECTED( 40032, "Target user is not connected to voice."),
     MISSING_ACCESS(     50001, "Missing Access"),
     INVALID_ACCOUNT_TYPE(50002,"Invalid Account Type"),
     INVALID_DM_ACTION(  50003, "Cannot execute action on a DM channel"),
@@ -106,7 +107,7 @@ public enum ErrorResponse
     }
 
     @Nonnull
-    public static ErrorResponse fromJSON(@Nullable JSONObject obj)
+    public static ErrorResponse fromJSON(@Nullable DataObject obj)
     {
         if (obj == null || obj.isNull("code"))
             return SERVER_ERROR;

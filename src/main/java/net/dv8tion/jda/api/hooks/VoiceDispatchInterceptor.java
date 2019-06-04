@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.managers.DirectAudioController;
-import org.json.JSONObject;
-import org.json.JSONString;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,7 +60,7 @@ public interface VoiceDispatchInterceptor
      * @see VoiceServerUpdate
      * @see VoiceStateUpdate
      */
-    interface VoiceUpdate extends JSONString
+    interface VoiceUpdate extends SerializableData
     {
         /**
          * The {@link Guild} for this update
@@ -76,13 +76,8 @@ public interface VoiceDispatchInterceptor
          * @return The raw JSON object
          */
         @Nonnull
-        JSONObject getJSON();
-
         @Override
-        default String toJSONString()
-        {
-            return getJSON().toString();
-        }
+        DataObject toData();
 
         /**
          * Shortcut to access the audio controller of this JDA instance
@@ -148,9 +143,9 @@ public interface VoiceDispatchInterceptor
         private final String endpoint;
         private final String token;
         private final String sessionId;
-        private final JSONObject json;
+        private final DataObject json;
 
-        public VoiceServerUpdate(Guild guild, String endpoint, String token, String sessionId, JSONObject json)
+        public VoiceServerUpdate(Guild guild, String endpoint, String token, String sessionId, DataObject json)
         {
             this.guild = guild;
             this.endpoint = endpoint;
@@ -168,7 +163,7 @@ public interface VoiceDispatchInterceptor
 
         @Nonnull
         @Override
-        public JSONObject getJSON()
+        public DataObject toData()
         {
             return json;
         }
@@ -214,9 +209,9 @@ public interface VoiceDispatchInterceptor
     {
         private final VoiceChannel channel;
         private final GuildVoiceState voiceState;
-        private final JSONObject json;
+        private final DataObject json;
 
-        public VoiceStateUpdate(VoiceChannel channel, GuildVoiceState voiceState, JSONObject json)
+        public VoiceStateUpdate(VoiceChannel channel, GuildVoiceState voiceState, DataObject json)
         {
             this.channel = channel;
             this.voiceState = voiceState;
@@ -232,7 +227,7 @@ public interface VoiceDispatchInterceptor
 
         @Nonnull
         @Override
-        public JSONObject getJSON()
+        public DataObject toData()
         {
             return json;
         }

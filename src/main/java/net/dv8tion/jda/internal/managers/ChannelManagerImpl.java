@@ -23,13 +23,13 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -342,13 +342,13 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject frame = new JSONObject().put("name", getChannel().getName());
+        DataObject frame = DataObject.empty().put("name", getChannel().getName());
         if (shouldUpdate(NAME))
             frame.put("name", name);
         if (shouldUpdate(POSITION))
             frame.put("position", position);
         if (shouldUpdate(TOPIC))
-            frame.put("topic", opt(topic));
+            frame.put("topic", topic);
         if (shouldUpdate(NSFW))
             frame.put("nsfw", nsfw);
         if (shouldUpdate(SLOWMODE))
@@ -358,7 +358,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         if (shouldUpdate(BITRATE))
             frame.put("bitrate", bitrate);
         if (shouldUpdate(PARENT))
-            frame.put("parent_id", opt(parent));
+            frame.put("parent_id", parent);
         withLock(lock, (lock) ->
         {
             if (shouldUpdate(PERMISSION))

@@ -16,10 +16,10 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 @FunctionalInterface
 public interface CacheConsumer
 {
-    void execute(long responseTotal, JSONObject allContent);
+    void execute(long responseTotal, DataObject allContent);
 }

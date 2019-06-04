@@ -16,9 +16,9 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
-import net.dv8tion.jda.api.entities.MessageActivity;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

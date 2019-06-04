@@ -19,8 +19,8 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import org.json.JSONObject;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -35,7 +35,7 @@ public class TypingStartHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         if (!content.isNull("guild_id"))
         {

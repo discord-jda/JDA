@@ -16,19 +16,18 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import org.json.JSONObject;
 
 public class ChannelDeleteHandler extends SocketHandler
 {
@@ -38,7 +37,7 @@ public class ChannelDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 
@@ -54,6 +53,23 @@ public class ChannelDeleteHandler extends SocketHandler
 
         switch (type)
         {
+            case STORE:
+            {
+                GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
+                StoreChannel channel = getJDA().getStoreChannelsView().remove(channelId);
+                if (channel == null)
+                {
+                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a store channel that is not yet cached. JSON: {}", content);
+                    return null;
+                }
+
+                guild.getStoreChannelView().remove(channelId);
+                getJDA().getEventManager().handle(
+                    new StoreChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
+                break;
+            }
             case TEXT:
             {
                 GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
@@ -81,13 +97,14 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
-                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
-                if (manager != null && manager.isConnected()
-                        && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
-                {
-                    manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                }
+                // This is done in the AudioWebSocket already
+//                //We use this instead of getAudioManager(Guild) so we don't create a new instance. Efficiency!
+//                AudioManagerImpl manager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guild.getIdLong());
+//                if (manager != null && manager.isConnected()
+//                        && manager.getConnectedChannel().getIdLong() == channel.getIdLong())
+//                {
+//                    manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
+//                }
                 guild.getVoiceChannelsView().remove(channel.getIdLong());
                 getJDA().getEventManager().handle(
                     new VoiceChannelDeleteEvent(
@@ -142,7 +159,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 WebSocketClient.LOG.warn("Received a CHANNEL_DELETE for a channel of type GROUP which is not supported!");
                 return null;
             default:
-                throw new IllegalArgumentException("CHANNEL_DELETE provided an unknown channel type. JSON: " + content);
+                WebSocketClient.LOG.debug("CHANNEL_DELETE provided an unknown channel type. JSON: {}", content);
         }
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         return null;

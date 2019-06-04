@@ -58,6 +58,8 @@ public enum ConnectionStatus
      * that this audio connection was connected to, thus the connection was severed.
      */
     DISCONNECTED_REMOVED_FROM_GUILD(false),
+    /** Indicates that we were kicked from a channel by a moderator */
+    DISCONNECTED_KICKED_FROM_CHANNEL(false),
     /**
      * Indicates that the logged in account was removed from the {@link net.dv8tion.jda.api.entities.Guild Guild}
      * while reconnecting to the gateway

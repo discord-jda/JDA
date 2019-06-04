@@ -20,12 +20,11 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.update.*;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -42,7 +41,7 @@ public class GuildUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("id");
         if (getJDA().getGuildSetupController().isLocked(id))
@@ -60,14 +59,14 @@ public class GuildUpdateHandler extends SocketHandler
         //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
         //////////////
         long ownerId = content.getLong("owner_id");
-        int maxMembers = Helpers.optInt(content, "max_members", 0);
-        int maxPresences = Helpers.optInt(content, "max_presences", 5000);
-        String description = content.optString("description", null);
-        String vanityCode = content.optString("vanity_url_code", null);
-        String bannerId = content.optString("banner", null);
+        int maxMembers = content.getInt("max_members", 0);
+        int maxPresences = content.getInt("max_presences", 5000);
+        String description = content.getString("description", null);
+        String vanityCode = content.getString("vanity_url_code", null);
+        String bannerId = content.getString("banner", null);
         String name = content.getString("name");
-        String iconId = content.optString("icon", null);
-        String splashId = content.optString("splash", null);
+        String iconId = content.getString("icon", null);
+        String splashId = content.getString("splash", null);
         String region = content.getString("region");
         Guild.VerificationLevel verificationLevel = Guild.VerificationLevel.fromKey(content.getInt("verification_level"));
         Guild.NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(content.getInt("default_message_notifications"));
@@ -81,7 +80,7 @@ public class GuildUpdateHandler extends SocketHandler
         Set<String> features;
         if (!content.isNull("features"))
         {
-            JSONArray featureArr = content.getJSONArray("features");
+            DataArray featureArr = content.getArray("features");
             features = StreamSupport.stream(featureArr.spliterator(), false).map(String::valueOf).collect(Collectors.toSet());
         }
         else

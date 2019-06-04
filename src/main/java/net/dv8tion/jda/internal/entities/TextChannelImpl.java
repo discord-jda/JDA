@@ -29,6 +29,8 @@ import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -36,12 +38,10 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -75,17 +75,17 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         JDAImpl jda = (JDAImpl) getJDA();
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
-            JSONArray array = response.getArray();
+            DataArray array = response.getArray();
             List<Webhook> webhooks = new ArrayList<>(array.length());
             EntityBuilder builder = jda.getEntityBuilder();
 
-            for (Object object : array)
+            for (int i = 0; i < array.length(); i++)
             {
                 try
                 {
-                    webhooks.add(builder.createWebhook((JSONObject) object));
+                    webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
-                catch (JSONException | NullPointerException e)
+                catch (UncheckedIOException | NullPointerException e)
                 {
                     JDAImpl.LOG.error("Error while creating websocket from json", e);
                 }
@@ -282,10 +282,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelsView because
         // getTextChannels does the sorting logic.
-        List<TextChannel> channels = getGuild().getTextChannels();
+        List<GuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
+        channels.addAll(getGuild().getStoreChannels());
+        Collections.sort(channels);
         for (int i = 0; i < channels.size(); i++)
         {
-            if (channels.get(i) == this)
+            if (equals(channels.get(i)))
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
@@ -296,7 +298,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<TextChannel> action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
+        ChannelAction<TextChannel> action = guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();
@@ -508,18 +510,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return "TC:" + getName() + '(' + id + ')';
     }
 
-    @Override
-    public int compareTo(@Nonnull TextChannel chan)
-    {
-        Checks.notNull(chan, "Other TextChannel");
-        if (this == chan)
-            return 0;
-        Checks.check(getGuild().equals(chan.getGuild()), "Cannot compare TextChannels that aren't from the same guild!");
-        if (this.getPositionRaw() == chan.getPositionRaw())
-            return Long.compare(id, chan.getIdLong());
-        return Integer.compare(rawPosition, chan.getPositionRaw());
-    }
-
     // -- Setters --
 
     public TextChannelImpl setTopic(String topic)
@@ -549,7 +539,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     // -- internal --
     private RestActionImpl<Void> deleteMessages0(Collection<String> messageIds)
     {
-        JSONObject body = new JSONObject().put("messages", messageIds);
+        DataObject body = DataObject.empty().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
         return new RestActionImpl<>(getJDA(), route, body);
     }
