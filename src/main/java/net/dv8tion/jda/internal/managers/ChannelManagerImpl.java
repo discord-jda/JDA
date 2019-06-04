@@ -331,7 +331,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         if (getType() != ChannelType.VOICE)
             throw new IllegalStateException("Can only set bitrate on voice channels");
-        final int maxBitrate = getGuild().getFeatures().contains("VIP_REGIONS") ? 128000 : 96000;
+        final int maxBitrate = getGuild().getMaxBitrate();
         Checks.check(bitrate >= 8000, "Bitrate must be greater or equal to 8000");
         Checks.check(bitrate <= maxBitrate, "Bitrate must be less or equal to %s", maxBitrate);
         this.bitrate = bitrate;

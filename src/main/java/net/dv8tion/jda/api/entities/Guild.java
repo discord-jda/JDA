@@ -275,6 +275,12 @@ public interface Guild extends ISnowflake
     BoostTier getBoostTier();
     int getBoostCount();
 
+    default int getMaxBitrate()
+    {
+        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 96000 : 128000;
+        return Math.max(maxBitrate, getBoostTier().getMaxBitrate());
+    }
+
     int getMaxMembers();
     int getMaxPresences();
 
@@ -3659,17 +3665,29 @@ public interface Guild extends ISnowflake
     //TODO: Docs
     enum BoostTier
     {
-        NONE(0),
-        TIER_1(1),
-        TIER_2(2),
-        TIER_3(3),
-        UNKNOWN(-1);
+        NONE(0, 96000),
+        TIER_1(1, 128000),
+        TIER_2(2, 256000),
+        TIER_3(3, 512000),
+        UNKNOWN(-1, Integer.MAX_VALUE);
 
         private final int key;
+        private final int maxBitrate;
 
-        BoostTier(int key)
+        BoostTier(int key, int maxBitrate)
         {
             this.key = key;
+            this.maxBitrate = maxBitrate;
+        }
+
+        public int getKey()
+        {
+            return key;
+        }
+
+        public int getMaxBitrate()
+        {
+            return maxBitrate;
         }
 
         @Nonnull
