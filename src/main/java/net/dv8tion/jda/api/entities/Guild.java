@@ -271,6 +271,10 @@ public interface Guild extends ISnowflake
     @Nullable
     String getBannerId(); //TODO: getBannerUrl
 
+    @Nonnull
+    BoostTier getBoostTier();
+    int getBoostCount();
+
     int getMaxMembers();
     int getMaxPresences();
 
@@ -3647,6 +3651,34 @@ public interface Guild extends ISnowflake
             {
                 if (level.key == key)
                     return level;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    //TODO: Docs
+    enum BoostTier
+    {
+        NONE(0),
+        TIER_1(1),
+        TIER_2(2),
+        TIER_3(3),
+        UNKNOWN(-1);
+
+        private final int key;
+
+        BoostTier(int key)
+        {
+            this.key = key;
+        }
+
+        @Nonnull
+        public static BoostTier fromKey(int key)
+        {
+            for (BoostTier tier : values())
+            {
+                if (tier.key == key)
+                    return tier;
             }
             return UNKNOWN;
         }

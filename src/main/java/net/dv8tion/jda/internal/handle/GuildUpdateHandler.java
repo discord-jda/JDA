@@ -61,6 +61,8 @@ public class GuildUpdateHandler extends SocketHandler
         long ownerId = content.getLong("owner_id");
         int maxMembers = content.getInt("max_members", 0);
         int maxPresences = content.getInt("max_presences", 5000);
+        int boostCount = content.getInt("premium_subscription_count", 0);
+        int boostTier = content.getInt("premium_tier", 0);
         String description = content.getString("description", null);
         String vanityCode = content.getString("vanity_url_code", null);
         String bannerId = content.getString("banner", null);
@@ -108,6 +110,14 @@ public class GuildUpdateHandler extends SocketHandler
         if (maxPresences != guild.getMaxPresences())
         {
             guild.setMaxPresences(maxPresences);
+        }
+        if (boostCount != guild.getBoostCount())
+        {
+            guild.setBoostCount(boostCount);
+        }
+        if (Guild.BoostTier.fromKey(boostTier) != guild.getBoostTier())
+        {
+            guild.setBoostTier(boostTier);
         }
 
         if (ownerId != guild.getOwnerIdLong())

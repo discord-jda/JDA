@@ -25,6 +25,9 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 public class GuildMemberUpdateHandler extends SocketHandler
@@ -115,6 +118,17 @@ public class GuildMemberUpdateHandler extends SocketHandler
                         new GuildMemberUpdateNicknameEvent(
                                 getJDA(), responseNumber,
                                 member, oldNick));
+            }
+        }
+        if (content.hasKey("premium_since"))
+        {
+            long boostDate = 0;
+            if (!content.isNull("premium_since"))
+            {
+                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("premium_since"));
+                long epoch = Instant.from(date).toEpochMilli();
+                member.setBoostDate(epoch);
+                //TODO: Event?
             }
         }
         return null;

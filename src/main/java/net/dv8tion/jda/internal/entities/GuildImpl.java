@@ -94,6 +94,7 @@ public class GuildImpl implements Guild
     private String vanityCode;
     private String description, banner;
     private int maxPresences, maxMembers;
+    private int boostCount;
     private long ownerId;
     private Set<String> features;
     private VoiceChannel afkChannel;
@@ -104,6 +105,7 @@ public class GuildImpl implements Guild
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
     private Timeout afkTimeout;
+    private BoostTier boostTier = BoostTier.NONE;
     private boolean available;
     private boolean canSendVerification = false;
 
@@ -220,6 +222,19 @@ public class GuildImpl implements Guild
     public String getBannerId()
     {
         return banner;
+    }
+
+    @Nonnull
+    @Override
+    public BoostTier getBoostTier()
+    {
+        return boostTier;
+    }
+
+    @Override
+    public int getBoostCount()
+    {
+        return boostCount;
     }
 
     @Override
@@ -1346,6 +1361,18 @@ public class GuildImpl implements Guild
     public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
+        return this;
+    }
+
+    public GuildImpl setBoostTier(int tier)
+    {
+        this.boostTier = BoostTier.fromKey(tier);
+        return this;
+    }
+
+    public GuildImpl setBoostCount(int count)
+    {
+        this.boostCount = count;
         return this;
     }
 

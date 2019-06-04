@@ -167,6 +167,8 @@ public class EntityBuilder
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
         final long afkChannelId = guildJson.getUnsignedLong("afk_channel_id", 0L);
         final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
+        final int boostCount = guildJson.getInt("premium_subscription_count", 0);
+        final int boostTier = guildJson.getInt("premium_tier", 0);
         final int maxMembers = guildJson.getInt("max_members", 0);
         final int maxPresences = guildJson.getInt("max_presences", 5000);
         final int mfaLevel = guildJson.getInt("mfa_level", 0);
@@ -190,7 +192,9 @@ public class EntityBuilder
                 .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
-                .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel));
+                .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
+                .setBoostCount(boostCount)
+                .setBoostTier(boostTier);
 
         guildObj.setFeatures(featuresArray.map(it ->
             StreamSupport.stream(it.spliterator(), false)
@@ -394,6 +398,12 @@ public class EntityBuilder
         {
             state.setGuildMuted(memberJson.getBoolean("mute"))
                  .setGuildDeafened(memberJson.getBoolean("deaf"));
+        }
+
+        if (!memberJson.isNull("premium_since"))
+        {
+            TemporalAccessor boostDate = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("premium_since"));
+            member.setBoostDate(Instant.from(boostDate).toEpochMilli());
         }
 
         TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("joined_at"));

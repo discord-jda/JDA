@@ -68,6 +68,10 @@ public interface Member extends IMentionable, IPermissionHolder
     @Nonnull
     OffsetDateTime getTimeJoined();
 
+    //TODO: Docs
+    @Nullable
+    OffsetDateTime getTimeBoosted();
+
     /**
      * The {@link net.dv8tion.jda.api.entities.GuildVoiceState VoiceState} of this Member.
      * <br><b>This will be null when the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled manually</b>
