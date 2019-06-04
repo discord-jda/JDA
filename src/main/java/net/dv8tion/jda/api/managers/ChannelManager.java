@@ -461,7 +461,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
-     *         If the provided bitrate is below 8000 or above {@link net.dv8tion.jda.api.entities.Guild#getMaxBitrate()}.
+     *         If the provided bitrate is less than 8000 or greater than {@link net.dv8tion.jda.api.entities.Guild#getMaxBitrate()}.
      *
      * @return ChannelManager for chaining convenience
      *
