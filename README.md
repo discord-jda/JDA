@@ -229,7 +229,7 @@ may instruct to delete these entities randomly for cache synchronization with th
 
 Some entities in JDA are marked through an interface called `IFakeable`. These entities can exist outside
 of the JDA cache and are inaccessible through the common `get...ById(id)` methods.
-Fake entities are essentially instances that are not directly referenced by the JDA cached and are only
+Fake entities are essentially instances that are not directly referenced by the JDA cache and are only
 temporarily created for a specific usage. It may be used for the author of a message that has left the guild
 when requesting the history of a `MessageChannel` or for `Emote` instances used in a `Message` that are not part
 of any of the guilds available to the bot.
