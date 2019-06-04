@@ -3668,7 +3668,7 @@ public interface Guild extends ISnowflake
         NONE(0, 96000),
         TIER_1(1, 128000),
         TIER_2(2, 256000),
-        TIER_3(3, 512000),
+        TIER_3(3, 384000),
         UNKNOWN(-1, Integer.MAX_VALUE);
 
         private final int key;
