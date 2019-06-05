@@ -1416,8 +1416,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves an unmodifiable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
-     * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) GuildController.ban(User, int)} or
-     * {@link #unban(User) GuildController.unban(User)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) ban(User, int)} or
+     * {@link #unban(User) unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1441,8 +1441,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int)}  GuildController.ban(id, int)} or
-     * {@link #unban(String)}  GuildController.unban(id)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int)} ban(id, int)} or
+     * {@link #unban(String)} unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1475,8 +1475,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int) GuildController.ban(id, int)} or
-     * {@link #unban(String) GuildController.unban(id)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int) ban(id, int)} or
+     * {@link #unban(String) unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1506,8 +1506,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided {@link net.dv8tion.jda.api.entities.User User}
-     * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) GuildController.ban(User, int)} or
-     * {@link #unban(User) GuildController.unban(User)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) ban(User, int)} or
+     * {@link #unban(User) unban(User)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -1879,7 +1879,6 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel);
-
 
     /**
      * Used to kick a {@link net.dv8tion.jda.api.entities.Member Member} from a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
@@ -2748,7 +2747,7 @@ public interface Guild extends ISnowflake
      *     List<Role> pleb = guild.getRolesByName("Pleb", true); // remove all roles named "pleb"
      *     List<Role> knight = guild.getRolesByName("Knight", true); // add all roles named "knight"
      *     // update roles in single request
-     *     guild.modifyMemberRoles(member, pleb, knight).queue();
+     *     guild.modifyMemberRoles(member, knight, pleb).queue();
      * }
      * }</pre>
      *

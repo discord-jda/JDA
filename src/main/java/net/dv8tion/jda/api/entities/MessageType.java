@@ -64,6 +64,26 @@ public enum MessageType
     GUILD_MEMBER_JOIN(7),
 
     /**
+     * Specialized message used to announce a new booster
+     */
+    GUILD_MEMBER_BOOST(8),
+
+    /**
+     * Specialized message used to announce the server has reached tier 1
+     */
+    GUILD_BOOST_TIER_1(9),
+
+    /**
+     * Specialized message used to announce the server has reached tier 2
+     */
+    GUILD_BOOST_TIER_2(10),
+
+    /**
+     * Specialized message used to announce the server has reached tier 3
+     */
+    GUILD_BOOST_TIER_3(11),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1);

@@ -276,28 +276,6 @@ public interface JDA
     }
 
     /**
-     * Contains all {@code cf-ray} headers that JDA received in this session.
-     * <br>These receive a new value whenever the WebSockedClient reconnects to the gateway.
-     *
-     * <p>This is useful to monitor cloudflare activity from the Discord Developer perspective.
-     * <br>Use this list to report connection issues.
-     *
-     * @return Immutable list of all cf-ray values for this session
-     */
-    @Nonnull
-    List<String> getCloudflareRays();
-
-    /**
-     * Receives all valid {@code _trace} lines that have been sent to us
-     * in this session.
-     * <br>These values reset on every reconnect! (not resume)
-     *
-     * @return List of all websocket traces
-     */
-    @Nonnull
-    List<String> getWebSocketTrace();
-
-    /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
      * executions. This is also used in other parts of JDA related to http requests.
      *
@@ -1541,13 +1519,6 @@ public interface JDA
      * @return True if JDA will attempt to automatically reconnect when a connection-error is encountered.
      */
     boolean isAutoReconnect();
-
-    /**
-     * Used to determine whether the instance of JDA supports audio and has it enabled.
-     *
-     * @return True if JDA can currently utilize the audio system.
-     */
-    boolean isAudioEnabled();
 
     /**
      * Used to determine if JDA will process MESSAGE_DELETE_BULK messages received from Discord as a single

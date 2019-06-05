@@ -28,6 +28,8 @@ import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
+import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
 import okhttp3.OkHttpClient;
 
@@ -55,13 +57,8 @@ public class  DefaultShardManagerBuilder
     protected SessionController sessionController = null;
     protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
-    protected boolean enableContext = true;
-    protected boolean enableBulkDeleteSplitting = true;
-    protected boolean enableShutdownHook = true;
-    protected boolean enableVoice = true;
-    protected boolean autoReconnect = true;
-    protected boolean retryOnTimeout = true;
-    protected boolean useShutdownNow = false;
+    protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
+    protected EnumSet<ShardingConfigFlag> shardingFlags = ShardingConfigFlag.getDefault();
     protected Compression compression = Compression.ZLIB;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
@@ -103,6 +100,21 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder(@Nonnull String token)
     {
         this.setToken(token);
+    }
+
+    /**
+     * Whether JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent} for every discord event.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent}.
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setRawEventsEnabled(boolean enable)
+    {
+        return setFlag(ConfigFlag.RAW_EVENTS, enable);
     }
 
     /**
@@ -195,7 +207,7 @@ public class  DefaultShardManagerBuilder
     {
         this.contextProvider = provider;
         if (provider != null)
-            this.enableContext = true;
+            setContextEnabled(true);
         return this;
     }
 
@@ -214,8 +226,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setContextEnabled(boolean enable)
     {
-        this.enableContext = enable;
-        return this;
+        return setFlag(ConfigFlag.MDC_CONTEXT, enable);
     }
 
     /**
@@ -409,24 +420,6 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
-     * Enables/Disables Voice functionality.
-     * <br>This is useful, if your current system doesn't support Voice and you do not need it.
-     *
-     * <p>Default: <b>true (enabled)</b>
-     *
-     * @param  enabled
-     *         True - enables voice support.
-     *
-     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
-     */
-    @Nonnull
-    public DefaultShardManagerBuilder setAudioEnabled(final boolean enabled)
-    {
-        this.enableVoice = enabled;
-        return this;
-    }
-
-    /**
      * Changes the factory used to create {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem IAudioSendSystem}
      * objects which handle the sending loop for audio packets.
      * <br>By default, JDA uses {@link net.dv8tion.jda.api.audio.factory.DefaultSendFactory DefaultSendFactory}.
@@ -458,8 +451,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setAutoReconnect(final boolean autoReconnect)
     {
-        this.autoReconnect = autoReconnect;
-        return this;
+        return setFlag(ConfigFlag.AUTO_RECONNECT, autoReconnect);
     }
 
     /**
@@ -477,8 +469,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setBulkDeleteSplittingEnabled(final boolean enabled)
     {
-        this.enableBulkDeleteSplitting = enabled;
-        return this;
+        return setFlag(ConfigFlag.BULK_DELETE_SPLIT, enabled);
     }
 
     /**
@@ -496,8 +487,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setEnableShutdownHook(final boolean enable)
     {
-        this.enableShutdownHook = enable;
-        return this;
+        return setFlag(ConfigFlag.SHUTDOWN_HOOK, enable);
     }
 
     /**
@@ -1010,8 +1000,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
-        this.retryOnTimeout = retryOnTimeout;
-        return this;
+        return setFlag(ConfigFlag.RETRY_TIMEOUT, retryOnTimeout);
     }
 
     /**
@@ -1169,8 +1158,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setUseShutdownNow(final boolean useShutdownNow)
     {
-        this.useShutdownNow = useShutdownNow;
-        return this;
+        return setFlag(ShardingConfigFlag.SHUTDOWN_NOW, useShutdownNow);
     }
 
     /**
@@ -1209,6 +1197,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
+        boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
         final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow);
         final EventConfig eventConfig = new EventConfig(eventManagerProvider);
         listeners.forEach(eventConfig::addEventListener);
@@ -1218,13 +1207,31 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
-        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, enableVoice, retryOnTimeout, autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
-        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, enableContext, useShutdownNow, compression);
+        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay);
+        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, flags, compression);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
 
         manager.login();
 
         return manager;
+    }
+
+    private DefaultShardManagerBuilder setFlag(ConfigFlag flag, boolean enable)
+    {
+        if (enable)
+            this.flags.add(flag);
+        else
+            this.flags.remove(flag);
+        return this;
+    }
+
+    private DefaultShardManagerBuilder setFlag(ShardingConfigFlag flag, boolean enable)
+    {
+        if (enable)
+            this.shardingFlags.add(flag);
+        else
+            this.shardingFlags.remove(flag);
+        return this;
     }
 
     //Avoid having multiple anonymous classes

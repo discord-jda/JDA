@@ -130,7 +130,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * Returns the current nickname of this Member for the parent Guild.
      *
      * <p>This can be changed using
-     * {@link net.dv8tion.jda.api.entities.Guild#modifyNickname(Member, String) GuildController.modifyNickname(Member, String)}.
+     * {@link net.dv8tion.jda.api.entities.Guild#modifyNickname(Member, String) modifyNickname(Member, String)}.
      *
      * @return The nickname or null, if no nickname is set.
      */

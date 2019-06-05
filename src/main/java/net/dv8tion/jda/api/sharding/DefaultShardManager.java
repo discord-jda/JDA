@@ -474,14 +474,13 @@ public class DefaultShardManager implements ShardManager
 
         AuthorizationConfig authConfig = new AuthorizationConfig(AccountType.BOT, token);
         SessionConfig sessionConfig = new SessionConfig(this.sessionConfig.getSessionController(), httpClient,
-                this.sessionConfig.getWebSocketFactory(), this.sessionConfig.getVoiceDispatchInterceptor(), this.sessionConfig.isAudioEnabled(),
-                this.sessionConfig.isRetryOnTimeout(), this.sessionConfig.isAutoReconnect(),
-                this.sessionConfig.isBulkDeleteSplittingEnabled(), this.sessionConfig.getMaxReconnectDelay());
+            this.sessionConfig.getWebSocketFactory(), this.sessionConfig.getVoiceDispatchInterceptor(),
+            this.sessionConfig.getFlags(), this.sessionConfig.getMaxReconnectDelay());
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
-        MetaConfig metaConfig = new MetaConfig(this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.metaConfig.isEnableMDC(), false);
+        MetaConfig metaConfig = new MetaConfig(this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
         threadingConfig.init(jda::getIdentifierString);
 

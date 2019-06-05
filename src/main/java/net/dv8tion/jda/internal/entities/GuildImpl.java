@@ -586,9 +586,6 @@ public class GuildImpl implements Guild
     @Override
     public AudioManager getAudioManager()
     {
-        if (!getJDA().isAudioEnabled())
-            throw new IllegalStateException("Audio is disabled. Cannot retrieve an AudioManager while audio is disabled.");
-
         final AbstractCacheView<AudioManager> managerMap = getJDA().getAudioManagersView();
         AudioManager mng = managerMap.get(id);
         if (mng == null)

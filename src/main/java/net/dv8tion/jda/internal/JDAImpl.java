@@ -141,6 +141,11 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
     }
 
+    public boolean isRawEvents()
+    {
+        return sessionConfig.isRawEvents();
+    }
+
     public EnumSet<CacheFlag> getCacheFlags()
     {
         return metaConfig.getCacheFlags();
@@ -373,11 +378,6 @@ public class JDAImpl implements JDA
         return authConfig.getToken();
     }
 
-    @Override
-    public boolean isAudioEnabled()
-    {
-        return sessionConfig.isAudioEnabled();
-    }
 
     @Override
     public boolean isBulkDeleteSplittingEnabled()
@@ -470,22 +470,6 @@ public class JDAImpl implements JDA
     public DirectAudioControllerImpl getDirectAudioController()
     {
         return this.audioController;
-    }
-
-    @Nonnull
-    @Override
-    public List<String> getCloudflareRays()
-    {
-        WebSocketClient client = getClient();
-        return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
-    }
-
-    @Nonnull
-    @Override
-    public List<String> getWebSocketTrace()
-    {
-        WebSocketClient client = getClient();
-        return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
     }
 
     @Nonnull
