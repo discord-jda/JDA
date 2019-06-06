@@ -224,6 +224,8 @@ Once that happens nothing in JDA interacts or updates the instances of those ent
 may instruct to delete these entities randomly for cache synchronization with the API.
 
 **It is not recommended to store _any_ of these entities for a longer period of time!**
+Instead of keeping (e.g.) a `User` instance in some field an ID should be used. With the ID of a user
+you can use `getUserById(id)` to get and keep the user reference in a local variable. (see below)
 
 ### Fake Entities
 
@@ -268,10 +270,12 @@ public class UserLogger extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        if (event.getAuthor().getIdLong() == userId)
+        User author = event.getAuthor();
+        Message message = event.getMessage();
+        if (author.getIdLong() == userId)
         {
             // Print the message of the user
-            System.out.println(event.getAuthor().getAsTag() + ": " + event.getMessage().getContentDisplay());
+            System.out.println(author.getAsTag() + ": " + message.getContentDisplay());
         }
     }
     
