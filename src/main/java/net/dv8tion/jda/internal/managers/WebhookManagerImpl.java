@@ -147,7 +147,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     protected boolean checkPermissions()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_WEBHOOKS);
         return super.checkPermissions();
     }
 }

@@ -142,7 +142,7 @@ public class GuildImpl implements Guild
         Checks.isSnowflake(userId, "User ID");
         Checks.check(getMemberById(userId) == null, "User is already in this guild");
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
-            throw new InsufficientPermissionException(Permission.CREATE_INSTANT_INVITE);
+            throw new InsufficientPermissionException(this, Permission.CREATE_INSTANT_INVITE);
         return new MemberActionImpl(getJDA(), this, userId, accessToken);
     }
 
@@ -189,7 +189,7 @@ public class GuildImpl implements Guild
     public RestAction<String> retrieveVanityUrl()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
         if (!getFeatures().contains("VANITY_URL"))
             throw new IllegalStateException("This guild doesn't have a vanity url");
 
@@ -216,7 +216,7 @@ public class GuildImpl implements Guild
     public RestAction<List<Webhook>> retrieveWebhooks()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(this, Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Guilds.GET_WEBHOOKS.compile(getId());
 
@@ -449,7 +449,7 @@ public class GuildImpl implements Guild
     public RestActionImpl<List<Ban>> retrieveBanList()
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
-            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+            throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
 
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
@@ -473,7 +473,7 @@ public class GuildImpl implements Guild
     public RestAction<Ban> retrieveBanById(@Nonnull String userId)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
-            throw new InsufficientPermissionException(Permission.BAN_MEMBERS);
+            throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
 
         Checks.isSnowflake(userId, "User ID");
 
@@ -493,7 +493,7 @@ public class GuildImpl implements Guild
     public RestAction<Integer> retrievePrunableMemberCount(int days)
     {
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
-            throw new InsufficientPermissionException(Permission.KICK_MEMBERS);
+            throw new InsufficientPermissionException(this, Permission.KICK_MEMBERS);
 
         if (days < 1)
             throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
@@ -700,7 +700,7 @@ public class GuildImpl implements Guild
     public RestAction<List<Invite>> retrieveInvites()
     {
         if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Invites.GET_GUILD_INVITES.compile(getId());
 
@@ -727,16 +727,17 @@ public class GuildImpl implements Guild
         GuildVoiceState vState = member.getVoiceState();
         if (vState == null)
             throw new IllegalStateException("Cannot move a Member with disabled CacheFlag.VOICE_STATE");
-        if (!vState.inVoiceChannel())
+        VoiceChannel channel = vState.getChannel();
+        if (channel == null)
             throw new IllegalStateException("You cannot move a Member who isn't in a VoiceChannel!");
 
-        if (!PermissionUtil.checkPermission(vState.getChannel(), getSelfMember(), Permission.VOICE_MOVE_OTHERS))
-            throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
+        if (!PermissionUtil.checkPermission(channel, getSelfMember(), Permission.VOICE_MOVE_OTHERS))
+            throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS, "This account does not have Permission to MOVE_OTHERS out of the channel that the Member is currently in.");
 
         if (voiceChannel != null
             && !PermissionUtil.checkPermission(voiceChannel, getSelfMember(), Permission.VOICE_CONNECT)
             && !PermissionUtil.checkPermission(voiceChannel, member, Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(Permission.VOICE_CONNECT,
+            throw new InsufficientPermissionException(voiceChannel, Permission.VOICE_CONNECT,
                                                       "Neither this account nor the Member that is attempting to be moved have the VOICE_CONNECT permission " +
                                                       "for the destination VoiceChannel, so the move cannot be done.");
 
@@ -752,11 +753,10 @@ public class GuildImpl implements Guild
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
 
-        if(member.equals(getSelfMember()))
+        if (member.equals(getSelfMember()))
         {
-            if(!member.hasPermission(Permission.NICKNAME_CHANGE)
-               && !member.hasPermission(Permission.NICKNAME_MANAGE))
-                throw new InsufficientPermissionException(Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
+            if (!member.hasPermission(Permission.NICKNAME_CHANGE) && !member.hasPermission(Permission.NICKNAME_MANAGE))
+                throw new InsufficientPermissionException(this, Permission.NICKNAME_CHANGE, "You neither have NICKNAME_CHANGE nor NICKNAME_MANAGE permission!");
         }
         else
         {
@@ -1162,7 +1162,7 @@ public class GuildImpl implements Guild
     protected void checkPermission(Permission perm)
     {
         if (!getSelfMember().hasPermission(perm))
-            throw new InsufficientPermissionException(perm);
+            throw new InsufficientPermissionException(this, perm);
     }
 
     protected void checkPosition(Member member)

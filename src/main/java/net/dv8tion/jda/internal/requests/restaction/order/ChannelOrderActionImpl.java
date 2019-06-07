@@ -107,7 +107,7 @@ public class ChannelOrderActionImpl
     {
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_CHANNEL);
         DataArray array = DataArray.empty();
         for (int i = 0; i < orderList.size(); i++)
         {

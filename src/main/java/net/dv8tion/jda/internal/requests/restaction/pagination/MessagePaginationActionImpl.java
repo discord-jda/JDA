@@ -48,7 +48,7 @@ public class MessagePaginationActionImpl
         {
             TextChannel textChannel = (TextChannel) channel;
             if (!textChannel.getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_HISTORY);
         }
 
         this.channel = channel;
