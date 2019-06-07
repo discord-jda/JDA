@@ -194,16 +194,19 @@ public class GuildSetupController
         log.debug("Received guild delete for id: {} available: {}", id, available);
         if (!available)
         {
-            if (!node.markedUnavailable && !node.requestedChunk)
+            // The guild is currently unavailable and should be ignored for chunking requests
+            if (!node.markedUnavailable)
             {
                 node.markedUnavailable = true; // this prevents repeated decrements from duplicate events
-                if (node.sync)
+                if (node.sync && !node.requestedChunk)
                 {
+                    // If this node is chunking then it is already synced
                     syncingCount--;
                     trySyncing();
                 }
                 if (incompleteCount > 0)
                 {
+                    // Allow other guilds to start chunking
                     incompleteCount--;
                     tryChunking();
                 }
@@ -212,8 +215,8 @@ public class GuildSetupController
         }
         else
         {
+            // This guild was deleted
             node.cleanup(); // clear EventCache
-            // this was actually deleted
             if (node.join && !node.requestedChunk)
                 remove(id);
             else
