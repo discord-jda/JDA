@@ -46,11 +46,31 @@ public interface AudioReceiveHandler
      */
     boolean canReceiveUser();
 
+    /**
+     * If this method returns true, then JDA will provide raw OPUS encoded packets to {@link #handleEncodedAudio(OpusPacket)}.
+     * <br>This can be used in combination with the other receive methods but will not be combined audio of multiple users.
+     *
+     * <p>Each user sends their own stream of OPUS encoded audio and each packet is assigned with a user id and SSRC.
+     * The decoder will be provided by JDA but need not be used.
+     *
+     * @return True, if {@link #handleEncodedAudio(OpusPacket)} should receive opus packets.
+     */
     default boolean canReceiveEncoded()
     {
         return false;
     }
 
+    /**
+     * If {@link #canReceiveEncoded()} returns true, JDA will provide raw {@link net.dv8tion.jda.api.audio.OpusPacket OpusPackets}
+     * to this method <b>every 20 milliseconds</b>. These packets are for specific users rather than a combined packet
+     * of all users like {@link #handleCombinedAudio(CombinedAudio)}.
+     *
+     * <p>This is useful for systems that want to either do lazy decoding of audio through {@link net.dv8tion.jda.api.audio.OpusPacket#getAudioData(double)}
+     * or for systems that can decode and transform the audio data manually without JDA involvement.
+     *
+     * @param packet
+     *        The {@link net.dv8tion.jda.api.audio.OpusPacket}
+     */
     default void handleEncodedAudio(@Nonnull OpusPacket packet) {}
 
     /**
