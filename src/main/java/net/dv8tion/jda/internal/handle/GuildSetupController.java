@@ -119,6 +119,8 @@ public class GuildSetupController
     void remove(long id)
     {
         setupNodes.remove(id);
+        if (syncingGuilds != null)
+            syncingGuilds.remove(id);
     }
 
     public void ready(long id)
@@ -201,12 +203,15 @@ public class GuildSetupController
                 if (node.sync && !node.requestedChunk)
                 {
                     // If this node is chunking then it is already synced
+                    syncingGuilds.remove(id);
                     syncingCount--;
                     trySyncing();
                 }
                 if (incompleteCount > 0)
                 {
                     // Allow other guilds to start chunking
+                    chunkingGuilds.remove(id);
+                    pendingChunks.remove(id);
                     incompleteCount--;
                     tryChunking();
                 }
@@ -217,6 +222,8 @@ public class GuildSetupController
         {
             // This guild was deleted
             node.cleanup(); // clear EventCache
+            chunkingGuilds.remove(id);
+            pendingChunks.remove(id);
             if (node.join && !node.requestedChunk)
                 remove(id);
             else
@@ -387,7 +394,7 @@ public class GuildSetupController
             }
             sendChunkRequest(subset);
         }
-        if (incompleteCount > 0 && chunkingGuilds.size() == incompleteCount)
+        if (incompleteCount > 0 && chunkingGuilds.size() >= incompleteCount)
         {
             // request last chunks
             final DataArray array = DataArray.empty();
@@ -431,7 +438,7 @@ public class GuildSetupController
             sendSyncRequest(subset);
             syncingCount -= subset.length();
         }
-        if (syncingCount > 0 && syncingGuilds.size() == syncingCount)
+        if (syncingCount > 0 && syncingGuilds.size() >= syncingCount)
         {
             final DataArray array = DataArray.empty();
             syncingGuilds.forEach((guild) -> {
