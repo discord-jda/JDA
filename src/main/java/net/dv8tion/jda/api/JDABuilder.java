@@ -823,8 +823,8 @@ public class JDABuilder
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
-     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
-     * being performed like database connection or local resource loading.
+     * For example {@link JDA#getGuilds()} might return an empty list or {@link net.dv8tion.jda.api.JDA#getUserById(long)} might return null
+     * for arbitrary user IDs.
      *
      * <p>If you wish to be sure that the {@link net.dv8tion.jda.api.JDA} information is correct, please use
      * {@link net.dv8tion.jda.api.JDA#awaitReady() JDA.awaitReady()} or register an
@@ -838,6 +838,8 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.api.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
+     *
+     * @see    net.dv8tion.jda.api.JDA#awaitReady()
      */
     @Nonnull
     public JDA build() throws LoginException
