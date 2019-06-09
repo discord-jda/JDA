@@ -206,12 +206,22 @@ public class Icon
         return new Icon(type, new String(Base64.getEncoder().encode(data), StandardCharsets.UTF_8));
     }
 
+    /**
+     * Supported image types for the Discord API.
+     */
     public enum IconType
     {
+        /** JPEG */
         JPEG("image/jpeg"),
+        /** PNG */
         PNG("image/png"),
+        /** WEBP */
         WEBP("image/webp"),
-        GIF("image/gif");
+        /** GIF */
+        GIF("image/gif"),
+
+        /** Placeholder for unsupported IconTypes */
+        UNKNOWN("image/jpeg");
 
         private final String mime;
         private final String header;
@@ -222,18 +232,39 @@ public class Icon
             this.header = "data:" + mime + ";base64,";
         }
 
+        /**
+         * The MIME Type
+         *
+         * @return The MIME Type
+         *
+         * @see    <a href="https://en.wikipedia.org/wiki/MIME" target="_blank">MIME</a>
+         */
         @Nonnull
-        public String getMime()
+        public String getMIME()
         {
             return mime;
         }
 
+        /**
+         * The data header for the encoding of an image.
+         *
+         * @return THe data header
+         */
         @Nonnull
         public String getHeader()
         {
             return header;
         }
 
+        /**
+         * Resolves the provided MIME Type to the equivalent IconType.
+         * <br>If the type is not supported, {@link #UNKNOWN} is returned.
+         *
+         * @param  mime
+         *         The MIME type
+         *
+         * @return The resolved IconType or {@link #UNKNOWN}.
+         */
         @Nonnull
         public static IconType fromMIME(@Nonnull String mime)
         {
@@ -243,9 +274,18 @@ public class Icon
                 if (type.mime.equalsIgnoreCase(mime))
                     return type;
             }
-            throw new IllegalArgumentException("MIME Type '" + mime + "' is not supported");
+            return UNKNOWN;
         }
 
+        /**
+         * Resolves the provided file extension type to the equivalent IconType.
+         * <br>If the type is not supported, {@link #UNKNOWN} is returned.
+         *
+         * @param  extension
+         *         The extension type
+         *
+         * @return The resolved IconType or {@link #UNKNOWN}.
+         */
         @Nonnull
         public static IconType fromExtension(@Nonnull String extension)
         {
@@ -266,7 +306,7 @@ public class Icon
                 case "gif":
                     return GIF;
             }
-            throw new IllegalArgumentException("Extension Type '" + extension + "' is not supported");
+            return UNKNOWN;
         }
     }
 }
