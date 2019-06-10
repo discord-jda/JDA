@@ -157,9 +157,8 @@ public interface User extends IMentionable, IFakeable
      * public CompletableFuture<Message> awaitMessage(User user, String content) {
      *     return user.openPrivateChannel().submit()
      *                .thenCompose(channel -> channel.sendMessage(content).submit())
-     *                .exceptionally(ex -> {
-     *                    ex.printStackTrace();
-     *                    return null;
+     *                .whenComplete((m, error) -> {
+     *                    if (error != null) error.printStackTrace());
      *                });
      * }
      * }</pre>
