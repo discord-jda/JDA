@@ -94,7 +94,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      *
      * @see    <a href="http://www.rfcreader.com/#rfc3550_line548" target="_blank">RTP Header</a>
      */
-    public int getSsrc()
+    public int getSSRC()
     {
         return rawPacket.getSSRC();
     }
