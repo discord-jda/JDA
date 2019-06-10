@@ -267,7 +267,7 @@ public class MessageEmbed implements SerializableData
      * to determine if it will fall in-line with other fields. If the embed contains no
      * fields, an empty list will be returned.
      *
-     * @return Never-null (but possibly empty) List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Field} objects
+     * @return Never-null (but possibly empty) immutable  List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Field} objects
      *         containing field information.
      */
     @Nonnull

@@ -96,7 +96,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      * </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Webhook Webhook}{@literal >}
-     *         <br>An immutable list of Webhook attached to this channel
+     *         <br>Retrieved an immutable list of Webhooks attached to this channel
      */
     @Nonnull
     @CheckReturnValue

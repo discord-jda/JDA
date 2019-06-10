@@ -2421,7 +2421,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Message}{@literal >}
-     *         <br>An immutable list of pinned messages
+     *         <br>Retrieves an immutable list of pinned messages
      */
     @Nonnull
     @CheckReturnValue

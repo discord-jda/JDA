@@ -531,19 +531,19 @@ public interface Message extends ISnowflake, Formattable
     Guild getGuild();
 
     /**
-     * An unmodifiable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message.
+     * An immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message.
      * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
      *
-     * @return Unmodifiable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
+     * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
     @Nonnull
     List<Attachment> getAttachments();
 
     /**
-     * An unmodifiable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this
+     * An immutable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this
      * Message.
      *
-     * @return Unmodifiable list of all given MessageEmbeds.
+     * @return Immutable list of all given MessageEmbeds.
      */
     @Nonnull
     List<MessageEmbed> getEmbeds();
@@ -570,7 +570,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * All {@link net.dv8tion.jda.api.entities.MessageReaction MessageReactions} that are on this Message.
      *
-     * @return immutable list of all MessageReactions on this message.
+     * @return Immutable list of all MessageReactions on this message.
      */
     @Nonnull
     List<MessageReaction> getReactions();

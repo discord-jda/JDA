@@ -1310,7 +1310,7 @@ public interface Guild extends ISnowflake
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
-     * Retrieves a list of emotes together with their respective creators.
+     * Retrieves an immutable list of emotes together with their respective creators.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
      * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
@@ -1415,7 +1415,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Retrieves an unmodifiable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
+     * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) ban(User, int)} or
      * {@link #unban(User) unban(User)}.
      *
@@ -1433,7 +1433,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.api.entities.Guild.Ban Ban}{@literal >}
-     *         <br>An unmodifiable list of all users currently banned from this Guild
+     *         <br>Retrieves an immutable list of all users currently banned from this Guild
      */
     @Nonnull
     @CheckReturnValue
@@ -1761,7 +1761,7 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.Member Members} in this {@link net.dv8tion.jda.api.entities.Guild Guild}, which is
      * impossible.
      *
-     * @return Never-empty list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * @return Never-empty immutable list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      */
     @Nonnull
     List<GuildVoiceState> getVoiceStates();

@@ -73,12 +73,14 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
 
     /**
      * A List of all {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel
-     * For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
+     * <br>For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
      * this returns all Members with the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ} Permission.
-     * In {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
+     * <br>For {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
      * this returns all Members that joined that VoiceChannel.
+     * <br>For {@link net.dv8tion.jda.api.entities.Category Categories},
+     * this returns all Members who are in its child channels.
      *
-     * @return A List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
      */
     @Nonnull
     List<Member> getMembers();
@@ -137,7 +139,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * If you would like only {@link net.dv8tion.jda.api.entities.Member Member} overrides or only {@link net.dv8tion.jda.api.entities.Role Role}
      * overrides, use {@link #getMemberPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
@@ -147,7 +149,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * Gets all of the {@link net.dv8tion.jda.api.entities.Member Member} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Member Member}
      *         for this {@link GuildChannel GuildChannel}.
      */
@@ -158,7 +160,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * Gets all of the {@link net.dv8tion.jda.api.entities.Role Role} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Role Roles}
      *         for this {@link GuildChannel GuildChannel}.
      */
