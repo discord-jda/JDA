@@ -282,6 +282,8 @@ public interface Guild extends ISnowflake
      *
      * @return The vanity code or null
      *
+     * @since  4.0.0
+     *
      * @see    #getVanityUrl()
      */
     @Nullable
@@ -292,6 +294,8 @@ public interface Guild extends ISnowflake
      * <br>The returned String will be the vanity invite link to this guild.
      *
      * @return The vanity url or null
+     *
+     * @since  4.0.0
      */
     @Nullable
     default String getVanityUrl()
@@ -304,6 +308,8 @@ public interface Guild extends ISnowflake
      * <br>This is displayed in the server browser below the guild name for verified guilds.
      *
      * @return The description
+     *
+     * @since  4.0.0
      */
     @Nullable
     String getDescription();
@@ -313,6 +319,8 @@ public interface Guild extends ISnowflake
      * <br>This is shown in guilds below the guild name.
      *
      * @return The guild banner id or null
+     *
+     * @since  4.0.0
      *
      * @see    #getBannerUrl()
      */
@@ -324,6 +332,8 @@ public interface Guild extends ISnowflake
      * <br>This is shown in guilds below the guild name.
      *
      * @return The guild banner url or null
+     *
+     * @since  4.0.0
      */
     @Nullable
     default String getBannerUrl()
@@ -336,6 +346,8 @@ public interface Guild extends ISnowflake
      * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
      *
      * @return The boost tier.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     BoostTier getBoostTier();
@@ -344,6 +356,8 @@ public interface Guild extends ISnowflake
      * The amount of boosts this server currently has.
      *
      * @return The boost count
+     *
+     * @since  4.0.0
      */
     int getBoostCount();
 
@@ -352,6 +366,8 @@ public interface Guild extends ISnowflake
      * <br>This depends on the features of this guild that can be unlocked for partners or through boosting.
      *
      * @return The maximum bitrate
+     *
+     * @since  4.0.0
      */
     default int getMaxBitrate()
     {
@@ -363,6 +379,8 @@ public interface Guild extends ISnowflake
      * The maximum amount of members that can join this guild.
      *
      * @return The maximum amount of members
+     *
+     * @since  4.0.0
      */
     int getMaxMembers();
 
@@ -372,6 +390,8 @@ public interface Guild extends ISnowflake
      * If too many members are online the guild will become unavailable for others.
      *
      * @return The maximum amount of connected members this guild can have
+     *
+     * @since  4.0.0
      */
     int getMaxPresences();
 
@@ -3756,6 +3776,8 @@ public interface Guild extends ISnowflake
     /**
      * The boost tier for this guild.
      * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
+     *
+     * @since  4.0.0
      */
     enum BoostTier
     {

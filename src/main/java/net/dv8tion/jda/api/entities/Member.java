@@ -72,6 +72,8 @@ public interface Member extends IMentionable, IPermissionHolder
      * The time when this member boosted the guild.
      *
      * @return The boosting time
+     *
+     * @since  4.0.0
      */
     @Nullable
     OffsetDateTime getTimeBoosted();
