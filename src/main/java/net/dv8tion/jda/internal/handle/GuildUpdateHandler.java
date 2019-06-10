@@ -99,7 +99,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             guild.setBannerId(bannerId);
         }
-        if (!Objects.equals(vanityCode, guild.getVanityUrl()))
+        if (!Objects.equals(vanityCode, guild.getVanityCode()))
         {
             guild.setVanityCode(vanityCode);
         }

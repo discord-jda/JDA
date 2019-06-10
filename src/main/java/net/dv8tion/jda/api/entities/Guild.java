@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -186,7 +189,10 @@ public interface Guild extends ISnowflake
      * @return Possibly-null String containing the Guild's icon URL.
      */
     @Nullable
-    String getIconUrl();
+    default String getIconUrl()
+    {
+        return getIconId() == null ? null : "https://cdn.discordapp.com/icons/" + getId() + "/" + getIconId() + ".png";
+    }
 
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -229,7 +235,10 @@ public interface Guild extends ISnowflake
      * @return Possibly-null String containing the Guild's splash URL.
      */
     @Nullable
-    String getSplashUrl();
+    default String getSplashUrl()
+    {
+        return getSplashId() == null ? null : "https://cdn.discordapp.com/splashes/" + getId() + "/" + getSplashId() + ".png";
+    }
 
     /**
      * Gets the vanity url for this Guild. The vanity url is the custom invite code of partnered / official Guilds.
@@ -257,31 +266,114 @@ public interface Guild extends ISnowflake
      *         <br>The vanity url of this server
      *
      * @see    #getFeatures()
-     * @see    #getVanityUrl()
+     * @see    #getVanityCode()
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("getVanityCode()")
     @CheckReturnValue
     RestAction<String> retrieveVanityUrl();
 
     //TODO: Docs
+    /**
+     * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
+     * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
+     *
+     * @return The vanity code or null
+     *
+     * @see    #getVanityUrl()
+     */
     @Nullable
-    String getVanityUrl();
+    String getVanityCode();
+
+    /**
+     * The vanity url for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
+     * <br>The returned String will be the vanity invite link to this guild.
+     *
+     * @return The vanity url or null
+     */
+    @Nullable
+    default String getVanityUrl()
+    {
+        return getVanityCode() == null ? null : "https://discord.gg/" + getVanityCode();
+    }
+
+    /**
+     * The description for this guild.
+     * <br>This is displayed in the server browser below the guild name for verified guilds.
+     *
+     * @return The description
+     */
     @Nullable
     String getDescription();
-    @Nullable
-    String getBannerId(); //TODO: getBannerUrl
 
+    /**
+     * The guild banner id.
+     * <br>This is shown in guilds below the guild name.
+     *
+     * @return The guild banner id or null
+     *
+     * @see    #getBannerUrl()
+     */
+    @Nullable
+    String getBannerId();
+
+    /**
+     * The guild banner url.
+     * <br>This is shown in guilds below the guild name.
+     *
+     * @return The guild banner url or null
+     */
+    @Nullable
+    default String getBannerUrl()
+    {
+        return getBannerId() == null ? null : "https://cdn.discordapp.com/banners/" + getId() + "/" + getBannerId() + ".png";
+    }
+
+    /**
+     * The boost tier for this guild.
+     * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
+     *
+     * @return The boost tier.
+     */
     @Nonnull
     BoostTier getBoostTier();
+
+    /**
+     * The amount of boosts this server currently has.
+     *
+     * @return The boost count
+     */
     int getBoostCount();
 
+    /**
+     * The maximum bitrate that can be applied to a voice channel in this guild.
+     * <br>This depends on the features of this guild that can be unlocked for partners or through boosting.
+     *
+     * @return The maximum bitrate
+     */
     default int getMaxBitrate()
     {
         int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 96000 : 128000;
         return Math.max(maxBitrate, getBoostTier().getMaxBitrate());
     }
 
+    /**
+     * The maximum amount of members that can join this guild.
+     *
+     * @return The maximum amount of members
+     */
     int getMaxMembers();
+
+    /**
+     * The maximum amount of connected members this guild can have at a time.
+     * <br>This includes members that are invisible but still connected to discord.
+     * If too many members are online the guild will become unavailable for others.
+     *
+     * @return The maximum amount of connected members this guild can have
+     */
     int getMaxPresences();
 
     /**
@@ -3662,13 +3754,35 @@ public interface Guild extends ISnowflake
         }
     }
 
-    //TODO: Docs
+    /**
+     * The boost tier for this guild.
+     * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
+     */
     enum BoostTier
     {
+        /**
+         * The default tier.
+         * <br>Unlocked at 0 boosters.
+         */
         NONE(0, 96000),
+        /**
+         * The first tier.
+         * <br>Unlocked at 2 boosters.
+         */
         TIER_1(1, 128000),
+        /**
+         * The second tier.
+         * <br>Unlocked at 10 boosters.
+         */
         TIER_2(2, 256000),
+        /**
+         * The third tier.
+         * <br>Unlocked at 50 boosters.
+         */
         TIER_3(3, 384000),
+        /**
+         * Placeholder for future tiers.
+         */
         UNKNOWN(-1, Integer.MAX_VALUE);
 
         private final int key;
@@ -3680,16 +3794,36 @@ public interface Guild extends ISnowflake
             this.maxBitrate = maxBitrate;
         }
 
+        /**
+         * The API key used to represent this tier, identical to the ordinal.
+         *
+         * @return The key
+         */
         public int getKey()
         {
             return key;
         }
 
+        /**
+         * The maximum bitrate that can be applied to voice channels when this tier is reached.
+         *
+         * @return The maximum bitrate
+         *
+         * @see    net.dv8tion.jda.api.entities.Guild#getMaxBitrate()
+         */
         public int getMaxBitrate()
         {
             return maxBitrate;
         }
 
+        /**
+         * Resolves the provided API key to the boost tier.
+         *
+         * @param  key
+         *         The API key
+         *
+         * @return The BoostTier or {@link #UNKNOWN}
+         */
         @Nonnull
         public static BoostTier fromKey(int key)
         {

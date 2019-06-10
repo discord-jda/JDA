@@ -182,12 +182,6 @@ public class GuildImpl implements Guild
         return splashId;
     }
 
-    @Override
-    public String getSplashUrl()
-    {
-        return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".png";
-    }
-
     @Nonnull
     @Override
     public RestAction<String> retrieveVanityUrl()
@@ -205,7 +199,7 @@ public class GuildImpl implements Guild
 
     @Nullable
     @Override
-    public String getVanityUrl()
+    public String getVanityCode()
     {
         return vanityCode;
     }

@@ -68,7 +68,11 @@ public interface Member extends IMentionable, IPermissionHolder
     @Nonnull
     OffsetDateTime getTimeJoined();
 
-    //TODO: Docs
+    /**
+     * The time when this member boosted the guild.
+     *
+     * @return The boosting time
+     */
     @Nullable
     OffsetDateTime getTimeBoosted();
 
