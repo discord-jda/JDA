@@ -27,6 +27,8 @@ import java.util.Objects;
 /**
  * A raw OPUS packet received from Discord that can be used for lazy decoding.
  *
+ * @since  4.0.0
+ *
  * @see AudioReceiveHandler#canReceiveEncoded()
  * @see AudioReceiveHandler#handleEncodedAudio(OpusPacket)
  */
