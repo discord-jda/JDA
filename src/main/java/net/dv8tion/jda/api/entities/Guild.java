@@ -1938,7 +1938,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Changes a Member's nickname in this guild.
+     * Changes the Member's nickname in this guild.
      * The nickname is visible to all members of this guild.
      *
      * <p>To change the nickname for the currently logged in account
@@ -2017,7 +2017,7 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Integer> prune(int days);
 
     /**
-     * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
@@ -2181,10 +2181,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
@@ -2229,10 +2230,11 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> ban(@Nonnull User user, int delDays, @Nullable String reason);
 
     /**
-     * Bans the a user specified by the userId and deletes messages sent by the user
+     * Bans the user specified by the userId and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
@@ -2277,10 +2279,11 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, @Nullable String reason);
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -2332,10 +2335,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -2381,10 +2385,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -2430,10 +2435,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans the a user specified by the userId and deletes messages sent by the user
+     * Bans the user specified by the userId and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
