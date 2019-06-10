@@ -90,36 +90,6 @@ public class GuildUpdateHandler extends SocketHandler
             features = Collections.emptySet();
         }
 
-        //TODO: Events?
-        if (!Objects.equals(description, guild.getDescription()))
-        {
-            guild.setDescription(description);
-        }
-        if (!Objects.equals(bannerId, guild.getBannerId()))
-        {
-            guild.setBannerId(bannerId);
-        }
-        if (!Objects.equals(vanityCode, guild.getVanityCode()))
-        {
-            guild.setVanityCode(vanityCode);
-        }
-        if (maxMembers != guild.getMaxMembers())
-        {
-            guild.setMaxMembers(maxMembers);
-        }
-        if (maxPresences != guild.getMaxPresences())
-        {
-            guild.setMaxPresences(maxPresences);
-        }
-        if (boostCount != guild.getBoostCount())
-        {
-            guild.setBoostCount(boostCount);
-        }
-        if (Guild.BoostTier.fromKey(boostTier) != guild.getBoostTier())
-        {
-            guild.setBoostTier(boostTier);
-        }
-
         if (ownerId != guild.getOwnerIdLong())
         {
             Member oldOwner = guild.getOwner();
@@ -129,9 +99,72 @@ public class GuildUpdateHandler extends SocketHandler
             guild.setOwner(newOwner);
             guild.setOwnerId(ownerId);
             getJDA().getEventManager().handle(
-                    new GuildUpdateOwnerEvent(
-                        getJDA(), responseNumber,
-                        guild, oldOwner));
+                new GuildUpdateOwnerEvent(
+                    getJDA(), responseNumber,
+                    guild, oldOwner));
+        }
+        if (!Objects.equals(description, guild.getDescription()))
+        {
+            String oldDescription = guild.getDescription();
+            guild.setDescription(description);
+            getJDA().getEventManager().handle(
+                new GuildUpdateDescriptionEvent(
+                    getJDA(), responseNumber,
+                    guild, oldDescription));
+        }
+        if (!Objects.equals(bannerId, guild.getBannerId()))
+        {
+            String oldBanner = guild.getBannerId();
+            guild.setBannerId(bannerId);
+            getJDA().getEventManager().handle(
+                new GuildUpdateBannerEvent(
+                    getJDA(), responseNumber,
+                    guild, oldBanner));
+        }
+        if (!Objects.equals(vanityCode, guild.getVanityCode()))
+        {
+            String oldCode = guild.getVanityCode();
+            guild.setVanityCode(vanityCode);
+            getJDA().getEventManager().handle(
+                new GuildUpdateVanityCodeEvent(
+                    getJDA(), responseNumber,
+                    guild, oldCode));
+        }
+        if (maxMembers != guild.getMaxMembers())
+        {
+            int oldMax = guild.getMaxMembers();
+            guild.setMaxMembers(maxMembers);
+            getJDA().getEventManager().handle(
+                new GuildUpdateMaxMembersEvent(
+                    getJDA(), responseNumber,
+                    guild, oldMax));
+        }
+        if (maxPresences != guild.getMaxPresences())
+        {
+            int oldMax = guild.getMaxPresences();
+            guild.setMaxPresences(maxPresences);
+            getJDA().getEventManager().handle(
+                new GuildUpdateMaxPresencesEvent(
+                    getJDA(), responseNumber,
+                    guild, oldMax));
+        }
+        if (boostCount != guild.getBoostCount())
+        {
+            int oldCount = guild.getBoostCount();
+            guild.setBoostCount(boostCount);
+            getJDA().getEventManager().handle(
+                new GuildUpdateBoostCountEvent(
+                    getJDA(), responseNumber,
+                    guild, oldCount));
+        }
+        if (Guild.BoostTier.fromKey(boostTier) != guild.getBoostTier())
+        {
+            Guild.BoostTier oldTier = guild.getBoostTier();
+            guild.setBoostTier(boostTier);
+            getJDA().getEventManager().handle(
+                new GuildUpdateBoostTierEvent(
+                    getJDA(), responseNumber,
+                    guild, oldTier));
         }
         if (!Objects.equals(name, guild.getName()))
         {

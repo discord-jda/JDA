@@ -276,7 +276,6 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     RestAction<String> retrieveVanityUrl();
 
-    //TODO: Docs
     /**
      * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
      * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.

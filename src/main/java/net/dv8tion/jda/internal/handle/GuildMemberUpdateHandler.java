@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
@@ -122,13 +124,20 @@ public class GuildMemberUpdateHandler extends SocketHandler
         }
         if (content.hasKey("premium_since"))
         {
-            long boostDate = 0;
+            long epoch = 0;
             if (!content.isNull("premium_since"))
             {
                 TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("premium_since"));
-                long epoch = Instant.from(date).toEpochMilli();
+                epoch = Instant.from(date).toEpochMilli();
+            }
+            if (epoch != member.getBoostDateRaw())
+            {
+                OffsetDateTime oldTime = member.getTimeBoosted();
                 member.setBoostDate(epoch);
-                //TODO: Event?
+                getJDA().getEventManager().handle(
+                    new GuildMemberUpdateBoostTimeEvent(
+                        getJDA(), responseNumber,
+                        member, oldTime));
             }
         }
         return null;
