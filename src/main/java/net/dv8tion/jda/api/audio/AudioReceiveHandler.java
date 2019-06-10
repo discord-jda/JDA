@@ -37,14 +37,51 @@ public interface AudioReceiveHandler
      *
      * @return If true, JDA enables subsystems to combine all user audio into a single provided data packet.
      */
-    boolean canReceiveCombined();
+    default boolean canReceiveCombined()
+    {
+        return false;
+    }
 
     /**
      * If this method returns true, then JDA will provide audio data to the {@link #handleUserAudio(UserAudio)} method.
      *
      * @return If true, JDA enables subsystems to provide user specific audio data.
      */
-    boolean canReceiveUser();
+    default boolean canReceiveUser()
+    {
+        return false;
+    }
+
+    /**
+     * If this method returns true, then JDA will provide raw OPUS encoded packets to {@link #handleEncodedAudio(OpusPacket)}.
+     * <br>This can be used in combination with the other receive methods but will not be combined audio of multiple users.
+     *
+     * <p>Each user sends their own stream of OPUS encoded audio and each packet is assigned with a user id and SSRC.
+     * The decoder will be provided by JDA but need not be used.
+     *
+     * @return True, if {@link #handleEncodedAudio(OpusPacket)} should receive opus packets.
+     *
+     * @since  4.0.0
+     */
+    default boolean canReceiveEncoded()
+    {
+        return false;
+    }
+
+    /**
+     * If {@link #canReceiveEncoded()} returns true, JDA will provide raw {@link net.dv8tion.jda.api.audio.OpusPacket OpusPackets}
+     * to this method <b>every 20 milliseconds</b>. These packets are for specific users rather than a combined packet
+     * of all users like {@link #handleCombinedAudio(CombinedAudio)}.
+     *
+     * <p>This is useful for systems that want to either do lazy decoding of audio through {@link net.dv8tion.jda.api.audio.OpusPacket#getAudioData(double)}
+     * or for systems that can decode and transform the audio data manually without JDA involvement.
+     *
+     * @param packet
+     *        The {@link net.dv8tion.jda.api.audio.OpusPacket}
+     *
+     * @since  4.0.0
+     */
+    default void handleEncodedAudio(@Nonnull OpusPacket packet) {}
 
     /**
      * If {@link #canReceiveCombined()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.CombinedAudio CombinedAudio}
@@ -65,7 +102,7 @@ public interface AudioReceiveHandler
      * @param  combinedAudio
      *         The combined audio data.
      */
-    void handleCombinedAudio(@Nonnull CombinedAudio combinedAudio);
+    default void handleCombinedAudio(@Nonnull CombinedAudio combinedAudio) {}
 
     /**
      * If {@link #canReceiveUser()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.UserAudio UserAudio}
@@ -88,7 +125,7 @@ public interface AudioReceiveHandler
      * @param  userAudio
      *         The user audio data
      */
-    void handleUserAudio(@Nonnull UserAudio userAudio);
+    default void handleUserAudio(@Nonnull UserAudio userAudio) {}
 
     /**
      * This method is a filter predicate used by JDA to determine whether or not to include a

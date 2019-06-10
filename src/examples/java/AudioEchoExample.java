@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
-import net.dv8tion.jda.api.audio.UserAudio;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -202,13 +201,6 @@ public class AudioEchoExample extends ListenerAdapter
             return queue.size() < 10;
         }
 
-        @Override // give audio separately for each user that is speaking
-        public boolean canReceiveUser()
-        {
-            // this is not useful if we want to echo the audio of the voice channel, thus disabled for this purpose
-            return false;
-        }
-
         @Override
         public void handleCombinedAudio(CombinedAudio combinedAudio)
         {
@@ -219,9 +211,19 @@ public class AudioEchoExample extends ListenerAdapter
             byte[] data = combinedAudio.getAudioData(1.0f); // volume at 100% = 1.0 (50% = 0.5 / 55% = 0.55)
             queue.add(data);
         }
+/*
+        Disable per-user audio since we want to echo the entire channel and not specific users.
+
+        @Override // give audio separately for each user that is speaking
+        public boolean canReceiveUser()
+        {
+            // this is not useful if we want to echo the audio of the voice channel, thus disabled for this purpose
+            return false;
+        }
 
         @Override
         public void handleUserAudio(UserAudio userAudio) {} // per-user is not helpful in an echo system
+*/
 
         /* Send Handling */
 
