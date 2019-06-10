@@ -841,6 +841,8 @@ public interface Guild extends ISnowflake
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     *
+     * @since  4.0.0
      */
     @Nullable
     default StoreChannel getStoreChannelById(@Nonnull String id)
@@ -859,6 +861,8 @@ public interface Guild extends ISnowflake
      *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     *
+     * @since  4.0.0
      */
     @Nullable
     default StoreChannel getStoreChannelById(long id)
@@ -876,6 +880,8 @@ public interface Guild extends ISnowflake
      * versions of handling these values.
      *
      * @return An immutable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in this Guild.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     default List<StoreChannel> getStoreChannels()
@@ -894,6 +900,8 @@ public interface Guild extends ISnowflake
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
@@ -907,6 +915,8 @@ public interface Guild extends ISnowflake
      * <br>TextChannels are sorted according to their position.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();

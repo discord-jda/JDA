@@ -141,6 +141,8 @@ public class JDABuilder
      *         True, if JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent}.
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     public JDABuilder setRawEventsEnabled(boolean enable)
@@ -809,6 +811,8 @@ public class JDABuilder
      *         The new voice dispatch handler, or null to use the default
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
      *
      * @see    VoiceDispatchInterceptor
      */

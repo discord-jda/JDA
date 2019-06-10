@@ -112,6 +112,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the provided type is null
      *
      * @return The status for that specific client or OFFLINE
+     *
+     * @since  4.0.0
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);

@@ -347,6 +347,8 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
      *         <br>With the current settings of an existing override or a fresh override with no permissions set
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
