@@ -21,6 +21,13 @@ import net.dv8tion.jda.api.entities.Guild;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that the {@link net.dv8tion.jda.api.entities.Guild#getBoostTier() boost tier} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
+ *
+ * <p>Can be used to detect when the boost tier changes and retrieve the old one
+ *
+ * <p>Identifier: {@code boost_tier}
+ */
 public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.BoostTier>
 {
     public static final String IDENTIFIER = "boost_tier";
@@ -28,5 +35,39 @@ public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.Boo
     public GuildUpdateBoostTierEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.BoostTier previous)
     {
         super(api, responseNumber, guild, previous, guild.getBoostTier(), IDENTIFIER);
+    }
+
+    /**
+     * The old {@link net.dv8tion.jda.api.entities.Guild.BoostTier}
+     *
+     * @return The old BoostTier
+     */
+    @Nonnull
+    public Guild.BoostTier getOldBoostTier()
+    {
+        return getOldValue();
+    }
+
+    /**
+     * The new {@link net.dv8tion.jda.api.entities.Guild.BoostTier}
+     *
+     * @return The new BoostTier
+     */
+    @Nonnull
+    public Guild.BoostTier getNewBoostTier()
+    {
+        return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public Guild.BoostTier getOldValue() {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Guild.BoostTier getNewValue() {
+        return super.getNewValue();
     }
 }
