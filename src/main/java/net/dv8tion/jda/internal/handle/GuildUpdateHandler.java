@@ -50,6 +50,7 @@ public class GuildUpdateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
         {
+            EventCache.LOG.debug("Caching GUILD_UPDATE for guild with id: {}", id);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
             return null;
         }
