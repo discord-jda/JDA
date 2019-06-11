@@ -246,7 +246,26 @@ public interface RestAction<T>
      * <br>Using the default callback functions:
      * {@link #setDefaultSuccess(Consumer)} and {@link #setDefaultFailure(Consumer)}
      *
+     * <p>To access the response you can use {@link #queue(java.util.function.Consumer)}
+     * and to handle failures use {@link #queue(java.util.function.Consumer, java.util.function.Consumer)}.
+     *
      * <p><b>This method is asynchronous</b>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void sendMessage(MessageChannel channel, String content)
+     * {
+     *     // sendMessage returns "MessageAction" which is a specialization for "RestAction<Message>"
+     *     RestAction<Message> action = channel.sendMessage(content);
+     *     // call queue() to send the message off to discord.
+     *     action.queue();
+     * }
+     * }</pre>
+     *
+     * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(java.lang.CharSequence) MessageChannel.sendMessage(CharSequence)
+     * @see net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction
+     * @see #queue(java.util.function.Consumer) queue(Consumer)
+     * @see #queue(java.util.function.Consumer, java.util.function.Consumer) queue(Consumer, Consumer)
      */
     default void queue()
     {
@@ -257,11 +276,27 @@ public interface RestAction<T>
      * Submits a Request for execution.
      * <br>Using the default failure callback function.
      *
+     * <p>To handle failures use {@link #queue(java.util.function.Consumer, java.util.function.Consumer)}.
+     *
      * <p><b>This method is asynchronous</b>
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void sendPrivateMessage(User user, String content)
+     * {
+     *     // The "<PrivateChannel>" is the response type for the parameter in the success callback
+     *     RestAction<PrivateChannel> action = user.openPrivateChannel();
+     *     // "channel" is the identifier we use to access the channel of the response
+     *     // this is like the "user" we declared above, just a name for the function parameter
+     *     action.queue((channel) -> channel.sendMessage(content).queue());
+     * }
+     * }</pre>
      *
      * @param  success
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null)
+     *
+     * @see    #queue(java.util.function.Consumer, java.util.function.Consumer) queue(Consumer, Consumer)
      */
     default void queue(@Nullable Consumer<? super T> success)
     {
@@ -273,12 +308,33 @@ public interface RestAction<T>
      *
      * <p><b>This method is asynchronous</b>
      *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void sendPrivateMessage(JDA jda, String userId, String content)
+     * {
+     *     // Retrieve the user by their id
+     *     RestAction<User> action = jda.retrieveUserById(userId);
+     *     action.queue(
+     *         // Handle success if the user exists
+     *         (user) -> user.openPrivateChannel().queue(
+     *             (channel) -> channel.sendMessage(content).queue()),
+     *
+     *         // Handle failure if the user does not exist (or another issue appeared)
+     *         (error) -> error.printStackTrace()
+     *     );
+     *
+     *     // Alternatively use submit() to remove nested callbacks
+     * }
+     * }</pre>
+     *
      * @param  success
      *         The success callback that will be called at a convenient time
-     *         for the API. (can be null)
+     *         for the API. (can be null to use default)
      * @param  failure
      *         The failure callback that will be called if the Request
-     *         encounters an exception at its execution point.
+     *         encounters an exception at its execution point. (can be null to use default)
+     *
+     * @see    #submit()
      */
     void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
 
@@ -331,6 +387,23 @@ public interface RestAction<T>
      * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void sendPrivateMessage(JDA jda, String userId, String content)
+     * {
+     *     // Retrieve the user by their id
+     *     RestAction<User> action = jda.retrieveUserById(userId);
+     *     action.submit() // CompletableFuture<User>
+     *           // Handle success if the user exists
+     *           .thenCompose((user) -> user.openPrivateChannel().submit()) // CompletableFuture<PrivateChannel>
+     *           .thenAccept((channel) -> channel.sendMessage(content).queue()) // CompletableFuture<Void>
+     *           .whenComplete((v, error) -> {
+     *               // Handle failure if the user does not exist (or another issue appeared)
+     *               if (error != null) error.printStackTrace();
+     *           });
+     * }
+     * }</pre>
      *
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
      */
