@@ -202,6 +202,7 @@ javadoc.apply {
             "https://square.github.io/okhttp/3.x/okhttp/")
         if (JavaVersion.current().isJava9Compatible) {
             opt.addBooleanOption("html5", true)
+            opt.addStringOption("-release", "8")
         }
         if (JavaVersion.current().isJava11Compatible) {
             opt.addBooleanOption("-no-module-directories", true)
