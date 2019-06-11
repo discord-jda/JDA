@@ -238,6 +238,6 @@ public final class OpusPacket implements Comparable<OpusPacket>
         OpusPacket other = (OpusPacket) obj;
         return getSequence() == other.getSequence()
             && getTimestamp() == other.getTimestamp()
-            && getSsrc() == other.getSsrc();
+            && getSSRC() == other.getSSRC();
     }
 }
