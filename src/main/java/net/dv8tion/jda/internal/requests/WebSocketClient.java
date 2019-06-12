@@ -43,7 +43,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.handle.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -858,7 +857,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             json = handleBinary(binary);
         }
-        handleEvent(json);
+        if (json != null)
+            handleEvent(json);
     }
 
     protected DataObject handleBinary(byte[] binary) throws DataFormatException
@@ -870,6 +870,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         try
         {
             jsonString = decompressor.decompress(binary);
+            if (jsonString == null)
+                return null;
         }
         catch (DataFormatException e)
         {
