@@ -67,12 +67,13 @@ public class ZlibDecompressor implements Decompressor
         if (flushBuffer == null)
             flushBuffer = ByteBuffer.allocate(data.length * 2);
 
+        //Ensure the capacity can hold the new data, ByteBuffer doesn't grow automatically
         if (flushBuffer.capacity() < data.length + flushBuffer.position())
         {
-            ByteBuffer buffer = ByteBuffer.allocate((flushBuffer.capacity() + data.length) * 2);
+            //Flip to make it a read buffer
             flushBuffer.flip();
-            buffer.put(flushBuffer);
-            flushBuffer = buffer;
+            //Reallocate for the new capacity
+            flushBuffer = IOUtil.reallocate(flushBuffer, (flushBuffer.capacity() + data.length) * 2);
         }
 
         flushBuffer.put(data);
