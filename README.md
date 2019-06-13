@@ -5,6 +5,10 @@
 [jenkins]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
 [FAQ]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [Troubleshooting]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
+[migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
+[migration-shield]: https://img.shields.io/badge/Migrating%20from%20V3-green.svg
+
+[ ![migration-shield][] ][migration]
 [ ![version][] ][download]
 [ ![jenkins][] ](https://ci.dv8tion.net/job/JDA)
 [ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
