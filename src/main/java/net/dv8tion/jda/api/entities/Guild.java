@@ -2566,6 +2566,53 @@ public interface Guild extends ISnowflake
      *         The {@link net.dv8tion.jda.api.entities.Member Member} who's {@link GuildVoiceState VoiceState} is being changed.
      * @param  deafen
      *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
+     * @param  protectOwner
+     *         Whether the owner should protected from being deafen.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
+     * @throws IllegalArgumentException
+     *         If the provided member is not from this Guild or null.
+     * @throws java.lang.IllegalStateException
+     *         If the provided member is not currently connected to a voice channel.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen, boolean protectOwner);
+
+    /**
+     * Sets the Guild Deafened state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
+     * boolean.
+     *
+     * This method by default protects the owner to be deafen by this method. {@see deafen(Member, boolean, boolean)}
+     *
+     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildDeafened() GuildVoiceState.isGuildDeafened()} value won't change
+     * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent} event related to this change.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be deafened due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#USER_NOT_CONNECTED USER_NOT_CONNECTED}
+     *     <br>The specified Member is not connected to a voice channel</li>
+     * </ul>
+     *
+     * @param  member
+     *         The {@link net.dv8tion.jda.api.entities.Member Member} who's {@link GuildVoiceState VoiceState} is being changed.
+     * @param  deafen
+     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
@@ -2585,6 +2632,53 @@ public interface Guild extends ISnowflake
     /**
      * Sets the Guild Muted state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
      * boolean.
+     *
+     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
+     * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be muted due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#USER_NOT_CONNECTED USER_NOT_CONNECTED}
+     *     <br>The specified Member is not connected to a voice channel</li>
+     * </ul>
+     *
+     * @param  member
+     *         The {@link net.dv8tion.jda.api.entities.Member Member} who's {@link GuildVoiceState VoiceState} is being changed.
+     * @param  mute
+     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
+     * @param  protectOwner
+     *         Whether the owner should protected from being muted.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided member is not from this Guild or null.
+     * @throws java.lang.IllegalStateException
+     *         If the provided member is not currently connected to a voice channel.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute, boolean protectOwner);
+
+    /**
+     * Sets the Guild Muted state state of the {@link net.dv8tion.jda.api.entities.Member Member} based on the provided
+     * boolean.
+     *
+     * This method by default protects the owner to be muted by this method. {@see mute(Member, boolean, boolean)}
      *
      * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
      * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.

@@ -874,7 +874,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen)
+    public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen, boolean protectOwner)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -882,7 +882,7 @@ public class GuildImpl implements Guild
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
-        if (member.equals(getOwner()))
+        if (protectOwner && member.equals(getOwner()))
             throw new HierarchyException("Cannot modify Guild Deafen status the Owner of the Guild");
 
         GuildVoiceState voiceState = member.getVoiceState();
@@ -901,7 +901,13 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute)
+    public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean mute) {
+        return mute(member, mute, true);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute, boolean protectOwner)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -909,7 +915,7 @@ public class GuildImpl implements Guild
 
         //We check the owner instead of Position because, apparently, Discord doesn't care about position for
         // muting and deafening, only whether the affected Member is the owner.
-        if (member.equals(getOwner()))
+        if (protectOwner && member.equals(getOwner()))
             throw new HierarchyException("Cannot modify Guild Mute status the Owner of the Guild");
 
         GuildVoiceState voiceState = member.getVoiceState();
@@ -924,6 +930,12 @@ public class GuildImpl implements Guild
         DataObject body = DataObject.empty().put("mute", mute);
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
         return new AuditableRestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute) {
+        return mute(member, mute, true);
     }
 
     @Nonnull
