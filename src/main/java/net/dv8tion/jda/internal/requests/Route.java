@@ -106,7 +106,6 @@ public class Route
         public static final Route BAN =                new Route(PUT,    "guilds/{guild_id}/bans/{user_id}",    "guild_id");
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
-        // TODO: no headers
         public static final Route ADD_MEMBER =         new Route(PUT,    "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
         public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune",             "guild_id");
@@ -202,9 +201,8 @@ public class Route
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}",     "channel_id");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
 
-        public static final Route ADD_REACTION =             new Route(PUT,    new RateLimit(1, 250),
-                                                                               "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/@me",       "channel_id");
-        public static final Route REMOVE_REACTION =          new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}", "channel_id");
+        public static final Route ADD_REACTION =             new ReactionRoute(PUT);
+        public static final Route REMOVE_REACTION =          new ReactionRoute(DELETE);
         public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                           "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
@@ -515,6 +513,21 @@ public class Route
         public String getRatelimitRoute()
         {
             return "channels/%s/messages/{message_id}/delete"; //the additional "/delete" forces a new bucket
+        }
+    }
+
+    // This endpoint shares the rate-limit bucket with REMOVE_ALL_REACTIONS
+    private static class ReactionRoute extends Route
+    {
+        private ReactionRoute(Method method)
+        {
+            super(method, new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}", "channel_id");
+        }
+
+        @Override
+        public String getRatelimitRoute()
+        {
+            return "channels/%s/messages/{message_id}/reactions";
         }
     }
 }
