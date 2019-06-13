@@ -23,12 +23,13 @@ import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -48,21 +49,24 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
         this.name = name;
     }
 
+    @Nonnull
     @Override
     public WebhookActionImpl setCheck(BooleanSupplier checks)
     {
         return (WebhookActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     public TextChannel getChannel()
     {
         return channel;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public WebhookActionImpl setName(String name)
+    public WebhookActionImpl setName(@Nonnull String name)
     {
         Checks.notNull(name, "Webhook name");
         Checks.check(name.length() >= 2 && name.length() <= 100, "The webhook name must be in the range of 2-100!");
@@ -71,6 +75,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public WebhookActionImpl setAvatar(Icon icon)
@@ -82,9 +87,9 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     @Override
     public RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
         object.put("name",   name);
-        object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
+        object.put("avatar", avatar != null ? avatar.getEncoding() : null);
 
         return getRequestBody(object);
     }
@@ -92,7 +97,7 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     @Override
     protected void handleSuccess(Response response, Request<Webhook> request)
     {
-        JSONObject json = response.getObject();
+        DataObject json = response.getObject();
         Webhook webhook = api.get().getEntityBuilder().createWebhook(json);
 
         request.onSuccess(webhook);

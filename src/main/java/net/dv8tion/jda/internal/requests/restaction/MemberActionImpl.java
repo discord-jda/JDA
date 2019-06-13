@@ -21,12 +21,12 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.restaction.MemberAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -56,6 +56,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         this.guild = guild;
     }
 
+    @Nonnull
     @Override
     public MemberAction setCheck(BooleanSupplier checks)
     {
@@ -90,6 +91,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return guild;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setNickname(String nick)
@@ -107,6 +109,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setRoles(Collection<Role> roles)
@@ -123,6 +126,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setRoles(Role... roles)
@@ -139,6 +143,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setMute(boolean mute)
@@ -147,6 +152,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MemberActionImpl setDeafen(boolean deaf)
@@ -158,7 +164,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject obj = new JSONObject();
+        DataObject obj = DataObject.empty();
         obj.put("access_token", accessToken);
         if (nick != null)
             obj.put("nick", nick);

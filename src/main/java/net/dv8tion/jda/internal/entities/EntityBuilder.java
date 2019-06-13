@@ -29,9 +29,10 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
@@ -39,9 +40,6 @@ import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.time.Instant;
@@ -87,9 +85,9 @@ public class EntityBuilder
         return api.get();
     }
 
-    public SelfUser createSelfUser(JSONObject self)
+    public SelfUser createSelfUser(DataObject self)
     {
-        SelfUserImpl selfUser = ((SelfUserImpl) getJDA().getSelfUser());
+        SelfUserImpl selfUser = (SelfUserImpl) (getJDA().hasSelfUser() ? getJDA().getSelfUser() : null);
         if (selfUser == null)
         {
             final long id = self.getLong("id");
@@ -108,16 +106,16 @@ public class EntityBuilder
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
-                .setAvatarId(self.optString("avatar", null))
-                .setBot(Helpers.optBoolean(self, "bot"));
+                .setAvatarId(self.getString("avatar", null))
+                .setBot(self.getBoolean("bot"));
 
         if (this.getJDA().getAccountType() == AccountType.CLIENT)
         {
             selfUser
-                .setEmail(self.optString("email", null))
-                .setMobile(Helpers.optBoolean(self, "mobile"))
-                .setNitro(Helpers.optBoolean(self, "premium"))
-                .setPhoneNumber(self.optString("phone", null));
+                .setEmail(self.getString("email", null))
+                .setMobile(self.getBoolean("mobile"))
+                .setNitro(self.getBoolean("premium"))
+                .setPhoneNumber(self.getString("phone", null));
         }
 
         return selfUser;
@@ -128,7 +126,7 @@ public class EntityBuilder
         return new ActivityImpl(name, url, type);
     }
 
-    private void createGuildEmotePass(GuildImpl guildObj, JSONArray array)
+    private void createGuildEmotePass(GuildImpl guildObj, DataArray array)
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))
             return;
@@ -138,7 +136,7 @@ public class EntityBuilder
             TLongObjectMap<Emote> emoteMap = emoteView.getMap();
             for (int i = 0; i < array.length(); i++)
             {
-                JSONObject object = array.getJSONObject(i);
+                DataObject object = array.getObject(i);
                 if (object.isNull("id"))
                 {
                     LOG.error("Received GUILD_CREATE with an emoji with a null ID. JSON: {}", object);
@@ -150,27 +148,27 @@ public class EntityBuilder
         }
     }
 
-    public GuildImpl createGuild(long guildId, JSONObject guildJson, TLongObjectMap<JSONObject> members)
+    public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members)
     {
         final GuildImpl guildObj = new GuildImpl(getJDA(), guildId);
-        final String name = guildJson.optString("name", "");
-        final String iconId = guildJson.optString("icon", null);
-        final String splashId = guildJson.optString("splash", null);
-        final String region = guildJson.optString("region", null);
-        final JSONArray roleArray = guildJson.getJSONArray("roles");
-        final JSONArray channelArray = guildJson.getJSONArray("channels");
-        final JSONArray emotesArray = guildJson.getJSONArray("emojis");
-        final JSONArray voiceStateArray = guildJson.getJSONArray("voice_states");
-        final JSONArray featuresArray = guildJson.optJSONArray("features");
-        final JSONArray presencesArray = guildJson.optJSONArray("presences");
-        final long ownerId = Helpers.optLong(guildJson, "owner_id", 0L);
-        final long afkChannelId = Helpers.optLong(guildJson, "afk_channel_id", 0L);
-        final long systemChannelId = Helpers.optLong(guildJson, "system_channel_id", 0L);
-        final int mfaLevel = Helpers.optInt(guildJson, "mfa_level", 0);
-        final int afkTimeout = Helpers.optInt(guildJson, "afk_timeout", 0);
-        final int verificationLevel = Helpers.optInt(guildJson, "verification_level", 0);
-        final int notificationLevel = Helpers.optInt(guildJson, "default_message_notifications", 0);
-        final int explicitContentLevel = Helpers.optInt(guildJson, "explicit_content_filter", 0);
+        final String name = guildJson.getString("name", "");
+        final String iconId = guildJson.getString("icon", null);
+        final String splashId = guildJson.getString("splash", null);
+        final String region = guildJson.getString("region", null);
+        final DataArray roleArray = guildJson.getArray("roles");
+        final DataArray channelArray = guildJson.getArray("channels");
+        final DataArray emotesArray = guildJson.getArray("emojis");
+        final DataArray voiceStateArray = guildJson.getArray("voice_states");
+        final Optional<DataArray> featuresArray = guildJson.optArray("features");
+        final Optional<DataArray> presencesArray = guildJson.optArray("presences");
+        final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
+        final long afkChannelId = guildJson.getUnsignedLong("afk_channel_id", 0L);
+        final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
+        final int mfaLevel = guildJson.getInt("mfa_level", 0);
+        final int afkTimeout = guildJson.getInt("afk_timeout", 0);
+        final int verificationLevel = guildJson.getInt("verification_level", 0);
+        final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
+        final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
 
         guildObj.setAvailable(true)
                 .setName(name)
@@ -184,17 +182,11 @@ public class EntityBuilder
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel));
 
-        if (featuresArray == null)
-        {
-            guildObj.setFeatures(Collections.emptySet());
-        }
-        else
-        {
-            guildObj.setFeatures(
-                    StreamSupport.stream(featuresArray.spliterator(), false)
-                                 .map(String::valueOf)
-                                 .collect(Collectors.toSet()));
-        }
+        guildObj.setFeatures(featuresArray.map(it ->
+            StreamSupport.stream(it.spliterator(), false)
+                         .map(String::valueOf)
+                         .collect(Collectors.toSet())
+        ).orElse(Collections.emptySet()));
 
         SnowflakeCacheViewImpl<Role> roleView = guildObj.getRolesView();
         try (UnlockHook hook = roleView.writeLock())
@@ -202,7 +194,7 @@ public class EntityBuilder
             TLongObjectMap<Role> map = roleView.getMap();
             for (int i = 0; i < roleArray.length(); i++)
             {
-                JSONObject obj = roleArray.getJSONObject(i);
+                DataObject obj = roleArray.getObject(i);
                 Role role = createRole(guildObj, obj, guildId);
                 map.put(role.getIdLong(), role);
                 if (role.getIdLong() == guildObj.getIdLong())
@@ -210,15 +202,15 @@ public class EntityBuilder
             }
         }
 
-        for (JSONObject memberJson : members.valueCollection())
+        for (DataObject memberJson : members.valueCollection())
             createMember(guildObj, memberJson);
 
         if (guildObj.getOwner() == null)
-            LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id"));
+            LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
 
         for (int i = 0; i < channelArray.length(); i++)
         {
-            JSONObject channelJson = channelArray.getJSONObject(i);
+            DataObject channelJson = channelArray.getObject(i);
             createGuildChannel(guildObj, channelJson);
         }
 
@@ -228,17 +220,19 @@ public class EntityBuilder
         guildObj.setAfkChannel(guildObj.getVoiceChannelById(afkChannelId))
                 .setSystemChannel(guildObj.getTextChannelById(systemChannelId));
 
-        for (int i = 0; i < presencesArray.length(); i++)
-        {
-            JSONObject presence = presencesArray.getJSONObject(i);
-            final long userId = presence.getJSONObject("user").getLong("id");
-            MemberImpl member = (MemberImpl) guildObj.getMembersView().get(userId);
+        presencesArray.ifPresent((arr) -> {
+            for (int i = 0; i < arr.length(); i++)
+            {
+                DataObject presence = arr.getObject(i);
+                final long userId = presence.getObject("user").getLong("id");
+                MemberImpl member = (MemberImpl) guildObj.getMembersView().get(userId);
 
-            if (member == null)
-                LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
-            else
-                createPresence(member, presence);
-        }
+                if (member == null)
+                    LOG.debug("Received a ghost presence in GuildFirstPass! UserId: {} Guild: {}", userId, guildObj);
+                else
+                    createPresence(member, presence);
+            }
+        });
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())
@@ -248,7 +242,7 @@ public class EntityBuilder
         return guildObj;
     }
 
-    private void createGuildChannel(GuildImpl guildObj, JSONObject channelData)
+    private void createGuildChannel(GuildImpl guildObj, DataObject channelData)
     {
         final ChannelType channelType = ChannelType.fromId(channelData.getInt("type"));
         switch (channelType)
@@ -262,16 +256,19 @@ public class EntityBuilder
         case CATEGORY:
             createCategory(guildObj, channelData, guildObj.getIdLong());
             break;
+        case STORE:
+            createStoreChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
         default:
-            throw new IllegalArgumentException("Cannot create channel for type " + channelData.getInt("type"));
+            LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
         }
     }
 
-    public void createGuildVoiceStatePass(GuildImpl guildObj, JSONArray voiceStates)
+    public void createGuildVoiceStatePass(GuildImpl guildObj, DataArray voiceStates)
     {
         for (int i = 0; i < voiceStates.length(); i++)
         {
-            JSONObject voiceStateJson = voiceStates.getJSONObject(i);
+            DataObject voiceStateJson = voiceStates.getObject(i);
             final long userId = voiceStateJson.getLong("user_id");
             Member member = guildObj.getMembersView().get(userId);
             if (member == null)
@@ -294,19 +291,19 @@ public class EntityBuilder
                     channelId, guildObj.getId(), userId);
 
             // VoiceState is considered volatile so we don't expect anything to actually exist
-            voiceState.setSelfMuted(Helpers.optBoolean(voiceStateJson, "self_mute"))
-                      .setSelfDeafened(Helpers.optBoolean(voiceStateJson, "self_deaf"))
-                      .setGuildMuted(Helpers.optBoolean(voiceStateJson, "mute"))
-                      .setGuildDeafened(Helpers.optBoolean(voiceStateJson, "deaf"))
-                      .setSuppressed(Helpers.optBoolean(voiceStateJson, "suppress"))
-                      .setSessionId(voiceStateJson.optString("session_id"))
+            voiceState.setSelfMuted(voiceStateJson.getBoolean("self_mute"))
+                      .setSelfDeafened(voiceStateJson.getBoolean("self_deaf"))
+                      .setGuildMuted(voiceStateJson.getBoolean("mute"))
+                      .setGuildDeafened(voiceStateJson.getBoolean("deaf"))
+                      .setSuppressed(voiceStateJson.getBoolean("suppress"))
+                      .setSessionId(voiceStateJson.getString("session_id", ""))
                       .setConnectedChannel(voiceChannel);
         }
     }
 
-    public UserImpl createFakeUser(JSONObject user, boolean modifyCache) { return createUser(user, true, modifyCache); }
-    public UserImpl createUser(JSONObject user)     { return createUser(user, false, true); }
-    private UserImpl createUser(JSONObject user, boolean fake, boolean modifyCache)
+    public UserImpl createFakeUser(DataObject user, boolean modifyCache) { return createUser(user, true, modifyCache); }
+    public UserImpl createUser(DataObject user)     { return createUser(user, false, true); }
+    private UserImpl createUser(DataObject user, boolean fake, boolean modifyCache)
     {
         final long id = user.getLong("id");
         UserImpl userObj;
@@ -355,17 +352,17 @@ public class EntityBuilder
         userObj
             .setName(user.getString("username"))
             .setDiscriminator(user.get("discriminator").toString())
-            .setAvatarId(user.optString("avatar", null))
-            .setBot(Helpers.optBoolean(user, "bot"));
+            .setAvatarId(user.getString("avatar", null))
+            .setBot(user.getBoolean("bot"));
         if (!fake && modifyCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.USER, id);
         return userObj;
     }
 
-    public Member createMember(GuildImpl guild, JSONObject memberJson)
+    public Member createMember(GuildImpl guild, DataObject memberJson)
     {
         boolean playbackCache = false;
-        User user = createUser(memberJson.getJSONObject("user"));
+        User user = createUser(memberJson.getObject("user"));
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
         {
@@ -391,9 +388,9 @@ public class EntityBuilder
 
         TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("joined_at"));
         member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
-              .setNickname(memberJson.optString("nick", null));
+              .setNickname(memberJson.getString("nick", null));
 
-        JSONArray rolesJson = memberJson.getJSONArray("roles");
+        DataArray rolesJson = memberJson.getArray("roles");
         for (int k = 0; k < rolesJson.length(); k++)
         {
             final long roleId = rolesJson.getLong(k);
@@ -417,14 +414,15 @@ public class EntityBuilder
         return member;
     }
 
-    //Effectively the same as createFriendPresence
-    public void createPresence(MemberImpl member, JSONObject presenceJson)
+    public void createPresence(MemberImpl member, DataObject presenceJson)
     {
         if (member == null)
             throw new NullPointerException("Provided member was null!");
-        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.PRESENCE);
+        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.ACTIVITY);
+        boolean cacheStatus = getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS);
 
-        JSONArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getJSONArray("activities");
+        DataArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getArray("activities");
+        DataObject clientStatusJson = !cacheStatus || presenceJson.isNull("client_status") ? null : presenceJson.getObject("client_status");
         OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         List<Activity> activities = new ArrayList<>();
         boolean parsedActivity = false;
@@ -435,7 +433,7 @@ public class EntityBuilder
             {
                 try
                 {
-                    activities.add(createAcitvity(activityArray.getJSONObject(i)));
+                    activities.add(createAcitvity(activityArray.getObject(i)));
                     parsedActivity = true;
                 }
                 catch (Exception ex)
@@ -449,12 +447,21 @@ public class EntityBuilder
                 }
             }
         }
-        member.setOnlineStatus(onlineStatus);
         if (cacheGame && parsedActivity)
             member.setActivities(activities);
+        member.setOnlineStatus(onlineStatus);
+        if (clientStatusJson != null)
+        {
+            for (String key : clientStatusJson.keys())
+            {
+                ClientType type = ClientType.fromKey(key);
+                OnlineStatus status = OnlineStatus.fromKey(clientStatusJson.getString(key));
+                member.setOnlineStatus(type, status);
+            }
+        }
     }
 
-    public static Activity createAcitvity(JSONObject gameJson)
+    public static Activity createAcitvity(DataObject gameJson)
     {
         String name = String.valueOf(gameJson.get("name"));
         String url = gameJson.isNull("url") ? null : String.valueOf(gameJson.get("url"));
@@ -473,35 +480,35 @@ public class EntityBuilder
         RichPresence.Timestamps timestamps = null;
         if (!gameJson.isNull("timestamps"))
         {
-            JSONObject obj = gameJson.getJSONObject("timestamps");
+            DataObject obj = gameJson.getObject("timestamps");
             long start, end;
-            start = obj.isNull("start") ? 0 : obj.getLong("start");
-            end = obj.isNull("end") ? 0 : obj.getLong("end");
+            start = obj.getLong("start", 0L);
+            end = obj.getLong("end", 0L);
             timestamps = new RichPresence.Timestamps(start, end);
         }
 
-        if (!CollectionUtils.containsAny(gameJson.keySet(), richGameFields))
+        if (!CollectionUtils.containsAny(gameJson.keys(), richGameFields))
             return new ActivityImpl(name, url, type, timestamps);
 
         // data for spotify
-        long id = Helpers.optLong(gameJson, "application_id", 0);
-        String sessionId = gameJson.optString("session_id", null);
-        String syncId = gameJson.optString("sync_id", null);
-        int flags = Helpers.optInt(gameJson, "flags", 0);
+        long id = gameJson.getLong("application_id", 0L);
+        String sessionId = gameJson.getString("session_id", null);
+        String syncId = gameJson.getString("sync_id", null);
+        int flags = gameJson.getInt("flags", 0);
         String details = gameJson.isNull("details") ? null : String.valueOf(gameJson.get("details"));
         String state = gameJson.isNull("state") ? null : String.valueOf(gameJson.get("state"));
 
         RichPresence.Party party = null;
         if (!gameJson.isNull("party"))
         {
-            JSONObject obj = gameJson.getJSONObject("party");
+            DataObject obj = gameJson.getObject("party");
             String partyId = obj.isNull("id") ? null : obj.getString("id");
-            JSONArray sizeArr = obj.isNull("size") ? null : obj.getJSONArray("size");
+            DataArray sizeArr = obj.isNull("size") ? null : obj.getArray("size");
             long size = 0, max = 0;
             if (sizeArr != null && sizeArr.length() > 0)
             {
                 size = sizeArr.getLong(0);
-                max = sizeArr.isNull(1) ? 0 : sizeArr.getLong(1);
+                max = sizeArr.length() < 2 ? 0 : sizeArr.getLong(1);
             }
             party = new RichPresence.Party(partyId, size, max);
         }
@@ -510,7 +517,7 @@ public class EntityBuilder
         String largeImageKey = null, largeImageText = null;
         if (!gameJson.isNull("assets"))
         {
-            JSONObject assets = gameJson.getJSONObject("assets");
+            DataObject assets = gameJson.getObject("assets");
             if (!assets.isNull("small_image"))
             {
                 smallImageKey = String.valueOf(assets.get("small_image"));
@@ -528,11 +535,11 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
-    public EmoteImpl createEmote(GuildImpl guildObj, JSONObject json, boolean fake)
+    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json, boolean fake)
     {
-        JSONArray emoteRoles = json.isNull("roles") ? new JSONArray() : json.getJSONArray("roles");
+        DataArray emoteRoles = json.optArray("roles").orElseGet(DataArray::empty);
         final long emoteId = json.getLong("id");
-        final User user = json.isNull("user") ? null : createFakeUser(json.getJSONObject("user"), false);
+        final User user = json.isNull("user") ? null : createFakeUser(json.getObject("user"), false);
         EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
         if (emoteObj == null)
             emoteObj = new EmoteImpl(emoteId, guildObj, fake);
@@ -548,17 +555,17 @@ public class EntityBuilder
         if (user != null)
             emoteObj.setUser(user);
         return emoteObj
-                .setName(json.optString("name"))
-                .setAnimated(json.optBoolean("animated"))
-                .setManaged(Helpers.optBoolean(json, "managed"));
+                .setName(json.getString("name", ""))
+                .setAnimated(json.getBoolean("animated"))
+                .setManaged(json.getBoolean("managed"));
     }
 
-    public Category createCategory(JSONObject json, long guildId)
+    public Category createCategory(DataObject json, long guildId)
     {
         return createCategory(null, json, guildId);
     }
 
-    public Category createCategory(GuildImpl guild, JSONObject json, long guildId)
+    public Category createCategory(GuildImpl guild, DataObject json, long guildId)
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
@@ -582,7 +589,7 @@ public class EntityBuilder
 
         if (!json.isNull("permission_overwrites"))
         {
-            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            DataArray overrides = json.getArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
 
@@ -594,13 +601,55 @@ public class EntityBuilder
         return channel;
     }
 
-    public TextChannel createTextChannel(JSONObject json, long guildId)
+    public StoreChannel createStoreChannel(DataObject json, long guildId)
+    {
+        return createStoreChannel(null, json, guildId);
+    }
+
+    public StoreChannel createStoreChannel(GuildImpl guild, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        StoreChannelImpl channel = (StoreChannelImpl) getJDA().getStoreChannelsView().get(id);
+        if (channel == null)
+        {
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildById(guildId);
+            SnowflakeCacheViewImpl<StoreChannel>
+                    guildStoreView = guild.getStoreChannelView(),
+                    storeView = getJDA().getStoreChannelsView();
+            try (
+                UnlockHook glock = guildStoreView.writeLock();
+                UnlockHook jlock = storeView.writeLock())
+            {
+                channel = new StoreChannelImpl(id, guild);
+                guildStoreView.getMap().put(id, channel);
+                playbackCache = storeView.getMap().put(id, channel) == null;
+            }
+        }
+
+        if (!json.isNull("permission_overwrites"))
+        {
+            DataArray overrides = json.getArray("permission_overwrites");
+            createOverridesPass(channel, overrides);
+        }
+
+        channel
+            .setParent(json.getLong("parent_id", 0))
+            .setName(json.getString("name"))
+            .setPosition(json.getInt("position"));
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+        return channel;
+    }
+
+    public TextChannel createTextChannel(DataObject json, long guildId)
     {
         return createTextChannel(null, json, guildId);
 
     }
 
-    public TextChannel createTextChannel(GuildImpl guildObj, JSONObject json, long guildId)
+    public TextChannel createTextChannel(GuildImpl guildObj, DataObject json, long guildId)
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
@@ -624,29 +673,29 @@ public class EntityBuilder
 
         if (!json.isNull("permission_overwrites"))
         {
-            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            DataArray overrides = json.getArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
 
         channel
-            .setParent(Helpers.optLong(json, "parent_id", 0))
-            .setLastMessageId(Helpers.optLong(json, "last_message_id", 0))
+            .setParent(json.getLong("parent_id", 0))
+            .setLastMessageId(json.getLong("last_message_id", 0))
             .setName(json.getString("name"))
-            .setTopic(json.optString("topic", null))
+            .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
-            .setNSFW(Helpers.optBoolean(json, "nsfw"))
-            .setSlowmode(Helpers.optInt(json, "rate_limit_per_user", 0));
+            .setNSFW(json.getBoolean("nsfw"))
+            .setSlowmode(json.getInt("rate_limit_per_user", 0));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
     }
 
-    public VoiceChannel createVoiceChannel(JSONObject json, long guildId)
+    public VoiceChannel createVoiceChannel(DataObject json, long guildId)
     {
         return createVoiceChannel(null, json, guildId);
     }
 
-    public VoiceChannel createVoiceChannel(GuildImpl guild, JSONObject json, long guildId)
+    public VoiceChannel createVoiceChannel(GuildImpl guild, DataObject json, long guildId)
     {
         boolean playbackCache = false;
         final long id = json.getLong("id");
@@ -670,12 +719,12 @@ public class EntityBuilder
 
         if (!json.isNull("permission_overwrites"))
         {
-            JSONArray overrides = json.getJSONArray("permission_overwrites");
+            DataArray overrides = json.getArray("permission_overwrites");
             createOverridesPass(channel, overrides);
         }
 
         channel
-            .setParent(Helpers.optLong(json, "parent_id", 0))
+            .setParent(json.getLong("parent_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
@@ -685,11 +734,11 @@ public class EntityBuilder
         return channel;
     }
 
-    public PrivateChannel createPrivateChannel(JSONObject privatechat)
+    public PrivateChannel createPrivateChannel(DataObject privatechat)
     {
-        JSONObject recipient = privatechat.has("recipients") ?
-            privatechat.getJSONArray("recipients").getJSONObject(0) :
-            privatechat.getJSONObject("recipient");
+        DataObject recipient = privatechat.hasKey("recipients") ?
+            privatechat.getArray("recipients").getObject(0) :
+            privatechat.getObject("recipient");
         final long userId = recipient.getLong("id");
         UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
         if (user == null)
@@ -700,7 +749,7 @@ public class EntityBuilder
 
         final long channelId = privatechat.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
-                .setLastMessageId(Helpers.optLong(privatechat, "last_message_id", 0));
+                .setLastMessageId(privatechat.getLong("last_message_id", 0));
         user.setPrivateChannel(priv);
 
         if (user.isFake())
@@ -720,13 +769,13 @@ public class EntityBuilder
         return priv;
     }
 
-    public void createOverridesPass(AbstractChannelImpl<?,?> channel, JSONArray overrides)
+    public void createOverridesPass(AbstractChannelImpl<?,?> channel, DataArray overrides)
     {
         for (int i = 0; i < overrides.length(); i++)
         {
             try
             {
-                createPermissionOverride(overrides.getJSONObject(i), channel);
+                createPermissionOverride(overrides.getObject(i), channel);
             }
             catch (NoSuchElementException e)
             {
@@ -741,7 +790,7 @@ public class EntityBuilder
         }
     }
 
-    public Role createRole(GuildImpl guild, JSONObject roleJson, long guildId)
+    public Role createRole(GuildImpl guild, DataObject roleJson, long guildId)
     {
         boolean playbackCache = false;
         final long id = roleJson.getLong("id");
@@ -764,14 +813,14 @@ public class EntityBuilder
             .setManaged(roleJson.getBoolean("managed"))
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
-            .setMentionable(roleJson.has("mentionable") && roleJson.getBoolean("mentionable"));
+            .setMentionable(roleJson.getBoolean("mentionable"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;
     }
 
-    public Message createMessage(JSONObject jsonObject) { return createMessage(jsonObject, false); }
-    public Message createMessage(JSONObject jsonObject, boolean exceptionOnMissingUser)
+    public Message createMessage(DataObject jsonObject) { return createMessage(jsonObject, false); }
+    public Message createMessage(DataObject jsonObject, boolean exceptionOnMissingUser)
     {
         final long channelId = jsonObject.getLong("channel_id");
 
@@ -785,23 +834,28 @@ public class EntityBuilder
 
         return createMessage(jsonObject, chan, exceptionOnMissingUser);
     }
-    public Message createMessage(JSONObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
+    public Message createMessage(DataObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
     {
         final long id = jsonObject.getLong("id");
-        String content = jsonObject.optString("content");
+        String content = jsonObject.getString("content", "");
 
-        JSONObject author = jsonObject.getJSONObject("author");
+        DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
-        final boolean fromWebhook = jsonObject.has("webhook_id");
-        final boolean pinned = Helpers.optBoolean(jsonObject, "pinned");
-        final boolean tts = Helpers.optBoolean(jsonObject, "tts");
-        final boolean mentionsEveryone = Helpers.optBoolean(jsonObject, "mention_everyone");
+        final boolean fromWebhook = jsonObject.hasKey("webhook_id");
+        final boolean pinned = jsonObject.getBoolean("pinned");
+        final boolean tts = jsonObject.getBoolean("tts");
+        final boolean mentionsEveryone = jsonObject.getBoolean("mention_everyone");
         final OffsetDateTime editTime = jsonObject.isNull("edited_timestamp") ? null : OffsetDateTime.parse(jsonObject.getString("edited_timestamp"));
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
 
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+
+        MessageActivity activity = null;
+
+        if (!jsonObject.isNull("activity"))
+            activity = createMessageActivity(jsonObject);
 
         User user;
         switch (chan.getType())
@@ -831,12 +885,12 @@ public class EntityBuilder
 
         TLongSet mentionedRoles = new TLongHashSet();
         TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));
-        JSONArray roleMentionArr = jsonObject.optJSONArray("mention_roles");
-        if (roleMentionArr != null)
+        Optional<DataArray> roleMentionArr = jsonObject.optArray("mention_roles");
+        roleMentionArr.ifPresent((arr) ->
         {
-            for (int i = 0; i < roleMentionArr.length(); i++)
-                mentionedRoles.add(roleMentionArr.getLong(i));
-        }
+            for (int i = 0; i < arr.length(); i++)
+                mentionedRoles.add(arr.getLong(i));
+        });
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         switch (type)
@@ -844,25 +898,52 @@ public class EntityBuilder
             case DEFAULT:
                 return new ReceivedMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
                 return new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, editTime, reactions, attachments, embeds);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
         }
 
     }
 
-    public MessageReaction createMessageReaction(MessageChannel chan, long id, JSONObject obj)
+    private static MessageActivity createMessageActivity(DataObject jsonObject)
     {
-        JSONObject emoji = obj.getJSONObject("emoji");
+        DataObject activityData = jsonObject.getObject("activity");
+        final MessageActivity.ActivityType activityType = MessageActivity.ActivityType.fromId(activityData.getInt("type"));
+        final String partyId = activityData.getString("party_id", null);
+        MessageActivity.Application application = null;
+
+        if (!jsonObject.isNull("application"))
+        {
+            DataObject applicationData = jsonObject.getObject("application");
+
+            final String name = applicationData.getString("name");
+            final String description = applicationData.getString("description", "");
+            final String iconId = applicationData.getString("icon", null);
+            final String coverId = applicationData.getString("cover_image", null);
+            final long applicationId = applicationData.getLong("id");
+
+            application = new MessageActivity.Application(name, description, iconId, coverId, applicationId);
+        }
+        if (activityType == MessageActivity.ActivityType.UNKNOWN)
+        {
+            LOG.debug("Received an unknown ActivityType, Activity: {}", activityData);
+        }
+
+        return new MessageActivity(activityType, partyId, application);
+    }
+
+    public MessageReaction createMessageReaction(MessageChannel chan, long id, DataObject obj)
+    {
+        DataObject emoji = obj.getObject("emoji");
         final Long emojiID = emoji.isNull("id") ? null : emoji.getLong("id");
-        final String name = emoji.optString("name", null);
-        final boolean animated = emoji.optBoolean("animated");
-        final int count = Helpers.optInt(obj, "count", -1);
-        final boolean me = Helpers.optBoolean(obj, "me");
+        final String name = emoji.getString("name", null);
+        final boolean animated = emoji.getBoolean("animated");
+        final int count = obj.getInt("count", -1);
+        final boolean me = obj.getBoolean("me");
 
         final MessageReaction.ReactionEmote reactionEmote;
         if (emojiID != null)
@@ -871,36 +952,36 @@ public class EntityBuilder
             // creates fake emoji because no guild has this emoji id
             if (emote == null)
                 emote = new EmoteImpl(emojiID, getJDA()).setAnimated(animated).setName(name);
-            reactionEmote = new MessageReaction.ReactionEmote(emote);
+            reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
         }
         else
         {
-            reactionEmote = new MessageReaction.ReactionEmote(name, null, getJDA());
+            reactionEmote = MessageReaction.ReactionEmote.fromUnicode(name, getJDA());
         }
 
         return new MessageReaction(chan, reactionEmote, id, me, count);
     }
 
-    public Message.Attachment createMessageAttachment(JSONObject jsonObject)
+    public Message.Attachment createMessageAttachment(DataObject jsonObject)
     {
-        final int width = Helpers.optInt(jsonObject, "width", -1);
-        final int height = Helpers.optInt(jsonObject, "height", -1);
+        final int width = jsonObject.getInt("width", -1);
+        final int height = jsonObject.getInt("height", -1);
         final int size = jsonObject.getInt("size");
-        final String url = jsonObject.optString("url", null);
-        final String proxyUrl = jsonObject.optString("proxy_url", null);
+        final String url = jsonObject.getString("url");
+        final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
         final long id = jsonObject.getLong("id");
         return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
     }
 
-    public MessageEmbed createMessageEmbed(JSONObject content)
+    public MessageEmbed createMessageEmbed(DataObject content)
     {
         if (content.isNull("type"))
-            throw new JSONException("Encountered embed object with missing/null type field for Json: " + content);
+            throw new IllegalStateException("Encountered embed object with missing/null type field for Json: " + content);
         EmbedType type = EmbedType.fromKey(content.getString("type"));
-        final String url = content.optString("url", null);
-        final String title = content.optString("title", null);
-        final String description = content.optString("description", null);
+        final String url = content.getString("url", null);
+        final String title = content.getString("title", null);
+        final String description = content.getString("description", null);
         final OffsetDateTime timestamp = content.isNull("timestamp") ? null : OffsetDateTime.parse(content.getString("timestamp"));
         final int color = content.isNull("color") ? Role.DEFAULT_COLOR_RAW : content.getInt("color");
 
@@ -911,11 +992,11 @@ public class EntityBuilder
         }
         else
         {
-            JSONObject obj = content.getJSONObject("thumbnail");
-            thumbnail = new Thumbnail(obj.optString("url", null),
-                                      obj.optString("proxy_url", null),
-                                      Helpers.optInt(obj, "width", -1),
-                                      Helpers.optInt(obj, "height", -1));
+            DataObject obj = content.getObject("thumbnail");
+            thumbnail = new Thumbnail(obj.getString("url", null),
+                                      obj.getString("proxy_url", null),
+                                      obj.getInt("width", -1),
+                                      obj.getInt("height", -1));
         }
 
         final Provider provider;
@@ -925,9 +1006,9 @@ public class EntityBuilder
         }
         else
         {
-            JSONObject obj = content.getJSONObject("provider");
-            provider = new Provider(obj.optString("name", null),
-                                    obj.optString("url", null));
+            DataObject obj = content.getObject("provider");
+            provider = new Provider(obj.getString("name", null),
+                                    obj.getString("url", null));
         }
 
         final AuthorInfo author;
@@ -937,11 +1018,11 @@ public class EntityBuilder
         }
         else
         {
-            JSONObject obj = content.getJSONObject("author");
-            author = new AuthorInfo(obj.optString("name", null),
-                                    obj.optString("url", null),
-                                    obj.optString("icon_url", null),
-                                    obj.optString("proxy_icon_url", null));
+            DataObject obj = content.getObject("author");
+            author = new AuthorInfo(obj.getString("name", null),
+                                    obj.getString("url", null),
+                                    obj.getString("icon_url", null),
+                                    obj.getString("proxy_icon_url", null));
         }
 
         final VideoInfo video;
@@ -951,10 +1032,10 @@ public class EntityBuilder
         }
         else
         {
-            JSONObject obj = content.getJSONObject("video");
-            video = new VideoInfo(obj.optString("url"),
-                                  Helpers.optInt(obj, "width", -1),
-                                  Helpers.optInt(obj, "height", -1));
+            DataObject obj = content.getObject("video");
+            video = new VideoInfo(obj.getString("url", null),
+                                  obj.getInt("width", -1),
+                                  obj.getInt("height", -1));
         }
 
         final Footer footer;
@@ -964,10 +1045,10 @@ public class EntityBuilder
         }
         else
         {
-            JSONObject obj = content.getJSONObject("footer");
-            footer = new Footer(obj.optString("text", null),
-                                obj.optString("icon_url", null),
-                                obj.optString("proxy_icon_url", null));
+            DataObject obj = content.getObject("footer");
+            footer = new Footer(obj.getString("text", null),
+                                obj.getString("icon_url", null),
+                                obj.getString("proxy_icon_url", null));
         }
 
         final ImageInfo image;
@@ -977,17 +1058,17 @@ public class EntityBuilder
         }
         else
         {
-            JSONObject obj = content.getJSONObject("image");
-            image = new ImageInfo(obj.optString("url", null),
-                                  obj.optString("proxy_url", null),
-                                  Helpers.optInt(obj, "width", -1),
-                                  Helpers.optInt(obj, "height", -1));
+            DataObject obj = content.getObject("image");
+            image = new ImageInfo(obj.getString("url", null),
+                                  obj.getString("proxy_url", null),
+                                  obj.getInt("width", -1),
+                                  obj.getInt("height", -1));
         }
 
         final List<Field> fields = map(content, "fields", (obj) ->
-            new Field(obj.optString("name", null),
-                      obj.optString("value", null),
-                      Helpers.optBoolean(obj, "inline"),
+            new Field(obj.getString("name", null),
+                      obj.getString("value", null),
+                      obj.getBoolean("inline"),
                       false)
         );
 
@@ -1003,7 +1084,7 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
-    public PermissionOverride createPermissionOverride(JSONObject override, GuildChannel chan)
+    public PermissionOverride createPermissionOverride(DataObject override, GuildChannel chan)
     {
         PermissionOverrideImpl permOverride;
         final long id = override.getLong("id");
@@ -1044,40 +1125,41 @@ public class EntityBuilder
         return permOverride.setAllow(allow).setDeny(deny);
     }
 
-    public WebhookImpl createWebhook(JSONObject object)
+    public WebhookImpl createWebhook(DataObject object)
     {
         final long id = object.getLong("id");
         final long guildId = object.getLong("guild_id");
         final long channelId = object.getLong("channel_id");
-        final String token = object.optString("token", null);
+        final String token = object.getString("token", null);
 
         TextChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
             throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
-        Object name = !object.isNull("name") ? object.get("name") : JSONObject.NULL;
-        Object avatar = !object.isNull("avatar") ? object.get("avatar") : JSONObject.NULL;
+        Object name = !object.isNull("name") ? object.get("name") : null;
+        Object avatar = !object.isNull("avatar") ? object.get("avatar") : null;
 
-        JSONObject fakeUser = new JSONObject()
+        DataObject fakeUser = DataObject.empty()
                     .put("username", name)
                     .put("discriminator", "0000")
                     .put("id", id)
                     .put("avatar", avatar);
         User defaultUser = createFakeUser(fakeUser, false);
 
-        JSONObject ownerJson = object.optJSONObject("user");
+        Optional<DataObject> ownerJson = object.optObject("user");
         User owner = null;
         
-        if (ownerJson != null)
+        if (ownerJson.isPresent())
         {
-            final long userId = ownerJson.getLong("id");
+            DataObject json = ownerJson.get();
+            final long userId = json.getLong("id");
 
             owner = getJDA().getUserById(userId);
             if (owner == null)
             {
-                ownerJson.put("id", userId);
-                owner = createFakeUser(ownerJson, false);
+                json.put("id", userId);
+                owner = createFakeUser(json, false);
             }
         }
         
@@ -1087,12 +1169,12 @@ public class EntityBuilder
                 .setUser(defaultUser);
     }
 
-    public Invite createInvite(JSONObject object)
+    public Invite createInvite(DataObject object)
     {
         final String code = object.getString("code");
-        final User inviter = object.has("inviter") ? this.createFakeUser(object.getJSONObject("inviter"), false) : null;
+        final User inviter = object.hasKey("inviter") ? this.createFakeUser(object.getObject("inviter"), false) : null;
 
-        final JSONObject channelObject = object.getJSONObject("channel");
+        final DataObject channelObject = object.getObject("channel");
         final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
 
         final Invite.InviteType type;
@@ -1106,16 +1188,15 @@ public class EntityBuilder
             guild = null;
             channel = null;
 
-            final String groupName = channelObject.optString("name");
+            final String groupName = channelObject.getString("name", "");
             final long groupId = channelObject.getLong("id");
-            final String groupIconId = channelObject.optString("icon", null);
+            final String groupIconId = channelObject.getString("icon", null);
 
-            final JSONArray usernameArray = channelObject.optJSONArray("recipients");
             final List<String> usernames;
-            if (usernameArray == null)
+            if (channelObject.isNull("recipients"))
                 usernames = null;
             else
-                usernames = Collections.unmodifiableList(StreamSupport.stream(usernameArray.spliterator(), false).map(String::valueOf).collect(Collectors.toList()));
+                usernames = map(channelObject, "recipients", (json) -> json.getString("username"));
 
             group = new InviteImpl.GroupImpl(groupIconId, groupName, groupId, usernames);
         }
@@ -1123,21 +1204,21 @@ public class EntityBuilder
         {
             type = Invite.InviteType.GUILD;
 
-            final JSONObject guildObject = object.getJSONObject("guild");
+            final DataObject guildObject = object.getObject("guild");
 
-            final String guildIconId = guildObject.optString("icon", null);
+            final String guildIconId = guildObject.getString("icon", null);
             final long guildId = guildObject.getLong("id");
             final String guildName = guildObject.getString("name");
-            final String guildSplashId = guildObject.optString("splash", null);
-            final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(Helpers.optInt(guildObject, "verification_level", -1));
-            final int presenceCount = Helpers.optInt(object, "approximate_presence_count", -1);
-            final int memberCount = Helpers.optInt(object, "approximate_member_count", -1);
+            final String guildSplashId = guildObject.getString("splash", null);
+            final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
+            final int presenceCount = object.getInt("approximate_presence_count", -1);
+            final int memberCount = object.getInt("approximate_member_count", -1);
 
             final Set<String> guildFeatures;
             if (guildObject.isNull("features"))
                 guildFeatures = Collections.emptySet();
             else
-                guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getJSONArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
+                guildFeatures = Collections.unmodifiableSet(StreamSupport.stream(guildObject.getArray("features").spliterator(), false).map(String::valueOf).collect(Collectors.toSet()));
 
             guild = new InviteImpl.GuildImpl(guildId, guildIconId, guildName, guildSplashId, guildVerificationLevel, presenceCount, memberCount, guildFeatures);
 
@@ -1164,7 +1245,7 @@ public class EntityBuilder
         final int uses;
         final boolean expanded;
 
-        if (object.has("max_uses"))
+        if (object.hasKey("max_uses"))
         {
             expanded = true;
             maxAge = object.getInt("max_age");
@@ -1188,27 +1269,27 @@ public class EntityBuilder
                               timeCreated, uses, channel, guild, group, type);
     }
 
-    public ApplicationInfo createApplicationInfo(JSONObject object)
+    public ApplicationInfo createApplicationInfo(DataObject object)
     {
         final String description = object.getString("description");
         final boolean doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
-        final String iconId = object.optString("icon", null);
+        final String iconId = object.getString("icon", null);
         final long id = object.getLong("id");
         final String name = object.getString("name");
         final boolean isBotPublic = object.getBoolean("bot_public");
-        final User owner = createFakeUser(object.getJSONObject("owner"), false);
+        final User owner = createFakeUser(object.getObject("owner"), false);
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
     }
 
-    public AuditLogEntry createAuditLogEntry(GuildImpl guild, JSONObject entryJson, JSONObject userJson, JSONObject webhookJson)
+    public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)
     {
-        final long targetId = Helpers.optLong(entryJson, "target_id", 0);
+        final long targetId = entryJson.getLong("target_id", 0);
         final long id = entryJson.getLong("id");
         final int typeKey = entryJson.getInt("action_type");
-        final JSONArray changes = entryJson.isNull("changes") ? null : entryJson.getJSONArray("changes");
-        final JSONObject options = entryJson.isNull("options") ? null : entryJson.getJSONObject("options");
-        final String reason = entryJson.optString("reason", null);
+        final DataArray changes = entryJson.isNull("changes") ? null : entryJson.getArray("changes");
+        final DataObject options = entryJson.isNull("options") ? null : entryJson.getObject("options");
+        final String reason = entryJson.getString("reason", null);
 
         final UserImpl user = userJson == null ? null : createFakeUser(userJson, false);
         final WebhookImpl webhook = webhookJson == null ? null : createWebhook(webhookJson);
@@ -1220,7 +1301,7 @@ public class EntityBuilder
             changesList = new HashSet<>(changes.length());
             for (int i = 0; i < changes.length(); i++)
             {
-                final JSONObject object = changes.getJSONObject(i);
+                final DataObject object = changes.getObject(i);
                 AuditLogChange change = createAuditLogChange(object);
                 changesList.add(change);
             }
@@ -1237,24 +1318,11 @@ public class EntityBuilder
         return new AuditLogEntry(type, id, targetId, guild, user, webhook, reason, changeMap, optionMap);
     }
 
-    public AuditLogChange createAuditLogChange(JSONObject change)
+    public AuditLogChange createAuditLogChange(DataObject change)
     {
         final String key = change.getString("key");
         Object oldValue = change.isNull("old_value") ? null : change.get("old_value");
         Object newValue = change.isNull("new_value") ? null : change.get("new_value");
-
-        // Don't confront users with JSON
-        if (oldValue instanceof JSONArray || newValue instanceof JSONArray)
-        {
-            oldValue = oldValue instanceof JSONArray ? ((JSONArray) oldValue).toList() : oldValue;
-            newValue = newValue instanceof JSONArray ? ((JSONArray) newValue).toList() : newValue;
-        }
-        else if (oldValue instanceof JSONObject || newValue instanceof JSONObject)
-        {
-            oldValue = oldValue instanceof JSONObject ? ((JSONObject) oldValue).toMap() : oldValue;
-            newValue = newValue instanceof JSONObject ? ((JSONObject) newValue).toMap() : newValue;
-        }
-
         return new AuditLogChange(oldValue, newValue, key);
     }
 
@@ -1263,16 +1331,16 @@ public class EntityBuilder
         return changesList.stream().collect(Collectors.toMap(AuditLogChange::getKey, UnaryOperator.identity()));
     }
 
-    private <T> List<T> map(JSONObject jsonObject, String key, Function<JSONObject, T> convert)
+    private <T> List<T> map(DataObject jsonObject, String key, Function<DataObject, T> convert)
     {
         if (jsonObject.isNull(key))
             return Collections.emptyList();
 
-        final JSONArray arr = jsonObject.getJSONArray(key);
+        final DataArray arr = jsonObject.getArray(key);
         final List<T> mappedObjects = new ArrayList<>(arr.length());
         for (int i = 0; i < arr.length(); i++)
         {
-            JSONObject obj = arr.getJSONObject(i);
+            DataObject obj = arr.getObject(i);
             mappedObjects.add(convert.apply(obj));
         }
 

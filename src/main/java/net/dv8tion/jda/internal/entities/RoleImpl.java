@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
+import javax.annotation.Nonnull;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -85,6 +86,7 @@ public class RoleImpl implements Role
         return rawPosition;
     }
 
+    @Nonnull
     @Override
     public String getName()
     {
@@ -115,6 +117,7 @@ public class RoleImpl implements Role
         return rawPermissions;
     }
 
+    @Nonnull
     @Override
     public EnumSet<Permission> getPermissions()
     {
@@ -140,7 +143,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(Permission... permissions)
+    public boolean hasPermission(@Nonnull Permission... permissions)
     {
         long effectivePerms = rawPermissions | getGuild().getPublicRole().getPermissionsRaw();
         for (Permission perm : permissions)
@@ -153,7 +156,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -161,7 +164,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(GuildChannel channel, Permission... permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
     {
         long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
         for (Permission perm : permissions)
@@ -174,7 +177,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(GuildChannel channel, Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -182,22 +185,24 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean canInteract(Role role)
+    public boolean canInteract(@Nonnull Role role)
     {
         return PermissionUtil.canInteract(this, role);
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild.get();
     }
 
+    @Nonnull
     @Override
-    public RoleAction createCopy(Guild guild)
+    public RoleAction createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        return guild.getController().createRole()
+        return guild.createRole()
                     .setColor(color)
                     .setHoisted(hoisted)
                     .setMentionable(mentionable)
@@ -205,6 +210,7 @@ public class RoleImpl implements Role
                     .setPermissions(rawPermissions);
     }
 
+    @Nonnull
     @Override
     public RoleManager getManager()
     {
@@ -221,11 +227,12 @@ public class RoleImpl implements Role
         return mng;
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
         if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
             throw new HierarchyException("Can't delete role >= highest self-role");
         if (managed)
@@ -235,12 +242,14 @@ public class RoleImpl implements Role
         return new AuditableRestActionImpl<Void>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return getGuild().getJDA();
     }
 
+    @Nonnull
     @Override
     public String getAsMention()
     {

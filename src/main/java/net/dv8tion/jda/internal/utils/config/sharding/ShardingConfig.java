@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.utils.config.sharding;
 
+import javax.annotation.Nonnull;
+
 public class ShardingConfig
 {
     private int shardsTotal;
@@ -42,6 +44,7 @@ public class ShardingConfig
         return useShutdownNow;
     }
 
+    @Nonnull
     public static ShardingConfig getDefault()
     {
         return new ShardingConfig(1, false);

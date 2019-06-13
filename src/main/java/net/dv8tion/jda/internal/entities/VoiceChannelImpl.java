@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,12 +50,14 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return bitrate;
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.VOICE;
     }
 
+    @Nonnull
     @Override
     public List<Member> getMembers()
     {
@@ -73,11 +76,12 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         throw new AssertionError("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createCopy(Guild guild)
+    public ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<VoiceChannel> action = guild.getController().createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
+        ChannelAction<VoiceChannel> action = guild.createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();
@@ -107,18 +111,6 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     public String toString()
     {
         return "VC:" + getName() + '(' + id + ')';
-    }
-
-    @Override
-    public int compareTo(VoiceChannel chan)
-    {
-        Checks.notNull(chan, "Other VoiceChannel");
-        if (this == chan)
-            return 0;
-        Checks.check(getGuild().equals(chan.getGuild()), "Cannot compare VoiceChannels that aren't from the same guild!");
-        if (this.getPositionRaw() == chan.getPositionRaw())
-            return Long.compare(id, chan.getIdLong());
-        return Integer.compare(rawPosition, chan.getPositionRaw());
     }
 
     // -- Setters --

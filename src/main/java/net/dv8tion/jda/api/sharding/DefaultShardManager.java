@@ -38,6 +38,8 @@ import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -133,20 +135,21 @@ public class DefaultShardManager implements ShardManager
      */
     protected final ShardingMetaConfig metaConfig;
 
-    public DefaultShardManager(String token)
+    public DefaultShardManager(@Nonnull String token)
     {
         this(token, null);
     }
 
-    public DefaultShardManager(String token, Collection<Integer> shardIds)
+    public DefaultShardManager(@Nonnull String token, @Nullable Collection<Integer> shardIds)
     {
         this(token, shardIds, null, null, null, null, null, null);
     }
 
     public DefaultShardManager(
-        String token, Collection<Integer> shardIds,
-        ShardingConfig shardingConfig, EventConfig eventConfig, PresenceProviderConfig presenceConfig,
-        ThreadingProviderConfig threadingConfig, ShardingSessionConfig sessionConfig, ShardingMetaConfig metaConfig)
+        @Nonnull String token, @Nullable Collection<Integer> shardIds,
+        @Nullable ShardingConfig shardingConfig, @Nullable EventConfig eventConfig,
+        @Nullable PresenceProviderConfig presenceConfig, @Nullable ThreadingProviderConfig threadingConfig,
+        @Nullable ShardingSessionConfig sessionConfig, @Nullable ShardingMetaConfig metaConfig)
     {
         this.token = token;
         this.eventConfig = eventConfig == null ? EventConfig.getDefault() : eventConfig;
@@ -178,7 +181,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void addEventListener(final Object... listeners)
+    public void addEventListener(@Nonnull final Object... listeners)
     {
         ShardManager.super.addEventListener(listeners);
         for (Object o : listeners)
@@ -186,7 +189,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void removeEventListener(final Object... listeners)
+    public void removeEventListener(@Nonnull final Object... listeners)
     {
         ShardManager.super.removeEventListener(listeners);
         for (Object o : listeners)
@@ -194,14 +197,14 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void addEventListeners(IntFunction<Object> eventListenerProvider)
+    public void addEventListeners(@Nonnull IntFunction<Object> eventListenerProvider)
     {
         ShardManager.super.addEventListeners(eventListenerProvider);
         eventConfig.addEventListenerProvider(eventListenerProvider);
     }
 
     @Override
-    public void removeEventListenerProvider(IntFunction<Object> eventListenerProvider)
+    public void removeEventListenerProvider(@Nonnull IntFunction<Object> eventListenerProvider)
     {
         eventConfig.removeEventListenerProvider(eventListenerProvider);
     }
@@ -226,6 +229,7 @@ public class DefaultShardManager implements ShardManager
         return shard == null ? null : shard.getGuildById(id);
     }
 
+    @Nonnull
     @Override
     public ShardCacheView getShardCache()
     {
@@ -449,7 +453,11 @@ public class DefaultShardManager implements ShardManager
     {
         OkHttpClient httpClient = sessionConfig.getHttpClient();
         if (httpClient == null)
+        {
+            //httpClient == null implies we have a builder
+            //noinspection ConstantConditions
             httpClient = sessionConfig.getHttpBuilder().build();
+        }
 
         // imagine if we had macros or closures or destructuring :)
         ExecutorPair<ScheduledExecutorService> rateLimitPair = resolveExecutor(threadingConfig.getRateLimitPoolProvider(), shardId);
@@ -466,14 +474,13 @@ public class DefaultShardManager implements ShardManager
 
         AuthorizationConfig authConfig = new AuthorizationConfig(AccountType.BOT, token);
         SessionConfig sessionConfig = new SessionConfig(this.sessionConfig.getSessionController(), httpClient,
-                this.sessionConfig.getWebSocketFactory(), this.sessionConfig.getVoiceDispatchInterceptor(), this.sessionConfig.isAudioEnabled(),
-                this.sessionConfig.isRetryOnTimeout(), this.sessionConfig.isAutoReconnect(),
-                this.sessionConfig.isBulkDeleteSplittingEnabled(), this.sessionConfig.getMaxReconnectDelay());
+            this.sessionConfig.getWebSocketFactory(), this.sessionConfig.getVoiceDispatchInterceptor(),
+            this.sessionConfig.getFlags(), this.sessionConfig.getMaxReconnectDelay());
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
-        MetaConfig metaConfig = new MetaConfig(this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.metaConfig.isEnableMDC(), false);
+        MetaConfig metaConfig = new MetaConfig(this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
         threadingConfig.init(jda::getIdentifierString);
 
@@ -536,7 +543,7 @@ public class DefaultShardManager implements ShardManager
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, getShardsTotal());
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.isEnableCompression(), false);
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false);
         if (getShardsTotal() == -1)
             shardingConfig.setShardsTotal(shardTotal);
 
@@ -551,7 +558,7 @@ public class DefaultShardManager implements ShardManager
     }
 
     @Override
-    public void setIdleProvider(IntFunction<Boolean> idleProvider)
+    public void setIdleProvider(@Nonnull IntFunction<Boolean> idleProvider)
     {
         ShardManager.super.setIdleProvider(idleProvider);
         presenceConfig.setIdleProvider(idleProvider);

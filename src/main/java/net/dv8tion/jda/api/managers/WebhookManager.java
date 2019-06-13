@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
@@ -65,6 +67,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return WebhookManager for chaining convenience
      */
+    @Nonnull
     @Override
     WebhookManager reset(long fields);
 
@@ -85,6 +88,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return WebhookManager for chaining convenience
      */
+    @Nonnull
     @Override
     WebhookManager reset(long... fields);
 
@@ -94,6 +98,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return The target {@link net.dv8tion.jda.api.entities.Webhook Webhook}
      */
+    @Nonnull
     Webhook getWebhook();
 
     /**
@@ -103,6 +108,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
+    @Nonnull
     default TextChannel getChannel()
     {
         return getWebhook().getChannel();
@@ -115,6 +121,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
+    @Nonnull
     default Guild getGuild()
     {
         return getWebhook().getGuild();
@@ -133,8 +140,9 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return WebhookManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    WebhookManager setName(String name);
+    WebhookManager setName(@Nonnull String name);
 
     /**
      * Sets the <b><u>default avatar</u></b> of the selected {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
@@ -146,8 +154,9 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return WebhookManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    WebhookManager setAvatar(Icon icon);
+    WebhookManager setAvatar(@Nullable Icon icon);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of the selected {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
@@ -166,6 +175,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      *
      * @return WebhookManager for chaining convenience
      */
+    @Nonnull
     @CheckReturnValue
-    WebhookManager setChannel(TextChannel channel);
+    WebhookManager setChannel(@Nonnull TextChannel channel);
 }

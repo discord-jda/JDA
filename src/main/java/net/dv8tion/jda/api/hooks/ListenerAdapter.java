@@ -25,6 +25,13 @@ import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePosition
 import net.dv8tion.jda.api.events.channel.category.update.GenericCategoryUpdateEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
+import net.dv8tion.jda.api.events.channel.store.update.GenericStoreChannelUpdateEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
@@ -41,6 +48,8 @@ import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
 import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
 import net.dv8tion.jda.api.events.guild.member.*;
+import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
@@ -69,6 +78,8 @@ import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.*;
 
+import javax.annotation.Nonnull;
+
 /**
  * An abstract implementation of {@link net.dv8tion.jda.api.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.api.events.Event Events}
  * for you.
@@ -96,194 +107,210 @@ import net.dv8tion.jda.api.events.user.update.*;
  */
 public abstract class ListenerAdapter implements EventListener
 {
-    public void onGenericEvent(GenericEvent event) {}
-    public void onGenericUpdate(UpdateEvent<?, ?> event) {}
+    public void onGenericEvent(@Nonnull GenericEvent event) {}
+    public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
+    public void onRawGateway(@Nonnull RawGatewayEvent event) {}
 
     //JDA Events
-    public void onReady(ReadyEvent event) {}
-    public void onResume(ResumedEvent event) {}
-    public void onReconnect(ReconnectedEvent event) {}
-    public void onDisconnect(DisconnectEvent event) {}
-    public void onShutdown(ShutdownEvent event) {}
-    public void onStatusChange(StatusChangeEvent event) {}
-    public void onException(ExceptionEvent event) {}
+    public void onReady(@Nonnull ReadyEvent event) {}
+    public void onResume(@Nonnull ResumedEvent event) {}
+    public void onReconnect(@Nonnull ReconnectedEvent event) {}
+    public void onDisconnect(@Nonnull DisconnectEvent event) {}
+    public void onShutdown(@Nonnull ShutdownEvent event) {}
+    public void onStatusChange(@Nonnull StatusChangeEvent event) {}
+    public void onException(@Nonnull ExceptionEvent event) {}
 
     //User Events
-    public void onUserUpdateName(UserUpdateNameEvent event) {}
-    public void onUserUpdateDiscriminator(UserUpdateDiscriminatorEvent event) {}
-    public void onUserUpdateAvatar(UserUpdateAvatarEvent event) {}
-    public void onUserUpdateOnlineStatus(UserUpdateOnlineStatusEvent event) {}
-    public void onUserUpdateActivityOrder(UserUpdateActivityOrderEvent event) {}
-    public void onUserTyping(UserTypingEvent event) {}
-    public void onUserActivityStart(UserActivityStartEvent event) {}
-    public void onUserActivityEnd(UserActivityEndEvent event) {}
+    public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
+    public void onUserUpdateDiscriminator(@Nonnull UserUpdateDiscriminatorEvent event) {}
+    public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
+    public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
+    public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
+    public void onUserTyping(@Nonnull UserTypingEvent event) {}
+    public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {}
+    public void onUserActivityEnd(@Nonnull UserActivityEndEvent event) {}
 
     //Self Events. Fires only in relation to the currently logged in account.
-    public void onSelfUpdateAvatar(SelfUpdateAvatarEvent event) {}
-    public void onSelfUpdateEmail(SelfUpdateEmailEvent event) {}
-    public void onSelfUpdateMFA(SelfUpdateMFAEvent event) {}
-    public void onSelfUpdateName(SelfUpdateNameEvent event) {}
-    public void onSelfUpdateVerified(SelfUpdateVerifiedEvent event) {}
+    public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}
+    public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
+    public void onSelfUpdateMFA(@Nonnull SelfUpdateMFAEvent event) {}
+    public void onSelfUpdateName(@Nonnull SelfUpdateNameEvent event) {}
+    public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
 
     //Message Events
     //Guild (TextChannel) Message Events
-    public void onGuildMessageReceived(GuildMessageReceivedEvent event) {}
-    public void onGuildMessageUpdate(GuildMessageUpdateEvent event) {}
-    public void onGuildMessageDelete(GuildMessageDeleteEvent event) {}
-    public void onGuildMessageEmbed(GuildMessageEmbedEvent event) {}
-    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {}
-    public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent event) {}
-    public void onGuildMessageReactionRemoveAll(GuildMessageReactionRemoveAllEvent event) {}
+    public void onGuildMessageReceived(@Nonnull GuildMessageReceivedEvent event) {}
+    public void onGuildMessageUpdate(@Nonnull GuildMessageUpdateEvent event) {}
+    public void onGuildMessageDelete(@Nonnull GuildMessageDeleteEvent event) {}
+    public void onGuildMessageEmbed(@Nonnull GuildMessageEmbedEvent event) {}
+    public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {}
+    public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {}
+    public void onGuildMessageReactionRemoveAll(@Nonnull GuildMessageReactionRemoveAllEvent event) {}
 
     //Private Message Events
-    public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {}
-    public void onPrivateMessageUpdate(PrivateMessageUpdateEvent event) {}
-    public void onPrivateMessageDelete(PrivateMessageDeleteEvent event) {}
-    public void onPrivateMessageEmbed(PrivateMessageEmbedEvent event) {}
-    public void onPrivateMessageReactionAdd(PrivateMessageReactionAddEvent event) {}
-    public void onPrivateMessageReactionRemove(PrivateMessageReactionRemoveEvent event) {}
+    public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {}
+    public void onPrivateMessageUpdate(@Nonnull PrivateMessageUpdateEvent event) {}
+    public void onPrivateMessageDelete(@Nonnull PrivateMessageDeleteEvent event) {}
+    public void onPrivateMessageEmbed(@Nonnull PrivateMessageEmbedEvent event) {}
+    public void onPrivateMessageReactionAdd(@Nonnull PrivateMessageReactionAddEvent event) {}
+    public void onPrivateMessageReactionRemove(@Nonnull PrivateMessageReactionRemoveEvent event) {}
 
     //Combined Message Events (Combines Guild and Private message into 1 event)
-    public void onMessageReceived(MessageReceivedEvent event) {}
-    public void onMessageUpdate(MessageUpdateEvent event) {}
-    public void onMessageDelete(MessageDeleteEvent event) {}
-    public void onMessageBulkDelete(MessageBulkDeleteEvent event) {}
-    public void onMessageEmbed(MessageEmbedEvent event) {}
-    public void onMessageReactionAdd(MessageReactionAddEvent event) {}
-    public void onMessageReactionRemove(MessageReactionRemoveEvent event) {}
-    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent event) {}
+    public void onMessageReceived(@Nonnull MessageReceivedEvent event) {}
+    public void onMessageUpdate(@Nonnull MessageUpdateEvent event) {}
+    public void onMessageDelete(@Nonnull MessageDeleteEvent event) {}
+    public void onMessageBulkDelete(@Nonnull MessageBulkDeleteEvent event) {}
+    public void onMessageEmbed(@Nonnull MessageEmbedEvent event) {}
+    public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {}
+    public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
+    public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
+
+    //StoreChannel Events
+    public void onStoreChannelDelete(@Nonnull StoreChannelDeleteEvent event) {}
+    public void onStoreChannelUpdateName(@Nonnull StoreChannelUpdateNameEvent event) {}
+    public void onStoreChannelUpdatePosition(@Nonnull StoreChannelUpdatePositionEvent event) {}
+    public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
+    public void onStoreChannelCreate(@Nonnull StoreChannelCreateEvent event) {}
 
     //TextChannel Events
-    public void onTextChannelDelete(TextChannelDeleteEvent event) {}
-    public void onTextChannelUpdateName(TextChannelUpdateNameEvent event) {}
-    public void onTextChannelUpdateTopic(TextChannelUpdateTopicEvent event) {}
-    public void onTextChannelUpdatePosition(TextChannelUpdatePositionEvent event) {}
-    public void onTextChannelUpdatePermissions(TextChannelUpdatePermissionsEvent event) {}
-    public void onTextChannelUpdateNSFW(TextChannelUpdateNSFWEvent event) {}
-    public void onTextChannelUpdateParent(TextChannelUpdateParentEvent event) {}
-    public void onTextChannelUpdateSlowmode(TextChannelUpdateSlowmodeEvent event) {}
-    public void onTextChannelCreate(TextChannelCreateEvent event) {}
+    public void onTextChannelDelete(@Nonnull TextChannelDeleteEvent event) {}
+    public void onTextChannelUpdateName(@Nonnull TextChannelUpdateNameEvent event) {}
+    public void onTextChannelUpdateTopic(@Nonnull TextChannelUpdateTopicEvent event) {}
+    public void onTextChannelUpdatePosition(@Nonnull TextChannelUpdatePositionEvent event) {}
+    public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
+    public void onTextChannelUpdateNSFW(@Nonnull TextChannelUpdateNSFWEvent event) {}
+    public void onTextChannelUpdateParent(@Nonnull TextChannelUpdateParentEvent event) {}
+    public void onTextChannelUpdateSlowmode(@Nonnull TextChannelUpdateSlowmodeEvent event) {}
+    public void onTextChannelCreate(@Nonnull TextChannelCreateEvent event) {}
 
     //VoiceChannel Events
-    public void onVoiceChannelDelete(VoiceChannelDeleteEvent event) {}
-    public void onVoiceChannelUpdateName(VoiceChannelUpdateNameEvent event) {}
-    public void onVoiceChannelUpdatePosition(VoiceChannelUpdatePositionEvent event) {}
-    public void onVoiceChannelUpdateUserLimit(VoiceChannelUpdateUserLimitEvent event) {}
-    public void onVoiceChannelUpdateBitrate(VoiceChannelUpdateBitrateEvent event) {}
-    public void onVoiceChannelUpdatePermissions(VoiceChannelUpdatePermissionsEvent event) {}
-    public void onVoiceChannelUpdateParent(VoiceChannelUpdateParentEvent event) {}
-    public void onVoiceChannelCreate(VoiceChannelCreateEvent event) {}
+    public void onVoiceChannelDelete(@Nonnull VoiceChannelDeleteEvent event) {}
+    public void onVoiceChannelUpdateName(@Nonnull VoiceChannelUpdateNameEvent event) {}
+    public void onVoiceChannelUpdatePosition(@Nonnull VoiceChannelUpdatePositionEvent event) {}
+    public void onVoiceChannelUpdateUserLimit(@Nonnull VoiceChannelUpdateUserLimitEvent event) {}
+    public void onVoiceChannelUpdateBitrate(@Nonnull VoiceChannelUpdateBitrateEvent event) {}
+    public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
+    public void onVoiceChannelUpdateParent(@Nonnull VoiceChannelUpdateParentEvent event) {}
+    public void onVoiceChannelCreate(@Nonnull VoiceChannelCreateEvent event) {}
 
     //Category Events
-    public void onCategoryDelete(CategoryDeleteEvent event) {}
-    public void onCategoryUpdateName(CategoryUpdateNameEvent event) {}
-    public void onCategoryUpdatePosition(CategoryUpdatePositionEvent event) {}
-    public void onCategoryUpdatePermissions(CategoryUpdatePermissionsEvent event) {}
-    public void onCategoryCreate(CategoryCreateEvent event) {}
+    public void onCategoryDelete(@Nonnull CategoryDeleteEvent event) {}
+    public void onCategoryUpdateName(@Nonnull CategoryUpdateNameEvent event) {}
+    public void onCategoryUpdatePosition(@Nonnull CategoryUpdatePositionEvent event) {}
+    public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
+    public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {}
 
     //PrivateChannel Events
-    public void onPrivateChannelCreate(PrivateChannelCreateEvent event) {}
-    public void onPrivateChannelDelete(PrivateChannelDeleteEvent event) {}
+    public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
+    public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
     //Guild Events
-    public void onGuildReady(GuildReadyEvent event) {}
-    public void onGuildJoin(GuildJoinEvent event) {}
-    public void onGuildLeave(GuildLeaveEvent event) {}
-    public void onGuildAvailable(GuildAvailableEvent event) {}
-    public void onGuildUnavailable(GuildUnavailableEvent event) {}
-    public void onUnavailableGuildJoined(UnavailableGuildJoinedEvent event) {}
-    public void onGuildBan(GuildBanEvent event) {}
-    public void onGuildUnban(GuildUnbanEvent event) {}
+    public void onGuildReady(@Nonnull GuildReadyEvent event) {}
+    public void onGuildJoin(@Nonnull GuildJoinEvent event) {}
+    public void onGuildLeave(@Nonnull GuildLeaveEvent event) {}
+    public void onGuildAvailable(@Nonnull GuildAvailableEvent event) {}
+    public void onGuildUnavailable(@Nonnull GuildUnavailableEvent event) {}
+    public void onUnavailableGuildJoined(@Nonnull UnavailableGuildJoinedEvent event) {}
+    public void onGuildBan(@Nonnull GuildBanEvent event) {}
+    public void onGuildUnban(@Nonnull GuildUnbanEvent event) {}
 
     //Guild Update Events
-    public void onGuildUpdateAfkChannel(GuildUpdateAfkChannelEvent event) {}
-    public void onGuildUpdateSystemChannel(GuildUpdateSystemChannelEvent event) {}
-    public void onGuildUpdateAfkTimeout(GuildUpdateAfkTimeoutEvent event) {}
-    public void onGuildUpdateExplicitContentLevel(GuildUpdateExplicitContentLevelEvent event) {}
-    public void onGuildUpdateIcon(GuildUpdateIconEvent event) {}
-    public void onGuildUpdateMFALevel(GuildUpdateMFALevelEvent event) {}
-    public void onGuildUpdateName(GuildUpdateNameEvent event){}
-    public void onGuildUpdateNotificationLevel(GuildUpdateNotificationLevelEvent event) {}
-    public void onGuildUpdateOwner(GuildUpdateOwnerEvent event) {}
-    public void onGuildUpdateRegion(GuildUpdateRegionEvent event) {}
-    public void onGuildUpdateSplash(GuildUpdateSplashEvent event) {}
-    public void onGuildUpdateVerificationLevel(GuildUpdateVerificationLevelEvent event) {}
-    public void onGuildUpdateFeatures(GuildUpdateFeaturesEvent event) {}
+    public void onGuildUpdateAfkChannel(@Nonnull GuildUpdateAfkChannelEvent event) {}
+    public void onGuildUpdateSystemChannel(@Nonnull GuildUpdateSystemChannelEvent event) {}
+    public void onGuildUpdateAfkTimeout(@Nonnull GuildUpdateAfkTimeoutEvent event) {}
+    public void onGuildUpdateExplicitContentLevel(@Nonnull GuildUpdateExplicitContentLevelEvent event) {}
+    public void onGuildUpdateIcon(@Nonnull GuildUpdateIconEvent event) {}
+    public void onGuildUpdateMFALevel(@Nonnull GuildUpdateMFALevelEvent event) {}
+    public void onGuildUpdateName(@Nonnull GuildUpdateNameEvent event){}
+    public void onGuildUpdateNotificationLevel(@Nonnull GuildUpdateNotificationLevelEvent event) {}
+    public void onGuildUpdateOwner(@Nonnull GuildUpdateOwnerEvent event) {}
+    public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
+    public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
+    public void onGuildUpdateVerificationLevel(@Nonnull GuildUpdateVerificationLevelEvent event) {}
+    public void onGuildUpdateFeatures(@Nonnull GuildUpdateFeaturesEvent event) {}
 
     //Guild Member Events
-    public void onGuildMemberJoin(GuildMemberJoinEvent event) {}
-    public void onGuildMemberLeave(GuildMemberLeaveEvent event) {}
-    public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {}
-    public void onGuildMemberRoleRemove(GuildMemberRoleRemoveEvent event) {}
-    public void onGuildMemberNickChange(GuildMemberNickChangeEvent event) {}
+    public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {}
+    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
+    public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {}
+    public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {}
+
+    //Guild Member Update Events
+    public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
 
     //Guild Voice Events
-    public void onGuildVoiceUpdate(GuildVoiceUpdateEvent event) {}
-    public void onGuildVoiceJoin(GuildVoiceJoinEvent event) {}
-    public void onGuildVoiceMove(GuildVoiceMoveEvent event) {}
-    public void onGuildVoiceLeave(GuildVoiceLeaveEvent event) {}
-    public void onGuildVoiceMute(GuildVoiceMuteEvent event) {}
-    public void onGuildVoiceDeafen(GuildVoiceDeafenEvent event) {}
-    public void onGuildVoiceGuildMute(GuildVoiceGuildMuteEvent event) {}
-    public void onGuildVoiceGuildDeafen(GuildVoiceGuildDeafenEvent event) {}
-    public void onGuildVoiceSelfMute(GuildVoiceSelfMuteEvent event) {}
-    public void onGuildVoiceSelfDeafen(GuildVoiceSelfDeafenEvent event) {}
-    public void onGuildVoiceSuppress(GuildVoiceSuppressEvent event) {}
+    public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {}
+    public void onGuildVoiceJoin(@Nonnull GuildVoiceJoinEvent event) {}
+    public void onGuildVoiceMove(@Nonnull GuildVoiceMoveEvent event) {}
+    public void onGuildVoiceLeave(@Nonnull GuildVoiceLeaveEvent event) {}
+    public void onGuildVoiceMute(@Nonnull GuildVoiceMuteEvent event) {}
+    public void onGuildVoiceDeafen(@Nonnull GuildVoiceDeafenEvent event) {}
+    public void onGuildVoiceGuildMute(@Nonnull GuildVoiceGuildMuteEvent event) {}
+    public void onGuildVoiceGuildDeafen(@Nonnull GuildVoiceGuildDeafenEvent event) {}
+    public void onGuildVoiceSelfMute(@Nonnull GuildVoiceSelfMuteEvent event) {}
+    public void onGuildVoiceSelfDeafen(@Nonnull GuildVoiceSelfDeafenEvent event) {}
+    public void onGuildVoiceSuppress(@Nonnull GuildVoiceSuppressEvent event) {}
 
     //Role events
-    public void onRoleCreate(RoleCreateEvent event) {}
-    public void onRoleDelete(RoleDeleteEvent event) {}
+    public void onRoleCreate(@Nonnull RoleCreateEvent event) {}
+    public void onRoleDelete(@Nonnull RoleDeleteEvent event) {}
 
     //Role Update Events
-    public void onRoleUpdateColor(RoleUpdateColorEvent event) {}
-    public void onRoleUpdateHoisted(RoleUpdateHoistedEvent event) {}
-    public void onRoleUpdateMentionable(RoleUpdateMentionableEvent event) {}
-    public void onRoleUpdateName(RoleUpdateNameEvent event) {}
-    public void onRoleUpdatePermissions(RoleUpdatePermissionsEvent event) {}
-    public void onRoleUpdatePosition(RoleUpdatePositionEvent event) {}
+    public void onRoleUpdateColor(@Nonnull RoleUpdateColorEvent event) {}
+    public void onRoleUpdateHoisted(@Nonnull RoleUpdateHoistedEvent event) {}
+    public void onRoleUpdateMentionable(@Nonnull RoleUpdateMentionableEvent event) {}
+    public void onRoleUpdateName(@Nonnull RoleUpdateNameEvent event) {}
+    public void onRoleUpdatePermissions(@Nonnull RoleUpdatePermissionsEvent event) {}
+    public void onRoleUpdatePosition(@Nonnull RoleUpdatePositionEvent event) {}
 
     //Emote Events
-    public void onEmoteAdded(EmoteAddedEvent event) {}
-    public void onEmoteRemoved(EmoteRemovedEvent event) {}
+    public void onEmoteAdded(@Nonnull EmoteAddedEvent event) {}
+    public void onEmoteRemoved(@Nonnull EmoteRemovedEvent event) {}
 
     //Emote Update Events
-    public void onEmoteUpdateName(EmoteUpdateNameEvent event) {}
-    public void onEmoteUpdateRoles(EmoteUpdateRolesEvent event) {}
+    public void onEmoteUpdateName(@Nonnull EmoteUpdateNameEvent event) {}
+    public void onEmoteUpdateRoles(@Nonnull EmoteUpdateRolesEvent event) {}
 
     // Debug Events
-    public void onHttpRequest(HttpRequestEvent event) {}
+    public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
-    public void onGenericMessage(GenericMessageEvent event) {}
-    public void onGenericMessageReaction(GenericMessageReactionEvent event) {}
-    public void onGenericGuildMessage(GenericGuildMessageEvent event) {}
-    public void onGenericGuildMessageReaction(GenericGuildMessageReactionEvent event) {}
-    public void onGenericPrivateMessage(GenericPrivateMessageEvent event) {}
-    public void onGenericPrivateMessageReaction(GenericPrivateMessageReactionEvent event) {}
-    public void onGenericUser(GenericUserEvent event) {}
-    public void onGenericUserPresence(GenericUserPresenceEvent event) {}
-    public void onGenericSelfUpdate(GenericSelfUpdateEvent event) {}
-    public void onGenericTextChannel(GenericTextChannelEvent event) {}
-    public void onGenericTextChannelUpdate(GenericTextChannelUpdateEvent event) {}
-    public void onGenericVoiceChannel(GenericVoiceChannelEvent event) {}
-    public void onGenericVoiceChannelUpdate(GenericVoiceChannelUpdateEvent event) {}
-    public void onGenericCategory(GenericCategoryEvent event) {}
-    public void onGenericCategoryUpdate(GenericCategoryUpdateEvent event) {}
-    public void onGenericGuild(GenericGuildEvent event) {}
-    public void onGenericGuildUpdate(GenericGuildUpdateEvent event) {}
-    public void onGenericGuildMember(GenericGuildMemberEvent event) {}
-    public void onGenericGuildVoice(GenericGuildVoiceEvent event) {}
-    public void onGenericRole(GenericRoleEvent event) {}
-    public void onGenericRoleUpdate(GenericRoleUpdateEvent event) {}
-    public void onGenericEmote(GenericEmoteEvent event) {}
-    public void onGenericEmoteUpdate(GenericEmoteUpdateEvent event) {}
+    public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
+    public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
+    public void onGenericGuildMessage(@Nonnull GenericGuildMessageEvent event) {}
+    public void onGenericGuildMessageReaction(@Nonnull GenericGuildMessageReactionEvent event) {}
+    public void onGenericPrivateMessage(@Nonnull GenericPrivateMessageEvent event) {}
+    public void onGenericPrivateMessageReaction(@Nonnull GenericPrivateMessageReactionEvent event) {}
+    public void onGenericUser(@Nonnull GenericUserEvent event) {}
+    public void onGenericUserPresence(@Nonnull GenericUserPresenceEvent event) {}
+    public void onGenericSelfUpdate(@Nonnull GenericSelfUpdateEvent event) {}
+    public void onGenericStoreChannel(@Nonnull GenericStoreChannelEvent event) {}
+    public void onGenericStoreChannelUpdate(@Nonnull GenericStoreChannelUpdateEvent event) {}
+    public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {}
+    public void onGenericTextChannelUpdate(@Nonnull GenericTextChannelUpdateEvent event) {}
+    public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {}
+    public void onGenericVoiceChannelUpdate(@Nonnull GenericVoiceChannelUpdateEvent event) {}
+    public void onGenericCategory(@Nonnull GenericCategoryEvent event) {}
+    public void onGenericCategoryUpdate(@Nonnull GenericCategoryUpdateEvent event) {}
+    public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
+    public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
+    public void onGenericGuildMember(@Nonnull GenericGuildMemberEvent event) {}
+    public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent event) {}
+    public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
+    public void onGenericRole(@Nonnull GenericRoleEvent event) {}
+    public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
+    public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
+    public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
 
     @Override
-    public final void onEvent(GenericEvent event)
+    public final void onEvent(@Nonnull GenericEvent event)
     {
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
+        else if (event instanceof RawGatewayEvent)
+            onRawGateway((RawGatewayEvent) event);
+
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
@@ -378,6 +405,18 @@ public abstract class ListenerAdapter implements EventListener
             onSelfUpdateName((SelfUpdateNameEvent) event);
         else if (event instanceof SelfUpdateVerifiedEvent)
             onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
+
+        //StoreChannel Events
+        else if (event instanceof StoreChannelCreateEvent)
+            onStoreChannelCreate((StoreChannelCreateEvent) event);
+        else if (event instanceof StoreChannelDeleteEvent)
+            onStoreChannelDelete((StoreChannelDeleteEvent) event);
+        else if (event instanceof StoreChannelUpdateNameEvent)
+            onStoreChannelUpdateName((StoreChannelUpdateNameEvent) event);
+        else if (event instanceof StoreChannelUpdatePositionEvent)
+            onStoreChannelUpdatePosition((StoreChannelUpdatePositionEvent) event);
+        else if (event instanceof StoreChannelUpdatePermissionsEvent)
+            onStoreChannelUpdatePermissions((StoreChannelUpdatePermissionsEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -490,8 +529,10 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
         else if (event instanceof GuildMemberRoleRemoveEvent)
             onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
-        else if (event instanceof GuildMemberNickChangeEvent)
-            onGuildMemberNickChange((GuildMemberNickChangeEvent) event);
+
+        //Guild Member Update Events
+        else if (event instanceof GuildMemberUpdateNicknameEvent)
+            onGuildMemberUpdateNickname((GuildMemberUpdateNicknameEvent) event);
 
         //Guild Voice Events
         else if (event instanceof GuildVoiceJoinEvent)
@@ -561,6 +602,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericMessageReaction((GenericMessageReactionEvent) event);
         else if (event instanceof GenericPrivateMessageReactionEvent)
             onGenericPrivateMessageReaction((GenericPrivateMessageReactionEvent) event);
+        else if (event instanceof GenericStoreChannelUpdateEvent)
+            onGenericStoreChannelUpdate((GenericStoreChannelUpdateEvent) event);
         else if (event instanceof GenericTextChannelUpdateEvent)
             onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
         else if (event instanceof GenericCategoryUpdateEvent)
@@ -571,8 +614,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
         else if (event instanceof GenericGuildUpdateEvent)
             onGenericGuildUpdate((GenericGuildUpdateEvent) event);
-        else if (event instanceof GenericGuildMemberEvent)
-            onGenericGuildMember((GenericGuildMemberEvent) event);
+        else if (event instanceof GenericGuildMemberUpdateEvent)
+            onGenericGuildMemberUpdate((GenericGuildMemberUpdateEvent) event);
         else if (event instanceof GenericGuildVoiceEvent)
             onGenericGuildVoice((GenericGuildVoiceEvent) event);
         else if (event instanceof GenericRoleUpdateEvent)
@@ -589,10 +632,14 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericGuildMemberEvent)
+            onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericUserEvent)
             onGenericUser((GenericUserEvent) event);
         else if (event instanceof GenericSelfUpdateEvent)
             onGenericSelfUpdate((GenericSelfUpdateEvent) event);
+        else if (event instanceof GenericStoreChannelEvent)
+            onGenericStoreChannel((GenericStoreChannelEvent) event);
         else if (event instanceof GenericTextChannelEvent)
             onGenericTextChannel((GenericTextChannelEvent) event);
         else if (event instanceof GenericVoiceChannelEvent)

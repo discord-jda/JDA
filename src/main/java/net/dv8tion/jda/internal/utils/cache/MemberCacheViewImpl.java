@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implements MemberCacheView
@@ -36,8 +38,9 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         return get(id);
     }
 
+    @Nonnull
     @Override
-    public List<Member> getElementsByUsername(String name, boolean ignoreCase)
+    public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
         if (isEmpty())
@@ -52,8 +55,9 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         return Collections.unmodifiableList(members);
     }
 
+    @Nonnull
     @Override
-    public List<Member> getElementsByNickname(String name, boolean ignoreCase)
+    public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
     {
         if (isEmpty())
             return Collections.emptyList();
@@ -74,15 +78,17 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
         return Collections.unmodifiableList(members);
     }
 
+    @Nonnull
     @Override
-    public List<Member> getElementsWithRoles(Role... roles)
+    public List<Member> getElementsWithRoles(@Nonnull Role... roles)
     {
         Checks.notNull(roles, "Roles");
         return getElementsWithRoles(Arrays.asList(roles));
     }
 
+    @Nonnull
     @Override
-    public List<Member> getElementsWithRoles(Collection<Role> roles)
+    public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles)
     {
         Checks.noneNull(roles, "Roles");
         if (isEmpty())

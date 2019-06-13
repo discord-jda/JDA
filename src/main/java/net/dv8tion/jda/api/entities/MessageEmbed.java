@@ -17,11 +17,14 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,10 +35,10 @@ import java.util.Objects;
 /**
  * Represents an embed displayed by Discord.
  * <br>A visual representation of an Embed can be found at:
- * <a href="http://imgur.com/a/yOb5n" target="_blank">http://imgur.com/a/yOb5n</a>
+ * <a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/01-Overview.png" target="_blank">Embed Overview</a>
  * <br>This class has many possibilities for null values, so be careful!
  */
-public class MessageEmbed
+public class MessageEmbed implements SerializableData
 {
     /**
      * The maximum length an embed title can have
@@ -108,7 +111,7 @@ public class MessageEmbed
     protected final List<Field> fields;
 
     protected volatile int length = -1;
-    protected volatile JSONObject json = null;
+    protected volatile DataObject json = null;
 
     public MessageEmbed(
         String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
@@ -134,8 +137,9 @@ public class MessageEmbed
     /**
      * The that was originally placed into chat that spawned this embed.
      *
-     * @return Never-null String containing the original message url.
+     * @return Possibly-null String containing the original message url.
      */
+    @Nullable
     public String getUrl()
     {
         return url;
@@ -148,6 +152,7 @@ public class MessageEmbed
      *
      * @return Possibly-null String containing the title of the embedded resource.
      */
+    @Nullable
     public String getTitle()
     {
         return title;
@@ -160,6 +165,7 @@ public class MessageEmbed
      *
      * @return Possibly-null String containing a description of the embedded resource.
      */
+    @Nullable
     public String getDescription()
     {
         return description;
@@ -170,6 +176,7 @@ public class MessageEmbed
      *
      * @return The {@link net.dv8tion.jda.api.entities.EmbedType EmbedType} of this embed.
      */
+    @Nonnull
     public EmbedType getType()
     {
         return type;
@@ -182,6 +189,7 @@ public class MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.Thumbnail Thumbnail} instance
      *         containing general information on the displayable thumbnail.
      */
+    @Nullable
     public Thumbnail getThumbnail()
     {
         return thumbnail;
@@ -194,6 +202,7 @@ public class MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.Provider Provider}
      *         containing site information.
      */
+    @Nullable
     public Provider getSiteProvider()
     {
         return siteProvider;
@@ -206,6 +215,7 @@ public class MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.AuthorInfo AuthorInfo}
      *         containing author information.
      */
+    @Nullable
     public AuthorInfo getAuthor()
     {
         return author;
@@ -220,6 +230,7 @@ public class MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.VideoInfo VideoInfo}
      *         containing the information about the video which should be embedded.
      */
+    @Nullable
     public VideoInfo getVideoInfo()
     {
         return videoInfo;
@@ -232,6 +243,7 @@ public class MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.Footer Footer}
      *         containing the embed footer content.
      */
+    @Nullable
     public Footer getFooter()
     {
         return footer;
@@ -243,6 +255,7 @@ public class MessageEmbed
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.MessageEmbed.ImageInfo ImageInfo}
      *         containing image information.
      */
+    @Nullable
     public ImageInfo getImage()
     {
         return image;
@@ -257,6 +270,7 @@ public class MessageEmbed
      * @return Never-null (but possibly empty) List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Field} objects
      *         containing field information.
      */
+    @Nonnull
     public List<Field> getFields()
     {
         return fields;
@@ -268,6 +282,7 @@ public class MessageEmbed
      *
      * @return Possibly-null Color.
      */
+    @Nullable
     public Color getColor()
     {
         return color != Role.DEFAULT_COLOR_RAW ? new Color(color) : null;
@@ -289,6 +304,7 @@ public class MessageEmbed
      *
      * @return Possibly-null OffsetDateTime object representing the timestamp.
      */
+    @Nullable
     public OffsetDateTime getTimestamp()
     {
         return timestamp;
@@ -367,7 +383,7 @@ public class MessageEmbed
      *
      * @see    #getLength()
      */
-    public boolean isSendable(AccountType type)
+    public boolean isSendable(@Nonnull AccountType type)
     {
         Checks.notNull(type, "AccountType");
         final int length = getLength();
@@ -406,12 +422,14 @@ public class MessageEmbed
     }
 
     /**
-     * Creates a new {@link org.json.JSONObject JSONObject}
+     * Creates a new {@link net.dv8tion.jda.api.utils.data.DataObject}
      * used for sending.
      *
      * @return JSONObject for this embed
      */
-    public JSONObject toJSONObject()
+    @Nonnull
+    @Override
+    public DataObject toData()
     {
         if (json != null)
             return json;
@@ -419,7 +437,7 @@ public class MessageEmbed
         {
             if (json != null)
                 return json;
-            JSONObject obj = new JSONObject();
+            DataObject obj = DataObject.empty();
             if (url != null)
                 obj.put("url", url);
             if (title != null)
@@ -431,10 +449,10 @@ public class MessageEmbed
             if (color != Role.DEFAULT_COLOR_RAW)
                 obj.put("color", color & 0xFFFFFF);
             if (thumbnail != null)
-                obj.put("thumbnail", new JSONObject().put("url", thumbnail.getUrl()));
+                obj.put("thumbnail", DataObject.empty().put("url", thumbnail.getUrl()));
             if (siteProvider != null)
             {
-                JSONObject siteProviderObj = new JSONObject();
+                DataObject siteProviderObj = DataObject.empty();
                 if (siteProvider.getName() != null)
                     siteProviderObj.put("name", siteProvider.getName());
                 if (siteProvider.getUrl() != null)
@@ -443,7 +461,7 @@ public class MessageEmbed
             }
             if (author != null)
             {
-                JSONObject authorObj = new JSONObject();
+                DataObject authorObj = DataObject.empty();
                 if (author.getName() != null)
                     authorObj.put("name", author.getName());
                 if (author.getUrl() != null)
@@ -453,10 +471,10 @@ public class MessageEmbed
                 obj.put("author", authorObj);
             }
             if (videoInfo != null)
-                obj.put("video", new JSONObject().put("url", videoInfo.getUrl()));
+                obj.put("video", DataObject.empty().put("url", videoInfo.getUrl()));
             if (footer != null)
             {
-                JSONObject footerObj = new JSONObject();
+                DataObject footerObj = DataObject.empty();
                 if (footer.getText() != null)
                     footerObj.put("text", footer.getText());
                 if (footer.getIconUrl() != null)
@@ -464,14 +482,14 @@ public class MessageEmbed
                 obj.put("footer", footerObj);
             }
             if (image != null)
-                obj.put("image", new JSONObject().put("url", image.getUrl()));
+                obj.put("image", DataObject.empty().put("url", image.getUrl()));
             if (!fields.isEmpty())
             {
-                JSONArray fieldsArray = new JSONArray();
+                DataArray fieldsArray = DataArray.empty();
                 for (Field field : fields)
                 {
                     fieldsArray
-                        .put(new JSONObject()
+                        .add(DataObject.empty()
                             .put("name", field.getName())
                             .put("value", field.getValue())
                             .put("inline", field.isInline()));
@@ -504,8 +522,9 @@ public class MessageEmbed
         /**
          * The web url of this thumbnail image.
          *
-         * @return Never-null String containing the url of the displayed image.
+         * @return Possibly-null String containing the url of the displayed image.
          */
+        @Nullable
         public String getUrl()
         {
             return url;
@@ -515,8 +534,9 @@ public class MessageEmbed
          * The Discord proxied url of the thumbnail image.
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
          *
-         * @return Never-null String containing the proxied url of this image.
+         * @return Possibly-null String containing the proxied url of this image.
          */
+        @Nullable
         public String getProxyUrl()
         {
             return proxyUrl;
@@ -575,8 +595,9 @@ public class MessageEmbed
          * <br>If this is an author, most likely the author's username.
          * <br>If this is a website, most likely the site's name.
          *
-         * @return Never-null String containing the name of the provider.
+         * @return Possibly-null String containing the name of the provider.
          */
+        @Nullable
         public String getName()
         {
             return name;
@@ -587,6 +608,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the url of the provider.
          */
+        @Nullable
         public String getUrl()
         {
             return url;
@@ -624,8 +646,9 @@ public class MessageEmbed
         /**
          * The url of the video.
          *
-         * @return Never-null String containing the video url.
+         * @return Possibly-null String containing the video url.
          */
+        @Nullable
         public String getUrl()
         {
             return url;
@@ -691,8 +714,9 @@ public class MessageEmbed
         /**
          * The url of the image.
          *
-         * @return Never-null String containing the image url.
+         * @return Possibly-null String containing the image url.
          */
+        @Nullable
         public String getUrl()
         {
             return url;
@@ -702,8 +726,9 @@ public class MessageEmbed
          * The url of the image, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
          *
-         * @return Never-null String containing the proxied image url.
+         * @return Possibly-null String containing the proxied image url.
          */
+        @Nullable
         public String getProxyUrl()
         {
             return proxyUrl;
@@ -767,6 +792,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the name of the author.
          */
+        @Nullable
         public String getName()
         {
             return name;
@@ -777,6 +803,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the url of the author.
          */
+        @Nullable
         public String getUrl()
         {
             return url;
@@ -787,6 +814,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the author's icon url.
          */
+        @Nullable
         public String getIconUrl()
         {
             return iconUrl;
@@ -798,6 +826,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the proxied icon url.
          */
+        @Nullable
         public String getProxyIconUrl()
         {
             return proxyIconUrl;
@@ -837,6 +866,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the text in the footer.
          */
+        @Nullable
         public String getText()
         {
             return text;
@@ -847,6 +877,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the footer's icon url.
          */
+        @Nullable
         public String getIconUrl()
         {
             return iconUrl;
@@ -858,6 +889,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the proxied icon url.
          */
+        @Nullable
         public String getProxyIconUrl()
         {
             return proxyIconUrl;
@@ -900,6 +932,8 @@ public class MessageEmbed
                     throw new IllegalArgumentException("Name cannot be longer than " + TITLE_MAX_LENGTH + " characters.");
                 else if (value.length() > VALUE_MAX_LENGTH)
                     throw new IllegalArgumentException("Value cannot be longer than " + VALUE_MAX_LENGTH + " characters.");
+                name = name.trim();
+                value = value.trim();
                 if (name.isEmpty())
                     this.name = EmbedBuilder.ZERO_WIDTH_SPACE;
                 else
@@ -928,6 +962,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the name of the field.
          */
+        @Nullable
         public String getName()
         {
             return name;
@@ -938,6 +973,7 @@ public class MessageEmbed
          *
          * @return Possibly-null String containing the value (contents) of the field.
          */
+        @Nullable
         public String getValue()
         {
             return value;

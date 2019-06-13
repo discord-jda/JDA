@@ -69,7 +69,6 @@ dependencies {
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.5")
     api("com.squareup.okhttp3:okhttp:3.13.0")
-    api("org.json:json:20160810")
 
     //Opus library support
     api("club.minnced:opus-java:1.0.4@pom") {
@@ -86,10 +85,13 @@ dependencies {
     //General Utility
     implementation("org.apache.commons:commons-collections4:4.1")
     implementation("net.sf.trove4j:trove4j:3.0.3")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.8")
 
     //Sets the dependencies for the examples
     configurations.asMap["examplesCompile"] = configurations["apiElements"]
     configurations.asMap["examplesRuntime"] = configurations["implementation"]
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
 }
 
 val bintrayUpload: BintrayUploadTask by tasks
@@ -164,11 +166,11 @@ tasks.withType<JavaCompile> {
     val arguments = mutableListOf("-Xlint:deprecation", "-Xlint:unchecked")
     options.encoding = "UTF-8"
     options.isIncremental = true
-    if (JavaVersion.current().isJava9Compatible) doLast {
-        arguments += "release"
+    if (JavaVersion.current().isJava9Compatible) doFirst {
+        arguments += "--release"
         arguments += "8"
     }
-    doLast {
+    doFirst {
         options.compilerArgs = arguments
     }
 }

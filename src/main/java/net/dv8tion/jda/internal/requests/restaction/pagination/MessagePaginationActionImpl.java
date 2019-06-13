@@ -22,14 +22,15 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
-import org.json.JSONArray;
-import org.json.JSONException;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,12 +48,13 @@ public class MessagePaginationActionImpl
         {
             TextChannel textChannel = (TextChannel) channel;
             if (!textChannel.getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_HISTORY);
         }
 
         this.channel = channel;
     }
 
+    @Nonnull
     @Override
     public MessageChannel getChannel()
     {
@@ -78,26 +80,32 @@ public class MessagePaginationActionImpl
     @Override
     protected void handleSuccess(Response response, Request<List<Message>> request)
     {
-        JSONArray array = response.getArray();
+        DataArray array = response.getArray();
         List<Message> messages = new ArrayList<>(array.length());
         EntityBuilder builder = api.get().getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
             try
             {
-                Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
+                Message msg = builder.createMessage(array.getObject(i), channel, false);
                 messages.add(msg);
                 if (useCache)
                     cached.add(msg);
                 last = msg;
                 lastKey = last.getIdLong();
             }
-            catch (JSONException | NullPointerException e)
+            catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered an exception in MessagePagination", e);
             }
         }
 
         request.onSuccess(messages);
+    }
+
+    @Override
+    protected long getKey(Message it)
+    {
+        return it.getIdLong();
     }
 }

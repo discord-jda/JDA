@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.role.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} updated its hoist state.
  *
@@ -30,7 +32,7 @@ public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "hoist";
 
-    public RoleUpdateHoistedEvent(JDA api, long responseNumber, Role role, boolean wasHoisted)
+    public RoleUpdateHoistedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, boolean wasHoisted)
     {
         super(api, responseNumber, role, wasHoisted, !wasHoisted, IDENTIFIER);
     }
@@ -43,5 +45,19 @@ public class RoleUpdateHoistedEvent extends GenericRoleUpdateEvent<Boolean>
     public boolean wasHoisted()
     {
         return getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public Boolean getNewValue()
+    {
+        return super.getNewValue();
     }
 }

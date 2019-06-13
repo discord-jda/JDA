@@ -26,11 +26,11 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -105,9 +105,9 @@ class AudioWebSocket extends WebSocketAdapter
 
     protected void send(int op, Object data)
     {
-        send(new JSONObject()
+        send(DataObject.empty()
             .put("op", op)
-            .put("d", data == null ? JSONObject.NULL : data)
+            .put("d", data)
             .toString());
     }
 
@@ -160,10 +160,10 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
             JDAImpl api = getJDA();
-            if (status == ConnectionStatus.ERROR_LOST_CONNECTION)
+            if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 //Get guild from JDA, don't use [guild] field to make sure that we don't have
-               // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
+                // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
                 Guild connGuild = api.getGuildById(guild.getIdLong());
                 if (connGuild != null)
                 {
@@ -192,7 +192,7 @@ class AudioWebSocket extends WebSocketAdapter
                 //Remove audio manager as we are no longer in the guild
                 api.getAudioManagersView().remove(guild.getIdLong());
             }
-            else if (status != ConnectionStatus.AUDIO_REGION_CHANGE)
+            else if (status != ConnectionStatus.AUDIO_REGION_CHANGE && status != ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 api.getDirectAudioController().disconnect(guild);
             }
@@ -268,7 +268,7 @@ class AudioWebSocket extends WebSocketAdapter
     {
         try
         {
-            handleEvent(new JSONObject(message));
+            handleEvent(DataObject.fromJson(message));
         }
         catch (Exception ex)
         {
@@ -296,6 +296,9 @@ class AudioWebSocket extends WebSocketAdapter
                     break;
                 case AUTHENTICATION_FAILED:
                     this.close(ConnectionStatus.DISCONNECTED_AUTHENTICATION_FAILURE);
+                    break;
+                case DISCONNECTED:
+                    this.close(ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL);
                     break;
                 default:
                     this.reconnect();
@@ -363,7 +366,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     /* Internals */
 
-    private void handleEvent(JSONObject contentAll)
+    private void handleEvent(DataObject contentAll)
     {
         int opCode = contentAll.getInt("op");
 
@@ -372,7 +375,7 @@ class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.HELLO:
             {
                 LOG.trace("-> HELLO {}", contentAll);
-                final JSONObject payload = contentAll.getJSONObject("d");
+                final DataObject payload = contentAll.getObject("d");
                 final int interval = payload.getInt("heartbeat_interval");
                 stopKeepAlive();
                 setupKeepAlive(interval);
@@ -381,11 +384,11 @@ class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.READY:
             {
                 LOG.trace("-> READY {}", contentAll);
-                JSONObject content = contentAll.getJSONObject("d");
+                DataObject content = contentAll.getObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
                 String ip = content.getString("ip");
-                JSONArray modes = content.getJSONArray("modes");
+                DataArray modes = content.getArray("modes");
                 encryption = AudioEncryption.getPreferredMode(modes);
                 if (encryption == null)
                 {
@@ -414,9 +417,9 @@ class AudioWebSocket extends WebSocketAdapter
                     }
                 } while (externalIpAndPort == null);
 
-                final JSONObject object = new JSONObject()
+                final DataObject object = DataObject.empty()
                         .put("protocol", "udp")
-                        .put("data", new JSONObject()
+                        .put("data", DataObject.empty()
                                 .put("address", externalIpAndPort.getHostString())
                                 .put("port", externalIpAndPort.getPort())
                                 .put("mode", encryption.getKey())); //Discord requires encryption
@@ -436,12 +439,12 @@ class AudioWebSocket extends WebSocketAdapter
             {
                 LOG.trace("-> SESSION_DESCRIPTION {}", contentAll);
                 send(VoiceCode.USER_SPEAKING_UPDATE, // required to receive audio?
-                     new JSONObject()
+                     DataObject.empty()
                         .put("delay", 0)
                         .put("speaking", 0)
                         .put("ssrc", ssrc));
                 //secret_key is an array of 32 ints that are less than 256, so they are bytes.
-                JSONArray keyArray = contentAll.getJSONObject("d").getJSONArray("secret_key");
+                DataArray keyArray = contentAll.getObject("d").getArray("secret_key");
 
                 secretKey = new byte[DISCORD_SECRET_KEY_LENGTH];
                 for (int i = 0; i < keyArray.length(); i++)
@@ -468,7 +471,7 @@ class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.USER_SPEAKING_UPDATE:
             {
                 LOG.trace("-> USER_SPEAKING_UPDATE {}", contentAll);
-                final JSONObject content = contentAll.getJSONObject("d");
+                final DataObject content = contentAll.getObject("d");
                 final EnumSet<SpeakingMode> speaking = SpeakingMode.getModes(content.getInt("speaking"));
                 final int ssrc = content.getInt("ssrc");
                 final long userId = content.getLong("user_id");
@@ -488,7 +491,7 @@ class AudioWebSocket extends WebSocketAdapter
             case VoiceCode.USER_DISCONNECT:
             {
                 LOG.trace("-> USER_DISCONNECT {}", contentAll);
-                final JSONObject payload = contentAll.getJSONObject("d");
+                final DataObject payload = contentAll.getObject("d");
                 final long userId = payload.getLong("user_id");
                 audioConnection.removeUserSSRC(userId);
                 break;
@@ -507,7 +510,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private void identify()
     {
-        JSONObject connectObj = new JSONObject()
+        DataObject connectObj = DataObject.empty()
                 .put("server_id", guild.getId())
                 .put("user_id", getJDA().getSelfUser().getId())
                 .put("session_id", sessionId)
@@ -518,7 +521,7 @@ class AudioWebSocket extends WebSocketAdapter
     private void resume()
     {
         LOG.debug("Sending resume payload...");
-        JSONObject resumeObj = new JSONObject()
+        DataObject resumeObj = DataObject.empty()
                 .put("server_id", guild.getId())
                 .put("session_id", sessionId)
                 .put("token", token);

@@ -17,17 +17,17 @@
 package net.dv8tion.jda.internal.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
-public class CategoryOrderActionImpl<T extends GuildChannel>
-    extends ChannelOrderActionImpl<T>
-    implements CategoryOrderAction<T>
+public class CategoryOrderActionImpl
+    extends ChannelOrderActionImpl
+    implements CategoryOrderAction
 {
     protected final Category category;
 
@@ -37,19 +37,12 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
      * @param  category
      *         The target {@link net.dv8tion.jda.api.entities.Category Category}
      *         which the new CategoryOrderAction will order channels from.
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} that
-     *         matches the returning value of {@link net.dv8tion.jda.api.entities.GuildChannel#getType() GuildChannel#getType()}
-     *         for the generic {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} type {@code T}.
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the {@code ChannelType} is not one that can be retrieved from a {@code Category}.
-     *         Currently the only two allowed are {@link ChannelType#TEXT} and {@link ChannelType#VOICE}.
+     * @param  bucket
+     *         The sorting bucket
      */
-    @SuppressWarnings("unchecked")
-    public CategoryOrderActionImpl(Category category, ChannelType type)
+    public CategoryOrderActionImpl(Category category, int bucket)
     {
-        super(category.getGuild(), type, (Collection<T>) getChannelsOfType(category, type));
+        super(category.getGuild(), bucket, getChannelsOfType(category, bucket));
         this.category = category;
     }
 
@@ -61,7 +54,7 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
     }
 
     @Override
-    protected void validateInput(T entity)
+    protected void validateInput(GuildChannel entity)
     {
         Checks.notNull(entity, "Provided channel");
         Checks.check(getCategory().equals(entity.getParent()), "Provided channel's Category is not this Category!");
@@ -69,20 +62,12 @@ public class CategoryOrderActionImpl<T extends GuildChannel>
     }
 
     @Nonnull
-    private static Collection<? extends GuildChannel> getChannelsOfType(Category category, ChannelType type)
+    private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket)
     {
-        Checks.notNull(type, "ChannelType");
         Checks.notNull(category, "Category");
-        // In the event Discord allows a new channel type to be nested in categories,
-        // supporting them via CategoryOrderAction is just a matter of adding a new case here.
-        switch(type)
-        {
-            case TEXT:
-                return category.getTextChannels();
-            case VOICE:
-                return category.getVoiceChannels();
-            default:
-                throw new IllegalArgumentException("Cannot order category with specified channel type " + type);
-        }
+        return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), bucket).stream()
+             .filter(it -> category.equals(it.getParent()))
+             .sorted()
+             .collect(Collectors.toList());
     }
 }

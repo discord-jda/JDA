@@ -22,8 +22,8 @@ import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -47,6 +47,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         super(api, route);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
@@ -54,6 +55,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return (M) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M reset(long fields)
@@ -67,6 +69,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return (M) this;
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M reset(long... fields)
@@ -85,6 +88,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
         return reset(sum);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public M reset()
@@ -94,7 +98,6 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void queue(Consumer<? super Void> success, Consumer<? super Throwable> failure)
     {
         if (shouldUpdate())
@@ -117,11 +120,6 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     protected BooleanSupplier finalizeChecks()
     {
         return enablePermissionChecks ? this::checkPermissions : super.finalizeChecks();
-    }
-
-    protected Object opt(Object it)
-    {
-        return it == null ? JSONObject.NULL : it;
     }
 
     protected boolean shouldUpdate()

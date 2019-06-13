@@ -51,7 +51,8 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      *
      * @return DelayedCompletableFuture for the specified runnable
      */
-    public static <E> DelayedCompletableFuture<E> make(ScheduledExecutorService executor, long delay, TimeUnit unit, Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
+    @Nonnull
+    public static <E> DelayedCompletableFuture<E> make(@Nonnull ScheduledExecutorService executor, long delay, @Nonnull TimeUnit unit, @Nonnull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
     {
         DelayedCompletableFuture<E> handle = new DelayedCompletableFuture<>();
         ScheduledFuture<?> future = executor.schedule(mapping.apply(handle), delay, unit);

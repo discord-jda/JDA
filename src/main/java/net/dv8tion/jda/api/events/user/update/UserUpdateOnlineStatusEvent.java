@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.api.entities.User User} changed.
  * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.api.entities.Member Member} in a Guild !
@@ -35,23 +37,27 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
     public static final String IDENTIFIER = "status";
 
     private final Guild guild;
+    private Member member;
 
-    public UserUpdateOnlineStatusEvent(JDA api, long responseNumber, User user, Guild guild, OnlineStatus oldOnlineStatus)
+    public UserUpdateOnlineStatusEvent(@Nonnull JDA api, long responseNumber, User user, @Nonnull Guild guild, @Nonnull OnlineStatus oldOnlineStatus)
     {
         super(api, responseNumber, user, oldOnlineStatus, guild.getMember(user).getOnlineStatus(), IDENTIFIER);
         this.guild = guild;
+        this.member = guild.getMember(getUser());
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @Nonnull
     @Override
     public Member getMember()
     {
-        return guild.getMember(getUser());
+        return member;
     }
 
     /**
@@ -59,6 +65,7 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
      *
      * @return The old status
      */
+    @Nonnull
     public OnlineStatus getOldOnlineStatus()
     {
         return getOldValue();
@@ -69,8 +76,22 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
      *
      * @return The new status
      */
+    @Nonnull
     public OnlineStatus getNewOnlineStatus()
     {
         return getNewValue();
+    }
+
+    @Nonnull
+    @Override
+    public OnlineStatus getOldValue()
+    {
+        return super.getOldValue();
+    }
+
+    @Nonnull
+    @Override
+    public OnlineStatus getNewValue() {
+        return super.getNewValue();
     }
 }

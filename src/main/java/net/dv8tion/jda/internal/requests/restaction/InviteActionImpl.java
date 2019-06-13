@@ -21,12 +21,13 @@ import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -42,12 +43,14 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         super(api, Route.Invites.CREATE_INVITE.compile(channelId));
     }
 
+    @Nonnull
     @Override
     public InviteActionImpl setCheck(BooleanSupplier checks)
     {
         return (InviteActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public InviteActionImpl setMaxAge(final Integer maxAge)
@@ -59,9 +62,10 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public InviteActionImpl setMaxAge(final Long maxAge, final TimeUnit timeUnit)
+    public InviteActionImpl setMaxAge(final Long maxAge, @Nonnull final TimeUnit timeUnit)
     {
         if (maxAge == null)
             return this.setMaxAge(null);
@@ -72,6 +76,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return this.setMaxAge(Math.toIntExact(timeUnit.toSeconds(maxAge)));
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public InviteActionImpl setMaxUses(final Integer maxUses)
@@ -83,6 +88,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public InviteActionImpl setTemporary(final Boolean temporary)
@@ -91,6 +97,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public InviteActionImpl setUnique(final Boolean unique)
@@ -102,16 +109,16 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Override
     protected RequestBody finalizeData()
     {
-        final JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
 
         if (this.maxAge != null)
-            object.put("max_age", (int) this.maxAge);
+            object.put("max_age", this.maxAge);
         if (this.maxUses != null)
-            object.put("max_uses", (int) this.maxUses);
+            object.put("max_uses", this.maxUses);
         if (this.temporary != null)
-            object.put("temporary", (boolean) this.temporary);
+            object.put("temporary", this.temporary);
         if (this.unique != null)
-            object.put("unique", (boolean) this.unique);
+            object.put("unique", this.unique);
 
         return getRequestBody(object);
     }

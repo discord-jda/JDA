@@ -24,6 +24,8 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -53,6 +55,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return Guild of this emote or null if it is a fake entity
      */
+    @Nullable
     Guild getGuild();
 
     /**
@@ -66,6 +69,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @see    #canProvideRoles()
      */
+    @Nonnull
     List<Role> getRoles();
 
     /**
@@ -101,6 +105,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return String representation of this emote's name
      */
+    @Nonnull
     String getName();
 
     /**
@@ -117,6 +122,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return The JDA instance of this Emote
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -144,6 +150,7 @@ public interface Emote extends IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
+    @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -159,6 +166,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return The EmoteManager for this Emote
      */
+    @Nonnull
     EmoteManager getManager();
 
     /**
@@ -176,6 +184,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return Discord CDN link to the Emote's image
      */
+    @Nonnull
     default String getImageUrl()
     {
         return "https://cdn.discordapp.com/emojis/" + getId() + (isAnimated() ? ".gif" : ".png");
@@ -189,6 +198,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @see    <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting">Message Formatting</a>
      */
+    @Nonnull
     @Override
     default String getAsMention()
     {

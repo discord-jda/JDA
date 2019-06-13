@@ -17,8 +17,10 @@
 package net.dv8tion.jda.internal.audio;
 
 import com.sun.jna.ptr.PointerByReference;
+import net.dv8tion.jda.api.audio.OpusPacket;
 import tomp2p.opuswrapper.Opus;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
@@ -39,28 +41,28 @@ public class Decoder
         this.lastTimestamp = -1;
 
         IntBuffer error = IntBuffer.allocate(1);
-        opusDecoder = Opus.INSTANCE.opus_decoder_create(AudioConnection.OPUS_SAMPLE_RATE, AudioConnection.OPUS_CHANNEL_COUNT, error);
+        opusDecoder = Opus.INSTANCE.opus_decoder_create(OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, error);
         if (error.get() != Opus.OPUS_OK && opusDecoder == null)
             throw new IllegalStateException("Received error code from opus_decoder_create(...): " + error.get());
     }
 
-    protected boolean isInOrder(char newSeq)
+    public boolean isInOrder(char newSeq)
     {
         return lastSeq == (char) -1 || newSeq > lastSeq || lastSeq - newSeq > 10;
     }
 
-    protected boolean wasPacketLost(char newSeq)
+    public boolean wasPacketLost(char newSeq)
     {
         return newSeq > lastSeq + 1;
     }
 
-    protected short[] decodeFromOpus(AudioPacket decryptedPacket)
+    public short[] decodeFromOpus(AudioPacket decryptedPacket)
     {
         int result;
         ShortBuffer decoded = ShortBuffer.allocate(4096);
         if (decryptedPacket == null)    //Flag for packet-loss
         {
-            result = Opus.INSTANCE.opus_decode(opusDecoder, null, 0, decoded, AudioConnection.OPUS_FRAME_SIZE, 0);
+            result = Opus.INSTANCE.opus_decode(opusDecoder, null, 0, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
             lastSeq = (char) -1;
             lastTimestamp = -1;
         }
@@ -69,10 +71,13 @@ public class Decoder
             this.lastSeq = decryptedPacket.getSequence();
             this.lastTimestamp = decryptedPacket.getTimestamp();
 
-            byte[] encodedAudio = decryptedPacket.getEncodedAudio();
-
-            result = Opus.INSTANCE.opus_decode(opusDecoder, encodedAudio, encodedAudio.length, decoded,
-                    AudioConnection.OPUS_FRAME_SIZE, 0);
+            ByteBuffer encodedAudio = decryptedPacket.getEncodedAudio();
+            int length = encodedAudio.remaining();
+            int offset = encodedAudio.arrayOffset() + encodedAudio.position();
+            byte[] buf = new byte[length];
+            byte[] data = encodedAudio.array();
+            System.arraycopy(data, offset, buf, 0, length);
+            result = Opus.INSTANCE.opus_decode(opusDecoder, buf, buf.length, decoded, OpusPacket.OPUS_FRAME_SIZE, 0);
         }
 
         //If we get a result that is less than 0, then there was an error. Return null as a signifier.

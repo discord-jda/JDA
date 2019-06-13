@@ -14,12 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils;
+package net.dv8tion.jda.internal.utils.compress;
 
-import org.json.JSONObject;
+import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 
-@FunctionalInterface
-public interface CacheConsumer
+import java.util.zip.DataFormatException;
+
+public interface Decompressor
 {
-    void execute(long responseTotal, JSONObject allContent);
+    Logger LOG = JDALogger.getLog(Decompressor.class);
+
+    Compression getType();
+
+    void reset();
+
+    void shutdown();
+
+    String decompress(byte[] data) throws DataFormatException;
 }

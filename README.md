@@ -542,10 +542,10 @@ All dependencies are managed automatically by Gradle.
    * Version: **4.1**
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
- * org.json
-   * Version: **20160810**
-   * [Github](https://github.com/douglascrockford/JSON-java)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.json%3Ajson/view)
+ * jackson
+   * Version: **2.9.8**
+   * [Github](https://github.com/FasterXML/jackson)
+   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)

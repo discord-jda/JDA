@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+
 /**
  * Top-level event type
  * <br>All events JDA fires are derived from this class.
@@ -39,7 +41,7 @@ public abstract class Event implements GenericEvent
      *
      * @see   #Event(net.dv8tion.jda.api.JDA)
      */
-    public Event(JDA api, long responseNumber)
+    public Event(@Nonnull JDA api, long responseNumber)
     {
         this.api = api;
         this.responseNumber = responseNumber;
@@ -52,11 +54,12 @@ public abstract class Event implements GenericEvent
      * @param api
      *        Current JDA instance
      */
-    public Event(JDA api)
+    public Event(@Nonnull JDA api)
     {
         this(api, api.getResponseTotal());
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {

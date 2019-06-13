@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -47,7 +49,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
      * <br><b>Note: This may not be available to accounts for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}.
      * <br>Using methods with a reason parameter will always work and <u>override</u> this header.</b>
-     * (ct. {@link net.dv8tion.jda.api.managers.GuildController#ban(net.dv8tion.jda.api.entities.User, int, String) GuildController.ban(User, int, String)})
+     * (ct. {@link net.dv8tion.jda.api.entities.Guild#ban(net.dv8tion.jda.api.entities.User, int, String) Guild.ban(User, int, String)})
      *
      * @param  reason
      *         The reason for this action which should be logged in the Guild's AuditLogs
@@ -56,11 +58,13 @@ public interface AuditableRestAction<T> extends RestAction<T>
      *
      * @see    ThreadLocalReason
      */
-    AuditableRestAction<T> reason(String reason);
+    @Nonnull
+    AuditableRestAction<T> reason(@Nullable String reason);
 
     /**
      * {@inheritDoc}
      */
+    @Nonnull
     @Override
-    AuditableRestAction<T> setCheck(BooleanSupplier checks);
+    AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks);
 }

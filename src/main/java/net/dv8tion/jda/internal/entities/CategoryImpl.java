@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -46,24 +47,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return null;
     }
 
-    @Override
-    public int compareTo(Category other)
-    {
-        Checks.notNull(other, "Other Category");
-        if (other.equals(this))
-            return 0;
-        Checks.check(getGuild().equals(other.getGuild()), "Cannot compare categories from different guilds!");
-        if (rawPosition == other.getPositionRaw())
-            return Long.compare(id, other.getIdLong());
-        return Integer.compare(rawPosition, other.getPositionRaw());
-    }
-
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return ChannelType.CATEGORY;
     }
 
+    @Nonnull
     @Override
     public List<Member> getMembers()
     {
@@ -88,11 +79,12 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<Category> createCopy(Guild guild)
+    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<Category> action = guild.getController().createCategory(name);
+        ChannelAction<Category> action = guild.createCategory(name);
         if (guild.equals(getGuild()))
         {
             for (PermissionOverride o : overrides.valueCollection())
@@ -106,71 +98,89 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return action;
     }
 
+    @Nonnull
     @Override
     public InviteAction createInvite()
     {
         throw new UnsupportedOperationException("Cannot create invites for category!");
     }
 
+    @Nonnull
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
         return new EmptyRestAction<>(getJDA(), Collections.emptyList());
     }
 
+    @Nonnull
     @Override
     public List<GuildChannel> getChannels()
     {
         List<GuildChannel> channels = new ArrayList<>();
+        channels.addAll(getStoreChannels());
         channels.addAll(getTextChannels());
         channels.addAll(getVoiceChannels());
+        Collections.sort(channels);
         return Collections.unmodifiableList(channels);
     }
 
+    @Nonnull
+    @Override
+    public List<StoreChannel> getStoreChannels()
+    {
+        return Collections.unmodifiableList(getGuild().getStoreChannelCache().stream()
+                    .filter(channel -> equals(channel.getParent()))
+                    .sorted().collect(Collectors.toList()));
+    }
+
+    @Nonnull
     @Override
     public List<TextChannel> getTextChannels()
     {
         return Collections.unmodifiableList(getGuild().getTextChannels().stream()
-                    .filter(channel -> channel.getParent() != null)
-                    .filter(channel -> channel.getParent().equals(this))
-                    .collect(Collectors.toList()));
+                    .filter(channel -> equals(channel.getParent()))
+                    .sorted().collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
         return Collections.unmodifiableList(getGuild().getVoiceChannels().stream()
-                    .filter(channel -> channel.getParent() != null)
-                    .filter(channel -> channel.getParent().equals(this))
-                    .collect(Collectors.toList()));
+                    .filter(channel -> equals(channel.getParent()))
+                    .sorted().collect(Collectors.toList()));
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(String name)
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
-        ChannelAction<TextChannel> action = getGuild().getController().createTextChannel(name).setParent(this);
+        ChannelAction<TextChannel> action = getGuild().createTextChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
+    @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
-        ChannelAction<VoiceChannel> action = getGuild().getController().createVoiceChannel(name).setParent(this);
+        ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name).setParent(this);
         applyPermission(action);
         return action;
     }
 
+    @Nonnull
     @Override
-    public CategoryOrderAction<TextChannel> modifyTextChannelPositions()
+    public CategoryOrderAction modifyTextChannelPositions()
     {
-        return getGuild().getController().modifyTextChannelPositions(this);
+        return getGuild().modifyTextChannelPositions(this);
     }
 
+    @Nonnull
     @Override
-    public CategoryOrderAction<VoiceChannel> modifyVoiceChannelPositions()
+    public CategoryOrderAction modifyVoiceChannelPositions()
     {
-        return getGuild().getController().modifyVoiceChannelPositions(this);
+        return getGuild().modifyVoiceChannelPositions(this);
     }
 
     @Override

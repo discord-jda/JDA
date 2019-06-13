@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.audio;
 
 import net.dv8tion.jda.api.entities.User;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class CombinedAudio
     protected List<User> users;
     protected short[] audioData;
 
-    public CombinedAudio(List<User> users, short[] audioData)
+    public CombinedAudio(@Nonnull List<User> users, @Nonnull short[] audioData)
     {
         this.users = Collections.unmodifiableList(users);
         this.audioData = audioData;
@@ -43,6 +44,7 @@ public class CombinedAudio
      *
      * @return Never-null list of all users that provided audio.
      */
+    @Nonnull
     public List<User> getUsers()
     {
         return users;
@@ -62,23 +64,9 @@ public class CombinedAudio
      *
      * @return Never-null byte array of PCM data defined by {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioReceiveHandler.OUTPUT_FORMAT}
      */
+    @Nonnull
     public byte[] getAudioData(double volume)
     {
-        short s;
-        int byteIndex = 0;
-        byte[] audio = new byte[audioData.length * 2];
-        for (int i = 0; i < audioData.length; i++)
-        {
-            s = audioData[i];
-            if (volume != 1.0)
-                s = (short) (s * volume);
-
-            byte leftByte = (byte) ((0x000000FF) & (s >> 8));
-            byte rightByte =  (byte) (0x000000FF & s);
-            audio[byteIndex] = leftByte;
-            audio[byteIndex + 1] = rightByte;
-            byteIndex += 2;
-        }
-        return audio;
+        return OpusPacket.getAudioData(audioData, volume);
     }
 }

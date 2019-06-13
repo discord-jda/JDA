@@ -24,18 +24,18 @@ import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,10 +52,11 @@ public class AuditLogPaginationActionImpl
     {
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
-            throw new InsufficientPermissionException(Permission.VIEW_AUDIT_LOGS);
+            throw new InsufficientPermissionException(guild, Permission.VIEW_AUDIT_LOGS);
         this.guild = guild;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl type(ActionType type)
     {
@@ -63,26 +64,31 @@ public class AuditLogPaginationActionImpl
         return this;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl user(User user)
     {
         return user(user == null ? null : user.getId());
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl user(String userId)
     {
-        Checks.isSnowflake(userId, "User ID");
+        if (userId != null)
+            Checks.isSnowflake(userId, "User ID");
         this.userId = userId;
         return this;
     }
 
+    @Nonnull
     @Override
     public AuditLogPaginationActionImpl user(long userId)
     {
         return user(Long.toUnsignedString(userId));
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
@@ -114,35 +120,35 @@ public class AuditLogPaginationActionImpl
     @Override
     protected void handleSuccess(Response response, Request<List<AuditLogEntry>> request)
     {
-        JSONObject obj = response.getObject();
-        JSONArray users = obj.getJSONArray("users");
-        JSONArray webhooks = obj.getJSONArray("webhooks");
-        JSONArray entries = obj.getJSONArray("audit_log_entries");
+        DataObject obj = response.getObject();
+        DataArray users = obj.getArray("users");
+        DataArray webhooks = obj.getArray("webhooks");
+        DataArray entries = obj.getArray("audit_log_entries");
 
         List<AuditLogEntry> list = new ArrayList<>(entries.length());
         EntityBuilder builder = api.get().getEntityBuilder();
 
-        TLongObjectMap<JSONObject> userMap = new TLongObjectHashMap<>();
+        TLongObjectMap<DataObject> userMap = new TLongObjectHashMap<>();
         for (int i = 0; i < users.length(); i++)
         {
-            JSONObject user = users.getJSONObject(i);
+            DataObject user = users.getObject(i);
             userMap.put(user.getLong("id"), user);
         }
-        
-        TLongObjectMap<JSONObject> webhookMap = new TLongObjectHashMap<>();
+
+        TLongObjectMap<DataObject> webhookMap = new TLongObjectHashMap<>();
         for (int i = 0; i < webhooks.length(); i++)
         {
-            JSONObject webhook = webhooks.getJSONObject(i);
+            DataObject webhook = webhooks.getObject(i);
             webhookMap.put(webhook.getLong("id"), webhook);
         }
-        
+
         for (int i = 0; i < entries.length(); i++)
         {
             try
             {
-                JSONObject entry = entries.getJSONObject(i);
-                JSONObject user = userMap.get(Helpers.optLong(entry, "user_id", 0));
-                JSONObject webhook = webhookMap.get(Helpers.optLong(entry, "target_id", 0));
+                DataObject entry = entries.getObject(i);
+                DataObject user = userMap.get(entry.getLong("user_id", 0));
+                DataObject webhook = webhookMap.get(entry.getLong("target_id", 0));
                 AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user, webhook);
                 list.add(result);
                 if (this.useCache)
@@ -150,12 +156,18 @@ public class AuditLogPaginationActionImpl
                 this.last = result;
                 this.lastKey = last.getIdLong();
             }
-            catch (JSONException | NullPointerException e)
+            catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered exception in AuditLogPagination", e);
             }
         }
 
         request.onSuccess(list);
+    }
+
+    @Override
+    protected long getKey(AuditLogEntry it)
+    {
+        return it.getIdLong();
     }
 }

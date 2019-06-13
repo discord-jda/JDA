@@ -21,14 +21,15 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,27 +63,31 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         this.name = name;
     }
 
+    @Nonnull
     @Override
     public ChannelActionImpl<T> setCheck(BooleanSupplier checks)
     {
         return (ChannelActionImpl<T>) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
+    @Nonnull
     @Override
     public ChannelType getType()
     {
         return type;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setName(String name)
+    public ChannelActionImpl<T> setName(@Nonnull String name)
     {
         Checks.notNull(name, "Channel name");
         if (name.length() < 1 || name.length() > 100)
@@ -92,6 +97,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setParent(Category category)
@@ -101,6 +107,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setPosition(Integer position)
@@ -110,6 +117,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
@@ -122,6 +130,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setNSFW(boolean nsfw)
@@ -132,18 +141,20 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
-        Checks.check(slowmode <= 120 && slowmode >= 0, "Slowmode must be between 0 and 120 (seconds)!");
+        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode must be between 0 and 21600 (seconds)!");
         this.slowmode = slowmode;
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> addPermissionOverride(IPermissionHolder target, long allow, long deny)
+    public ChannelActionImpl<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny)
     {
         Checks.notNull(target, "Override Role");
         Checks.notNegative(allow, "Granted permissions value");
@@ -168,6 +179,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     }
 
     // --voice only--
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setBitrate(Integer bitrate)
@@ -187,6 +199,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public ChannelActionImpl<T> setUserlimit(Integer userlimit)
@@ -202,19 +215,19 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
         object.put("name", name);
         object.put("type", type.getId());
-        object.put("permission_overwrites", new JSONArray(overrides));
+        object.put("permission_overwrites", DataArray.fromCollection(overrides));
         if (position != null)
             object.put("position", position);
         switch (type)
         {
             case VOICE:
                 if (bitrate != null)
-                    object.put("bitrate", bitrate.intValue());
+                    object.put("bitrate", bitrate);
                 if (userlimit != null)
-                    object.put("user_limit", userlimit.intValue());
+                    object.put("user_limit", userlimit);
                 break;
             case TEXT:
                 if (topic != null && !topic.isEmpty())

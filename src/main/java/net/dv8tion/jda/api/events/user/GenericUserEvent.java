@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} changed or started an activity.
  * <br>Every UserEvent is derived from this event and can be casted.
@@ -29,7 +31,7 @@ public abstract class GenericUserEvent extends Event
 {
     private final User user;
 
-    public GenericUserEvent(JDA api, long responseNumber, User user)
+    public GenericUserEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user)
     {
         super(api, responseNumber);
         this.user = user;
@@ -40,6 +42,7 @@ public abstract class GenericUserEvent extends Event
      *
      * @return The user instance related to this event
      */
+    @Nonnull
     public User getUser()
     {
         return user;

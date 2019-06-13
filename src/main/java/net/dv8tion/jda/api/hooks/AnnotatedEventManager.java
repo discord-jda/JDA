@@ -19,10 +19,13 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 
+import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Implementation for {@link net.dv8tion.jda.api.hooks.IEventManager IEventManager}
@@ -48,11 +51,11 @@ import java.util.*;
  */
 public class AnnotatedEventManager implements IEventManager
 {
-    private final Set<Object> listeners = new HashSet<>();
-    private final Map<Class<?>, Map<Object, List<Method>>> methods = new HashMap<>();
+    private final Set<Object> listeners = ConcurrentHashMap.newKeySet();
+    private final Map<Class<?>, Map<Object, List<Method>>> methods = new ConcurrentHashMap<>();
 
     @Override
-    public void register(Object listener)
+    public void register(@Nonnull Object listener)
     {
         if (listeners.add(listener))
         {
@@ -61,7 +64,7 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
-    public void unregister(Object listener)
+    public void unregister(@Nonnull Object listener)
     {
         if (listeners.remove(listener))
         {
@@ -69,15 +72,16 @@ public class AnnotatedEventManager implements IEventManager
         }
     }
 
+    @Nonnull
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return Collections.unmodifiableList(new LinkedList<>(listeners));
+        return Collections.unmodifiableList(new ArrayList<>(listeners));
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void handle(GenericEvent event)
+    public void handle(@Nonnull GenericEvent event)
     {
         Class<?> eventClass = event.getClass();
         do
@@ -94,7 +98,7 @@ public class AnnotatedEventManager implements IEventManager
                     }
                     catch (IllegalAccessException | InvocationTargetException e1)
                     {
-                        JDAImpl.LOG.error("Couldn't access annotated eventlistener method", e1);
+                        JDAImpl.LOG.error("Couldn't access annotated EventListener method", e1);
                     }
                     catch (Throwable throwable)
                     {
@@ -127,12 +131,12 @@ public class AnnotatedEventManager implements IEventManager
                     Class<?> eventClass = pType[0];
                     if (!methods.containsKey(eventClass))
                     {
-                        methods.put(eventClass, new HashMap<>());
+                        methods.put(eventClass, new ConcurrentHashMap<>());
                     }
 
                     if (!methods.get(eventClass).containsKey(listener))
                     {
-                        methods.get(eventClass).put(listener, new ArrayList<>());
+                        methods.get(eventClass).put(listener, new CopyOnWriteArrayList<>());
                     }
 
                     methods.get(eventClass).get(listener).add(m);

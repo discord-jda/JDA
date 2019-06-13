@@ -27,13 +27,13 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -107,7 +107,7 @@ public class GuildSetupController
             if (incompleteCount <= 0)
             {
                 // this happens during runtime -> sync right away
-                sendSyncRequest(new JSONArray().put(id));
+                sendSyncRequest(DataArray.empty().add(id));
                 return;
             }
             syncingCount++;
@@ -119,13 +119,15 @@ public class GuildSetupController
     void remove(long id)
     {
         setupNodes.remove(id);
+        if (syncingGuilds != null)
+            syncingGuilds.remove(id);
     }
 
     public void ready(long id)
     {
         setupNodes.remove(id);
         WebSocketClient client = getJDA().getClient();
-        if (!client.isReady() && --incompleteCount < 1)
+        if (--incompleteCount < 1 && !client.isReady())
             client.ready();
         else
             tryChunking();
@@ -144,7 +146,7 @@ public class GuildSetupController
         return !ready;
     }
 
-    public void onReady(long id, JSONObject obj)
+    public void onReady(long id, DataObject obj)
     {
         log.trace("Adding id to setup cache {}", id);
         GuildSetupNode node = new GuildSetupNode(id, this, false);
@@ -162,7 +164,7 @@ public class GuildSetupController
         }
     }
 
-    public void onCreate(long id, JSONObject obj)
+    public void onCreate(long id, DataObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
         log.trace("Received guild create for id: {} available: {}", id, available);
@@ -185,7 +187,7 @@ public class GuildSetupController
         node.handleCreate(obj);
     }
 
-    public boolean onDelete(long id, JSONObject obj)
+    public boolean onDelete(long id, DataObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
         GuildSetupNode node = setupNodes.get(id);
@@ -194,16 +196,22 @@ public class GuildSetupController
         log.debug("Received guild delete for id: {} available: {}", id, available);
         if (!available)
         {
-            if (!node.markedUnavailable && !node.requestedChunk)
+            // The guild is currently unavailable and should be ignored for chunking requests
+            if (!node.markedUnavailable)
             {
                 node.markedUnavailable = true; // this prevents repeated decrements from duplicate events
-                if (node.sync)
+                if (node.sync && !node.requestedChunk)
                 {
+                    // If this node is chunking then it is already synced
+                    syncingGuilds.remove(id);
                     syncingCount--;
                     trySyncing();
                 }
                 if (incompleteCount > 0)
                 {
+                    // Allow other guilds to start chunking
+                    chunkingGuilds.remove(id);
+                    pendingChunks.remove(id);
                     incompleteCount--;
                     tryChunking();
                 }
@@ -212,8 +220,10 @@ public class GuildSetupController
         }
         else
         {
+            // This guild was deleted
             node.cleanup(); // clear EventCache
-            // this was actually deleted
+            chunkingGuilds.remove(id);
+            pendingChunks.remove(id);
             if (node.join && !node.requestedChunk)
                 remove(id);
             else
@@ -223,7 +233,7 @@ public class GuildSetupController
         return true;
     }
 
-    public void onMemberChunk(long id, JSONArray chunk)
+    public void onMemberChunk(long id, DataArray chunk)
     {
         log.debug("Received member chunk for guild id: {} size: {}", id, chunk.length());
         synchronized (pendingChunks)
@@ -235,7 +245,7 @@ public class GuildSetupController
             node.handleMemberChunk(chunk);
     }
 
-    public boolean onAddMember(long id, JSONObject member)
+    public boolean onAddMember(long id, DataObject member)
     {
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
@@ -245,7 +255,7 @@ public class GuildSetupController
         return true;
     }
 
-    public boolean onRemoveMember(long id, JSONObject member)
+    public boolean onRemoveMember(long id, DataObject member)
     {
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
@@ -255,7 +265,7 @@ public class GuildSetupController
         return true;
     }
 
-    public void onSync(long id, JSONObject obj)
+    public void onSync(long id, DataObject obj)
     {
         GuildSetupNode node = setupNodes.get(id);
         if (node != null)
@@ -267,7 +277,7 @@ public class GuildSetupController
         return setupNodes.containsKey(id);
     }
 
-    public void cacheEvent(long guildId, JSONObject event)
+    public void cacheEvent(long guildId, DataObject event)
     {
         GuildSetupNode node = setupNodes.get(guildId);
         if (node != null)
@@ -333,16 +343,26 @@ public class GuildSetupController
 
     // Chunking
 
-    private void sendChunkRequest(Object obj)
+    int getIncompleteCount()
     {
-        log.debug("Sending chunking requests for {} guilds", obj instanceof JSONArray ? ((JSONArray) obj).length() : 1);
+        return incompleteCount;
+    }
+
+    int getChunkingCount()
+    {
+        return chunkingGuilds.size();
+    }
+
+    void sendChunkRequest(Object obj)
+    {
+        log.debug("Sending chunking requests for {} guilds", obj instanceof DataArray ? ((DataArray) obj).length() : 1);
 
         long timeout = System.currentTimeMillis() + CHUNK_TIMEOUT;
         synchronized (pendingChunks)
         {
-            if (obj instanceof JSONArray)
+            if (obj instanceof DataArray)
             {
-                JSONArray arr = (JSONArray) obj;
+                DataArray arr = (DataArray) obj;
                 for (Object o : arr)
                     pendingChunks.put((long) o, timeout);
             }
@@ -353,9 +373,9 @@ public class GuildSetupController
         }
 
         getJDA().getClient().chunkOrSyncRequest(
-            new JSONObject()
+            DataObject.empty()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-                .put("d", new JSONObject()
+                .put("d", DataObject.empty()
                     .put("guild_id", obj)
                     .put("query", "")
                     .put("limit", 0)));
@@ -366,20 +386,20 @@ public class GuildSetupController
         if (chunkingGuilds.size() >= 50)
         {
             // request chunks
-            final JSONArray subset = new JSONArray();
+            final DataArray subset = DataArray.empty();
             for (final TLongIterator it = chunkingGuilds.iterator(); subset.length() < 50; )
             {
-                subset.put(it.next());
+                subset.add(it.next());
                 it.remove();
             }
             sendChunkRequest(subset);
         }
-        if (incompleteCount > 0 && chunkingGuilds.size() == incompleteCount)
+        if (incompleteCount > 0 && chunkingGuilds.size() >= incompleteCount)
         {
             // request last chunks
-            final JSONArray array = new JSONArray();
+            final DataArray array = DataArray.empty();
             chunkingGuilds.forEach((guild) -> {
-                array.put(guild);
+                array.add(guild);
                 return true;
             });
             chunkingGuilds.clear();
@@ -394,12 +414,12 @@ public class GuildSetupController
 
     // Syncing
 
-    private void sendSyncRequest(JSONArray arr)
+    private void sendSyncRequest(DataArray arr)
     {
         log.debug("Sending syncing requests for {} guilds", arr.length());
 
         getJDA().getClient().chunkOrSyncRequest(
-            new JSONObject()
+            DataObject.empty()
                 .put("op", WebSocketCode.GUILD_SYNC)
                 .put("d", arr));
     }
@@ -409,20 +429,20 @@ public class GuildSetupController
         if (syncingGuilds.size() >= 50)
         {
             // request chunks
-            final JSONArray subset = new JSONArray();
+            final DataArray subset = DataArray.empty();
             for (final TLongIterator it = syncingGuilds.iterator(); subset.length() < 50; )
             {
-                subset.put(it.next());
+                subset.add(it.next());
                 it.remove();
             }
             sendSyncRequest(subset);
             syncingCount -= subset.length();
         }
-        if (syncingCount > 0 && syncingGuilds.size() == syncingCount)
+        if (syncingCount > 0 && syncingGuilds.size() >= syncingCount)
         {
-            final JSONArray array = new JSONArray();
+            final DataArray array = DataArray.empty();
             syncingGuilds.forEach((guild) -> {
-                array.put(guild);
+                array.add(guild);
                 return true;
             });
             syncingGuilds.clear();
@@ -458,20 +478,20 @@ public class GuildSetupController
             synchronized (pendingChunks)
             {
                 TLongLongIterator it = pendingChunks.iterator();
-                List<JSONArray> requests = new LinkedList<>();
-                JSONArray arr = new JSONArray();
+                List<DataArray> requests = new LinkedList<>();
+                DataArray arr = DataArray.empty();
                 while (it.hasNext())
                 {
                     // key=guild_id, value=timeout
                     it.advance();
                     if (System.currentTimeMillis() <= it.value())
                         continue;
-                    arr.put(it.key());
+                    arr.add(it.key());
 
                     if (arr.length() == 50)
                     {
                         requests.add(arr);
-                        arr = new JSONArray();
+                        arr = DataArray.empty();
                     }
                 }
                 if (arr.length() > 0)

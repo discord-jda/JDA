@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -29,6 +32,7 @@ public interface GuildVoiceState
      *
      * @return The corresponding JDA instance
      */
+    @Nonnull
     JDA getJDA();
 
     /**
@@ -93,6 +97,7 @@ public interface GuildVoiceState
      *
      * @return The VoiceChannel that the Member is in, or null.
      */
+    @Nullable
     VoiceChannel getChannel();
 
     /**
@@ -102,6 +107,7 @@ public interface GuildVoiceState
      *
      * @return the Member's Guild
      */
+    @Nonnull
     Guild getGuild();
 
     /**
@@ -110,6 +116,7 @@ public interface GuildVoiceState
      *
      * @return the Member that holds this GuildVoiceState
      */
+    @Nonnull
     Member getMember();
 
     /**
@@ -127,5 +134,6 @@ public interface GuildVoiceState
      *
      * @return The Session-Id
      */
+    @Nullable
     String getSessionId();
 }

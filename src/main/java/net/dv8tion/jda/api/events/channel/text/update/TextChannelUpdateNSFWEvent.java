@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.events.channel.text.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s NSFW status changed.
  *
@@ -29,7 +31,7 @@ public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Bo
 {
     public static final String IDENTIFIER = "nsfw";
 
-    public TextChannelUpdateNSFWEvent(JDA api, long responseNumber, TextChannel channel, boolean oldNsfw)
+    public TextChannelUpdateNSFWEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, boolean oldNsfw)
     {
         super(api, responseNumber, channel, oldNsfw, channel.isNSFW(), IDENTIFIER);
     }

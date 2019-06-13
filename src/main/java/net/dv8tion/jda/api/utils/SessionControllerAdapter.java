@@ -22,13 +22,14 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -51,14 +52,14 @@ public class SessionControllerAdapter implements SessionController
     }
 
     @Override
-    public void appendSession(SessionConnectNode node)
+    public void appendSession(@Nonnull SessionConnectNode node)
     {
         connectQueue.add(node);
         runWorker();
     }
 
     @Override
-    public void removeSession(SessionConnectNode node)
+    public void removeSession(@Nonnull SessionConnectNode node)
     {
         connectQueue.remove(node);
     }
@@ -75,16 +76,18 @@ public class SessionControllerAdapter implements SessionController
         globalRatelimit.set(ratelimit);
     }
 
+    @Nonnull
     @Override
-    public String getGateway(JDA api)
+    public String getGateway(@Nonnull JDA api)
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
             (response, request) -> response.getObject().getString("url")).complete();
     }
 
+    @Nonnull
     @Override
-    public Pair<String, Integer> getGatewayBot(JDA api)
+    public Pair<String, Integer> getGatewayBot(@Nonnull JDA api)
     {
         AccountTypeException.check(api.getAccountType(), AccountType.BOT);
         return new RestActionImpl<Pair<String, Integer>>(api, Route.Misc.GATEWAY_BOT.compile())
@@ -96,7 +99,7 @@ public class SessionControllerAdapter implements SessionController
                 {
                     if (response.isOk())
                     {
-                        JSONObject object = response.getObject();
+                        DataObject object = response.getObject();
 
                         String url = object.getString("url");
                         int shards = object.getInt("shards");

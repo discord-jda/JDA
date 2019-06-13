@@ -17,6 +17,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
+import javax.annotation.Nonnull;
+
 /**
  * Represents a Discord Voice GuildChannel.
  * <br>Adds additional information specific to voice channels in Discord.
@@ -25,7 +27,7 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
  * @see TextChannel
  * @see Category
  */
-public interface VoiceChannel extends GuildChannel, Comparable<VoiceChannel>
+public interface VoiceChannel extends GuildChannel
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
@@ -45,9 +47,11 @@ public interface VoiceChannel extends GuildChannel, Comparable<VoiceChannel>
      */
     int getBitrate();
 
+    @Nonnull
     @Override
-    ChannelAction<VoiceChannel> createCopy(Guild guild);
+    ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild);
 
+    @Nonnull
     @Override
     ChannelAction<VoiceChannel> createCopy();
 }

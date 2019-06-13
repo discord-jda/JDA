@@ -22,14 +22,15 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -57,12 +58,14 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
             checkPermissions();
     }
 
+    @Nonnull
     @Override
     public Role getRole()
     {
         return role.get();
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleManagerImpl reset(long fields)
@@ -75,6 +78,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleManagerImpl reset(long... fields)
@@ -83,6 +87,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleManagerImpl reset()
@@ -93,17 +98,19 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl setName(String name)
+    public RoleManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        Checks.check(name.length() <= 32, "Name must be within 32 characters in length");
+        Checks.check(name.length() <= 100, "Name must be less or equal to 100 characters in length");
         this.name = name;
         set |= NAME;
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setPermissions(long perms)
@@ -118,13 +125,14 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         {
             EnumSet<Permission> permissionList = Permission.getPermissions(missingPerms);
             if (!permissionList.isEmpty())
-                throw new InsufficientPermissionException(permissionList.iterator().next());
+                throw new InsufficientPermissionException(getGuild(), permissionList.iterator().next());
         }
         this.permissions = perms;
         set |= PERMISSION;
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setColor(int rgb)
@@ -134,6 +142,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setHoisted(boolean hoisted)
@@ -143,6 +152,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public RoleManagerImpl setMentionable(boolean mentionable)
@@ -152,18 +162,20 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl givePermissions(Collection<Permission> perms)
+    public RoleManagerImpl givePermissions(@Nonnull Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
         setupPermissions();
         return setPermissions(this.permissions | Permission.getRaw(perms));
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public RoleManagerImpl revokePermissions(Collection<Permission> perms)
+    public RoleManagerImpl revokePermissions(@Nonnull Collection<Permission> perms)
     {
         Checks.noneNull(perms, "Permissions");
         setupPermissions();
@@ -173,7 +185,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject().put("name", getRole().getName());
+        DataObject object = DataObject.empty().put("name", getRole().getName());
         if (shouldUpdate(NAME))
             object.put("name", name);
         if (shouldUpdate(PERMISSION))
@@ -193,7 +205,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     {
         Member selfMember = getGuild().getSelfMember();
         if (!selfMember.hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
         if (!selfMember.canInteract(getRole()))
             throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
         return super.checkPermissions();

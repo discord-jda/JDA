@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.sharding;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -36,6 +37,7 @@ public interface ThreadPoolProvider<T extends ExecutorService>
      *
      * @return The Executor Service
      */
+    @Nullable
     T provide(int shardId);
 
     /**

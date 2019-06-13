@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.audio.factory;
 
+import javax.annotation.Nonnull;
+
 /**
  * Factory interface for the creation of new {@link net.dv8tion.jda.api.audio.factory.IAudioSendSystem IAudioSendSystem} objects.
  * <br>JDA, by default, uses {@link net.dv8tion.jda.api.audio.factory.DefaultSendFactory DefaultSendFactory} for the
@@ -36,5 +38,6 @@ public interface IAudioSendFactory
      *
      * @return The newly constructed IAudioSendSystem, ready for {@link IAudioSendSystem#start()} to be called.
      */
-    IAudioSendSystem createSendSystem(IPacketProvider packetProvider);
+    @Nonnull
+    IAudioSendSystem createSendSystem(@Nonnull IPacketProvider packetProvider);
 }

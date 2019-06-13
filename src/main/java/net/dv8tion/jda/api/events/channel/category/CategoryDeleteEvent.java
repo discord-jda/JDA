@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.events.channel.category;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Category Category} was deleted.
  *
@@ -26,7 +28,7 @@ import net.dv8tion.jda.api.entities.Category;
  */
 public class CategoryDeleteEvent extends GenericCategoryEvent
 {
-    public CategoryDeleteEvent(JDA api, long responseNumber, Category category)
+    public CategoryDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category)
     {
         super(api, responseNumber, category);
     }

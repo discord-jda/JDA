@@ -22,13 +22,14 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.EmoteManager;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -65,12 +66,14 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return g;
     }
 
+    @Nonnull
     @Override
     public Emote getEmote()
     {
         return emote;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset(long fields)
@@ -83,6 +86,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset(long... fields)
@@ -91,6 +95,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl reset()
@@ -101,9 +106,10 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl setName(String name)
+    public EmoteManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
@@ -112,6 +118,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public EmoteManagerImpl setRoles(Set<Role> roles)
@@ -141,7 +148,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = DataObject.empty();
         if (shouldUpdate(NAME))
             object.put("name", name);
         withLock(this.roles, (list) ->
@@ -158,7 +165,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     protected boolean checkPermissions()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES);
         return super.checkPermissions();
     }
 }

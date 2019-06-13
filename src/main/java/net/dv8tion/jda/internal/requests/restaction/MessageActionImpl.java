@@ -24,18 +24,20 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -69,12 +71,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         this.channel = channel;
     }
 
+    @Nonnull
     @Override
     public MessageAction setCheck(BooleanSupplier checks)
     {
         return (MessageAction) super.setCheck(checks);
     }
 
+    @Nonnull
     @Override
     public MessageChannel getChannel()
     {
@@ -94,6 +98,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return finalizeRoute().getMethod() == Method.PATCH;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl apply(final Message message)
@@ -108,6 +113,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return content(message.getContentRaw()).tts(message.isTTS());
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl tts(final boolean isTTS)
@@ -116,6 +122,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl reset()
@@ -123,6 +130,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return content(null).nonce(null).embed(null).tts(false).override(false).clearFiles();
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl nonce(final String nonce)
@@ -131,6 +139,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl content(final String content)
@@ -144,6 +153,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl embed(final MessageEmbed embed)
@@ -159,6 +169,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl append(final CharSequence csq, final int start, final int end)
@@ -169,6 +180,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl append(final char c)
@@ -179,24 +191,29 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(final InputStream data, final String name)
+    public MessageActionImpl addFile(@Nonnull final InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         checkEdit();
         Checks.notNull(data, "Data");
         Checks.notBlank(name, "Name");
+        Checks.noneNull(options, "Options");
         checkFileAmount();
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
+        name = applyOptions(name, options);
         files.put(name, data);
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(final File file, final String name)
+    public MessageActionImpl addFile(@Nonnull final File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
+        Checks.noneNull(options, "Options");
         Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(file.length() <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
@@ -204,6 +221,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         {
             FileInputStream data = new FileInputStream(file);
             ownedResources.add(data);
+            name = applyOptions(name, options);
             return addFile(data, name);
         }
         catch (FileNotFoundException e)
@@ -212,6 +230,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         }
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl clearFiles()
@@ -221,9 +240,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl clearFiles(BiConsumer<String, InputStream> finalizer)
+    public MessageActionImpl clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
         for (Iterator<Map.Entry<String, InputStream>> it = files.entrySet().iterator(); it.hasNext();)
@@ -236,9 +256,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
-    public MessageActionImpl clearFiles(Consumer<InputStream> finalizer)
+    public MessageActionImpl clearFiles(@Nonnull Consumer<InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
         for (Iterator<InputStream> it = files.values().iterator(); it.hasNext(); )
@@ -250,12 +271,26 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
     @Override
     @CheckReturnValue
     public MessageActionImpl override(final boolean bool)
     {
         this.override = isEdit() && bool;
         return this;
+    }
+
+    private String applyOptions(String name, AttachmentOption[] options)
+    {
+        for (AttachmentOption opt : options)
+        {
+            if (opt == AttachmentOption.SPOILER)
+            {
+                name = "SPOILER_" + name;
+                break;
+            }
+        }
+        return name;
     }
 
     private void clearResources()
@@ -281,7 +316,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         int index = 0;
         for (Map.Entry<String, InputStream> entry : files.entrySet())
         {
-            final RequestBody body = MiscUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
+            final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
             builder.addFormDataPart("file" + index++, entry.getKey(), body);
         }
         if (!isEmpty())
@@ -297,21 +332,21 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toString());
     }
 
-    protected JSONObject getJSON()
+    protected DataObject getJSON()
     {
-        final JSONObject obj = new JSONObject();
+        final DataObject obj = DataObject.empty();
         if (override)
         {
             if (embed == null)
-                obj.put("embed", JSONObject.NULL);
+                obj.putNull("embed");
             else
-                obj.put("embed", getJSONEmbed(embed));
+                obj.put("embed", embed);
             if (content.length() == 0)
-                obj.put("content", JSONObject.NULL);
+                obj.putNull("content");
             else
                 obj.put("content", content.toString());
             if (nonce == null)
-                obj.put("nonce", JSONObject.NULL);
+                obj.putNull("nonce");
             else
                 obj.put("nonce", nonce);
             obj.put("tts", tts);
@@ -319,7 +354,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         else
         {
             if (embed != null)
-                obj.put("embed", getJSONEmbed(embed));
+                obj.put("embed", embed);
             if (content.length() > 0)
                 obj.put("content", content.toString());
             if (nonce != null)
@@ -327,11 +362,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             obj.put("tts", tts);
         }
         return obj;
-    }
-
-    protected static JSONObject getJSONEmbed(final MessageEmbed embed)
-    {
-        return embed.toJSONObject();
     }
 
     protected void checkFileAmount()
@@ -349,7 +379,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected void checkPermission(Permission perm)
     {
         if (!hasPermission(perm))
-            throw new InsufficientPermissionException(perm);
+        {
+            TextChannel channel = (TextChannel) this.channel;
+            throw new InsufficientPermissionException(channel, perm);
+        }
     }
 
     protected boolean hasPermission(Permission perm)

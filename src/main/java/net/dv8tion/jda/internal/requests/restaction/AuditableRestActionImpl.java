@@ -21,15 +21,16 @@ import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 
@@ -47,7 +48,7 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
         super(api, route, data);
     }
 
-    public AuditableRestActionImpl(JDA api, Route.CompiledRoute route, JSONObject data)
+    public AuditableRestActionImpl(JDA api, Route.CompiledRoute route, DataObject data)
     {
         super(api, route, data);
     }
@@ -57,7 +58,7 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
         super(api, route, handler);
     }
 
-    public AuditableRestActionImpl(JDA api, Route.CompiledRoute route, JSONObject data, BiFunction<Response, Request<T>, T> handler)
+    public AuditableRestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
     {
         super(api, route, data, handler);
     }
@@ -74,8 +75,9 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
         return (AuditableRestActionImpl) super.setCheck(checks);
     }
 
+    @Nonnull
     @CheckReturnValue
-    public AuditableRestActionImpl<T> reason(String reason)
+    public AuditableRestActionImpl<T> reason(@Nullable String reason)
     {
         this.reason = reason;
         return this;
@@ -110,7 +112,7 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
 
     private String uriEncode(String input)
     {
-        String formEncode = MiscUtil.encodeUTF8(input);
+        String formEncode = EncodingUtil.encodeUTF8(input);
         return formEncode.replace('+', ' ');
     }
 }

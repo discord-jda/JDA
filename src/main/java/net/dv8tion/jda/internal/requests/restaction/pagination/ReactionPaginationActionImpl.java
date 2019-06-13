@@ -18,15 +18,16 @@ package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
-import org.json.JSONArray;
-import org.json.JSONException;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -54,9 +55,10 @@ public class ReactionPaginationActionImpl
 
         return emote.isEmote()
             ? emote.getName() + ":" + emote.getId()
-            : MiscUtil.encodeUTF8(emote.getName());
+            : EncodingUtil.encodeUTF8(emote.getName());
     }
 
+    @Nonnull
     @Override
     public MessageReaction getReaction()
     {
@@ -86,20 +88,20 @@ public class ReactionPaginationActionImpl
     protected void handleSuccess(Response response, Request<List<User>> request)
     {
         final EntityBuilder builder = api.get().getEntityBuilder();
-        final JSONArray array = response.getArray();
+        final DataArray array = response.getArray();
         final List<User> users = new LinkedList<>();
         for (int i = 0; i < array.length(); i++)
         {
             try
             {
-                final User user = builder.createFakeUser(array.getJSONObject(i), false);
+                final User user = builder.createFakeUser(array.getObject(i), false);
                 users.add(user);
                 if (useCache)
                     cached.add(user);
                 last = user;
                 lastKey = last.getIdLong();
             }
-            catch (JSONException | NullPointerException e)
+            catch (ParsingException | NullPointerException e)
             {
                 LOG.warn("Encountered exception in ReactionPagination", e);
             }
@@ -108,4 +110,9 @@ public class ReactionPaginationActionImpl
         request.onSuccess(users);
     }
 
+    @Override
+    protected long getKey(User it)
+    {
+        return it.getIdLong();
+    }
 }
