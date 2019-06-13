@@ -2569,8 +2569,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
@@ -2612,8 +2610,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException

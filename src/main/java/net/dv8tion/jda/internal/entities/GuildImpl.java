@@ -880,11 +880,6 @@ public class GuildImpl implements Guild
         checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_DEAF_OTHERS);
 
-        //We check the owner instead of Position because, apparently, Discord doesn't care about position for
-        // muting and deafening, only whether the affected Member is the owner.
-        if (member.equals(getOwner()))
-            throw new HierarchyException("Cannot modify Guild Deafen status the Owner of the Guild");
-
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null)
         {
@@ -906,11 +901,6 @@ public class GuildImpl implements Guild
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
         checkPermission(Permission.VOICE_MUTE_OTHERS);
-
-        //We check the owner instead of Position because, apparently, Discord doesn't care about position for
-        // muting and deafening, only whether the affected Member is the owner.
-        if (member.equals(getOwner()))
-            throw new HierarchyException("Cannot modify Guild Mute status the Owner of the Guild");
 
         GuildVoiceState voiceState = member.getVoiceState();
         if (voiceState != null)
