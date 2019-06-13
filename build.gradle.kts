@@ -33,7 +33,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "2.0.4"
 }
 
-val versionObj = Version(major="4", minor="ALPHA", revision="0")
+val versionObj = Version(major="4", minor="BETA", revision="0")
 
 project.group = "net.dv8tion"
 project.version = "$versionObj"
