@@ -51,6 +51,13 @@ import java.util.*;
  */
 public interface Guild extends ISnowflake
 {
+    /** Template for {@link #getIconUrl()}. */
+    String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
+    /** Template for {@link #getSplashUrl()}. */
+    String SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s.png";
+    /** Template for {@link #getBannerUrl()}. */
+    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.png";
+
     /**
      * Retrieves the available regions for this Guild
      * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
@@ -191,7 +198,9 @@ public interface Guild extends ISnowflake
     @Nullable
     default String getIconUrl()
     {
-        return getIconId() == null ? null : "https://cdn.discordapp.com/icons/" + getId() + "/" + getIconId() + ".png";
+        String iconId = getIconId();
+        return iconId == null ? null
+                              : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -237,7 +246,8 @@ public interface Guild extends ISnowflake
     @Nullable
     default String getSplashUrl()
     {
-        return getSplashId() == null ? null : "https://cdn.discordapp.com/splashes/" + getId() + "/" + getSplashId() + ".png";
+        String splashId = getSplashId();
+        return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
     }
 
     /**
@@ -338,7 +348,8 @@ public interface Guild extends ISnowflake
     @Nullable
     default String getBannerUrl()
     {
-        return getBannerId() == null ? null : "https://cdn.discordapp.com/banners/" + getId() + "/" + getBannerId() + ".png";
+        String bannerId = getBannerId();
+        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId);
     }
 
     /**
