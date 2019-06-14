@@ -167,9 +167,13 @@ public class Bot extends ListenerAdapter
 }
 ```
 
-<!-- ### More Examples
-TODO: Call for examples
+### More Examples
+
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
+
+<!--
+TODO: Find good examples
+- [JDA Butler](https://github.com/Almighty-Alpaca/JDA-Butler)
 
 [And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
 -->
@@ -499,6 +503,8 @@ fun main() {
                .build()
 }
 ```
+
+An example bot for this can be found at [Reactive JDA Bot](https://github.com/MinnDevelopment/reactive-jda-bot).
 
 ------
 
