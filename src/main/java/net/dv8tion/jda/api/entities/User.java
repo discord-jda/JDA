@@ -103,8 +103,7 @@ public interface User extends IMentionable, IFakeable
     default String getAvatarUrl()
     {
         String avatarId = getAvatarId();
-        return avatarId == null ? null
-                                : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+        return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
     /**

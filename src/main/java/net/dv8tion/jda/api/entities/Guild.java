@@ -199,8 +199,7 @@ public interface Guild extends ISnowflake
     default String getIconUrl()
     {
         String iconId = getIconId();
-        return iconId == null ? null
-                              : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
+        return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
     /**

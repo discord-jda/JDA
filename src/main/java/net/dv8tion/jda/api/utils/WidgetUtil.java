@@ -640,8 +640,7 @@ public class WidgetUtil
             public String getAvatarUrl()
             {
                 String avatarId = getAvatarId();
-                return avatarId == null ? null
-                                             : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
+                return avatarId == null ? null : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
             }
 
             /**
