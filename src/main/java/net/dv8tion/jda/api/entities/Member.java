@@ -70,8 +70,9 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The time when this member boosted the guild.
+     * <br>Null indicates this member is not currently boosting the guild.
      *
-     * @return The boosting time
+     * @return The boosting time, or null if the member is not boosting
      *
      * @since  4.0.0
      */
