@@ -48,6 +48,9 @@ import java.util.List;
  */
 public interface Emote extends IMentionable, IFakeable
 {
+    /** Template for {@link #getImageUrl()} */
+    String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
+
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.
      *
@@ -187,7 +190,7 @@ public interface Emote extends IMentionable, IFakeable
     @Nonnull
     default String getImageUrl()
     {
-        return "https://cdn.discordapp.com/emojis/" + getId() + (isAnimated() ? ".gif" : ".png");
+        return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
     /**

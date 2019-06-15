@@ -57,7 +57,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getNewBannerIdUrl()
     {
-        return getNewBannerId() == null ? null : "https://cdn.discordapp.com/banners/" + getGuild().getId() + "/" + getNewBannerId() + ".png";
+        return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next);
     }
 
     /**
@@ -79,6 +79,6 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getOldBannerUrl()
     {
-        return getOldBannerId() == null ? null : "https://cdn.discordapp.com/banners/" + getGuild().getId() + "/" + getOldBannerId() + ".png";
+        return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous);
     }
 }
