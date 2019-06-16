@@ -207,7 +207,7 @@ public class MessageListenerExample extends ListenerAdapter
 
                         //Remember, due to the fact that we're using queue we will never have to deal with RateLimits.
                         // JDA will do it all for you so long as you are using queue!
-                        guild.getController().kick(member).queue(
+                        guild.kick(member).queue(
                             success -> channel.sendMessage("Kicked ").append(member.getEffectiveName()).append("! Cya!").queue(),
                             error ->
                             {
