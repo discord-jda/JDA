@@ -28,6 +28,8 @@ import java.util.regex.Pattern;
  * Implements and algorithm that can strip or replace markdown in any supplied string.
  *
  * @see #sanitize(String, net.dv8tion.jda.api.utils.MarkdownSanitizer.SanitizationStrategy)
+ *
+ * @since  4.0.0
  */
 public class MarkdownSanitizer
 {

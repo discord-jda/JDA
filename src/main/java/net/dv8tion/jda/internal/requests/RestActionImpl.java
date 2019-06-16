@@ -34,6 +34,7 @@ import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.BiFunction;
@@ -137,12 +138,14 @@ public class RestActionImpl<T> implements RestAction<T>
         this.handler = handler;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return api.get();
     }
 
+    @Nonnull
     @Override
     public RestAction<T> setCheck(BooleanSupplier checks)
     {
@@ -165,6 +168,7 @@ public class RestActionImpl<T> implements RestAction<T>
         api.get().getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
+    @Nonnull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {

@@ -90,6 +90,8 @@ public interface CacheView<T> extends Iterable<T>
      * if order is desired use {@link #iterator()} instead!</b>
      *
      * @return {@link ClosableIterator} holding a read-lock on the data structure.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     ClosableIterator<T> lockedIterator();
@@ -103,6 +105,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @throws NullPointerException
      *         If provided with null
+     *
+     * @since  4.0.0
      */
     default void forEachUnordered(@Nonnull final Consumer<? super T> action)
     {
@@ -131,6 +135,8 @@ public interface CacheView<T> extends Iterable<T>
      *         If the action is null
      *
      * @return The resulting value after the action was performed
+     *
+     * @since  4.0.0
      *
      * @see    #acceptStream(Consumer)
      */
@@ -163,6 +169,8 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @throws IllegalArgumentException
      *         If the action is null
+     *
+     * @since  4.0.0
      *
      * @see    #applyStream(Function)
      */

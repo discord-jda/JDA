@@ -50,6 +50,8 @@ public interface Category extends GuildChannel
      * listed for this Category
      *
      * @return Immutable list of all child StoreChannels
+     *
+     * @since  4.0.0
      */
     @Nonnull
     List<StoreChannel> getStoreChannels();

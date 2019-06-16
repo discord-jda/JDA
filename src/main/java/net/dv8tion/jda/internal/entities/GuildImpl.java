@@ -619,7 +619,10 @@ public class GuildImpl implements Guild
     public List<GuildVoiceState> getVoiceStates()
     {
         return Collections.unmodifiableList(
-                getMembersView().stream().map(Member::getVoiceState).filter(Objects::nonNull).collect(Collectors.toList()));
+                getMembersView().stream()
+                    .map(Member::getVoiceState)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()));
     }
 
     @Nonnull

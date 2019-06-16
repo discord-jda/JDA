@@ -26,6 +26,8 @@ import java.util.function.Function;
  * @param <T>
  *        The result type
  *
+ * @since  4.0.0
+ *
  * @see    CompletableFuture
  * @see    Delayed
  */

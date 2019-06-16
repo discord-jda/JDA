@@ -114,6 +114,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the provided type is null
      *
      * @return The status for that specific client or OFFLINE
+     *
+     * @since  4.0.0
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
@@ -306,6 +308,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -356,6 +360,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -393,6 +399,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -433,6 +441,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -475,6 +485,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the provided member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -516,6 +528,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the provided member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -565,6 +579,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue

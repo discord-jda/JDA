@@ -289,10 +289,12 @@ public interface Guild extends ISnowflake
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
+     * <br>This is null when the owner is no longer in this guild. Sometimes owners of guilds delete their account
+     * or get banned by Discord.
      *
      * <p>Ownership can be transferred using {@link net.dv8tion.jda.api.entities.Guild#transferOwnership(Member)}.
      *
-     * @return Member object for the Guild owner.
+     * @return Possibly-null Member object for the Guild owner.
      *
      * @see    #getOwnerIdLong()
      */
@@ -841,6 +843,8 @@ public interface Guild extends ISnowflake
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     *
+     * @since  4.0.0
      */
     @Nullable
     default StoreChannel getStoreChannelById(@Nonnull String id)
@@ -859,6 +863,8 @@ public interface Guild extends ISnowflake
      *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     *
+     * @since  4.0.0
      */
     @Nullable
     default StoreChannel getStoreChannelById(long id)
@@ -876,6 +882,8 @@ public interface Guild extends ISnowflake
      * versions of handling these values.
      *
      * @return An immutable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in this Guild.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     default List<StoreChannel> getStoreChannels()
@@ -894,6 +902,8 @@ public interface Guild extends ISnowflake
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
@@ -907,6 +917,8 @@ public interface Guild extends ISnowflake
      * <br>TextChannels are sorted according to their position.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
@@ -1310,7 +1322,7 @@ public interface Guild extends ISnowflake
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
-     * Retrieves a list of emotes together with their respective creators.
+     * Retrieves an immutable list of emotes together with their respective creators.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
      * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
@@ -1415,7 +1427,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Retrieves an unmodifiable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
+     * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) ban(User, int)} or
      * {@link #unban(User) unban(User)}.
      *
@@ -1433,7 +1445,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.api.entities.Guild.Ban Ban}{@literal >}
-     *         <br>An unmodifiable list of all users currently banned from this Guild
+     *         <br>Retrieves an immutable list of all users currently banned from this Guild
      */
     @Nonnull
     @CheckReturnValue
@@ -1761,7 +1773,7 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.Member Members} in this {@link net.dv8tion.jda.api.entities.Guild Guild}, which is
      * impossible.
      *
-     * @return Never-empty list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * @return Never-empty immutable list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      */
     @Nonnull
     List<GuildVoiceState> getVoiceStates();
