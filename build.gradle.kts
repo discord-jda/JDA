@@ -33,7 +33,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "2.0.4"
 }
 
-val versionObj = Version(major="4", minor="ALPHA", revision="0")
+val versionObj = Version(major="4", minor="BETA", revision="0")
 
 project.group = "net.dv8tion"
 project.version = "$versionObj"
@@ -202,6 +202,7 @@ javadoc.apply {
             "https://square.github.io/okhttp/3.x/okhttp/")
         if (JavaVersion.current().isJava9Compatible) {
             opt.addBooleanOption("html5", true)
+            opt.addStringOption("-release", "8")
         }
         if (JavaVersion.current().isJava11Compatible) {
             opt.addBooleanOption("-no-module-directories", true)

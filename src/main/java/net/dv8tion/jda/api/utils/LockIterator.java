@@ -46,6 +46,8 @@ import java.util.concurrent.locks.Lock;
  *
  * @param <T>
  *        The element type for this iterator
+ *
+ * @since  4.0.0
  */
 public class LockIterator<T> implements ClosableIterator<T>
 {

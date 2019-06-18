@@ -19,7 +19,9 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
@@ -123,6 +125,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the provided type is null
      *
      * @return The status for that specific client or OFFLINE
+     *
+     * @since  4.0.0
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
@@ -275,4 +279,324 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nullable
     TextChannel getDefaultChannel();
+
+    /**
+     * Bans this Member and deletes messages sent by the user based on the amount of delDays.
+     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
+     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  delDays
+     *         The history of messages, in days, that will be deleted.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided member is {@code null}</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> ban(int delDays)
+    {
+        return getGuild().ban(this, delDays);
+    }
+
+    /**
+     * Bans this Member and deletes messages sent by the user based on the amount of delDays.
+     * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
+     * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be banned due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  delDays
+     *         The history of messages, in days, that will be deleted.
+     * @param  reason
+     *         The reason for this action or {@code null} if there is no specified reason
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot ban the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided amount of days (delDays) is less than 0.</li>
+     *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided member is {@code null}</li>
+     *         </ul>
+     *
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> ban(int delDays, @Nullable String reason)
+    {
+        return getGuild().ban(this, delDays, reason);
+    }
+
+    /**
+     * Kicks this Member from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided member is not a Member of this Guild or is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot kick the other member due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *         Kicks the provided Member from the current Guild
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> kick()
+    {
+        return getGuild().kick(this);
+    }
+
+    /**
+     * Kicks this from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be kicked due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  reason
+     *         The reason for this action or {@code null} if there is no specified reason
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided member is not a Member of this Guild or is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the logged in account cannot kick the other member due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *         Kicks the provided Member from the current Guild
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> kick(@Nullable String reason)
+    {
+        return getGuild().kick(this, reason);
+    }
+
+    /**
+     * Sets the Guild Muted state state of this Member based on the provided
+     * boolean.
+     *
+     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildMuted() GuildVoiceState.isGuildMuted()} value won't change
+     * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildMuteEvent GuildVoiceGuildMuteEvent} event related to this change.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be muted due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#USER_NOT_CONNECTED USER_NOT_CONNECTED}
+     *     <br>The specified Member is not connected to a voice channel</li>
+     * </ul>
+     *
+     * @param  mute
+     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be muted or unmuted.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided member is not from this Guild or null.
+     * @throws java.lang.IllegalStateException
+     *         If the provided member is not currently connected to a voice channel.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> mute(boolean mute)
+    {
+        return getGuild().mute(this, mute);
+    }
+
+    /**
+     * Sets the Guild Deafened state state of this Member based on the provided boolean.
+     *
+     * <p><b>Note:</b> The Member's {@link net.dv8tion.jda.api.entities.GuildVoiceState#isGuildDeafened() GuildVoiceState.isGuildDeafened()} value won't change
+     * until JDA receives the {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceGuildDeafenEvent GuildVoiceGuildDeafenEvent} event related to this change.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The target Member cannot be deafened due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#USER_NOT_CONNECTED USER_NOT_CONNECTED}
+     *     <br>The specified Member is not connected to a voice channel</li>
+     * </ul>
+     *
+     * @param  deafen
+     *         Whether this {@link net.dv8tion.jda.api.entities.Member Member} should be deafened or undeafened.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
+     * @throws IllegalArgumentException
+     *         If the provided member is not from this Guild or null.
+     * @throws java.lang.IllegalStateException
+     *         If the provided member is not currently connected to a voice channel.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> deafen(boolean deafen)
+    {
+        return getGuild().deafen(this, deafen);
+    }
+
+    /**
+     * Changes this Member's nickname in this guild.
+     * The nickname is visible to all members of this guild.
+     *
+     * <p>To change the nickname for the currently logged in account
+     * only the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE NICKNAME_CHANGE} is required.
+     * <br>To change the nickname of <b>any</b> {@link net.dv8tion.jda.api.entities.Member Member} for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     * the Permission {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE NICKNAME_MANAGE} is required.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The nickname of the target Member is not modifiable due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>We were removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The specified Member was removed from the Guild before finishing the task</li>
+     * </ul>
+     *
+     * @param  nickname
+     *         The new nickname of the {@link net.dv8tion.jda.api.entities.Member Member}, provide {@code null} or an
+     *         empty String to reset the nickname
+     *
+     * @throws IllegalArgumentException
+     *         If the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     *         is not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         Or if the provided member is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         <ul>
+     *             <li>If attempting to set nickname for self and the logged in account has neither {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE}
+     *                 or {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE}</li>
+     *             <li>If attempting to set nickname for another member and the logged in account does not have {@link net.dv8tion.jda.api.Permission#NICKNAME_MANAGE}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
+     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> modifyNickname(@Nullable String nickname)
+    {
+        return getGuild().modifyNickname(this, nickname);
+    }
 }

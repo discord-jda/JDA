@@ -684,7 +684,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             DataObject presence = array.getObject(i);
             final DataObject obj = DataObject.empty();
-            obj.put("jda-field", "This was constructed from a PRESENCES_REPLACE payload")
+            obj.put("comment", "This was constructed from a PRESENCES_REPLACE payload")
                .put("op", WebSocketCode.DISPATCH)
                .put("s", responseTotal)
                .put("d", presence)
@@ -774,7 +774,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 final PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
                 LOG.trace("{} -> {}", type, payload);
                 for (DataObject o : converted)
+                {
                     handler.handle(responseTotal, o);
+                    // Send raw event after cache has been updated - including comment
+                    if (api.isRawEvents())
+                        api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, o));
+                }
             }
             else
             {
@@ -819,6 +824,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     else
                         LOG.debug("Unrecognized event:\n{}", raw);
             }
+            // Send raw event after cache has been updated
+            if (api.isRawEvents())
+                api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, raw));
         }
         catch (ParsingException ex)
         {
@@ -849,7 +857,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             json = handleBinary(binary);
         }
-        handleEvent(json);
+        if (json != null)
+            handleEvent(json);
     }
 
     protected DataObject handleBinary(byte[] binary) throws DataFormatException
@@ -861,6 +870,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         try
         {
             jsonString = decompressor.decompress(binary);
+            if (jsonString == null)
+                return null;
         }
         catch (DataFormatException e)
         {

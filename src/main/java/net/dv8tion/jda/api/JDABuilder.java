@@ -34,6 +34,7 @@ import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
@@ -74,17 +75,12 @@ public class JDABuilder
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
+    protected Compression compression = Compression.ZLIB;
     protected Activity activity = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
-    protected int maxReconnectDelay = 900;
-    protected boolean enableContext = true;
-    protected boolean enableVoice = true;
-    protected boolean enableShutdownHook = true;
-    protected boolean enableBulkDeleteSplitting = true;
-    protected boolean autoReconnect = true;
     protected boolean idle = false;
-    protected boolean requestTimeoutRetry = true;
-    protected Compression compression = Compression.ZLIB;
+    protected int maxReconnectDelay = 900;
+    protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
 
     /**
      * Creates a completely empty JDABuilder.
@@ -135,6 +131,23 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    /**
+     * Whether JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent} for every discord event.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent}.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    public JDABuilder setRawEventsEnabled(boolean enable)
+    {
+        return setFlag(ConfigFlag.RAW_EVENTS, enable);
     }
 
     /**
@@ -193,7 +206,7 @@ public class JDABuilder
     {
         this.contextMap = map;
         if (map != null)
-            this.enableContext = true;
+            setContextEnabled(true);
         return this;
     }
 
@@ -212,8 +225,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setContextEnabled(boolean enable)
     {
-        this.enableContext = enable;
-        return this;
+        return setFlag(ConfigFlag.MDC_CONTEXT, enable);
     }
 
     /**
@@ -259,8 +271,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
-        this.requestTimeoutRetry = retryOnTimeout;
-        return this;
+        return setFlag(ConfigFlag.RETRY_TIMEOUT, retryOnTimeout);
     }
 
     /**
@@ -502,24 +513,6 @@ public class JDABuilder
     }
 
     /**
-     * Enables/Disables Voice functionality.
-     * <br>This is useful, if your current system doesn't support Voice and you do not need it.
-     *
-     * <p>Default: <b>true (enabled)</b>
-     *
-     * @param  enabled
-     *         True - enables voice support.
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     */
-    @Nonnull
-    public JDABuilder setAudioEnabled(boolean enabled)
-    {
-        this.enableVoice = enabled;
-        return this;
-    }
-
-    /**
      * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
      * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
      * should instead handle the {@link net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
@@ -534,8 +527,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
-        this.enableBulkDeleteSplitting = enabled;
-        return this;
+        return setFlag(ConfigFlag.BULK_DELETE_SPLIT, enabled);
     }
 
     /**
@@ -553,8 +545,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setEnableShutdownHook(boolean enable)
     {
-        this.enableShutdownHook = enable;
-        return this;
+        return setFlag(ConfigFlag.SHUTDOWN_HOOK, enable);
     }
 
     /**
@@ -571,8 +562,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
-        this.autoReconnect = autoReconnect;
-        return this;
+        return setFlag(ConfigFlag.AUTO_RECONNECT, autoReconnect);
     }
 
     /**
@@ -822,6 +812,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
+     * @since  4.0.0
+     *
      * @see    VoiceDispatchInterceptor
      */
     @Nonnull
@@ -835,8 +827,8 @@ public class JDABuilder
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
-     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
-     * being performed like database connection or local resource loading.
+     * For example {@link JDA#getGuilds()} might return an empty list or {@link net.dv8tion.jda.api.JDA#getUserById(long)} might return null
+     * for arbitrary user IDs.
      *
      * <p>If you wish to be sure that the {@link net.dv8tion.jda.api.JDA} information is correct, please use
      * {@link net.dv8tion.jda.api.JDA#awaitReady() JDA.awaitReady()} or register an
@@ -850,6 +842,8 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.api.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
+     *
+     * @see    net.dv8tion.jda.api.JDA#awaitReady()
      */
     @Nonnull
     public JDA build() throws LoginException
@@ -872,8 +866,8 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, enableVoice, requestTimeoutRetry,autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
-        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, enableContext, enableShutdownHook);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay);
+        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
 
@@ -893,5 +887,14 @@ public class JDABuilder
                 .setCacheStatus(status);
         jda.login(shardInfo, compression, true);
         return jda;
+    }
+
+    private JDABuilder setFlag(ConfigFlag flag, boolean enable)
+    {
+        if (enable)
+            this.flags.add(flag);
+        else
+            this.flags.remove(flag);
+        return this;
     }
 }

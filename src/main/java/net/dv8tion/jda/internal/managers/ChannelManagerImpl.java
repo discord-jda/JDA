@@ -162,7 +162,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
         withLock(lock, (lock) ->
@@ -182,7 +182,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         withLock(lock, (lock) ->
         {
@@ -205,7 +205,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             return this;
 
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
         withLock(lock, (lock) ->
         {
@@ -374,7 +374,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         final Member selfMember = getGuild().getSelfMember();
         if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_CHANNEL);
         return super.checkPermissions();
     }
 

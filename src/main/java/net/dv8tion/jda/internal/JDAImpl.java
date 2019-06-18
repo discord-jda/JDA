@@ -141,6 +141,11 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
     }
 
+    public boolean isRawEvents()
+    {
+        return sessionConfig.isRawEvents();
+    }
+
     public boolean isCacheFlagSet(CacheFlag flag)
     {
         return metaConfig.getCacheFlags().contains(flag);
@@ -368,11 +373,6 @@ public class JDAImpl implements JDA
         return authConfig.getToken();
     }
 
-    @Override
-    public boolean isAudioEnabled()
-    {
-        return sessionConfig.isAudioEnabled();
-    }
 
     @Override
     public boolean isBulkDeleteSplittingEnabled()

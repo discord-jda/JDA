@@ -314,7 +314,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected boolean checkPermissions()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_SERVER);
         return super.checkPermissions();
     }
 

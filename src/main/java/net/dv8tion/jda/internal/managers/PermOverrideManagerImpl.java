@@ -166,7 +166,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     protected boolean checkPermissions()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         return super.checkPermissions();
     }
 }

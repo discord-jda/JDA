@@ -449,10 +449,12 @@ public interface Guild extends ISnowflake
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
+     * <br>This is null when the owner is no longer in this guild. Sometimes owners of guilds delete their account
+     * or get banned by Discord.
      *
      * <p>Ownership can be transferred using {@link net.dv8tion.jda.api.entities.Guild#transferOwnership(Member)}.
      *
-     * @return Member object for the Guild owner.
+     * @return Possibly-null Member object for the Guild owner.
      *
      * @see    #getOwnerIdLong()
      */
@@ -1001,6 +1003,8 @@ public interface Guild extends ISnowflake
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     *
+     * @since  4.0.0
      */
     @Nullable
     default StoreChannel getStoreChannelById(@Nonnull String id)
@@ -1019,6 +1023,8 @@ public interface Guild extends ISnowflake
      *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     *
+     * @since  4.0.0
      */
     @Nullable
     default StoreChannel getStoreChannelById(long id)
@@ -1036,6 +1042,8 @@ public interface Guild extends ISnowflake
      * versions of handling these values.
      *
      * @return An immutable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in this Guild.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     default List<StoreChannel> getStoreChannels()
@@ -1054,6 +1062,8 @@ public interface Guild extends ISnowflake
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
+     *
+     * @since  4.0.0
      */
     @Nonnull
     default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
@@ -1067,6 +1077,8 @@ public interface Guild extends ISnowflake
      * <br>TextChannels are sorted according to their position.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
@@ -1470,7 +1482,7 @@ public interface Guild extends ISnowflake
     SnowflakeCacheView<Emote> getEmoteCache();
 
     /**
-     * Retrieves a list of emotes together with their respective creators.
+     * Retrieves an immutable list of emotes together with their respective creators.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
      * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
@@ -1575,7 +1587,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Retrieves an unmodifiable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
+     * Retrieves an immutable list of the currently banned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If you wish to ban or unban a user, use either {@link #ban(User, int) ban(User, int)} or
      * {@link #unban(User) unban(User)}.
      *
@@ -1593,7 +1605,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@literal List<}{@link net.dv8tion.jda.api.entities.Guild.Ban Ban}{@literal >}
-     *         <br>An unmodifiable list of all users currently banned from this Guild
+     *         <br>Retrieves an immutable list of all users currently banned from this Guild
      */
     @Nonnull
     @CheckReturnValue
@@ -1921,7 +1933,7 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.Member Members} in this {@link net.dv8tion.jda.api.entities.Guild Guild}, which is
      * impossible.
      *
-     * @return Never-empty list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * @return Never-empty immutable list containing all the {@link GuildVoiceState GuildVoiceStates} on this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      */
     @Nonnull
     List<GuildVoiceState> getVoiceStates();
@@ -2088,7 +2100,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Changes a Member's nickname in this guild.
+     * Changes the Member's nickname in this guild.
      * The nickname is visible to all members of this guild.
      *
      * <p>To change the nickname for the currently logged in account
@@ -2167,7 +2179,7 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Integer> prune(int days);
 
     /**
-     * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
@@ -2331,10 +2343,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.User User} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
@@ -2379,10 +2392,11 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> ban(@Nonnull User user, int delDays, @Nullable String reason);
 
     /**
-     * Bans the a user specified by the userId and deletes messages sent by the user
+     * Bans the user specified by the userId and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
@@ -2427,10 +2441,11 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, @Nullable String reason);
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -2482,10 +2497,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -2531,10 +2547,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans a {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
+     * Bans the {@link net.dv8tion.jda.api.entities.Member Member} and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a member without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
@@ -2580,10 +2597,11 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Bans the a user specified by the userId and deletes messages sent by the user
+     * Bans the user specified by the userId and deletes messages sent by the user
      * based on the amount of delDays.
      * <br>If you wish to ban a user without deleting any messages, provide delDays with a value of 0.
-     * This change will be applied immediately.
+     *
+     * <p>You can unban a user with {@link net.dv8tion.jda.api.entities.Guild#unban(User) Guild.unban(User)}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
@@ -2723,8 +2741,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
@@ -2766,8 +2782,6 @@ public interface Guild extends ISnowflake
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException

@@ -18,5 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 /**
  * Represents a Discord Store GuildChannel.
+ *
+ * @since  4.0.0
  */
 public interface StoreChannel extends GuildChannel {}

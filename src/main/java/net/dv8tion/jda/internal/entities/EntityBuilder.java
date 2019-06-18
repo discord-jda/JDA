@@ -438,7 +438,7 @@ public class EntityBuilder
     {
         if (member == null)
             throw new NullPointerException("Provided member was null!");
-        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.PRESENCE);
+        boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.ACTIVITY);
         boolean cacheStatus = getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS);
 
         DataArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getArray("activities");

@@ -212,6 +212,8 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
      *
+     * @since  4.0.0
+     *
      * @see    #getGatewayPing()
      */
     @Nonnull
@@ -280,6 +282,8 @@ public interface JDA
      * executions. This is also used in other parts of JDA related to http requests.
      *
      * @return The {@link ScheduledExecutorService} used for http request handling
+     *
+     * @since  4.0.0
      */
     @Nonnull
     ScheduledExecutorService getRateLimitPool();
@@ -289,6 +293,8 @@ public interface JDA
      * <br>This involves initial setup of guilds as well as keeping the connection alive.
      *
      * @return The {@link ScheduledExecutorService} used for WebSocket transmissions
+     *
+     * @since  4.0.0
      */
     @Nonnull
     ScheduledExecutorService getGatewayPool();
@@ -300,6 +306,8 @@ public interface JDA
      * <br>By default this uses the {@link ForkJoinPool#commonPool() CommonPool} of the runtime.
      *
      * @return The {@link ExecutorService} used for callbacks
+     *
+     * @since  4.0.0
      */
     @Nonnull
     ExecutorService getCallbackPool();
@@ -308,6 +316,8 @@ public interface JDA
      * The {@link OkHttpClient} used for handling http requests from {@link RestAction RestActions}.
      *
      * @return The http client
+     *
+     * @since  4.0.0
      */
     @Nonnull
     OkHttpClient getHttpClient();
@@ -320,6 +330,8 @@ public interface JDA
      * {@link AudioManager}.
      *
      * @return The {@link DirectAudioController} for this JDA instance
+     *
+     * @since  4.0.0
      */
     @Nonnull
     DirectAudioController getDirectAudioController();
@@ -363,7 +375,7 @@ public interface JDA
     void removeEventListener(@Nonnull Object... listeners);
 
     /**
-     * Returns an unmodifiable List of Objects that have been registered as EventListeners.
+     * Immutable List of Objects that have been registered as EventListeners.
      *
      * @return List of currently registered Objects acting as EventListeners.
      */
@@ -432,7 +444,7 @@ public interface JDA
     SnowflakeCacheView<User> getUserCache();
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.User Users} that share a
+     * An immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that share a
      * {@link net.dv8tion.jda.api.entities.Guild Guild} with the currently logged in account.
      * <br>This list will never contain duplicates and represents all
      * {@link net.dv8tion.jda.api.entities.User Users} that JDA can currently see.
@@ -445,7 +457,7 @@ public interface JDA
      * a local variable or use {@link #getUserCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return List of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
      */
     @Nonnull
     default List<User> getUsers()
@@ -551,7 +563,7 @@ public interface JDA
     }
 
     /**
-     * This unmodifiable returns all {@link net.dv8tion.jda.api.entities.User Users} that have the same username as the one provided.
+     * This immutable returns all {@link net.dv8tion.jda.api.entities.User Users} that have the same username as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.User Users} with the provided name, then this returns an empty list.
      *
      * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.api.entities.User#getName()}
@@ -561,7 +573,7 @@ public interface JDA
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.User#getName()}.
      *
-     * @return Possibly-empty list of {@link net.dv8tion.jda.api.entities.User Users} that all have the same name as the provided name.
+     * @return Possibly-empty immutable list of {@link net.dv8tion.jda.api.entities.User Users} that all have the same name as the provided name.
      */
     @Nonnull
     default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase)
@@ -575,7 +587,9 @@ public interface JDA
      * @param  users
      *         The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     *
+     * @see    Guild#isMember(net.dv8tion.jda.api.entities.User)
      */
     @Nonnull
     List<Guild> getMutualGuilds(@Nonnull User... users);
@@ -586,7 +600,7 @@ public interface JDA
      * @param users
      *        The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      */
     @Nonnull
     List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
@@ -659,7 +673,7 @@ public interface JDA
     SnowflakeCacheView<Guild> getGuildCache();
 
     /**
-     * An unmodifiable List of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that the logged account is connected to.
+     * An immutable List of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that the logged account is connected to.
      * <br>If this account is not connected to any {@link net.dv8tion.jda.api.entities.Guild Guilds}, this will return an empty list.
      *
      * <p>If the developer is sharding ({@link net.dv8tion.jda.api.JDABuilder#useSharding(int, int)}, then this list
@@ -673,7 +687,7 @@ public interface JDA
      * a local variable or use {@link #getGuildCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that this account is connected to.
+     * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that this account is connected to.
      */
     @Nonnull
     default List<Guild> getGuilds()
@@ -715,7 +729,7 @@ public interface JDA
     }
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that have the same name as the one provided.
+     * An immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Guild Guilds} with the provided name, then this returns an empty list.
      *
      * @param  name
@@ -723,7 +737,7 @@ public interface JDA
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.Guild#getName()}.
      *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that all have the same name as the provided name.
+     * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that all have the same name as the provided name.
      */
     @Nonnull
     default List<Guild> getGuildsByName(@Nonnull String name, boolean ignoreCase)
@@ -1519,13 +1533,6 @@ public interface JDA
      * @return True if JDA will attempt to automatically reconnect when a connection-error is encountered.
      */
     boolean isAutoReconnect();
-
-    /**
-     * Used to determine whether the instance of JDA supports audio and has it enabled.
-     *
-     * @return True if JDA can currently utilize the audio system.
-     */
-    boolean isAudioEnabled();
 
     /**
      * Used to determine if JDA will process MESSAGE_DELETE_BULK messages received from Discord as a single

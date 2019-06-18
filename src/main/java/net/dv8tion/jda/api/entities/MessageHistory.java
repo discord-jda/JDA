@@ -65,7 +65,7 @@ public class MessageHistory
         {
             TextChannel tc = (TextChannel) channel;
             if (!tc.getGuild().getSelfMember().hasPermission(tc, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(tc, Permission.MESSAGE_HISTORY);
         }
     }
 
@@ -268,11 +268,14 @@ public class MessageHistory
     }
 
     /**
-     * Returns a List of Messages, sorted starting from newest to oldest, of all message that have already been retrieved
+     * The List of Messages, sorted starting from newest to oldest, of all message that have already been retrieved
      * from Discord with this MessageHistory object using the {@link #retrievePast(int)}, {@link #retrieveFuture(int)}, and
      * {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(String, int)} methods.
      *
-     * @return A List of Messages, sorted newest to oldest.
+     * <p>This will be empty if it was just created using {@link MessageChannel#getHistory()} or similar
+     * methods. You first have to retrieve messages.
+     *
+     * @return An immutable List of Messages, sorted newest to oldest.
      */
     @Nonnull
     public List<Message> getRetrievedHistory()
@@ -502,7 +505,7 @@ public class MessageHistory
         {
             TextChannel t = (TextChannel) channel;
             if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(t, Permission.MESSAGE_HISTORY);
         }
     }
 

@@ -330,7 +330,7 @@ public class MessageReaction
             {
                 GuildChannel channel = (GuildChannel) this.channel;
                 if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
-                    throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
+                    throw new InsufficientPermissionException(channel, Permission.MESSAGE_MANAGE);
             }
             else
             {

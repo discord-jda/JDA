@@ -132,6 +132,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(text);
     }
 
+    @Nonnull
     @Override
     public MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
@@ -139,6 +140,7 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendMessage(embed);
     }
 
+    @Nonnull
     @Override
     public MessageAction sendMessage(@Nonnull Message msg)
     {

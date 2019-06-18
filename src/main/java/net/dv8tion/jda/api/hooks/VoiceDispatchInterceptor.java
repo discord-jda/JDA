@@ -32,6 +32,8 @@ import javax.annotation.Nullable;
  * <br>This will make it impossible to connect to voice channels with
  * the built-in {@link net.dv8tion.jda.api.managers.AudioManager AudioManager}.
  * It is expected that the user has some other means of establishing voice connections when this is used.
+ *
+ * @since  4.0.0
  */
 public interface VoiceDispatchInterceptor
 {

@@ -232,7 +232,7 @@ public class RoleImpl implements Role
     public AuditableRestAction<Void> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
         if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
             throw new HierarchyException("Can't delete role >= highest self-role");
         if (managed)

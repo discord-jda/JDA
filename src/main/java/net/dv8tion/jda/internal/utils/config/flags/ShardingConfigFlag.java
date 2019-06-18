@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils.compress;
+package net.dv8tion.jda.internal.utils.config.flags;
 
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.internal.utils.JDALogger;
-import org.slf4j.Logger;
+import java.util.EnumSet;
 
-import javax.annotation.Nullable;
-import java.util.zip.DataFormatException;
-
-public interface Decompressor
+public enum ShardingConfigFlag
 {
-    Logger LOG = JDALogger.getLog(Decompressor.class);
+    SHUTDOWN_NOW;
 
-    Compression getType();
-
-    void reset();
-
-    void shutdown();
-
-    @Nullable // returns null when the decompression isn't done, for example when no Z_SYNC_FLUSH was present
-    String decompress(byte[] data) throws DataFormatException;
+    public static EnumSet<ShardingConfigFlag> getDefault()
+    {
+        return EnumSet.noneOf(ShardingConfigFlag.class);
+    }
 }
