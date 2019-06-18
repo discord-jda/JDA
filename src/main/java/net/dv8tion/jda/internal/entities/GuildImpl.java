@@ -184,6 +184,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    @Deprecated
     public RestAction<String> retrieveVanityUrl()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
