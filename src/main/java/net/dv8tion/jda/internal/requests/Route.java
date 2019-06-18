@@ -203,7 +203,7 @@ public class Route
 
         public static final Route ADD_REACTION =             new ReactionRoute(PUT);
         public static final Route REMOVE_REACTION =          new ReactionRoute(DELETE);
-        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions",                           "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions",    "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
         public static final Route DELETE_MESSAGE =      new DeleteMessageRoute();
