@@ -71,6 +71,17 @@ public interface Member extends IMentionable, IPermissionHolder
     OffsetDateTime getTimeJoined();
 
     /**
+     * The time when this member boosted the guild.
+     * <br>Null indicates this member is not currently boosting the guild.
+     *
+     * @return The boosting time, or null if the member is not boosting
+     *
+     * @since  4.0.0
+     */
+    @Nullable
+    OffsetDateTime getTimeBoosted();
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.GuildVoiceState VoiceState} of this Member.
      * <br><b>This will be null when the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled manually</b>
      *

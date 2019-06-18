@@ -48,6 +48,9 @@ import java.util.List;
  */
 public interface Emote extends IMentionable, IFakeable
 {
+    /** Template for {@link #getImageUrl()} */
+    String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
+
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.
      *
@@ -59,8 +62,8 @@ public interface Emote extends IMentionable, IFakeable
     Guild getGuild();
 
     /**
-     * Roles this emote is active for
-     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
+     * Roles this emote is active for.
+     * <br><a href="https://discordapp.com/developers/docs/resources/emoji#emoji-object" target="_blank">Learn More</a>
      *
      * @throws IllegalStateException
      *         If this Emote does not have attached roles according to {@link #canProvideRoles()}
@@ -111,7 +114,7 @@ public interface Emote extends IMentionable, IFakeable
     /**
      * Whether this emote is managed. A managed Emote is controlled by Discord, not the Guild administrator, typical
      * via a service like BBTV in conjunction with Twitch.
-     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
+     * <br><a href="https://discordapp.com/developers/docs/resources/emoji#emoji-object" target="_blank">Learn More</a>
      *
      * @return True, if this emote is managed
      */
@@ -187,7 +190,7 @@ public interface Emote extends IMentionable, IFakeable
     @Nonnull
     default String getImageUrl()
     {
-        return "https://cdn.discordapp.com/emojis/" + getId() + (isAnimated() ? ".gif" : ".png");
+        return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
     /**

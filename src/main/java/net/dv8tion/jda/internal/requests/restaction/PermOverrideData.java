@@ -18,8 +18,11 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 
-public class PermOverrideData //TODO: implements JSONString
+import javax.annotation.Nonnull;
+
+public class PermOverrideData implements SerializableData
 {
     public static final int ROLE_TYPE = 0;
     public static final int MEMBER_TYPE = 1;
@@ -52,14 +55,15 @@ public class PermOverrideData //TODO: implements JSONString
         this.deny = override.getDeniedRaw();
     }
 
-//    @Override
-    public String toJSONString()
+    @Nonnull
+    @Override
+    public DataObject toData()
     {
         final DataObject o = DataObject.empty();
         o.put("type",  type);
         o.put("id",    id);
         o.put("allow", allow);
         o.put("deny",  deny);
-        return o.toString();
+        return o;
     }
 }

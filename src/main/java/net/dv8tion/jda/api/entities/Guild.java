@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -48,6 +51,13 @@ import java.util.*;
  */
 public interface Guild extends ISnowflake
 {
+    /** Template for {@link #getIconUrl()}. */
+    String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
+    /** Template for {@link #getSplashUrl()}. */
+    String SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s.png";
+    /** Template for {@link #getBannerUrl()}. */
+    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.png";
+
     /**
      * Retrieves the available regions for this Guild
      * <br>Shortcut for {@link #retrieveRegions(boolean) retrieveRegions(true)}
@@ -186,18 +196,29 @@ public interface Guild extends ISnowflake
      * @return Possibly-null String containing the Guild's icon URL.
      */
     @Nullable
-    String getIconUrl();
+    default String getIconUrl()
+    {
+        String iconId = getIconId();
+        return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
+    }
 
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
      * <b>Possible known features:</b>
      * <ul>
-     *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
-     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #retrieveVanityUrl()}</li>
+     *     <li>ANIMATED_ICON - Guild can have an animated icon</li>
+     *     <li>BANNER - Guild can have a banner</li>
+     *     <li>COMMERCE - Guild can sell software through a store channel</li>
+     *     <li>DISCOVERABLE - Guild shows up in discovery tab</li>
      *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
-     *     <li>VERIFIED - Guild is "verified"</li>
+     *     <li>LURKABLE - Guild allows users to lurk</li>
      *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
+     *     <li>NEWS - Guild can create news channels</li>
+     *     <li>PARTNERED - Guild is "partnered"</li>
+     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
+     *     <li>VERIFIED - Guild is "verified"</li>
+     *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
      * </ul>
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
@@ -229,7 +250,11 @@ public interface Guild extends ISnowflake
      * @return Possibly-null String containing the Guild's splash URL.
      */
     @Nullable
-    String getSplashUrl();
+    default String getSplashUrl()
+    {
+        String splashId = getSplashId();
+        return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
+    }
 
     /**
      * Gets the vanity url for this Guild. The vanity url is the custom invite code of partnered / official Guilds.
@@ -257,10 +282,155 @@ public interface Guild extends ISnowflake
      *         <br>The vanity url of this server
      *
      * @see    #getFeatures()
+     * @see    #getVanityCode()
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("getVanityCode()")
     @CheckReturnValue
     RestAction<String> retrieveVanityUrl();
+
+    /**
+     * The vanity url code for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
+     * <br>The returned String will be the code that can be provided to {@code discord.gg/{code}} to get the invite link.
+     *
+     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
+     *
+     * @return The vanity code or null
+     *
+     * @since  4.0.0
+     *
+     * @see    #getVanityUrl()
+     */
+    @Nullable
+    String getVanityCode();
+
+    /**
+     * The vanity url for this Guild. The vanity url is the custom invite code of partnered / official / boosted Guilds.
+     * <br>The returned String will be the vanity invite link to this guild.
+     *
+     * <p>The Vanity Code can be modified using {@link GuildManager#setVanityCode(String)}.
+     *
+     * @return The vanity url or null
+     *
+     * @since  4.0.0
+     */
+    @Nullable
+    default String getVanityUrl()
+    {
+        return getVanityCode() == null ? null : "https://discord.gg/" + getVanityCode();
+    }
+
+    /**
+     * The description for this guild.
+     * <br>This is displayed in the server browser below the guild name for verified guilds.
+     *
+     * <p>The description can be modified using {@link GuildManager#setDescription(String)}.
+     *
+     * @return The description
+     *
+     * @since  4.0.0
+     */
+    @Nullable
+    String getDescription();
+
+    /**
+     * The guild banner id.
+     * <br>This is shown in guilds below the guild name.
+     *
+     * <p>The banner can be modified using {@link GuildManager#setBanner(Icon)}.
+     *
+     * @return The guild banner id or null
+     *
+     * @since  4.0.0
+     *
+     * @see    #getBannerUrl()
+     */
+    @Nullable
+    String getBannerId();
+
+    /**
+     * The guild banner url.
+     * <br>This is shown in guilds below the guild name.
+     *
+     * <p>The banner can be modified using {@link GuildManager#setBanner(Icon)}.
+     *
+     * @return The guild banner url or null
+     *
+     * @since  4.0.0
+     */
+    @Nullable
+    default String getBannerUrl()
+    {
+        String bannerId = getBannerId();
+        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId);
+    }
+
+    /**
+     * The boost tier for this guild.
+     * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
+     *
+     * @return The boost tier.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    BoostTier getBoostTier();
+
+    /**
+     * The amount of boosts this server currently has.
+     *
+     * @return The boost count
+     *
+     * @since  4.0.0
+     */
+    int getBoostCount();
+
+    /**
+     * Sorted list of {@link net.dv8tion.jda.api.entities.Member Members} that boost this guild.
+     * <br>The list is sorted by {@link net.dv8tion.jda.api.entities.Member#getTimeBoosted()} ascending.
+     * This means the first element will be the member who has been boosting for the longest time.
+     *
+     * @return Possibly-immutable list of members who boost this guild
+     */
+    @Nonnull
+    List<Member> getBoosters();
+
+    /**
+     * The maximum bitrate that can be applied to a voice channel in this guild.
+     * <br>This depends on the features of this guild that can be unlocked for partners or through boosting.
+     *
+     * @return The maximum bitrate
+     *
+     * @since  4.0.0
+     */
+    default int getMaxBitrate()
+    {
+        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 96000 : 128000;
+        return Math.max(maxBitrate, getBoostTier().getMaxBitrate());
+    }
+
+    /**
+     * The maximum amount of members that can join this guild.
+     *
+     * @return The maximum amount of members
+     *
+     * @since  4.0.0
+     */
+    int getMaxMembers();
+
+    /**
+     * The maximum amount of connected members this guild can have at a time.
+     * <br>This includes members that are invisible but still connected to discord.
+     * If too many members are online the guild will become unavailable for others.
+     *
+     * @return The maximum amount of connected members this guild can have
+     *
+     * @since  4.0.0
+     */
+    int getMaxPresences();
 
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
@@ -3649,6 +3819,90 @@ public interface Guild extends ISnowflake
             {
                 if (level.key == key)
                     return level;
+            }
+            return UNKNOWN;
+        }
+    }
+
+    /**
+     * The boost tier for this guild.
+     * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
+     *
+     * @since  4.0.0
+     */
+    enum BoostTier
+    {
+        /**
+         * The default tier.
+         * <br>Unlocked at 0 boosters.
+         */
+        NONE(0, 96000),
+        /**
+         * The first tier.
+         * <br>Unlocked at 2 boosters.
+         */
+        TIER_1(1, 128000),
+        /**
+         * The second tier.
+         * <br>Unlocked at 10 boosters.
+         */
+        TIER_2(2, 256000),
+        /**
+         * The third tier.
+         * <br>Unlocked at 50 boosters.
+         */
+        TIER_3(3, 384000),
+        /**
+         * Placeholder for future tiers.
+         */
+        UNKNOWN(-1, Integer.MAX_VALUE);
+
+        private final int key;
+        private final int maxBitrate;
+
+        BoostTier(int key, int maxBitrate)
+        {
+            this.key = key;
+            this.maxBitrate = maxBitrate;
+        }
+
+        /**
+         * The API key used to represent this tier, identical to the ordinal.
+         *
+         * @return The key
+         */
+        public int getKey()
+        {
+            return key;
+        }
+
+        /**
+         * The maximum bitrate that can be applied to voice channels when this tier is reached.
+         *
+         * @return The maximum bitrate
+         *
+         * @see    net.dv8tion.jda.api.entities.Guild#getMaxBitrate()
+         */
+        public int getMaxBitrate()
+        {
+            return maxBitrate;
+        }
+
+        /**
+         * Resolves the provided API key to the boost tier.
+         *
+         * @param  key
+         *         The API key
+         *
+         * @return The BoostTier or {@link #UNKNOWN}
+         */
+        @Nonnull
+        public static BoostTier fromKey(int key)
+        {
+            for (BoostTier tier : values())
+            {
+                if (tier.key == key)
+                    return tier;
             }
             return UNKNOWN;
         }

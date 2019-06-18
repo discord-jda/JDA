@@ -678,8 +678,8 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Adds a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} to this channel
-         * with the provided {@link GuildActionImpl.RoleData RoleData}!
-         * <br>Use {@link GuildActionImpl#newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
+         * with the provided {@link GuildAction.RoleData RoleData}!
+         * <br>Use {@link #newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
          *
          * @param  role
          *         The target role

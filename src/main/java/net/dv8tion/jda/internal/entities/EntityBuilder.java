@@ -155,6 +155,9 @@ public class EntityBuilder
         final String iconId = guildJson.getString("icon", null);
         final String splashId = guildJson.getString("splash", null);
         final String region = guildJson.getString("region", null);
+        final String description = guildJson.getString("description", null);
+        final String vanityCode = guildJson.getString("vanity_url_code", null);
+        final String bannerId = guildJson.getString("banner", null);
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray emotesArray = guildJson.getArray("emojis");
@@ -164,6 +167,10 @@ public class EntityBuilder
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
         final long afkChannelId = guildJson.getUnsignedLong("afk_channel_id", 0L);
         final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
+        final int boostCount = guildJson.getInt("premium_subscription_count", 0);
+        final int boostTier = guildJson.getInt("premium_tier", 0);
+        final int maxMembers = guildJson.getInt("max_members", 0);
+        final int maxPresences = guildJson.getInt("max_presences", 5000);
         final int mfaLevel = guildJson.getInt("mfa_level", 0);
         final int afkTimeout = guildJson.getInt("afk_timeout", 0);
         final int verificationLevel = guildJson.getInt("verification_level", 0);
@@ -175,12 +182,19 @@ public class EntityBuilder
                 .setIconId(iconId)
                 .setSplashId(splashId)
                 .setRegion(region)
+                .setDescription(description)
+                .setBannerId(bannerId)
+                .setVanityCode(vanityCode)
+                .setMaxMembers(maxMembers)
+                .setMaxPresences(maxPresences)
                 .setOwnerId(ownerId)
                 .setAfkTimeout(Guild.Timeout.fromKey(afkTimeout))
                 .setVerificationLevel(VerificationLevel.fromKey(verificationLevel))
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
-                .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel));
+                .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
+                .setBoostCount(boostCount)
+                .setBoostTier(boostTier);
 
         guildObj.setFeatures(featuresArray.map(it ->
             StreamSupport.stream(it.spliterator(), false)
@@ -384,6 +398,12 @@ public class EntityBuilder
         {
             state.setGuildMuted(memberJson.getBoolean("mute"))
                  .setGuildDeafened(memberJson.getBoolean("deaf"));
+        }
+
+        if (!memberJson.isNull("premium_since"))
+        {
+            TemporalAccessor boostDate = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("premium_since"));
+            member.setBoostDate(Instant.from(boostDate).toEpochMilli());
         }
 
         TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("joined_at"));

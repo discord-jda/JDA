@@ -259,7 +259,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a VoiceChannel
      * @throws IllegalArgumentException
-     *         If the provided bitrate is less than 8000 or greater than 128000
+     *         If the provided bitrate is less than 8000 or greater than {@link net.dv8tion.jda.api.entities.Guild#getMaxBitrate()}
      *
      * @return The current ChannelAction, for chaining convenience
      */

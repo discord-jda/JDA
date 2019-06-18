@@ -89,9 +89,12 @@ public class GuildImpl implements Guild
 
     private Member owner;
     private String name;
-    private String iconId;
-    private String splashId;
+    private String iconId, splashId;
     private String region;
+    private String vanityCode;
+    private String description, banner;
+    private int maxPresences, maxMembers;
+    private int boostCount;
     private long ownerId;
     private Set<String> features;
     private VoiceChannel afkChannel;
@@ -102,6 +105,7 @@ public class GuildImpl implements Guild
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
     private Timeout afkTimeout;
+    private BoostTier boostTier = BoostTier.NONE;
     private boolean available;
     private boolean canSendVerification = false;
 
@@ -178,14 +182,9 @@ public class GuildImpl implements Guild
         return splashId;
     }
 
-    @Override
-    public String getSplashUrl()
-    {
-        return splashId == null ? null : "https://cdn.discordapp.com/splashes/" + id + "/" + splashId + ".png";
-    }
-
     @Nonnull
     @Override
+    @Deprecated
     public RestAction<String> retrieveVanityUrl()
     {
         if (!getSelfMember().hasPermission(Permission.MANAGE_SERVER))
@@ -197,6 +196,63 @@ public class GuildImpl implements Guild
 
         return new RestActionImpl<>(getJDA(), route,
             (response, request) -> response.getObject().getString("code"));
+    }
+
+    @Nullable
+    @Override
+    public String getVanityCode()
+    {
+        return vanityCode;
+    }
+
+    @Nullable
+    @Override
+    public String getDescription()
+    {
+        return description;
+    }
+
+    @Nullable
+    @Override
+    public String getBannerId()
+    {
+        return banner;
+    }
+
+    @Nonnull
+    @Override
+    public BoostTier getBoostTier()
+    {
+        return boostTier;
+    }
+
+    @Override
+    public int getBoostCount()
+    {
+        return boostCount;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions") // can't be null here
+    public List<Member> getBoosters()
+    {
+        return memberCache.applyStream((members) ->
+            members.filter(m -> m.getTimeBoosted() != null)
+                   .sorted(Comparator.comparing(Member::getTimeBoosted))
+                   .collect(Collectors.toList()));
+    }
+
+    @Override
+    public int getMaxMembers()
+    {
+        return maxMembers;
+    }
+
+    @Override
+    public int getMaxPresences()
+    {
+        return maxPresences;
     }
 
     @Override
@@ -1225,6 +1281,36 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setVanityCode(String code)
+    {
+        this.vanityCode = code;
+        return this;
+    }
+
+    public GuildImpl setDescription(String description)
+    {
+        this.description = description;
+        return this;
+    }
+
+    public GuildImpl setBannerId(String bannerId)
+    {
+        this.banner = bannerId;
+        return this;
+    }
+
+    public GuildImpl setMaxPresences(int maxPresences)
+    {
+        this.maxPresences = maxPresences;
+        return this;
+    }
+
+    public GuildImpl setMaxMembers(int maxMembers)
+    {
+        this.maxMembers = maxMembers;
+        return this;
+    }
+
     public GuildImpl setAfkChannel(VoiceChannel afkChannel)
     {
         this.afkChannel = afkChannel;
@@ -1271,6 +1357,18 @@ public class GuildImpl implements Guild
     public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
+        return this;
+    }
+
+    public GuildImpl setBoostTier(int tier)
+    {
+        this.boostTier = BoostTier.fromKey(tier);
+        return this;
+    }
+
+    public GuildImpl setBoostCount(int count)
+    {
+        this.boostCount = count;
         return this;
     }
 
