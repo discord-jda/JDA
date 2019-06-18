@@ -232,6 +232,17 @@ public class GuildImpl implements Guild
         return boostCount;
     }
 
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions") // can't be null here
+    public List<Member> getBoosters()
+    {
+        return memberCache.applyStream((members) ->
+            members.filter(m -> m.getTimeBoosted() != null)
+                   .sorted(Comparator.comparing(Member::getTimeBoosted))
+                   .collect(Collectors.toList()));
+    }
+
     @Override
     public int getMaxMembers()
     {

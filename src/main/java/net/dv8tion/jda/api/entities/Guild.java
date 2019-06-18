@@ -389,6 +389,16 @@ public interface Guild extends ISnowflake
     int getBoostCount();
 
     /**
+     * Sorted list of {@link net.dv8tion.jda.api.entities.Member Members} that boost this guild.
+     * <br>The list is sorted by {@link net.dv8tion.jda.api.entities.Member#getTimeBoosted()} ascending.
+     * This means the first element will be the member who has been boosting for the longest time.
+     *
+     * @return Possibly-immutable list of members who boost this guild
+     */
+    @Nonnull
+    List<Member> getBoosters();
+
+    /**
      * The maximum bitrate that can be applied to a voice channel in this guild.
      * <br>This depends on the features of this guild that can be unlocked for partners or through boosting.
      *
