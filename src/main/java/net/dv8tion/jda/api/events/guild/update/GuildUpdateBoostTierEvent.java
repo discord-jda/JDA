@@ -61,13 +61,15 @@ public class GuildUpdateBoostTierEvent extends GenericGuildUpdateEvent<Guild.Boo
 
     @Nonnull
     @Override
-    public Guild.BoostTier getOldValue() {
+    public Guild.BoostTier getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Guild.BoostTier getNewValue() {
+    public Guild.BoostTier getNewValue()
+    {
         return super.getNewValue();
     }
 }

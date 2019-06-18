@@ -59,13 +59,15 @@ public class GuildUpdateMaxPresencesEvent extends GenericGuildUpdateEvent<Intege
 
     @Nonnull
     @Override
-    public Integer getOldValue() {
+    public Integer getOldValue()
+    {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Integer getNewValue() {
+    public Integer getNewValue()
+    {
         return super.getNewValue();
     }
 }
