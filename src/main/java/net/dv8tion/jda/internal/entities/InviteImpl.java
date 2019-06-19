@@ -223,7 +223,8 @@ public class InviteImpl implements Invite
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeCreated() {
+    public OffsetDateTime getTimeCreated()
+    {
         if (!this.expanded)
             throw new IllegalStateException("Only valid for expanded invites");
         return this.timeCreated;
