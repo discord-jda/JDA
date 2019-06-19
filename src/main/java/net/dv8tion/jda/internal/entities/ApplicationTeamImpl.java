@@ -56,6 +56,23 @@ public class ApplicationTeamImpl implements ApplicationTeam
     }
 
     @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof ApplicationTeamImpl))
+            return false;
+        ApplicationTeamImpl app = (ApplicationTeamImpl) obj;
+        return app.id == this.id;
+    }
+
+    @Override
     public String toString()
     {
         return "ApplicationTeam(" + getId() + ')';

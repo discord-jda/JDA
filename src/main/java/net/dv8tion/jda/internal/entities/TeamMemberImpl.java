@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.TeamMember;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 
 public class TeamMemberImpl implements TeamMember
 {
@@ -52,6 +53,23 @@ public class TeamMemberImpl implements TeamMember
     public long getTeamIdLong()
     {
         return teamId;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(user, teamId);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof TeamMemberImpl))
+            return false;
+        TeamMemberImpl member = (TeamMemberImpl) obj;
+        return member.teamId == this.teamId && member.user.equals(this.user);
     }
 
     @Override
