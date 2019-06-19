@@ -248,7 +248,7 @@ public class Icon
         /**
          * The data header for the encoding of an image.
          *
-         * @return THe data header
+         * @return The data header
          */
         @Nonnull
         public String getHeader()
