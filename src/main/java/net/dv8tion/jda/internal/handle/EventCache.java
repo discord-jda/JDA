@@ -23,10 +23,9 @@ import net.dv8tion.jda.internal.utils.CacheConsumer;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class EventCache
@@ -34,7 +33,7 @@ public class EventCache
     public static final Logger LOG = JDALogger.getLog(EventCache.class);
     /** Sequence difference after which events will be removed from cache */
     public static final long TIMEOUT_AMOUNT = 100;
-    private final Map<Type, TLongObjectMap<List<CacheNode>>> eventCache = new HashMap<>();
+    private final EnumMap<Type, TLongObjectMap<List<CacheNode>>> eventCache = new EnumMap<>(Type.class);
 
     public synchronized void timeout(final long responseTotal)
     {
