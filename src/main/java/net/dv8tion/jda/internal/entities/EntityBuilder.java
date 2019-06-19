@@ -1298,8 +1298,22 @@ public class EntityBuilder
         final String name = object.getString("name");
         final boolean isBotPublic = object.getBoolean("bot_public");
         final User owner = createFakeUser(object.getObject("owner"), false);
+        final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
 
-        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner);
+        return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner, team);
+    }
+
+    public ApplicationTeam createApplicationTeam(DataObject object)
+    {
+        String iconId = object.getString("icon", null);
+        long id = object.getUnsignedLong("id");
+        List<TeamMember> members = map(object, "members", (o) -> {
+            DataObject userJson = o.getObject("user");
+            TeamMember.MembershipState state = TeamMember.MembershipState.fromKey(o.getInt("membership_state"));
+            User user = createFakeUser(userJson, false);
+            return new TeamMemberImpl(user, state, id);
+        });
+        return new ApplicationTeamImpl(iconId, members, id);
     }
 
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)

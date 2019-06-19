@@ -71,6 +71,9 @@ public interface ApplicationInfo extends ISnowflake
     @Nullable
     String getIconUrl();
 
+    @Nullable
+    ApplicationTeam getTeam();
+
     /**
      * Creates a OAuth invite-link used to invite the bot.
      * 
