@@ -57,7 +57,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getOldSplashUrl()
     {
-        return previous == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + previous + ".png";
+        return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
     }
 
     /**
@@ -79,6 +79,6 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getNewSplashUrl()
     {
-        return next == null ? null : "https://cdn.discordapp.com/splashes/" + guild.getId() + "/" + next + ".png";
+        return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
     }
 }

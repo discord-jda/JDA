@@ -61,6 +61,11 @@ public interface User extends IMentionable, IFakeable
      */
     Pattern USER_TAG = Pattern.compile("(.{2,32})#(\\d{4})");
 
+    /** Template for {@link #getAvatarUrl()}. */
+    String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
+    /** Template for {@link #getDefaultAvatarUrl()} */
+    String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
+
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).
      *
@@ -95,7 +100,11 @@ public interface User extends IMentionable, IFakeable
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
      */
     @Nullable
-    String getAvatarUrl();
+    default String getAvatarUrl()
+    {
+        String avatarId = getAvatarId();
+        return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
+    }
 
     /**
      * The Discord Id for this user's default avatar image.
@@ -111,7 +120,10 @@ public interface User extends IMentionable, IFakeable
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
      */
     @Nonnull
-    String getDefaultAvatarUrl();
+    default String getDefaultAvatarUrl()
+    {
+        return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
+    }
 
     /**
      * The URL for the user's avatar image
@@ -121,7 +133,11 @@ public interface User extends IMentionable, IFakeable
      * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
      */
     @Nonnull
-    String getEffectiveAvatarUrl();
+    default String getEffectiveAvatarUrl()
+    {
+        String avatarUrl = getAvatarUrl();
+        return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+    }
 
     /**
      * The "tag" for this user
@@ -145,11 +161,23 @@ public interface User extends IMentionable, IFakeable
      * <br>If a channel has already been opened with this user, it is immediately returned in the RestAction's
      * success consumer without contacting the Discord API.
      *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
-     *     <br>If the recipient User has you blocked</li>
-     * </ul>
+     * <h2>Examples</h2>
+     * <pre>{@code
+     * // Send message without response handling
+     * public void sendMessage(User user, String content) {
+     *     user.openPrivateChannel().queue(channel ->
+     *         channel.sendMessage(content).queue());
+     * }
+     *
+     * // Send message and provide it to the future for further handling
+     * public CompletableFuture<Message> awaitMessage(User user, String content) {
+     *     return user.openPrivateChannel().submit()
+     *                .thenCompose(channel -> channel.sendMessage(content).submit())
+     *                .whenComplete((m, error) -> {
+     *                    if (error != null) error.printStackTrace());
+     *                });
+     * }
+     * }</pre>
      *
      * @throws java.lang.UnsupportedOperationException
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})
@@ -157,7 +185,7 @@ public interface User extends IMentionable, IFakeable
      *         If this User is {@link #isFake() fake}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
-     *         <br>The PrivateChannel to use to directly message this User.
+     *         <br>Retrieves the PrivateChannel to use to directly message this User.
      */
     @Nonnull
     @CheckReturnValue
@@ -167,7 +195,7 @@ public interface User extends IMentionable, IFakeable
      * Finds and collects all {@link net.dv8tion.jda.api.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.api.entities.User User} within the current {@link net.dv8tion.jda.api.JDA JDA} instance.<br>
      * <p>This method is a shortcut for {@link net.dv8tion.jda.api.JDA#getMutualGuilds(User...) JDA.getMutualGuilds(User)}.</p>
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that this user is a member of.
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that this user is a member of.
      */
     @Nonnull
     List<Guild> getMutualGuilds();

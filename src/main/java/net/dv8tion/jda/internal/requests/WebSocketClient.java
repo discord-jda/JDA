@@ -857,7 +857,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             json = handleBinary(binary);
         }
-        handleEvent(json);
+        if (json != null)
+            handleEvent(json);
     }
 
     protected DataObject handleBinary(byte[] binary) throws DataFormatException
@@ -869,6 +870,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         try
         {
             jsonString = decompressor.decompress(binary);
+            if (jsonString == null)
+                return null;
         }
         catch (DataFormatException e)
         {

@@ -188,7 +188,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             throw new UnsupportedOperationException("Can only set the bitrate for a VoiceChannel!");
         if (bitrate != null)
         {
-            int maxBitrate = guild.getFeatures().contains("VIP_REGIONS") ? 128000 : 96000;
+            int maxBitrate = getGuild().getMaxBitrate();
             if (bitrate < 8000)
                 throw new IllegalArgumentException("Bitrate must be greater than 8000.");
             else if (bitrate > maxBitrate)

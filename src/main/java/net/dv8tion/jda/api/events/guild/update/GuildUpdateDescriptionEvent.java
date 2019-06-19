@@ -18,45 +18,44 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that the owner of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
+ * Indicates that the {@link net.dv8tion.jda.api.entities.Guild#getDescription() description} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
  *
- * <p>Can be used to detect when an owner of a guild changes and retrieve the old one
+ * <p>Can be used to detect when the description changes and retrieve the old one
  *
- * <p>Identifier: {@code owner}
+ * <p>Identifier: {@code description}
  */
-public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
+public class GuildUpdateDescriptionEvent extends GenericGuildUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "owner";
+    public static final String IDENTIFIER = "description";
 
-    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable Member oldOwner)
+    public GuildUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
     {
-        super(api, responseNumber, guild, oldOwner, guild.getOwner(), IDENTIFIER);
+        super(api, responseNumber, guild, previous, guild.getDescription(), IDENTIFIER);
     }
 
     /**
-     * The old owner
+     * The old description for this guild
      *
-     * @return The old owner
+     * @return The old description for this guild, or null if none was set
      */
     @Nullable
-    public Member getOldOwner()
+    public String getOldDescription()
     {
         return getOldValue();
     }
 
     /**
-     * The new owner
+     * The new description for this guild
      *
-     * @return The new owner
+     * @return The new description, or null if it was removed
      */
     @Nullable
-    public Member getNewOwner()
+    public String getNewDescription()
     {
         return getNewValue();
     }

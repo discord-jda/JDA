@@ -66,6 +66,12 @@ public interface GuildManager extends Manager<GuildManager>
     long EXPLICIT_CONTENT_LEVEL = 0x200;
     /** Used to reset the verification level field */
     long VERIFICATION_LEVEL     = 0x400;
+    /** Used to reset the banner field */
+    long BANNER                 = 0x800;
+    /** Used to reset the vanity code field */
+    long VANITY_URL   = 0x1000;
+    /** Used to reset the description field */
+    long DESCRIPTION  = 0x2000;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -188,7 +194,7 @@ public interface GuildManager extends Manager<GuildManager>
      *         The new splash for this {@link net.dv8tion.jda.api.entities.Guild Guild}
      *         or {@code null} to reset
      *
-     * @throws IllegalArgumentException
+     * @throws java.lang.IllegalStateException
      *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code INVITE_SPLASH}
      *
      * @return GuildManager for chaining convenience
@@ -303,4 +309,52 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level);
+
+    /**
+     * Sets the Banner {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @param  banner
+     *         The new banner for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         or {@code null} to reset
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code BANNER}
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setBanner(@Nullable Icon banner);
+
+    /**
+     * Sets the Vanity Code {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @param  code
+     *         The new vanity code for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         or {@code null} to reset
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code VANITY_URL}
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setVanityCode(@Nullable String code);
+
+    /**
+     * Sets the Description {@link net.dv8tion.jda.api.entities.Icon Icon} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @param  description
+     *         The new description for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         or {@code null} to reset
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code VERIFIED}
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setDescription(@Nullable String description);
 }

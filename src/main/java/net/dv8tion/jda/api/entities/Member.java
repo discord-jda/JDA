@@ -71,6 +71,17 @@ public interface Member extends IMentionable, IPermissionHolder
     OffsetDateTime getTimeJoined();
 
     /**
+     * The time when this member boosted the guild.
+     * <br>Null indicates this member is not currently boosting the guild.
+     *
+     * @return The boosting time, or null if the member is not boosting
+     *
+     * @since  4.0.0
+     */
+    @Nullable
+    OffsetDateTime getTimeBoosted();
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.GuildVoiceState VoiceState} of this Member.
      * <br><b>This will be null when the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE} is disabled manually</b>
      *
@@ -114,6 +125,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the provided type is null
      *
      * @return The status for that specific client or OFFLINE
+     *
+     * @since  4.0.0
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
@@ -306,6 +319,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -356,6 +371,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -393,6 +410,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -433,6 +452,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -469,14 +490,14 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws java.lang.IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
      *         If the provided member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -512,14 +533,14 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
-     *         If the provided member is the Guild's owner. You cannot modify the owner of a Guild.
      * @throws IllegalArgumentException
      *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
      *         If the provided member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
@@ -569,6 +590,8 @@ public interface Member extends IMentionable, IPermissionHolder
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue

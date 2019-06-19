@@ -45,7 +45,7 @@ public class MemberImpl implements Member
     private final Map<ClientType, OnlineStatus> clientStatus;
 
     private String nickname;
-    private long joinDate;
+    private long joinDate, boostDate;
     private List<Activity> activities = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
@@ -86,6 +86,13 @@ public class MemberImpl implements Member
     public OffsetDateTime getTimeJoined()
     {
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
+    }
+
+    @Nullable
+    @Override
+    public OffsetDateTime getTimeBoosted()
+    {
+        return boostDate != 0 ? OffsetDateTime.ofInstant(Instant.ofEpochMilli(boostDate), OFFSET) : null;
     }
 
     @Override
@@ -248,6 +255,12 @@ public class MemberImpl implements Member
         return this;
     }
 
+    public MemberImpl setBoostDate(long boostDate)
+    {
+        this.boostDate = boostDate;
+        return this;
+    }
+
     public MemberImpl setActivities(List<Activity> activities)
     {
         this.activities = Collections.unmodifiableList(activities);
@@ -274,6 +287,11 @@ public class MemberImpl implements Member
     public Set<Role> getRoleSet()
     {
         return roles;
+    }
+
+    public long getBoostDateRaw()
+    {
+        return boostDate;
     }
 
     @Override
