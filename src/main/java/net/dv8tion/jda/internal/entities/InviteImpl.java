@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -170,11 +172,12 @@ public class InviteImpl implements Invite
 
     @Nonnull
     @Override
+    @Deprecated
+    @DeprecatedSince("4.BETA.0")
+    @ReplaceWith("getTimeCreated()")
     public OffsetDateTime getCreationTime()
     {
-        if (!this.expanded)
-            throw new IllegalStateException("Only valid for expanded invites");
-        return this.timeCreated;
+        return getTimeCreated();
     }
 
     @Override
@@ -216,6 +219,14 @@ public class InviteImpl implements Invite
         if (!this.expanded)
             throw new IllegalStateException("Only valid for expanded invites");
         return this.maxUses;
+    }
+
+    @Nonnull
+    @Override
+    public OffsetDateTime getTimeCreated() {
+        if (!this.expanded)
+            throw new IllegalStateException("Only valid for expanded invites");
+        return this.timeCreated;
     }
 
     @Override
