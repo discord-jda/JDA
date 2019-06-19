@@ -57,7 +57,7 @@ public class Icon
 
     /**
      * Creates an {@link Icon Icon} with the specified {@link java.io.File File}.
-     * <br>We here read the specified File and forward the retrieved byte data to {@link #from(IconType, byte[])}.
+     * <br>We here read the specified File and forward the retrieved byte data to {@link #from(byte[], IconType)}.
      *
      * @param  file
      *         An existing, not-null file.
@@ -78,15 +78,15 @@ public class Icon
         Checks.check(file.exists(), "Provided file does not exist!");
         int index = file.getName().lastIndexOf('.');
         if (index < 0)
-            return from(IconType.JPEG, file);
+            return from(file, IconType.JPEG);
         String ext = file.getName().substring(index + 1);
         IconType type = IconType.fromExtension(ext);
-        return from(type, file);
+        return from(file, type);
     }
 
     /**
      * Creates an {@link Icon Icon} with the specified {@link java.io.InputStream InputStream}.
-     * <br>We here read the specified InputStream and forward the retrieved byte data to {@link #from(IconType, byte[])}.
+     * <br>We here read the specified InputStream and forward the retrieved byte data to {@link #from(byte[], IconType)}.
      * This will use {@link net.dv8tion.jda.api.entities.Icon.IconType#JPEG} but discord is capable for
      * interpreting other types correctly either way.
      *
@@ -106,7 +106,7 @@ public class Icon
     @Nonnull
     public static Icon from(@Nonnull InputStream stream) throws IOException
     {
-        return from(IconType.JPEG, stream);
+        return from(stream, IconType.JPEG);
     }
 
     /**
@@ -125,17 +125,17 @@ public class Icon
     @Nonnull
     public static Icon from(@Nonnull byte[] data)
     {
-        return from(IconType.JPEG, data);
+        return from(data, IconType.JPEG);
     }
 
     /**
      * Creates an {@link Icon Icon} with the specified {@link java.io.File File}.
-     * <br>We here read the specified File and forward the retrieved byte data to {@link #from(IconType, byte[])}.
+     * <br>We here read the specified File and forward the retrieved byte data to {@link #from(byte[], IconType)}.
      *
-     * @param  type
-     *         The type of image
      * @param  file
      *         An existing, not-null file.
+     * @param  type
+     *         The type of image
      *
      * @throws IllegalArgumentException
      *         if the provided file is either null or does not exist
@@ -147,23 +147,23 @@ public class Icon
      * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(File)
      */
     @Nonnull
-    public static Icon from(@Nonnull IconType type, @Nonnull File file) throws IOException
+    public static Icon from(@Nonnull File file, @Nonnull IconType type) throws IOException
     {
         Checks.notNull(file, "Provided File");
         Checks.notNull(type, "IconType");
         Checks.check(file.exists(), "Provided file does not exist!");
 
-        return from(type, IOUtil.readFully(file));
+        return from(IOUtil.readFully(file), type);
     }
 
     /**
      * Creates an {@link Icon Icon} with the specified {@link java.io.InputStream InputStream}.
-     * <br>We here read the specified InputStream and forward the retrieved byte data to {@link #from(IconType, byte[])}.
+     * <br>We here read the specified InputStream and forward the retrieved byte data to {@link #from(byte[], IconType)}.
      *
-     * @param  type
-     *         The type of image
      * @param  stream
      *         A not-null InputStream.
+     * @param  type
+     *         The type of image
      *
      * @throws IllegalArgumentException
      *         if the provided stream is null
@@ -176,21 +176,21 @@ public class Icon
      * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(InputStream)
      */
     @Nonnull
-    public static Icon from(@Nonnull IconType type, @Nonnull InputStream stream) throws IOException
+    public static Icon from(@Nonnull InputStream stream, @Nonnull IconType type) throws IOException
     {
         Checks.notNull(stream, "InputStream");
         Checks.notNull(type, "IconType");
 
-        return from(type, IOUtil.readFully(stream));
+        return from(IOUtil.readFully(stream), type);
     }
 
     /**
      * Creates an {@link Icon Icon} with the specified image data.
      *
-     * @param  type
-     *         The type of image
      * @param  data
      *         not-null image data bytes.
+     * @param  type
+     *         The type of image
      *
      * @throws IllegalArgumentException
      *         if the provided data is null
@@ -198,7 +198,7 @@ public class Icon
      * @return An Icon instance representing the specified image data
      */
     @Nonnull
-    public static Icon from(@Nonnull IconType type, @Nonnull byte[] data)
+    public static Icon from(@Nonnull byte[] data, @Nonnull IconType type)
     {
         Checks.notNull(data, "Provided byte[]");
         Checks.notNull(type, "IconType");
