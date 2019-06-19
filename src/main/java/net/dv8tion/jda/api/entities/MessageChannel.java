@@ -1777,7 +1777,7 @@ public interface MessageChannel extends ISnowflake, Formattable
             encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
         else
             encoded = EncodingUtil.encodeUTF8(unicode);
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -1918,7 +1918,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
 
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()), "@me");
         return new RestActionImpl<Void>(getJDA(), route);
     }
 
