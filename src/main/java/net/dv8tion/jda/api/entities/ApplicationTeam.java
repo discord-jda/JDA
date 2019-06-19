@@ -20,11 +20,41 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Meta-data for the team of an application.
+ */
 public interface ApplicationTeam extends ISnowflake
 {
+    /** Template for {@link #getIconUrl()} */
+    String ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s.png";
+
+    /**
+     * The id hash for the icon of this team.
+     *
+     * @return The icon id, or null if no icon is applied
+     *
+     * @see    #getIconUrl()
+     */
     @Nullable
     String getIconId();
 
+    /**
+     * The url for the icon of this team.
+     *
+     * @return The icon url, or null if no icon is applied
+     */
+    @Nullable
+    default String getIconUrl()
+    {
+        String iconId = getIconId();
+        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+    }
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.TeamMember Team Members}.
+     *
+     * @return Immutable list of team members
+     */
     @Nonnull
     List<? extends TeamMember> getMembers();
 }

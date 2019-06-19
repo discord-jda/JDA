@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.TeamMember;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 public class ApplicationTeamImpl implements ApplicationTeam
@@ -31,7 +32,7 @@ public class ApplicationTeamImpl implements ApplicationTeam
     public ApplicationTeamImpl(String iconId, List<TeamMember> members, long id)
     {
         this.iconId = iconId;
-        this.members = members;
+        this.members = Collections.unmodifiableList(members);
         this.id = id;
     }
 
