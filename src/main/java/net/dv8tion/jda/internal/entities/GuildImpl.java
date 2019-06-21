@@ -163,12 +163,6 @@ public class GuildImpl implements Guild
         return iconId;
     }
 
-    @Override
-    public String getIconUrl()
-    {
-        return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".png";
-    }
-
     @Nonnull
     @Override
     public Set<String> getFeatures()
