@@ -764,7 +764,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
+                long oldPing = api.getGatewayPing();
                 api.setPing(System.currentTimeMillis() - heartbeatStartTime);
+                api.getEventManager().handle(
+                    new GatewayPingEvent(
+                        api, oldPing));
                 break;
             default:
                 LOG.debug("Got unknown op-code: {} with content: {}", opCode, content);
