@@ -196,7 +196,7 @@ public interface Invite
      */
     @Nonnull
     @Deprecated
-    @DeprecatedSince("4.BETA.0")
+    @DeprecatedSince("4.0.0")
     @ReplaceWith("getTimeCreated()")
     OffsetDateTime getCreationTime();
 
