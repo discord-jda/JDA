@@ -559,7 +559,7 @@ public class  DefaultShardManagerBuilder
      * {@link net.dv8tion.jda.api.entities.Activity#playing(String) Activity.playing(String)} or
      * {@link net.dv8tion.jda.api.entities.Activity#streaming(String, String)} Activity.streaming(String, String)}.
      *
-     * @param  game
+     * @param  activity
      *         An instance of {@link net.dv8tion.jda.api.entities.Activity Activity} (null allowed)
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
@@ -567,9 +567,9 @@ public class  DefaultShardManagerBuilder
      * @see    net.dv8tion.jda.api.managers.Presence#setActivity(net.dv8tion.jda.api.entities.Activity)
      */
     @Nonnull
-    public DefaultShardManagerBuilder setActivity(@Nullable final Activity game)
+    public DefaultShardManagerBuilder setActivity(@Nullable final Activity activity)
     {
-        return this.setActivityProvider(id -> game);
+        return this.setActivityProvider(id -> activity);
     }
 
     /**
@@ -580,7 +580,7 @@ public class  DefaultShardManagerBuilder
      * {@link net.dv8tion.jda.api.entities.Activity#playing(String) Activity.playing(String)} or
      * {@link net.dv8tion.jda.api.entities.Activity#streaming(String, String) Activity.streaming(String, String)}.
      *
-     * @param  gameProvider
+     * @param  activityProvider
      *         An instance of {@link net.dv8tion.jda.api.entities.Activity Activity} (null allowed)
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
@@ -588,9 +588,9 @@ public class  DefaultShardManagerBuilder
      * @see    net.dv8tion.jda.api.managers.Presence#setActivity(net.dv8tion.jda.api.entities.Activity)
      */
     @Nonnull
-    public DefaultShardManagerBuilder setActivityProvider(@Nullable final IntFunction<? extends Activity> gameProvider)
+    public DefaultShardManagerBuilder setActivityProvider(@Nullable final IntFunction<? extends Activity> activityProvider)
     {
-        this.activityProvider = gameProvider;
+        this.activityProvider = activityProvider;
         return this;
     }
 
