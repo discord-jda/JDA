@@ -684,7 +684,7 @@ public class JDAImpl implements JDA
     @Override
     public IEventManager getEventManager()
     {
-        return eventManager;
+        return eventManager.getSubject();
     }
 
     @Nonnull
