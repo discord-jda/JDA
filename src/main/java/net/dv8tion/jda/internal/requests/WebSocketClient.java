@@ -51,6 +51,7 @@ import net.dv8tion.jda.internal.utils.compress.ZlibDecompressor;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -1219,12 +1220,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected abstract class ConnectNode implements SessionController.SessionConnectNode
     {
+        @Nonnull
         @Override
         public JDA getJDA()
         {
             return api;
         }
 
+        @Nonnull
         @Override
         public JDA.ShardInfo getShardInfo()
         {
