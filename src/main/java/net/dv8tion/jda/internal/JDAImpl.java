@@ -47,6 +47,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
+import net.dv8tion.jda.internal.hooks.EventManagerProxy;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -97,6 +98,7 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
+    protected final EventManagerProxy eventManager = new EventManagerProxy(new InterfacedEventManager());
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
@@ -108,7 +110,6 @@ public class JDAImpl implements JDA
 
     protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
-    protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
@@ -696,7 +697,7 @@ public class JDAImpl implements JDA
     @Override
     public void setEventManager(IEventManager eventManager)
     {
-        this.eventManager = eventManager == null ? new InterfacedEventManager() : eventManager;
+        this.eventManager.setSubject(eventManager);
     }
 
     @Override
@@ -721,7 +722,7 @@ public class JDAImpl implements JDA
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return Collections.unmodifiableList(eventManager.getRegisteredListeners());
+        return eventManager.getRegisteredListeners();
     }
 
     @Nonnull
