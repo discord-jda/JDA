@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
@@ -837,7 +838,11 @@ public class JDAImpl implements JDA
 
     public void setPing(long ping)
     {
+        long oldPing = this.ping;
         this.ping = ping;
+        getEventManager().handle(
+            new GatewayPingEvent(
+                this, oldPing));
     }
 
     public Requester getRequester()
