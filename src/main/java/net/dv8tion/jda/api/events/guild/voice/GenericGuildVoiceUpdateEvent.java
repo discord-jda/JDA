@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-class GenericGuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements GuildVoiceUpdateEvent
+public class GenericGuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements GuildVoiceUpdateEvent
 {
     protected final VoiceChannel joined, left;
 
