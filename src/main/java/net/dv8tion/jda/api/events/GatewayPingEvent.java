@@ -40,6 +40,26 @@ public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
         this.prev = old;
     }
 
+    /**
+     * The new ping for the current JDA session
+     *
+     * @return The new ping in milliseconds
+     */
+    public long getNewPing()
+    {
+        return next;
+    }
+
+    /**
+     * The previous ping for the current JDA session
+     *
+     * @return The previous ping in milliseconds, or -1 if no ping was available yet
+     */
+    public long getOldPing()
+    {
+        return prev;
+    }
+
     @Nonnull
     @Override
     public String getPropertyIdentifier()
