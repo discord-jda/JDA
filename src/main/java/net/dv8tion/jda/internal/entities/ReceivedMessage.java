@@ -128,11 +128,12 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(emote, "Emote");
 
-        MessageReaction reaction = reactions.stream()
-                .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
-                .findFirst().orElse(null);
+        boolean missingReaction = reactions.stream()
+                   .map(MessageReaction::getReactionEmote)
+                   .filter(MessageReaction.ReactionEmote::isEmote)
+                   .noneMatch(r -> r.getIdLong() == emote.getIdLong());
 
-        if (reaction == null)
+        if (missingReaction)
         {
             Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
                          "Cannot react with the provided emote because it is not available in the current channel.");
