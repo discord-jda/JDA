@@ -86,7 +86,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 {
                     String oldUsername = user.getName();
                     user.setName(name);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                         new UserUpdateNameEvent(
                             getJDA(), responseNumber,
                             user, oldUsername));
@@ -95,7 +95,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 {
                     String oldDiscriminator = user.getDiscriminator();
                     user.setDiscriminator(discriminator);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                         new UserUpdateDiscriminatorEvent(
                             getJDA(), responseNumber,
                             user, oldDiscriminator));
@@ -104,7 +104,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 {
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                         new UserUpdateAvatarEvent(
                             getJDA(), responseNumber,
                             user, oldAvatarId));
@@ -178,7 +178,7 @@ public class PresenceUpdateHandler extends SocketHandler
                     {
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
-                        getJDA().getEventManager().handle(
+                        getJDA().handleEvent(
                             new UserUpdateOnlineStatusEvent(
                                 getJDA(), responseNumber,
                                 user, guild, oldStatus));
@@ -193,7 +193,7 @@ public class PresenceUpdateHandler extends SocketHandler
                             if (!deepEquals)
                             {
                                 member.setActivities(newActivities);
-                                getJDA().getEventManager().handle(
+                                getJDA().handleEvent(
                                     new UserUpdateActivityOrderEvent(
                                         getJDA(), responseNumber,
                                         oldActivities, member));
@@ -212,7 +212,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
                             for (Activity activity : startedActivities)
                             {
-                                getJDA().getEventManager().handle(
+                                getJDA().handleEvent(
                                     new UserActivityStartEvent(
                                         getJDA(), responseNumber,
                                         member, activity));
@@ -220,7 +220,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
                             for (Activity activity : oldActivities)
                             {
-                                getJDA().getEventManager().handle(
+                                getJDA().handleEvent(
                                     new UserActivityEndEvent(
                                         getJDA(), responseNumber,
                                         member, activity));

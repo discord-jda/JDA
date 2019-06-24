@@ -86,7 +86,7 @@ public class Request<T>
             {
                 RestActionImpl.LOG.error("Encountered error while processing success consumer", t);
                 if (t instanceof Error)
-                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
+                    api.handleEvent(new ExceptionEvent(api, t, true));
             }
         });
     }
@@ -113,13 +113,13 @@ public class Request<T>
             {
                 onFailure.accept(failException);
                 if (failException instanceof Error)
-                    api.getEventManager().handle(new ExceptionEvent(api, failException, false));
+                    api.handleEvent(new ExceptionEvent(api, failException, false));
             }
             catch (Throwable t)
             {
                 RestActionImpl.LOG.error("Encountered error while processing failure consumer", t);
                 if (t instanceof Error)
-                    api.getEventManager().handle(new ExceptionEvent(api, t, true));
+                    api.handleEvent(new ExceptionEvent(api, t, true));
             }
         });
     }
@@ -195,6 +195,6 @@ public class Request<T>
     public void handleResponse(@Nonnull Response response)
     {
         restAction.handleResponse(response, this);
-        api.getEventManager().handle(new HttpRequestEvent(this, response));
+        api.handleEvent(new HttpRequestEvent(this, response));
     }
 }

@@ -64,7 +64,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 }
 
                 guild.getStoreChannelView().remove(channelId);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new StoreChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
@@ -81,7 +81,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 }
 
                 guild.getTextChannelsView().remove(channel.getIdLong());
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new TextChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
@@ -106,7 +106,7 @@ public class ChannelDeleteHandler extends SocketHandler
 //                    manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
 //                }
                 guild.getVoiceChannelsView().remove(channel.getIdLong());
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new VoiceChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));
@@ -123,7 +123,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 }
 
                 guild.getCategoriesView().remove(channelId);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new CategoryDeleteEvent(
                         getJDA(), responseNumber,
                         category));
@@ -149,7 +149,7 @@ public class ChannelDeleteHandler extends SocketHandler
                 if (channel.getUser().isFake())
                     getJDA().getFakeUserMap().remove(channel.getUser().getIdLong());
                 ((UserImpl) channel.getUser()).setPrivateChannel(null);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new PrivateChannelDeleteEvent(
                         getJDA(), responseNumber,
                         channel));

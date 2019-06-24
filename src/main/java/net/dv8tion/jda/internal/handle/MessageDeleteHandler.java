@@ -62,7 +62,7 @@ public class MessageDeleteHandler extends SocketHandler
                 return tChan.getGuild().getIdLong();
             if (tChan.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 tChan.setLastMessageId(0); // Reset latest message id as it was deleted.
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildMessageDeleteEvent(
                             getJDA(), responseNumber,
                             messageId, tChan));
@@ -72,14 +72,14 @@ public class MessageDeleteHandler extends SocketHandler
             PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
             if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 pChan.setLastMessageId(0); // Reset latest message id as it was deleted.
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new PrivateMessageDeleteEvent(
                             getJDA(), responseNumber,
                             messageId, pChan));
         }
 
         //Combo event
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
                 new MessageDeleteEvent(
                         getJDA(), responseNumber,
                         messageId, channel));

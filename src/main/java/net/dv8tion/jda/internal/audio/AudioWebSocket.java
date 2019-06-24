@@ -329,7 +329,7 @@ class AudioWebSocket extends WebSocketAdapter
     {
         LOG.error("There was some audio websocket error", cause);
         JDAImpl api = getJDA();
-        api.getEventManager().handle(new ExceptionEvent(api, cause, true));
+        api.handleEvent(new ExceptionEvent(api, cause, true));
     }
 
     @Override

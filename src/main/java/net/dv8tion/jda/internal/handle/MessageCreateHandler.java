@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.entities.MessageType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -46,17 +45,18 @@ public class MessageCreateHandler extends SocketHandler
             return null;
         }
 
+        JDAImpl jda = getJDA();
         if (!content.isNull("guild_id"))
         {
             long guildId = content.getLong("guild_id");
-            if (getJDA().getGuildSetupController().isLocked(guildId))
+            if (jda.getGuildSetupController().isLocked(guildId))
                 return guildId;
         }
 
         Message message;
         try
         {
-            message = getJDA().getEntityBuilder().createMessage(content, true);
+            message = jda.getEntityBuilder().createMessage(content, true);
         }
         catch (IllegalArgumentException e)
         {
@@ -65,14 +65,14 @@ public class MessageCreateHandler extends SocketHandler
                 case EntityBuilder.MISSING_CHANNEL:
                 {
                     final long channelId = content.getLong("channel_id");
-                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
+                    jda.getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message for a channel that JDA does not currently have cached");
                     return null;
                 }
                 case EntityBuilder.MISSING_USER:
                 {
                     final long authorId = content.getObject("author").getLong("id");
-                    getJDA().getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
+                    jda.getEventCache().cache(EventCache.Type.USER, authorId, responseNumber, allContent, this::handle);
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;
                 }
@@ -81,18 +81,17 @@ public class MessageCreateHandler extends SocketHandler
             }
         }
 
-        final IEventManager manager = getJDA().getEventManager();
         switch (message.getChannelType())
         {
             case TEXT:
             {
                 TextChannelImpl channel = (TextChannelImpl) message.getTextChannel();
-                if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
+                if (jda.getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
                 channel.setLastMessageId(message.getIdLong());
-                manager.handle(
+                jda.handleEvent(
                     new GuildMessageReceivedEvent(
-                        getJDA(), responseNumber,
+                        jda, responseNumber,
                         message));
                 break;
             }
@@ -100,9 +99,9 @@ public class MessageCreateHandler extends SocketHandler
             {
                 PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
                 channel.setLastMessageId(message.getIdLong());
-                manager.handle(
+                jda.handleEvent(
                     new PrivateMessageReceivedEvent(
-                        getJDA(), responseNumber,
+                        jda, responseNumber,
                         message));
                 break;
             }
@@ -115,9 +114,9 @@ public class MessageCreateHandler extends SocketHandler
         }
 
         //Combo event
-        manager.handle(
+        jda.handleEvent(
             new MessageReceivedEvent(
-                getJDA(), responseNumber,
+                jda, responseNumber,
                 message));
         return null;
     }

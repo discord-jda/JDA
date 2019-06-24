@@ -99,7 +99,7 @@ public class GuildUpdateHandler extends SocketHandler
                 WebSocketClient.LOG.warn("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
             guild.setOwner(newOwner);
             guild.setOwnerId(ownerId);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateOwnerEvent(
                     getJDA(), responseNumber,
                     guild, oldOwner));
@@ -108,7 +108,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             String oldDescription = guild.getDescription();
             guild.setDescription(description);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateDescriptionEvent(
                     getJDA(), responseNumber,
                     guild, oldDescription));
@@ -117,7 +117,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             String oldBanner = guild.getBannerId();
             guild.setBannerId(bannerId);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateBannerEvent(
                     getJDA(), responseNumber,
                     guild, oldBanner));
@@ -126,7 +126,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             String oldCode = guild.getVanityCode();
             guild.setVanityCode(vanityCode);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateVanityCodeEvent(
                     getJDA(), responseNumber,
                     guild, oldCode));
@@ -135,7 +135,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             int oldMax = guild.getMaxMembers();
             guild.setMaxMembers(maxMembers);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateMaxMembersEvent(
                     getJDA(), responseNumber,
                     guild, oldMax));
@@ -144,7 +144,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             int oldMax = guild.getMaxPresences();
             guild.setMaxPresences(maxPresences);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateMaxPresencesEvent(
                     getJDA(), responseNumber,
                     guild, oldMax));
@@ -153,7 +153,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             int oldCount = guild.getBoostCount();
             guild.setBoostCount(boostCount);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateBoostCountEvent(
                     getJDA(), responseNumber,
                     guild, oldCount));
@@ -162,7 +162,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Guild.BoostTier oldTier = guild.getBoostTier();
             guild.setBoostTier(boostTier);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUpdateBoostTierEvent(
                     getJDA(), responseNumber,
                     guild, oldTier));
@@ -171,7 +171,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             String oldName = guild.getName();
             guild.setName(name);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateNameEvent(
                             getJDA(), responseNumber,
                             guild, oldName));
@@ -180,7 +180,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             String oldIconId = guild.getIconId();
             guild.setIconId(iconId);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateIconEvent(
                             getJDA(), responseNumber,
                             guild, oldIconId));
@@ -189,7 +189,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Set<String> oldFeatures = guild.getFeatures();
             guild.setFeatures(features);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateFeaturesEvent(
                             getJDA(), responseNumber,
                             guild, oldFeatures));
@@ -198,7 +198,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             String oldSplashId = guild.getSplashId();
             guild.setSplashId(splashId);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateSplashEvent(
                             getJDA(), responseNumber,
                             guild, oldSplashId));
@@ -207,7 +207,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             String oldRegion = guild.getRegionRaw();
             guild.setRegion(region);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateRegionEvent(
                             getJDA(), responseNumber,
                             guild, oldRegion));
@@ -216,7 +216,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Guild.VerificationLevel oldVerificationLevel = guild.getVerificationLevel();
             guild.setVerificationLevel(verificationLevel);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateVerificationLevelEvent(
                             getJDA(), responseNumber,
                             guild, oldVerificationLevel));
@@ -225,7 +225,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Guild.NotificationLevel oldNotificationLevel = guild.getDefaultNotificationLevel();
             guild.setDefaultNotificationLevel(notificationLevel);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateNotificationLevelEvent(
                             getJDA(), responseNumber,
                             guild, oldNotificationLevel));
@@ -234,7 +234,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Guild.MFALevel oldMfaLevel = guild.getRequiredMFALevel();
             guild.setRequiredMFALevel(mfaLevel);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateMFALevelEvent(
                             getJDA(), responseNumber,
                             guild, oldMfaLevel));
@@ -243,7 +243,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Guild.ExplicitContentLevel oldExplicitContentLevel = guild.getExplicitContentLevel();
             guild.setExplicitContentLevel(explicitContentLevel);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateExplicitContentLevelEvent(
                             getJDA(), responseNumber,
                             guild, oldExplicitContentLevel));
@@ -252,7 +252,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             Guild.Timeout oldAfkTimeout = guild.getAfkTimeout();
             guild.setAfkTimeout(afkTimeout);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateAfkTimeoutEvent(
                             getJDA(), responseNumber,
                             guild, oldAfkTimeout));
@@ -261,7 +261,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             VoiceChannel oldAfkChannel = guild.getAfkChannel();
             guild.setAfkChannel(afkChannel);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateAfkChannelEvent(
                             getJDA(), responseNumber,
                             guild, oldAfkChannel));
@@ -270,7 +270,7 @@ public class GuildUpdateHandler extends SocketHandler
         {
             TextChannel oldSystemChannel = guild.getSystemChannel();
             guild.setSystemChannel(systemChannel);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUpdateSystemChannelEvent(
                             getJDA(), responseNumber,
                             guild, oldSystemChannel));

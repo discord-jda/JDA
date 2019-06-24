@@ -67,7 +67,7 @@ public class GuildDeleteHandler extends SocketHandler
         if (unavailable)
         {
             guild.setAvailable(false);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUnavailableEvent(
                             getJDA(), responseNumber,
                             guild
@@ -150,7 +150,7 @@ public class GuildDeleteHandler extends SocketHandler
             });
         }
 
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
             new GuildLeaveEvent(
                 getJDA(), responseNumber,
                 guild));

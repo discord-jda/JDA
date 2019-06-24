@@ -54,7 +54,7 @@ public class ChannelCreateHandler extends SocketHandler
             case STORE:
             {
                 builder.createStoreChannel(content, guildId);
-                jda.getEventManager().handle(
+                jda.handleEvent(
                     new StoreChannelCreateEvent(
                         jda, responseNumber,
                         builder.createStoreChannel(content, guildId)));
@@ -62,7 +62,7 @@ public class ChannelCreateHandler extends SocketHandler
             }
             case TEXT:
             {
-                jda.getEventManager().handle(
+                jda.handleEvent(
                     new TextChannelCreateEvent(
                         jda, responseNumber,
                         builder.createTextChannel(content, guildId)));
@@ -70,7 +70,7 @@ public class ChannelCreateHandler extends SocketHandler
             }
             case VOICE:
             {
-                jda.getEventManager().handle(
+                jda.handleEvent(
                     new VoiceChannelCreateEvent(
                         jda, responseNumber,
                         builder.createVoiceChannel(content, guildId)));
@@ -78,7 +78,7 @@ public class ChannelCreateHandler extends SocketHandler
             }
             case CATEGORY:
             {
-                jda.getEventManager().handle(
+                jda.handleEvent(
                     new CategoryCreateEvent(
                         jda, responseNumber,
                         builder.createCategory(content, guildId)));
@@ -86,7 +86,7 @@ public class ChannelCreateHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                jda.getEventManager().handle(
+                jda.handleEvent(
                     new PrivateChannelCreateEvent(
                         jda, responseNumber,
                         builder.createPrivateChannel(content)));

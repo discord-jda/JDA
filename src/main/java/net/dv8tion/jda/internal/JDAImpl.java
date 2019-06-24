@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -142,6 +143,11 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
     }
 
+    public void handleEvent(@Nonnull GenericEvent event)
+    {
+        eventManager.handle(event);
+    }
+
     public boolean isRawEvents()
     {
         return sessionConfig.isRawEvents();
@@ -257,7 +263,7 @@ public class JDAImpl implements JDA
             Status oldStatus = this.status;
             this.status = status;
 
-            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+            handleEvent(new StatusChangeEvent(this, status, oldStatus));
         }
     }
 
