@@ -110,6 +110,7 @@ We offer two implementations for the `IEventManager`:
 - **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
 - **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
 
+By default the **InterfacedEventManager** is used.
 Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
 If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
 configure it on the `JDABuidler` with `setEventManager(...)`.
