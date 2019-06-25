@@ -112,7 +112,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *     <br>The webhook could not be created due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
+     *     <br>The {@link net.dv8tion.jda.api.Permission.VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
      * </ul>
      *
      * @param  name
