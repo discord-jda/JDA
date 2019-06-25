@@ -113,7 +113,7 @@ We offer two implementations for the `IEventManager`:
 By default the **InterfacedEventManager** is used.
 Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
 If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
-configure it on the `JDABuidler` with `setEventManager(...)`.
+configure it on the `JDABuilder` with `setEventManager(...)`.
 
 #### Examples:
 
