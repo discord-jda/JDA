@@ -36,7 +36,7 @@ the Discord Terms of Service.
 
 _Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
-1. [Examples](#creating-the-jda-object)
+1. [Introduction](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
 3. [Entity Lifetimes](#entity-lifetimes)
 4. [Download](#download)
@@ -101,6 +101,18 @@ public static void main(String[] args) {
 
 > See [JDABuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/JDABuilder.html)
   and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
+
+### Listening to Events
+
+The event system in JDA is configured through a hierarchy of classes/interfaces.
+We offer two implementations for the `IEventManager`:
+
+- **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
+- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
+
+Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
+If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
+configure it on the `JDABuidler` with `setEventManager(...)`.
 
 #### Examples:
 
