@@ -493,8 +493,6 @@ this plugin will help catch those cases quickly as it will cause a build failure
 More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction)
 -->
 
-<!--
-TODO: Ensure this is compatible with version 4
 ### [jda-nas](https://github.com/sedmelluq/jda-nas)
 
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
@@ -507,8 +505,6 @@ since discord identifies the sending UDP-Client as the receiver.
 JDABuilder builder = new JDABuilder(BOT_TOKEN)
     .setAudioSendFactory(new NativeAudioSendFactory());
 ```
-
--->
 
 ### [jda-reactor](https://github.com/MinnDevelopment/jda-reactor)
 
