@@ -79,43 +79,28 @@ Use `new JDABuilder(AccountType)` to change to a different account type.
 ### Configuration
 
 Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of configurations to improve the experience.
-In the following table we will only look at `JDABuilder` but the shard manager is very similar.
 
-<details>
-<summary>Show Table</summary>
+**Example**:
 
-| Method | Example Usage | Description |
-|--------|---------------|-------------|
-| setRawEventsEnabled | setRawEventsEnabled(true) | Will enable `RawGatewayEvent` to access discord gateway events directly |
-| setEnabledCacheFlags | setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class)) | Set exactly which cache flags should be enabled, others will be disabled |
-| setDisabledCacheFlags | setDisabledCacheFlags(EnumSet.allOf(CacheFlag.class)) | Set which cache flags should be disabled |
-| setContextMap | setContextMap(map) | Specify MDC information that should be present on JDA threads |
-| setContextEnabled | setContextEnabled(false) | Whether JDA should use MDC or not |
-| setCompression | setCompression(Compression.NONE) | Apply a specific compression algorithm for the gateway connection |
-| setRequestTimeoutRetry | setRequestTimeoutRetry(false) | Whether JDA should retry HTTP requests if they timeout |
-| setToken | setToken(BOT_TOKEN) | Change the token that should be used |
-| setHttpClientBuilder | setHttpClientBuilder(new OkHttpClient.Builder()) | The builder used to create the HTTP client |
-| setHttpClient | setHttpClient(new OkHttpClient()) | Set the HTTP client that should be used |
-| setWebSocketFactory | setWebSocketFactory(new WebSocketFactory()) | Configure the WebSocket that will be used for the gateway connections |
-| setRateLimitPool | setRateLimitPool(Executors.newSingleThreadScheduledExecutor()) | Change the pool used for scheduling HTTP requests |
-| setGatewayPool | setGatewayPool(Executors.newSingleThreadExecutor()) | Change the pool used to send gateway messages |
-| setCallbackPool | setCallbackPool(new ForkJoinPool()) | Change the pool used for handling RestAction callbacks |
-| setBulkDeleteSplittingEnabled | setBulkDeleteSplittingEnabled(false) | Whether bulk delete events should be split to single delete events |
-| setEnableShutdownHook | setEnabledShutdownHook(false) | Whether JDA should try to shutdown when the JVM terminates |
-| setAutoReconnect | setAutoReconnect(false) | Configure whether JDA should attempt to reconnect the gateway session automatically |
-| setEventManager | setEventManager(new ReactiveEventManager()) | Change the event manager implementation |
-| setAudioSendFactory | setAudioSendFactory(new NativeAudioSendFactory()) | Configure a different audio send system |
-| setIdle | setIdle(true) | Set the AFK value in the presence that should be used |
-| setActivity | setActivity(Activity.watching("TV")) | Set the Activity that should be used |
-| setOnlineStatus | setOnlineStatus(OnlineStatus.INVISIBLE) | Set the Online Status that should be used |
-| addEventListeners | addEventListeners(new ReadyListener()) | Add one or more event listeners that will be passed to the Event Manager |
-| removeEventListeners | removeEventListeners(listener) | Remove one or more event listeners |
-| setMaxReconnectDelay | setMaxReconnectDelay(35) | The maximum delay that should be used between reconnect attempts |
-| useSharding | useSharding(1, 10) | The shard configuration that should be applied |
-| setSessionController | setSessionController(new SessionControllerAdapter()) | Configure special handling for reconnects or rate limit handling |
-| setVoiceDispatchInterceptor | setVoiceDispatchInterceptor(lavalink.getVoiceInterceptor()) | Configure special handling for voice connections |
+```java
+public static void main(String[] args) {
+    JDABuilder builder = new JDABuilder(args[0]);
+    
+    // Disable parts of the cache
+    builder.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE));
+    // Enable the bulk delete event
+    builder.setBulkDeleteSplittingEnabled(false);
+    // Disable compression (not recommended)
+    builder.setCompression(Compression.NONE);
+    // Set activity (like "playing Something")
+    builder.setActivity(Activity.watching("TV"));
+    
+    builder.build();
+}
+```
 
-</details>
+> See [JDABuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/JDABuilder.html)
+  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 #### Examples:
 
