@@ -21,6 +21,7 @@ import okhttp3.RequestBody;
 import okio.Okio;
 
 import java.io.*;
+import java.net.URI;
 import java.nio.ByteBuffer;
 
 public class IOUtil
@@ -41,6 +42,11 @@ public class IOUtil
             closeable.close();
         }
         catch (IOException ignored) {}
+    }
+
+    public static String getHost(String uri)
+    {
+        return URI.create(uri).getHost();
     }
 
     /**

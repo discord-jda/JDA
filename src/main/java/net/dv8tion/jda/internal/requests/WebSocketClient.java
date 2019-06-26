@@ -43,6 +43,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.handle.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -309,11 +310,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            socket = api.getWebSocketFactory()
-                    .createSocket(url)
-                    .addHeader("Accept-Encoding", "gzip")
-                    .addListener(this);
-            socket.connect();
+            WebSocketFactory socketFactory = api.getWebSocketFactory();
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (socketFactory)
+            {
+                String host = IOUtil.getHost(url);
+                if (host != null)
+                    socketFactory.setServerName(host);
+                socket = socketFactory.createSocket(url);
+            }
+            socket.addHeader("Accept-Encoding", "gzip")
+                  .addListener(this)
+                  .connect();
         }
         catch (IOException | WebSocketException e)
         {
