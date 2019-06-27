@@ -61,7 +61,7 @@ public class MessageUpdateHandler extends SocketHandler
                     case DEFAULT:
                         return handleMessage(content);
                     default:
-                        WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {} JSON: {}", type, content);
+                        WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
                         return null;
                 }
             }

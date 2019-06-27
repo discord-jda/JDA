@@ -1626,7 +1626,6 @@ public class GuildController
         {
             Checks.notNull(role, "Role in collection");
             checkGuild(role.getGuild(), "Role: " + role.toString());
-            checkPosition(role);
         });
 
         Checks.check(!roles.contains(getGuild().getPublicRole()),
@@ -1636,6 +1635,25 @@ public class GuildController
         final List<Role> memberRoles = member.getRoles();
         if (memberRoles.size() == roles.size() && memberRoles.containsAll(roles))
             return new AuditableRestAction.EmptyRestAction<>(getGuild().getJDA());
+
+        // Check removed roles
+        for (Role r : memberRoles)
+        {
+            if (!roles.contains(r))
+            {
+                checkPosition(r);
+                Checks.check(!r.isManaged(), "Cannot remove managed role from member. Role: %s", r);
+            }
+        }
+        // Check added roles
+        for (Role r : roles)
+        {
+            if (!memberRoles.contains(r))
+            {
+                checkPosition(r);
+                Checks.check(!r.isManaged(), "Cannot add managed role to member. Role: %s", r);
+            }
+        }
 
         //Make sure that the current managed roles are preserved and no new ones are added.
         List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
