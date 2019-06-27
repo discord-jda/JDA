@@ -522,7 +522,7 @@ JDABuilder builder = new JDABuilder(BOT_TOKEN)
 ### [jda-reactor](https://github.com/MinnDevelopment/jda-reactor)
 
 Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
-<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](https://en.wikipedia.org/wiki/Reactive_programming) alternative to common JDA interfaces.
+<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](http://reactivex.io/intro.html) alternative to common JDA interfaces.
 
 ```kotlin
 fun main() {
