@@ -2903,8 +2903,6 @@ public interface Guild extends ISnowflake
      * <br>None of the provided roles may be the <u>Public Role</u> of the current Guild.
      * <br>If a role is both in {@code rolesToAdd} and {@code rolesToRemove} it will be removed.
      *
-     * <p>None of the provided collections may be null
-     *
      * <h1>Warning</h1>
      * <b>This may <u>not</u> be used together with any other role add/remove/modify methods for the same Member
      * within one event listener cycle! The changes made by this require cache updates which are triggered by
