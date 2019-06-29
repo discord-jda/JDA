@@ -1307,13 +1307,14 @@ public class EntityBuilder
     {
         String iconId = object.getString("icon", null);
         long id = object.getUnsignedLong("id");
+        long ownerId = object.getUnsignedLong("owner_user_id", 0);
         List<TeamMember> members = map(object, "members", (o) -> {
             DataObject userJson = o.getObject("user");
             TeamMember.MembershipState state = TeamMember.MembershipState.fromKey(o.getInt("membership_state"));
             User user = createFakeUser(userJson, false);
             return new TeamMemberImpl(user, state, id);
         });
-        return new ApplicationTeamImpl(iconId, members, id);
+        return new ApplicationTeamImpl(iconId, members, id, ownerId);
     }
 
     public AuditLogEntry createAuditLogEntry(GuildImpl guild, DataObject entryJson, DataObject userJson, DataObject webhookJson)

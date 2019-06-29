@@ -29,6 +29,43 @@ public interface ApplicationTeam extends ISnowflake
     String ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s.png";
 
     /**
+     * Searches for the {@link net.dv8tion.jda.api.entities.TeamMember TeamMember}
+     * in {@link #getMembers()} that has the same user id as {@link #getOwnerIdLong()}.
+     * <br>Its possible although unlikely that the owner of the team is not a member, in that case this will be null.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} who owns the team
+     */
+    @Nullable
+    default TeamMember getOwner()
+    {
+        long ownerId = getOwnerIdLong();
+        for (TeamMember m : getMembers())
+        {
+            if (m.getUser().getIdLong() == ownerId)
+                return m;
+        }
+        return null;
+    }
+
+    /**
+     * The id for the user who owns this team.
+     *
+     * @return The owner id
+     */
+    @Nonnull
+    default String getOwnerId()
+    {
+        return Long.toUnsignedString(getOwnerIdLong());
+    }
+
+    /**
+     * The id for the user who owns this team.
+     *
+     * @return The owner id
+     */
+    long getOwnerIdLong();
+
+    /**
      * The id hash for the icon of this team.
      *
      * @return The icon id, or null if no icon is applied
