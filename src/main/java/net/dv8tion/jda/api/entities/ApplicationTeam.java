@@ -41,13 +41,7 @@ public interface ApplicationTeam extends ISnowflake
     @Nullable
     default TeamMember getOwner()
     {
-        long ownerId = getOwnerIdLong();
-        for (TeamMember m : getMembers())
-        {
-            if (m.getUser().getIdLong() == ownerId)
-                return m;
-        }
-        return null;
+        return getMemberById(getOwnerIdLong());
     }
 
     /**
