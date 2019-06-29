@@ -863,7 +863,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalStateException
      *         <ul>
      *             <li>If the message attempting to be edited was not created by the currently logged in account</li>
-     *             <li>If the message contains a MessageEmebd that is not
+     *             <li>If the message contains a MessageEmbed that is not
      *                 {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
      *         </ul>
      *

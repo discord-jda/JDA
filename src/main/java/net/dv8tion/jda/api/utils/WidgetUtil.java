@@ -563,7 +563,7 @@ public class WidgetUtil
                 this.avatar = json.getString("avatar", null);
                 this.nickname = json.getString("nick", null);
                 this.status = OnlineStatus.fromKey(json.getString("status"));
-                this.game = json.isNull("game") ? null : EntityBuilder.createAcitvity(json.getObject("game"));
+                this.game = json.isNull("game") ? null : EntityBuilder.createActivity(json.getObject("game"));
             }
             
             private void setVoiceState(VoiceState voiceState)

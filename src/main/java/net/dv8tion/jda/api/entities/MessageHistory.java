@@ -182,14 +182,14 @@ public class MessageHistory
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder builder = jda.getEntityBuilder();
-            LinkedList<Message> msgs  = new LinkedList<>();
+            LinkedList<Message> messages  = new LinkedList<>();
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                msgs.add(builder.createMessage(historyJson.getObject(i)));
+                messages.add(builder.createMessage(historyJson.getObject(i)));
 
-            msgs.forEach(msg -> history.put(msg.getIdLong(), msg));
-            return msgs;
+            messages.forEach(msg -> history.put(msg.getIdLong(), msg));
+            return messages;
         });
     }
 
@@ -251,19 +251,19 @@ public class MessageHistory
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder builder = jda.getEntityBuilder();
-            LinkedList<Message> msgs  = new LinkedList<>();
+            LinkedList<Message> messages  = new LinkedList<>();
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                msgs.add(builder.createMessage(historyJson.getObject(i)));
+                messages.add(builder.createMessage(historyJson.getObject(i)));
 
-            for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
+            for (Iterator<Message> it = messages.descendingIterator(); it.hasNext();)
             {
                 Message m = it.next();
                 history.put(0, m.getIdLong(), m);
             }
 
-            return msgs;
+            return messages;
         });
     }
 
