@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.utils.Checks;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -94,4 +97,77 @@ public interface ApplicationTeam extends ISnowflake
      */
     @Nonnull
     List<TeamMember> getMembers();
+
+    /**
+     * Check whether {@link #getMember(User)} returns null for the provided user.
+     *
+     * @param  user
+     *         The user to check
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
+     *
+     * @return True, if the provided user is a member of this team
+     */
+    default boolean isMember(@Nonnull User user)
+    {
+        return getMember(user) != null;
+    }
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} instance
+     * for the provided user. If the user is not a member of this team, null is returned.
+     *
+     * @param  user
+     *         The user for the team member
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
+     */
+    @Nullable
+    default TeamMember getMember(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return getMemberById(user.getIdLong());
+    }
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} instance
+     * for the provided user id. If the user is not a member of this team, null is returned.
+     *
+     * @param  userId
+     *         The user id for the team member
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
+     */
+    @Nullable
+    default TeamMember getMemberById(@Nonnull String userId)
+    {
+        return getMemberById(MiscUtil.parseSnowflake(userId));
+    }
+
+    /**
+     * Retrieves the {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} instance
+     * for the provided user id. If the user is not a member of this team, null is returned.
+     *
+     * @param  userId
+     *         The user id for the team member
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.TeamMember TeamMember} for the user or null
+     */
+    @Nullable
+    default TeamMember getMemberById(long userId)
+    {
+        for (TeamMember member : getMembers())
+        {
+            if (member.getUser().getIdLong() == userId)
+                return member;
+        }
+        return null;
+    }
 }
