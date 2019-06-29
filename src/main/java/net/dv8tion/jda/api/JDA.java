@@ -113,6 +113,9 @@ public interface JDA
      */
     class ShardInfo
     {
+        /** Default sharding config with one shard */
+        public static final ShardInfo SINGLE = new ShardInfo(0, 1);
+
         int shardId;
         int shardTotal;
 
@@ -1479,9 +1482,9 @@ public interface JDA
      * The shard information used when creating this instance of JDA.
      * <br>Represents the information provided to {@link net.dv8tion.jda.api.JDABuilder#useSharding(int, int)}.
      *
-     * @return The shard information for this shard or {@code null} if this JDA instance isn't sharding.
+     * @return The shard information for this shard
      */
-    @Nullable
+    @Nonnull
     ShardInfo getShardInfo();
 
     /**

@@ -1032,13 +1032,18 @@ public interface Message extends ISnowflake, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
-     *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REACTION_BLOCKED REACTION_BLOCKED}
+     *     <br>The user has blocked the currently logged in account and the reaction failed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#TOO_MANY_REACTIONS TOO_MANY_REACTIONS}
+     *     <br>The message already has too many reactions to proceed</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
+     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -1097,10 +1102,14 @@ public interface Message extends ISnowflake, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
-     *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REACTION_BLOCKED REACTION_BLOCKED}
+     *     <br>The user has blocked the currently logged in account and the reaction failed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#TOO_MANY_REACTIONS TOO_MANY_REACTIONS}
+     *     <br>The message already has too many reactions to proceed</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
