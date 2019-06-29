@@ -56,5 +56,5 @@ public interface ApplicationTeam extends ISnowflake
      * @return Immutable list of team members
      */
     @Nonnull
-    List<? extends TeamMember> getMembers();
+    List<TeamMember> getMembers();
 }
