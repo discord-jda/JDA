@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Controls states and behaviour of one or multiple {@link net.dv8tion.jda.api.JDA JDA} instances.
@@ -178,7 +177,7 @@ public interface SessionController
          *
          * @return The ShardInfo
          */
-        @Nullable
+        @Nonnull
         JDA.ShardInfo getShardInfo();
 
         /**

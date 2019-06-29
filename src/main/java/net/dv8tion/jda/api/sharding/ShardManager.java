@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.sharding;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -329,10 +331,6 @@ public interface ShardManager
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} visible to this ShardManager instance.
      *
-     * <p>This copies the backing store into a list. This means every call
-     * creates a new list with O(n) complexity. It is recommended to store this into
-     * a local variable or use {@link #getEmoteCache()} and use its more efficient
-     * versions of handling these values.
      *
      * @return Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -350,6 +348,11 @@ public interface ShardManager
      * Emote#canInteract(net.dv8tion.jda.api.entities.User, net.dv8tion.jda.api.entities.MessageChannel)}
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getEmoteCache()} and use its more efficient
+     * versions of handling these values.
      *
      * @return An immutable list of Emotes (which may or may not be available to usage).
      */
@@ -1096,10 +1099,35 @@ public interface ShardManager
      *
      * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
+     *
+     * @deprecated
+     *         Use {@link #setActivity(net.dv8tion.jda.api.entities.Activity)} instead
      */
+    @Deprecated
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("setActivity()")
     default void setGame(@Nullable final Activity game)
     {
         this.setActivityProvider(id -> game);
+    }
+
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for all shards.
+     * <br>An Activity can be retrieved via {@link net.dv8tion.jda.api.entities.Activity#playing(String)}.
+     * For streams you provide a valid streaming url as second parameter.
+     *
+     * <p>This will also change the activity for shards that are created in the future.
+     *
+     * @param  activity
+     *         A {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
+     *
+     * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
+     * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
+     */
+    default void setActivity(@Nullable final Activity activity)
+    {
+        this.setActivityProvider(id -> activity);
     }
 
     /**
@@ -1109,15 +1137,15 @@ public interface ShardManager
      *
      * <p>This will also change the provider for shards that are created in the future.
      *
-     * @param  gameProvider
+     * @param  activityProvider
      *         Provider for an {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
      *
      * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
      */
-    default void setActivityProvider(@Nullable final IntFunction<? extends Activity> gameProvider)
+    default void setActivityProvider(@Nullable final IntFunction<? extends Activity> activityProvider)
     {
-        this.getShardCache().forEach(jda -> jda.getPresence().setActivity(gameProvider == null ? null : gameProvider.apply(jda.getShardInfo().getShardId())));
+        this.getShardCache().forEach(jda -> jda.getPresence().setActivity(activityProvider == null ? null : activityProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**
@@ -1157,7 +1185,7 @@ public interface ShardManager
      * @param  status
      *         The {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
-     * @param  game
+     * @param  activity
      *         A {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
      *
      * @throws java.lang.IllegalArgumentException
@@ -1166,9 +1194,9 @@ public interface ShardManager
      * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
      */
-    default void setPresence(@Nullable final OnlineStatus status, @Nullable final Activity game)
+    default void setPresence(@Nullable final OnlineStatus status, @Nullable final Activity activity)
     {
-        this.setPresenceProvider(id -> status, id -> game);
+        this.setPresenceProvider(id -> status, id -> activity);
     }
 
     /**
@@ -1180,7 +1208,7 @@ public interface ShardManager
      * @param  statusProvider
      *         The {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus}
      *         to be used (OFFLINE/null {@literal ->} INVISIBLE)
-     * @param  gameProvider
+     * @param  activityProvider
      *         A {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
      *
      * @throws java.lang.IllegalArgumentException
@@ -1189,9 +1217,9 @@ public interface ShardManager
      * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
      */
-    default void setPresenceProvider(@Nullable final IntFunction<OnlineStatus> statusProvider, @Nullable final IntFunction<? extends Activity> gameProvider)
+    default void setPresenceProvider(@Nullable final IntFunction<OnlineStatus> statusProvider, @Nullable final IntFunction<? extends Activity> activityProvider)
     {
-        this.getShardCache().forEach(jda -> jda.getPresence().setPresence(statusProvider == null ? null : statusProvider.apply(jda.getShardInfo().getShardId()), gameProvider == null ? null : gameProvider.apply(jda.getShardInfo().getShardId())));
+        this.getShardCache().forEach(jda -> jda.getPresence().setPresence(statusProvider == null ? null : statusProvider.apply(jda.getShardInfo().getShardId()), activityProvider == null ? null : activityProvider.apply(jda.getShardInfo().getShardId())));
     }
 
     /**

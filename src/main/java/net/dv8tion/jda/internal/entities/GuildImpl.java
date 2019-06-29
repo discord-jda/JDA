@@ -163,12 +163,6 @@ public class GuildImpl implements Guild
         return iconId;
     }
 
-    @Override
-    public String getIconUrl()
-    {
-        return iconId == null ? null : "https://cdn.discordapp.com/icons/" + id + "/" + iconId + ".png";
-    }
-
     @Nonnull
     @Override
     public Set<String> getFeatures()
@@ -1039,7 +1033,6 @@ public class GuildImpl implements Guild
         {
             Checks.notNull(role, "Role in collection");
             checkGuild(role.getGuild(), "Role: " + role.toString());
-            checkPosition(role);
         });
 
         Checks.check(!roles.contains(getPublicRole()),
@@ -1050,16 +1043,24 @@ public class GuildImpl implements Guild
         if (Helpers.deepEqualsUnordered(roles, memberRoles))
             return new EmptyRestAction<>(getJDA());
 
-        //Make sure that the current managed roles are preserved and no new ones are added.
-        List<Role> currentManaged = memberRoles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        List<Role> newManaged = roles.stream().filter(Role::isManaged).collect(Collectors.toList());
-        if (!Helpers.deepEqualsUnordered(newManaged, currentManaged))
+        // Check removed roles
+        for (Role r : memberRoles)
         {
-            List<Role> added = new ArrayList<>(newManaged);
-            added.removeAll(currentManaged);
-            List<Role> removed = new ArrayList<>(currentManaged);
-            removed.removeAll(added);
-            throw new IllegalArgumentException("Cannot modify managed roles from a member! Added: " + added + " Removed: " + removed);
+            if (!roles.contains(r))
+            {
+                checkPosition(r);
+                Checks.check(!r.isManaged(), "Cannot remove managed role from member. Role: %s", r);
+            }
+        }
+
+        // Check added roles
+        for (Role r : roles)
+        {
+            if (!memberRoles.contains(r))
+            {
+                checkPosition(r);
+                Checks.check(!r.isManaged(), "Cannot add managed role to member. Role: %s", r);
+            }
         }
 
         DataObject body = DataObject.empty()

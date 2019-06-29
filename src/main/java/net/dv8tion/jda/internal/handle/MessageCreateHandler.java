@@ -76,6 +76,11 @@ public class MessageCreateHandler extends SocketHandler
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;
                 }
+                case EntityBuilder.UNKNOWN_MESSAGE_TYPE:
+                {
+                    WebSocketClient.LOG.debug("Ignoring message with unknown type: {}", content);
+                    return null;
+                }
                 default:
                     throw e;
             }

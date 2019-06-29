@@ -666,10 +666,11 @@ public class JDAImpl implements JDA
         return sessionConfig.getMaxReconnectDelay();
     }
 
+    @Nonnull
     @Override
     public ShardInfo getShardInfo()
     {
-        return shardInfo;
+        return shardInfo == null ? ShardInfo.SINGLE : shardInfo;
     }
 
     @Nonnull

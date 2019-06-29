@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.*;
+import org.apache.commons.collections4.Bag;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -128,7 +129,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
-     * <br>If no user was mentioned, this list is empty.
+     * <br>If no user was mentioned, this list is empty. Elements are sorted in order of appearance. This only
+     * counts direct mentions of the user and not mentions through roles or the everyone tag.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -139,8 +141,38 @@ public interface Message extends ISnowflake, Formattable
     List<User> getMentionedUsers();
 
     /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned users.
+     * <br>This can be used to retrieve the amount of times a user was mentioned in this message. This only
+     * counts direct mentions of the user and not mentions through roles or the everyone tag.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<User> mentions = msg.getMentionedUsers(); // distinct list, in order of appearance
+     *     Bag<User> count = msg.getMentionedUsersBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (User user : mentions)
+     *     {
+     *         content.append(user.getAsTag())
+     *                .append(": ")
+     *                .append(count.getCount(user))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned users
+     *
+     * @see    #getMentionedUsers()
+     */
+    @Nonnull
+    Bag<User> getMentionedUsersBag();
+
+    /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
-     * <br>If none were mentioned, this list is empty.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
      * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
@@ -153,8 +185,39 @@ public interface Message extends ISnowflake, Formattable
     List<TextChannel> getMentionedChannels();
 
     /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned channels.
+     * <br>This can be used to retrieve the amount of times a channel was mentioned in this message.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<TextChannel> mentions = msg.getMentionedTextChannels(); // distinct list, in order of appearance
+     *     Bag<TextChannel> count = msg.getMentionedTextChannelsBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (TextChannel channel : mentions)
+     *     {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(count.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels
+     *
+     * @see    #getMentionedChannels()
+     */
+    @Nonnull
+    Bag<TextChannel> getMentionedChannelsBag();
+
+    /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.
-     * <br>If none were mentioned, this list is empty.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance. This only
+     * counts direct mentions of the role and not mentions through the everyone tag.
      *
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
@@ -165,6 +228,37 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     List<Role> getMentionedRoles();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned roles.
+     * <br>This can be used to retrieve the amount of times a role was mentioned in this message. This only
+     * counts direct mentions of the role and not mentions through the everyone tag.
+     * If a role is not {@link net.dv8tion.jda.api.entities.Role#isMentionable() mentionable} it will not be included.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<Role> mentions = msg.getMentionedRoles(); // distinct list, in order of appearance
+     *     Bag<Role> count = msg.getMentionedRolesBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (Role role : mentions)
+     *     {
+     *         content.append(role.getName())
+     *                .append(": ")
+     *                .append(count.getCount(role))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned roles
+     *
+     * @see    #getMentionedRoles()
+     */
+    @Nonnull
+    Bag<Role> getMentionedRolesBag();
 
     /**
      * Creates an immutable list of {@link net.dv8tion.jda.api.entities.Member Members}
@@ -550,9 +644,9 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * All {@link net.dv8tion.jda.api.entities.Emote Emotes} used in this Message.
-     * <br><b>This only includes Custom Emotes, not UTF8 Emojis.</b> JDA classifies Emotes as the Custom Emojis uploaded
+     * <br><b>This only includes Custom Emotes, not unicode Emojis.</b> JDA classifies Emotes as the Custom Emojis uploaded
      * to a Guild and retrievable with {@link net.dv8tion.jda.api.entities.Guild#getEmotes()}. These are not the same
-     * as the UTF8 emojis that Discord also supports.
+     * as the unicode emojis that Discord also supports. Elements are sorted in order of appearance.
      * <p>
      * <b>This may or may not contain fake Emotes which means they can be displayed but not used by the logged in account.</b>
      * To check whether an Emote is fake you can test if {@link Emote#isFake()} returns true.
@@ -566,6 +660,35 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     List<Emote> getEmotes();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of emotes used in this message.
+     * <br>This can be used to retrieve the amount of times an emote was used in this message.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<Emote> emotes = msg.getEmotes(); // distinct list, in order of appearance
+     *     Bag<Emote> count = msg.getEmotesBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (Emote emote : emotes)
+     *     {
+     *         content.append(emote.getName())
+     *                .append(": ")
+     *                .append(count.getCount(role))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of used emotes
+     *
+     * @see    #getEmotes()
+     */
+    @Nonnull
+    Bag<Emote> getEmotesBag();
 
     /**
      * All {@link net.dv8tion.jda.api.entities.MessageReaction MessageReactions} that are on this Message.
@@ -909,13 +1032,18 @@ public interface Message extends ISnowflake, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
-     *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REACTION_BLOCKED REACTION_BLOCKED}
+     *     <br>The user has blocked the currently logged in account and the reaction failed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#TOO_MANY_REACTIONS TOO_MANY_REACTIONS}
+     *     <br>The message already has too many reactions to proceed</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
+     *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
@@ -974,10 +1102,14 @@ public interface Message extends ISnowflake, Formattable
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
-     *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         typically due to being kicked or removed.
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REACTION_BLOCKED REACTION_BLOCKED}
+     *     <br>The user has blocked the currently logged in account and the reaction failed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#TOO_MANY_REACTIONS TOO_MANY_REACTIONS}
+     *     <br>The message already has too many reactions to proceed</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
