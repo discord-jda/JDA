@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.bean.MutableGuildData;
+import net.dv8tion.jda.api.entities.bean.rich.RichGuildData;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -87,25 +89,13 @@ public class GuildImpl implements Guild
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
 
+    private final MutableGuildData guildData = new RichGuildData();
     private Member owner;
     private String name;
-    private String iconId, splashId;
-    private String region;
     private String vanityCode;
-    private String description, banner;
-    private int maxPresences, maxMembers;
-    private int boostCount;
     private long ownerId;
     private Set<String> features;
-    private VoiceChannel afkChannel;
-    private TextChannel systemChannel;
     private Role publicRole;
-    private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
-    private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
-    private MFALevel mfaLevel = MFALevel.UNKNOWN;
-    private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
-    private Timeout afkTimeout;
-    private BoostTier boostTier = BoostTier.NONE;
     private boolean available;
     private boolean canSendVerification = false;
 
@@ -160,7 +150,7 @@ public class GuildImpl implements Guild
     @Override
     public String getIconId()
     {
-        return iconId;
+        return guildData.getIconId();
     }
 
     @Nonnull
@@ -173,7 +163,7 @@ public class GuildImpl implements Guild
     @Override
     public String getSplashId()
     {
-        return splashId;
+        return guildData.getSplashId();
     }
 
     @Nonnull
@@ -203,27 +193,27 @@ public class GuildImpl implements Guild
     @Override
     public String getDescription()
     {
-        return description;
+        return guildData.getDescription();
     }
 
     @Nullable
     @Override
     public String getBannerId()
     {
-        return banner;
+        return guildData.getBannerId();
     }
 
     @Nonnull
     @Override
     public BoostTier getBoostTier()
     {
-        return boostTier;
+        return guildData.getBoostTier();
     }
 
     @Override
     public int getBoostCount()
     {
-        return boostCount;
+        return guildData.getBoostCount();
     }
 
     @Nonnull
@@ -240,25 +230,25 @@ public class GuildImpl implements Guild
     @Override
     public int getMaxMembers()
     {
-        return maxMembers;
+        return guildData.getMaxMembers();
     }
 
     @Override
     public int getMaxPresences()
     {
-        return maxPresences;
+        return guildData.getMaxPresences();
     }
 
     @Override
     public VoiceChannel getAfkChannel()
     {
-        return afkChannel;
+        return getVoiceChannelById(guildData.getAfkChannelId());
     }
 
     @Override
     public TextChannel getSystemChannel()
     {
-        return systemChannel;
+        return getTextChannelById(guildData.getSystemChannelId());
     }
 
     @Nonnull
@@ -308,14 +298,14 @@ public class GuildImpl implements Guild
     @Override
     public Timeout getAfkTimeout()
     {
-        return afkTimeout;
+        return guildData.getAfkTimeout();
     }
 
     @Nonnull
     @Override
     public String getRegionRaw()
     {
-        return region;
+        return guildData.getRegion();
     }
 
     @Override
@@ -679,28 +669,28 @@ public class GuildImpl implements Guild
     @Override
     public VerificationLevel getVerificationLevel()
     {
-        return verificationLevel;
+        return guildData.getVerificationLevel();
     }
 
     @Nonnull
     @Override
     public NotificationLevel getDefaultNotificationLevel()
     {
-        return defaultNotificationLevel;
+        return guildData.getNotificationLevel();
     }
 
     @Nonnull
     @Override
     public MFALevel getRequiredMFALevel()
     {
-        return mfaLevel;
+        return guildData.getMFALevel();
     }
 
     @Nonnull
     @Override
     public ExplicitContentLevel getExplicitContentLevel()
     {
-        return explicitContentLevel;
+        return guildData.getExplicitContentLevel();
     }
 
     @Override
@@ -714,7 +704,7 @@ public class GuildImpl implements Guild
         if (getJDA().getSelfUser().getPhoneNumber() != null)
             return canSendVerification = true;
 
-        switch (verificationLevel)
+        switch (getVerificationLevel())
         {
             case VERY_HIGH:
                 break; // we already checked for a verified phone number
@@ -1260,7 +1250,7 @@ public class GuildImpl implements Guild
 
     public GuildImpl setIconId(String iconId)
     {
-        this.iconId = iconId;
+        guildData.setIconId(iconId);
         return this;
     }
 
@@ -1272,13 +1262,13 @@ public class GuildImpl implements Guild
 
     public GuildImpl setSplashId(String splashId)
     {
-        this.splashId = splashId;
+        guildData.setSplashId(splashId);
         return this;
     }
 
     public GuildImpl setRegion(String region)
     {
-        this.region = region;
+        guildData.setRegion(region);
         return this;
     }
 
@@ -1290,37 +1280,37 @@ public class GuildImpl implements Guild
 
     public GuildImpl setDescription(String description)
     {
-        this.description = description;
+        guildData.setDescription(description);
         return this;
     }
 
     public GuildImpl setBannerId(String bannerId)
     {
-        this.banner = bannerId;
+        guildData.setBannerId(bannerId);
         return this;
     }
 
     public GuildImpl setMaxPresences(int maxPresences)
     {
-        this.maxPresences = maxPresences;
+        guildData.setMaxPresences(maxPresences);
         return this;
     }
 
     public GuildImpl setMaxMembers(int maxMembers)
     {
-        this.maxMembers = maxMembers;
+        guildData.setMaxMembers(maxMembers);
         return this;
     }
 
     public GuildImpl setAfkChannel(VoiceChannel afkChannel)
     {
-        this.afkChannel = afkChannel;
+        guildData.setAfkChannelId(afkChannel == null ? 0 : afkChannel.getIdLong());
         return this;
     }
 
     public GuildImpl setSystemChannel(TextChannel systemChannel)
     {
-        this.systemChannel = systemChannel;
+        guildData.setSystemChannelId(systemChannel == null ? 0 : systemChannel.getIdLong());
         return this;
     }
 
@@ -1332,44 +1322,44 @@ public class GuildImpl implements Guild
 
     public GuildImpl setVerificationLevel(VerificationLevel level)
     {
-        this.verificationLevel = level;
+        guildData.setVerificationLevel(level);
         this.canSendVerification = false;   //recalc on next send
         return this;
     }
 
     public GuildImpl setDefaultNotificationLevel(NotificationLevel level)
     {
-        this.defaultNotificationLevel = level;
+        guildData.setNotificationLevel(level);
         return this;
     }
 
     public GuildImpl setRequiredMFALevel(MFALevel level)
     {
-        this.mfaLevel = level;
+        guildData.setMFALevel(level);
         return this;
     }
 
     public GuildImpl setExplicitContentLevel(ExplicitContentLevel level)
     {
-        this.explicitContentLevel = level;
+        guildData.setExplicitContentLevel(level);
         return this;
     }
 
     public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
-        this.afkTimeout = afkTimeout;
+        guildData.setAfkTimeout(afkTimeout);
         return this;
     }
 
     public GuildImpl setBoostTier(int tier)
     {
-        this.boostTier = BoostTier.fromKey(tier);
+        guildData.setBoostTier(BoostTier.fromKey(tier));
         return this;
     }
 
     public GuildImpl setBoostCount(int count)
     {
-        this.boostCount = count;
+        guildData.setBoostCount(count);
         return this;
     }
 
