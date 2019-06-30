@@ -315,8 +315,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             synchronized (socketFactory)
             {
                 String host = IOUtil.getHost(url);
+                // null if the host is undefined, unlikely but we should handle it
                 if (host != null)
                     socketFactory.setServerName(host);
+                else // practically should never happen
+                    socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(url);
             }
             socket.addHeader("Accept-Encoding", "gzip")

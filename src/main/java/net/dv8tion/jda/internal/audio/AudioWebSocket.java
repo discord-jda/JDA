@@ -124,8 +124,11 @@ class AudioWebSocket extends WebSocketAdapter
             synchronized (socketFactory)
             {
                 String host = IOUtil.getHost(wssEndpoint);
+                // null if the host is undefined, unlikely but we should handle it
                 if (host != null)
                     socketFactory.setServerName(host);
+                else // practically should never happen
+                    socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(wssEndpoint);
             }
             socket.addListener(this);
