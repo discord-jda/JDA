@@ -364,7 +364,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 <repository>
     <id>jcenter</id>
     <name>jcenter-bintray</name>
-    <url>http://jcenter.bintray.com</url>
+    <url>https://jcenter.bintray.com</url>
 </repository>
 
 ```
