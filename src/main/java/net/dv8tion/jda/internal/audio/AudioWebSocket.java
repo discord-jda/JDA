@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
@@ -118,9 +119,19 @@ class AudioWebSocket extends WebSocketAdapter
 
         try
         {
-            socket = getJDA().getWebSocketFactory()
-                             .createSocket(wssEndpoint)
-                             .addListener(this);
+            WebSocketFactory socketFactory = getJDA().getWebSocketFactory();
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
+            synchronized (socketFactory)
+            {
+                String host = IOUtil.getHost(wssEndpoint);
+                // null if the host is undefined, unlikely but we should handle it
+                if (host != null)
+                    socketFactory.setServerName(host);
+                else // practically should never happen
+                    socketFactory.setServerNames(null);
+                socket = socketFactory.createSocket(wssEndpoint);
+            }
+            socket.addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
             socket.connectAsynchronously();
         }
