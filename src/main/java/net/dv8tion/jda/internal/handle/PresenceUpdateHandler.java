@@ -158,7 +158,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 }
                 else
                 {
-                    if (!content.isNull("client_status"))
+                    if (getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS) && !content.isNull("client_status"))
                     {
                         DataObject json = content.getObject("client_status");
                         EnumSet<ClientType> types = EnumSet.of(ClientType.UNKNOWN);
