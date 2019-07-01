@@ -234,6 +234,10 @@ public class Requester
         Set<String> rays = new LinkedHashSet<>();
         List<okhttp3.Response> responses = new ArrayList<>(4);
         CompletableFuture<Long> task = new CompletableFuture<>();
+        task.whenComplete((i1, i2) -> {
+            for (okhttp3.Response r : responses)
+                r.close();
+        });
         // Initialize state-machine
         attemptRequest(task, request, responses, rays, apiRequest, url, handleOnRatelimit, false, 0);
         return task;
