@@ -206,7 +206,8 @@ public class ClientRateLimiter extends RateLimiter
                             request = it.next();
                             if (isSkipped(it, request))
                                 continue;
-                            Long retryAfter = requester.execute(request);
+                            // Blocking code because I'm lazy and client accounts are not priority
+                            Long retryAfter = requester.execute(request).get();
                             if (retryAfter != null)
                                 break;
                             else
