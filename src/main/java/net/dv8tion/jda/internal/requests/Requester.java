@@ -27,13 +27,14 @@ import net.dv8tion.jda.internal.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import okhttp3.internal.http.HttpMethod;
-import org.jetbrains.annotations.Async;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
-import javax.annotation.Nonnull;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -109,7 +110,7 @@ public class Requester
         return api;
     }
 
-    public <T> void request(@Async.Schedule Request<T> apiRequest)
+    public <T> void request(Request<T> apiRequest)
     {
         if (rateLimiter.isShutdown) 
             throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
@@ -123,7 +124,7 @@ public class Requester
     private void attemptRequest(CompletableFuture<Long> task, okhttp3.Request request,
                                 List<okhttp3.Response> responses, Set<String> rays,
                                 Request apiRequest, String url,
-                                boolean handleOnRatelimit, int attempt)
+                                boolean handleOnRatelimit, boolean timeout, int attempt)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         okhttp3.Response lastResponse = responses.isEmpty() ? null : responses.get(responses.size() - 1);
@@ -144,58 +145,53 @@ public class Requester
             return;
         }
         Call call = httpClient.newCall(request);
-        call.enqueue(new Callback()
-        {
-            @Override
-            public void onFailure(@Nonnull Call call, @Nonnull IOException e)
+        call.enqueue(FunctionalCallback.onFailure((c, e) -> {
+            if (e instanceof SocketException || e instanceof SocketTimeoutException)
             {
-                if (e instanceof SocketException || e instanceof SocketTimeoutException)
+                if (retryOnTimeout && !timeout)
                 {
-                    if (retryOnTimeout)
-                    {
-                        attemptRequest(task, request, responses, rays, apiRequest, url, true, 3);
-                    }
-                    else
-                    {
-                        LOG.error("Requester timed out while executing a request", e);
-                        apiRequest.handleResponse(new Response(null, e, rays));
-                        task.complete(null);
-                    }
-                    return;
+                    // Retry once on timeout
+                    attemptRequest(task, request, responses, rays, apiRequest, url, true, true, attempt + 1);
                 }
-                LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
-                apiRequest.handleResponse(new Response(null, e, rays));
-                task.complete(null);
+                else
+                {
+                    // Second attempt failed or we don't want to retry
+                    LOG.error("Requester timed out while executing a request", e);
+                    apiRequest.handleResponse(new Response(null, e, rays));
+                    task.complete(null);
+                }
+                return;
+            }
+            // Unexpected error, failed request
+            LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
+            apiRequest.handleResponse(new Response(null, e, rays));
+            task.complete(null);
+        })
+        .onSuccess((c, response) -> {
+            responses.add(response);
+            String cfRay = response.header("CF-RAY");
+            if (cfRay != null)
+                rays.add(cfRay);
+
+            if (response.code() >= 500)
+            {
+                LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
+                          route.getMethod(), url, response.code(), attempt);
+                attemptRequest(task, request, responses, rays, apiRequest, url, true, timeout, attempt + 1);
+                return;
             }
 
-            @Override
-            public void onResponse(@Nonnull Call call, @Nonnull okhttp3.Response response)
-            {
-                responses.add(response);
-                String cfRay = response.header("CF-RAY");
-                if (cfRay != null)
-                    rays.add(cfRay);
+            Long retryAfter = rateLimiter.handleResponse(route, response);
+            if (!rays.isEmpty())
+                LOG.debug("Received response with following cf-rays: {}", rays);
 
-                if (response.code() >= 500)
-                {
-                    LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
-                              route.getMethod(), url, response.code(), attempt);
-                    attemptRequest(task, request, responses, rays, apiRequest, url, true, attempt + 1);
-                    return;
-                }
+            if (retryAfter == null)
+                apiRequest.handleResponse(new Response(response, -1, rays));
+            else if (handleOnRatelimit)
+                apiRequest.handleResponse(new Response(response, retryAfter, rays));
 
-                Long retryAfter = rateLimiter.handleResponse(route, response);
-                if (!rays.isEmpty())
-                    LOG.debug("Received response with following cf-rays: {}", rays);
-
-                if (retryAfter == null)
-                    apiRequest.handleResponse(new Response(response, -1, rays));
-                else if (handleOnRatelimit)
-                    apiRequest.handleResponse(new Response(response, retryAfter, rays));
-
-                task.complete(retryAfter);
-            }
-        });
+            task.complete(retryAfter);
+        }).build());
     }
 
     public CompletableFuture<Long> execute(Request<?> apiRequest)
@@ -208,19 +204,14 @@ public class Requester
      *
      * @param  apiRequest
      *         The API request that needs to be sent
-     * @param  handleOnRateLimit
+     * @param  handleOnRatelimit
      *         Whether to forward rate-limits, false if rate limit handling should take over
      *
      * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public CompletableFuture<Long> execute(Request<?> apiRequest, boolean handleOnRateLimit)
-    {
-        return execute(apiRequest, false, handleOnRateLimit);
-    }
-
-    public CompletableFuture<Long> execute(@Async.Execute Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
+    public CompletableFuture<Long> execute(Request<?> apiRequest, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
@@ -231,24 +222,42 @@ public class Requester
             return CompletableFuture.completedFuture(retryAfter);
         }
 
+        // Build the request
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
-
         String url = DISCORD_API_PREFIX + route.getCompiledRoute();
         builder.url(url);
+        applyBody(apiRequest, builder);
+        applyHeaders(apiRequest, builder, url.startsWith(DISCORD_API_PREFIX));
+        okhttp3.Request request = builder.build();
 
+        // Setup response handling
+        Set<String> rays = new LinkedHashSet<>();
+        List<okhttp3.Response> responses = new ArrayList<>(4);
+        CompletableFuture<Long> task = new CompletableFuture<>();
+        // Initialize state-machine
+        attemptRequest(task, request, responses, rays, apiRequest, url, handleOnRatelimit, false, 0);
+        return task;
+    }
+
+    private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder)
+    {
         String method = apiRequest.getRoute().getMethod().toString();
         RequestBody body = apiRequest.getBody();
 
         if (body == null && HttpMethod.requiresRequestBody(method))
             body = EMPTY_BODY;
 
-        builder.method(method, body)
-               .header("user-agent", USER_AGENT)
+        builder.method(method, body);
+    }
+
+    private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder, boolean authorized)
+    {
+        builder.header("user-agent", USER_AGENT)
                .header("accept-encoding", "gzip");
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
-        if (url.startsWith(DISCORD_API_PREFIX))
+        if (authorized)
             builder.header("authorization", authConfig.getToken());
 
         // Apply custom headers like X-Audit-Log-Reason
@@ -258,14 +267,6 @@ public class Requester
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
                 builder.addHeader(header.getKey(), header.getValue());
         }
-
-        okhttp3.Request request = builder.build();
-
-        Set<String> rays = new LinkedHashSet<>();
-        List<okhttp3.Response> responses = new ArrayList<>(4);
-        CompletableFuture<Long> task = new CompletableFuture<>();
-        attemptRequest(task, request, responses, rays, apiRequest, url, handleOnRatelimit, 0);
-        return task;
     }
 
     public OkHttpClient getHttpClient()
