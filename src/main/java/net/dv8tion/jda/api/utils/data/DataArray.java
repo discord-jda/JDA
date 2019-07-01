@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import org.jetbrains.annotations.Contract;
@@ -44,8 +45,19 @@ import java.util.function.UnaryOperator;
 public class DataArray implements Iterable<Object>
 {
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
-    private static final ObjectMapper mapper = new ObjectMapper();
-    private static final CollectionType listType = mapper.getTypeFactory().constructCollectionType(List.class, Object.class);
+    private static final ObjectMapper mapper;
+    private static final SimpleModule module;
+    private static final CollectionType listType;
+
+    static
+    {
+        mapper = new ObjectMapper();
+        module = new SimpleModule();
+        module.addAbstractTypeMapping(Map.class, HashMap.class);
+        module.addAbstractTypeMapping(List.class, ArrayList.class);
+        mapper.registerModule(module);
+        listType = mapper.getTypeFactory().constructRawCollectionType(ArrayList.class);
+    }
 
     protected final List<Object> data;
 
