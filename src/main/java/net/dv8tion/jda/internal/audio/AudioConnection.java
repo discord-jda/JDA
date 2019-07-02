@@ -243,7 +243,7 @@ public class AudioConnection
         {
             LOG.error("Uncaught exception in Audio ready-thread", throwable);
             JDAImpl api = getJDA();
-            api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+            api.handleEvent(new ExceptionEvent(api, throwable, true));
         });
         readyThread.setDaemon(true);
         readyThread.setName(threadIdentifier + " Ready Thread");
@@ -463,7 +463,7 @@ public class AudioConnection
             {
                 LOG.error("There was some uncaught exception in the audio receive thread", throwable);
                 JDAImpl api = getJDA();
-                api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+                api.handleEvent(new ExceptionEvent(api, throwable, true));
             });
             receiveThread.setDaemon(true);
             receiveThread.setName(threadIdentifier + " Receiving Thread");
@@ -488,7 +488,7 @@ public class AudioConnection
                 {
                     LOG.error("I have no idea how, but there was an uncaught exception in the combinedAudioExecutor", throwable);
                     JDAImpl api = getJDA();
-                    api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+                    api.handleEvent(new ExceptionEvent(api, throwable, true));
                 });
                 return t;
             });

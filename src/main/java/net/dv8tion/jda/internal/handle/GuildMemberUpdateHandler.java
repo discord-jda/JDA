@@ -97,14 +97,14 @@ public class GuildMemberUpdateHandler extends SocketHandler
 
         if (removedRoles.size() > 0)
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildMemberRoleRemoveEvent(
                             getJDA(), responseNumber,
                             member, removedRoles));
         }
         if (newRoles.size() > 0)
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildMemberRoleAddEvent(
                             getJDA(), responseNumber,
                             member, newRoles));
@@ -116,7 +116,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             if (!Objects.equals(oldNick, newNick))
             {
                 member.setNickname(newNick);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new GuildMemberUpdateNicknameEvent(
                                 getJDA(), responseNumber,
                                 member, oldNick));
@@ -134,7 +134,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
             {
                 OffsetDateTime oldTime = member.getTimeBoosted();
                 member.setBoostDate(epoch);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new GuildMemberUpdateBoostTimeEvent(
                         getJDA(), responseNumber,
                         member, oldTime));

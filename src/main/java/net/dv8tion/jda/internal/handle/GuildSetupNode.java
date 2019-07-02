@@ -231,7 +231,7 @@ public class GuildSetupNode
             {
                 firedUnavailableJoin = true;
                 JDAImpl api = getController().getJDA();
-                api.getEventManager().handle(new UnavailableGuildJoinedEvent(api, api.getResponseTotal(), id));
+                api.handleEvent(new UnavailableGuildJoinedEvent(api, api.getResponseTotal(), id));
             }
             return;
         }
@@ -389,7 +389,7 @@ public class GuildSetupNode
         updateAudioManagerReference(guild);
         if (join)
         {
-            api.getEventManager().handle(new GuildJoinEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), guild));
             if (requestedChunk)
                 getController().ready(id);
             else
@@ -397,7 +397,7 @@ public class GuildSetupNode
         }
         else
         {
-            api.getEventManager().handle(new GuildReadyEvent(api, api.getResponseTotal(), guild));
+            api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), guild));
             getController().ready(id);
         }
         updateStatus(GuildSetupController.Status.READY);

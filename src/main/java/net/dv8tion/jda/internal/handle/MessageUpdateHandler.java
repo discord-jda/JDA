@@ -115,7 +115,7 @@ public class MessageUpdateHandler extends SocketHandler
                 TextChannel channel = message.getTextChannel();
                 if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new GuildMessageUpdateEvent(
                                 getJDA(), responseNumber,
                                 message));
@@ -123,7 +123,7 @@ public class MessageUpdateHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new PrivateMessageUpdateEvent(
                                 getJDA(), responseNumber,
                                 message));
@@ -141,7 +141,7 @@ public class MessageUpdateHandler extends SocketHandler
         }
 
         //Combo event
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
                 new MessageUpdateEvent(
                         getJDA(), responseNumber,
                         message));
@@ -176,13 +176,13 @@ public class MessageUpdateHandler extends SocketHandler
                 TextChannel tChannel = (TextChannel) channel;
                 if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
                     return tChannel.getGuild().getIdLong();
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new GuildMessageEmbedEvent(
                         getJDA(), responseNumber,
                         messageId, tChannel, embeds));
                 break;
             case PRIVATE:
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new PrivateMessageEmbedEvent(
                         getJDA(), responseNumber,
                         messageId, (PrivateChannel) channel, embeds));
@@ -195,7 +195,7 @@ public class MessageUpdateHandler extends SocketHandler
 
         }
         //Combo event
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
                 new MessageEmbedEvent(
                         getJDA(), responseNumber,
                         messageId, channel, embeds));

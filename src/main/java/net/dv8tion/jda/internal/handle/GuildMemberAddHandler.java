@@ -46,7 +46,7 @@ public class GuildMemberAddHandler extends SocketHandler
         }
 
         Member member = getJDA().getEntityBuilder().createMember(guild, content);
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
             new GuildMemberJoinEvent(
                 getJDA(), responseNumber,
                 member));

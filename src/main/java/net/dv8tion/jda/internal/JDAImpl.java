@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.bean.MutableGuildData;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -48,6 +49,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
+import net.dv8tion.jda.internal.hooks.EventManagerProxy;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -95,6 +97,7 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
+    protected final EventManagerProxy eventManager = new EventManagerProxy(new InterfacedEventManager());
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
@@ -107,7 +110,6 @@ public class JDAImpl implements JDA
 
     protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
-    protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
@@ -140,6 +142,11 @@ public class JDAImpl implements JDA
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
+    }
+
+    public void handleEvent(@Nonnull GenericEvent event)
+    {
+        eventManager.handle(event);
     }
 
     public boolean isRawEvents()
@@ -257,7 +264,7 @@ public class JDAImpl implements JDA
             Status oldStatus = this.status;
             this.status = status;
 
-            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+            handleEvent(new StatusChangeEvent(this, status, oldStatus));
         }
     }
 
@@ -685,7 +692,7 @@ public class JDAImpl implements JDA
     @Override
     public IEventManager getEventManager()
     {
-        return eventManager;
+        return eventManager.getSubject();
     }
 
     @Nonnull
@@ -698,7 +705,7 @@ public class JDAImpl implements JDA
     @Override
     public void setEventManager(IEventManager eventManager)
     {
-        this.eventManager = eventManager == null ? new InterfacedEventManager() : eventManager;
+        this.eventManager.setSubject(eventManager);
     }
 
     @Override
@@ -723,7 +730,7 @@ public class JDAImpl implements JDA
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return Collections.unmodifiableList(eventManager.getRegisteredListeners());
+        return eventManager.getRegisteredListeners();
     }
 
     @Nonnull

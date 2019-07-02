@@ -388,7 +388,7 @@ public class BotRateLimiter extends RateLimiter
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();
-                    api.getEventManager().handle(new ExceptionEvent(api, err, true));
+                    api.handleEvent(new ExceptionEvent(api, err, true));
                 }
             }
         }
