@@ -105,6 +105,11 @@ public class GuildImpl implements Guild
         this.guildData = api.provideGuildData(id);
     }
 
+    public MutableGuildData getMutableGuildData()
+    {
+        return guildData;
+    }
+
     @Nonnull
     @Override
     public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
