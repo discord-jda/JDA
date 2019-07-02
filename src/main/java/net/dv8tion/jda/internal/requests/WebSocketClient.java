@@ -132,7 +132,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.error("Failed to append new session to session controller queue. Shutting down!", e);
             this.api.setStatus(JDA.Status.SHUTDOWN);
-            this.api.getEventManager().handle(
+            this.api.handleEvent(
                 new ShutdownEvent(api, OffsetDateTime.now(), 1006));
             if (e instanceof RuntimeException)
                 throw (RuntimeException) e;
@@ -178,19 +178,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     JDAImpl.LOG.warn("For more info see https://git.io/vrFWP");
                 }
                 JDAImpl.LOG.info("Finished Loading!");
-                api.getEventManager().handle(new ReadyEvent(api, api.getResponseTotal()));
+                api.handleEvent(new ReadyEvent(api, api.getResponseTotal()));
             }
             else
             {
                 updateAudioManagerReferences();
                 JDAImpl.LOG.info("Finished (Re)Loading!");
-                api.getEventManager().handle(new ReconnectedEvent(api, api.getResponseTotal()));
+                api.handleEvent(new ReconnectedEvent(api, api.getResponseTotal()));
             }
         }
         else
         {
             JDAImpl.LOG.info("Successfully resumed Session!");
-            api.getEventManager().handle(new ResumedEvent(api, api.getResponseTotal()));
+            api.handleEvent(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
     }
@@ -418,7 +418,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             if (decompressor != null)
                 decompressor.shutdown();
             api.shutdownInternals();
-            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
+            api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
         {
@@ -430,7 +430,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
-            api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
+            api.handleEvent(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             try
             {
                 handleReconnect();
@@ -491,7 +491,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.error("Reconnect queue rejected session. Shutting down...");
             this.api.setStatus(JDA.Status.SHUTDOWN);
-            this.api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), 1006));
+            this.api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1006));
         }
     }
 
@@ -524,7 +524,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (shutdown)
         {
             api.setStatus(JDA.Status.SHUTDOWN);
-            api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
+            api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
             return;
         }
         String message = "";
@@ -548,7 +548,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 // JDA has already been shutdown so we can stop here
                 api.setStatus(JDA.Status.SHUTDOWN);
-                api.getEventManager().handle(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
+                api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), 1000));
                 return;
             }
             catch (RuntimeException ex)
@@ -715,7 +715,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         catch (Exception ex)
         {
             LOG.error("Encountered exception on lifecycle level\nJSON: {}", content, ex);
-            api.getEventManager().handle(new ExceptionEvent(api, ex, true));
+            api.handleEvent(new ExceptionEvent(api, ex, true));
         }
     }
 
@@ -790,7 +790,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     handler.handle(responseTotal, o);
                     // Send raw event after cache has been updated - including comment
                     if (api.isRawEvents())
-                        api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, o));
+                        api.handleEvent(new RawGatewayEvent(api, responseTotal, o));
                 }
             }
             else
@@ -838,7 +838,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             // Send raw event after cache has been updated
             if (api.isRawEvents())
-                api.getEventManager().handle(new RawGatewayEvent(api, responseTotal, raw));
+                api.handleEvent(new RawGatewayEvent(api, responseTotal, raw));
         }
         catch (ParsingException ex)
         {
@@ -913,7 +913,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
         LOG.error("There was an error in the WebSocket connection", cause);
-        api.getEventManager().handle(new ExceptionEvent(api, cause, true));
+        api.handleEvent(new ExceptionEvent(api, cause, true));
     }
 
     @Override

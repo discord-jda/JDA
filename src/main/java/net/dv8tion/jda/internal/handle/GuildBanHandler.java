@@ -53,14 +53,14 @@ public class GuildBanHandler extends SocketHandler
 
         if (banned)
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildBanEvent(
                             getJDA(), responseNumber,
                             guild, user));
         }
         else
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildUnbanEvent(
                             getJDA(), responseNumber,
                             guild, user));

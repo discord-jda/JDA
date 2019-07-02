@@ -51,6 +51,9 @@ public interface IEventManager
      *
      * @param listener
      *        A listener object
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If the implementation does not support this method
      */
     void register(@Nonnull Object listener);
 
@@ -59,12 +62,17 @@ public interface IEventManager
      *
      * @param listener
      *        The listener object to remove
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If the implementation does not support this method
      */
     void unregister(@Nonnull Object listener);
 
     /**
      * Handles the provided {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
-     * How this is handled is specified by the implementation.
+     * <br>How this is handled is specified by the implementation.
+     *
+     * <p>An implementation should not throw exceptions.
      *
      * @param event
      *        The event to handle
@@ -74,8 +82,10 @@ public interface IEventManager
     /**
      * The currently registered listeners
      *
-     * @return An immutable list of listeners
-     *         that have already been registered
+     * @throws java.lang.UnsupportedOperationException
+     *         If the implementation does not support this method
+     *
+     * @return A list of listeners that have already been registered
      */
     @Nonnull
     List<Object> getRegisteredListeners();

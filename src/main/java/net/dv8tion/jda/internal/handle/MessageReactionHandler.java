@@ -26,7 +26,6 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEv
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
-import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
@@ -137,57 +136,57 @@ public class MessageReactionHandler extends SocketHandler
 
     private void onAdd(MessageReaction reaction, User user)
     {
-        IEventManager manager = getJDA().getEventManager();
+        JDAImpl jda = getJDA();
         switch (reaction.getChannelType())
         {
             case TEXT:
-                manager.handle(
+                jda.handleEvent(
                     new GuildMessageReactionAddEvent(
-                            getJDA(), responseNumber,
-                            user, reaction));
+                        jda, responseNumber,
+                        user, reaction));
                 break;
             case PRIVATE:
-                manager.handle(
+                jda.handleEvent(
                     new PrivateMessageReactionAddEvent(
-                            getJDA(), responseNumber,
-                            user, reaction));
+                        jda, responseNumber,
+                        user, reaction));
                 break;
             case GROUP:
-                WebSocketClient.LOG.error("Received a reaction add for a group which should not be possible");
+                WebSocketClient.LOG.debug("Received a reaction add for a group which should not be possible");
                 return;
         }
 
-        manager.handle(
+        jda.handleEvent(
             new MessageReactionAddEvent(
-                    getJDA(), responseNumber,
-                    user, reaction));
+                jda, responseNumber,
+                user, reaction));
     }
 
     private void onRemove(MessageReaction reaction, User user)
     {
-        IEventManager manager = getJDA().getEventManager();
+        JDAImpl jda = getJDA();
         switch (reaction.getChannelType())
         {
             case TEXT:
-                manager.handle(
+                jda.handleEvent(
                     new GuildMessageReactionRemoveEvent(
-                            getJDA(), responseNumber,
-                            user, reaction));
+                        jda, responseNumber,
+                        user, reaction));
                 break;
             case PRIVATE:
-                manager.handle(
+                jda.handleEvent(
                     new PrivateMessageReactionRemoveEvent(
-                            getJDA(), responseNumber,
-                            user, reaction));
+                        jda, responseNumber,
+                        user, reaction));
                 break;
             case GROUP:
-                WebSocketClient.LOG.error("Received a reaction add for a group which should not be possible");
+                WebSocketClient.LOG.debug("Received a reaction remove for a group which should not be possible");
                 return;
         }
 
-        manager.handle(
+        jda.handleEvent(
             new MessageReactionRemoveEvent(
-                    getJDA(), responseNumber,
-                    user, reaction));
+                jda, responseNumber,
+                user, reaction));
     }
 }

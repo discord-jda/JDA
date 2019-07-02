@@ -45,7 +45,7 @@ public class GuildCreateHandler extends SocketHandler
         if (guild.isAvailable() && unavailable)
         {
             guild.setAvailable(false);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildUnavailableEvent(
                     getJDA(), responseNumber,
                     guild));
@@ -53,7 +53,7 @@ public class GuildCreateHandler extends SocketHandler
         else if (!guild.isAvailable() && !unavailable)
         {
             guild.setAvailable(true);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new GuildAvailableEvent(
                     getJDA(), responseNumber,
                     guild));
