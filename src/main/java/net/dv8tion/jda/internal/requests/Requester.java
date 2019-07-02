@@ -35,6 +35,7 @@ import okhttp3.internal.http.HttpMethod;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,6 +122,13 @@ public class Requester
             execute(apiRequest, true);
     }
 
+    private static boolean isRetry(Throwable e)
+    {
+        return e instanceof SocketException             // Socket couldn't be created or access failed
+            || e instanceof SocketTimeoutException      // Connection timed out
+            || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
+    }
+
     private void attemptRequest(CompletableFuture<Long> task, okhttp3.Request request,
                                 List<okhttp3.Response> responses, Set<String> rays,
                                 Request apiRequest, String url,
@@ -146,7 +154,7 @@ public class Requester
         }
         Call call = httpClient.newCall(request);
         call.enqueue(FunctionalCallback.onFailure((c, e) -> {
-            if (e instanceof SocketException || e instanceof SocketTimeoutException)
+            if (isRetry(e))
             {
                 if (retryOnTimeout && !timeout)
                 {
