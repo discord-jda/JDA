@@ -117,7 +117,7 @@ public class JDAImpl implements JDA
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected long responseTotal;
-    protected long ping = -1;
+    protected long gatewayPing = -1;
     protected String gatewayUrl;
 
     protected String clientId = null;
@@ -419,7 +419,7 @@ public class JDAImpl implements JDA
     @Override
     public long getGatewayPing()
     {
-        return ping;
+        return gatewayPing;
     }
 
     @Nonnull
@@ -836,13 +836,11 @@ public class JDAImpl implements JDA
         this.audioSendFactory = factory;
     }
 
-    public void setPing(long ping)
+    public void setGatewayPing(long ping)
     {
-        long oldPing = this.ping;
-        this.ping = ping;
-        getEventManager().handle(
-            new GatewayPingEvent(
-                this, oldPing));
+        long oldPing = this.gatewayPing;
+        this.gatewayPing = ping;
+        handleEvent(new GatewayPingEvent(this, oldPing));
     }
 
     public Requester getRequester()
