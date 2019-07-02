@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.entities.bean.rich;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.bean.MutableGuildData;
 
+import java.util.Objects;
+
 public class RichGuildData implements MutableGuildData
 {
     private String iconId, splashId, bannerId;
@@ -53,6 +55,46 @@ public class RichGuildData implements MutableGuildData
         data.setSystemChannelId(systemChannelId);
         data.setAfkChannelId(afkChannelId);
         return data;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof RichGuildData))
+            return false;
+
+        RichGuildData data = (RichGuildData) obj;
+        return Objects.equals(iconId, data.iconId)
+            && Objects.equals(splashId, data.splashId)
+            && Objects.equals(bannerId, data.bannerId)
+            && Objects.equals(description, data.description)
+            && Objects.equals(region, data.region)
+            && maxMembers == data.maxMembers
+            && maxPresences == data.maxPresences
+            && boostCount == data.boostCount
+            && boostTier == data.boostTier
+            && notificationLevel == data.notificationLevel
+            && explicitContentLevel == data.explicitContentLevel
+            && mfaLevel == data.mfaLevel
+            && verificationLevel == data.verificationLevel
+            && afkTimeout == data.afkTimeout
+            && systemChannelId == data.systemChannelId
+            && afkChannelId == data.afkChannelId;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(
+            iconId, splashId, bannerId,
+            description, region,
+            maxMembers, maxPresences, boostCount,
+            boostTier, notificationLevel, explicitContentLevel,
+            mfaLevel, verificationLevel, afkTimeout,
+            systemChannelId, afkChannelId
+        );
     }
 
     @Override

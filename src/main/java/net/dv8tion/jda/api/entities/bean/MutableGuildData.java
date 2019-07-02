@@ -24,7 +24,7 @@ import java.util.function.LongFunction;
 
 public interface MutableGuildData extends GuildData
 {
-    LongFunction<MutableGuildData> LIGHT_PROVIDER = (id) -> new LightGuildData();
+    LongFunction<MutableGuildData> LIGHT_PROVIDER = (id) -> LightGuildData.SINGLETON;
     LongFunction<MutableGuildData> RICH_PROVIDER = (id) -> new RichGuildData();
 
     // Returning old value, this can be useful for update events!

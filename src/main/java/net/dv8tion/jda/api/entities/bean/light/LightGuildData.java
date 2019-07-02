@@ -23,11 +23,15 @@ import net.dv8tion.jda.api.entities.bean.MutableGuildData;
 
 public class LightGuildData implements MutableGuildData
 {
+    public static final LightGuildData SINGLETON = new LightGuildData();
+
     @Override
     public GuildData copy()
     {
-        return new LightGuildData();
+        return this;
     }
+
+    // EQUALS = IDENTITY (see Object)
 
     @Override
     public String setIconId(String id)

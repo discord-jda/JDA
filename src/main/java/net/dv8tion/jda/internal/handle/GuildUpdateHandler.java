@@ -141,7 +141,8 @@ public class GuildUpdateHandler extends SocketHandler
 
     private void handleDigestUpdate(GuildImpl guild, MutableGuildData data, GuildData oldData)
     {
-        //TODO: Equality check?
+        if (data.equals(oldData))
+            return;
         getJDA().handleEvent(
             new GuildUpdateDigestEvent(
                 getJDA(), responseNumber,
