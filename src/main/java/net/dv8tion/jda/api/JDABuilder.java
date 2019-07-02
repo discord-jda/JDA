@@ -19,6 +19,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.bean.MutableGuildData;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
@@ -30,10 +31,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
-import net.dv8tion.jda.internal.utils.config.MetaConfig;
-import net.dv8tion.jda.internal.utils.config.SessionConfig;
-import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
+import net.dv8tion.jda.internal.utils.config.*;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
@@ -42,6 +40,7 @@ import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.LongFunction;
 
 /**
  * Used to create new {@link net.dv8tion.jda.api.JDA} instances. This is also useful for making sure all of
@@ -57,6 +56,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
     protected final AccountType accountType;
+    protected final DataProviderConfig dataProviderConfig = new DataProviderConfig();
 
     protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
@@ -823,6 +823,13 @@ public class JDABuilder
         return this;
     }
 
+    @Nonnull
+    public JDABuilder setGuildDataProvider(@Nullable LongFunction<? extends MutableGuildData> provider)
+    {
+        this.dataProviderConfig.setGuildProvider(provider);
+        return this;
+    }
+
     /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
@@ -869,7 +876,7 @@ public class JDABuilder
         SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay);
         MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
 
-        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, dataProviderConfig);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

@@ -17,9 +17,16 @@
 package net.dv8tion.jda.api.entities.bean;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.bean.light.LightGuildData;
+import net.dv8tion.jda.api.entities.bean.rich.RichGuildData;
+
+import java.util.function.LongFunction;
 
 public interface MutableGuildData extends GuildData
 {
+    LongFunction<MutableGuildData> LIGHT_PROVIDER = (id) -> new LightGuildData();
+    LongFunction<MutableGuildData> RICH_PROVIDER = (id) -> new RichGuildData();
+
     // Returning old value, this can be useful for update events!
     String setIconId(String id);
     String setSplashId(String id);

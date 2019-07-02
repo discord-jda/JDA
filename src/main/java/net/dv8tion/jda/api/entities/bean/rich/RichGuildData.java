@@ -33,6 +33,29 @@ public class RichGuildData implements MutableGuildData
     private long systemChannelId, afkChannelId;
 
     @Override
+    public RichGuildData copy()
+    {
+        RichGuildData data = new RichGuildData();
+        data.setIconId(iconId);
+        data.setSplashId(splashId);
+        data.setBannerId(bannerId);
+        data.setDescription(description);
+        data.setRegion(region);
+        data.setMaxMembers(maxMembers);
+        data.setMaxPresences(maxPresences);
+        data.setBoostCount(boostCount);
+        data.setBoostTier(boostTier);
+        data.setNotificationLevel(notificationLevel);
+        data.setExplicitContentLevel(explicitContentLevel);
+        data.setMFALevel(mfaLevel);
+        data.setVerificationLevel(verificationLevel);
+        data.setAfkTimeout(afkTimeout);
+        data.setSystemChannelId(systemChannelId);
+        data.setAfkChannelId(afkChannelId);
+        return data;
+    }
+
+    @Override
     public String setIconId(String id)
     {
         String oldIcon = this.iconId;

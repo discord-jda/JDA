@@ -18,10 +18,17 @@ package net.dv8tion.jda.api.entities.bean.light;
 
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.bean.GuildData;
 import net.dv8tion.jda.api.entities.bean.MutableGuildData;
 
 public class LightGuildData implements MutableGuildData
 {
+    @Override
+    public GuildData copy()
+    {
+        return new LightGuildData();
+    }
+
     @Override
     public String setIconId(String id)
     {

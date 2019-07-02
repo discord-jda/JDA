@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.bean.MutableGuildData;
-import net.dv8tion.jda.api.entities.bean.rich.RichGuildData;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -89,7 +88,7 @@ public class GuildImpl implements Guild
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
 
-    private final MutableGuildData guildData = new RichGuildData();
+    private final MutableGuildData guildData;
     private Member owner;
     private String name;
     private String vanityCode;
@@ -103,6 +102,7 @@ public class GuildImpl implements Guild
     {
         this.id = id;
         this.api = new UpstreamReference<>(api);
+        this.guildData = api.provideGuildData(id);
     }
 
     @Nonnull

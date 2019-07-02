@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 
 public interface GuildData
 {
+    GuildData copy();
+
     String getIconId();
     String getSplashId();
     String getDescription();
