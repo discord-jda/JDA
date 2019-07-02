@@ -26,11 +26,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect changes to the gateway ping.
  *
- * <p>Identifier: {@code ping}
+ * <p>Identifier: {@code gateway-ping}
  */
 public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
 {
-    public static final String IDENTIFIER = "ping";
+    public static final String IDENTIFIER = "gateway-ping";
     private final long next, prev;
 
     public GatewayPingEvent(@Nonnull JDA api, long old)
