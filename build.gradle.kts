@@ -33,7 +33,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "2.0.4"
 }
 
-val versionObj = Version(major="4", minor="BETA", revision="0")
+val versionObj = Version(major = "4", minor = "BETA", revision = "0")
 
 project.group = "net.dv8tion"
 project.version = "$versionObj"
@@ -95,25 +95,25 @@ dependencies {
 }
 
 val bintrayUpload: BintrayUploadTask by tasks
-val compileJava  : JavaCompile by tasks
-val shadowJar    : ShadowJar by tasks
-val javadoc      : Javadoc by tasks
-val jar          : Jar by tasks
-val build        : Task by tasks
-val clean        : Task by tasks
-val test         : Task by tasks
-val check        : Task by tasks
+val compileJava: JavaCompile by tasks
+val shadowJar: ShadowJar by tasks
+val javadoc: Javadoc by tasks
+val jar: Jar by tasks
+val build: Task by tasks
+val clean: Task by tasks
+val test: Task by tasks
+val check: Task by tasks
 
 shadowJar.classifier = "withDependencies"
 
 val sourcesForRelease = task<Copy>("sourcesForRelease") {
-    from ("src/main/java") {
+    from("src/main/java") {
         include("**/JDAInfo.java")
         val tokens = mapOf(
-            "versionMajor"    to versionObj.major,
-            "versionMinor"    to versionObj.minor,
-            "versionRevision" to versionObj.revision,
-            "versionBuild"    to getBuild()
+                "versionMajor" to versionObj.major,
+                "versionMinor" to versionObj.minor,
+                "versionRevision" to versionObj.revision,
+                "versionBuild" to getBuild()
         )
         filter<ReplaceTokens>(mapOf("tokens" to tokens))
     }
@@ -148,7 +148,7 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
 
 val sourcesJar = task<Jar>("sourcesJar") {
     classifier = "sources"
-    from ("src/main/java") {
+    from("src/main/java") {
         exclude("**/JDAInfo.java")
     }
     from(sourcesForRelease.destinationDir)
@@ -183,8 +183,8 @@ compileJava.apply {
 jar.apply {
     baseName = project.name
     manifest.attributes(mapOf(
-        "Implementation-Version" to version,
-        "Automatic-Module-Name"  to "net.dv8tion.jda"))
+            "Implementation-Version" to version,
+            "Automatic-Module-Name" to "net.dv8tion.jda"))
 }
 
 javadoc.apply {
@@ -197,9 +197,9 @@ javadoc.apply {
         opt.author()
         opt.tags("incubating:a:Incubating:")
         opt.links(
-            "https://docs.oracle.com/javase/8/docs/api/",
-            "https://takahikokawasaki.github.io/nv-websocket-client/",
-            "https://square.github.io/okhttp/3.x/okhttp/")
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://takahikokawasaki.github.io/nv-websocket-client/",
+                "https://square.github.io/okhttp/3.x/okhttp/")
         if (JavaVersion.current().isJava9Compatible) {
             opt.addBooleanOption("html5", true)
             opt.addStringOption("-release", "8")
@@ -283,15 +283,15 @@ fun getProjectProperty(propertyName: String): String {
 
 fun getBuild(): String {
     return System.getenv("BUILD_NUMBER")
-        ?: System.getProperty("BUILD_NUMBER")
-        ?: System.getenv("GIT_COMMIT")?.substring(0, 7)
-        ?: System.getProperty("GIT_COMMIT")?.substring(0, 7)
-        ?:"DEV"
+            ?: System.getProperty("BUILD_NUMBER")
+            ?: System.getenv("GIT_COMMIT")?.substring(0, 7)
+            ?: System.getProperty("GIT_COMMIT")?.substring(0, 7)
+            ?: "DEV"
 }
 
 class Version(
-    val major: String,
-    val minor: String,
-    val revision: String) {
-    override fun toString()="$major.$minor.${revision}_${getBuild()}"
+        val major: String,
+        val minor: String,
+        val revision: String) {
+    override fun toString() = "$major.$minor.${revision}_${getBuild()}"
 }
