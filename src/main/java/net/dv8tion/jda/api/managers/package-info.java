@@ -21,6 +21,6 @@
  *
  * <p>Manager types allow to directly modify one or more values.
  *
- * <p>All managers (except for {@link net.dv8tion.jda.api.managers.Presence Presence}) require a RestAction execution.
+ * <p>Almost all managers require a RestAction execution.
  */
 package net.dv8tion.jda.api.managers;

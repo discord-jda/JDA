@@ -177,7 +177,6 @@ public class AudioManagerImpl implements AudioManager
         return EnumSet.copyOf(this.speakingModes);
     }
 
-    @Nonnull
     @Override
     public void setSpeakingDelay(int millis)
     {
@@ -186,6 +185,7 @@ public class AudioManagerImpl implements AudioManager
             audioConnection.setSpeakingDelay(millis);
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {
