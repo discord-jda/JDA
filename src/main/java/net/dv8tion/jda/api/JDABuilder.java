@@ -665,7 +665,8 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
     @Nonnull
-    public JDABuilder setStatus(@Nullable OnlineStatus status)
+    @SuppressWarnings("ConstantConditions") // we have to enforce the nonnull at runtime
+    public JDABuilder setStatus(@Nonnull OnlineStatus status)
     {
         if (status == null || status == OnlineStatus.UNKNOWN)
             throw new IllegalArgumentException("OnlineStatus cannot be null or unknown!");
