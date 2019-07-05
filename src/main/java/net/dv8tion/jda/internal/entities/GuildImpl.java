@@ -1271,7 +1271,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setRegion(String region)
+    public GuildImpl setRegion(@Nonnull String region)
     {
         guildData.setRegion(region);
         return this;
@@ -1325,32 +1325,32 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setVerificationLevel(VerificationLevel level)
+    public GuildImpl setVerificationLevel(@Nonnull VerificationLevel level)
     {
         guildData.setVerificationLevel(level);
         this.canSendVerification = false;   //recalc on next send
         return this;
     }
 
-    public GuildImpl setDefaultNotificationLevel(NotificationLevel level)
+    public GuildImpl setDefaultNotificationLevel(@Nonnull NotificationLevel level)
     {
         guildData.setNotificationLevel(level);
         return this;
     }
 
-    public GuildImpl setRequiredMFALevel(MFALevel level)
+    public GuildImpl setRequiredMFALevel(@Nonnull MFALevel level)
     {
         guildData.setMFALevel(level);
         return this;
     }
 
-    public GuildImpl setExplicitContentLevel(ExplicitContentLevel level)
+    public GuildImpl setExplicitContentLevel(@Nonnull ExplicitContentLevel level)
     {
         guildData.setExplicitContentLevel(level);
         return this;
     }
 
-    public GuildImpl setAfkTimeout(Timeout afkTimeout)
+    public GuildImpl setAfkTimeout(@Nonnull Timeout afkTimeout)
     {
         guildData.setAfkTimeout(afkTimeout);
         return this;

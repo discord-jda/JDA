@@ -19,12 +19,13 @@ package net.dv8tion.jda.api.entities.bean.rich;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.bean.MutableGuildData;
 
+import javax.annotation.Nonnull;
 import java.util.Objects;
 
 public class RichGuildData implements MutableGuildData
 {
     private String iconId, splashId, bannerId;
-    private String description = "", region = "";
+    private String description, region = "";
     private int maxMembers, maxPresences, boostCount;
     private Guild.BoostTier boostTier;
     private Guild.NotificationLevel notificationLevel;
@@ -129,8 +130,9 @@ public class RichGuildData implements MutableGuildData
         return oldBanner;
     }
 
+    @Nonnull
     @Override
-    public Guild.BoostTier setBoostTier(Guild.BoostTier tier)
+    public Guild.BoostTier setBoostTier(@Nonnull Guild.BoostTier tier)
     {
         Guild.BoostTier oldTier = this.boostTier;
         this.boostTier = tier;
@@ -177,48 +179,54 @@ public class RichGuildData implements MutableGuildData
         return oldId;
     }
 
+    @Nonnull
     @Override
-    public Guild.Timeout setAfkTimeout(Guild.Timeout timeout)
+    public Guild.Timeout setAfkTimeout(@Nonnull Guild.Timeout timeout)
     {
         Guild.Timeout oldTimeout = this.afkTimeout;
         this.afkTimeout = timeout;
         return oldTimeout;
     }
 
+    @Nonnull
     @Override
-    public Guild.VerificationLevel setVerificationLevel(Guild.VerificationLevel level)
+    public Guild.VerificationLevel setVerificationLevel(@Nonnull Guild.VerificationLevel level)
     {
         Guild.VerificationLevel oldLevel = this.verificationLevel;
         this.verificationLevel = level;
         return oldLevel;
     }
 
+    @Nonnull
     @Override
-    public Guild.NotificationLevel setNotificationLevel(Guild.NotificationLevel level)
+    public Guild.NotificationLevel setNotificationLevel(@Nonnull Guild.NotificationLevel level)
     {
         Guild.NotificationLevel oldLevel = this.notificationLevel;
         this.notificationLevel = level;
         return oldLevel;
     }
 
+    @Nonnull
     @Override
-    public Guild.ExplicitContentLevel setExplicitContentLevel(Guild.ExplicitContentLevel level)
+    public Guild.ExplicitContentLevel setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level)
     {
         Guild.ExplicitContentLevel oldLevel = this.explicitContentLevel;
         this.explicitContentLevel = level;
         return oldLevel;
     }
 
+    @Nonnull
     @Override
-    public Guild.MFALevel setMFALevel(Guild.MFALevel level)
+    public Guild.MFALevel setMFALevel(@Nonnull Guild.MFALevel level)
     {
         Guild.MFALevel oldLevel = this.mfaLevel;
         this.mfaLevel = level;
         return oldLevel;
     }
 
+    @Nonnull
     @Override
-    public String setRegion(String region)
+    public String setRegion(@Nonnull String region)
     {
         String oldRegion = this.region;
         this.region = region;
@@ -249,6 +257,7 @@ public class RichGuildData implements MutableGuildData
         return bannerId;
     }
 
+    @Nonnull
     @Override
     public Guild.BoostTier getBoostTier()
     {
@@ -285,36 +294,42 @@ public class RichGuildData implements MutableGuildData
         return systemChannelId;
     }
 
+    @Nonnull
     @Override
     public Guild.Timeout getAfkTimeout()
     {
         return afkTimeout;
     }
 
+    @Nonnull
     @Override
     public Guild.VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
     }
 
+    @Nonnull
     @Override
     public Guild.NotificationLevel getNotificationLevel()
     {
         return notificationLevel;
     }
 
+    @Nonnull
     @Override
     public Guild.MFALevel getMFALevel()
     {
         return mfaLevel;
     }
 
+    @Nonnull
     @Override
     public Guild.ExplicitContentLevel getExplicitContentLevel()
     {
         return explicitContentLevel;
     }
 
+    @Nonnull
     @Override
     public String getRegion()
     {

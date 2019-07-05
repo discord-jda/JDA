@@ -18,24 +18,38 @@ package net.dv8tion.jda.api.entities.bean;
 
 import net.dv8tion.jda.api.entities.Guild;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 public interface GuildData
 {
     GuildData copy();
 
+    @Nullable
     String getIconId();
+    @Nullable
     String getSplashId();
+    @Nullable
     String getDescription();
+    @Nullable
     String getBannerId();
+    @Nonnull
     Guild.BoostTier getBoostTier();
     int getBoostCount();
     int getMaxMembers();
     int getMaxPresences();
     long getAfkChannelId();
     long getSystemChannelId();
+    @Nonnull
     Guild.Timeout getAfkTimeout();
+    @Nonnull
     Guild.VerificationLevel getVerificationLevel();
+    @Nonnull
     Guild.NotificationLevel getNotificationLevel();
+    @Nonnull
     Guild.MFALevel getMFALevel();
+    @Nonnull
     Guild.ExplicitContentLevel getExplicitContentLevel();
+    @Nonnull
     String getRegion();
 }

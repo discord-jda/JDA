@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.bean.GuildData;
 import net.dv8tion.jda.api.entities.bean.MutableGuildData;
 
+import javax.annotation.Nonnull;
+
 public class LightGuildData implements MutableGuildData
 {
     public static final LightGuildData SINGLETON = new LightGuildData();
@@ -57,8 +59,9 @@ public class LightGuildData implements MutableGuildData
         return id;
     }
 
+    @Nonnull
     @Override
-    public Guild.BoostTier setBoostTier(Guild.BoostTier tier)
+    public Guild.BoostTier setBoostTier(@Nonnull Guild.BoostTier tier)
     {
         return tier;
     }
@@ -93,38 +96,44 @@ public class LightGuildData implements MutableGuildData
         return id;
     }
 
+    @Nonnull
     @Override
-    public Guild.Timeout setAfkTimeout(Guild.Timeout timeout)
+    public Guild.Timeout setAfkTimeout(@Nonnull Guild.Timeout timeout)
     {
         return timeout;
     }
 
+    @Nonnull
     @Override
-    public Guild.VerificationLevel setVerificationLevel(Guild.VerificationLevel level)
+    public Guild.VerificationLevel setVerificationLevel(@Nonnull Guild.VerificationLevel level)
     {
         return level;
     }
 
+    @Nonnull
     @Override
-    public Guild.NotificationLevel setNotificationLevel(Guild.NotificationLevel level)
+    public Guild.NotificationLevel setNotificationLevel(@Nonnull Guild.NotificationLevel level)
     {
         return level;
     }
 
+    @Nonnull
     @Override
-    public Guild.ExplicitContentLevel setExplicitContentLevel(Guild.ExplicitContentLevel level)
+    public Guild.ExplicitContentLevel setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level)
     {
         return level;
     }
 
+    @Nonnull
     @Override
-    public Guild.MFALevel setMFALevel(Guild.MFALevel level)
+    public Guild.MFALevel setMFALevel(@Nonnull Guild.MFALevel level)
     {
         return level;
     }
 
+    @Nonnull
     @Override
-    public String setRegion(String region)
+    public String setRegion(@Nonnull String region)
     {
         return region;
     }
@@ -144,7 +153,7 @@ public class LightGuildData implements MutableGuildData
     @Override
     public String getDescription()
     {
-        return "";
+        return null;
     }
 
     @Override
@@ -153,6 +162,7 @@ public class LightGuildData implements MutableGuildData
         return null;
     }
 
+    @Nonnull
     @Override
     public Guild.BoostTier getBoostTier()
     {
@@ -189,36 +199,42 @@ public class LightGuildData implements MutableGuildData
         return 0;
     }
 
+    @Nonnull
     @Override
     public Guild.Timeout getAfkTimeout()
     {
         return Guild.Timeout.SECONDS_3600;
     }
 
+    @Nonnull
     @Override
     public Guild.VerificationLevel getVerificationLevel()
     {
         return Guild.VerificationLevel.UNKNOWN;
     }
 
+    @Nonnull
     @Override
     public Guild.NotificationLevel getNotificationLevel()
     {
         return Guild.NotificationLevel.UNKNOWN;
     }
 
+    @Nonnull
     @Override
     public Guild.MFALevel getMFALevel()
     {
         return Guild.MFALevel.UNKNOWN;
     }
 
+    @Nonnull
     @Override
     public Guild.ExplicitContentLevel getExplicitContentLevel()
     {
         return Guild.ExplicitContentLevel.UNKNOWN;
     }
 
+    @Nonnull
     @Override
     public String getRegion()
     {
