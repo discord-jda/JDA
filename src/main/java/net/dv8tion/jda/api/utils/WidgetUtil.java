@@ -309,7 +309,7 @@ public class WidgetUtil
          * Constructs an available Widget
          *
          * @param json
-         *        The {@link org.json.JSONObject JSONObject} to construct the Widget from
+         *        The {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to construct the Widget from
          */
         private Widget(@Nonnull DataObject json)
         {
@@ -563,7 +563,7 @@ public class WidgetUtil
                 this.avatar = json.getString("avatar", null);
                 this.nickname = json.getString("nick", null);
                 this.status = OnlineStatus.fromKey(json.getString("status"));
-                this.game = json.isNull("game") ? null : EntityBuilder.createAcitvity(json.getObject("game"));
+                this.game = json.isNull("game") ? null : EntityBuilder.createActivity(json.getObject("game"));
             }
             
             private void setVoiceState(VoiceState voiceState)

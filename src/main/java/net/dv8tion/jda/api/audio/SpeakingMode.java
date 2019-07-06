@@ -69,7 +69,7 @@ public enum SpeakingMode
     }
 
     /**
-     * Converts the given speaking modes into raw its bitmast.
+     * Converts the given speaking modes into raw its bitmask.
      * This is only useful for sending speaking updates.
      *
      * @param  modes
@@ -88,7 +88,7 @@ public enum SpeakingMode
     }
 
     /**
-     * Converts the given speaking modes into raw its bitmast.
+     * Converts the given speaking modes into raw its bitmask.
      * This is only useful for sending speaking updates.
      *
      * @param  modes

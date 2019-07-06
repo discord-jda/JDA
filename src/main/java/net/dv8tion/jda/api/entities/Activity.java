@@ -101,7 +101,7 @@ public interface Activity
     static Activity playing(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        return EntityBuilder.createAcitvity(name, null, ActivityType.DEFAULT);
+        return EntityBuilder.createActivity(name, null, ActivityType.DEFAULT);
     }
 
     /**
@@ -130,7 +130,7 @@ public interface Activity
             type = ActivityType.STREAMING;
         else
             type = ActivityType.DEFAULT;
-        return EntityBuilder.createAcitvity(name, url, type);
+        return EntityBuilder.createActivity(name, url, type);
     }
 
     /**
@@ -149,7 +149,7 @@ public interface Activity
     static Activity listening(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        return EntityBuilder.createAcitvity(name, null, ActivityType.LISTENING);
+        return EntityBuilder.createActivity(name, null, ActivityType.LISTENING);
     }
 
     /**
@@ -171,7 +171,7 @@ public interface Activity
     static Activity watching(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        return EntityBuilder.createAcitvity(name, null, ActivityType.WATCHING);
+        return EntityBuilder.createActivity(name, null, ActivityType.WATCHING);
     }
 
     /**

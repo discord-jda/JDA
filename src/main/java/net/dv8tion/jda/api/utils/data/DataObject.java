@@ -565,7 +565,7 @@ public class DataObject implements SerializableData
      * Upserts a null value for the provided key.
      *
      * @param  key
-     *         THe key to upsert
+     *         The key to upsert
      *
      * @return A DataObject with the updated value
      */

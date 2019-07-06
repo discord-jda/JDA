@@ -78,7 +78,7 @@ public class ChannelUpdateHandler extends SocketHandler
                     return null;
                 }
                 final String oldName = storeChannel.getName();
-                final int oldPositon = storeChannel.getPositionRaw();
+                final int oldPosition = storeChannel.getPositionRaw();
 
                 if (!Objects.equals(oldName, name))
                 {
@@ -88,13 +88,13 @@ public class ChannelUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             storeChannel, oldName));
                 }
-                if (!Objects.equals(oldPositon, position))
+                if (!Objects.equals(oldPosition, position))
                 {
                     storeChannel.setPosition(position);
                     getJDA().handleEvent(
                         new StoreChannelUpdatePositionEvent(
                             getJDA(), responseNumber,
-                            storeChannel, oldPositon));
+                            storeChannel, oldPosition));
                 }
 
                 applyPermissions(storeChannel, content, permOverwrites, contained, changed);
