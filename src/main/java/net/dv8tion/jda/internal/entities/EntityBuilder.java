@@ -148,7 +148,7 @@ public class EntityBuilder
         }
     }
 
-    public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members)
+    public GuildImpl createGuild(long guildId, DataObject guildJson, TLongObjectMap<DataObject> members, int memberCount)
     {
         final GuildImpl guildObj = new GuildImpl(getJDA(), guildId);
         final String name = guildJson.getString("name", "");
@@ -194,7 +194,8 @@ public class EntityBuilder
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
                 .setBoostCount(boostCount)
-                .setBoostTier(boostTier);
+                .setBoostTier(boostTier)
+                .setMemberCount(memberCount);
 
         guildObj.setFeatures(featuresArray.map(it ->
             StreamSupport.stream(it.spliterator(), false)
@@ -373,7 +374,7 @@ public class EntityBuilder
         return userObj;
     }
 
-    public Member createMember(GuildImpl guild, DataObject memberJson)
+    public MemberImpl createMember(GuildImpl guild, DataObject memberJson)
     {
         boolean playbackCache = false;
         User user = createUser(memberJson.getObject("user"));
@@ -385,12 +386,21 @@ public class EntityBuilder
             {
                 member = new MemberImpl(guild, user);
                 playbackCache = memberView.getMap().put(user.getIdLong(), member) == null;
+                DataObject cachedOverride = guild.getCachedOverrideMap().remove(user.getIdLong());
+                if (cachedOverride != null)
+                {
+                    long channelId = cachedOverride.getLong("channel_id");
+                    GuildChannel channel = guild.getGuildChannelById(channelId);
+                    if (channel != null)
+                        createPermissionOverride(cachedOverride, channel);
+                }
             }
             if (guild.getOwnerIdLong() == user.getIdLong())
             {
                 LOG.trace("Found owner of guild with id {}", guild.getId());
                 guild.setOwner(member);
             }
+            guild.onMemberChunk();
         }
 
         GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
@@ -856,6 +866,14 @@ public class EntityBuilder
     }
     public Message createMessage(DataObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
     {
+        if (chan.getType().isGuild() && !jsonObject.isNull("member"))
+        {
+            GuildChannel guildChannel = (GuildChannel) chan;
+            DataObject member = jsonObject.getObject("member");
+            member.put("user", jsonObject.getObject("author"));
+            createMember((GuildImpl) guildChannel.getGuild(), member);
+        }
+
         final long id = jsonObject.getLong("id");
         String content = jsonObject.getString("content", "");
 
@@ -1118,7 +1136,11 @@ public class EntityBuilder
             case "member":
                 Member member = chan.getGuild().getMemberById(id);
                 if (member == null)
+                {
+                    override.put("channel_id", chan.getIdLong());
+                    ((GuildImpl) chan.getGuild()).getCachedOverrideMap().put(id, override);
                     throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
+                }
 
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(member);
                 if (permOverride == null)

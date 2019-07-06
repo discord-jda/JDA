@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
@@ -75,7 +76,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMemberById(userId);
+        MemberImpl member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, content.getObject("member"));
         if (member == null)
         {
             //Caching of this might not be valid. It is possible that we received this

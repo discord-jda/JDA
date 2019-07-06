@@ -44,6 +44,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1991,6 +1992,8 @@ public interface Guild extends ISnowflake
      * @return If the Guild is available
      */
     boolean isAvailable();
+
+    CompletableFuture<Void> retrieveMembers();
 
     /* From GuildController */
 

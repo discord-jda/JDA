@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -118,6 +119,7 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
     protected String gatewayUrl;
+    protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL; // TODO: Configuration in JDABuilder?
 
     protected String clientId = null;
     protected ShardManager shardManager = null;
@@ -156,6 +158,11 @@ public class JDAImpl implements JDA
     public boolean isCacheFlagSet(CacheFlag flag)
     {
         return metaConfig.getCacheFlags().contains(flag);
+    }
+
+    public boolean chunkGuild(long id)
+    {
+        return chunkingFilter.filter(id);
     }
 
     public SessionController getSessionController()

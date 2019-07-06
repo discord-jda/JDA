@@ -283,7 +283,7 @@ public class GuildSetupNode
             members.put(id, obj);
         }
 
-        if (members.size() >= expectedMemberCount)
+        if (members.size() >= expectedMemberCount || !getController().getJDA().chunkGuild(id))
         {
             completeSetup();
             return false;
@@ -385,7 +385,7 @@ public class GuildSetupNode
         for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
             members.remove(it.next());
         removedMembers.clear();
-        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
+        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members, expectedMemberCount);
         updateAudioManagerReference(guild);
         if (join)
         {
@@ -404,6 +404,7 @@ public class GuildSetupNode
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
+        guild.onMemberChunk();
     }
 
     private void ensureMembers()
@@ -412,7 +413,11 @@ public class GuildSetupNode
         members = new TLongObjectHashMap<>(expectedMemberCount);
         removedMembers = new TLongHashSet();
         DataArray memberArray = partialGuild.getArray("members");
-        if (memberArray.length() < expectedMemberCount && !requestedChunk)
+        if (!getController().getJDA().chunkGuild(id))
+        {
+            handleMemberChunk(memberArray);
+        }
+        else if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
             updateStatus(GuildSetupController.Status.CHUNKING);
             getController().addGuildForChunking(id, join);

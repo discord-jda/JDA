@@ -63,6 +63,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return null;
         }
 
+        // Update the memberCount
+        guild.onMemberRemove();
+
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
         if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {

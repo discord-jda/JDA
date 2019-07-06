@@ -47,6 +47,7 @@ import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
@@ -64,6 +65,7 @@ import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -83,7 +85,9 @@ public class GuildImpl implements Guild
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
     private final TLongObjectMap<DataObject> cachedPresences = MiscUtil.newLongMap();
+    private final TLongObjectMap<DataObject> cachedOverrides = MiscUtil.newLongMap();
 
+    private final CompletableFuture<Void> chunkingCallback = new CompletableFuture<>();
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
 
@@ -108,6 +112,8 @@ public class GuildImpl implements Guild
     private BoostTier boostTier = BoostTier.NONE;
     private boolean available;
     private boolean canSendVerification = false;
+
+    private long memberCount;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -740,6 +746,13 @@ public class GuildImpl implements Guild
     public boolean isAvailable()
     {
         return available;
+    }
+
+    @Override
+    public CompletableFuture<Void> retrieveMembers()
+    {
+        startChunking();
+        return chunkingCallback;
     }
 
     @Override
@@ -1379,6 +1392,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setMemberCount(long count)
+    {
+        this.memberCount = count;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
@@ -1421,6 +1440,51 @@ public class GuildImpl implements Guild
         return cachedPresences;
     }
 
+    public TLongObjectMap<DataObject> getCachedOverrideMap()
+    {
+        //TODO: Prune on channel delete
+        return cachedOverrides;
+    }
+
+
+    // -- Member Tracking --
+
+    public void startChunking()
+    {
+        if (memberCache.size() == memberCount)
+            return;
+
+        DataObject request = DataObject.empty()
+            .put("limit", 0)
+            .put("query", "")
+            .put("guild_id", getId());
+
+        DataObject packet = DataObject.empty()
+            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+            .put("d", request);
+
+        getJDA().getClient().chunkOrSyncRequest(packet);
+    }
+
+    public void onMemberAdd()
+    {
+        memberCount++;
+    }
+
+    public void onMemberRemove()
+    {
+        memberCount--;
+        onMemberChunk();
+    }
+
+    public void onMemberChunk()
+    {
+        if (memberCache.size() == memberCount && !chunkingCallback.isDone())
+        {
+            JDALogger.getLog(Guild.class).info("Chunking completed for guild {}", this);
+            chunkingCallback.complete(null);
+        }
+    }
 
     // -- Object overrides --
 
