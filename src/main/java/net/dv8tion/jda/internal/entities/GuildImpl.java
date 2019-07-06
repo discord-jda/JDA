@@ -1442,7 +1442,6 @@ public class GuildImpl implements Guild
 
     public TLongObjectMap<DataObject> getCachedOverrideMap()
     {
-        //TODO: Prune on channel delete
         return cachedOverrides;
     }
 
@@ -1481,7 +1480,7 @@ public class GuildImpl implements Guild
     {
         if (memberCache.size() == memberCount && !chunkingCallback.isDone())
         {
-            JDALogger.getLog(Guild.class).info("Chunking completed for guild {}", this);
+            JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
             chunkingCallback.complete(null);
         }
     }

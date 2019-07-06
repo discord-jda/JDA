@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -482,6 +483,7 @@ public class DefaultShardManager implements ShardManager
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         MetaConfig metaConfig = new MetaConfig(this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        jda.setChunkingFilter(ChunkingFilter.NONE); //TODO
         threadingConfig.init(jda::getIdentifierString);
 
         jda.setShardManager(this);

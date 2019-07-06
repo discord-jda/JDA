@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
@@ -81,6 +82,7 @@ public class JDABuilder
     protected boolean idle = false;
     protected int maxReconnectDelay = 900;
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
+    protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -824,6 +826,12 @@ public class JDABuilder
         return this;
     }
 
+    public JDABuilder setChunkingFilter(ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter;
+        return this;
+    }
+
     /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
@@ -871,6 +879,7 @@ public class JDABuilder
         MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        jda.setChunkingFilter(chunkingFilter);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

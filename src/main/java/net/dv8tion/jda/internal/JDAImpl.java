@@ -119,7 +119,7 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
     protected String gatewayUrl;
-    protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL; // TODO: Configuration in JDABuilder?
+    protected ChunkingFilter chunkingFilter;
 
     protected String clientId = null;
     protected ShardManager shardManager = null;
@@ -163,6 +163,11 @@ public class JDAImpl implements JDA
     public boolean chunkGuild(long id)
     {
         return chunkingFilter.filter(id);
+    }
+
+    public void setChunkingFilter(ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter;
     }
 
     public SessionController getSessionController()
