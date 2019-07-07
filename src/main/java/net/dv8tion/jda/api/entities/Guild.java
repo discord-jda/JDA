@@ -2001,6 +2001,7 @@ public interface Guild extends ISnowflake
      */
     boolean isAvailable();
 
+    //TODO: Documentation
     CompletableFuture<Void> retrieveMembers();
 
     /* From GuildController */

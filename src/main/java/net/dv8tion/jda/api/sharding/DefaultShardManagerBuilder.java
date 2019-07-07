@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -77,6 +78,7 @@ public class  DefaultShardManagerBuilder
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
+    protected ChunkingFilter chunkingFilter;
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
@@ -1181,6 +1183,13 @@ public class  DefaultShardManagerBuilder
         return this;
     }
 
+    @Nonnull
+    public DefaultShardManagerBuilder setChunkingFilter(@Nullable ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter;
+        return this;
+    }
+
     /**
      * Builds a new {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} has not
@@ -1213,7 +1222,7 @@ public class  DefaultShardManagerBuilder
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, flags, compression);
-        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
+        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 
         manager.login();
 

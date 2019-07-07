@@ -30,8 +30,9 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.JDALogger;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -40,6 +41,7 @@ import java.util.Objects;
 
 public class PresenceUpdateHandler extends SocketHandler
 {
+    private static final Logger log = JDALogger.getLog(PresenceUpdateHandler.class);
 
     public PresenceUpdateHandler(JDAImpl api)
     {
@@ -52,7 +54,7 @@ public class PresenceUpdateHandler extends SocketHandler
         // Ignore events for relationships, presences are guild only to us
         if (content.isNull("guild_id"))
         {
-            WebSocketClient.LOG.debug("Received PRESENCE_UPDATE without guild_id. Ignoring event.");
+            log.debug("Received PRESENCE_UPDATE without guild_id. Ignoring event.");
             return null;
         }
 
@@ -174,6 +176,7 @@ public class PresenceUpdateHandler extends SocketHandler
                   .put("roles", roles)
                   .put("nick", nick)
                   .put("joined_at", joinDate);
+        log.trace("Creating member from PRESENCE_UPDATE for userId: {} and guildId: {}", jsonUser.getUnsignedLong("id"), guild.getId());
         return (UserImpl) getJDA().getEntityBuilder().createMember(guild, memberJson).getUser();
     }
 
