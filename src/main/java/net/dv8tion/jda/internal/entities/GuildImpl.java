@@ -83,8 +83,6 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
-
-    private final TLongObjectMap<DataObject> cachedPresences = MiscUtil.newLongMap();
     private final TLongObjectMap<DataObject> cachedOverrides = MiscUtil.newLongMap();
 
     private final CompletableFuture<Void> chunkingCallback = new CompletableFuture<>();
@@ -112,8 +110,7 @@ public class GuildImpl implements Guild
     private BoostTier boostTier = BoostTier.NONE;
     private boolean available;
     private boolean canSendVerification = false;
-
-    private long memberCount;
+    private int memberCount;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -154,6 +151,12 @@ public class GuildImpl implements Guild
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(this, Permission.CREATE_INSTANT_INVITE);
         return new MemberActionImpl(getJDA(), this, userId, accessToken);
+    }
+
+    @Override
+    public int getMemberCount()
+    {
+        return memberCount;
     }
 
     @Nonnull
@@ -1392,7 +1395,7 @@ public class GuildImpl implements Guild
         return this;
     }
 
-    public GuildImpl setMemberCount(long count)
+    public GuildImpl setMemberCount(int count)
     {
         this.memberCount = count;
         return this;
@@ -1435,11 +1438,6 @@ public class GuildImpl implements Guild
         return memberCache;
     }
 
-    public TLongObjectMap<DataObject> getCachedPresenceMap()
-    {
-        return cachedPresences;
-    }
-
     public TLongObjectMap<DataObject> getCachedOverrideMap()
     {
         return cachedOverrides;
@@ -1473,10 +1471,10 @@ public class GuildImpl implements Guild
     public void onMemberRemove()
     {
         memberCount--;
-        onMemberChunk();
+        acknowledgeMembers();
     }
 
-    public void onMemberChunk()
+    public void acknowledgeMembers()
     {
         if (memberCache.size() == memberCount && !chunkingCallback.isDone())
         {

@@ -400,7 +400,7 @@ public class EntityBuilder
                 LOG.trace("Found owner of guild with id {}", guild.getId());
                 guild.setOwner(member);
             }
-            guild.onMemberChunk();
+            guild.acknowledgeMembers();
         }
 
         GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
@@ -420,24 +420,24 @@ public class EntityBuilder
         member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
               .setNickname(memberJson.getString("nick", null));
 
-        DataArray rolesJson = memberJson.getArray("roles");
-        for (int k = 0; k < rolesJson.length(); k++)
-        {
-            final long roleId = rolesJson.getLong(k);
-            Role r = guild.getRolesView().get(roleId);
-            if (r == null)
-            {
-                LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
-                    member.getUser().getId(), guild.getId(), roleId);
-            }
-            else
-            {
-                member.getRoleSet().add(r);
-            }
-        }
-
         if (playbackCache)
         {
+            DataArray rolesJson = memberJson.getArray("roles");
+            for (int k = 0; k < rolesJson.length(); k++)
+            {
+                final long roleId = rolesJson.getLong(k);
+                Role r = guild.getRolesView().get(roleId);
+                if (r == null)
+                {
+                    LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
+                        member.getUser().getId(), guild.getId(), roleId);
+                }
+                else
+                {
+                    member.getRoleSet().add(r);
+                }
+            }
+
             long hashId = guild.getIdLong() ^ user.getIdLong();
             getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
         }
@@ -1139,7 +1139,8 @@ public class EntityBuilder
                 {
                     override.put("channel_id", chan.getIdLong());
                     ((GuildImpl) chan.getGuild()).getCachedOverrideMap().put(id, override);
-                    throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
+//                    throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
+                    return null;
                 }
 
                 permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(member);

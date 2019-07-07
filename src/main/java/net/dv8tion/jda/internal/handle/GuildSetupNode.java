@@ -404,7 +404,7 @@ public class GuildSetupNode
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
-        guild.onMemberChunk();
+        guild.acknowledgeMembers();
     }
 
     private void ensureMembers()

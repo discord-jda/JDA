@@ -168,6 +168,14 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * The expected member count for this guild.
+     * <br>If this guild is not lazy loaded this should be identical to the size returned by {@link #getMemberCache()}.
+     *
+     * @return The expected member count for this guild
+     */
+    int getMemberCount();
+
+    /**
      * The human readable name of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
      * This value can be modified using {@link GuildManager#setName(String)}.
