@@ -108,7 +108,7 @@ public final class Helpers
 
     public static boolean isNumeric(final String input)
     {
-        if (input.isEmpty())
+        if (isEmpty(input))
             return false;
         for (char c : input.toCharArray())
         {
