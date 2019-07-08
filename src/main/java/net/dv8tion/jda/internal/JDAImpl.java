@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
@@ -116,7 +117,7 @@ public class JDAImpl implements JDA
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected long responseTotal;
-    protected long ping = -1;
+    protected long gatewayPing = -1;
     protected String gatewayUrl;
 
     protected String clientId = null;
@@ -418,7 +419,7 @@ public class JDAImpl implements JDA
     @Override
     public long getGatewayPing()
     {
-        return ping;
+        return gatewayPing;
     }
 
     @Nonnull
@@ -835,9 +836,11 @@ public class JDAImpl implements JDA
         this.audioSendFactory = factory;
     }
 
-    public void setPing(long ping)
+    public void setGatewayPing(long ping)
     {
-        this.ping = ping;
+        long oldPing = this.gatewayPing;
+        this.gatewayPing = ping;
+        handleEvent(new GatewayPingEvent(this, oldPing));
     }
 
     public Requester getRequester()
