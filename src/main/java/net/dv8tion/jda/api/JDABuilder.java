@@ -826,9 +826,25 @@ public class JDABuilder
         return this;
     }
 
-    public JDABuilder setChunkingFilter(ChunkingFilter filter)
+    /**
+     * The {@link ChunkingFilter} to filter which guilds should use member chunking.
+     * <br>By default this uses {@link ChunkingFilter#ALL}.
+     *
+     * @param  filter
+     *         The filter to apply
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     *
+     * @see    ChunkingFilter#NONE
+     * @see    ChunkingFilter#include(long...)
+     * @see    ChunkingFilter#exclude(long...)
+     */
+    @Nonnull
+    public JDABuilder setChunkingFilter(@Nullable ChunkingFilter filter)
     {
-        this.chunkingFilter = filter;
+        this.chunkingFilter = filter == null ? ChunkingFilter.ALL : filter;
         return this;
     }
 

@@ -2001,7 +2001,14 @@ public interface Guild extends ISnowflake
      */
     boolean isAvailable();
 
-    //TODO: Documentation
+    /**
+     * Requests member chunks for this guild.
+     * <br>This returns a completed future if the member demand is already matched.
+     *
+     * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
+     *
+     * @return {@link CompletableFuture} representing the chunking task
+     */
     CompletableFuture<Void> retrieveMembers();
 
     /* From GuildController */
