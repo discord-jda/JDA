@@ -58,7 +58,7 @@ public enum ClientType
      * @param  key
      *         The api key to check
      *
-     * @return THe resolved ClientType or {@link #UNKNOWN}
+     * @return The resolved ClientType or {@link #UNKNOWN}
      */
     @Nonnull
     public static ClientType fromKey(@Nonnull String key)

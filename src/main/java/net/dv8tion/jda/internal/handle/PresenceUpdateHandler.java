@@ -121,7 +121,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 if (activityArray != null)
                 {
                     for (int i = 0; i < activityArray.length(); i++)
-                        newActivities.add(EntityBuilder.createAcitvity(activityArray.getObject(i)));
+                        newActivities.add(EntityBuilder.createActivity(activityArray.getObject(i)));
                     parsedGame = true;
                 }
             }

@@ -149,7 +149,7 @@ public interface AudioManager
      * <br>This can be useful for send systems that buffer a certain interval of audio frames that will be sent.
      * By default the delay is 200 milliseconds which is also the minimum delay.
      *
-     * <p>If the delay is less than 200 milliseconds it will reset it the minimum delay. The provided delay
+     * <p>If the delay is less than 200 milliseconds it will use the minimum delay. The provided delay
      * will be aligned to the audio frame length of 20 milliseconds by means of integer division. This means
      * it will be rounded down to the next biggest multiple of 20.
      *
@@ -158,6 +158,8 @@ public interface AudioManager
      *
      * @param millis
      *        The delay that should be used, in milliseconds
+     *
+     * @since 4.0.0
      */
     void setSpeakingDelay(int millis);
 

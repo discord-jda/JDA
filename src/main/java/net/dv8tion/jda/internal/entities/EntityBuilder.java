@@ -122,7 +122,7 @@ public class EntityBuilder
         return selfUser;
     }
 
-    public static Activity createAcitvity(String name, String url, Activity.ActivityType type)
+    public static Activity createActivity(String name, String url, Activity.ActivityType type)
     {
         return new ActivityImpl(name, url, type);
     }
@@ -454,7 +454,7 @@ public class EntityBuilder
             {
                 try
                 {
-                    activities.add(createAcitvity(activityArray.getObject(i)));
+                    activities.add(createActivity(activityArray.getObject(i)));
                     parsedActivity = true;
                 }
                 catch (Exception ex)
@@ -482,7 +482,7 @@ public class EntityBuilder
         }
     }
 
-    public static Activity createAcitvity(DataObject gameJson)
+    public static Activity createActivity(DataObject gameJson)
     {
         String name = String.valueOf(gameJson.get("name"));
         String url = gameJson.isNull("url") ? null : String.valueOf(gameJson.get("url"));
@@ -755,11 +755,11 @@ public class EntityBuilder
         return channel;
     }
 
-    public PrivateChannel createPrivateChannel(DataObject privatechat)
+    public PrivateChannel createPrivateChannel(DataObject json)
     {
-        DataObject recipient = privatechat.hasKey("recipients") ?
-            privatechat.getArray("recipients").getObject(0) :
-            privatechat.getObject("recipient");
+        DataObject recipient = json.hasKey("recipients") ?
+            json.getArray("recipients").getObject(0) :
+            json.getObject("recipient");
         final long userId = recipient.getLong("id");
         UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
         if (user == null)
@@ -768,9 +768,9 @@ public class EntityBuilder
             user = createFakeUser(recipient, true);
         }
 
-        final long channelId = privatechat.getLong("id");
+        final long channelId = json.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
-                .setLastMessageId(privatechat.getLong("last_message_id", 0));
+                .setLastMessageId(json.getLong("last_message_id", 0));
         user.setPrivateChannel(priv);
 
         if (user.isFake())

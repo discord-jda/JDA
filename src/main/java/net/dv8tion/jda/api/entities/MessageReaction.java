@@ -312,11 +312,13 @@ public class MessageReaction
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code user} is null.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the provided User is not us and we do not have permission to
+     *         If the provided User is not us and we do not have permission to
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE manage messages}
      *         in the channel this reaction was used in
+     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     *         If the message is from another user in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      *         Nothing is returned on success
      */
     @Nonnull
@@ -324,7 +326,8 @@ public class MessageReaction
     public RestAction<Void> removeReaction(@Nonnull User user)
     {
         Checks.notNull(user, "User");
-        if (!user.equals(getJDA().getSelfUser()))
+        boolean self = user.equals(getJDA().getSelfUser());
+        if (!self)
         {
             if (channel.getType() == ChannelType.TEXT)
             {
@@ -341,11 +344,8 @@ public class MessageReaction
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
                     : EncodingUtil.encodeUTF8(emote.getName());
-        Route.CompiledRoute route;
-        if (user.equals(getJDA().getSelfUser()))
-            route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, "@me");
-        else
-            route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
+        String target = self ? "@me" : user.getId();
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
     }
 

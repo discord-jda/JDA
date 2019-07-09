@@ -188,7 +188,7 @@ public class MessageUpdateHandler extends SocketHandler
                         messageId, (PrivateChannel) channel, embeds));
                 break;
             case GROUP:
-                WebSocketClient.LOG.error("Rceived a message update for a group which should not be possible");
+                WebSocketClient.LOG.error("Received a message update for a group which should not be possible");
                 return null;
             default:
                 WebSocketClient.LOG.warn("No event handled for message update of type {}", channel.getType());

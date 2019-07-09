@@ -111,6 +111,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
+    public void onGatewayPing(@Nonnull GatewayPingEvent event) {}
 
     //JDA Events
     public void onReady(@Nonnull ReadyEvent event) {}
@@ -336,6 +337,8 @@ public abstract class ListenerAdapter implements EventListener
             onStatusChange((StatusChangeEvent) event);
         else if (event instanceof ExceptionEvent)
             onException((ExceptionEvent) event);
+        else if (event instanceof GatewayPingEvent)
+            onGatewayPing((GatewayPingEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events

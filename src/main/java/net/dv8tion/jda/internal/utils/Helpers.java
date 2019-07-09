@@ -16,10 +16,6 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import net.dv8tion.jda.api.utils.data.DataObject;
-
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Objects;
@@ -61,11 +57,6 @@ public final class Helpers
                 return false;
         }
         return true;
-    }
-
-    public static boolean equalsIgnoreCase(final String seq0, final String seq1)
-    {
-        return Objects.equals(seq0, seq1) || (seq0 != null && seq0.equalsIgnoreCase(seq1));
     }
 
     public static int countMatches(final CharSequence seq, final char c)
@@ -117,7 +108,7 @@ public final class Helpers
 
     public static boolean isNumeric(final String input)
     {
-        if (input.isEmpty())
+        if (isEmpty(input))
             return false;
         for (char c : input.toCharArray())
         {
@@ -127,37 +118,20 @@ public final class Helpers
         return true;
     }
 
-    // ## ExceptionUtils ##
-
-    //Copied from ogr.apache.commons:commons-lang3:3.5 ExceptionsUtils.java
-    public static String getStackTrace(final Throwable throwable) {
-        final StringWriter sw = new StringWriter();
-        final PrintWriter pw = new PrintWriter(sw, true);
-        throwable.printStackTrace(pw);
-        return sw.getBuffer().toString();
-    }
-
     // ## CollectionUtils ##
 
     public static boolean deepEquals(Collection<?> first, Collection<?> second)
     {
-        if (first != null)
-        {
-            if (second == null)
-                return false;
-            if (first.size() != second.size())
-                return false;
-            for (Iterator<?> itFirst = first.iterator(), itSecond = second.iterator(); itFirst.hasNext(); )
-            {
-                Object elementFirst = itFirst.next();
-                Object elementSecond = itSecond.next();
-                if (!Objects.equals(elementFirst, elementSecond))
-                    return false;
-            }
-        }
-        else if (second != null)
-        {
+        if (first == second)
+            return true;
+        if (first == null || second == null || first.size() != second.size())
             return false;
+        for (Iterator<?> itFirst = first.iterator(), itSecond = second.iterator(); itFirst.hasNext(); )
+        {
+            Object elementFirst = itFirst.next();
+            Object elementSecond = itSecond.next();
+            if (!Objects.equals(elementFirst, elementSecond))
+                return false;
         }
         return true;
     }
@@ -167,22 +141,5 @@ public final class Helpers
         if (first == second) return true;
         if (first == null || second == null) return false;
         return first.size() == second.size() && second.containsAll(first);
-    }
-
-    // ## JSONObject ##
-
-    public static boolean optBoolean(DataObject object, String key)
-    {
-        return !object.isNull(key) && object.getBoolean(key);
-    }
-
-    public static int optInt(DataObject object, String key, int defaultValue)
-    {
-        return object.isNull(key) ? defaultValue : object.getInt(key);
-    }
-
-    public static long optLong(DataObject object, String key, long defaultValue)
-    {
-        return object.isNull(key) ? defaultValue : object.getLong(key);
     }
 }

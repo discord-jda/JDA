@@ -15,7 +15,6 @@
  */
 
 /**
- * Implementations of {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView}
- * allowing read-only access to internal JDA cache.
+ * Interfaces for read-only access to internal JDA cache.
  */
 package net.dv8tion.jda.api.utils.cache;
