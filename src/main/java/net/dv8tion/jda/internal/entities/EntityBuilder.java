@@ -400,7 +400,6 @@ public class EntityBuilder
                 LOG.trace("Found owner of guild with id {}", guild.getId());
                 guild.setOwner(member);
             }
-            guild.acknowledgeMembers();
         }
 
         GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
@@ -416,7 +415,10 @@ public class EntityBuilder
             member.setBoostDate(Instant.from(boostDate).toEpochMilli());
         }
 
-        TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("joined_at"));
+        //In some contexts this is missing (PRESENCE_UPDATE and GUILD_MEMBER_UPDATE)
+        // we call this incomplete and load the joined_at later through a MESSAGE_CREATE (if we get one)
+        String joinedAtRaw = memberJson.opt("joined_at").map(String::valueOf).orElseGet(() -> guild.getTimeCreated().toString());
+        TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
         member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
               .setNickname(memberJson.getString("nick", null));
 
@@ -440,6 +442,7 @@ public class EntityBuilder
 
             long hashId = guild.getIdLong() ^ user.getIdLong();
             getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
+            guild.acknowledgeMembers();
         }
         return member;
     }

@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.ClientType;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.events.user.update.*;
-import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -169,7 +168,7 @@ public class PresenceUpdateHandler extends SocketHandler
         DataArray roles = content.optArray("roles").orElse(null);
         String onlineStatus = content.getString("status");
         // unfortunately this information is missing
-        Object joinDate = content.opt("joined_at").orElseGet(() -> TimeUtil.getTimeCreated(guildId).toString());
+        String joinDate = content.getString("joined_at", null);
 
         memberJson.put("user", jsonUser)
                   .put("status", onlineStatus)

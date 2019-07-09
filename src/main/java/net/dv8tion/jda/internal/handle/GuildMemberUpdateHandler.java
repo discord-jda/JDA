@@ -62,9 +62,6 @@ public class GuildMemberUpdateHandler extends SocketHandler
         MemberImpl member = (MemberImpl) guild.getMembersView().get(userId);
         if (member == null)
         {
-            content.put("joined_at",
-                content.opt("joined_at")
-                       .orElseGet(() -> guild.getTimeCreated().toString()));
             EntityBuilder.LOG.debug("Creating member from GUILD_MEMBER_UPDATE {}", content);
             member = getJDA().getEntityBuilder().createMember(guild, content);
         }
