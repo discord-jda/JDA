@@ -871,14 +871,28 @@ public class GuildImpl implements Guild
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
+        return kick0(member.getUser().getId(), reason);
+    }
 
-        final String userId = member.getUser().getId();
-        final String guildId = getId();
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
+    {
+        Member member = getMemberById(userId);
+        if (member != null)
+            return kick(member, reason);
+        // Check permissions and whether the user is the owner, otherwise attempt a kick
+        Checks.check(!userId.equals(getOwnerId()), "Cannot kick the owner of a guild!");
+        checkPermission(Permission.KICK_MEMBERS);
+        return kick0(userId, reason);
+    }
 
-        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
-        if (reason != null && !reason.isEmpty())
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
-
+    @Nonnull
+    private AuditableRestAction<Void> kick0(@Nonnull String userId, @Nullable String reason)
+    {
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
+        if (!Helpers.isBlank(reason))
+            route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 

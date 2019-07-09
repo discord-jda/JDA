@@ -2327,19 +2327,13 @@ public interface Guild extends ISnowflake
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
      * @throws java.lang.IllegalArgumentException
-     *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
+     *         If the user for the provided id cannot be kicked from this Guild or the provided {@code userId} is blank/null.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
-    {
-        Member member = getMemberById(userId);
-        Checks.check(member != null, "The provided userId does not correspond to a member in this guild! Provided userId: %s");
-
-        return kick(member, reason);
-    }
+    AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason);
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
