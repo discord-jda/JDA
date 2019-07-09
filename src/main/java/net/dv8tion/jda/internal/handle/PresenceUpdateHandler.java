@@ -80,10 +80,12 @@ public class PresenceUpdateHandler extends SocketHandler
         // due to a User leaving a guild.
         if (user == null)
         {
-            if (jsonUser.isNull("username") || content.getString("status", "offline").equals(OnlineStatus.OFFLINE.getKey()))
-                return null;
-            // We should have somewhat enough information to create this member, so lets do it!
-            user = createMember(content, guildId, guild, jsonUser);
+//            if (jsonUser.isNull("username") || content.getString("status", "offline").equals(OnlineStatus.OFFLINE.getKey()))
+//                return null;
+            // We should have somewhat enough information to create this member, so lets do it! TODO: Is this needed?
+//            user = createMember(content, guildId, guild, jsonUser);
+            log.trace("Ignoring PRESENCE_UPDATE for unknown user with id {}", userId);
+            return null;
         }
 
         if (jsonUser.hasKey("username"))
@@ -131,6 +133,7 @@ public class PresenceUpdateHandler extends SocketHandler
 //            long hashId = userId ^ guild.getIdLong();
 //            EventCache.LOG.debug("Received PRESENCE_UPDATE for a member that is not yet cached. UserId: {} GuildId: {}", userId, guild.getIdLong());
 //            getJDA().getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
+            log.trace("Ignoring PRESENCE_UPDATE for unloaded member with id {} in guild with id {}", userId, guildId);
             return null;
         }
 

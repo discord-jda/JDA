@@ -866,19 +866,23 @@ public class EntityBuilder
     }
     public Message createMessage(DataObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
     {
+        final long id = jsonObject.getLong("id");
+        final DataObject author = jsonObject.getObject("author");
+        final long authorId = author.getLong("id");
+
         if (chan.getType().isGuild() && !jsonObject.isNull("member"))
         {
             GuildChannel guildChannel = (GuildChannel) chan;
-            DataObject member = jsonObject.getObject("member");
-            member.put("user", jsonObject.getObject("author"));
-            createMember((GuildImpl) guildChannel.getGuild(), member);
+            if (guildChannel.getGuild().getMemberById(authorId) == null)
+            {
+                DataObject member = jsonObject.getObject("member");
+                LOG.debug("Initializing member from message create {}", member);
+                member.put("user", author);
+                createMember((GuildImpl) guildChannel.getGuild(), member);
+            }
         }
 
-        final long id = jsonObject.getLong("id");
-        String content = jsonObject.getString("content", "");
-
-        DataObject author = jsonObject.getObject("author");
-        final long authorId = author.getLong("id");
+        final String content = jsonObject.getString("content", "");
         final boolean fromWebhook = jsonObject.hasKey("webhook_id");
         final boolean pinned = jsonObject.getBoolean("pinned");
         final boolean tts = jsonObject.getBoolean("tts");

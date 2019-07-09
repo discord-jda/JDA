@@ -162,7 +162,15 @@ public class JDAImpl implements JDA
 
     public boolean chunkGuild(long id)
     {
-        return chunkingFilter.filter(id);
+        try
+        {
+            return chunkingFilter.filter(id);
+        }
+        catch (Exception e)
+        {
+            LOG.error("Uncaught exception from chunking filter", e);
+            return true;
+        }
     }
 
     public void setChunkingFilter(ChunkingFilter filter)
