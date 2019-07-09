@@ -873,12 +873,18 @@ public class EntityBuilder
         if (chan.getType().isGuild() && !jsonObject.isNull("member"))
         {
             GuildChannel guildChannel = (GuildChannel) chan;
-            if (guildChannel.getGuild().getMemberById(authorId) == null)
+            Guild guild = guildChannel.getGuild();
+            MemberImpl cachedMember = (MemberImpl) guild.getMemberById(authorId);
+            boolean incomplete = cachedMember != null && cachedMember.isIncomplete();
+            if (cachedMember == null || incomplete)
             {
                 DataObject member = jsonObject.getObject("member");
                 member.put("user", author);
-                LOG.debug("Initializing member from message create {}", member);
-                createMember((GuildImpl) guildChannel.getGuild(), member);
+                if (incomplete)
+                    LOG.debug("Completing initialization of incomplete member through message create {}", member);
+                else
+                    LOG.debug("Initializing member from message create {}", member);
+                createMember((GuildImpl) guild, member);
             }
         }
 

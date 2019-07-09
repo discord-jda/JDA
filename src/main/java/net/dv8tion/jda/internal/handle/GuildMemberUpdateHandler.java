@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameE
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
@@ -61,11 +62,19 @@ public class GuildMemberUpdateHandler extends SocketHandler
         MemberImpl member = (MemberImpl) guild.getMembersView().get(userId);
         if (member == null)
         {
-            long hashId = id ^ userId;
-            getJDA().getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. HASH_ID: {} JSON: {}", hashId, content);
-            return null;
+            content.put("joined_at",
+                content.opt("joined_at")
+                       .orElseGet(() -> guild.getTimeCreated().toString()));
+            EntityBuilder.LOG.debug("Creating member from GUILD_MEMBER_UPDATE {}", content);
+            member = getJDA().getEntityBuilder().createMember(guild, content);
         }
+//        if (member == null)
+//        {
+//            long hashId = id ^ userId;
+//            getJDA().getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
+//            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. HASH_ID: {} JSON: {}", hashId, content);
+//            return null;
+//        }
 
         Set<Role> currentRoles = member.getRoleSet();
         List<Role> newRoles = toRolesList(guild, content.getArray("roles"));

@@ -80,12 +80,11 @@ public class PresenceUpdateHandler extends SocketHandler
         // due to a User leaving a guild.
         if (user == null)
         {
-//            if (jsonUser.isNull("username") || content.getString("status", "offline").equals(OnlineStatus.OFFLINE.getKey()))
-//                return null;
-            // We should have somewhat enough information to create this member, so lets do it! TODO: Is this needed?
-//            user = createMember(content, guildId, guild, jsonUser);
-            log.trace("Ignoring PRESENCE_UPDATE for unknown user with id {}", userId);
-            return null;
+            // If this presence update doesn't have a user or the status is offline we ignore it
+            if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
+                return null;
+            // We should have somewhat enough information to create this member, so lets do it!
+            user = createMember(content, guildId, guild, jsonUser);
         }
 
         if (jsonUser.hasKey("username"))
@@ -170,9 +169,7 @@ public class PresenceUpdateHandler extends SocketHandler
         DataArray roles = content.optArray("roles").orElse(null);
         String onlineStatus = content.getString("status");
         // unfortunately this information is missing
-        String joinDate = content.opt("joined_at")
-            .map(Object::toString)
-            .orElseGet(() -> TimeUtil.getTimeCreated(guildId).toString());
+        Object joinDate = content.opt("joined_at").orElseGet(() -> TimeUtil.getTimeCreated(guildId).toString());
 
         memberJson.put("user", jsonUser)
                   .put("status", onlineStatus)
