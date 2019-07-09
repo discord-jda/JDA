@@ -14,32 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils.config;
+package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.api.entities.bean.MutableGuildData;
-import net.dv8tion.jda.api.utils.DataProvider;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
+import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
-public class DataProviderConfig
+public interface DataProvider<T>
 {
-    private static final DataProviderConfig DEFAULT = new DataProviderConfig();
-
-    private DataProvider<? extends MutableGuildData> guildProvider = MutableGuildData.RICH_PROVIDER;
-
-    public void setGuildProvider(DataProvider<? extends MutableGuildData> provider)
-    {
-        this.guildProvider = provider;
-    }
-
-    public MutableGuildData provideGuildData(long guildId, EnumSet<CacheFlag> flags)
-    {
-        return guildProvider.provide(guildId, flags);
-    }
-
-    public static DataProviderConfig getDefault()
-    {
-        return DEFAULT;
-    }
+    @Nonnull
+    T provide(long id, @Nonnull EnumSet<CacheFlag> flags);
 }

@@ -962,6 +962,6 @@ public class JDAImpl implements JDA
     public MutableGuildData provideGuildData(long id)
     {
         // TODO: Catch exceptions
-        return dataProviderConfig.provideGuildData(id);
+        return dataProviderConfig.provideGuildData(id, metaConfig.getCacheFlags());
     }
 }

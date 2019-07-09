@@ -19,15 +19,15 @@ package net.dv8tion.jda.api.entities.bean;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.bean.light.LightGuildData;
 import net.dv8tion.jda.api.entities.bean.rich.RichGuildData;
+import net.dv8tion.jda.api.utils.DataProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.function.LongFunction;
 
 public interface MutableGuildData extends GuildData
 {
-    LongFunction<MutableGuildData> LIGHT_PROVIDER = (id) -> LightGuildData.SINGLETON;
-    LongFunction<MutableGuildData> RICH_PROVIDER = (id) -> new RichGuildData();
+    DataProvider<MutableGuildData> LIGHT_PROVIDER = (id, flags) -> LightGuildData.SINGLETON;
+    DataProvider<MutableGuildData> RICH_PROVIDER = (id, flags) -> new RichGuildData();
 
     // Returning old value, this can be useful for update events!
     @Nullable

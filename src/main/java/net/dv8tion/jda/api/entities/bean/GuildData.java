@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 
 public interface GuildData
 {
+    @Nonnull
     GuildData copy();
 
     @Nullable

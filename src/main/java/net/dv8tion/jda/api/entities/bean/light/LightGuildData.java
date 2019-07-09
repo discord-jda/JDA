@@ -27,6 +27,7 @@ public class LightGuildData implements MutableGuildData
 {
     public static final LightGuildData SINGLETON = new LightGuildData();
 
+    @Nonnull
     @Override
     public GuildData copy()
     {

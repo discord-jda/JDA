@@ -19,15 +19,27 @@ package net.dv8tion.jda.api.entities.bean;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ClientType;
+import net.dv8tion.jda.api.entities.bean.light.LightMemberData;
+import net.dv8tion.jda.api.entities.bean.rich.RichMemberData;
+import net.dv8tion.jda.api.utils.DataProvider;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 public interface MutableMemberData extends MemberData
 {
-    String setNickname(String nickname);
+    DataProvider<MutableMemberData> LIGHT_PROVIDER = (id, flags) -> LightMemberData.SINGLETON;
+    DataProvider<MutableMemberData> RICH_PROVIDER = (id, flags) -> new RichMemberData(flags);
+
+    @Nullable
+    String setNickname(@Nullable String nickname);
     long setTimeJoined(long time);
     long setTimeBoosted(long time);
-    List<Activity> setActivities(List<Activity> activities);
-    OnlineStatus setOnlineStatus(OnlineStatus status);
-    OnlineStatus setOnlineStatus(ClientType type, OnlineStatus status);
+    @Nonnull
+    List<Activity> setActivities(@Nonnull List<Activity> activities);
+    @Nonnull
+    OnlineStatus setOnlineStatus(@Nonnull OnlineStatus status);
+    @Nonnull
+    OnlineStatus setOnlineStatus(@Nonnull ClientType type, @Nonnull OnlineStatus status);
 }

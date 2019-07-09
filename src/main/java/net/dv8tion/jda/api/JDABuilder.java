@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.api.utils.DataProvider;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -40,7 +41,6 @@ import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.LongFunction;
 
 /**
  * Used to create new {@link net.dv8tion.jda.api.JDA} instances. This is also useful for making sure all of
@@ -825,7 +825,7 @@ public class JDABuilder
     }
 
     @Nonnull
-    public JDABuilder setGuildDataProvider(@Nullable LongFunction<? extends MutableGuildData> provider)
+    public JDABuilder setGuildDataProvider(@Nullable DataProvider<? extends MutableGuildData> provider)
     {
         this.dataProviderConfig.setGuildProvider(provider);
         return this;

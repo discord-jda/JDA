@@ -35,6 +35,7 @@ public class RichGuildData implements MutableGuildData
     private Guild.Timeout afkTimeout;
     private long systemChannelId, afkChannelId;
 
+    @Nonnull
     @Override
     public RichGuildData copy()
     {
