@@ -1446,6 +1446,19 @@ public class GuildImpl implements Guild
 
     // -- Member Tracking --
 
+
+    @Override
+    public RestAction<Member> retrieveMemberById(long id)
+    {
+        Member member = getMemberById(id);
+        if (member != null)
+            return new EmptyRestAction<>(getJDA(), member);
+
+        Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
+        return new RestActionImpl<>(getJDA(), route, (resp, req) ->
+            getJDA().getEntityBuilder().createMember(this, resp.getObject()));
+    }
+
     public void startChunking()
     {
         if (memberCache.size() == memberCount)

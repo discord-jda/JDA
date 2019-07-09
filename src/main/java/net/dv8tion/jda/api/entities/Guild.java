@@ -2011,6 +2011,75 @@ public interface Guild extends ISnowflake
      */
     CompletableFuture<Void> retrieveMembers();
 
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  user
+     *         The user to load the member from
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     */
+    default RestAction<Member> retrieveMember(User user)
+    {
+        return retrieveMemberById(user.getId());
+    }
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the member from
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     */
+    default RestAction<Member> retrieveMemberById(String id)
+    {
+        return retrieveMemberById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the member from
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     */
+    RestAction<Member> retrieveMemberById(long id);
+
     /* From GuildController */
 
     /**
