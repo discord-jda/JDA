@@ -876,8 +876,8 @@ public class EntityBuilder
             if (guildChannel.getGuild().getMemberById(authorId) == null)
             {
                 DataObject member = jsonObject.getObject("member");
-                LOG.debug("Initializing member from message create {}", member);
                 member.put("user", author);
+                LOG.debug("Initializing member from message create {}", member);
                 createMember((GuildImpl) guildChannel.getGuild(), member);
             }
         }
