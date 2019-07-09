@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class VoiceStateUpdateHandler extends SocketHandler
 {
@@ -76,27 +77,18 @@ public class VoiceStateUpdateHandler extends SocketHandler
         MemberImpl member = (MemberImpl) guild.getMemberById(userId);
         if (member == null || member.isIncomplete())
         {
-            DataObject memberJson = content.getObject("member");
-            EntityBuilder.LOG.debug("Initializing member from VOICE_STATE_UPDATE {}", memberJson);
-            member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson);
+            Optional<DataObject> memberJson = content.optObject("member");
+            if (memberJson.isPresent())
+            {
+                EntityBuilder.LOG.debug("Initializing member from VOICE_STATE_UPDATE {}", memberJson.get());
+                member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
+            }
+            else if (member == null)
+            {
+                EntityBuilder.LOG.debug("Ignoring VOICE_STATE_UPDATE without member attribute {}", content);
+                return;
+            }
         }
-//        if (member == null)
-//        {
-//            //Caching of this might not be valid. It is possible that we received this
-//            // update due to this Member leaving the guild while still connected to a voice channel.
-//            // In that case, we should not cache this because it could cause problems if they rejoined.
-//            //However, we can't just ignore it completely because it could be a user that joined off of
-//            // an invite to a VoiceChannel, so the GUILD_MEMBER_ADD and the VOICE_STATE_UPDATE may have
-//            // come out of order. Not quite sure what to do. Going to cache for now however.
-//            //At the worst, this will just cause a few events to fire with bad data if the member rejoins the guild if
-//            // in fact the issue was that the VOICE_STATE_UPDATE was sent after they had left, however, by caching
-//            // it we will preserve the integrity of the cache in the event that it was actually a mis-ordering of
-//            // GUILD_MEMBER_ADD and VOICE_STATE_UPDATE. I'll take some bad-data events over an invalid cache.
-//            long idHash = guildId ^ userId;
-//            getJDA().getEventCache().cache(EventCache.Type.MEMBER, idHash, responseNumber, allContent, this::handle);
-//            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. HASH_ID: {} JSON: {}", idHash, content);
-//            return;
-//        }
 
         GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
         if (vState == null)
