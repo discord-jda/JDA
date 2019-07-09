@@ -751,6 +751,7 @@ public class GuildImpl implements Guild
         return available;
     }
 
+    @Nonnull
     @Override
     public CompletableFuture<Void> retrieveMembers()
     {
@@ -1447,6 +1448,7 @@ public class GuildImpl implements Guild
     // -- Member Tracking --
 
 
+    @Nonnull
     @Override
     public RestAction<Member> retrieveMemberById(long id)
     {

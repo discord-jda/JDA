@@ -2009,6 +2009,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link CompletableFuture} representing the chunking task
      */
+    @Nonnull
     CompletableFuture<Void> retrieveMembers();
 
     /**
@@ -2028,10 +2029,15 @@ public interface Guild extends ISnowflake
      * @param  user
      *         The user to load the member from
      *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
      * @return {@link RestAction} - Type: {@link Member}
      */
-    default RestAction<Member> retrieveMember(User user)
+    @Nonnull
+    default RestAction<Member> retrieveMember(@Nonnull User user)
     {
+        Checks.notNull(user, "User");
         return retrieveMemberById(user.getId());
     }
 
@@ -2052,9 +2058,15 @@ public interface Guild extends ISnowflake
      * @param  id
      *         The user id to load the member from
      *
+     * @throws IllegalArgumentException
+     *         If the provided id is empty or null
+     * @throws NumberFormatException
+     *         If the provided id is not a snowflake
+     *
      * @return {@link RestAction} - Type: {@link Member}
      */
-    default RestAction<Member> retrieveMemberById(String id)
+    @Nonnull
+    default RestAction<Member> retrieveMemberById(@Nonnull String id)
     {
         return retrieveMemberById(MiscUtil.parseSnowflake(id));
     }
@@ -2078,6 +2090,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link RestAction} - Type: {@link Member}
      */
+    @Nonnull
     RestAction<Member> retrieveMemberById(long id);
 
     /* From GuildController */
