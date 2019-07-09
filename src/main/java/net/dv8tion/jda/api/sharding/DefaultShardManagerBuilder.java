@@ -1183,6 +1183,21 @@ public class  DefaultShardManagerBuilder
         return this;
     }
 
+    /**
+     * The {@link ChunkingFilter} to filter which guilds should use member chunking.
+     * <br>By default this uses {@link ChunkingFilter#ALL}.
+     *
+     * @param  filter
+     *         The filter to apply
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     *
+     * @see    ChunkingFilter#NONE
+     * @see    ChunkingFilter#include(long...)
+     * @see    ChunkingFilter#exclude(long...)
+     */
     @Nonnull
     public DefaultShardManagerBuilder setChunkingFilter(@Nullable ChunkingFilter filter)
     {
