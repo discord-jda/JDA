@@ -221,7 +221,7 @@ public class EntityBuilder
             createMember(guildObj, memberJson);
 
         if (guildObj.getOwner() == null)
-            LOG.warn("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
+            LOG.debug("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
 
         for (int i = 0; i < channelArray.length(); i++)
         {

@@ -233,8 +233,9 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean isOwner() {
-        return this.equals(getGuild().getOwner());
+    public boolean isOwner()
+    {
+        return this.user.getIdLong() == getGuild().getOwnerIdLong();
     }
 
     @Override

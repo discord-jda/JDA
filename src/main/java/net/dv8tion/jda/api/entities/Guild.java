@@ -465,8 +465,8 @@ public interface Guild extends ISnowflake
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
-     * <br>This is null when the owner is no longer in this guild. Sometimes owners of guilds delete their account
-     * or get banned by Discord.
+     * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
+     * Sometimes owners of guilds delete their account or get banned by Discord.
      *
      * <p>Ownership can be transferred using {@link net.dv8tion.jda.api.entities.Guild#transferOwnership(Member)}.
      *
