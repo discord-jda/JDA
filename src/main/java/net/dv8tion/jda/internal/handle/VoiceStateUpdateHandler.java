@@ -74,7 +74,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
 
         MemberImpl member = (MemberImpl) guild.getMemberById(userId);
-        if (member == null)
+        if (member == null || member.isIncomplete())
         {
             DataObject memberJson = content.getObject("member");
             EntityBuilder.LOG.debug("Initializing member from VOICE_STATE_UPDATE {}", memberJson);
