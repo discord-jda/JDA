@@ -1467,7 +1467,8 @@ public class GuildImpl implements Guild
     public RestAction<Member> retrieveMemberById(long id)
     {
         Member member = getMemberById(id);
-        if (member != null)
+        // If guild subscriptions are disabled this member might not be up-to-date
+        if (member != null && getJDA().isGuildSubscriptions())
             return new EmptyRestAction<>(getJDA(), member);
 
         Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));

@@ -785,6 +785,11 @@ public class EntityBuilder
             user = createFakeUser(recipient, true);
         }
 
+        return createPrivateChannel(json, user);
+    }
+
+    public PrivateChannel createPrivateChannel(DataObject json, UserImpl user)
+    {
         final long channelId = json.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
                 .setLastMessageId(json.getLong("last_message_id", 0));
@@ -793,7 +798,9 @@ public class EntityBuilder
         if (user.isFake())
         {
             priv.setFake(true);
+            // Promote user and channel to cache of fakers
             getJDA().getFakePrivateChannelMap().put(channelId, priv);
+            getJDA().getFakeUserMap().put(user.getIdLong(), user);
         }
         else
         {

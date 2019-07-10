@@ -534,7 +534,8 @@ public class JDAImpl implements JDA
 
         // check cache
         User user = this.getUserById(id);
-        if (user != null)
+        // If guild subscriptions are disabled this user might not be up-to-date
+        if (user != null && isGuildSubscriptions())
             return new EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
