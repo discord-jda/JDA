@@ -160,6 +160,11 @@ public class JDAImpl implements JDA
         return metaConfig.getCacheFlags().contains(flag);
     }
 
+    public boolean isGuildSubscriptions()
+    {
+        return metaConfig.isGuildSubscriptions();
+    }
+
     public boolean chunkGuild(long id)
     {
         try

@@ -1206,6 +1206,26 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * Enable typing and presence update events.
+     * <br>These events cover the majority of traffic happening on the gateway and thus cause a lot
+     * of bandwidth usage. Disabling these events means the cache for users might become outdated since
+     * user properties are only updated by presence updates.
+     * <br>Default: true
+     *
+     * @param  enabled
+     *         True, if guild subscriptions should be enabled
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setGuildSubscriptionsEnabled(boolean enabled)
+    {
+        return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
