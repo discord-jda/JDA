@@ -427,24 +427,24 @@ public class EntityBuilder
         member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
               .setNickname(memberJson.getString("nick", null));
 
+        DataArray rolesJson = memberJson.getArray("roles");
+        for (int k = 0; k < rolesJson.length(); k++)
+        {
+            final long roleId = rolesJson.getLong(k);
+            Role r = guild.getRolesView().get(roleId);
+            if (r == null)
+            {
+                LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
+                    member.getUser().getId(), guild.getId(), roleId);
+            }
+            else
+            {
+                member.getRoleSet().add(r);
+            }
+        }
+
         if (playbackCache)
         {
-            DataArray rolesJson = memberJson.getArray("roles");
-            for (int k = 0; k < rolesJson.length(); k++)
-            {
-                final long roleId = rolesJson.getLong(k);
-                Role r = guild.getRolesView().get(roleId);
-                if (r == null)
-                {
-                    LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
-                        member.getUser().getId(), guild.getId(), roleId);
-                }
-                else
-                {
-                    member.getRoleSet().add(r);
-                }
-            }
-
             long hashId = guild.getIdLong() ^ user.getIdLong();
             getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
             guild.acknowledgeMembers();
@@ -883,14 +883,12 @@ public class EntityBuilder
             GuildChannel guildChannel = (GuildChannel) chan;
             Guild guild = guildChannel.getGuild();
             MemberImpl cachedMember = (MemberImpl) guild.getMemberById(authorId);
-            boolean incomplete = cachedMember != null && cachedMember.isIncomplete();
-            if (cachedMember == null || incomplete)
+            // Update member cache with new information if needed
+            if (cachedMember == null || cachedMember.isIncomplete() || !getJDA().isGuildSubscriptions())
             {
                 DataObject member = jsonObject.getObject("member");
                 member.put("user", author);
-                if (incomplete)
-                    LOG.debug("Completing initialization of incomplete member through message create {}", member);
-                else
+                if (cachedMember == null)
                     LOG.debug("Initializing member from message create {}", member);
                 createMember((GuildImpl) guild, member);
             }

@@ -181,7 +181,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
         EntityBuilder entityBuilder = getJDA().getEntityBuilder();
         // Check for existing member
         MemberImpl member = (MemberImpl) guild.getMemberById(userId);
-        if (member == null || member.isIncomplete())
+        // Update or create member if guild subscriptions are disabled (we don't receive member updates so use what we have)
+        if (member == null || member.isIncomplete() || !getJDA().isGuildSubscriptions())
         {
             if (memberJson.isPresent())
             {
