@@ -873,7 +873,7 @@ public class EntityBuilder
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
 
-        if (chan.getType().isGuild() && !jsonObject.isNull("member"))
+        if (chan.getType().isGuild() && !jsonObject.isNull("member") && exceptionOnMissingUser)
         {
             GuildChannel guildChannel = (GuildChannel) chan;
             Guild guild = guildChannel.getGuild();
