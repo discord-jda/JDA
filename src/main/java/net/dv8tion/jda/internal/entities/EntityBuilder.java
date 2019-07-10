@@ -364,14 +364,19 @@ public class EntityBuilder
             }
         }
 
+        updateUser(userObj, user);
+        if (!fake && modifyCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.USER, id);
+        return userObj;
+    }
+
+    public void updateUser(UserImpl userObj, DataObject user)
+    {
         userObj
             .setName(user.getString("username"))
             .setDiscriminator(user.get("discriminator").toString())
             .setAvatarId(user.getString("avatar", null))
             .setBot(user.getBoolean("bot"));
-        if (!fake && modifyCache)
-            getJDA().getEventCache().playbackCache(EventCache.Type.USER, id);
-        return userObj;
     }
 
     public MemberImpl createMember(GuildImpl guild, DataObject memberJson)
@@ -853,7 +858,7 @@ public class EntityBuilder
     }
 
     public Message createMessage(DataObject jsonObject) { return createMessage(jsonObject, false); }
-    public Message createMessage(DataObject jsonObject, boolean exceptionOnMissingUser)
+    public Message createMessage(DataObject jsonObject, boolean modifyCache)
     {
         final long channelId = jsonObject.getLong("channel_id");
 
@@ -865,15 +870,15 @@ public class EntityBuilder
         if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
-        return createMessage(jsonObject, chan, exceptionOnMissingUser);
+        return createMessage(jsonObject, chan, modifyCache);
     }
-    public Message createMessage(DataObject jsonObject, MessageChannel chan, boolean exceptionOnMissingUser)
+    public Message createMessage(DataObject jsonObject, MessageChannel chan, boolean modifyCache)
     {
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
 
-        if (chan.getType().isGuild() && !jsonObject.isNull("member") && exceptionOnMissingUser)
+        if (chan.getType().isGuild() && !jsonObject.isNull("member") && modifyCache)
         {
             GuildChannel guildChannel = (GuildChannel) chan;
             Guild guild = guildChannel.getGuild();
@@ -925,7 +930,7 @@ public class EntityBuilder
                 user = member != null ? member.getUser() : null;
                 if (user == null)
                 {
-                    if (fromWebhook || !exceptionOnMissingUser)
+                    if (fromWebhook || !modifyCache)
                         user = createFakeUser(author, false);
                     else
                         throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
@@ -933,6 +938,9 @@ public class EntityBuilder
                 break;
             default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
         }
+
+        if (modifyCache) // update the user information on message receive
+            updateUser((UserImpl) user, author);
 
         TLongSet mentionedRoles = new TLongHashSet();
         TLongSet mentionedUsers = new TLongHashSet(map(jsonObject, "mentions", (o) -> o.getLong("id")));

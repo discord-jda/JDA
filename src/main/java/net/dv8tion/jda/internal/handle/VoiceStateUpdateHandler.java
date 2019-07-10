@@ -74,21 +74,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMemberById(userId);
-        if (member == null || member.isIncomplete())
-        {
-            Optional<DataObject> memberJson = content.optObject("member");
-            if (memberJson.isPresent())
-            {
-                EntityBuilder.LOG.debug("Initializing member from VOICE_STATE_UPDATE {}", memberJson.get());
-                member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
-            }
-            else if (member == null)
-            {
-                EntityBuilder.LOG.debug("Ignoring VOICE_STATE_UPDATE without member attribute {}", content);
-                return;
-            }
-        }
+        MemberImpl member = getLazyMember(content, userId, guild);
+        if (member == null) return;
 
         GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
         if (vState == null)
@@ -186,5 +173,33 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
                 getJDA().getDirectAudioController().update(guild, channel);
         }
+    }
+
+    private MemberImpl getLazyMember(DataObject content, long userId, Guild guild)
+    {
+        Optional<DataObject> memberJson = content.optObject("member");
+        EntityBuilder entityBuilder = getJDA().getEntityBuilder();
+        // Check for existing member
+        MemberImpl member = (MemberImpl) guild.getMemberById(userId);
+        if (member == null || member.isIncomplete())
+        {
+            if (memberJson.isPresent())
+            {
+                // Update with new information that was missing before
+                EntityBuilder.LOG.debug("Initializing member from VOICE_STATE_UPDATE {}", memberJson.get());
+                member = entityBuilder.createMember((GuildImpl) guild, memberJson.get());
+            }
+            else if (member == null)
+            {
+                EntityBuilder.LOG.debug("Ignoring VOICE_STATE_UPDATE without member attribute {}", content);
+                return null;
+            }
+        }
+        // Update the user object with the latest information, this is needed because presence updates are unreliable
+        UserImpl user = (UserImpl) member.getUser();
+        memberJson                             // Opt<Member>
+            .flatMap(o -> o.optObject("user")) // Opt<Member> -> Opt<User>
+            .ifPresent(json -> entityBuilder.updateUser(user , json)); // If present, update the user with new information
+        return member;
     }
 }
