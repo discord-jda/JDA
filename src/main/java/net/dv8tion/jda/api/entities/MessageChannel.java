@@ -335,6 +335,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see net.dv8tion.jda.api.MessageBuilder
      */
     @Nonnull
+    @CheckReturnValue
     default MessageAction sendMessage(@Nonnull CharSequence text)
     {
         Checks.notEmpty(text, "Provided text for message");
