@@ -224,8 +224,20 @@ public class EntityBuilder
             }
         }
 
-        for (DataObject memberJson : members.valueCollection())
-            createMember(guildObj, memberJson);
+        try (UnlockHook h1 = guildObj.getMembersView().writeLock();
+             UnlockHook h2 = getJDA().getUsersView().writeLock())
+        {
+            //Add members to cache when subscriptions are disabled when they appear here
+            // this is done because we can still keep track of members in voice channels
+            TLongObjectMap<Member> memberCache = guildObj.getMembersView().getMap();
+            TLongObjectMap<User> userCache = getJDA().getUsersView().getMap();
+            for (DataObject memberJson : members.valueCollection())
+            {
+                MemberImpl member = createMember(guildObj, memberJson);
+                memberCache.put(member.getIdLong(), member);
+                userCache.put(member.getIdLong(), member.getUser());
+            }
+        }
 
         if (guildObj.getOwner() == null)
             LOG.debug("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
@@ -1104,7 +1116,7 @@ public class EntityBuilder
             default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
         }
 
-        if (modifyCache) // update the user information on message receive
+        if (modifyCache && !fromWebhook) // update the user information on message receive
             updateUser((UserImpl) user, author);
 
         TLongSet mentionedRoles = new TLongHashSet();

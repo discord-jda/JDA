@@ -17,12 +17,18 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -74,7 +80,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return;
         }
 
-        MemberImpl member = getLazyMember(content, userId, guild);
+        MemberImpl member = getLazyMember(content, userId, (GuildImpl) guild, channelId != null);
         if (member == null) return;
 
         GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
@@ -175,26 +181,74 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
     }
 
-    private MemberImpl getLazyMember(DataObject content, long userId, Guild guild)
+    private MemberImpl getLazyMember(DataObject content, long userId, GuildImpl guild, boolean connected)
     {
-        Optional<DataObject> memberJson = content.optObject("member");
-        EntityBuilder entityBuilder = getJDA().getEntityBuilder();
         // Check for existing member
+        Optional<DataObject> memberJson = content.optObject("member");
         MemberImpl member = (MemberImpl) guild.getMemberById(userId);
-        // Update or create member if guild subscriptions are disabled (we don't receive member updates so use what we have)
-        if (member == null || member.isIncomplete() || !getJDA().isGuildSubscriptions())
+        if (!memberJson.isPresent() || userId == getJDA().getSelfUser().getIdLong())
+            return member;
+
+        // Handle cache changes
+        boolean subscriptions = getJDA().isGuildSubscriptions();
+        if (member == null)
         {
-            if (memberJson.isPresent())
+            if (subscriptions || (connected && getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE)))
             {
-                // Update with new information that was missing before
-                EntityBuilder.LOG.debug("Initializing member from VOICE_STATE_UPDATE {}", memberJson.get());
-                member = entityBuilder.createMember((GuildImpl) guild, memberJson.get());
+                // this means either:
+                // - the member just connected to a voice channel, otherwise we would know about it already!
+                // - the member is not connect to a voice channel but we can load it here because subscriptions are enabled
+                member = loadMember(userId, guild, memberJson.get(), "Initializing");
             }
-            else if (member == null)
+        }
+        else
+        {
+            if (subscriptions && member.isIncomplete())
             {
-                EntityBuilder.LOG.debug("Ignoring VOICE_STATE_UPDATE without member attribute {}", content);
+                // the member can be updated with new information that was missing before
+                member = loadMember(userId, guild, memberJson.get(), "Updating");
+            }
+            else if (!subscriptions && !connected)
+            {
+                EntityBuilder.LOG.debug("Unloading member who just left a voice channel {}", memberJson);
+                // the member just disconnected from the voice channel - remove it from cache
+                unloadMember(userId, member);
                 return null;
             }
+        }
+        return member;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void unloadMember(long userId, MemberImpl member)
+    {
+        MemberCacheViewImpl membersView = member.getGuild().getMembersView();
+        VoiceChannel channelLeft = member.getVoiceState().getChannel();
+        ((GuildVoiceStateImpl) member.getVoiceState()).setConnectedChannel(null);
+        getJDA().handleEvent(
+            new GuildVoiceLeaveEvent(
+                getJDA(), responseNumber,
+                member, channelLeft));
+        membersView.remove(userId);
+        User user = member.getUser();
+        boolean dropUser = getJDA().getGuildsView().applyStream(stream -> stream.noneMatch(it -> it.isMember(user)));
+        if (dropUser)
+            getJDA().getUsersView().remove(userId);
+    }
+
+    private MemberImpl loadMember(long userId, GuildImpl guild, DataObject memberJson, String comment)
+    {
+        EntityBuilder entityBuilder = getJDA().getEntityBuilder();
+        MemberCacheViewImpl membersView = guild.getMembersView();
+        SnowflakeCacheViewImpl<User> usersView = getJDA().getUsersView();
+        MemberImpl member;
+        EntityBuilder.LOG.debug("{} member from VOICE_STATE_UPDATE {}", comment, memberJson);
+        member = entityBuilder.createMember(guild, memberJson);
+        try (UnlockHook h1 = membersView.writeLock();
+             UnlockHook h2 = usersView.writeLock())
+        {
+            membersView.getMap().put(userId, member);
+            usersView.getMap().put(userId, member.getUser());
         }
         return member;
     }
