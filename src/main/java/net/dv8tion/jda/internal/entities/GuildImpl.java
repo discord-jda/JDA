@@ -1480,6 +1480,11 @@ public class GuildImpl implements Guild
     {
         if (memberCache.size() == memberCount)
             return;
+        if (!getJDA().isGuildSubscriptions())
+        {
+            chunkingCallback.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled guild subscriptions"));
+            return;
+        }
 
         DataObject request = DataObject.empty()
             .put("limit", 0)

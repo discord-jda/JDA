@@ -239,6 +239,12 @@ public class MemberImpl implements Member
     }
 
     @Override
+    public boolean isFake()
+    {
+        return getGuild().getMemberById(getIdLong()) == null;
+    }
+
+    @Override
     public long getIdLong()
     {
         return user.getIdLong();

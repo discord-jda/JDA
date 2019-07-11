@@ -360,7 +360,8 @@ public class EntityBuilder
                 else
                 {
                     userObj = new UserImpl(id, getJDA()).setFake(fake);
-                    if (modifyCache)
+                    // Cache user if guild subscriptions are enabled
+                    if (modifyCache && getJDA().isGuildSubscriptions())
                     {
                         if (fake)
                             getJDA().getFakeUserMap().put(id, userObj);
@@ -439,7 +440,11 @@ public class EntityBuilder
             try (UnlockHook hook = memberView.writeLock())
             {
                 member = new MemberImpl(guild, user);
-                playbackCache = memberView.getMap().put(user.getIdLong(), member) == null;
+                // Cache member if guild subscriptions are enabled or the user is the self user
+                if (getJDA().isGuildSubscriptions() || user.equals(getJDA().getSelfUser()))
+                    playbackCache = memberView.getMap().put(user.getIdLong(), member) == null;
+                else // otherwise re-create every time!
+                    playbackCache = true;
                 DataObject cachedOverride = guild.getCachedOverrideMap().remove(user.getIdLong());
                 if (cachedOverride != null)
                 {
@@ -1033,6 +1038,7 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
+        Member member = null;
 
         if (chan.getType().isGuild() && !jsonObject.isNull("member") && modifyCache)
         {
@@ -1042,11 +1048,15 @@ public class EntityBuilder
             // Update member cache with new information if needed
             if (cachedMember == null || cachedMember.isIncomplete() || !getJDA().isGuildSubscriptions())
             {
-                DataObject member = jsonObject.getObject("member");
-                member.put("user", author);
+                DataObject memberJson = jsonObject.getObject("member");
+                memberJson.put("user", author);
                 if (cachedMember == null)
-                    LOG.debug("Initializing member from message create {}", member);
-                createMember((GuildImpl) guild, member);
+                    LOG.trace("Initializing member from message create {}", memberJson);
+                member = createMember((GuildImpl) guild, memberJson);
+            }
+            else
+            {
+                member = cachedMember;
             }
         }
 
@@ -1080,7 +1090,8 @@ public class EntityBuilder
                 throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
             case TEXT:
                 Guild guild = ((TextChannel) chan).getGuild();
-                Member member = guild.getMemberById(authorId);
+                if (member == null)
+                    member = guild.getMemberById(authorId);
                 user = member != null ? member.getUser() : null;
                 if (user == null)
                 {
@@ -1111,13 +1122,13 @@ public class EntityBuilder
             case DEFAULT:
                 return new ReceivedMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
                 return new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, activity, editTime, reactions, attachments, embeds);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds);
         }
 
     }
@@ -1312,9 +1323,13 @@ public class EntityBuilder
                 Member member = chan.getGuild().getMemberById(id);
                 if (member == null)
                 {
-                    override.put("channel_id", chan.getIdLong());
-                    ((GuildImpl) chan.getGuild()).getCachedOverrideMap().put(id, override);
-//                    throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent user. Guild: " + chan.getGuild() + ", Channel: " + chan + ", JSON: " + override);
+                    if (getJDA().isGuildSubscriptions())
+                    {
+                        // Cache override for later
+                        override.put("channel_id", chan.getIdLong());
+                        LOG.debug("Caching permission override of unloaded member {}", override);
+                        ((GuildImpl) chan.getGuild()).getCachedOverrideMap().put(id, override);
+                    }
                     return null;
                 }
 

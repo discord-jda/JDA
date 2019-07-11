@@ -169,7 +169,7 @@ public class JDAImpl implements JDA
     {
         try
         {
-            return chunkingFilter.filter(id);
+            return isGuildSubscriptions() && chunkingFilter.filter(id);
         }
         catch (Exception e)
         {

@@ -196,11 +196,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 return null;
             }
         }
-        // Update the user object with the latest information, this is needed because presence updates are unreliable
-        UserImpl user = (UserImpl) member.getUser();
-        memberJson                             // Opt<Member>
-            .flatMap(o -> o.optObject("user")) // Opt<Member> -> Opt<User>
-            .ifPresent(json -> entityBuilder.updateUser(user , json)); // If present, update the user with new information
         return member;
     }
 }

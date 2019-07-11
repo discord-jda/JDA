@@ -53,6 +53,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
     protected final User author;
+    protected final Member member;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
     protected final List<MessageReaction> reactions;
@@ -74,7 +75,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
-        String content, String nonce, User author, MessageActivity activity, OffsetDateTime editTime,
+        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
@@ -86,6 +87,7 @@ public class ReceivedMessage extends AbstractMessage
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
+        this.member = member;
         this.activity = activity;
         this.editedTime = editTime;
         this.reactions = Collections.unmodifiableList(reactions);
@@ -449,7 +451,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Member getMember()
     {
-        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
+        return member;
     }
 
     @Nonnull
