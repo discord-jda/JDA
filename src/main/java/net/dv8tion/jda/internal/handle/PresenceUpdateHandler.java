@@ -20,7 +20,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ClientType;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
-import net.dv8tion.jda.api.events.user.update.*;
+import net.dv8tion.jda.api.events.user.update.UserUpdateActivityOrderEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -36,7 +37,6 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 
 public class PresenceUpdateHandler extends SocketHandler
 {
@@ -86,8 +86,8 @@ public class PresenceUpdateHandler extends SocketHandler
 
         if (jsonUser.hasKey("username"))
         {
-            // username implies this is an update to a user
-            handleUserUpdate(jsonUser, user);
+            // username implies this is an update to a user - fire events and update properties
+            getJDA().getEntityBuilder().updateUser(user, jsonUser);
         }
 
         //Now that we've update the User's info, lets see if we need to set the specific Presence information.
@@ -169,42 +169,6 @@ public class PresenceUpdateHandler extends SocketHandler
                   .put("joined_at", joinDate);
         log.trace("Creating member from PRESENCE_UPDATE for userId: {} and guildId: {}", jsonUser.getUnsignedLong("id"), guild.getId());
         return getJDA().getEntityBuilder().createMember(guild, memberJson);
-    }
-
-    private void handleUserUpdate(DataObject jsonUser, UserImpl user)
-    {
-        String name = jsonUser.getString("username");
-        String discriminator = jsonUser.get("discriminator").toString();
-        String avatarId = jsonUser.getString("avatar", null);
-        String oldAvatar = user.getAvatarId();
-
-        if (!user.getName().equals(name))
-        {
-            String oldUsername = user.getName();
-            user.setName(name);
-            getJDA().handleEvent(
-                new UserUpdateNameEvent(
-                    getJDA(), responseNumber,
-                    user, oldUsername));
-        }
-        if (!user.getDiscriminator().equals(discriminator))
-        {
-            String oldDiscriminator = user.getDiscriminator();
-            user.setDiscriminator(discriminator);
-            getJDA().handleEvent(
-                new UserUpdateDiscriminatorEvent(
-                    getJDA(), responseNumber,
-                    user, oldDiscriminator));
-        }
-        if (!Objects.equals(avatarId, oldAvatar))
-        {
-            String oldAvatarId = user.getAvatarId();
-            user.setAvatarId(avatarId);
-            getJDA().handleEvent(
-                new UserUpdateAvatarEvent(
-                    getJDA(), responseNumber,
-                    user, oldAvatarId));
-        }
     }
 
     private void handleActivities(List<Activity> newActivities, MemberImpl member)

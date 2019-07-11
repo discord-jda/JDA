@@ -28,6 +28,13 @@ import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -364,7 +371,19 @@ public class EntityBuilder
             }
         }
 
-        updateUser(userObj, user);
+        if (modifyCache)
+        {
+            // Initial creation
+            userObj.setName(user.getString("username"))
+                   .setDiscriminator(user.get("discriminator").toString())
+                   .setAvatarId(user.getString("avatar", null))
+                   .setBot(user.getBoolean("bot"));
+        }
+        else if (!userObj.isFake())
+        {
+            // Fire update events
+            updateUser(userObj, user);
+        }
         if (!fake && modifyCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.USER, id);
         return userObj;
@@ -372,11 +391,41 @@ public class EntityBuilder
 
     public void updateUser(UserImpl userObj, DataObject user)
     {
-        userObj
-            .setName(user.getString("username"))
-            .setDiscriminator(user.get("discriminator").toString())
-            .setAvatarId(user.getString("avatar", null))
-            .setBot(user.getBoolean("bot"));
+        String oldName = userObj.getName();
+        String newName = user.getString("username");
+        String oldDiscriminator = userObj.getDiscriminator();
+        String newDiscriminator = user.get("discriminator").toString();
+        String oldAvatar = userObj.getAvatarId();
+        String newAvatar = user.getString("avatar", null);
+
+        JDAImpl jda = getJDA();
+        long responseNumber = jda.getResponseTotal();
+        if (!oldName.equals(newName))
+        {
+            userObj.setName(newName);
+            jda.handleEvent(
+                new UserUpdateNameEvent(
+                    jda, responseNumber,
+                    userObj, oldName));
+        }
+
+        if (!oldDiscriminator.equals(newDiscriminator))
+        {
+            userObj.setDiscriminator(newDiscriminator);
+            jda.handleEvent(
+                new UserUpdateDiscriminatorEvent(
+                    jda, responseNumber,
+                    userObj, oldDiscriminator));
+        }
+
+        if (!Objects.equals(oldAvatar, newAvatar))
+        {
+            userObj.setAvatarId(newAvatar);
+            jda.handleEvent(
+                new UserUpdateAvatarEvent(
+                    jda, responseNumber,
+                    userObj, oldAvatar));
+        }
     }
 
     public MemberImpl createMember(GuildImpl guild, DataObject memberJson)
@@ -407,11 +456,37 @@ public class EntityBuilder
             }
         }
 
+        if (playbackCache)
+        {
+            loadMember(guild, memberJson, user, member);
+            long hashId = guild.getIdLong() ^ user.getIdLong();
+            getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
+            guild.acknowledgeMembers();
+        }
+        else
+        {
+            // This is not a new member - fire update events
+            DataArray roleArray = memberJson.getArray("roles");
+            List<Role> roles = new ArrayList<>(roleArray.length());
+            for (int i = 0; i < roleArray.length(); i++)
+            {
+                long roleId = roleArray.getUnsignedLong(i);
+                Role role = guild.getRoleById(roleId);
+                if (role != null)
+                    roles.add(role);
+            }
+            updateMember(guild, member, memberJson, roles);
+        }
+        return member;
+    }
+
+    private void loadMember(GuildImpl guild, DataObject memberJson, User user, MemberImpl member)
+    {
         GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
         if (state != null)
         {
             state.setGuildMuted(memberJson.getBoolean("mute"))
-                 .setGuildDeafened(memberJson.getBoolean("deaf"));
+                .setGuildDeafened(memberJson.getBoolean("deaf"));
         }
 
         if (!memberJson.isNull("premium_since"))
@@ -425,7 +500,7 @@ public class EntityBuilder
         String joinedAtRaw = memberJson.opt("joined_at").map(String::valueOf).orElseGet(() -> guild.getTimeCreated().toString());
         TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
         member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
-              .setNickname(memberJson.getString("nick", null));
+            .setNickname(memberJson.getString("nick", null));
 
         DataArray rolesJson = memberJson.getArray("roles");
         for (int k = 0; k < rolesJson.length(); k++)
@@ -442,14 +517,88 @@ public class EntityBuilder
                 member.getRoleSet().add(r);
             }
         }
+    }
 
-        if (playbackCache)
+    public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
+    {
+        //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
+        long responseNumber = getJDA().getResponseTotal();
+        if (newRoles != null)
         {
-            long hashId = guild.getIdLong() ^ user.getIdLong();
-            getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
-            guild.acknowledgeMembers();
+            updateMemberRoles(member, newRoles, responseNumber);
         }
-        return member;
+        if (content.hasKey("nick"))
+        {
+            String oldNick = member.getNickname();
+            String newNick = content.getString("nick", null);
+            if (!Objects.equals(oldNick, newNick))
+            {
+                member.setNickname(newNick);
+                getJDA().handleEvent(
+                    new GuildMemberUpdateNicknameEvent(
+                        getJDA(), responseNumber,
+                        member, oldNick));
+            }
+        }
+        if (content.hasKey("premium_since"))
+        {
+            long epoch = 0;
+            if (!content.isNull("premium_since"))
+            {
+                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("premium_since"));
+                epoch = Instant.from(date).toEpochMilli();
+            }
+            if (epoch != member.getBoostDateRaw())
+            {
+                OffsetDateTime oldTime = member.getTimeBoosted();
+                member.setBoostDate(epoch);
+                getJDA().handleEvent(
+                    new GuildMemberUpdateBoostTimeEvent(
+                        getJDA(), responseNumber,
+                        member, oldTime));
+            }
+        }
+    }
+
+    private void updateMemberRoles(MemberImpl member, List<Role> newRoles, long responseNumber)
+    {
+        Set<Role> currentRoles = member.getRoleSet();
+        //Find the roles removed.
+        List<Role> removedRoles = new LinkedList<>();
+        each:
+        for (Role role : currentRoles)
+        {
+            for (Iterator<Role> it = newRoles.iterator(); it.hasNext(); )
+            {
+                Role r = it.next();
+                if (role.equals(r))
+                {
+                    it.remove();
+                    continue each;
+                }
+            }
+            removedRoles.add(role);
+        }
+
+        if (removedRoles.size() > 0)
+            currentRoles.removeAll(removedRoles);
+        if (newRoles.size() > 0)
+            currentRoles.addAll(newRoles);
+
+        if (removedRoles.size() > 0)
+        {
+            getJDA().handleEvent(
+                new GuildMemberRoleRemoveEvent(
+                    getJDA(), responseNumber,
+                    member, removedRoles));
+        }
+        if (newRoles.size() > 0)
+        {
+            getJDA().handleEvent(
+                new GuildMemberRoleAddEvent(
+                    getJDA(), responseNumber,
+                    member, newRoles));
+        }
     }
 
     public void createPresence(MemberImpl member, DataObject presenceJson)
@@ -1425,7 +1574,9 @@ public class EntityBuilder
         for (int i = 0; i < arr.length(); i++)
         {
             DataObject obj = arr.getObject(i);
-            mappedObjects.add(convert.apply(obj));
+            T result = convert.apply(obj);
+            if (result != null)
+                mappedObjects.add(result);
         }
 
         return mappedObjects;
