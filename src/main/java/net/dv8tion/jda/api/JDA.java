@@ -196,6 +196,8 @@ public interface JDA
      * <p><b>{@link net.dv8tion.jda.api.requests.RestAction RestAction} request times do not
      * correlate to this value!</b>
      *
+     * <p>The {@link net.dv8tion.jda.api.events.GatewayPingEvent GatewayPingEvent} indicates an update to this value.
+     *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
      *
      * @see    #getRestPing() Getting RestAction ping
