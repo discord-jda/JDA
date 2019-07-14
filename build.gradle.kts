@@ -30,7 +30,7 @@ plugins {
 
     id("com.jfrog.bintray") version "1.8.1"
     id("com.github.ben-manes.versions") version "0.19.0"
-    id("com.github.johnrengelman.shadow") version "2.0.4"
+    id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
 val versionObj = Version(major="4", minor="BETA", revision="0")
@@ -146,6 +146,19 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
+val minimalJar = task<ShadowJar>("minimalJar") {
+    dependsOn(shadowJar)
+    minimize()
+    classifier = shadowJar.classifier + "-min"
+    configurations = shadowJar.configurations
+    from(sourceSets["main"].output)
+    exclude("natives/**")     // ~2 MB
+    exclude("com/sun/jna/**") // ~1 MB
+    exclude("club/minnced/opus/util/*")
+    exclude("tomp2p/opuswrapper/*")
+    manifest.inheritFrom(jar.manifest)
+}
+
 val sourcesJar = task<Jar>("sourcesJar") {
     classifier = "sources"
     from ("src/main/java") {
@@ -160,6 +173,10 @@ val javadocJar = task<Jar>("javadocJar") {
     dependsOn(javadoc)
     classifier = "javadoc"
     from(javadoc.destinationDir)
+}
+
+tasks.withType<ShadowJar> {
+    exclude("*.pom")
 }
 
 tasks.withType<JavaCompile> {
@@ -224,6 +241,7 @@ build.apply {
     dependsOn(sourcesJar)
     dependsOn(shadowJar)
     dependsOn(noOpusJar)
+    dependsOn(minimalJar)
 
     jar.mustRunAfter(clean)
     javadocJar.mustRunAfter(jar)
