@@ -384,7 +384,7 @@ public class EntityBuilder
             }
         }
 
-        if (modifyCache)
+        if (modifyCache || userObj.isFake())
         {
             // Initial creation
             userObj.setName(user.getString("username"))
