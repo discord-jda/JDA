@@ -466,7 +466,7 @@ public class EntityBuilder
                         createPermissionOverride(cachedOverride, channel);
                 }
             }
-            if (guild.getOwnerIdLong() == user.getIdLong())
+            if (playbackCache && guild.getOwnerIdLong() == user.getIdLong())
             {
                 LOG.trace("Found owner of guild with id {}", guild.getId());
                 guild.setOwner(member);

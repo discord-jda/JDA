@@ -33,10 +33,56 @@ import javax.annotation.Nullable;
 public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
 {
     public static final String IDENTIFIER = "owner";
+    private final long prevId, nextId;
 
-    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable Member oldOwner)
+    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable Member oldOwner,
+                                 long prevId, long nextId)
     {
         super(api, responseNumber, guild, oldOwner, guild.getOwner(), IDENTIFIER);
+        this.prevId = prevId;
+        this.nextId = nextId;
+    }
+
+    /**
+     * The previous owner user id
+     *
+     * @return The previous owner id
+     */
+    public long getNewOwnerIdLong()
+    {
+        return nextId;
+    }
+
+    /**
+     * The previous owner user id
+     *
+     * @return The previous owner id
+     */
+    @Nonnull
+    public String getNewOwnerId()
+    {
+        return Long.toUnsignedString(nextId);
+    }
+
+    /**
+     * The new owner user id
+     *
+     * @return The new owner id
+     */
+    public long getOldOwnerIdLong()
+    {
+        return prevId;
+    }
+
+    /**
+     * The new owner user id
+     *
+     * @return The new owner id
+     */
+    @Nonnull
+    public String getOldOwnerId()
+    {
+        return Long.toUnsignedString(prevId);
     }
 
     /**
