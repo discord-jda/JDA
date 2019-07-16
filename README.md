@@ -480,8 +480,6 @@ to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
-<!--
-TODO: Ensure this is compatible with version 4
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
 Created and maintained by [jagrosh](https://github.com/jagrosh).
@@ -491,7 +489,6 @@ Features include:
 - Paginated Message using Reactions
 - EventWaiter allowing to wait for a response and other events
 
--->
 
 <!--
 TODO: Ensure this is compatible with version 4
