@@ -61,8 +61,6 @@ public class AudioConnection
     private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE});
     private static boolean printedError = false;
 
-    protected volatile DatagramSocket udpSocket;
-
     private final TIntLongMap ssrcMap = new TIntLongHashMap();
     private final TIntObjectMap<Decoder> opusDecoders = new TIntObjectHashMap<>();
     private final HashMap<User, Queue<AudioData>> combinedQueue = new HashMap<>();
@@ -295,7 +293,7 @@ public class AudioConnection
 
     private synchronized void setupSendSystem()
     {
-        if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
+        if (!getJDA().getUdpSocket().isClosed() && sendHandler != null && sendSystem == null)
         {
             IAudioSendFactory factory = getJDA().getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider(new TweetNaclFast.SecretBox(webSocket.getSecretKey())));
@@ -317,7 +315,7 @@ public class AudioConnection
 
     private synchronized void setupReceiveSystem()
     {
-        if (udpSocket != null && !udpSocket.isClosed() && receiveHandler != null && receiveThread == null)
+        if (!getJDA().getUdpSocket().isClosed() && receiveHandler != null && receiveThread == null)
         {
             setupReceiveThread();
         }
@@ -349,6 +347,7 @@ public class AudioConnection
             receiveThread = new Thread(() ->
             {
                 getJDA().setContext();
+                DatagramSocket udpSocket = getJDA().getUdpSocket();
                 try
                 {
                     udpSocket.setSoTimeout(1000);
@@ -648,7 +647,7 @@ public class AudioConnection
         @Override
         public DatagramSocket getUdpSocket()
         {
-            return udpSocket;
+            return getJDA().getUdpSocket();
         }
 
         @Nonnull

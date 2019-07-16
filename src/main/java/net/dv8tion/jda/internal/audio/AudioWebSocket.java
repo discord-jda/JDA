@@ -35,7 +35,9 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
 import java.util.List;
@@ -156,8 +158,6 @@ class AudioWebSocket extends WebSocketAdapter
             shutdown = true;
             stopKeepAlive();
 
-            if (audioConnection.udpSocket != null)
-                audioConnection.udpSocket.close();
             if (socket != null)
                 socket.sendClose();
 
@@ -571,20 +571,18 @@ class AudioWebSocket extends WebSocketAdapter
         //This is called UDP hole punching.
         try
         {
-            audioConnection.udpSocket = new DatagramSocket();   //Use UDP, not TCP.
-
             //Create a byte array of length 70 containing our ssrc.
             ByteBuffer buffer = ByteBuffer.allocate(70);    //70 taken from https://github.com/Rapptz/discord.py/blob/async/discord/voice_client.py#L208
             buffer.putInt(ssrc);                            //Put the ssrc that we were given into the packet to send back to discord.
 
             //Construct our packet to be sent loaded with the byte buffer we store the ssrc in.
             DatagramPacket discoveryPacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
-            audioConnection.udpSocket.send(discoveryPacket);
+            getJDA().getUdpSocket().send(discoveryPacket);
 
             //Discord responds to our packet, returning a packet containing our external ip and the port we connected through.
             DatagramPacket receivedPacket = new DatagramPacket(new byte[70], 70);   //Give a buffer the same size as the one we sent.
-            audioConnection.udpSocket.setSoTimeout(1000);
-            audioConnection.udpSocket.receive(receivedPacket);
+            getJDA().getUdpSocket().setSoTimeout(1000);
+            getJDA().getUdpSocket().receive(receivedPacket);
 
             //The byte array returned by discord containing our external ip and the port that we used
             //to connect to discord with.
@@ -620,10 +618,6 @@ class AudioWebSocket extends WebSocketAdapter
 
             return new InetSocketAddress(ourIP, ourPort);
         }
-        catch (SocketException e)
-        {
-            return null;
-        }
         catch (IOException e)
         {
             return null;
@@ -647,12 +641,12 @@ class AudioWebSocket extends WebSocketAdapter
             getJDA().setContext();
             if (socket != null && socket.isOpen()) //TCP keep-alive
                 send(VoiceCode.HEARTBEAT, System.currentTimeMillis());
-            if (audioConnection.udpSocket != null && !audioConnection.udpSocket.isClosed()) //UDP keep-alive
+            if (!getJDA().getUdpSocket().isClosed()) //UDP keep-alive
             {
                 try
                 {
                     DatagramPacket keepAlivePacket = new DatagramPacket(UDP_KEEP_ALIVE, UDP_KEEP_ALIVE.length, address);
-                    audioConnection.udpSocket.send(keepAlivePacket);
+                    getJDA().getUdpSocket().send(keepAlivePacket);
                 }
                 catch (NoRouteToHostException e)
                 {

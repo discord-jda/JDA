@@ -72,6 +72,9 @@ import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
+import java.io.UncheckedIOException;
+import java.net.DatagramSocket;
+import java.net.SocketException;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -119,6 +122,7 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long gatewayPing = -1;
     protected String gatewayUrl;
+    protected DatagramSocket udpSocket = null;
 
     protected String clientId = null;
     protected ShardManager shardManager = null;
@@ -157,6 +161,31 @@ public class JDAImpl implements JDA
     public boolean isCacheFlagSet(CacheFlag flag)
     {
         return metaConfig.getCacheFlags().contains(flag);
+    }
+
+    public DatagramSocket getUdpSocket()
+    {
+        if (udpSocket == null)
+        {
+            // ensure only a single socket is created
+            synchronized (audioLifeCycleLock)
+            {
+                // maybe another thread created one already
+                if (udpSocket != null)
+                    return udpSocket;
+                // otherwise we create it in this one
+                try
+                {
+                    udpSocket = new DatagramSocket();
+                }
+                catch (SocketException e)
+                {
+                    // Rethrow as runtime exception
+                    throw new UncheckedIOException(e);
+                }
+            }
+        }
+        return udpSocket;
     }
 
     public SessionController getSessionController()
@@ -631,6 +660,8 @@ public class JDAImpl implements JDA
         //so we can shutdown from WebSocketClient properly
         closeAudioConnections();
         guildSetupController.close();
+        if (udpSocket != null && !udpSocket.isClosed())
+            udpSocket.close();
 
         getRequester().shutdown();
         if (audioLifeCyclePool != null)
