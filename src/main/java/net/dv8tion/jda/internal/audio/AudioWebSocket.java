@@ -600,9 +600,12 @@ class AudioWebSocket extends WebSocketAdapter
             //Example string:"   121.83.253.66                                                   ��"
             //You'll notice that there are 4 leading nulls and a large amount of nulls between the the ip and
             // the last 2 bytes. Not sure why these exist.  The last 2 bytes are the port. More info below.
-            String ourIP = new String(received);//Puts the entire byte array in. nulls are converted to spaces.
-            ourIP = ourIP.substring(4, ourIP.length() - 2); //Removes the SSRC of the answer package and the port that is stuck on the end of this string. (last 2 bytes are the port)
-            ourIP = ourIP.trim();  //Removes the extra whitespace(nulls) attached to both sides of the IP
+
+            //Take bytes between SSRC and PORT and put them into a string
+            // null bytes at the beginning are skipped and the rest are appended to the end of the string
+            String ourIP = new String(received, 4, received.length - 6);
+            // Removes the extra nulls attached to the end of the IP string
+            ourIP = ourIP.trim();
 
             //The port exists as the last 2 bytes in the packet data, and is encoded as an UNSIGNED short.
             //Furthermore, it is stored in Little Endian instead of normal Big Endian.
