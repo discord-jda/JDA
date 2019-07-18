@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.Route.RateLimit;
+import net.dv8tion.jda.internal.utils.UnlockHook;
 import okhttp3.Headers;
 
 import java.io.IOException;
@@ -33,9 +34,11 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BotRateLimiter extends RateLimiter
 {
@@ -238,6 +241,8 @@ public class BotRateLimiter extends RateLimiter
         final boolean missingHeaders;
         final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
+        final ReentrantLock requestLock = new ReentrantLock();
+        volatile boolean processing = false;
         volatile long resetTime = 0;
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
@@ -331,56 +336,109 @@ public class BotRateLimiter extends RateLimiter
             return route.hashCode();
         }
 
+        private void handleResponse(Iterator<Request> it, Long retryAfter)
+        {
+            if (retryAfter == null)
+            {
+                // We were not rate-limited! Then just continue with the rest of the requests
+                it.remove();
+                processIterator(it);
+            }
+            else
+            {
+                // Rate-limited D: Guess we have to backoff for now
+                finishProcess();
+            }
+        }
+
+        private void processIterator(Iterator<Request> it)
+        {
+            Request request = null;
+            try
+            {
+                do
+                {
+                    if (!it.hasNext())
+                    {
+                        // End loop, no more requests left
+                        finishProcess();
+                        return;
+                    }
+                    request = it.next();
+                } while (isSkipped(it, request));
+
+                CompletableFuture<Long> handle = requester.execute(request);
+                final Request request0 = request;
+                // Hook the callback for the request
+                handle.whenComplete((retryAfter, error) ->
+                {
+                    requester.setContext();
+                    if (error != null)
+                    {
+                        // There was an error, handle it and continue with the next request
+                        log.error("Requester system encountered internal error", error);
+                        it.remove();
+                        request0.onFailure(error);
+                        processIterator(it);
+                    }
+                    else
+                    {
+                        // Handle the response and backoff if necessary
+                        handleResponse(it, retryAfter);
+                    }
+                });
+            }
+            catch (Throwable t)
+            {
+                log.error("Requester system encountered an internal error", t);
+                it.remove();
+                if (request != null)
+                    request.onFailure(t);
+                // don't forget to end the loop and start over
+                finishProcess();
+            }
+        }
+
+        private void finishProcess()
+        {
+            // We are done with processing
+            requestLock.lock();
+            try (UnlockHook hook = new UnlockHook(requestLock))
+            {
+                processing = false;
+            }
+            // Re-submit if new requests were added or rate-limit was hit
+            synchronized (submittedBuckets)
+            {
+                submittedBuckets.remove(this);
+                if (!requests.isEmpty())
+                {
+                    try
+                    {
+                        this.submitForProcessing();
+                    }
+                    catch (RejectedExecutionException e)
+                    {
+                        log.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
+                    }
+                }
+            }
+        }
+
         @Override
         public void run()
         {
             requester.setContext();
-            try
+            requestLock.lock();
+            try (UnlockHook hook = new UnlockHook(requestLock))
             {
-                synchronized (requests)
-                {
-                    for (Iterator<Request> it = requests.iterator(); it.hasNext(); )
-                    {
-                        Long limit = getRateLimit();
-                        if (limit != null && limit > 0)
-                            break; // possible global cooldown here
-                        Request request = null;
-                        try
-                        {
-                            request = it.next();
-                            if (isSkipped(it, request))
-                                continue;
-                            Long retryAfter = requester.execute(request);
-                            if (retryAfter != null)
-                                break;
-                            else
-                                it.remove();
-                        }
-                        catch (Throwable t)
-                        {
-                            log.error("Requester system encountered an internal error", t);
-                            it.remove();
-                            if (request != null)
-                                request.onFailure(t);
-                        }
-                    }
-
-                    synchronized (submittedBuckets)
-                    {
-                        submittedBuckets.remove(this);
-                        if (!requests.isEmpty())
-                        {
-                            try
-                            {
-                                this.submitForProcessing();
-                            }
-                            catch (RejectedExecutionException e)
-                            {
-                                log.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
-                            }
-                        }
-                    }
-                }
+                // Ensure the processing is synchronized
+                if (processing)
+                    return;
+                processing = true;
+                // Start processing loop
+                Iterator<Request> it = requests.iterator();
+                processIterator(it);
             }
             catch (Throwable err)
             {
