@@ -23,6 +23,10 @@ public enum OnlineStatus
     ONLINE("online"),
     IDLE("idle"),
     DO_NOT_DISTURB("dnd"),
+    /**
+     * Only available for the currently logged in account.
+     * <br>Other {@link net.dv8tion.jda.api.entities.Member Members} will show up as {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} even when they really are INVISIBLE.
+     */
     INVISIBLE("invisible"),
     OFFLINE("offline"),
     UNKNOWN("");
