@@ -944,17 +944,17 @@ public class MessageBuilder implements Appendable
     public interface SplitPolicy
     {
         /**
-         * Splits on newline chars {@code `\n`}.
+         * Splits on newline chars {@code `\n`} and removes the characters it splits on.
          */
         SplitPolicy NEWLINE = new CharSequenceSplitPolicy("\n", true);
 
         /**
-         * Splits on space chars {@code `\u0020`}.
+         * Splits on space chars {@code `\u0020`} and removes the characters it splits on.
          */
         SplitPolicy SPACE = new CharSequenceSplitPolicy(" ", true);
 
         /**
-         * Splits exactly after 2000 chars.
+         * Splits exactly after 2000 chars and doesn't remove the characters it splits on.
          */
         SplitPolicy ANYWHERE = (i, b) -> Math.min(i + 2000, b.length());
 
