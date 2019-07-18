@@ -25,8 +25,9 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
- * Indicates that the {@link net.dv8tion.jda.api.entities.Activity Activity} order of a {@link net.dv8tion.jda.api.entities.User User} changes.
- * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.api.entities.Member Member} in a Guild!
+ * Indicates that the {@link net.dv8tion.jda.api.entities.Activity Activity} order of a {@link net.dv8tion.jda.api.entities.User User} changes in a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
+ * to be enabled.
  *
  * <p>Can be used to retrieve the User who changed their Activities and their previous Activities.
  *

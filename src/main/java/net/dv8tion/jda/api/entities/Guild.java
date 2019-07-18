@@ -2004,6 +2004,8 @@ public interface Guild extends ISnowflake
     /**
      * Requests member chunks for this guild.
      * <br>This returns a completed future if the member demand is already matched.
+     * When {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions} are disabled
+     * this will do nothing since member caching is disabled.
      *
      * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
      *

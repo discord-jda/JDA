@@ -1187,6 +1187,8 @@ public class  DefaultShardManagerBuilder
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
      * <br>By default this uses {@link ChunkingFilter#ALL}.
      *
+     * <p>This filter is useless when {@link #setGuildSubscriptionsEnabled(boolean)} is false.
+     *
      * @param  filter
      *         The filter to apply
      *
@@ -1211,6 +1213,10 @@ public class  DefaultShardManagerBuilder
      * of bandwidth usage. Disabling these events means the cache for users might become outdated since
      * user properties are only updated by presence updates.
      * <br>Default: true
+     *
+     * <h2>Notice</h2>
+     * This disables the majority of member cache and related events. If anything in your project
+     * relies on member state you should keep this enabled.
      *
      * @param  enabled
      *         True, if guild subscriptions should be enabled
