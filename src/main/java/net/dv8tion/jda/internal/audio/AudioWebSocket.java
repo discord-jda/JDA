@@ -35,7 +35,10 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
 import java.util.List;
@@ -571,7 +574,11 @@ class AudioWebSocket extends WebSocketAdapter
         //This is called UDP hole punching.
         try
         {
-            audioConnection.udpSocket = new DatagramSocket();   //Use UDP, not TCP.
+            //First close existing socket from possible previous attempts
+            if (audioConnection.udpSocket != null)
+                audioConnection.udpSocket.close();
+            //Create new UDP socket for communication
+            audioConnection.udpSocket = new DatagramSocket();
 
             //Create a byte array of length 70 containing our ssrc.
             ByteBuffer buffer = ByteBuffer.allocate(70);    //70 taken from https://github.com/Rapptz/discord.py/blob/async/discord/voice_client.py#L208
@@ -593,7 +600,7 @@ class AudioWebSocket extends WebSocketAdapter
             //Example string:"   121.83.253.66                                                   ��"
             //You'll notice that there are 4 leading nulls and a large amount of nulls between the the ip and
             // the last 2 bytes. Not sure why these exist.  The last 2 bytes are the port. More info below.
-            String ourIP = new String(receivedPacket.getData());//Puts the entire byte array in. nulls are converted to spaces.
+            String ourIP = new String(received);//Puts the entire byte array in. nulls are converted to spaces.
             ourIP = ourIP.substring(4, ourIP.length() - 2); //Removes the SSRC of the answer package and the port that is stuck on the end of this string. (last 2 bytes are the port)
             ourIP = ourIP.trim();  //Removes the extra whitespace(nulls) attached to both sides of the IP
 
@@ -602,30 +609,16 @@ class AudioWebSocket extends WebSocketAdapter
             //We will first need to convert the byte order from Little Endian to Big Endian (reverse the order)
             //Then we will need to deal with the fact that the bytes represent an unsigned short.
             //Java cannot deal with unsigned types, so we will have to promote the short to a higher type.
-            //Options:  char or int.  I will be doing int because it is just easier to work with.
-            byte[] portBytes = new byte[2];                 //The port is exactly 2 bytes in size.
-            portBytes[0] = received[received.length - 1];   //Get the second byte and store as the first
-            portBytes[1] = received[received.length - 2];   //Get the first byte and store as the second.
-            //We have now effectively converted from Little Endian -> Big Endian by reversing the order.
 
-            //For more information on how this is converting from an unsigned short to an int refer to:
-            //http://www.darksleep.com/player/JavaAndUnsignedTypes.html
-            int firstByte = (0x000000FF & ((int) portBytes[0]));    //Promotes to int and handles the fact that it was unsigned.
-            int secondByte = (0x000000FF & ((int) portBytes[1]));   //
-
-            //Combines the 2 bytes back together.
-            int ourPort = (firstByte << 8) | secondByte;
-
+            //Get our port which is stored as little endian at the end of the packet
+            // We AND it with 0xFFFF to ensure that it isn't sign extended
+            int ourPort = (int) IOUtil.getShortLittleEndian(received, received.length - 2) & 0xFFFF;
             this.address = address;
-
             return new InetSocketAddress(ourIP, ourPort);
-        }
-        catch (SocketException e)
-        {
-            return null;
         }
         catch (IOException e)
         {
+            // We either timed out or the socket could not be created (firewall?)
             return null;
         }
     }
