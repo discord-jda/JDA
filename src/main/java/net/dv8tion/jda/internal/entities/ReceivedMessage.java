@@ -174,7 +174,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return String.format("https://discordapp.com/channels/%s/%s/%s", getGuild() == null ? "@me" : getGuild().getId(), getChannel().getId(), getId());
+        return String.format("https://discordapp.com/channels/%s/%s/%s", !isFromGuild() ? "@me" : getGuild().getId(), getChannel().getId(), getId());
     }
 
     private User matchUser(Matcher matcher)
@@ -486,13 +486,15 @@ public class ReceivedMessage extends AbstractMessage
                     name = user.getName();
                 tmp = tmp.replaceAll("<@!?" + Pattern.quote(user.getId()) + '>', '@' + Matcher.quoteReplacement(name));
             }
+            for (TextChannel mentionedChannel : getMentionedChannels())
+            {
+                tmp = tmp.replaceAll(
+                        "<#" + mentionedChannel.getId() + "(?::(\\d+):([^>\\s]+))?>", // possible mention formats
+                        '#' + Matcher.quoteReplacement(mentionedChannel.getName()));  // proper look and feel
+            }
             for (Emote emote : getEmotes())
             {
                 tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
-            }
-            for (TextChannel mentionedChannel : getMentionedChannels())
-            {
-                tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
             }
             for (Role mentionedRole : getMentionedRoles())
             {
