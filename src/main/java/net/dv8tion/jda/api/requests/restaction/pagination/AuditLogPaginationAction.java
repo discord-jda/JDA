@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * {@link PaginationAction PaginationAction}
- * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Guilds#GET_AUDIT_LOGS Route.Guilds.GET_AUDIT_LOGS}.
+ * {@link PaginationAction PaginationAction} that paginates the audit logs endpoint.
  * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *

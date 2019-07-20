@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.entities.User;
 import javax.annotation.Nonnull;
 
 /**
- * {@link PaginationAction PaginationAction}
- * that paginates the endpoint {@link net.dv8tion.jda.internal.requests.Route.Messages#GET_REACTION_USERS Route.Messages.GET_REACTION_USERS}.
+ * {@link PaginationAction PaginationAction} that paginates the reaction users endpoint.
  * <br>Note that this implementation is not considered thread-safe as modifications to the cache are not done
  * with a lock. Calling methods on this class from multiple threads is not recommended.
  *

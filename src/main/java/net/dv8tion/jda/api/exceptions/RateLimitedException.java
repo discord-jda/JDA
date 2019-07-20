@@ -40,7 +40,7 @@ public class RateLimitedException extends Exception
 
     /**
      * The route responsible for the rate limit bucket that is used in
-     * the responsible {@link net.dv8tion.jda.internal.requests.RateLimiter RateLimiter}
+     * the responsible RateLimiter
      *
      * @return The corresponding route
      */

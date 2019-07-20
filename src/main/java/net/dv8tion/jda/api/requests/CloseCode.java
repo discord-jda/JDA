@@ -20,8 +20,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Constants representing {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} close codes
- * with association to an explaining message.
+ * Constants representing main gateway close codes with association to an explaining message.
  * <br>This was inspired from the <a target="_blank" href="https://discordapp.com/developers/docs/topics/gateway#disconnections">official documentation</a>
  */
 public enum CloseCode
@@ -80,7 +79,7 @@ public enum CloseCode
     }
 
     /**
-     * Whether the {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient}
+     * Whether the gateway client
      * will attempt to reconnect when this close code appears
      *
      * @return Whether the WebSocketClient will attempt to reconnect
