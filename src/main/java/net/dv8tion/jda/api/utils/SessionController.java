@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
@@ -149,6 +150,7 @@ public interface SessionController
      */
     @Nonnull
     @Deprecated
+    @ForRemoval
     @DeprecatedSince("4.0.0")
     @ReplaceWith("getShardedGateway(api)")
     @SuppressWarnings("DeprecatedIsStillUsed")
