@@ -20,15 +20,33 @@ package net.dv8tion.jda.api;
  */
 public enum OnlineStatus
 {
+    /**
+     * Indicates that the user is currently online (green circle)
+     */
     ONLINE("online"),
+    /**
+     * Indicates that the user is currently idle (orange circle)
+     */
     IDLE("idle"),
+    /**
+     * Indicates that the user is currently on do not disturb (red circle)
+     * <br>This means the user won't receive notifications for mentions.
+     */
     DO_NOT_DISTURB("dnd"),
     /**
-     * Only available for the currently logged in account.
+     * Indicates that the currently logged in account is set to invisible and shows
+     * up as {@link #OFFLINE} for other users.
+     * <br>Only available for the currently logged in account.
      * <br>Other {@link net.dv8tion.jda.api.entities.Member Members} will show up as {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} even when they really are INVISIBLE.
      */
     INVISIBLE("invisible"),
+    /**
+     * Indicates that a member is currently offline or invisible (grey circle)
+     */
     OFFLINE("offline"),
+    /**
+     * Placeholder for possible future online status values that are not listed here yet.
+     */
     UNKNOWN("");
 
     private final String key;
