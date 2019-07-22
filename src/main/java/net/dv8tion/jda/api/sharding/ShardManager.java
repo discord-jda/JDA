@@ -936,6 +936,67 @@ public interface ShardManager
     }
 
     /**
+     * This returns the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     */
+    @Nullable
+    default StoreChannel getStoreChannelById(final long id)
+    {
+        return this.getStoreChannelCache().getElementById(id);
+    }
+
+    /**
+     * This returns the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} which has the same id as the one provided.
+     * <br>If there is no known {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
+     */
+    @Nullable
+    default StoreChannel getStoreChannelById(@Nonnull final String id)
+    {
+        return this.getStoreChannelCache().getElementById(id);
+    }
+
+    /**
+     * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
+     * all cached {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} visible to this ShardManager instance.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     */
+    @Nonnull
+    default SnowflakeCacheView<StoreChannel> getStoreChannelCache()
+    {
+        return CacheView.allSnowflakes(() -> this.getShardCache().stream().map(JDA::getStoreChannelCache));
+    }
+
+    /**
+     * An unmodifiable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels} of all connected
+     * {@link net.dv8tion.jda.api.entities.Guild Guilds}.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity. It is recommended to store this into
+     * a local variable or use {@link #getStoreChannelCache()} and use its more efficient
+     * versions of handling these values.
+     *
+     * @return Possibly-empty list of all known {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
+     */
+    @Nonnull
+    default List<StoreChannel> getStoreChannels()
+    {
+        return this.getStoreChannelCache().asList();
+    }
+    
+    /**
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
      * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
