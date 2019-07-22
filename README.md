@@ -25,6 +25,7 @@
 # JDA (Java Discord API)
 
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
+This library is a helpful tool that provides the functionality to create a discord bot in java.
 
 ## Summary
 
@@ -205,6 +206,17 @@ public class Bot extends ListenerAdapter
     }
 }
 ```
+
+### RestAction
+
+Through [RestAction](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
+ 
+ - [callbacks](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue(java.util.function.Consumer\))
+ - [promises](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit())
+ - and [sync](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete())
+
+and it is up to the user to decide which pattern to utilize.
+It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
 
 ### More Examples
 
@@ -600,16 +612,16 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
- * opus-java
+ * opus-java (optional)
    * Version: **1.0.4**
    * [GitHub](https://github.com/discord-java/opus-java)
    * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
 ## Related Projects
 
-- [Discord4J](https://github.com/austinv11/Discord4J)
-- [Discord.NET](https://github.com/RogueException/Discord.Net)
+- [Discord4J](https://github.com/Discord4J/Discord4J)
+- [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [discord.py](https://github.com/Rapptz/discord.py)
-- [serenity](https://github.com/zeyla/serenity)
+- [serenity](https://github.com/serenity-rs/serenity)
 
 **See also:** https://discordapp.com/developers/docs/topics/community-resources#libraries
