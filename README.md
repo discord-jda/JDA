@@ -211,9 +211,9 @@ public class Bot extends ListenerAdapter
 
 Through [RestAction](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
  
- - [callbacks](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue(java.util.function.Consumer\))
- - [promises](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit())
- - and [sync](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete())
+ - [callbacks](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
+ - [promises](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
+ - and [sync](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
 
 and it is up to the user to decide which pattern to utilize.
 It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
