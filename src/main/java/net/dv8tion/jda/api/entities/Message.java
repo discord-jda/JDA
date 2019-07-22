@@ -131,6 +131,10 @@ public interface Message extends ISnowflake, Formattable
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If no user was mentioned, this list is empty. Elements are sorted in order of appearance. This only
      * counts direct mentions of the user and not mentions through roles or the everyone tag.
+     * If the user is not in the same guild/recipient of the private channel their mention will most likely not resolve
+     * and they won't be listed here even though their mention tag was used.
+     *
+     * <p>This uses the pattern provided by {@link MentionType#USER}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -176,6 +180,8 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
+     * <p>This uses the pattern provided by {@link MentionType#CHANNEL}.
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
@@ -220,6 +226,8 @@ public interface Message extends ISnowflake, Formattable
      * counts direct mentions of the role and not mentions through the everyone tag.
      *
      * <p><b>This may include Roles from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * <p>This uses the pattern provided by {@link MentionType#ROLE}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1230,6 +1238,12 @@ public interface Message extends ISnowflake, Formattable
             this.pattern = Pattern.compile(regex);
         }
 
+        /**
+         * The matcher pattern that can be used to resolve mentions
+         * to their respective IDs.
+         *
+         * @return The {@link Pattern}
+         */
         @Nonnull
         public Pattern getPattern()
         {
