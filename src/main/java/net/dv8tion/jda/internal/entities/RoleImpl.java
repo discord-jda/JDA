@@ -35,7 +35,7 @@ import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -122,6 +122,27 @@ public class RoleImpl implements Role
     public EnumSet<Permission> getPermissions()
     {
         return Permission.getPermissions(rawPermissions);
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit()
+    {
+        return getPermissions();
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
 
     @Override
