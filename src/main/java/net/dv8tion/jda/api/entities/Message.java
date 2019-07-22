@@ -1208,7 +1208,7 @@ public interface Message extends ISnowflake, Formattable
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
          * <br>The first and only group matches the id of the mention.
          */
-        CHANNEL("<#(\\d+)(?::(\\d+):([^>\\s]+))?>"),
+        CHANNEL("<#(\\d+)(?::(\\d+):([^>]{1,100}))?>"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Emote Emote}
          * <br>The first group matches the name of the emote and the second the id of the mention.

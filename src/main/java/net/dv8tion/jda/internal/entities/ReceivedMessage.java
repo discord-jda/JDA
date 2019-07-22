@@ -489,7 +489,7 @@ public class ReceivedMessage extends AbstractMessage
             for (TextChannel mentionedChannel : getMentionedChannels())
             {
                 tmp = tmp.replaceAll(
-                        "<#" + mentionedChannel.getId() + "(?::(\\d+):([^>\\s]+))?>", // possible mention formats
+                        "<#" + mentionedChannel.getId() + "(?::(\\d+):([^>]{1,100}))?>", // possible mention formats
                         '#' + Matcher.quoteReplacement(mentionedChannel.getName()));  // proper look and feel
             }
             for (Emote emote : getEmotes())
