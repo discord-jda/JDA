@@ -166,6 +166,11 @@ public class JDAImpl implements JDA
         return metaConfig.isGuildSubscriptions();
     }
 
+    public int getLargeThreshold()
+    {
+        return sessionConfig.getLargeThreshold();
+    }
+
     public boolean chunkGuild(long id)
     {
         try

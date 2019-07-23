@@ -81,6 +81,7 @@ public class JDABuilder
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected boolean idle = false;
     protected int maxReconnectDelay = 900;
+    protected int largeThreshold = 250;
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
 
@@ -780,7 +781,7 @@ public class JDABuilder
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,
-            "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
+                "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }
@@ -815,7 +816,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    VoiceDispatchInterceptor
      */
@@ -875,6 +876,26 @@ public class JDABuilder
     }
 
     /**
+     * Decides the total number of members at which a guild should start to use lazy loading.
+     * <br>This is limited to a number between 50 and 250 (inclusive).
+     * If the {@link #setChunkingFilter(ChunkingFilter) chunking filter} is set to {@link ChunkingFilter#ALL}
+     * this should be set to {@code 250} (default) to minimize the amount of guilds that need to request members.
+     *
+     * @param  threshold
+     *         The threshold in {@code [50, 250]}
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    public JDABuilder setLargeThreshold(int threshold)
+    {
+        this.largeThreshold = Math.max(50, Math.min(250, threshold)); // enforce 50 <= t <= 250
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
@@ -917,7 +938,7 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
         MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);

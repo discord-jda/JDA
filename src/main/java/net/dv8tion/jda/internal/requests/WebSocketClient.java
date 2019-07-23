@@ -604,7 +604,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("properties", connectionProperties)
             .put("v", DISCORD_GATEWAY_VERSION)
             .put("guild_subscriptions", api.isGuildSubscriptions())
-            .put("large_threshold", 250);
+            .put("large_threshold", api.getLargeThreshold());
             //Used to make the READY event be given
             // as compressed binary data when over a certain size. TY @ShadowLordAlpha
             //.put("compress", true);
