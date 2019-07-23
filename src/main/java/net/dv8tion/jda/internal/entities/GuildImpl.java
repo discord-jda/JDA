@@ -17,6 +17,8 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -44,10 +46,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.WebSocketCode;
+import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
@@ -83,7 +82,9 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
-    private final TLongObjectMap<DataObject> cachedOverrides = MiscUtil.newLongMap();
+
+    // user -> channel -> override
+    private final TLongObjectMap<TLongObjectMap<DataObject>> overrideMap = MiscUtil.newLongMap();
 
     private final CompletableFuture<Void> chunkingCallback = new CompletableFuture<>();
     private final ReentrantLock mngLock = new ReentrantLock();
@@ -1453,14 +1454,71 @@ public class GuildImpl implements Guild
         return memberCache;
     }
 
-    public TLongObjectMap<DataObject> getCachedOverrideMap()
-    {
-        return cachedOverrides;
-    }
-
-
     // -- Member Tracking --
 
+    public TLongObjectMap<DataObject> getOverrideMap(long userId)
+    {
+        return overrideMap.get(userId);
+    }
+
+    public TLongObjectMap<DataObject> removeOverrideMap(long userId)
+    {
+        return overrideMap.remove(userId);
+    }
+
+    public void pruneChannelOverrides(long channelId)
+    {
+        WebSocketClient.LOG.debug("Pruning cached overrides for channel with id {}", channelId);
+        overrideMap.transformValues((value) -> {
+            DataObject removed = value.remove(channelId);
+            return value.isEmpty() ? null : value;
+        });
+    }
+
+    public void cacheOverride(long userId, long channelId, DataObject obj)
+    {
+        if (!getJDA().isGuildSubscriptions())
+            return;
+        EntityBuilder.LOG.debug("Caching permission override of unloaded member {}", obj);
+        TLongObjectMap<DataObject> channelMap = overrideMap.get(userId);
+        if (channelMap == null)
+            overrideMap.put(userId, channelMap = MiscUtil.newLongMap());
+        channelMap.put(channelId, obj);
+    }
+
+    public void updateCachedOverrides(AbstractChannelImpl<?, ?> channel, DataArray newOverrides)
+    {
+        if (!getJDA().isGuildSubscriptions())
+            return;
+        long channelId = channel.getIdLong();
+        // extract user ids
+        TLongSet users = new TLongHashSet();
+        for (int i = 0; i < newOverrides.length(); i++)
+        {
+            DataObject obj = newOverrides.getObject(i);
+            if (!obj.getString("type", "").equals("member"))
+                continue;
+            long id = obj.getUnsignedLong("id");
+            // remember that this user has an override
+            users.add(id);
+        }
+
+        // now remove the overrides that are missing
+        TLongSet toRemove = new TLongHashSet();
+        overrideMap.forEachEntry((userId, overrides) ->
+        {
+            if (users.contains(userId))
+                return true;
+            // remove for the channel
+            overrides.remove(channelId);
+            // remember to remove this map if its empty now
+            if (overrides.isEmpty())
+                toRemove.add(userId);
+            return true;
+        });
+        // remove all empty maps
+        overrideMap.keySet().removeAll(toRemove);
+    }
 
     @Nonnull
     @Override

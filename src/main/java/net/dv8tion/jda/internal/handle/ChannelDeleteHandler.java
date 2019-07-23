@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import gnu.trove.map.TLongObjectMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
@@ -163,29 +160,7 @@ public class ChannelDeleteHandler extends SocketHandler
         }
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
         if (guild != null)
-            pruneOverrides(guild, channelId);
+            guild.pruneChannelOverrides(channelId);
         return null;
-    }
-
-    private void pruneOverrides(GuildImpl guild, long channelId)
-    {
-        TLongSet toRemove = new TLongHashSet();
-        TLongObjectMap<DataObject> overrideMap = guild.getCachedOverrideMap();
-        overrideMap.forEachValue(it ->
-        {
-            if (it.getLong("channel_id") == channelId)
-                toRemove.add(it.getLong("id"));
-            return true;
-        });
-
-        if (!toRemove.isEmpty())
-        {
-            WebSocketClient.LOG.debug("Pruning {} cached overrides for channel with id {}", toRemove.size(), channelId);
-            toRemove.forEach(it ->
-            {
-                overrideMap.remove(it);
-                return true;
-            });
-        }
     }
 }
