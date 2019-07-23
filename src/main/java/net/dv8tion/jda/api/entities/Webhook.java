@@ -175,6 +175,9 @@ public interface Webhook extends ISnowflake, IFakeable
      *     <br>If the provided webhook token is not valid.</li>
      * </ul>
      *
+     * @param  token
+     *         The webhook token (this is not the bot authorization token!)
+     *
      * @throws IllegalArgumentException
      *         If the provided token is null
      *
