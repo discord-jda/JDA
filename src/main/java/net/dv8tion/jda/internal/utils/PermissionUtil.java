@@ -430,23 +430,11 @@ public class PermissionUtil
         if (!guild.equals(role.getGuild()))
             throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
 
-        long permissions = role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw();
-
-        PermissionOverride publicOverride = channel.getPermissionOverride(guild.getPublicRole());
-        PermissionOverride roleOverride = channel.getPermissionOverride(role);
-
-        if (publicOverride != null)
-        {
-            permissions &= ~publicOverride.getDeniedRaw();
-            permissions |= publicOverride.getAllowedRaw();
-        }
-
-        if (roleOverride != null)
-        {
-            permissions &= ~roleOverride.getDeniedRaw();
-            permissions |= roleOverride.getAllowedRaw();
-        }
-
+        long permissions = getExplicitPermission(channel, role);
+        if (isApplied(permissions, Permission.ADMINISTRATOR.getRawValue()))
+            return Permission.ALL_CHANNEL_PERMISSIONS;
+        else if (!isApplied(permissions, Permission.VIEW_CHANNEL.getRawValue()))
+            return 0;
         return permissions;
     }
 
@@ -571,10 +559,6 @@ public class PermissionUtil
             : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
     }
 
-    /**
-     * Pushes all deny/allow values to the specified BiConsumer
-     * <br>First parameter is allow, second is deny
-     */
     private static void getExplicitOverrides(GuildChannel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
         PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());

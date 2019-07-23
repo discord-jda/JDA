@@ -193,6 +193,8 @@ public class Requester
             if (!rays.isEmpty())
                 LOG.debug("Received response with following cf-rays: {}", rays);
 
+            LOG.trace("Finished Request {} {} with code {}", route.getMethod(), response.request().url(), response.code());
+
             if (retryAfter == null)
                 apiRequest.handleResponse(new Response(response, -1, rays));
             else if (handleOnRatelimit)
@@ -246,6 +248,7 @@ public class Requester
             for (okhttp3.Response r : responses)
                 r.close();
         });
+        LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
         // Initialize state-machine
         attemptRequest(task, request, responses, rays, apiRequest, url, handleOnRatelimit, false, 0);
         return task;
