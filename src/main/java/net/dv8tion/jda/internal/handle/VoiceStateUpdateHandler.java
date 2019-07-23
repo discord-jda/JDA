@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -223,8 +222,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
     private void unloadMember(long userId, MemberImpl member)
     {
         MemberCacheViewImpl membersView = member.getGuild().getMembersView();
-        VoiceChannel channelLeft = member.getVoiceState().getChannel();
+        VoiceChannelImpl channelLeft = (VoiceChannelImpl) member.getVoiceState().getChannel();
         ((GuildVoiceStateImpl) member.getVoiceState()).setConnectedChannel(null);
+        if (channelLeft != null)
+            channelLeft.getConnectedMembersMap().remove(userId);
         getJDA().handleEvent(
             new GuildVoiceLeaveEvent(
                 getJDA(), responseNumber,
