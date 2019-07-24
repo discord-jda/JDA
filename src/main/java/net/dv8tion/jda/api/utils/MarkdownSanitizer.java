@@ -53,6 +53,8 @@ public class MarkdownSanitizer
     public static final int UNDERLINE = 1 << 7;
     /** Strikethrough region such as "~~Hello~~" */
     public static final int STRIKE    = 1 << 8;
+    /** Quote region such as "> text here" */
+    public static final int QUOTE     = 1 << 9; //TODO: Tests
 
     private static final int ESCAPED_BOLD      = Integer.MIN_VALUE | BOLD;
     private static final int ESCAPED_ITALICS_U = Integer.MIN_VALUE | ITALICS_U;
@@ -63,6 +65,7 @@ public class MarkdownSanitizer
     private static final int ESCAPED_SPOILER   = Integer.MIN_VALUE | SPOILER;
     private static final int ESCAPED_UNDERLINE = Integer.MIN_VALUE | UNDERLINE;
     private static final int ESCAPED_STRIKE    = Integer.MIN_VALUE | STRIKE;
+    private static final int ESCAPED_QUOTE     = Integer.MIN_VALUE | QUOTE;
 
     private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
 
@@ -81,6 +84,7 @@ public class MarkdownSanitizer
         tokens.put(SPOILER, "||");
         tokens.put(UNDERLINE, "__");
         tokens.put(STRIKE, "~~");
+        tokens.put(QUOTE, ">");
     }
 
     private int ignored;
@@ -253,6 +257,8 @@ public class MarkdownSanitizer
                 return doesEscape(index, sequence) ? ESCAPED_ITALICS_U : ITALICS_U;
             case '`':
                 return doesEscape(index, sequence) ? ESCAPED_MONO : MONO;
+            case '>':
+                return doesEscape(index, sequence) ? ESCAPED_QUOTE : QUOTE;
         }
         return NORMAL;
     }
@@ -268,6 +274,8 @@ public class MarkdownSanitizer
     {
         if (isEscape(region))
             return -1;
+        if (!hasEnd(region))
+            return sequence.length();
         int lastMatch = afterIndex + getDelta(region) + 1;
         while (lastMatch != -1)
         {
@@ -382,9 +390,11 @@ public class MarkdownSanitizer
             case ESCAPED_ITALICS_A:
             case ESCAPED_ITALICS_U:
             case ESCAPED_MONO:
+            case ESCAPED_QUOTE:
             case ITALICS_A:
             case ITALICS_U:
             case MONO:
+            case QUOTE:
                 return 1;
             default:
                 return 0;
@@ -404,6 +414,11 @@ public class MarkdownSanitizer
         String token = tokens.get(region);
         if (token == null)
             throw new IllegalStateException("Found illegal region for strategy ESCAPE '" + region + "' with no known format token!");
+        if (!hasEnd(region))
+        {
+            builder.append("\\").append(token).append(seq);
+            return;
+        }
         if (region == UNDERLINE)
             token = "_\\_"; // UNDERLINE needs special handling because the client thinks its ITALICS_U if you only escape once
         builder.append("\\").append(token)
@@ -431,6 +446,11 @@ public class MarkdownSanitizer
     private boolean isIgnored(int nextRegion)
     {
         return (nextRegion & ignored) == nextRegion;
+    }
+
+    private boolean hasEnd(int region)
+    {
+        return region != QUOTE;
     }
 
     /**
