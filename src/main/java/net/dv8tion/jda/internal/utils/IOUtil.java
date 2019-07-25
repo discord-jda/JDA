@@ -161,6 +161,13 @@ public class IOUtil
                        | arr[offset + 1] & 0xff);
     }
 
+    public static short getShortLittleEndian(byte[] arr, int offset)
+    {
+        // Same as big endian but reversed order of bytes (java uses big endian)
+        return (short) ((arr[offset    ] & 0xff)
+                      | (arr[offset + 1] & 0xff) << 8);
+    }
+
     public static int getIntBigEndian(byte[] arr, int offset)
     {
         return arr[offset + 3] & 0xFF
