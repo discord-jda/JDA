@@ -68,8 +68,6 @@ public class Icon
      *         if there is a problem while reading the file.
      *
      * @return An Icon instance representing the specified File
-     *
-     * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(File)
      */
     @Nonnull
     public static Icon from(@Nonnull File file) throws IOException
@@ -100,8 +98,6 @@ public class Icon
      *         if the input stream has been closed, or if some other I/O error occurs.
      *
      * @return An Icon instance representing the specified InputStream
-     *
-     * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(InputStream)
      */
     @Nonnull
     public static Icon from(@Nonnull InputStream stream) throws IOException
@@ -143,8 +139,6 @@ public class Icon
      *         if there is a problem while reading the file.
      *
      * @return An Icon instance representing the specified File
-     *
-     * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(File)
      */
     @Nonnull
     public static Icon from(@Nonnull File file, @Nonnull IconType type) throws IOException
@@ -172,8 +166,6 @@ public class Icon
      *         if the input stream has been closed, or if some other I/O error occurs.
      *
      * @return An Icon instance representing the specified InputStream
-     *
-     * @see    net.dv8tion.jda.internal.utils.IOUtil#readFully(InputStream)
      */
     @Nonnull
     public static Icon from(@Nonnull InputStream stream, @Nonnull IconType type) throws IOException

@@ -215,9 +215,6 @@ public interface Emote extends IMentionable, IFakeable
      *         The User to test
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(Member issuer)
     {
@@ -234,9 +231,6 @@ public interface Emote extends IMentionable, IFakeable
      *         The MessageChannel to test
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(User issuer, MessageChannel channel)
     {
@@ -255,9 +249,6 @@ public interface Emote extends IMentionable, IFakeable
      *         Whether bots can use non-managed emotes in other guilds
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel, boolean)
      */
     default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride)
     {

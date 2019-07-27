@@ -397,7 +397,7 @@ public interface RestAction<T>
      *     action.submit() // CompletableFuture<User>
      *           // Handle success if the user exists
      *           .thenCompose((user) -> user.openPrivateChannel().submit()) // CompletableFuture<PrivateChannel>
-     *           .thenAccept((channel) -> channel.sendMessage(content).queue()) // CompletableFuture<Void>
+     *           .thenCompose((channel) -> channel.sendMessage(content).submit()) // CompletableFuture<Void>
      *           .whenComplete((v, error) -> {
      *               // Handle failure if the user does not exist (or another issue appeared)
      *               if (error != null) error.printStackTrace();
