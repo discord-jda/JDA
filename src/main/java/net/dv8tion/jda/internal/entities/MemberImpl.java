@@ -28,10 +28,11 @@ import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -184,6 +185,20 @@ public class MemberImpl implements Member
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
 
         return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit()
+    {
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(this));
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
 
     @Override

@@ -21,10 +21,12 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.CheckReturnValue;
@@ -1347,17 +1349,9 @@ public interface Message extends ISnowflake, Formattable
             CompletableFuture<InputStream> future = new CompletableFuture<>();
             Request req = getRequest();
             OkHttpClient httpClient = getJDA().getHttpClient();
-            httpClient.newCall(req).enqueue(new Callback()
-            {
-                @Override
-                public void onFailure(@Nonnull Call call, @Nonnull IOException e)
-                {
-                    future.completeExceptionally(new UncheckedIOException(e));
-                }
-
-                @Override
-                public void onResponse(@Nonnull Call call, @Nonnull Response response) throws IOException
-                {
+            httpClient.newCall(req).enqueue(FunctionalCallback
+                .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
+                .onSuccess((call, response) -> {
                     if (response.isSuccessful())
                     {
                         InputStream body = Requester.getBody(response);
@@ -1369,8 +1363,7 @@ public interface Message extends ISnowflake, Formattable
                         future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
                         IOUtil.silentClose(response);
                     }
-                }
-            });
+                }).build());
             return future;
         }
 
@@ -1466,7 +1459,7 @@ public interface Message extends ISnowflake, Formattable
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
-            Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
+            Checks.check(!file.exists() || file.canWrite(), "Cannot write to file %s", file.getName());
             return retrieveInputStream().thenApplyAsync((stream) -> {
                 try (FileOutputStream out = new FileOutputStream(file))
                 {

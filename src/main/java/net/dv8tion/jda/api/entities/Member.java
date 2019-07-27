@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -26,7 +25,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -187,23 +185,6 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return The raw RGB value or the role default
      */
     int getColorRaw();
-
-    /**
-     * The Permissions this Member holds in the specified {@link GuildChannel GuildChannel}.
-     * <br>Permissions returned by this may be different from {@link #getPermissions()}
-     * due to the GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}.
-     * <br><u>Changes to the returned set do not affect this entity directly.</u>
-     *
-     * @param  channel
-     *         The {@link GuildChannel GuildChannel} of which to get Permissions for
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the channel is null
-     *
-     * @return Set of Permissions granted to this Member.
-     */
-    @Nonnull
-    EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel);
 
     /**
      * Whether this Member can interact with the provided Member
