@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild}'s Role. Used to control permissions for Members.
