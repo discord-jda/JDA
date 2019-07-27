@@ -234,7 +234,7 @@ public class JDAImpl implements JDA
 
 
     // This method also checks for a valid bot token as it is required to get the recommended shard count.
-    public SessionController.GatewayBot getGatewayBot()
+    public SessionController.ShardedGateway getShardedGateway()
     {
         return getSessionController().getShardedGateway(this);
     }

@@ -509,7 +509,7 @@ public class DefaultShardManager implements ShardManager
         {
             try
             {
-                SessionController.GatewayBot gateway = jda.getGatewayBot();
+                SessionController.ShardedGateway gateway = jda.getShardedGateway();
                 this.gatewayURL = gateway.getUrl();
                 if (this.gatewayURL == null)
                     LOG.error("Acquired null gateway url from SessionController");

@@ -159,26 +159,27 @@ public interface SessionController
     /**
      * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
      * when a new shards is starting.
-     * <br>Should provide a {@link GatewayBot} with {@code (gateway, shardTotal)}.
+     * <br>Should provide a {@link ShardedGateway} with {@code (gateway, shardTotal)}.
      *
      * @param  api
      *         The current JDA instance (used for RestActions and ShardInfo)
      *
-     * @return The GatewayBot instance consisting of the gateway endpoint to connect to and the shardTotal
+     * @return The ShardedGateway instance consisting of the gateway endpoint to connect to and the shardTotal
      *
      * @see    #getGateway(net.dv8tion.jda.api.JDA)
      */
     @Nonnull
-    default GatewayBot getShardedGateway(@Nonnull JDA api)
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
+    default ShardedGateway getShardedGateway(@Nonnull JDA api)
     {
         Pair<String, Integer> tuple = getGatewayBot(api);
-        return new GatewayBot(tuple.getLeft(), tuple.getRight());
+        return new ShardedGateway(tuple.getLeft(), tuple.getRight());
     }
 
     /**
      * POJO containing the gateway endpoint and recommended shard total for a shard manager.
      */
-    class GatewayBot
+    class ShardedGateway
     {
         private final String url;
         private final int shardTotal;
@@ -191,7 +192,7 @@ public interface SessionController
          * @param shardTotal
          *        The recommended shard total
          */
-        public GatewayBot(String url, int shardTotal)
+        public ShardedGateway(String url, int shardTotal)
         {
             this.url = url;
             this.shardTotal = shardTotal;

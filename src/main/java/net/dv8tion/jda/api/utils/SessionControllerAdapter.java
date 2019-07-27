@@ -87,13 +87,13 @@ public class SessionControllerAdapter implements SessionController
 
     @Nonnull
     @Override
-    public GatewayBot getShardedGateway(@Nonnull JDA api)
+    public ShardedGateway getShardedGateway(@Nonnull JDA api)
     {
         AccountTypeException.check(api.getAccountType(), AccountType.BOT);
-        return new RestActionImpl<GatewayBot>(api, Route.Misc.GATEWAY_BOT.compile())
+        return new RestActionImpl<ShardedGateway>(api, Route.Misc.GATEWAY_BOT.compile())
         {
             @Override
-            public void handleResponse(Response response, Request<GatewayBot> request)
+            public void handleResponse(Response response, Request<ShardedGateway> request)
             {
                 try
                 {
@@ -104,7 +104,7 @@ public class SessionControllerAdapter implements SessionController
                         String url = object.getString("url");
                         int shards = object.getInt("shards");
 
-                        request.onSuccess(new GatewayBot(url, shards));
+                        request.onSuccess(new ShardedGateway(url, shards));
                     }
                     else if (response.code == 401)
                     {
@@ -126,9 +126,10 @@ public class SessionControllerAdapter implements SessionController
 
     @Nonnull
     @Override
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
     public Pair<String, Integer> getGatewayBot(@Nonnull JDA api)
     {
-        GatewayBot bot = getShardedGateway(api);
+        ShardedGateway bot = getShardedGateway(api);
         return Pair.of(bot.getUrl(), bot.getShardTotal());
     }
 
