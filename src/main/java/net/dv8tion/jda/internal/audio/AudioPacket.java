@@ -168,7 +168,7 @@ public class AudioPacket
         // so we need to create a 24 byte array, and copy the nonce into it.
         // we will leave the extra bytes as nulls. (Java sets non-populated bytes as 0).
         byte[] extendedNonce = nonce;
-        if (nonce == null)
+        if (nlen == 0) // this means the header is the nonce!
             extendedNonce = getNoncePadded();
 
         //Create our SecretBox encoder with the secretKey provided by Discord.
@@ -182,7 +182,7 @@ public class AudioPacket
         if (capacity > buffer.remaining())
             buffer = ByteBuffer.allocate(capacity);
         populateBuffer(seq, timestamp, ssrc, ByteBuffer.wrap(encryptedAudio), buffer);
-        if (nonce != null)
+        if (nlen > 0) // this means we append the nonce to the payload
             buffer.put(nonce, 0, nlen);
 
         ((Buffer) buffer).flip();
