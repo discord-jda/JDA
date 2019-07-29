@@ -25,8 +25,9 @@
 # JDA (Java Discord API)
 
 JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
+This library is a helpful tool that provides the functionality to create a discord bot in java.
 
-## JDA 4.x BETA
+## Summary
 
 Due to official statements made by the Discord developers we will no longer support unofficial features. These features
 are undocumented API endpoints or protocols that are not available to bot-accounts. We will however continue support
@@ -36,7 +37,7 @@ the Discord Terms of Service.
 
 _Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
-1. [Examples](#creating-the-jda-object)
+1. [Introduction](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
 3. [Entity Lifetimes](#entity-lifetimes)
 4. [Download](#download)
@@ -75,6 +76,45 @@ JDA jda = new JDABuilder("token").build();
 **Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
 You can change this to use `AccountType.CLIENT`, however you will be risking account termination.
 Use `new JDABuilder(AccountType)` to change to a different account type.
+
+### Configuration
+
+Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of configurations to improve the experience.
+
+**Example**:
+
+```java
+public static void main(String[] args) {
+    JDABuilder builder = new JDABuilder(args[0]);
+    
+    // Disable parts of the cache
+    builder.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE));
+    // Enable the bulk delete event
+    builder.setBulkDeleteSplittingEnabled(false);
+    // Disable compression (not recommended)
+    builder.setCompression(Compression.NONE);
+    // Set activity (like "playing Something")
+    builder.setActivity(Activity.watching("TV"));
+    
+    builder.build();
+}
+```
+
+> See [JDABuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/JDABuilder.html)
+  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
+
+### Listening to Events
+
+The event system in JDA is configured through a hierarchy of classes/interfaces.
+We offer two implementations for the `IEventManager`:
+
+- **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
+- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
+
+By default the **InterfacedEventManager** is used.
+Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
+If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
+configure it on the `JDABuilder` with `setEventManager(...)`.
 
 #### Examples:
 
@@ -166,6 +206,17 @@ public class Bot extends ListenerAdapter
     }
 }
 ```
+
+### RestAction
+
+Through [RestAction](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
+ 
+ - [callbacks](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
+ - [promises](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
+ - and [sync](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
+
+and it is up to the user to decide which pattern to utilize.
+It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
 
 ### More Examples
 
@@ -325,7 +376,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 <repository>
     <id>jcenter</id>
     <name>jcenter-bintray</name>
-    <url>http://jcenter.bintray.com</url>
+    <url>https://jcenter.bintray.com</url>
 </repository>
 
 ```
@@ -441,8 +492,6 @@ to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
-<!--
-TODO: Ensure this is compatible with version 4
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
 Created and maintained by [jagrosh](https://github.com/jagrosh).
@@ -452,7 +501,6 @@ Features include:
 - Paginated Message using Reactions
 - EventWaiter allowing to wait for a response and other events
 
--->
 
 <!--
 TODO: Ensure this is compatible with version 4
@@ -467,8 +515,6 @@ this plugin will help catch those cases quickly as it will cause a build failure
 More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction)
 -->
 
-<!--
-TODO: Ensure this is compatible with version 4
 ### [jda-nas](https://github.com/sedmelluq/jda-nas)
 
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
@@ -482,12 +528,10 @@ JDABuilder builder = new JDABuilder(BOT_TOKEN)
     .setAudioSendFactory(new NativeAudioSendFactory());
 ```
 
--->
-
 ### [jda-reactor](https://github.com/MinnDevelopment/jda-reactor)
 
 Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
-<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](https://en.wikipedia.org/wiki/Reactive_programming) alternative to common JDA interfaces.
+<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](http://reactivex.io/intro.html) alternative to common JDA interfaces.
 
 ```kotlin
 fun main() {
@@ -568,16 +612,16 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
- * opus-java
+ * opus-java (optional)
    * Version: **1.0.4**
    * [GitHub](https://github.com/discord-java/opus-java)
    * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
 ## Related Projects
 
-- [Discord4J](https://github.com/austinv11/Discord4J)
-- [Discord.NET](https://github.com/RogueException/Discord.Net)
+- [Discord4J](https://github.com/Discord4J/Discord4J)
+- [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [discord.py](https://github.com/Rapptz/discord.py)
-- [serenity](https://github.com/zeyla/serenity)
+- [serenity](https://github.com/serenity-rs/serenity)
 
 **See also:** https://discordapp.com/developers/docs/topics/community-resources#libraries
