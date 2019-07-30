@@ -21,6 +21,16 @@ import javax.annotation.Nullable;
 
 public class MarkdownUtil
 {
+    /**
+     * Escapes already existing bold regions in the input
+     * and applies bold formatting to the entire string.
+     * <br>The resulting string will be {@code "**" + escaped(input) + "**"}.
+     *
+     * @param  input
+     *         The input to bold
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String bold(@Nonnull String input)
     {
@@ -28,6 +38,16 @@ public class MarkdownUtil
         return "**" + sanitized + "**";
     }
 
+    /**
+     * Escapes already existing italics (with underscore) regions in the input
+     * and applies italics formatting to the entire string.
+     * <br>The resulting string will be {@code "_" + escaped(input) + "_"}.
+     *
+     * @param  input
+     *         The input to italics
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String italics(@Nonnull String input)
     {
@@ -35,6 +55,16 @@ public class MarkdownUtil
         return "_" + sanitized + "_";
     }
 
+    /**
+     * Escapes already existing underline regions in the input
+     * and applies underline formatting to the entire string.
+     * <br>The resulting string will be {@code "__" + escaped(input) + "__"}.
+     *
+     * @param  input
+     *         The input to underline
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String underline(@Nonnull String input)
     {
@@ -42,6 +72,16 @@ public class MarkdownUtil
         return "__" + sanitized + "__";
     }
 
+    /**
+     * Escapes already existing monospace (single backtick) regions in the input
+     * and applies monospace formatting to the entire string.
+     * <br>The resulting string will be {@code "`" + escaped(input) + "`"}.
+     *
+     * @param  input
+     *         The input to monospace
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String monospace(@Nonnull String input)
     {
@@ -49,6 +89,18 @@ public class MarkdownUtil
         return "`" + sanitized + "`";
     }
 
+    /**
+     * Escapes already existing codeblock regions in the input
+     * and applies codeblock formatting to the entire string.
+     * <br>The resulting string will be {@code "```" + escaped(input) + "```"}.
+     *
+     * @param  language
+     *         The language to use for syntax highlighting (null to use no language)
+     * @param  input
+     *         The input to codeblock
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String codeblock(@Nullable String language, @Nonnull String input)
     {
@@ -58,6 +110,16 @@ public class MarkdownUtil
         return "```" + sanitized + "```";
     }
 
+    /**
+     * Escapes already existing spoiler regions in the input
+     * and applies spoiler formatting to the entire string.
+     * <br>The resulting string will be {@code "||" + escaped(input) + "||"}.
+     *
+     * @param  input
+     *         The input to spoiler
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String spoiler(@Nonnull String input)
     {
@@ -65,6 +127,16 @@ public class MarkdownUtil
         return "||" + sanitized + "||";
     }
 
+    /**
+     * Escapes already existing strike regions in the input
+     * and applies strike formatting to the entire string.
+     * <br>The resulting string will be {@code "~~" + escaped(input) + "~~"}.
+     *
+     * @param  input
+     *         The input to strike
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String strike(@Nonnull String input)
     {
@@ -72,6 +144,16 @@ public class MarkdownUtil
         return "~~" + sanitized + "~~";
     }
 
+    /**
+     * Escapes already existing quote regions in the input
+     * and applies quote formatting to the entire string.
+     * <br>The resulting string will be {@code "> " + escaped(input).replace(LF, "> ")}.
+     *
+     * @param  input
+     *         The input to quote
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String quote(@Nonnull String input)
     {
@@ -79,15 +161,36 @@ public class MarkdownUtil
         return "> " + sanitized.replace("\n", "\n> ");
     }
 
+    /**
+     * Applies quote block formatting to the entire string.
+     * <br>The resulting string will be {@code ">>> " + input}.
+     *
+     * @param  input
+     *         The input to quote block
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String quoteBlock(@Nonnull String input)
     {
         return ">>> " + input;
     }
 
+    /**
+     * Creates a masked link with the provided url as target.
+     * <br>This will replace any closing parentheses (in the url) with the url encoded equivalent
+     * and replace closing square brackets with their escaped equivalent.
+     *
+     * @param  text
+     *         The text to display
+     * @param  url
+     *         The target url
+     *
+     * @return The resulting output
+     */
     @Nonnull
     public static String maskedLink(@Nonnull String text, @Nonnull String url)
     {
-        return "[" + text + "](" + url.replace(")", "%29") + ")";
+        return "[" + text.replace("]", "\\]") + "](" + url.replace(")", "%29") + ")";
     }
 }
