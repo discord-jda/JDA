@@ -19,8 +19,10 @@ package net.dv8tion.jda.api.utils;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MarkdownUtil
+public final class MarkdownUtil
 {
+    private MarkdownUtil() {}
+
     /**
      * Escapes already existing bold regions in the input
      * and applies bold formatting to the entire string.
