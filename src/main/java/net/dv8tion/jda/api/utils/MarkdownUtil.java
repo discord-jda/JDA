@@ -76,13 +76,13 @@ public class MarkdownUtil
     public static String quote(@Nonnull String input)
     {
         String sanitized = MarkdownSanitizer.escape(input, ~MarkdownSanitizer.QUOTE);
-        return ">" + sanitized.replace("\n", "\n>");
+        return "> " + sanitized.replace("\n", "\n> ");
     }
 
     @Nonnull
     public static String quoteBlock(@Nonnull String input)
     {
-        return ">>>" + input;
+        return ">>> " + input;
     }
 
     @Nonnull
