@@ -1117,6 +1117,13 @@ public interface Message extends ISnowflake, Formattable
         private final int size;
         private final int height;
         private final int width;
+        
+        /**
+        * Pattern used to check if the file is an image.
+        *
+        * @see #isImage()
+        */
+        private final Pattern image = Pattern.compile("([^\\s]+)(?:\\.(?i)(jpe?g|png|gif|bmp|webp))$");
 
         private final JDAImpl jda;
 
@@ -1455,7 +1462,6 @@ public interface Message extends ISnowflake, Formattable
          */
         public boolean isImage()
         {
-            private final Pattern image = Pattern.compile("([^\\s]+)(?:\\.(?i)(jpe?g|png|gif|bmp|webp))$");
             return image.matcher(getFileName()).matches();
         }
     }
