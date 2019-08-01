@@ -1449,13 +1449,14 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * Whether or not this attachment is an Image.
-         * <br>Based on the values of getHeight and getWidth being larger than zero.
+         * <br>Based on the image pattern.
          *
-         * @return True if width and height are greater than zero.
+         * @return True if the file is an image
          */
         public boolean isImage()
         {
-            return height > 0 && width > 0;
+            private final Pattern image = Pattern.compile("([^\\s]+)(?:\\.(?i)(jpe?g|png|gif|bmp|webp))$");
+            return image.matcher(getFileName()).matches();
         }
     }
 }
