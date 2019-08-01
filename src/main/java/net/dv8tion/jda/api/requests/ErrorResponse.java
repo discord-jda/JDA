@@ -85,6 +85,7 @@ public enum ErrorResponse
 
     private final int code;
     private final String meaning;
+
     ErrorResponse(int code, String meaning)
     {
         this.code = code;
@@ -118,9 +119,6 @@ public enum ErrorResponse
     {
         if (obj == null || obj.isNull("code"))
             return SERVER_ERROR;
-        else
-        {
-            return ErrorResponse.fromCode(obj.getInt("code"));
-        }
+        return ErrorResponse.fromCode(obj.getInt("code"));
     }
 }

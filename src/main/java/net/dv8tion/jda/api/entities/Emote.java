@@ -104,7 +104,8 @@ public interface Emote extends IMentionable, IFakeable
     boolean canProvideRoles();
 
     /**
-     * The name of this emote
+     * The name of this emote.
+     * <br>Does not include colons.
      *
      * @return String representation of this emote's name
      */
