@@ -165,7 +165,7 @@ public final class MarkdownUtil
     /**
      * Escapes already existing quote regions in the input
      * and applies quote formatting to the entire string.
-     * <br>The resulting string will be {@code "> " + escaped(input).replace(LF, "> ")}.
+     * <br>The resulting string will be {@code "> " + escaped(input).replace("\n", "\n> ")}.
      *
      * @param  input
      *         The input to quote

@@ -53,9 +53,9 @@ public class MarkdownSanitizer
     public static final int UNDERLINE   = 1 << 7;
     /** Strikethrough region such as "~~Hello~~" */
     public static final int STRIKE      = 1 << 8;
-    /** Quote region such as "> text here" */
+    /** Quote region such as {@code "> text here"} */
     public static final int QUOTE       = 1 << 9;
-    /** Quote block region such as ">>> text here" */
+    /** Quote block region such as {@code ">>> text here"} */
     public static final int QUOTE_BLOCK = 1 << 10;
 
     private static final int ESCAPED_BOLD        = Integer.MIN_VALUE | BOLD;
@@ -90,7 +90,6 @@ public class MarkdownSanitizer
         tokens.put(SPOILER, "||");
         tokens.put(UNDERLINE, "__");
         tokens.put(STRIKE, "~~");
-        tokens.put(QUOTE, ">");
     }
 
     private int ignored;
