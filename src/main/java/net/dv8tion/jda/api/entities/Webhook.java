@@ -192,14 +192,11 @@ public interface Webhook extends ISnowflake, IFakeable
 
     /**
      * The {@link WebhookManager WebhookManager} for this Webhook.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You can modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS}
      *
-     * @throws IllegalStateException 
-     *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
-     * 
      * @return The {@link WebhookManager WebhookManager} for this Webhook
      */
     @Nonnull

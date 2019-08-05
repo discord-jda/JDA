@@ -136,9 +136,6 @@ public class WebhookImpl implements Webhook
     @Override
     public WebhookManager getManager()
     {
-        if (isFake())
-            throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
-                    + "cannot provide a WebhookManager!");
         WebhookManager mng = manager;
         if (mng == null)
         {
