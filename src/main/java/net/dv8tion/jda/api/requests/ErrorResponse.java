@@ -72,6 +72,7 @@ public enum ErrorResponse
     INVITE_CODE_INVALID(            50020, "Invite code is either invalid or taken"),
     INVALID_MESSAGE_TARGET(         50021, "Cannot execute action on a system message"),
     INVALID_OAUTH_ACCESS_TOKEN(     50025, "Invalid OAuth2 access token"),
+    INVALID_WEBHOOK_TOKEN(          50027, "Invalid Webhook Token"),
     INVALID_BULK_DELETE_MESSAGE_AGE(50034, "A Message provided to bulk_delete was older than 2 weeks"),
     INVALID_FORM_BODY(              50035, "Invalid Form Body"),
     INVITE_FOR_UNKNOWN_GUILD(       50036, "An invite was accepted to a guild the application's bot is not in"),

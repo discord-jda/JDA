@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.ratelimit;
 
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
@@ -402,11 +403,10 @@ public class BotRateLimiter extends RateLimiter
         private void finishProcess()
         {
             // We are done with processing
-            requestLock.lock();
-            try (UnlockHook hook = new UnlockHook(requestLock))
+            MiscUtil.locked(requestLock, () ->
             {
                 processing = false;
-            }
+            });
             // Re-submit if new requests were added or rate-limit was hit
             synchronized (submittedBuckets)
             {
