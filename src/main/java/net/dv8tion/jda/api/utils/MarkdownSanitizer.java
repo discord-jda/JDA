@@ -462,7 +462,7 @@ public class MarkdownSanitizer
     {
         Checks.notNull(sequence, "Input");
         StringBuilder builder = new StringBuilder();
-        String end = handleQuote(sequence);
+        String end = handleQuote(sequence, false);
         if (end != null) return end;
 
         for (int i = 0; i < sequence.length();)
@@ -472,9 +472,9 @@ public class MarkdownSanitizer
             {
                 if (sequence.charAt(i) == '\n' && i + 1 < sequence.length())
                 {
-                    String result = handleQuote(sequence.substring(i + 1));
+                    String result = handleQuote(sequence.substring(i + 1), true);
                     if (result != null)
-                        return result;
+                        return builder.append(result).toString();
                 }
 
                 builder.append(sequence.charAt(i++));
@@ -496,7 +496,7 @@ public class MarkdownSanitizer
         return builder.toString();
     }
 
-    private String handleQuote(@Nonnull String sequence)
+    private String handleQuote(@Nonnull String sequence, boolean newline)
     {
         // Special handling for quote
         if (!isIgnored(QUOTE) && quote.matcher(sequence).matches())
@@ -507,8 +507,10 @@ public class MarkdownSanitizer
             StringBuilder builder = new StringBuilder(compute(sequence.substring(2, end)));
             if (strategy == SanitizationStrategy.ESCAPE)
                 builder.insert(0, "\\> ");
+            if (newline)
+                builder.insert(0, '\n');
             if (end < sequence.length())
-                builder.append('\n').append(compute(sequence.substring(end)));
+                builder.append(compute(sequence.substring(end)));
             return builder.toString();
 
         }

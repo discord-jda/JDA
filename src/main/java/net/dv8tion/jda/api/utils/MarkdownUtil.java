@@ -96,6 +96,22 @@ public final class MarkdownUtil
      * and applies codeblock formatting to the entire string.
      * <br>The resulting string will be {@code "```" + escaped(input) + "```"}.
      *
+     * @param  input
+     *         The input to codeblock
+     *
+     * @return The resulting output
+     */
+    @Nonnull
+    public static String codeblock(@Nonnull String input)
+    {
+        return codeblock(null, input);
+    }
+
+    /**
+     * Escapes already existing codeblock regions in the input
+     * and applies codeblock formatting to the entire string.
+     * <br>The resulting string will be {@code "```" + language + "\n" + escaped(input) + "```"}.
+     *
      * @param  language
      *         The language to use for syntax highlighting (null to use no language)
      * @param  input
