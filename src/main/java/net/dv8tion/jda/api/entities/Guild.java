@@ -410,6 +410,18 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * The maximum amount of emotes a guild can have.
+     *
+     * @return The maximum amount of emotes
+     *
+     * @since 4.0.0
+     */
+    default int getMaxEmotes()
+    {
+        return getBoostTier().getMaxEmotes();
+    }
+
+    /**
      * The maximum amount of members that can join this guild.
      *
      * @return The maximum amount of members
@@ -3738,34 +3750,36 @@ public interface Guild extends ISnowflake
          * The default tier.
          * <br>Unlocked at 0 boosters.
          */
-        NONE(0, 96000),
+        NONE(0, 96000, 50),
         /**
          * The first tier.
          * <br>Unlocked at 2 boosters.
          */
-        TIER_1(1, 128000),
+        TIER_1(1, 128000, 100),
         /**
          * The second tier.
          * <br>Unlocked at 10 boosters.
          */
-        TIER_2(2, 256000),
+        TIER_2(2, 256000, 150),
         /**
          * The third tier.
          * <br>Unlocked at 50 boosters.
          */
-        TIER_3(3, 384000),
+        TIER_3(3, 384000, 250),
         /**
          * Placeholder for future tiers.
          */
-        UNKNOWN(-1, Integer.MAX_VALUE);
+        UNKNOWN(-1, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
         private final int key;
         private final int maxBitrate;
+        private final int maxEmotes;
 
-        BoostTier(int key, int maxBitrate)
+        BoostTier(int key, int maxBitrate, int maxEmotes)
         {
             this.key = key;
             this.maxBitrate = maxBitrate;
+            this.maxEmotes = maxEmotes;
         }
 
         /**
@@ -3788,6 +3802,18 @@ public interface Guild extends ISnowflake
         public int getMaxBitrate()
         {
             return maxBitrate;
+        }
+
+        /**
+         * The maximum amount of emotes a guild can have when this tier is reached.
+         *
+         * @return The maximum emotes
+         * 
+         * @see    net.dv8tion.jda.api.entities.Guild#getMaxEmotes()
+         */
+        public int getMaxEmotes() 
+        {
+            return maxEmotes;
         }
 
         /**
