@@ -1466,11 +1466,11 @@ public interface Guild extends ISnowflake
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
      * @param  name
-     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
-     * @return Possibly-empty immutable list of all Role names that match the provided name.
+     * @return Possibly-empty immutable list of all Emotes that match the provided name.
      */
     @Nonnull
     default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase)

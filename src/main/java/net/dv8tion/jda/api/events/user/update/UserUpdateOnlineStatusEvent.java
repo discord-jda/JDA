@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.api.entities.User User} changed.
- * <br>As with any presence updates this either happened for a {@link net.dv8tion.jda.api.entities.Member Member} in a Guild !
+ * <br>As with any presence updates this happened for a {@link net.dv8tion.jda.api.entities.Member Member} in a Guild !
  *
  * <p>Can be used to retrieve the User who changed their status and their previous status.
  *

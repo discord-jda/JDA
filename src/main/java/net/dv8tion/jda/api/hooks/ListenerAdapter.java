@@ -83,10 +83,10 @@ import javax.annotation.Nonnull;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.api.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.api.events.Event Events}
- * for you.
+ * for you. You should <b><u>override</u></b> the methods provided by this class for your event listener implementation.
  *
- * <p><b>Example:</b>
- * <br><pre><code>
+ * <h2>Example:</h2>
+ * <pre><code>
  * public class MyReadyListener extends ListenerAdapter
  * {
  *    {@literal @Override}
