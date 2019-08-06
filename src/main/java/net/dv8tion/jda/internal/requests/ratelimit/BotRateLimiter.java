@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.Route.RateLimit;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import okhttp3.Headers;
 
@@ -90,7 +91,7 @@ public class BotRateLimiter extends RateLimiter
                 String retry = headers.get("Retry-After");
                 if (retry == null || retry.isEmpty())
                 {
-                    try (InputStream in = Requester.getBody(response))
+                    try (InputStream in = IOUtil.getBody(response))
                     {
                         DataObject limitObj = DataObject.fromJson(in);
                         retry = limitObj.get("retry_after").toString();

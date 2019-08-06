@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.IOFunction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Requester;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -69,7 +69,7 @@ public class Response implements Closeable
         else // weird compatibility issue, thinks some final isn't initialized if we return pre-maturely
         try
         {
-            this.body = Requester.getBody(response);
+            this.body = IOUtil.getBody(response);
         }
         catch (final Exception e)
         {

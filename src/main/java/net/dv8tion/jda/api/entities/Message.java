@@ -1354,7 +1354,7 @@ public interface Message extends ISnowflake, Formattable
                 .onSuccess((call, response) -> {
                     if (response.isSuccessful())
                     {
-                        InputStream body = Requester.getBody(response);
+                        InputStream body = IOUtil.getBody(response);
                         if (!future.complete(body))
                             IOUtil.silentClose(response);
                     }

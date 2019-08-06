@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter;
 import net.dv8tion.jda.internal.requests.ratelimit.ClientRateLimiter;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
@@ -36,9 +35,6 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.*;
@@ -46,10 +42,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
-import java.util.zip.ZipException;
 
 public class Requester
 {
@@ -304,41 +296,4 @@ public class Requester
         rateLimiter.shutdown();
     }
 
-    /**
-     * Retrieves an {@link java.io.InputStream InputStream} for the provided {@link okhttp3.Response Response}.
-     * <br>When the header for {@code content-encoding} is set with {@code gzip} this will wrap the body
-     * in a {@link java.util.zip.GZIPInputStream GZIPInputStream} which decodes the data.
-     *
-     * <p>This is used to make usage of encoded responses more user-friendly in various parts of JDA.
-     *
-     * @param  response
-     *         The not-null Response object
-     *
-     * @throws IOException
-     *         If a GZIP format error has occurred or the compression method used is unsupported
-     *
-     * @return InputStream representing the body of this response
-     */
-    @SuppressWarnings("ConstantConditions") // methods here don't return null despite the annotations on them, read the docs
-    public static InputStream getBody(okhttp3.Response response) throws IOException
-    {
-        String encoding = response.header("content-encoding", "");
-        InputStream data = new BufferedInputStream(response.body().byteStream());
-        data.mark(256);
-        try
-        {
-            if (encoding.equalsIgnoreCase("gzip"))
-                return new GZIPInputStream(data);
-            else if (encoding.equalsIgnoreCase("deflate"))
-                return new InflaterInputStream(data, new Inflater(true));
-        }
-        catch (ZipException ex)
-        {
-            data.reset(); // reset to get full content
-            LOG.error("Failed to read gzip content for response. Headers: {}\nContent: '{}'",
-                      response.headers(), JDALogger.getLazyString(() -> new String(IOUtil.readFully(data))), ex);
-            return null;
-        }
-        return data;
-    }
 }
