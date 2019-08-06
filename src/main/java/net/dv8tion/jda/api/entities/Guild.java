@@ -410,7 +410,8 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * The maximum amount of emotes a guild can have.
+     * The maximum amount of emotes a guild can have based on the guilds boost tier.
+     * This does not take into account if the guild has the MORE_EMOJI feature.
      *
      * @return The maximum amount of emotes
      *
