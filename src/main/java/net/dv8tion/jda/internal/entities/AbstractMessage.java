@@ -452,6 +452,7 @@ public abstract class AbstractMessage implements Message
     @Override
     public RestAction<Void> removeReaction(Emote emote)
     {
+        unsupported();
         return null;
     }
 
@@ -459,6 +460,7 @@ public abstract class AbstractMessage implements Message
     @Override
     public RestAction<Void> removeReaction(Emote emote, User user)
     {
+        unsupported();
         return null;
     }
 
@@ -466,6 +468,7 @@ public abstract class AbstractMessage implements Message
     @Override
     public RestAction<Void> removeReaction(String emote)
     {
+        unsupported();
         return null;
     }
 
@@ -473,6 +476,7 @@ public abstract class AbstractMessage implements Message
     @Override
     public RestAction<Void> removeReaction(String emote, User user)
     {
+        unsupported();
         return null;
     }
 
@@ -480,6 +484,7 @@ public abstract class AbstractMessage implements Message
     @Override
     public RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote)
     {
+        unsupported();
         return null;
     }
 
@@ -487,6 +492,7 @@ public abstract class AbstractMessage implements Message
     @Override
     public RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote)
     {
+        unsupported();
         return null;
     }
 
@@ -494,13 +500,15 @@ public abstract class AbstractMessage implements Message
     @Override
     public MessageReaction.ReactionEmote getReactionByName(String name)
     {
+        unsupported();
         return null;
     }
 
     @Nonnull
     @Override
-    public MessageReaction.ReactionEmote getReationById(String id)
+    public MessageReaction.ReactionEmote getReactionById(String id)
     {
+        unsupported();
         return null;
     }
 
@@ -508,6 +516,7 @@ public abstract class AbstractMessage implements Message
     @Override
     public MessageReaction.ReactionEmote getReactionById(long id)
     {
+        unsupported();
         return null;
     }
 

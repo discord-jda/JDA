@@ -1195,7 +1195,7 @@ public interface Message extends ISnowflake, Formattable
 
     MessageReaction.ReactionEmote getReactionByName(String name);
 
-    MessageReaction.ReactionEmote getReationById(String id);
+    MessageReaction.ReactionEmote getReactionById(String id);
 
     MessageReaction.ReactionEmote getReactionById(long id);
 
