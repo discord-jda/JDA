@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.apache.commons.collections4.Bag;
 
@@ -444,6 +445,69 @@ public abstract class AbstractMessage implements Message
     public RestAction<Void> clearReactions()
     {
         unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(Emote emote)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(Emote emote, User user)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(String emote)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(String emote, User user)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public MessageReaction.ReactionEmote getReactionByName(String name)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public MessageReaction.ReactionEmote getReationById(String id)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(long id)
+    {
         return null;
     }
 

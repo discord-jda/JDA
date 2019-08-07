@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -1178,6 +1179,25 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
+
+
+    RestAction<Void> removeReaction(Emote emote);
+
+    RestAction<Void> removeReaction(Emote emote, User user);
+
+    RestAction<Void> removeReaction(String emote);
+
+    RestAction<Void> removeReaction(String emote, User user);
+
+    RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote);
+
+    RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote);
+
+    MessageReaction.ReactionEmote getReactionByName(String name);
+
+    MessageReaction.ReactionEmote getReationById(String id);
+
+    MessageReaction.ReactionEmote getReactionById(long id);
 
     /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
