@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -155,6 +156,68 @@ public class ReceivedMessage extends AbstractMessage
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId());
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(Emote emote) {
+        return super.removeReaction(emote);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(Emote emote, User user) {
+        return super.removeReaction(emote, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(String emote) {
+        return super.removeReaction(emote);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(String emote, User user) {
+        return super.removeReaction(emote, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote) {
+        return super.retrieveReactionUsers(emote);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote) {
+        return super.retrieveReactionUsers(emote);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionByName(String name)
+    {
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.getName().equals(name))
+            .findFirst()
+            .orElse(null);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(String id)
+    {
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.getId().equals(id))
+            .findFirst()
+            .orElse(null);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(long id)
+    {
+        return getReactionById(Long.toString(id));
     }
 
     @Nonnull

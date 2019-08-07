@@ -480,7 +480,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @Nonnull
     @Override
     public RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote)
     {
@@ -488,7 +487,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @Nonnull
     @Override
     public RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote)
     {
@@ -496,7 +494,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @Nonnull
     @Override
     public MessageReaction.ReactionEmote getReactionByName(String name)
     {
@@ -504,7 +501,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @Nonnull
     @Override
     public MessageReaction.ReactionEmote getReactionById(String id)
     {
@@ -512,7 +508,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @Nonnull
     @Override
     public MessageReaction.ReactionEmote getReactionById(long id)
     {
