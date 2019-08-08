@@ -29,11 +29,16 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -202,24 +207,19 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ReactionPaginationAction retrieveReactionUsers(Emote emote)
     {
+        Checks.notNull(emote, "Emote");
+
         MessageReaction reaction = this.reactions.stream()
-            .filter(r -> r.getReactionEmote().getEmote().equals(emote))
+            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getEmote().equals(emote))
             .findFirst().orElse(null);
-        Checks.check(reaction != null,
-            "Cannot retrieve users for a reaction that doesn't exist.");
-        return reaction.retrieveUsers();
+        return new ReactionPaginationActionImpl(reaction);
     }
 
     @Nonnull
     @Override
     public ReactionPaginationAction retrieveReactionUsers(String emote)
     {
-        Emote e = this.reactions.stream()
-            .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.isEmoji() && r.getEmoji().equals(emote))
-            .map(MessageReaction.ReactionEmote::getEmote)
-            .findFirst().orElse(null);
-        return retrieveReactionUsers(e);
+        return retrieveReactionUsers(MessageReaction.ReactionEmote.fromUnicode(emote, getJDA()).getEmote());
     }
 
     @Override
