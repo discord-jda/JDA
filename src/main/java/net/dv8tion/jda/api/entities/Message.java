@@ -1179,8 +1179,7 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
-
-
+    
     RestAction<Void> removeReaction(Emote emote);
 
     RestAction<Void> removeReaction(Emote emote, User user);
