@@ -174,13 +174,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(Emote emote, User user)
     {
-        Checks.notNull(emote, "Emote");
-        Checks.notNull(user, "User");
-
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
-            channel.getId(), getId(), emote.getName() + ":" + emote.getId(), "@" + user.getName()
-        );
-        return new RestActionImpl<>(getJDA(), route);
+        return getTextChannel().removeReactionById(getIdLong(), emote, user);
     }
 
     @Nonnull
@@ -194,13 +188,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(String emote, User user)
     {
-        Checks.noWhitespace(emote, "Emoji");
-        Checks.notNull(user, "User");
-
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
-            channel.getId(), getId(), EncodingUtil.encodeUTF8(emote), "@" + user.getName()
-        );
-        return new RestActionImpl<>(getJDA(), route);
+        return getTextChannel().removeReactionById(getId(), emote, user);
     }
 
     @Nonnull
