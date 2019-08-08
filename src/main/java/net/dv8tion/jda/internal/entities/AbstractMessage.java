@@ -497,7 +497,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @NotNull
     @Override
     public MessageReaction.ReactionEmote getReactionByName(String name)
     {
@@ -505,7 +504,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @NotNull
     @Override
     public MessageReaction.ReactionEmote getReactionById(String id)
     {
@@ -513,7 +511,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @NotNull
     @Override
     public MessageReaction.ReactionEmote getReactionById(long id)
     {

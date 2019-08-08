@@ -1204,15 +1204,15 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     ReactionPaginationAction retrieveReactionUsers(String emote);
 
-    @Nonnull
+    @Nullable
     @CheckReturnValue
     MessageReaction.ReactionEmote getReactionByName(String name);
 
-    @Nonnull
+    @Nullable
     @CheckReturnValue
     MessageReaction.ReactionEmote getReactionById(String id);
 
-    @Nonnull
+    @Nullable
     @CheckReturnValue
     MessageReaction.ReactionEmote getReactionById(long id);
 
