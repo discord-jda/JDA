@@ -225,6 +225,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageReaction.ReactionEmote getReactionByName(String name)
     {
+        Checks.notNull(name, "Reaction name");
+
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
             .filter(r -> r.getName().equals(name))
@@ -234,16 +236,18 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageReaction.ReactionEmote getReactionById(String id)
     {
+        Checks.isSnowflake(id, "Reaction ID");
+
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.getId().equals(id))
+            .filter(r -> r.isEmote() && r.getIdLong() == Long.parseLong(id))
             .findFirst().orElse(null);
     }
 
     @Override
     public MessageReaction.ReactionEmote getReactionById(long id)
     {
-        return getReactionById(Long.toString(id));
+        return getReactionById(Long.toUnsignedString(id));
     }
 
     @Nonnull
