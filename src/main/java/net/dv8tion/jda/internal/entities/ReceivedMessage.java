@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -160,32 +161,51 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(Emote emote) {
-        return super.removeReaction(emote);
+    public RestAction<Void> removeReaction(Emote emote)
+    {
+        return channel.removeReactionById(getId(), emote);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(Emote emote, User user) {
-        return super.removeReaction(emote, user);
+    public RestAction<Void> removeReaction(Emote emote, User user)
+    {
+        Checks.notNull(emote, "Emote");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().getIdLong() == emote.getIdLong())
+            .findFirst().orElse(null);
+
+        Checks.check(reaction != null,
+            "Cannot remove reaction from a message that doesn't contain the reaction.");
+
+        return user != null ? reaction.removeReaction(user) : reaction.removeReaction();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String emote) {
-        return super.removeReaction(emote);
+    public RestAction<Void> removeReaction(String emote)
+    {
+        return channel.removeReactionById(getId(), emote);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String emote, User user) {
-        return super.removeReaction(emote, user);
+    public RestAction<Void> removeReaction(String emote, User user)
+    {
+        Emote e = this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmoji() && r.getEmoji().equals(emote))
+            .map(MessageReaction.ReactionEmote::getEmote)
+            .findFirst().orElse(null);
+
+        return removeReaction(e, user);
     }
 
     @Nonnull
     @Override
     public RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote) {
-        return super.retrieveReactionUsers(emote);
+        return null;
     }
 
     @Nonnull
@@ -200,8 +220,7 @@ public class ReceivedMessage extends AbstractMessage
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
             .filter(r -> r.getName().equals(name))
-            .findFirst()
-            .orElse(null);
+            .findFirst().orElse(null);
     }
 
     @Override
@@ -210,8 +229,7 @@ public class ReceivedMessage extends AbstractMessage
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
             .filter(r -> r.getId().equals(id))
-            .findFirst()
-            .orElse(null);
+            .findFirst().orElse(null);
     }
 
     @Override
