@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -171,14 +170,11 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(Emote emote, User user)
     {
         Checks.notNull(emote, "Emote");
-
         MessageReaction reaction = this.reactions.stream()
             .filter(r -> r.getReactionEmote().getIdLong() == emote.getIdLong())
             .findFirst().orElse(null);
-
         Checks.check(reaction != null,
             "Cannot remove reaction from a message that doesn't contain the reaction.");
-
         return user != null ? reaction.removeReaction(user) : reaction.removeReaction();
     }
 
@@ -198,20 +194,31 @@ public class ReceivedMessage extends AbstractMessage
             .filter(r -> r.isEmoji() && r.getEmoji().equals(emote))
             .map(MessageReaction.ReactionEmote::getEmote)
             .findFirst().orElse(null);
-
         return removeReaction(e, user);
     }
 
     @Nonnull
     @Override
-    public RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote) {
-        return null;
+    public ReactionPaginationAction retrieveReactionUsers(Emote emote)
+    {
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().getEmote().equals(emote))
+            .findFirst().orElse(null);
+        Checks.check(reaction != null,
+            "Cannot retrieve users for a reaction that doesn't exist.");
+        return reaction.retrieveUsers();
     }
 
     @Nonnull
     @Override
-    public RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote) {
-        return super.retrieveReactionUsers(emote);
+    public ReactionPaginationAction retrieveReactionUsers(String emote)
+    {
+        Emote e = this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmoji() && r.getEmoji().equals(emote))
+            .map(MessageReaction.ReactionEmote::getEmote)
+            .findFirst().orElse(null);
+        return retrieveReactionUsers(e);
     }
 
     @Override
