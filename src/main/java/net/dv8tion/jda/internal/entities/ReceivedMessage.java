@@ -561,7 +561,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (!isFromType(ChannelType.PRIVATE))
             throw new IllegalStateException("This message was not sent in a private channel");
-        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
+        return (PrivateChannel) channel;
     }
 
     @Nonnull
@@ -570,7 +570,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("This message was not sent in a text channel");
-        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
+        return (TextChannel) channel;
     }
 
     @Override

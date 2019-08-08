@@ -1475,11 +1475,11 @@ public interface Guild extends ISnowflake
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
      * @param  name
-     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
-     * @return Possibly-empty immutable list of all Role names that match the provided name.
+     * @return Possibly-empty immutable list of all Emotes that match the provided name.
      */
     @Nonnull
     default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase)
@@ -2228,7 +2228,7 @@ public interface Guild extends ISnowflake
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -2292,7 +2292,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -2327,7 +2327,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the user for the provided id cannot be kicked from this Guild or the provided {@code userId} is blank/null.
      *
@@ -2362,7 +2362,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -2397,7 +2397,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
      *
@@ -2442,7 +2442,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -2488,7 +2488,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -2534,7 +2534,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -2585,7 +2585,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -2632,7 +2632,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -2679,7 +2679,7 @@ public interface Guild extends ISnowflake
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>

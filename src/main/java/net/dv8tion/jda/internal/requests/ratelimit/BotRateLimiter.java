@@ -18,12 +18,14 @@ package net.dv8tion.jda.internal.requests.ratelimit;
 
 import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.Route.RateLimit;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import okhttp3.Headers;
 
@@ -89,7 +91,7 @@ public class BotRateLimiter extends RateLimiter
                 String retry = headers.get("Retry-After");
                 if (retry == null || retry.isEmpty())
                 {
-                    try (InputStream in = Requester.getBody(response))
+                    try (InputStream in = IOUtil.getBody(response))
                     {
                         DataObject limitObj = DataObject.fromJson(in);
                         retry = limitObj.get("retry_after").toString();
@@ -402,11 +404,10 @@ public class BotRateLimiter extends RateLimiter
         private void finishProcess()
         {
             // We are done with processing
-            requestLock.lock();
-            try (UnlockHook hook = new UnlockHook(requestLock))
+            MiscUtil.locked(requestLock, () ->
             {
                 processing = false;
-            }
+            });
             // Re-submit if new requests were added or rate-limit was hit
             synchronized (submittedBuckets)
             {

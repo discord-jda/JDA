@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -201,14 +201,14 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         if the specified Member is not from the same guild
      *
      * @return True, if this Member is able to interact with the specified Member
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member)
      */
     boolean canInteract(@Nonnull Member member);
 
     /**
      * Whether this Member can interact with the provided {@link net.dv8tion.jda.api.entities.Role Role}
      * (kick/ban/move/modify/delete/etc.)
+     *
+     * <p>If this returns true this member can assign the role to other members.
      *
      * @param  role
      *         The target Role to check
@@ -219,8 +219,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         if the specified Role is not from the same guild
      *
      * @return True, if this member is able to interact with the specified Role
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Role)
      */
     boolean canInteract(@Nonnull Role role);
 
@@ -237,8 +235,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         if the specified Emote is not from the same guild
      *
      * @return True, if this Member is able to interact with the specified Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
      */
     boolean canInteract(@Nonnull Emote emote);
 
@@ -290,7 +286,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -338,7 +334,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -380,7 +376,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -419,7 +415,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -549,7 +545,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link #canInteract(Member)}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *

@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.Route.RateLimit;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +74,7 @@ public class ClientRateLimiter extends RateLimiter
             int code = response.code();
             if (code == 429)
             {
-                try (InputStream in = Requester.getBody(response))
+                try (InputStream in = IOUtil.getBody(response))
                 {
                     DataObject limitObj = DataObject.fromJson(in);
                     long retryAfter = limitObj.getLong("retry_after");

@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -1291,9 +1294,34 @@ public interface JDA
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
      *         same name as the provided name.
+     *
+     * @deprecated
+     *         Replace with {@link #getVoiceChannelsByName(String, boolean)}
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("jda.getVoiceChannelsByName(name, ignoreCase)")
     default List<VoiceChannel> getVoiceChannelByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getVoiceChannelsByName(name, ignoreCase);
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.VoiceChannel#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
@@ -1439,7 +1467,7 @@ public interface JDA
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
      * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.api.entities.Emote#getName()}.

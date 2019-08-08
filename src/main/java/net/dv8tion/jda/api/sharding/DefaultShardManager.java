@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -35,7 +36,6 @@ import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
@@ -516,8 +516,8 @@ public class DefaultShardManager implements ShardManager
         {
             try
             {
-                Pair<String, Integer> gateway = jda.getGatewayBot();
-                this.gatewayURL = gateway.getLeft();
+                SessionController.ShardedGateway gateway = jda.getShardedGateway();
+                this.gatewayURL = gateway.getUrl();
                 if (this.gatewayURL == null)
                     LOG.error("Acquired null gateway url from SessionController");
                 else
@@ -525,7 +525,7 @@ public class DefaultShardManager implements ShardManager
 
                 if (getShardsTotal() == -1)
                 {
-                    shardingConfig.setShardsTotal(gateway.getRight());
+                    shardingConfig.setShardsTotal(gateway.getShardTotal());
                     this.shards = new ShardCacheViewImpl(getShardsTotal());
 
                     synchronized (queue)

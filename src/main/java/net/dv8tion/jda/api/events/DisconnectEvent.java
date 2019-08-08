@@ -27,10 +27,10 @@ import java.time.OffsetDateTime;
  * Indicates that JDA has been disconnected from the remote server.
  * <br>When this event is fired JDA will try to reconnect if possible
  * unless {@link net.dv8tion.jda.api.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
- * has been provided {@code false} or the disconnect was too fatal.
+ * has been provided {@code false} or the disconnect was too fatal in which case a {@link ShutdownEvent} is fired.
  *
  * <p>When reconnecting was successful either a {@link net.dv8tion.jda.api.events.ReconnectedEvent ReconnectEvent}
- * or a {@link net.dv8tion.jda.api.events.ResumedEvent ResumedEvent} is fired.
+ * <b>or</b> {@link net.dv8tion.jda.api.events.ResumedEvent ResumedEvent} is fired.
  */
 public class DisconnectEvent extends Event
 {

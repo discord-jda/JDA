@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -215,7 +216,7 @@ public class WidgetUtil
         try (Response response = client.newCall(request).execute())
         {
             final int code = response.code();
-            InputStream data = Requester.getBody(response);
+            InputStream data = IOUtil.getBody(response);
 
             switch (code)
             {

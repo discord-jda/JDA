@@ -66,7 +66,6 @@ import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
@@ -265,9 +264,9 @@ public class JDAImpl implements JDA
 
 
     // This method also checks for a valid bot token as it is required to get the recommended shard count.
-    public Pair<String, Integer> getGatewayBot()
+    public SessionController.ShardedGateway getShardedGateway()
     {
-        return getSessionController().getGatewayBot(this);
+        return getSessionController().getShardedGateway(this);
     }
 
     public ConcurrentMap<String, String> getContextMap()
