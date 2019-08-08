@@ -170,12 +170,12 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(Emote emote, User user)
     {
         Checks.notNull(emote, "Emote");
-        MessageReaction reaction = this.reactions.stream()
-            .filter(r -> r.getReactionEmote().getIdLong() == emote.getIdLong())
-            .findFirst().orElse(null);
-        Checks.check(reaction != null,
-            "Cannot remove reaction from a message that doesn't contain the reaction.");
-        return user != null ? reaction.removeReaction(user) : reaction.removeReaction();
+        Checks.notNull(user, "User");
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
+            channel.getId(), getId(), emote.getName() + ":" + emote.getId(), "@" + user.getName()
+        );
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -189,12 +189,13 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(String emote, User user)
     {
-        Emote e = this.reactions.stream()
-            .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.isEmoji() && r.getEmoji().equals(emote))
-            .map(MessageReaction.ReactionEmote::getEmote)
-            .findFirst().orElse(null);
-        return removeReaction(e, user);
+        Checks.noWhitespace(emote, "Emoji");
+        Checks.notNull(user, "User");
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(
+            channel.getId(), getId(), EncodingUtil.encodeUTF8(emote), "@" + user.getName()
+        );
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
