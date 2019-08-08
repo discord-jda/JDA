@@ -481,14 +481,14 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(Emote emote)
     {
         unsupported();
         return null;
     }
 
     @Override
-    public RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote)
+    public ReactionPaginationAction retrieveReactionUsers(String emote)
     {
         unsupported();
         return null;

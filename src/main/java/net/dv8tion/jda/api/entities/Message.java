@@ -1189,9 +1189,9 @@ public interface Message extends ISnowflake, Formattable
 
     RestAction<Void> removeReaction(String emote, User user);
 
-    RestAction<ReactionPaginationAction> retrieveReactionUsers(Emote emote);
+    ReactionPaginationAction retrieveReactionUsers(Emote emote);
 
-    RestAction<ReactionPaginationAction> retrieveReactionUsers(String emote);
+    ReactionPaginationAction retrieveReactionUsers(String emote);
 
     MessageReaction.ReactionEmote getReactionByName(String name);
 
