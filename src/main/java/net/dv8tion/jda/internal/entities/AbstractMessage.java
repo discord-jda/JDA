@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.utils.Helpers;
 import org.apache.commons.collections4.Bag;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -480,6 +481,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NotNull
     @Override
     public ReactionPaginationAction retrieveReactionUsers(Emote emote)
     {
@@ -487,6 +489,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NotNull
     @Override
     public ReactionPaginationAction retrieveReactionUsers(String emote)
     {
@@ -494,6 +497,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NotNull
     @Override
     public MessageReaction.ReactionEmote getReactionByName(String name)
     {
@@ -501,6 +505,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NotNull
     @Override
     public MessageReaction.ReactionEmote getReactionById(String id)
     {
@@ -508,6 +513,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @NotNull
     @Override
     public MessageReaction.ReactionEmote getReactionById(long id)
     {

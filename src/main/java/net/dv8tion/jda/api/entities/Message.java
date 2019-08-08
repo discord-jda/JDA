@@ -1179,23 +1179,41 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
-    
+
+    @Nonnull
+    @CheckReturnValue
     RestAction<Void> removeReaction(Emote emote);
 
+    @Nonnull
+    @CheckReturnValue
     RestAction<Void> removeReaction(Emote emote, User user);
 
+    @Nonnull
+    @CheckReturnValue
     RestAction<Void> removeReaction(String emote);
 
+    @Nonnull
+    @CheckReturnValue
     RestAction<Void> removeReaction(String emote, User user);
 
+    @Nonnull
+    @CheckReturnValue
     ReactionPaginationAction retrieveReactionUsers(Emote emote);
 
+    @Nonnull
+    @CheckReturnValue
     ReactionPaginationAction retrieveReactionUsers(String emote);
 
+    @Nonnull
+    @CheckReturnValue
     MessageReaction.ReactionEmote getReactionByName(String name);
 
+    @Nonnull
+    @CheckReturnValue
     MessageReaction.ReactionEmote getReactionById(String id);
 
+    @Nonnull
+    @CheckReturnValue
     MessageReaction.ReactionEmote getReactionById(long id);
 
     /**
