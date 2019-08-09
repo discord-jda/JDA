@@ -29,16 +29,12 @@ import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationActi
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
@@ -207,7 +203,12 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ReactionPaginationAction retrieveReactionUsers(String emote)
     {
-        return retrieveReactionUsers(MessageReaction.ReactionEmote.fromUnicode(emote, getJDA()).getEmote());
+        Checks.noWhitespace(emote, "Emoji");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(emote))
+            .findFirst().orElse(null);
+        return new ReactionPaginationActionImpl(reaction);
     }
 
     @Override
@@ -226,9 +227,10 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.isSnowflake(id, "Reaction ID");
 
+        final long snowflake = MiscUtil.parseSnowflake(id);
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.isEmote() && r.getIdLong() == Long.parseLong(id))
+            .filter(r -> r.isEmote() && r.getIdLong() == snowflake)
             .findFirst().orElse(null);
     }
 
