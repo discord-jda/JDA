@@ -411,7 +411,6 @@ public interface Guild extends ISnowflake
 
     /**
      * The maximum amount of emotes a guild can have based on the guilds boost tier.
-     * This does not take into account if the guild has the MORE_EMOJI feature.
      *
      * @return The maximum amount of emotes
      *
@@ -419,7 +418,8 @@ public interface Guild extends ISnowflake
      */
     default int getMaxEmotes()
     {
-        return getBoostTier().getMaxEmotes();
+        int maxEmotes = getFeatures().contains("MORE_EMOJI") ? 200 : 50;
+        return Math.max(maxEmotes, getBoostTier().getMaxEmotes())
     }
 
     /**
