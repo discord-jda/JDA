@@ -419,7 +419,7 @@ public interface Guild extends ISnowflake
     default int getMaxEmotes()
     {
         int maxEmotes = getFeatures().contains("MORE_EMOJI") ? 200 : 50;
-        return Math.max(maxEmotes, getBoostTier().getMaxEmotes())
+        return Math.max(maxEmotes, getBoostTier().getMaxEmotes());
     }
 
     /**
