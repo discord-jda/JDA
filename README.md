@@ -2,7 +2,7 @@
 [download]: https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
-[jenkins]: https://ci.dv8tion.net/job/JDA4-Beta
+[jenkins]: https://ci.dv8tion.net/job/JDA
 [license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
 [faq]: https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ
 [troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
@@ -100,8 +100,8 @@ public static void main(String[] args) {
 }
 ```
 
-> See [JDABuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/JDABuilder.html)
-  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
+> See [JDABuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html)
+  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 ### Listening to Events
 
@@ -209,11 +209,11 @@ public class Bot extends ListenerAdapter
 
 ### RestAction
 
-Through [RestAction](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
+Through [RestAction](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
  
- - [callbacks](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
- - [promises](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
- - and [sync](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
+ - [callbacks](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
+ - [promises](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
+ - and [sync](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
 
 and it is up to the user to decide which pattern to utilize.
 It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
@@ -240,7 +240,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
@@ -446,7 +446,7 @@ The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/
 
 ## Documentation
 
-Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA4-Beta/javadoc/)
+Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ### Annotations

@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
@@ -43,11 +41,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioManagerImpl implements AudioManager
 {
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("3.8.1")
-    public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
-
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
     protected final ListenerProxy connectionListener = new ListenerProxy();
