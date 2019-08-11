@@ -261,7 +261,7 @@ public class Requester
     {
         builder.header("user-agent", USER_AGENT)
                .header("accept-encoding", "gzip")
-               .header("x-ratelimit-precision", "milliseconds");
+               .header("x-ratelimit-precision", "millisecond");
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization

@@ -181,7 +181,7 @@ public class BotRateLimiter extends RateLimiter
             bucket.routeUsageRemaining = 0;
         }
 
-        headerCount += parseLong(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = time); //Seconds to milliseconds
+        headerCount += parseDouble(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = (long) (time * 1000)); //Seconds to milliseconds
         headerCount += parseInt(headers.get(LIMIT_HEADER),  bucket, (limit, b) -> b.routeUsageLimit = limit);
 
         //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
@@ -214,12 +214,11 @@ public class BotRateLimiter extends RateLimiter
         catch (NumberFormatException ignored) {}
         return 0;
     }
-
-    private int parseLong(String input, Bucket bucket, LongObjectConsumer<? super Bucket> consumer)
+    private int parseDouble(String input, Bucket bucket, DoubleObjectConsumer<? super Bucket> consumer)
     {
         try
         {
-            long parsed = Long.parseLong(input);
+            double parsed = Double.parseDouble(input);
             consumer.accept(parsed, bucket);
             return 1;
         }
@@ -448,13 +447,13 @@ public class BotRateLimiter extends RateLimiter
         }
     }
 
-    private interface LongObjectConsumer<T>
-    {
-        void accept(long n, T t);
-    }
-
     private interface IntObjectConsumer<T>
     {
         void accept(int n, T t);
+    }
+
+    private interface DoubleObjectConsumer<T>
+    {
+        void accept(double n, T t);
     }
 }
