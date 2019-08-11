@@ -24,7 +24,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.Route.RateLimit;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import okhttp3.Headers;
@@ -137,7 +136,7 @@ public class BotRateLimiter extends RateLimiter
                 if (bucket == null)
                 {
                     Route baseRoute = route.getBaseRoute();
-                    bucket = new Bucket(rateLimitRoute, baseRoute.getRatelimit(), baseRoute.isMissingHeaders());
+                    bucket = new Bucket(rateLimitRoute, baseRoute.isMissingHeaders());
                     buckets.put(rateLimitRoute, bucket);
                 }
             }
@@ -182,17 +181,8 @@ public class BotRateLimiter extends RateLimiter
             bucket.routeUsageRemaining = 0;
         }
 
-        if (bucket.hasRatelimit()) // Check if there's a hardcoded rate limit
-        {
-            bucket.resetTime = getNow() + bucket.getRatelimit().getResetTime();
-            headerCount += 2;
-            //routeUsageLimit provided by the ratelimit object already in the bucket.
-        }
-        else
-        {
-            headerCount += parseLong(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = time * 1000); //Seconds to milliseconds
-            headerCount += parseInt(headers.get(LIMIT_HEADER),  bucket, (limit, b) -> b.routeUsageLimit = limit);
-        }
+        headerCount += parseLong(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = time); //Seconds to milliseconds
+        headerCount += parseInt(headers.get(LIMIT_HEADER),  bucket, (limit, b) -> b.routeUsageLimit = limit);
 
         //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
         // however, if there should ever be a case where Discord informs that the remaining is less than what
@@ -241,7 +231,6 @@ public class BotRateLimiter extends RateLimiter
     {
         final String route;
         final boolean missingHeaders;
-        final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         final ReentrantLock requestLock = new ReentrantLock();
         volatile boolean processing = false;
@@ -249,16 +238,10 @@ public class BotRateLimiter extends RateLimiter
         volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
         volatile int routeUsageLimit = 1;        // ratelimit information.
 
-        public Bucket(String route, RateLimit rateLimit, boolean missingHeaders)
+        public Bucket(String route, boolean missingHeaders)
         {
             this.route = route;
-            this.rateLimit = rateLimit;
             this.missingHeaders = missingHeaders;
-            if (rateLimit != null)
-            {
-                this.routeUsageRemaining = rateLimit.getUsageLimit();
-                this.routeUsageLimit = rateLimit.getUsageLimit();
-            }
         }
 
         void addToQueue(Request request)
@@ -450,12 +433,6 @@ public class BotRateLimiter extends RateLimiter
                     api.handleEvent(new ExceptionEvent(api, err, true));
                 }
             }
-        }
-
-        @Override
-        public RateLimit getRatelimit()
-        {
-            return rateLimit;
         }
 
         @Override
