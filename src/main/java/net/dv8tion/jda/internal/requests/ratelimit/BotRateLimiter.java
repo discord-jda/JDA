@@ -31,8 +31,6 @@ import okhttp3.Headers;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
@@ -46,7 +44,6 @@ public class BotRateLimiter extends RateLimiter
     private static final String RESET_HEADER = "X-RateLimit-Reset";
     private static final String LIMIT_HEADER = "X-RateLimit-Limit";
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
-    protected volatile Long timeOffset = null;
 
     public BotRateLimiter(Requester requester)
     {
@@ -81,8 +78,6 @@ public class BotRateLimiter extends RateLimiter
         {
             Headers headers = response.headers();
             int code = response.code();
-            if (timeOffset == null)
-                setTimeOffset(headers);
 
             if (code == 429)
             {
@@ -146,30 +141,7 @@ public class BotRateLimiter extends RateLimiter
 
     public long getNow()
     {
-        return System.currentTimeMillis() + getTimeOffset();
-    }
-
-    public long getTimeOffset()
-    {
-        return timeOffset == null ? 0 : timeOffset;
-    }
-
-    private void setTimeOffset(Headers headers)
-    {
-        //Store as soon as possible to get the most accurate time difference;
-        long time = System.currentTimeMillis();
-        if (timeOffset == null)
-        {
-            //Get the date header provided by Discord.
-            //Format:  "date" : "Fri, 16 Sep 2016 05:49:36 GMT"
-            String date = headers.get("Date");
-            if (date != null)
-            {
-                OffsetDateTime tDate = OffsetDateTime.parse(date, DateTimeFormatter.RFC_1123_DATE_TIME);
-                long lDate = tDate.toInstant().toEpochMilli(); //We want to work in milliseconds, not seconds
-                timeOffset = lDate - time; //Get offset in milliseconds.
-            }
-        }
+        return System.currentTimeMillis();
     }
 
     private void updateBucket(Bucket bucket, Headers headers, long retryAfter)
