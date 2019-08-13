@@ -494,6 +494,8 @@ https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
 ### [Lavalink](https://github.com/frederikam/Lavalink)
 
+Created and maintained by [Frederik Mikkelsen](https://github.com/Frederikam), the creator of FredBoat.
+
 Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalink was built with scalability in mind,
 and allows streaming music via many servers. It supports most of Lavaplayer's features.
 
@@ -502,8 +504,6 @@ If you plan on serving music on a smaller scale with JDA it is often preferable 
 as it is easier.
 
 [Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
-Both Lavalink-Client and Lavalink are created and maintained by [Frederik Mikkelsen](https://github.com/Frederikam),
-the creator of FredBoat.
 
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
