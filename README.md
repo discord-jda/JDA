@@ -492,6 +492,19 @@ to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
+### [Lavalink](https://github.com/frederikam/Lavalink)
+
+Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalink was built with scalability in mind,
+and allows streaming music via many servers. It supports most of Lavaplayer's features.
+
+Lavalink is used by many large bots, as well as bot developers who can not use a Java library like Lavaplayer.
+If you plan on serving music on a smaller scale with JDA it is often preferable to just use Lavaplayer directly
+as it is easier.
+
+[Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
+Both Lavalink-Client and Lavalink are created and maintained by [Frederik Mikkelsen](https://github.com/Frederikam),
+the creator of FredBoat.
+
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
 Created and maintained by [jagrosh](https://github.com/jagrosh).
