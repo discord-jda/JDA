@@ -41,6 +41,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class BotRateLimiter extends RateLimiter
 {
+    private static final String RESET_AFTER_HEADER = "X-RateLimit-Reset-After";
     private static final String RESET_HEADER = "X-RateLimit-Reset";
     private static final String LIMIT_HEADER = "X-RateLimit-Limit";
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
@@ -153,7 +154,12 @@ public class BotRateLimiter extends RateLimiter
             bucket.routeUsageRemaining = 0;
         }
 
-        headerCount += parseDouble(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = (long) (time * 1000)); //Seconds to milliseconds
+        // relative = reset-after
+        if (requester.getJDA().isRelativeRateLimit())
+            headerCount += parseDouble(headers.get(RESET_AFTER_HEADER), bucket, (time, b)  -> b.resetTime = getNow() + (long) (time * 1000)); //Seconds to milliseconds
+        else // absolute = reset
+            headerCount += parseDouble(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = (long) (time * 1000)); //Seconds to milliseconds
+
         headerCount += parseInt(headers.get(LIMIT_HEADER),  bucket, (limit, b) -> b.routeUsageLimit = limit);
 
         //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
@@ -194,7 +200,7 @@ public class BotRateLimiter extends RateLimiter
             consumer.accept(parsed, bucket);
             return 1;
         }
-        catch (NumberFormatException ignored) {}
+        catch (NumberFormatException | NullPointerException ignored) {}
         return 0;
     }
 

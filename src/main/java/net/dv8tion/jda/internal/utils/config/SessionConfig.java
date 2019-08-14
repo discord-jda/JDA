@@ -101,6 +101,11 @@ public class SessionConfig
         return flags.contains(ConfigFlag.RAW_EVENTS);
     }
 
+    public boolean isRelativeRateLimit()
+    {
+        return flags.contains(ConfigFlag.USE_RELATIVE_RATELIMIT);
+    }
+
     public int getMaxReconnectDelay()
     {
         return maxReconnectDelay;
