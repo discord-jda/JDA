@@ -153,6 +153,11 @@ public class JDAImpl implements JDA
         return sessionConfig.isRawEvents();
     }
 
+    public boolean isRelativeRateLimit()
+    {
+        return sessionConfig.isRelativeRateLimit();
+    }
+
     public boolean isCacheFlagSet(CacheFlag flag)
     {
         return metaConfig.getCacheFlags().contains(flag);

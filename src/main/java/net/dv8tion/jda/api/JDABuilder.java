@@ -151,6 +151,31 @@ public class JDABuilder
     }
 
     /**
+     * Whether the rate-limit should be relative to the current time plus latency.
+     * <br>By default we use the {@code X-RateLimit-Rest-After} header to determine when
+     * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
+     * to the latency which is ignored by the reset-after relative delay.
+     *
+     * <p>When disabled, we will use the {@code X-RateLimit-Reset} absolute timestamp instead which accounts for
+     * latency but requires a properly NTP synchronized clock to be present.
+     * If your system does have this feature you might gain a little quicker rate-limit handling than the default allows.
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @param  enable
+     *         True, if the relative {@code X-RateLimit-Reset-After} header should be used.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    public JDABuilder setRelativeRateLimit(boolean enable)
+    {
+        return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
+    }
+
+    /**
      * Flags used to enable selective parts of the JDA cache to reduce the runtime memory footprint.
      * <br><b>It is highly recommended to use {@link #setDisabledCacheFlags(EnumSet)} instead
      * for backwards compatibility</b>. We might add more flags in the future which you then effectively disable
