@@ -190,6 +190,10 @@ public class BotRateLimiter extends RateLimiter
             return 1;
         }
         catch (NumberFormatException ignored) {}
+        catch (Exception e)
+        {
+            log.error("Uncaught exception parsing header value: {}", input, e);
+        }
         return 0;
     }
     private int parseDouble(String input, Bucket bucket, DoubleObjectConsumer<? super Bucket> consumer)
@@ -201,6 +205,10 @@ public class BotRateLimiter extends RateLimiter
             return 1;
         }
         catch (NumberFormatException | NullPointerException ignored) {}
+        catch (Exception e)
+        {
+            log.error("Uncaught exception parsing header value: {}", input, e);
+        }
         return 0;
     }
 
