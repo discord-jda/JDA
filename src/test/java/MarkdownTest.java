@@ -304,7 +304,7 @@ class EscapeMarkdownTest
     @Test
     public void testBoldItalics()
     {
-        Assertions.assertEquals("\\***Hello\\***", markdown.compute("***Hello***"));
+        Assertions.assertEquals("\\*\\*\\*Hello\\*\\*\\*", markdown.compute("***Hello***"));
         Assertions.assertEquals("***Hello", markdown.compute("***Hello"));
         Assertions.assertEquals("\\***Hello***", markdown.compute("\\***Hello***"));
     }
