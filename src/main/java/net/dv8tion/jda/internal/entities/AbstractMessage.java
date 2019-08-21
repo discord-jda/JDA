@@ -466,7 +466,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String emote)
+    public RestAction<Void> removeReaction(String unicode)
     {
         unsupported();
         return null;
@@ -474,7 +474,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String emote, User user)
+    public RestAction<Void> removeReaction(String unicode, User user)
     {
         unsupported();
         return null;

@@ -175,16 +175,16 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String emote)
+    public RestAction<Void> removeReaction(String unicode)
     {
-        return channel.removeReactionById(getId(), emote);
+        return channel.removeReactionById(getId(), unicode);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String emote, User user)
+    public RestAction<Void> removeReaction(String unicode, User user)
     {
-        return getTextChannel().removeReactionById(getId(), emote, user);
+        return getTextChannel().removeReactionById(getId(), unicode, user);
     }
 
     @Nonnull
