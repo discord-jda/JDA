@@ -490,7 +490,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(String emote)
+    public ReactionPaginationAction retrieveReactionUsers(String unicode)
     {
         unsupported();
         return null;

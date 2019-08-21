@@ -1387,13 +1387,48 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     RestAction<Void> removeReaction(String unicode, User user);
 
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given {@link net.dv8tion.jda.api.entities.Emote emote}.
+     *
+     * <p>Messages keep track of reactions as well as who added those reactions. Using this data, we can obtain a
+     * {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the reacting users.</p>
+     *
+     * @param emote
+     *      The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is fake {@link net.dv8tion.jda.api.entities.Emote#isFake() Emote.isFake()}.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
+     *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *         </ul>
+     *
+     *  @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     */
     @Nonnull
     @CheckReturnValue
     ReactionPaginationAction retrieveReactionUsers(Emote emote);
 
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given unicode emote.
+     *
+     * <p>Messages keep track of reactions as well as who added those reactions. Using this data, we can obtain a
+     * {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the reacting users.</p>
+     *
+     * @param unicode
+     *      The unicode emote to retrieve users for.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided unicode emote is null or empty.
+     *
+     *  @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     */
     @Nonnull
     @CheckReturnValue
-    ReactionPaginationAction retrieveReactionUsers(String emote);
+    ReactionPaginationAction retrieveReactionUsers(String unicode);
 
     /**
      *  This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction name on this message.
@@ -1403,6 +1438,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param name
      *      The name of the reaction emoji.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided emote name is null or empty.
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message.
      */
@@ -1420,6 +1458,9 @@ public interface Message extends ISnowflake, Formattable
      * @param id
      *      The string id of the reaction emoji.
      *
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided id is not a valid snowflake.
+     *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message.
      */
     @Nullable
@@ -1435,6 +1476,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param id
      *      The long id of the reaction emoji.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *      If the provided id is not a valid snowflake.
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message.
      */

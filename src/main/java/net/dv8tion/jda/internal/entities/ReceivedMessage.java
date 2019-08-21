@@ -201,12 +201,12 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(String emote)
+    public ReactionPaginationAction retrieveReactionUsers(String unicode)
     {
-        Checks.noWhitespace(emote, "Emoji");
+        Checks.noWhitespace(unicode, "Emoji");
 
         MessageReaction reaction = this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(emote))
+            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
             .findFirst().orElse(null);
         return new ReactionPaginationActionImpl(reaction);
     }
