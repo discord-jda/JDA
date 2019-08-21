@@ -1395,14 +1395,49 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     ReactionPaginationAction retrieveReactionUsers(String emote);
 
+    /**
+     *  This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction name on this message.
+     *
+     * <p>Messages can host a number of different reactions at once. In order to distinguish between reactions they are
+     * represented by their id or name. This method is specifically for referencing unicode emojis that follow the form ":name:"</p>
+     *
+     * @param name
+     *      The name of the reaction emoji.
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message.
+     */
     @Nullable
     @CheckReturnValue
     MessageReaction.ReactionEmote getReactionByName(String name);
 
+    /**
+     *  This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     *
+     * <p>Messages can host a number of different reactions at once. In order to distinguish between reactions they are
+     * represented by their id or name. This method is specifically for referencing {@link net.dv8tion.jda.api.entities.Emote custom emotes}
+     * that follow the form "<:name:id>"</p>
+     *
+     * @param id
+     *      The string id of the reaction emoji.
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message.
+     */
     @Nullable
     @CheckReturnValue
     MessageReaction.ReactionEmote getReactionById(String id);
 
+    /**
+     *  This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     *
+     * <p>Messages can host a number of different reactions at once. In order to distinguish between reactions they are
+     * represented by their id or name. This method is specifically for referencing {@link net.dv8tion.jda.api.entities.Emote custom emotes}
+     * that follow the form "<:name:id>"</p>
+     *
+     * @param id
+     *      The long id of the reaction emoji.
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message.
+     */
     @Nullable
     @CheckReturnValue
     MessageReaction.ReactionEmote getReactionById(long id);
