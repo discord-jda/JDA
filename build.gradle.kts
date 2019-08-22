@@ -101,7 +101,7 @@ val javadoc: Javadoc by tasks
 val jar: Jar by tasks
 val build: Task by tasks
 val clean: Task by tasks
-val test: Task by tasks
+val test: Test by tasks
 val check: Task by tasks
 
 shadowJar.classifier = "withDependencies"
@@ -257,6 +257,11 @@ bintrayUpload.apply {
     onlyIf { getProjectProperty("bintrayUsername").isNotEmpty() }
     onlyIf { getProjectProperty("bintrayApiKey").isNotEmpty() }
     onlyIf { System.getenv("BUILD_NUMBER") != null }
+}
+
+test.apply {
+    useJUnitPlatform()
+    failFast = true
 }
 
 publishing {
