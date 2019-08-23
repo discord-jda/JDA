@@ -228,21 +228,22 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(String id)
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
     {
         Checks.isSnowflake(id, "Reaction ID");
 
-        final long snowflake = MiscUtil.parseSnowflake(id);
-        return this.reactions.stream()
-            .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.isEmote() && r.getIdLong() == snowflake)
-            .findFirst().orElse(null);
+        return getReactionById(MiscUtil.parseSnowflake(id));
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(long id)
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull Long id)
     {
-        return getReactionById(Long.toUnsignedString(id));
+        Checks.notNull(id, "Reaction ID");
+
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmote() && r.getIdLong() == id)
+            .findFirst().orElse(null);
     }
 
     @Nonnull
