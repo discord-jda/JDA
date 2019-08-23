@@ -204,7 +204,7 @@ public class Route
 
         public static final Route ADD_REACTION =             new ReactionRoute(PUT);
         public static final Route REMOVE_REACTION =          new ReactionRoute(DELETE);
-        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions",    "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions", "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
         public static final Route DELETE_MESSAGE =      new DeleteMessageRoute();
@@ -242,29 +242,17 @@ public class Route
     private final int paramCount;
     private final Method method;
     private final List<Integer> majorParamIndexes = new ArrayList<>();
-    private final RateLimit ratelimit;
     private final boolean missingHeaders;
 
     private Route(Method method, String route, String... majorParameters)
     {
-        this(method, null, false, route, majorParameters);
-    }
-
-    private Route(Method method, RateLimit rateLimit, String route, String... majorParameters)
-    {
-        this(method, rateLimit, false, route, majorParameters);
+        this(method, false, route, majorParameters);
     }
 
     private Route(Method method, boolean missingHeaders, String route, String... majorParameters)
     {
-        this(method, null, missingHeaders, route, majorParameters);
-    }
-
-    private Route(Method method, RateLimit rateLimit, boolean missingHeaders, String route, String... majorParameters)
-    {
         this.method = method;
         this.missingHeaders = missingHeaders;
-        this.ratelimit = rateLimit;
         this.route = route;
         this.paramCount = Helpers.countMatches(route, '{'); //All parameters start with {
 
@@ -325,11 +313,6 @@ public class Route
     public String getRatelimitRoute()
     {
         return ratelimitRoute;
-    }
-
-    public final RateLimit getRatelimit()
-    {
-        return this.ratelimit;
     }
 
     public String getCompilableRoute()
@@ -469,28 +452,6 @@ public class Route
         }
     }
     
-    public static class RateLimit
-    {
-        final int usageLimit;
-        final int resetTime; // in ms
-
-        public RateLimit(int usageLimit, int resetTime)
-        {
-            this.usageLimit = usageLimit;
-            this.resetTime = resetTime;
-        }
-
-        public final int getUsageLimit()
-        {
-            return this.usageLimit;
-        }
-
-        public final int getResetTime()
-        {
-            return this.resetTime;
-        }
-    }
-
     //edit message uses a different rate-limit bucket as delete message and thus we need a special handling
 
     /*
@@ -522,7 +483,7 @@ public class Route
     {
         private ReactionRoute(Method method)
         {
-            super(method, new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}", "channel_id");
+            super(method, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}", "channel_id");
         }
 
         @Override
