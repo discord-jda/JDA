@@ -161,58 +161,63 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
         return channel.removeReactionById(getId(), emote);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(Emote emote, User user)
+    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
     {
         return getTextChannel().removeReactionById(getIdLong(), emote, user);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String unicode)
+    public RestAction<Void> removeReaction(@Nonnull String unicode)
     {
         return channel.removeReactionById(getId(), unicode);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String unicode, User user)
+    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
     {
         return getTextChannel().removeReactionById(getId(), unicode, user);
     }
 
+
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
     {
         Checks.notNull(emote, "Emote");
 
         MessageReaction reaction = this.reactions.stream()
             .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getEmote().equals(emote))
             .findFirst().orElse(null);
+
+        Checks.check(reaction != null, "Emoji is present not on this message.");
         return new ReactionPaginationActionImpl(reaction);
     }
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(String unicode)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
     {
         Checks.noWhitespace(unicode, "Emoji");
 
         MessageReaction reaction = this.reactions.stream()
             .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
             .findFirst().orElse(null);
+
+        Checks.check(reaction != null, "Emoji is not present on this message.");
         return new ReactionPaginationActionImpl(reaction);
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByName(String name)
+    public MessageReaction.ReactionEmote getReactionByName(@Nonnull String name)
     {
         Checks.notNull(name, "Reaction name");
 

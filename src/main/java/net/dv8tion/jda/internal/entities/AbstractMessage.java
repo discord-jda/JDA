@@ -450,7 +450,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(Emote emote)
+    public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
         unsupported();
         return null;
@@ -458,7 +458,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(Emote emote, User user)
+    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
     {
         unsupported();
         return null;
@@ -466,7 +466,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String unicode)
+    public RestAction<Void> removeReaction(@Nonnull String unicode)
     {
         unsupported();
         return null;
@@ -474,7 +474,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> removeReaction(String unicode, User user)
+    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
     {
         unsupported();
         return null;
@@ -482,7 +482,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
     {
         unsupported();
         return null;
@@ -490,28 +490,28 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(String unicode)
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
     {
         unsupported();
         return null;
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByName(String name)
+    public MessageReaction.ReactionEmote getReactionByName(@Nonnull String name)
     {
         unsupported();
         return null;
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(String id)
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
     {
         unsupported();
         return null;
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(long id)
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull Long id)
     {
         unsupported();
         return null;
