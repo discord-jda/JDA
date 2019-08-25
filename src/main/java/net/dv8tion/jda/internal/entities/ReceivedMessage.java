@@ -234,7 +234,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(@Nonnull Long id)
+    public MessageReaction.ReactionEmote getReactionById(long id)
     {
         Checks.notNull(id, "Reaction ID");
 

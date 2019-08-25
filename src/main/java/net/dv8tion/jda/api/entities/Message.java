@@ -1581,7 +1581,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionById(@Nonnull Long id);
+    MessageReaction.ReactionEmote getReactionById(long id);
 
     /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.

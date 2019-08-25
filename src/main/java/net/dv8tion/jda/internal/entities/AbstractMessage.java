@@ -511,7 +511,7 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(@Nonnull Long id)
+    public MessageReaction.ReactionEmote getReactionById(long id)
     {
         unsupported();
         return null;
