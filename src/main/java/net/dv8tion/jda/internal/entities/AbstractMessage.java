@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -443,6 +444,26 @@ public abstract class AbstractMessage implements Message
     @Override
     public RestAction<Void> clearReactions()
     {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> suppressEmbeds(boolean suppressed) {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public boolean isSuppressedEmbeds() {
+        unsupported();
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<MessageFlag> getFlags() {
         unsupported();
         return null;
     }

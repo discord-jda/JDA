@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -34,10 +35,14 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.time.OffsetDateTime;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.Formattable;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Text message received from Discord.
@@ -1180,6 +1185,63 @@ public interface Message extends ISnowflake, Formattable
     RestAction<Void> clearReactions();
 
     /**
+     * Enables/Disables suppression of Embeds on this Message.
+     * <br>Suppressing Embeds is equivalent to pressing the {@code X} in the top-right corner of an Embed inside the Discord client.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The clear-reactions request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
+     *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The suppress-embeds request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The suppress-embeds request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the currently logged in account does not have
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
+     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         and the message was not sent by the currently logged in account.
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @see    #isSuppressedEmbeds()
+     */
+    @Nonnull
+    @CheckReturnValue
+    @Incubating
+    RestAction<Void> suppressEmbeds(boolean suppressed);
+
+    /**
+     * Returns wheter or not Embeds for this Message are suppressed.
+     * When Embeds are suppressed, They are not shown on Clients nor provided via API until un-suppressed.
+     * <br>This is a shortcut method for checking if {@link #getFlags() getFlags()} contains {@link}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @return Whether or not Embeds are suppressed for this Message.
+     * @see    #suppressEmbeds(boolean)
+     */
+    @Incubating
+    boolean isSuppressedEmbeds();
+
+    /**
+     * //TODO: Fill out
+     * @return
+     */
+    @Nonnull
+    EnumSet<MessageFlag> getFlags();
+
+    /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
      *
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that
@@ -1236,6 +1298,33 @@ public interface Message extends ISnowflake, Formattable
         public Pattern getPattern()
         {
             return pattern;
+        }
+    }
+
+    /**
+     * Enum representing the flags on a Message
+     *
+     * @incubating The values in this Enum are not documented on discords end and could change at any time
+     */
+    @Incubating
+    enum MessageFlag {
+        /**
+         * Embeds are suppressed on the Message.
+         * @see net.dv8tion.jda.api.entities.Message#isSuppressedEmbeds() Message#isSuppressedEmbeds()
+         */
+        EMBEDS_SUPPRESSED(2);
+
+        private final int offset;
+
+        MessageFlag(int offset) {
+            this.offset = offset;
+        }
+
+        public static EnumSet<MessageFlag> fromValue(int value) {
+            Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
+                .filter(e -> ((1 << e.offset) & value) > 0)
+                .collect(Collectors.toSet());
+            return set.isEmpty() ? EnumSet.noneOf(MessageFlag.class) : EnumSet.copyOf(set);
         }
     }
 

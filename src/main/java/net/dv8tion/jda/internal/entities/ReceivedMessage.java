@@ -27,7 +27,10 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -60,6 +63,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageEmbed> embeds;
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
+    protected final EnumSet<MessageFlag> flags;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -75,7 +79,7 @@ public class ReceivedMessage extends AbstractMessage
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, EnumSet<MessageFlag> flags)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -93,6 +97,7 @@ public class ReceivedMessage extends AbstractMessage
         this.embeds = Collections.unmodifiableList(embeds);
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
+        this.flags = flags;
     }
 
     @Nonnull
@@ -696,6 +701,25 @@ public class ReceivedMessage extends AbstractMessage
                 throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> suppressEmbeds(boolean suppressed) {
+        JDAImpl jda = (JDAImpl) getJDA();
+        Route.CompiledRoute route = Route.Messages.SUPPRESS_EMBEDS.compile(getChannel().getId(), getId());
+        return new RestActionImpl<>(jda, route, DataObject.empty().put("suppress", suppressed));
+    }
+
+    @Override
+    public boolean isSuppressedEmbeds() {
+        return this.flags.contains(MessageFlag.EMBEDS_SUPPRESSED);
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<MessageFlag> getFlags() {
+        return this.flags.clone();
     }
 
     @Override
