@@ -118,7 +118,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         if (this.nitro) // by directly accessing the field we don't need to check the account type
             return Message.MAX_FILE_SIZE_NITRO;
         else
-            return Message.MAX_FILE_SIZE;
+            return getJDA().getAccountType() == AccountType.CLIENT ? Message.MAX_FILE_SIZE : Message.MAX_FILE_SIZE_NITRO;
     }
 
     @Nonnull
