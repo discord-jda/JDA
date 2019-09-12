@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
@@ -198,7 +199,8 @@ public class ReceivedMessage extends AbstractMessage
             .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getEmote().equals(emote))
             .findFirst().orElse(null);
 
-        Checks.check(reaction != null, "Emoji is present not on this message.");
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, String.format("%s:%s", emote, emote.getId()));
         return new ReactionPaginationActionImpl(reaction);
     }
 
@@ -212,7 +214,8 @@ public class ReceivedMessage extends AbstractMessage
             .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
             .findFirst().orElse(null);
 
-        Checks.check(reaction != null, "Emoji is not present on this message.");
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, EncodingUtil.encodeUTF8(unicode));
         return new ReactionPaginationActionImpl(reaction);
     }
 

@@ -1221,7 +1221,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since 4.1.0
+     * @since  4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1274,7 +1274,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since 4.1.0
+     * @since  4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1326,7 +1326,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since 4.1.0
+     * @since  4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1378,7 +1378,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since 4.1.0
+     * @since  4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1412,21 +1412,18 @@ public interface Message extends ISnowflake, Formattable
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.</li>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is not on this message.</li>
-     *         </ul>
+     *         If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.
      *
-     *  @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
      *
-     *  @since 4.1.0
+     * @since  4.1.0
      */
     @Nonnull
     @CheckReturnValue
     ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given unicode emote.
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given unicode emoji.
      *
      * <p>Messages maintain a list of reactions, alongside a list of users who added them.
      *
@@ -1453,14 +1450,11 @@ public interface Message extends ISnowflake, Formattable
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
-     *          <ul>
-     *              <li>If the provided unicode emote is null or empty.</li>
-     *              <li>If the provided unicode emote is not on this message.</li>
-     *          </ul>
+     *         If the provided unicode emoji is null or empty.
      *
-     *  @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
-     *  @since 4.1.0
+     * @since  4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1499,7 +1493,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
-     * @since 4.1.0
+     * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
@@ -1538,7 +1532,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
-     * @since 4.1.0
+     * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
@@ -1577,7 +1571,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
-     * @since 4.1.0
+     * @since  4.1.0
      */
     @Nullable
     @CheckReturnValue
