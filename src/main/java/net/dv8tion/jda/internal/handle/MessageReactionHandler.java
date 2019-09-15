@@ -125,7 +125,9 @@ public class MessageReactionHandler extends SocketHandler
         {
             rEmote = MessageReaction.ReactionEmote.fromUnicode(emojiName, getJDA());
         }
-        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(getJDA().getSelfUser()), -1);
+        boolean self = channel.retrieveMessageById(messageId).complete().getReactions().stream()
+            .anyMatch(r -> r.getReactionEmote().equals(rEmote) && r.retrieveUsers().getCached().contains(getJDA().getSelfUser()));
+        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, self, -1);
 
         if (add)
             onAdd(reaction, user);
