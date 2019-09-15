@@ -1480,7 +1480,7 @@ public interface Message extends ISnowflake, Formattable
      *         The reaction request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @param  name
+     * @param  unicode
      *         The name of the reaction emoji.
      *
      * @throws java.lang.UnsupportedOperationException
@@ -1497,7 +1497,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nullable
     @CheckReturnValue
-    MessageReaction.ReactionEmote getReactionByName(@Nonnull String name);
+    MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode);
 
     /**
      * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.

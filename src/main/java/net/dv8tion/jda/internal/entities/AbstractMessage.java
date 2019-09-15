@@ -497,7 +497,7 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByName(@Nonnull String name)
+    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
     {
         unsupported();
         return null;

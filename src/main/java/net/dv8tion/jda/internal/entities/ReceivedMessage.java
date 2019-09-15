@@ -220,13 +220,13 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByName(@Nonnull String name)
+    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
     {
-        Checks.notNull(name, "Reaction name");
+        Checks.notNull(unicode, "Reaction name");
 
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
-            .filter(r -> r.getName().equals(name))
+            .filter(r -> r.isEmoji() && r.getEmoji().equals(unicode))
             .findFirst().orElse(null);
     }
 
