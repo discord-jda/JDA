@@ -1461,12 +1461,12 @@ public interface Message extends ISnowflake, Formattable
     ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode);
 
     /**
-     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction name on this message.
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given unicode reaction on this message.
      *
-     * <p>Messages store reactions by keeping a list of reaction names.
+     * <p>Messages also store reactions using unicode values.
      *
      * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
-     * obtained through this method by using the emoji's name.
+     * obtained through this method by using the emoji's unicode value.
      *
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -1481,7 +1481,7 @@ public interface Message extends ISnowflake, Formattable
      * </ul>
      *
      * @param  unicode
-     *         The name of the reaction emoji.
+     *         The unicode value of the reaction emoji.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}

@@ -222,7 +222,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
     {
-        Checks.notNull(unicode, "Reaction name");
+        Checks.noWhitespace(unicode, "Emoji");
 
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
