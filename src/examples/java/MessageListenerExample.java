@@ -66,7 +66,7 @@ public class MessageListenerExample extends ListenerAdapter
      *  a method from a super class properly. You should do this every time you override a method!
      *
      * As stated above, this method is overriding a hook method in the
-     * {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} class. It has convience methods for all JDA events!
+     * {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} class. It has convenient methods for all JDA events!
      * Consider looking through the events it offers if you plan to use the ListenerAdapter.
      *
      * In this example, when a message is received it is printed to the console.
