@@ -607,7 +607,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> leave()
     {
-        if (owner.equals(getSelfMember()))
+        if (getSelfMember().isOwner())
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
@@ -628,7 +628,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete(String mfaCode)
     {
-        if (!owner.equals(getSelfMember()))
+        if (!getSelfMember().isOwner())
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         DataObject mfaBody = null;
@@ -1108,7 +1108,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(newOwner, "Member");
         checkGuild(newOwner.getGuild(), "Member");
-        if (!getSelfMember().equals(getOwner()))
+        if (!getSelfMember().isOwner())
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
 
         Checks.check(!getSelfMember().equals(newOwner),
