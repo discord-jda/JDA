@@ -92,7 +92,7 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Creates a DefaultShardManagerBuilder with the given token.
-     * <br>This is equivalent to using the constuctor
+     * <br>This is equivalent to using the constructor
      * {@link #DefaultShardManagerBuilder() DefaultShardManagerBuilder()}
      * and calling {@link #setToken(String) setToken(String)}
      * directly afterward. You can always change the token later with
