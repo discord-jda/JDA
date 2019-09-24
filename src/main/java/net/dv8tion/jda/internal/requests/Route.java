@@ -195,8 +195,8 @@ public class Route
 
     public static class Messages
     {
+        public static final Route EDIT_MESSAGE =          new EditMessageRoute(); // requires special handling, same bucket but different endpoints
         public static final Route SEND_MESSAGE =          new Route(POST,   "channels/{channel_id}/messages",              "channel_id");
-        public static final Route EDIT_MESSAGE =          new Route(PATCH,  "channels/{channel_id}/messages/{message_id}", "channel_id");
         public static final Route GET_PINNED_MESSAGES =   new Route(GET,    "channels/{channel_id}/pins",                  "channel_id");
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}",     "channel_id");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}",     "channel_id");
@@ -206,7 +206,7 @@ public class Route
         public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions", "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
-        public static final Route DELETE_MESSAGE =      new DeleteMessageRoute();
+        public static final Route DELETE_MESSAGE =      new Route(DELETE, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
         public static final Route GET_MESSAGE_HISTORY = new Route(GET,    true, "channels/{channel_id}/messages",              "channel_id");
 
         //Bot only
@@ -349,7 +349,7 @@ public class Route
             compiledRatelimitRoute = String.format(compiledRatelimitRoute, (Object[]) majorParams);
         }
 
-        return new CompiledRoute(this, compiledRatelimitRoute, compiledRoute);
+        return new CompiledRoute(this, method.name() + ":" + compiledRatelimitRoute, compiledRoute);
     }
 
     @Override
@@ -463,17 +463,17 @@ public class Route
 
     As of 1st of September 2018
      */
-    private static class DeleteMessageRoute extends Route
+    private static class EditMessageRoute extends Route
     {
-        private DeleteMessageRoute()
+        private EditMessageRoute()
         {
-            super(DELETE, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
+            super(PATCH, true, "channels/{channel_id}/messages/{message_id}", "channel_id");
         }
 
         @Override
         public String getRatelimitRoute()
         {
-            return "channels/%s/messages/{message_id}/delete"; //the additional "/delete" forces a new bucket
+            return "POST:channels/%s/messages"; // this uses the same bucket as posting messages
         }
     }
 
