@@ -136,7 +136,7 @@ public class ReadyListener implements EventListener
     }
 
     @Override
-    public void onEvent(Event event)
+    public void onEvent(GenericEvent event)
     {
         if (event instanceof ReadyEvent)
             System.out.println("API is ready!");
