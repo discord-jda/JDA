@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class GuildMemberAddHandler extends SocketHandler
 {
@@ -42,6 +43,13 @@ public class GuildMemberAddHandler extends SocketHandler
         {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, id, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Caching member for guild that is not yet cached. Guild ID: {} JSON: {}", id, content);
+            return null;
+        }
+
+        long userId = content.getObject("user").getUnsignedLong("id");
+        if (guild.getMemberById(userId) != null)
+        {
+            WebSocketClient.LOG.debug("Ignoring duplicate GUILD_MEMBER_ADD for user with id {} in guild {}", userId, id);
             return null;
         }
 
