@@ -2011,7 +2011,13 @@ public interface Guild extends ISnowflake
      * <br>If a Guild is unavailable, no actions on it can be performed (Messages, Manager,...)
      *
      * @return If the Guild is available
+     *
+     * @deprecated
+     *         This will be removed in a future version, unavailable guilds are now removed from cache
      */
+    @ForRemoval
+    @Deprecated
+    @DeprecatedSince("4.1.0")
     boolean isAvailable();
 
     /**

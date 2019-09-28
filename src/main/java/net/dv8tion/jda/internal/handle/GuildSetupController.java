@@ -53,6 +53,7 @@ public class GuildSetupController
     private final TLongSet chunkingGuilds = new TLongHashSet();
     private final TLongLongMap pendingChunks = new TLongLongHashMap();
     private final TLongSet syncingGuilds;
+    private final TLongSet unavailableGuilds = new TLongHashSet();
 
     private int incompleteCount = 0;
     private int syncingCount = 0;
@@ -149,7 +150,7 @@ public class GuildSetupController
     public void onReady(long id, DataObject obj)
     {
         log.trace("Adding id to setup cache {}", id);
-        GuildSetupNode node = new GuildSetupNode(id, this, false);
+        GuildSetupNode node = new GuildSetupNode(id, this, GuildSetupNode.Type.INIT);
         setupNodes.put(id, node);
         node.handleReady(obj);
         if (node.markedUnavailable)
@@ -168,11 +169,19 @@ public class GuildSetupController
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
         log.trace("Received guild create for id: {} available: {}", id, available);
+
+        if (unavailableGuilds.contains(id) && available)
+        {
+            // Guild was unavailable for a moment, its back now so initialize it again!
+            unavailableGuilds.remove(id);
+            setupNodes.put(id, new GuildSetupNode(id, this, GuildSetupNode.Type.AVAILABLE));
+        }
+
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
         {
             // this is a join event
-            node = new GuildSetupNode(id, this, true);
+            node = new GuildSetupNode(id, this, GuildSetupNode.Type.JOIN);
             setupNodes.put(id, node);
             // do not increment incomplete counter, it is only relevant to init guilds
         }
@@ -224,7 +233,7 @@ public class GuildSetupController
             node.cleanup(); // clear EventCache
             chunkingGuilds.remove(id);
             pendingChunks.remove(id);
-            if (node.join && !node.requestedChunk)
+            if (node.isJoin() && !node.requestedChunk)
                 remove(id);
             else
                 ready(id);
@@ -449,6 +458,17 @@ public class GuildSetupController
             sendSyncRequest(array);
             syncingCount = 0;
         }
+    }
+
+    public void onUnavailable(long id)
+    {
+        unavailableGuilds.add(id);
+        log.debug("Guild with id {} is now marked unavailable. Total: {}", id, unavailableGuilds.size());
+    }
+
+    public boolean isUnavailable(long id)
+    {
+        return unavailableGuilds.contains(id);
     }
 
     public enum Status

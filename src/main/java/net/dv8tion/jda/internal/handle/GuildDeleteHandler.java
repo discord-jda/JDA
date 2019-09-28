@@ -46,8 +46,9 @@ public class GuildDeleteHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("id");
-        boolean wasInit = getJDA().getGuildSetupController().onDelete(id, content);
-        if (wasInit)
+        GuildSetupController setupController = getJDA().getGuildSetupController();
+        boolean wasInit = setupController.onDelete(id, content);
+        if (wasInit || setupController.isUnavailable(id))
             return null;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
@@ -66,6 +67,8 @@ public class GuildDeleteHandler extends SocketHandler
 
         if (unavailable)
         {
+            setupController.onUnavailable(id);
+            getJDA().getGuildsView().remove(id);
             guild.setAvailable(false);
             getJDA().handleEvent(
                     new GuildUnavailableEvent(
