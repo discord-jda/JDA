@@ -1269,7 +1269,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 return;
             try
             {
-                api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+                api.awaitStatus(JDA.Status.LOADING_SUBSYSTEMS);
             }
             catch (IllegalStateException ex)
             {
@@ -1297,7 +1297,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 return;
             try
             {
-                api.awaitStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
+                api.awaitStatus(JDA.Status.LOADING_SUBSYSTEMS);
             }
             catch (IllegalStateException ex)
             {
