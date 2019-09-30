@@ -458,14 +458,23 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.isSnowflake(messageId, "Message ID");
         Checks.noWhitespace(unicode, "Unicode emoji");
         Checks.notNull(user, "User");
+
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
-        final String code = EncodingUtil.encodeUTF8(unicode);
-        Route.CompiledRoute route;
-        if (user.equals(getJDA().getSelfUser()))
-            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
+
+        String encoded;
+        if (unicode.startsWith("U+"))
+            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
         else
-            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
+            encoded = EncodingUtil.encodeUTF8(unicode);
+
+        String targetUser;
+        if (user.equals(getJDA().getSelfUser()))
+            targetUser = "@me";
+        else
+            targetUser = user.getId();
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, targetUser);
         return new RestActionImpl<>(getJDA(), route);
     }
 

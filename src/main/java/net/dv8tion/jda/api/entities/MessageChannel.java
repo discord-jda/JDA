@@ -1772,6 +1772,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(unicode, "Provided Unicode");
         unicode = unicode.trim();
         Checks.notEmpty(unicode, "Provided Unicode");
+        // TODO Maybe checking for Checks.noWhitespace(unicode, "Unicode emoji") instead (in terms of consistency / making it uniform)
 
         String encoded;
         if (unicode.startsWith("U+"))
@@ -1916,11 +1917,8 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emote emote)
     {
-        Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
-
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()), "@me");
-        return new RestActionImpl<Void>(getJDA(), route);
+        return addReactionById(messageId, emote.getName() + ":" + emote.getId());
     }
 
     /**
@@ -2042,12 +2040,8 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode)
     {
-        Checks.isSnowflake(messageId, "Message ID");
-        Checks.noWhitespace(unicode, "Emoji");
-
-        final String code = EncodingUtil.encodeUTF8(unicode);
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
-        return new RestActionImpl<>(getJDA(), route);
+        // removes code redundancy but kind of bad design
+        return ((TextChannel) this).removeReactionById(messageId, unicode, getJDA().getSelfUser());
     }
 
     /**
@@ -2216,8 +2210,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote)
     {
-        Checks.notNull(emote, "Emote");
-        return removeReactionById(messageId, emote.getName() + ":" + emote.getId());
+        return removeReactionById(Long.toUnsignedString(messageId), emote);
     }
 
     /**
