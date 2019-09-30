@@ -43,6 +43,9 @@ import java.util.List;
  */
 public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
 {
+    /**
+     * The maximum duration of slowmode in seconds
+     */
     int MAX_SLOWMODE = 21600;
 
     /**
