@@ -43,7 +43,7 @@ import java.util.List;
  */
 public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
 {
-    static int MAX_SLOWMODE = 21600;
+    int MAX_SLOWMODE = 21600;
 
     /**
      * The topic set for this TextChannel.
