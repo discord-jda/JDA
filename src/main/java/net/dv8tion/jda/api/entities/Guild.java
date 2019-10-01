@@ -405,7 +405,7 @@ public interface Guild extends ISnowflake
      */
     default int getMaxBitrate()
     {
-        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 96000 : 128000;
+        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 384000 : 96000;
         return Math.max(maxBitrate, getBoostTier().getMaxBitrate());
     }
 
