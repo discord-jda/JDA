@@ -36,8 +36,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.time.OffsetDateTime;
-import java.util.Formattable;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -1642,6 +1641,10 @@ public interface Message extends ISnowflake, Formattable
      */
     class Attachment implements ISnowflake
     {
+        private static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(Arrays.asList("jpg",
+                "jpeg", "png", "gif", "webp", "tiff", "svg"));
+        private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(Arrays.asList("webm",
+                "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg"));
         private final long id;
         private final String url;
         private final String proxyUrl;
@@ -1712,6 +1715,20 @@ public interface Message extends ISnowflake, Formattable
         public String getFileName()
         {
             return fileName;
+        }
+
+        /**
+         * The file extension of the Attachment when it was first uploaded.
+         * <br>Null is returned if no characters follow the last occurrence of the '{@code .}' character
+         * (or if the character is not present in {@link #getFileName()}).
+         *
+         * @return Non-null String containing the Attachment file extension, or null if it can't be determined.
+         */
+        @Nullable
+        public String getFileExtension()
+        {
+            int index = fileName.lastIndexOf('.') + 1;
+            return index == 0 || index == fileName.length() ? null : fileName.substring(index);
         }
 
         /**
@@ -1949,10 +1966,11 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The height of the Attachment if this Attachment is an image.
-         * <br>If this Attachment is not an image, this returns -1.
+         * The height of the Attachment if this Attachment is an image/video.
+         * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
          * @return int containing image Attachment height.
+         * @see #hasImage()
          */
         public int getHeight()
         {
@@ -1960,10 +1978,11 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The width of the Attachment if this Attachment is an image.
-         * <br>If this Attachment is not an image, this returns -1.
+         * The width of the Attachment if this Attachment is an image/video.
+         * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
          * @return int containing image Attachment width.
+         * @see #hasImage()
          */
         public int getWidth()
         {
@@ -1972,13 +1991,41 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * Whether or not this attachment is an Image.
-         * <br>Based on the values of getHeight and getWidth being larger than zero.
+         * <br>Based on the values of {@link #getHeight()} and {@link #getWidth()} being larger than zero.
+         * <br>This method may return {@code true}, even when both
+         * {@link #isImage()} and {@link #isVideo()} return {@code false}.
          *
          * @return True if width and height are greater than zero.
          */
-        public boolean isImage()
+        public boolean hasImage()
         {
             return height > 0 && width > 0;
+        }
+
+        /**
+         * Whether or not this attachment is an Image,
+         * based on {@link #hasImage()} and {@link #getFileExtension()}.
+         *
+         * @return True if this attachment is an image
+         */
+        public boolean isImage()
+        {
+            if (!hasImage()) return false;
+            String extension = getFileExtension();
+            return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase());
+        }
+
+        /**
+         * Whether or not this attachment is a video,
+         * based on {@link #hasImage()} and {@link #getFileExtension()}.
+         *
+         * @return True if this attachment is a video
+         */
+        public boolean isVideo()
+        {
+            if (!hasImage()) return false;
+            String extension = getFileExtension();
+            return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
         }
     }
 }
