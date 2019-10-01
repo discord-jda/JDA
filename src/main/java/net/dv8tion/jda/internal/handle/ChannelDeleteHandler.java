@@ -90,7 +90,7 @@ public class ChannelDeleteHandler extends SocketHandler
             case VOICE:
             {
                 GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
-                VoiceChannel channel = guild.getVoiceChannelsView().remove(channelId);
+                VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);
                 if (channel == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: {}", content);
