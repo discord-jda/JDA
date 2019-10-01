@@ -1969,8 +1969,7 @@ public interface Message extends ISnowflake, Formattable
          * The height of the Attachment if this Attachment is an image/video.
          * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
-         * @return int containing image Attachment height.
-         * @see #hasImage()
+         * @return int containing image/video Attachment height.
          */
         public int getHeight()
         {
@@ -1981,8 +1980,7 @@ public interface Message extends ISnowflake, Formattable
          * The width of the Attachment if this Attachment is an image/video.
          * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
-         * @return int containing image Attachment width.
-         * @see #hasImage()
+         * @return int containing image/video Attachment width.
          */
         public int getWidth()
         {
@@ -1990,40 +1988,27 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Whether or not this attachment is an Image.
-         * <br>Based on the values of {@link #getHeight()} and {@link #getWidth()} being larger than zero.
-         * <br>This method may return {@code true}, even when both
-         * {@link #isImage()} and {@link #isVideo()} return {@code false}.
-         *
-         * @return True if width and height are greater than zero.
-         */
-        public boolean hasImage()
-        {
-            return height > 0 && width > 0;
-        }
-
-        /**
          * Whether or not this attachment is an Image,
-         * based on {@link #hasImage()} and {@link #getFileExtension()}.
+         * based on {@link #getWidth()}, {@link #getHeight()} and {@link #getFileExtension()}.
          *
          * @return True if this attachment is an image
          */
         public boolean isImage()
         {
-            if (!hasImage()) return false;
+            if (width < 0) return false; //if width is -1, so is height
             String extension = getFileExtension();
             return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase());
         }
 
         /**
          * Whether or not this attachment is a video,
-         * based on {@link #hasImage()} and {@link #getFileExtension()}.
+         * based on {@link #getWidth()}, {@link #getHeight()} and {@link #getFileExtension()}.
          *
          * @return True if this attachment is a video
          */
         public boolean isVideo()
         {
-            if (!hasImage()) return false;
+            if (width < 0) return false; //if width is -1, so is height
             String extension = getFileExtension();
             return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
         }
