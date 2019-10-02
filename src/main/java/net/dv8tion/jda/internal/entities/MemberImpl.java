@@ -127,6 +127,21 @@ public class MemberImpl implements Member
         return status == null ? OnlineStatus.OFFLINE : status;
     }
 
+    @Nonnull
+    @Override
+    public Set<ClientType> getActiveClients()
+    {
+        EnumSet<ClientType> activeClients = EnumSet.noneOf(ClientType.class);
+        this.clientStatus.forEach((client, status) ->
+        {
+            if (status != OnlineStatus.OFFLINE && status != OnlineStatus.UNKNOWN)
+            {
+                activeClients.add(client);
+            }
+        });
+        return Collections.unmodifiableSet(activeClients);
+    }
+
     @Override
     public String getNickname()
     {

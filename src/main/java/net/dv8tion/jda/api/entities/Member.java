@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Represents a Guild-specific User.
@@ -128,6 +129,21 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
+
+    /**
+     * A Set of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes} of this Member.
+     * Every {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} other than {@code OFFLINE} and {@code UNKNOWN}
+     * is interpreted as active.
+     * <br>If the Member is currently not active with any Client, this returns an empty Set.
+     * <br>Since a user can be connected from multiple different devices such as web and mobile,
+     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
+     *
+     * @return Immutable Set of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    Set<ClientType> getActiveClients();
 
     /**
      * Returns the current nickname of this Member for the parent Guild.
