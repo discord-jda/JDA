@@ -456,14 +456,16 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public RestActionImpl<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.noWhitespace(unicode, "Unicode emoji");
+        Checks.notNull(unicode, "Provided Unicode");
+        unicode = unicode.trim();
+        Checks.notEmpty(unicode, "Provided Unicode");
         Checks.notNull(user, "User");
 
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
 
         String encoded;
-        if (unicode.startsWith("U+"))
+        if (unicode.startsWith("U+") || unicode.startsWith("u+"))
             encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
         else
             encoded = EncodingUtil.encodeUTF8(unicode);

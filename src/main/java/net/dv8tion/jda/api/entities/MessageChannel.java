@@ -1772,10 +1772,9 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(unicode, "Provided Unicode");
         unicode = unicode.trim();
         Checks.notEmpty(unicode, "Provided Unicode");
-        // TODO Maybe checking for Checks.noWhitespace(unicode, "Unicode emoji") instead (in terms of consistency / making it uniform)
 
         String encoded;
-        if (unicode.startsWith("U+"))
+        if (unicode.startsWith("U+") || unicode.startsWith("u+"))
             encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
         else
             encoded = EncodingUtil.encodeUTF8(unicode);
@@ -2040,8 +2039,19 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode)
     {
-        // removes code redundancy but kind of bad design
-        return ((TextChannel) this).removeReactionById(messageId, unicode, getJDA().getSelfUser());
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(unicode, "Provided Unicode");
+        unicode = unicode.trim();
+        Checks.notEmpty(unicode, "Provided Unicode");
+
+        String encoded;
+        if (unicode.startsWith("U+") || unicode.startsWith("u+"))
+            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
+        else
+            encoded = EncodingUtil.encodeUTF8(unicode);
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, "@me");
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**
