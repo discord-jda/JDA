@@ -840,7 +840,7 @@ public class GuildImpl implements Guild
     {
         checkPermission(Permission.KICK_MEMBERS);
 
-        Checks.check(days >= 1, "Days amount must be at minimum 1 day.");
+        Checks.check(days >= 1 && days <= 30, "Days amount must be at between 1 and 30 days.");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId()).withQueryParams("days", Integer.toString(days));
         return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
