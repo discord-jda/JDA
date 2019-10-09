@@ -25,10 +25,13 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
@@ -157,6 +160,93 @@ public class ReceivedMessage extends AbstractMessage
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId());
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    {
+        return channel.removeReactionById(getId(), emote);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    {
+        return getTextChannel().removeReactionById(getIdLong(), emote, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode)
+    {
+        return channel.removeReactionById(getId(), unicode);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
+    {
+        return getTextChannel().removeReactionById(getId(), unicode, user);
+    }
+
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getEmote().equals(emote))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, String.format("%s:%s", emote, emote.getId()));
+        return new ReactionPaginationActionImpl(reaction);
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    {
+        Checks.noWhitespace(unicode, "Emoji");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, EncodingUtil.encodeUTF8(unicode));
+        return new ReactionPaginationActionImpl(reaction);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    {
+        Checks.noWhitespace(unicode, "Emoji");
+
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmoji() && r.getEmoji().equals(unicode))
+            .findFirst().orElse(null);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
+    {
+        return getReactionById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(long id)
+    {
+        Checks.notNull(id, "Reaction ID");
+
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmote() && r.getIdLong() == id)
+            .findFirst().orElse(null);
     }
 
     @Nonnull

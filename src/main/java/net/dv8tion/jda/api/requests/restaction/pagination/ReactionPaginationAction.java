@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
+import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
@@ -51,6 +52,9 @@ public interface ReactionPaginationAction extends PaginationAction<User, Reactio
 {
     /**
      * The current target {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction}
+     *
+     * @throws IllegalStateException
+     *         If this was created by {@link net.dv8tion.jda.api.entities.Message#retrieveReactionUsers(Emote) Message.retrieveReactionUsers(...)}
      *
      * @return The current MessageReaction
      */
