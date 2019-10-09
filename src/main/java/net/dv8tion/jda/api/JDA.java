@@ -47,6 +47,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
@@ -759,6 +760,18 @@ public interface JDA
     {
         return getGuildCache().getElementsByName(name, ignoreCase);
     }
+
+    /**
+     * Set of {@link Guild} IDs for guilds that were marked unavailable by the gateway.
+     * <br>When a guild becomes unavailable a {@link net.dv8tion.jda.api.events.guild.GuildUnavailableEvent GuildUnavailableEvent}
+     * is emitted and a {@link net.dv8tion.jda.api.events.guild.GuildAvailableEvent GuildAvailableEvent} is emitted
+     * when it becomes available again. During the time a guild is unavailable it its not reachable through
+     * cache such as {@link #getGuildById(long)}.
+     *
+     * @return Possibly-empty set of guild IDs for unavailable guilds
+     */
+    @Nonnull
+    Set<String> getUnavailableGuilds();
 
     /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of

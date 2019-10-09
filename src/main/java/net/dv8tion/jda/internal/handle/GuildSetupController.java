@@ -325,6 +325,11 @@ public class GuildSetupController
         return false;
     }
 
+    public TLongSet getUnavailableGuilds()
+    {
+        return unavailableGuilds;
+    }
+
     public Set<GuildSetupNode> getSetupNodes()
     {
         return new HashSet<>(setupNodes.valueCollection());

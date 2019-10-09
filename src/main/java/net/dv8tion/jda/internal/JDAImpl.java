@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -565,6 +566,16 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
+    }
+
+    @Nonnull
+    @Override
+    public Set<String> getUnavailableGuilds()
+    {
+        TLongSet unavailableGuilds = guildSetupController.getUnavailableGuilds();
+        Set<String> copy = new HashSet<>();
+        unavailableGuilds.forEach(id -> copy.add(Long.toUnsignedString(id)));
+        return copy;
     }
 
     @Nonnull
