@@ -69,8 +69,6 @@ public interface AudioManager
      *         </ul>
      * @throws UnsupportedOperationException
      *         If audio is disabled due to an internal JDA error
-     * @throws net.dv8tion.jda.api.exceptions.GuildUnavailableException
-     *         If the Guild is temporarily unavailable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If the currently logged in account does not have the Permission {@link net.dv8tion.jda.api.Permission#VOICE_CONNECT VOICE_CONNECT}</li>

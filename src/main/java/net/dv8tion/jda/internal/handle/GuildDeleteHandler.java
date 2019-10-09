@@ -62,7 +62,7 @@ public class GuildDeleteHandler extends SocketHandler
 
         //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
         // ignore the event
-        if (!guild.isAvailable() && unavailable)
+        if (setupController.isUnavailable(id) && unavailable)
             return null;
 
         if (unavailable)
