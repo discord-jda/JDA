@@ -568,10 +568,9 @@ An example bot for this can be found at [Reactive JDA Bot](https://github.com/Mi
 More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
 
 ## Contributing to JDA
-If you want to contribute to JDA, make sure to base your branch off of our **v4** branch (or a feature-branch)
-and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 
-It is also highly recommended to get in touch with the Developers before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
+If you want to contribute to JDA, make sure to base your branch off of our **development** branch (or a feature-branch)
+and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 It is very possible that your change might already be in development or you missed something.
 
 More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
