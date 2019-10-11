@@ -1642,9 +1642,9 @@ public interface Message extends ISnowflake, Formattable
     class Attachment implements ISnowflake
     {
         private static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(Arrays.asList("jpg",
-                "jpeg", "png", "gif", "webp", "tiff", "svg"));
+                "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
         private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(Arrays.asList("webm",
-                "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg"));
+                "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg", "gifv"));
         private final long id;
         private final String url;
         private final String proxyUrl;
@@ -1989,7 +1989,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * Whether or not this attachment is an Image,
-         * based on {@link #getWidth()}, {@link #getHeight()} and {@link #getFileExtension()}.
+         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getFileExtension()}.
          *
          * @return True if this attachment is an image
          */
@@ -2002,7 +2002,7 @@ public interface Message extends ISnowflake, Formattable
 
         /**
          * Whether or not this attachment is a video,
-         * based on {@link #getWidth()}, {@link #getHeight()} and {@link #getFileExtension()}.
+         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getFileExtension()}.
          *
          * @return True if this attachment is a video
          */
