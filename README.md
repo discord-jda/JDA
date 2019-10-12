@@ -128,7 +128,7 @@ public class ReadyListener implements EventListener
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder("token")
-            .addEventListener(new ReadyListener())
+            .addEventListeners(new ReadyListener())
             .build();
 
         // optionally block until JDA is ready
@@ -156,7 +156,7 @@ public class MessageListener extends ListenerAdapter
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
-        jda.addEventListener(new MessageListener());
+        jda.addEventListeners(new MessageListener());
     }
 
     @Override
@@ -185,7 +185,7 @@ public class Bot extends ListenerAdapter
     public static void main(String[] args) throws LoginException
     {
         new JDABuilder(args[0])
-            .addEventListener(new Bot())
+            .addEventListeners(new Bot())
             .setActivity(Activity.playing("Type !ping"))
             .build();
     }
@@ -252,8 +252,8 @@ Since version **3.4.0** JDA provides a `ShardManager` which automates this build
 public static void main(String[] args) throws Exception
 {
     JDABuilder shardBuilder = new JDABuilder(args[0]);
-    //register your listeners here using shardBuilder.addEventListener(...)
-    shardBuilder.addEventListener(new MessageListener());
+    //register your listeners here using shardBuilder.addEventListeners(...)
+    shardBuilder.addEventListeners(new MessageListener());
     for (int i = 0; i < 10; i++)
     {
         shardBuilder.useSharding(i, 10)
@@ -270,7 +270,7 @@ public static void main(String[] args) throws Exception
 {
     DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
     builder.setToken(args[0]);
-    builder.addEventListener(new MessageListener());
+    builder.addEventListeners(new MessageListener());
     builder.build();
 }
 ```
