@@ -43,7 +43,7 @@ public enum Region
     US_EAST("us-east", "US East", "\uD83C\uDDFA\uD83C\uDDF8", false),
     US_SOUTH("us-south", "US South", "\uD83C\uDDFA\uD83C\uDDF8", false),
     US_WEST("us-west", "US West", "\uD83C\uDDFA\uD83C\uDDF8", false),
-    
+
     VIP_AMSTERDAM("vip-amsterdam", "Amsterdam (VIP)", "\uD83C\uDDF3\uD83C\uDDF1", true),
     VIP_BRAZIL("vip-brazil", "Brazil (VIP)", "\uD83C\uDDE7\uD83C\uDDF7", true),
     VIP_EU_CENTRAL("vip-eu-central", "EU Central (VIP)", "\uD83C\uDDEA\uD83C\uDDFA", true),
@@ -106,7 +106,7 @@ public enum Region
     {
         return emoji;
     }
-    
+
     /**
      * Whether or not this Region is a VIP region.
      * <br>VIP regions have special perks like higher bitrate in VoiceChannels and priority during times
