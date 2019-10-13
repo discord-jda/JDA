@@ -1773,11 +1773,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         unicode = unicode.trim();
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        String encoded;
-        if (unicode.startsWith("U+") || unicode.startsWith("u+"))
-            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
-        else
-            encoded = EncodingUtil.encodeUTF8(unicode);
+        final String encoded = EncodingUtil.encodeReaction(unicode);
+
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -2044,11 +2041,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         unicode = unicode.trim();
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        String encoded;
-        if (unicode.startsWith("U+") || unicode.startsWith("u+"))
-            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
-        else
-            encoded = EncodingUtil.encodeUTF8(unicode);
+        final String encoded = EncodingUtil.encodeReaction(unicode);
 
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);

@@ -464,11 +464,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
 
-        String encoded;
-        if (unicode.startsWith("U+") || unicode.startsWith("u+"))
-            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
-        else
-            encoded = EncodingUtil.encodeUTF8(unicode);
+        final String encoded = EncodingUtil.encodeReaction(unicode);
 
         String targetUser;
         if (user.equals(getJDA().getSelfUser()))
