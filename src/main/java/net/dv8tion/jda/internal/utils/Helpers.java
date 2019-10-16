@@ -72,6 +72,10 @@ public final class Helpers
         return count;
     }
 
+    public static String sanitizeChannelName(String input) {
+        return input.replace(' ', '-');
+    }
+
     public static String truncate(final String input, final int maxWidth)
     {
         if (input == null)

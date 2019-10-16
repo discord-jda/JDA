@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 
@@ -239,8 +240,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() > 0 && name.length() <= 100, "Name must be between 1-100 characters long");
+
         if (getType() == ChannelType.TEXT)
-            Checks.noWhitespace(name, "Name");
+            name = Helpers.sanitizeChannelName(name.trim());
+
         this.name = name;
         set |= NAME;
         return this;
