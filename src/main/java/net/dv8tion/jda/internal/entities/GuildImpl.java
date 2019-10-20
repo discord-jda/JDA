@@ -1095,7 +1095,7 @@ public class GuildImpl implements Guild
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
-        name = Helpers.sanitizeChannelName(name.trim());
+        name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
         return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT);

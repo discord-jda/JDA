@@ -240,10 +240,6 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() > 0 && name.length() <= 100, "Name must be between 1-100 characters long");
-
-        if (getType() == ChannelType.TEXT)
-            name = Helpers.sanitizeChannelName(name.trim());
-
         this.name = name;
         set |= NAME;
         return this;
