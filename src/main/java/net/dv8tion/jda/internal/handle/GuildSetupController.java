@@ -119,13 +119,15 @@ public class GuildSetupController
     void remove(long id)
     {
         setupNodes.remove(id);
+        chunkingGuilds.remove(id);
+        synchronized (pendingChunks) { pendingChunks.remove(id); }
         if (syncingGuilds != null)
             syncingGuilds.remove(id);
     }
 
     public void ready(long id)
     {
-        setupNodes.remove(id);
+        remove(id);
         WebSocketClient client = getJDA().getClient();
         if (--incompleteCount < 1 && !client.isReady())
             client.ready();
@@ -211,7 +213,7 @@ public class GuildSetupController
                 {
                     // Allow other guilds to start chunking
                     chunkingGuilds.remove(id);
-                    pendingChunks.remove(id);
+                    synchronized (pendingChunks) { pendingChunks.remove(id); }
                     incompleteCount--;
                     tryChunking();
                 }
@@ -222,8 +224,6 @@ public class GuildSetupController
         {
             // This guild was deleted
             node.cleanup(); // clear EventCache
-            chunkingGuilds.remove(id);
-            pendingChunks.remove(id);
             if (node.join && !node.requestedChunk)
                 remove(id);
             else
