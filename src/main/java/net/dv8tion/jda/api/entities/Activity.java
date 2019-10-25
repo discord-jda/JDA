@@ -270,7 +270,15 @@ public interface Activity
          * @incubating This feature is not yet confirmed for the official bot API
          */
         @Incubating
-        WATCHING(3);
+        WATCHING(3),
+        /**
+         * Used to indicate that the {@link Activity Activity} should display as a custom status
+         * in the official client.
+         *
+         * @incubating This feature is currently not officially documented and might change
+         */
+        @Incubating
+        CUSTOM_STATUS(4);
 
         private final int key;
 
@@ -312,6 +320,8 @@ public interface Activity
                     return LISTENING;
                 case 3:
                     return WATCHING;
+                case 4:
+                    return CUSTOM_STATUS;
             }
         }
     }

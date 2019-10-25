@@ -550,8 +550,18 @@ public class EntityBuilder
             }
         }
 
+        RichPresence.Emoji emoji = null;
+        if (!gameJson.isNull("emoji"))
+        {
+            DataObject emojiJson = gameJson.getObject("emoji");
+            String emojiName = emojiJson.getString("name");
+            long emojiId = emojiJson.getUnsignedLong("id", 0);
+            boolean emojiAnimated = emojiJson.getBoolean("animated");
+            emoji = new RichPresence.Emoji(emojiName, emojiId, emojiAnimated);
+        }
+
         return new RichPresenceImpl(type, name, url,
-            id, party, details, state, timestamps, syncId, sessionId, flags,
+            id, emoji, party, details, state, timestamps, syncId, sessionId, flags,
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
