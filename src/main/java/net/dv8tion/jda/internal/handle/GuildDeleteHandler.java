@@ -65,19 +65,6 @@ public class GuildDeleteHandler extends SocketHandler
         if (setupController.isUnavailable(id) && unavailable)
             return null;
 
-        if (unavailable)
-        {
-            setupController.onUnavailable(id);
-            getJDA().getGuildsView().remove(id);
-            guild.setAvailable(false);
-            getJDA().handleEvent(
-                    new GuildUnavailableEvent(
-                            getJDA(), responseNumber,
-                            guild
-                    ));
-            return null;
-        }
-
         //Remove everything from global cache
         // this prevents some race-conditions for getting audio managers from guilds
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
@@ -153,10 +140,22 @@ public class GuildDeleteHandler extends SocketHandler
             });
         }
 
-        getJDA().handleEvent(
-            new GuildLeaveEvent(
-                getJDA(), responseNumber,
-                guild));
+        if (unavailable)
+        {
+            setupController.onUnavailable(id);
+            guild.setAvailable(false);
+            getJDA().handleEvent(
+                new GuildUnavailableEvent(
+                    getJDA(), responseNumber,
+                    guild));
+        }
+        else
+        {
+            getJDA().handleEvent(
+                new GuildLeaveEvent(
+                    getJDA(), responseNumber,
+                    guild));
+        }
         getJDA().getEventCache().clear(EventCache.Type.GUILD, id);
         return null;
     }
