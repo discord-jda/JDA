@@ -1736,7 +1736,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1}
+     *         If the provided days are less than {@code 1} or more than {@code 30}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
@@ -2165,7 +2165,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1}
+     *         If the provided days are less than {@code 1} or more than {@code 30}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
