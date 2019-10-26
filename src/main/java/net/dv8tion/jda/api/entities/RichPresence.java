@@ -271,7 +271,7 @@ public interface RichPresence extends Activity
         }
     }
 
-    class Emoji
+    class Emoji implements ISnowflake
     {
         private final String name;
         private final long id;
@@ -289,12 +289,14 @@ public interface RichPresence extends Activity
             this(name, 0, false);
         }
 
+        @Nonnull
         public String getName()
         {
             return name;
         }
 
-        public long getId()
+        @Override
+        public long getIdLong()
         {
             return id;
         }

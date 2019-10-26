@@ -70,6 +70,7 @@ public class EntityBuilder
         tmp.add("session_id");
         tmp.add("state");
         tmp.add("sync_id");
+        tmp.add("emoji");
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
