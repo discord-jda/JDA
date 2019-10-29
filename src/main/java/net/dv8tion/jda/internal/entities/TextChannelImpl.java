@@ -456,16 +456,23 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public RestActionImpl<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.noWhitespace(unicode, "Unicode emoji");
+        Checks.notNull(unicode, "Provided Unicode");
+        unicode = unicode.trim();
+        Checks.notEmpty(unicode, "Provided Unicode");
         Checks.notNull(user, "User");
+
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
-        final String code = EncodingUtil.encodeUTF8(unicode);
-        Route.CompiledRoute route;
+
+        final String encoded = EncodingUtil.encodeReaction(unicode);
+
+        String targetUser;
         if (user.equals(getJDA().getSelfUser()))
-            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
+            targetUser = "@me";
         else
-            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
+            targetUser = user.getId();
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, targetUser);
         return new RestActionImpl<>(getJDA(), route);
     }
 
