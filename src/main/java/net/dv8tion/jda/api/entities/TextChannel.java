@@ -44,6 +44,11 @@ import java.util.List;
 public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
 {
     /**
+     * The maximum duration of slowmode in seconds
+     */
+    int MAX_SLOWMODE = 21600;
+
+    /**
      * The topic set for this TextChannel.
      * <br>If no topic has been set, this returns null.
      *
@@ -62,7 +67,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
 
     /**
      * The slowmode set for this TextChannel.
-     * <br>If slowmode is set this returns an {@code int} between 1 and 21600. If not set this returns {@code 0}.
+     * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
+     * <br>If not set this returns {@code 0}.
      *
      * <p>Note that only {@link net.dv8tion.jda.api.AccountType#CLIENT CLIENT} type accounts are
      * affected by slowmode, and that {@link net.dv8tion.jda.api.AccountType#BOT BOT} accounts
@@ -71,7 +77,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
-     * @return The slowmode for this TextChannel, between 1 and 21600, or {@code 0} if no slowmode is set.
+     * @return The slowmode for this TextChannel, between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or {@code 0} if no slowmode is set.
      */
     int getSlowmode();
 

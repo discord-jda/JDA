@@ -166,8 +166,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @param  slowmode
      *         The number of seconds required to wait between sending messages in the channel.
      *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
-     *         If the {@code slowmode} is greater than 21600, or less than 0
+     *         If the {@code slowmode} is greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
      */
