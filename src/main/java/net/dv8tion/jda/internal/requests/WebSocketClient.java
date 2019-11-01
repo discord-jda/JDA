@@ -818,8 +818,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                     processingReady = true;
                     handleIdentifyRateLimit = false;
-                    sessionId = content.getString("session_id");
+                    // first handle the ready payload before applying the session id
+                    // this prevents a possible race condition with the cache of the guild setup controller
+                    // otherwise the audio connection requests that are currently pending might be removed in the process
                     handlers.get("READY").handle(responseTotal, raw);
+                    sessionId = content.getString("session_id");
                     break;
                 case "RESUMED":
                     sentAuthInfo = true;
@@ -1111,7 +1114,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected ConnectionRequest getNextAudioConnectRequest()
     {
         //Don't try to setup audio connections before JDA has finished loading.
-        if (!isReady())
+        if (sessionId == null)
             return null;
 
         long now = System.currentTimeMillis();
@@ -1122,13 +1125,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             ConnectionRequest audioRequest = it.value();
             if (audioRequest.getNextAttemptEpoch() < now)
             {
-                Guild guild = api.getGuildById(audioRequest.getGuildIdLong());
+                // Check if the guild is ready
+                long guildId = audioRequest.getGuildIdLong();
+                Guild guild = api.getGuildById(guildId);
                 if (guild == null)
                 {
-                    it.remove();
-                    //if (listener != null)
-                    //    listener.onStatusChange(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-                    //already handled by event handling
+                    // Not yet ready, check if the guild is known to this shard
+                    GuildSetupController controller = api.getGuildSetupController();
+                    if (!controller.isKnown(guildId))
+                    {
+                        // The guild is not tracked anymore -> we can't connect the audio channel
+                        LOG.debug("Removing audio connection request because the guild has been removed. {}", audioRequest);
+                        it.remove();
+                    }
                     continue;
                 }
 

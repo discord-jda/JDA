@@ -286,6 +286,17 @@ public class GuildSetupController
         return setupNodes.containsKey(id);
     }
 
+    public boolean isUnavailable(long id)
+    {
+        return unavailableGuilds.contains(id);
+    }
+
+    public boolean isKnown(long id)
+    {
+        // Whether we know this guild at all
+        return isLocked(id) || isUnavailable(id);
+    }
+
     public void cacheEvent(long guildId, DataObject event)
     {
         GuildSetupNode node = setupNodes.get(guildId);
@@ -470,11 +481,6 @@ public class GuildSetupController
     {
         unavailableGuilds.add(id);
         log.debug("Guild with id {} is now marked unavailable. Total: {}", id, unavailableGuilds.size());
-    }
-
-    public boolean isUnavailable(long id)
-    {
-        return unavailableGuilds.contains(id);
     }
 
     public enum Status
