@@ -234,8 +234,12 @@ public class EntityBuilder
             for (DataObject memberJson : members.valueCollection())
             {
                 MemberImpl member = createMember(guildObj, memberJson);
-                memberCache.put(member.getIdLong(), member);
-                userCache.put(member.getIdLong(), member.getUser());
+                // ignore members in voice channels if voice state cache is disabled
+                if (member.getUser().equals(getJDA().getSelfUser()) || getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE))
+                {
+                    memberCache.put(member.getIdLong(), member);
+                    userCache.put(member.getIdLong(), member.getUser());
+                }
             }
         }
 
