@@ -172,7 +172,7 @@ public class GuildSetupController
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
         log.trace("Received guild create for id: {} available: {}", id, available);
 
-        if (unavailableGuilds.contains(id) && available)
+        if (available && unavailableGuilds.contains(id) && !setupNodes.containsKey(id))
         {
             // Guild was unavailable for a moment, its back now so initialize it again!
             unavailableGuilds.remove(id);
@@ -299,6 +299,7 @@ public class GuildSetupController
     {
         setupNodes.clear();
         chunkingGuilds.clear();
+        unavailableGuilds.clear();
         incompleteCount = 0;
         close();
         synchronized (pendingChunks)
