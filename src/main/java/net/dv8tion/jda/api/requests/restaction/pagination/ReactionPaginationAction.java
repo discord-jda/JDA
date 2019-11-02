@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 
@@ -36,17 +37,22 @@ import javax.annotation.Nonnull;
  *
  * <h1>Example</h1>
  * <pre>{@code
- * ReactionPaginationAction users = reaction.retrieveUsers();
- *
- * Optional<User> optUser = users.stream().skip(ThreadLocalRandom.current().nextInt(reaction.getCount())).findFirst();
- * optUser.ifPresent( (user) -> user.openPrivateChannel().queue(
- *         (channel) -> channel.sendMessage("I see you reacted to my message :eyes:").queue()
- * ));
+ * // Remove reactions for the specified emoji
+ * public static void removeReaction(Message message, String emoji) {
+ *     // get paginator
+ *     ReactionPaginationAction users = message.retrieveReactionUsers(emoji);
+ *     // remove reaction for every user
+ *     users.forEachAsync((user) ->
+ *         message.removeReaction(emoji, user).queue()
+ *     );
+ * }
  * }</pre>
  *
  * @since  3.1
  *
  * @see    MessageReaction#retrieveUsers()
+ * @see    Message#retrieveReactionUsers(String)
+ * @see    Message#retrieveReactionUsers(Emote)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
@@ -54,7 +60,7 @@ public interface ReactionPaginationAction extends PaginationAction<User, Reactio
      * The current target {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction}
      *
      * @throws IllegalStateException
-     *         If this was created by {@link net.dv8tion.jda.api.entities.Message#retrieveReactionUsers(Emote) Message.retrieveReactionUsers(...)}
+     *         If this was created by {@link Message#retrieveReactionUsers(Emote) Message.retrieveReactionUsers(...)}
      *
      * @return The current MessageReaction
      */
