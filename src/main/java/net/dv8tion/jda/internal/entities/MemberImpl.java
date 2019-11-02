@@ -129,17 +129,9 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public Set<ClientType> getActiveClients()
+    public EnumSet<ClientType> getActiveClients()
     {
-        EnumSet<ClientType> activeClients = EnumSet.noneOf(ClientType.class);
-        this.clientStatus.forEach((client, status) ->
-        {
-            if (status != OnlineStatus.OFFLINE && status != OnlineStatus.UNKNOWN)
-            {
-                activeClients.add(client);
-            }
-        });
-        return Collections.unmodifiableSet(activeClients);
+        return EnumSet.copyOf(clientStatus.keySet());
     }
 
     @Override
