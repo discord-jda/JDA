@@ -33,6 +33,14 @@ import java.util.Base64;
  * <br>Example: {@link AccountManager#setAvatar(Icon)}.
  *
  * @since 3.0
+ *
+ * @see #from(File)
+ * @see #from(byte[])
+ * @see #from(InputStream)
+ *
+ * @see #from(File, IconType)
+ * @see #from(byte[], IconType)
+ * @see #from(InputStream, IconType)
  */
 public class Icon
 {

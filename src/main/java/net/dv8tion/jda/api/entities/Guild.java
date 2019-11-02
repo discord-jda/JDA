@@ -48,6 +48,11 @@ import java.util.*;
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
  * This should contain all information provided from Discord about a Guild.
+ *
+ * @see JDA#getGuildCache()
+ * @see JDA#getGuildById(long)
+ * @see JDA#getGuildsByName(String, boolean)
+ * @see JDA#getGuilds()
  */
 public interface Guild extends ISnowflake
 {

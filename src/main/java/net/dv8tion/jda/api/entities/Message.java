@@ -92,6 +92,20 @@ import java.util.regex.Pattern;
  * </ul>
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
+ *
+ * @see net.dv8tion.jda.api.MessageBuilder MessageBuilder
+ * @see MessageChannel#sendMessage(Message)
+ *
+ * @see MessageChannel#getIterableHistory()
+ * @see MessageChannel#getHistory()
+ * @see MessageChannel#getHistoryAfter(String, int)
+ * @see MessageChannel#getHistoryBefore(String, int)
+ * @see MessageChannel#getHistoryAround(String, int)
+ * @see MessageChannel#getHistoryFromBeginning(int)
+ * @see MessageChannel#retrieveMessageById(String)
+ *
+ * @see MessageChannel#deleteMessageById(String)
+ * @see MessageChannel#editMessageById(String, CharSequence)
  */
 public interface Message extends ISnowflake, Formattable
 {

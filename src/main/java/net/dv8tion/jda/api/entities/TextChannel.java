@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -40,6 +41,16 @@ import java.util.List;
  * @see MessageChannel
  * @see VoiceChannel
  * @see Category
+ *
+ * @see   Guild#getTextChannelCache()
+ * @see   Guild#getTextChannels()
+ * @see   Guild#getTextChannelsByName(String, boolean)
+ * @see   Guild#getTextChannelById(long)
+ *
+ * @see   JDA#getTextChannelCache()
+ * @see   JDA#getTextChannels()
+ * @see   JDA#getTextChannelsByName(String, boolean)
+ * @see   JDA#getTextChannelById(long)
  */
 public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
 {

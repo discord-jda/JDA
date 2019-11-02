@@ -71,6 +71,9 @@ import java.util.function.Function;
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  * <br><b>{@link net.dv8tion.jda.api.entities.TextChannel TextChannel} is a special case which uses {@link IMentionable#getAsMention() IMentionable.getAsMention()}
  * by default and uses the <code>#{@link #getName()}</code> format as <u>alternative</u></b>
+ *
+ * @see TextChannel
+ * @see PrivateChannel
  */
 public interface MessageChannel extends ISnowflake, Formattable
 {
