@@ -18,9 +18,16 @@ package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.JDALogger;
 
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.api.requests.RestAction RestAction}
@@ -148,5 +155,144 @@ public class ErrorResponseException extends RuntimeException
         }
 
         return new ErrorResponseException(errorResponse, response, code, meaning);
+    }
+
+    /**
+     * Ignore the specified set of error responses.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Creates a message with the provided content and deletes it 30 seconds later
+     * public static void selfDestruct(MessageChannel channel, String content) {
+     *     channel.sendMessage(content).queue((message) ->
+     *         message.delete().queueAfter(30, SECONDS, null, ignore(EnumSet.of(UNKNOWN_MESSAGE)))
+     *     );
+     * }
+     * }</pre>
+     *
+     * @param  set
+     *         Set of ignored error responses
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null or an empty collection
+     *
+     * @return {@link Consumer} decorator for {@link RestAction#getDefaultFailure()}
+     *         which ignores the specified {@link ErrorResponse ErrorResponses}
+     */
+    @Nonnull
+    public static Consumer<Throwable> ignore(@Nonnull Collection<ErrorResponse> set)
+    {
+        return ignore(RestAction.getDefaultFailure(), set);
+    }
+
+    /**
+     * Ignore the specified set of error responses.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Creates a message with the provided content and deletes it 30 seconds later
+     * public static void selfDestruct(MessageChannel channel, String content) {
+     *     channel.sendMessage(content).queue((message) ->
+     *         message.delete().queueAfter(30, SECONDS, null, ignore(UNKNOWN_MESSAGE))
+     *     );
+     * }
+     * }</pre>
+     *
+     * @param  ignored
+     *         Ignored error response
+     * @param  errorResponses
+     *         Additional error responses to ignore
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link Consumer} decorator for {@link RestAction#getDefaultFailure()}
+     *         which ignores the specified {@link ErrorResponse ErrorResponses}
+     */
+    @Nonnull
+    public static Consumer<Throwable> ignore(@Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses)
+    {
+        return ignore(RestAction.getDefaultFailure(), ignored, errorResponses);
+    }
+
+    /**
+     * Ignore the specified set of error responses.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Creates a message with the provided content and deletes it 30 seconds later
+     * public static void selfDestruct(MessageChannel channel, String content) {
+     *     channel.sendMessage(content).queue((message) ->
+     *         message.delete().queueAfter(30, SECONDS, null, ignore(Throwable::printStackTrace, EnumSet.of(UNKNOWN_MESSAGE)))
+     *     );
+     * }
+     * }</pre>
+     *
+     * @param  orElse
+     *         Behavior to default to if the error response is not ignored
+     * @param  set
+     *         Set of ignored error responses
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null or an empty collection
+     *
+     * @return {@link Consumer} decorator for the provided callback
+     *         which ignores the specified {@link ErrorResponse ErrorResponses}
+     */
+    @Nonnull
+    public static Consumer<Throwable> ignore(@Nonnull Consumer<? super Throwable> orElse, @Nonnull Collection<ErrorResponse> set)
+    {
+        Checks.notNull(orElse, "Callback");
+        Checks.notEmpty(set, "Ignored collection");
+        return (throwable) ->
+        {
+            if (throwable instanceof ErrorResponseException)
+            {
+                ErrorResponseException ex = (ErrorResponseException) throwable;
+                if (set.contains(ex.getErrorResponse()))
+                    return;
+            }
+
+            try
+            {
+                orElse.accept(throwable);
+            }
+            catch (Exception ex)
+            {
+                JDALogger.getLog(ErrorResponseException.class).error("Uncaught exception in ignore callback", throwable);
+            }
+        };
+    }
+
+    /**
+     * Ignore the specified set of error responses.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Creates a message with the provided content and deletes it 30 seconds later
+     * public static void selfDestruct(MessageChannel channel, String content) {
+     *     channel.sendMessage(content).queue((message) ->
+     *         message.delete().queueAfter(30, SECONDS, null, ignore(Throwable::printStackTrace, UNKNOWN_MESSAGE))
+     *     );
+     * }
+     * }</pre>
+     *
+     * @param  orElse
+     *         Behavior to default to if the error response is not ignored
+     * @param  ignored
+     *         Ignored error response
+     * @param  errorResponses
+     *         Additional error responses to ignore
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link Consumer} decorator for the provided callback
+     *         which ignores the specified {@link ErrorResponse ErrorResponses}
+     */
+    @Nonnull
+    public static Consumer<Throwable> ignore(@Nonnull Consumer<? super Throwable> orElse, @Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses)
+    {
+        return ignore(orElse, EnumSet.of(ignored, errorResponses));
     }
 }
