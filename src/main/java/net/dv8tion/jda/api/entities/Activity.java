@@ -460,4 +460,64 @@ public interface Activity
             return Objects.hash(start, end);
         }
     }
+
+    class Emoji implements ISnowflake
+    {
+        private final String name;
+        private final long id;
+        private final boolean animated;
+
+        public Emoji(String name, long id, boolean animated)
+        {
+            this.name = name;
+            this.id = id;
+            this.animated = animated;
+        }
+
+        public Emoji(String name)
+        {
+            this(name, 0, false);
+        }
+
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        public boolean isAnimated()
+        {
+            return animated;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return id == 0 ? name.hashCode() : Long.hashCode(id);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof Emoji))
+                return false;
+            Emoji other = (Emoji) obj;
+            return id == 0 ? other.name.equals(this.name)
+                           : other.id == this.id;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "RichPresenceEmoji(" + (id == 0 ? "" : Long.toUnsignedString(id) + " / ") + name + ')';
+        }
+    }
 }

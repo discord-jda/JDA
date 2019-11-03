@@ -70,7 +70,6 @@ public class EntityBuilder
         tmp.add("session_id");
         tmp.add("state");
         tmp.add("sync_id");
-        tmp.add("emoji");
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
@@ -508,6 +507,16 @@ public class EntityBuilder
             timestamps = new RichPresence.Timestamps(start, end);
         }
 
+        Activity.Emoji emoji = null;
+        if (!gameJson.isNull("emoji"))
+        {
+            DataObject emojiJson = gameJson.getObject("emoji");
+            String emojiName = emojiJson.getString("name");
+            long emojiId = emojiJson.getUnsignedLong("id", 0);
+            boolean emojiAnimated = emojiJson.getBoolean("animated");
+            emoji = new Activity.Emoji(emojiName, emojiId, emojiAnimated);
+        }
+
         if (!CollectionUtils.containsAny(gameJson.keys(), richGameFields))
             return new ActivityImpl(name, url, type, timestamps);
 
@@ -549,16 +558,6 @@ public class EntityBuilder
                 largeImageKey = String.valueOf(assets.get("large_image"));
                 largeImageText = assets.isNull("large_text") ? null : String.valueOf(assets.get("large_text"));
             }
-        }
-
-        RichPresence.Emoji emoji = null;
-        if (!gameJson.isNull("emoji"))
-        {
-            DataObject emojiJson = gameJson.getObject("emoji");
-            String emojiName = emojiJson.getString("name");
-            long emojiId = emojiJson.getUnsignedLong("id", 0);
-            boolean emojiAnimated = emojiJson.getBoolean("animated");
-            emoji = new RichPresence.Emoji(emojiName, emojiId, emojiAnimated);
         }
 
         return new RichPresenceImpl(type, name, url,
