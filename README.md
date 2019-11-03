@@ -282,13 +282,13 @@ that Discord provides.
 Instances of these entities are created and deleted by JDA when Discord instructs it. This means
 the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
 This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
-When Discord instructs JDA to delete entities they are simply removed from the JDA cache and lose their references.
-Once that happens nothing in JDA interacts or updates the instances of those entities and they become useless. Discord
+When Discord instructs JDA to delete entities, they are simply removed from the JDA cache and lose their references.
+Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless. Discord
 may instruct to delete these entities randomly for cache synchronization with the API.
 
 **It is not recommended to store _any_ of these entities for a longer period of time!**
-Instead of keeping (e.g.) a `User` instance in some field an ID should be used. With the ID of a user
-you can use `getUserById(id)` to get and keep the user reference in a local variable. (see below)
+Instead of keeping (e.g.) a `User` instance in some field, an ID should be used. With the ID of a user,
+you can use `getUserById(id)` to get and keep the user reference in a local variable (see below).
 
 ### Fake Entities
 
@@ -301,20 +301,20 @@ of any of the guilds available to the bot.
 
 ### Entity Updates
 
-When an entity is updated through its manager they will send a request to the Discord API which will update the state
-of the entity. The success of this request **does not** imply the entity has been updated yet. All entities are updated
+When an entity is updated through its manager, they will send a request to the Discord API which will update the state
+of the entity. The success of this request **does not** imply the entity has finished updating. All entities are updated
 by the aforementioned **Gateway Events** which means you cannot rely on the cache being updated yet once the
 execution of a RestAction has completed. Some requests rely on the cache being updated to correctly update the entity.
 An example of this is updating roles of a member which overrides all roles of the member by sending a list of the
 new set of roles. This is done by first checking the current cache, the roles the member has right now, and appending
-or removing the requested roles. If the cache has not yet been updated by an event this will result in unexpected behavior.
+or removing the requested roles. If the cache has not yet been updated by an event, this will result in unexpected behavior.
 
 ### Entity Deletion
 
-Discord may request that a client (the JDA session) invalidates its entire cache. When this happens JDA will
+Discord may request that a client (the JDA session) invalidates its entire cache. When this happens, JDA will
 remove all of its current entities and reconnect the session. This is signaled through the `ReconnectEvent`.
-When entities are removed from the JDA cache they lose access to the encapsulating entities. For instance
-a channel loses access to its guild. Once that happens they are unable to make any API requests through RestAction
+When entities are removed from the JDA cache, they lose access to the encapsulating entities. For instance,
+a channel loses access to its guild. Once that happens, they are unable to make any API requests through RestAction
 and instead throw an `IllegalStateException`. It is **highly recommended** to only keep references to entities
 by storing their **id** and using the respective `get...ById(id)` method when needed.
 
