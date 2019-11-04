@@ -108,9 +108,6 @@ public interface RichPresence extends Activity
     @Nullable
     Party getParty();
 
-    @Nullable
-    Emoji getEmoji();
-
     /**
      * Information on the large image displayed in the profile view
      *

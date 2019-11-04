@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -83,6 +84,9 @@ public interface Activity
      */
     @Nullable
     Timestamps getTimestamps();
+
+    @Nullable
+    Emoji getEmoji();
 
     /**
      * Creates a new Activity instance with the specified name.
@@ -485,6 +489,14 @@ public interface Activity
             return name;
         }
 
+        @Nonnull
+        public String getAsCodepoints()
+        {
+            if (!isEmoji())
+                throw new IllegalStateException("Cannot convert custom emote to codepoints");
+            return EncodingUtil.encodeCodepoints(name);
+        }
+
         @Override
         public long getIdLong()
         {
@@ -494,6 +506,16 @@ public interface Activity
         public boolean isAnimated()
         {
             return animated;
+        }
+
+        public boolean isEmoji()
+        {
+            return id == 0;
+        }
+
+        public boolean isEmote()
+        {
+            return id != 0;
         }
 
         @Override
@@ -517,7 +539,9 @@ public interface Activity
         @Override
         public String toString()
         {
-            return "RichPresenceEmoji(" + (id == 0 ? "" : Long.toUnsignedString(id) + " / ") + name + ')';
+            if (isEmoji())
+                return "RichPresenceEmoji(" + getAsCodepoints() + ')';
+            return "RichPresenceEmoji(" + Long.toUnsignedString(id) + " / " + name + ')';
         }
     }
 }

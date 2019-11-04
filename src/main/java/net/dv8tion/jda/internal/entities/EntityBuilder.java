@@ -518,7 +518,7 @@ public class EntityBuilder
         }
 
         if (!CollectionUtils.containsAny(gameJson.keys(), richGameFields))
-            return new ActivityImpl(name, url, type, timestamps);
+            return new ActivityImpl(name, url, type, timestamps, emoji);
 
         // data for spotify
         long id = gameJson.getLong("application_id", 0L);

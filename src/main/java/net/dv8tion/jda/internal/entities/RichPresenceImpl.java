@@ -28,7 +28,6 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
 {
     protected final long applicationId;
 
-    protected final Emoji emoji;
     protected final Party party;
     protected final String details;
     protected final String state;
@@ -43,9 +42,8 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         Emoji emoji, Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId,
         int flags, String largeImageKey, String largeImageText, String smallImageKey, String smallImageText)
     {
-        super(name, url, type, timestamps);
+        super(name, url, type, timestamps, emoji);
         this.applicationId = applicationId;
-        this.emoji = emoji;
         this.party = party;
         this.details = details;
         this.state = state;
