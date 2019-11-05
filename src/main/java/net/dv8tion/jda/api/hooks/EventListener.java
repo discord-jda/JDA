@@ -28,8 +28,8 @@ import javax.annotation.Nonnull;
  * <p><b>Examples: </b>
  * <br>
  * <code>
- *     JDA jda = new {@link net.dv8tion.jda.api.JDABuilder JDABuilder}(AccountType.BOT).{@link net.dv8tion.jda.api.JDABuilder#addEventListeners(Object...) addEventListeners(listeners)}.buildBlocking();<br>
- *     {@link net.dv8tion.jda.api.JDA#addEventListener(Object...) jda.addEventListeners(listeners)};
+ *     JDA jda = new {@link net.dv8tion.jda.api.JDABuilder JDABuilder}("token").{@link net.dv8tion.jda.api.JDABuilder#addEventListeners(Object...) addEventListeners(listeners)}.{@link net.dv8tion.jda.api.JDABuilder#build() build()};<br>
+ *     {@link net.dv8tion.jda.api.JDA#addEventListener(Object...) jda.addEventListener(listeners)};
  * </code>
  *
  * @see net.dv8tion.jda.api.hooks.ListenerAdapter

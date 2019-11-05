@@ -642,7 +642,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean) Presence#setIdle(boolean)
+     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean) Presence.setIdle(boolean)
      */
     @Nonnull
     public JDABuilder setIdle(boolean idle)
@@ -716,7 +716,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.JDA#addEventListener(Object...) JDA.addEventListeners(Object...)
+     * @see    net.dv8tion.jda.api.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
     @Nonnull
     public JDABuilder addEventListeners(@Nonnull Object... listeners)
@@ -738,7 +738,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.JDA#removeEventListener(Object...) JDA.removeEventListeners(Object...)
+     * @see    net.dv8tion.jda.api.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
     @Nonnull
     public JDABuilder removeEventListeners(@Nonnull Object... listeners)
