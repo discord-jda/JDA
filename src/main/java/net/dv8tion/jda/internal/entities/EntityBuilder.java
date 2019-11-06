@@ -311,8 +311,11 @@ public class EntityBuilder
             Member member = guildObj.getMembersView().get(userId);
             if (member == null)
             {
-                LOG.error("Received a VoiceState for a unknown Member! GuildId: "
-                        + guildObj.getId() + " MemberId: " + voiceStateJson.getString("user_id"));
+                if (getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE))
+                {
+                    LOG.error("Received a VoiceState for a unknown Member! GuildId: "
+                            + guildObj.getId() + " MemberId: " + voiceStateJson.getString("user_id"));
+                }
                 continue;
             }
 
