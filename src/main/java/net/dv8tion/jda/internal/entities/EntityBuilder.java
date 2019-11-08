@@ -1144,20 +1144,63 @@ public class EntityBuilder
         });
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
+        ReceivedMessage message;
         switch (type)
         {
             case DEFAULT:
-                return new ReceivedMessage(id, chan, type, fromWebhook,
+                message = new ReceivedMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds);
+                break;
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
-                return new SystemMessage(id, chan, type, fromWebhook,
+                message = new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds);
+                break;
         }
 
+        if (!message.isFromGuild())
+            return message;
+
+        GuildImpl guild = (GuildImpl) message.getGuild();
+
+        // Don't do more computations when members are loaded already
+        if (guild.getMemberCount() <= guild.getMemberCache().size())
+            return message;
+
+        // Load users/members from message object through mentions
+        List<User> mentionedUsersList = new ArrayList<>();
+        List<Member> mentionedMembersList = new ArrayList<>();
+        DataArray userMentions = jsonObject.getArray("mentions");
+
+        for (int i = 0; i < userMentions.length(); i++)
+        {
+            DataObject mentionJson = userMentions.getObject(i);
+            if (mentionJson.isNull("member"))
+            {
+                // Can't load user without member context so fake them if possible
+                User mentionedUser = createFakeUser(mentionJson, false);
+                mentionedUsersList.add(mentionedUser);
+                Member mentionedMember = guild.getMember(mentionedUser);
+                if (mentionedMember != null)
+                    mentionedMembersList.add(mentionedMember);
+                continue;
+            }
+
+            // Load member/user from mention (gateway messages only)
+            DataObject memberJson = mentionJson.getObject("member");
+            mentionJson.remove("member");
+            memberJson.put("user", mentionJson);
+            Member mentionedMember = createMember(guild, memberJson);
+            mentionedMembersList.add(mentionedMember);
+            mentionedUsersList.add(mentionedMember.getUser());
+        }
+
+        if (!mentionedUsersList.isEmpty())
+            message.setMentions(mentionedUsersList, mentionedMembersList);
+        return message;
     }
 
     private static MessageActivity createMessageActivity(DataObject jsonObject)

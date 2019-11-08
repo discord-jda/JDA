@@ -70,6 +70,7 @@ public class ReceivedMessage extends AbstractMessage
     protected String strippedContent = null;
 
     protected List<User> userMentions = null;
+    protected List<Member> memberMentions = null;
     protected List<Emote> emoteMentions = null;
     protected List<Role> roleMentions = null;
     protected List<TextChannel> channelMentions = null;
@@ -277,6 +278,8 @@ public class ReceivedMessage extends AbstractMessage
         User user = getJDA().getUserById(userId);
         if (user == null)
             user = api.getFakeUserMap().get(userId);
+        if (user == null && userMentions != null)
+            user = userMentions.stream().filter(it -> it.getIdLong() == userId).findFirst().orElse(null);
         return user;
     }
 
@@ -350,6 +353,8 @@ public class ReceivedMessage extends AbstractMessage
     public List<Member> getMentionedMembers(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        if (isFromGuild() && guild.equals(getGuild()) && memberMentions != null)
+            return memberMentions;
         List<User> mentionedUsers = getMentionedUsers();
         List<Member> members = new ArrayList<>();
         for (User user : mentionedUsers)
@@ -834,6 +839,21 @@ public class ReceivedMessage extends AbstractMessage
             out = out.toUpperCase(formatter.locale());
 
         appendFormat(formatter, width, precision, leftJustified, out);
+    }
+
+    public void setMentions(List<User> users, List<Member> members)
+    {
+        users.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                        content.indexOf("<@!" + user.getId() + ">")
+                )));
+        members.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                         content.indexOf("<@!" + user.getId() + ">")
+                )));
+
+        this.userMentions = Collections.unmodifiableList(users);
+        this.memberMentions = Collections.unmodifiableList(members);
     }
 
     private <T, C extends Collection<T>> C processMentions(MentionType type, C collection, boolean distinct, Function<Matcher, T> map)
