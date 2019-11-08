@@ -451,8 +451,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * Sets the <b><u>bitrate</u></b> of the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      * <br>The default value is {@code 64000}
      *
-     * <p>A channel bitrate <b>must not</b> be less than {@code 8000} nor greater than {@code 96000} (for non-vip Guilds)!
-     * {@link net.dv8tion.jda.api.entities.Guild#getFeatures() VIP Guilds} allow a bitrate for up to {@code 128000}.
+     * <p>A channel bitrate <b>must not</b> be less than {@code 8000} nor greater than {@link Guild#getMaxBitrate()}!
      * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}</b>
      *
      * @param  bitrate

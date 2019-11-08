@@ -255,7 +255,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Sets the bitrate for the new VoiceChannel
      *
      * @param  bitrate
-     *         The bitrate for the new GuildChannel in {@code bps} (limits 8000 <= bitrate <= {@link Guild#getMaxBitrate()})
+     *         The bitrate for the new VoiceChannel in {@code bps} (limits 8000 <= bitrate <= {@link Guild#getMaxBitrate()})
      *         or {@code null} to use the default 64kbps.
      *
      * @throws UnsupportedOperationException
