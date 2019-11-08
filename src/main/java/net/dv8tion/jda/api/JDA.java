@@ -274,7 +274,45 @@ public interface JDA
      * @return The current JDA instance, for chaining convenience
      */
     @Nonnull
-    JDA awaitStatus(@Nonnull JDA.Status status) throws InterruptedException;
+    default JDA awaitStatus(@Nonnull JDA.Status status) throws InterruptedException
+    {
+        //This is done to retain backwards compatible ABI as it would otherwise change the signature of the method
+        // which would require recompilation for all users (including extension libraries)
+        return awaitStatus(status, new JDA.Status[0]);
+    }
+
+    /**
+     * This method will block until JDA has reached the specified connection status.
+     *
+     * <h2>Login Cycle</h2>
+     * <ol>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#LOGGING_IN LOGGING_IN}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTING_TO_WEBSOCKET CONNECTING_TO_WEBSOCKET}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#IDENTIFYING_SESSION IDENTIFYING_SESSION}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#AWAITING_LOGIN_CONFIRMATION AWAITING_LOGIN_CONFIRMATION}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#LOADING_SUBSYSTEMS LOADING_SUBSYSTEMS}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTED CONNECTED}</li>
+     * </ol>
+     *
+     * @param  status
+     *         The init status to wait for, once JDA has reached the specified
+     *         stage of the startup cycle this method will return.
+     * @param  failOn
+     *         Optional failure states that will force a premature return
+     *
+     * @throws InterruptedException
+     *         If this thread is interrupted while waiting
+     * @throws IllegalArgumentException
+     *         If the provided status is null or not an init status ({@link Status#isInit()})
+     * @throws IllegalStateException
+     *         If JDA is shutdown during this wait period
+     *
+     * @return The current JDA instance, for chaining convenience
+     */
+    @Nonnull
+    JDA awaitStatus(@Nonnull JDA.Status status, @Nonnull JDA.Status... failOn) throws InterruptedException;
 
     /**
      * This method will block until JDA has reached the status {@link Status#CONNECTED}.

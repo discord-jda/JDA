@@ -1279,13 +1279,30 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 return;
             try
             {
-                api.awaitStatus(JDA.Status.LOADING_SUBSYSTEMS);
+                api.awaitStatus(JDA.Status.LOADING_SUBSYSTEMS, JDA.Status.RECONNECT_QUEUED);
             }
             catch (IllegalStateException ex)
             {
                 close();
                 LOG.debug("Shutdown while trying to connect");
             }
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash("C", getJDA());
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof StartingNode))
+                return false;
+            StartingNode node = (StartingNode) obj;
+            return node.getJDA().equals(getJDA());
         }
     }
 
@@ -1307,13 +1324,30 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 return;
             try
             {
-                api.awaitStatus(JDA.Status.LOADING_SUBSYSTEMS);
+                api.awaitStatus(JDA.Status.LOADING_SUBSYSTEMS, JDA.Status.RECONNECT_QUEUED);
             }
             catch (IllegalStateException ex)
             {
                 close();
                 LOG.debug("Shutdown while trying to reconnect");
             }
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash("R", getJDA());
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof ReconnectNode))
+                return false;
+            ReconnectNode node = (ReconnectNode) obj;
+            return node.getJDA().equals(getJDA());
         }
     }
 }

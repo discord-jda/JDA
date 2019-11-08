@@ -459,17 +459,20 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public JDA awaitStatus(@Nonnull Status status) throws InterruptedException
+    public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn) throws InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
         if (getStatus() == Status.CONNECTED)
             return this;
+        List<Status> failStatus = Arrays.asList(failOn);
         while (!getStatus().isInit()                         // JDA might disconnect while starting
                 || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
         {
             if (getStatus() == Status.SHUTDOWN)
                 throw new IllegalStateException("Was shutdown trying to await status");
+            else if (failStatus.contains(getStatus()))
+                return this;
             Thread.sleep(50);
         }
         return this;
