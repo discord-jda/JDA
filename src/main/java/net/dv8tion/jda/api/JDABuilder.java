@@ -863,7 +863,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since  4.0.0
+     * @since  4.1.0
      *
      * @see    ChunkingFilter#NONE
      * @see    ChunkingFilter#include(long...)
@@ -892,7 +892,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since  4.0.0
+     * @since  4.1.0
      */
     @Nonnull
     public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
@@ -911,7 +911,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since  4.0.0
+     * @since  4.1.0
      */
     @Nonnull
     public JDABuilder setLargeThreshold(int threshold)

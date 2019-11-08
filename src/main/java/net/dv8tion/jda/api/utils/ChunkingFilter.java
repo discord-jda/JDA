@@ -24,6 +24,14 @@ import javax.annotation.Nonnull;
  * Filter function for member chunking of guilds.
  * <br>The filter decides based on the provided guild id whether chunking should be done
  * on guild initialization.
+ *
+ * @since 4.1.0
+ *
+ * @see   #ALL
+ * @see   #NONE
+ *
+ * @see   net.dv8tion.jda.api.JDABuilder#setChunkingFilter(ChunkingFilter) JDABuilder.setChunkingFilter(ChunkingFilter)
+ * @see   net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setChunkingFilter(ChunkingFilter) DefaultShardManagerBuilder.setChunkingFilter(ChunkingFilter)
  */
 @FunctionalInterface
 public interface ChunkingFilter
