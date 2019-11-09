@@ -144,7 +144,7 @@ public class JDAImpl implements JDA
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
-        this.eventCache = new EventCache(!isGuildSubscriptions());
+        this.eventCache = new EventCache(isGuildSubscriptions());
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
