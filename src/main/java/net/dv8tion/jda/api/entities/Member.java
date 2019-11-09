@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -128,6 +129,25 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
+
+    /**
+     * A Set of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes} of this Member.
+     * Every {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} other than {@code OFFLINE} and {@code UNKNOWN}
+     * is interpreted as active.
+     * Since {@code INVISIBLE} is only possible for the SelfUser, other Members will never have ClientTypes show as
+     * active when actually being {@code INVISIBLE}, since they will show as {@code OFFLINE}.
+     * <br>If the Member is currently not active with any Client, this returns an empty Set.
+     * <br>When {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} is disabled,
+     * active clients will not be tracked and this will always return an empty Set
+     * <br>Since a user can be connected from multiple different devices such as web and mobile,
+     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
+     *
+     * @return EnumSet of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    EnumSet<ClientType> getActiveClients();
 
     /**
      * Returns the current nickname of this Member for the parent Guild.
