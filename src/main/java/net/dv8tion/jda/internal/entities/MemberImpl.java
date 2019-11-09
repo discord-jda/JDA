@@ -131,6 +131,8 @@ public class MemberImpl implements Member
     @Override
     public EnumSet<ClientType> getActiveClients()
     {
+        if (clientStatus == null)
+            return EnumSet.noneOf(ClientType.class);
         return EnumSet.copyOf(clientStatus.keySet());
     }
 
