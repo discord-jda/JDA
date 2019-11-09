@@ -221,10 +221,10 @@ public interface Guild extends ISnowflake
      *     <li>COMMERCE - Guild can sell software through a store channel</li>
      *     <li>DISCOVERABLE - Guild shows up in discovery tab</li>
      *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
-     *     <li>LURKABLE - Guild allows users to lurk</li>
      *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
      *     <li>NEWS - Guild can create news channels</li>
      *     <li>PARTNERED - Guild is "partnered"</li>
+     *     <li>PUBLIC - Guild is public</li>
      *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
      *     <li>VERIFIED - Guild is "verified"</li>
      *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
@@ -414,7 +414,7 @@ public interface Guild extends ISnowflake
      */
     default int getMaxBitrate()
     {
-        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 96000 : 128000;
+        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 384000 : 96000;
         return Math.max(maxBitrate, getBoostTier().getMaxBitrate());
     }
 

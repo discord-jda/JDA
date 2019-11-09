@@ -127,6 +127,13 @@ public class MemberImpl implements Member
         return status == null ? OnlineStatus.OFFLINE : status;
     }
 
+    @Nonnull
+    @Override
+    public EnumSet<ClientType> getActiveClients()
+    {
+        return EnumSet.copyOf(clientStatus.keySet());
+    }
+
     @Override
     public String getNickname()
     {

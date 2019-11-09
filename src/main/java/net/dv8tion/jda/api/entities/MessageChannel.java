@@ -1773,11 +1773,8 @@ public interface MessageChannel extends ISnowflake, Formattable
         unicode = unicode.trim();
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        String encoded;
-        if (unicode.startsWith("U+"))
-            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
-        else
-            encoded = EncodingUtil.encodeUTF8(unicode);
+        final String encoded = EncodingUtil.encodeReaction(unicode);
+
         Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
@@ -1916,11 +1913,8 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emote emote)
     {
-        Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
-
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()), "@me");
-        return new RestActionImpl<Void>(getJDA(), route);
+        return addReactionById(messageId, emote.getName() + ":" + emote.getId());
     }
 
     /**
@@ -2043,10 +2037,13 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.noWhitespace(unicode, "Emoji");
+        Checks.notNull(unicode, "Provided Unicode");
+        unicode = unicode.trim();
+        Checks.notEmpty(unicode, "Provided Unicode");
 
-        final String code = EncodingUtil.encodeUTF8(unicode);
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
+        final String encoded = EncodingUtil.encodeReaction(unicode);
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -2216,8 +2213,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote)
     {
-        Checks.notNull(emote, "Emote");
-        return removeReactionById(messageId, emote.getName() + ":" + emote.getId());
+        return removeReactionById(Long.toUnsignedString(messageId), emote);
     }
 
     /**
