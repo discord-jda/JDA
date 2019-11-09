@@ -53,7 +53,8 @@ public interface Activity
     RichPresence asRichPresence();
 
     /**
-     * The displayed name of the {@link Activity Activity}. If no name has been set, this returns null.
+     * The displayed name of the {@link Activity Activity}.
+     * <br>For {@link ActivityType#CUSTOM_STATUS} this will return the custom status text.
      *
      * @return String containing the Activity's name.
      */
@@ -85,6 +86,11 @@ public interface Activity
     @Nullable
     Timestamps getTimestamps();
 
+    /**
+     * The emoji (or custom emoji) attached to a custom status.
+     *
+     * @return {@link Emoji}
+     */
     @Nullable
     Emoji getEmoji();
 
@@ -465,7 +471,11 @@ public interface Activity
         }
     }
 
-    class Emoji implements ISnowflake
+    /**
+     * Emoji for a custom status.
+     * <br>This can be a unicode emoji or a custom emoji (Emote).
+     */
+    class Emoji implements ISnowflake, IMentionable
     {
         private final String name;
         private final long id;
@@ -483,12 +493,31 @@ public interface Activity
             this(name, 0, false);
         }
 
+        /**
+         * The name of this emoji. This will be the unicode characters for a unicode emoji
+         * and the name of the custom emote otherwise.
+         *
+         * @return The emoji name
+         *
+         * @see    #getAsCodepoints()
+         */
         @Nonnull
         public String getName()
         {
             return name;
         }
 
+        /**
+         * The codepoint notation ({@code "U+XXXX"}) for the unicode of this emoji.
+         * Not available for custom emotes.
+         *
+         * @throws IllegalStateException
+         *         If {@link #isEmoji()} is false
+         *
+         * @return The codepoint notation
+         *
+         * @see    #getName()
+         */
         @Nonnull
         public String getAsCodepoints()
         {
@@ -497,25 +526,61 @@ public interface Activity
             return EncodingUtil.encodeCodepoints(name);
         }
 
+        /**
+         * The id for this custom emoji.
+         *
+         * @throws IllegalStateException
+         *         If {@link #isEmote()} is false
+         *
+         * @return The emoji id
+         */
         @Override
         public long getIdLong()
         {
+            if (!isEmote())
+                throw new IllegalStateException("Cannot get id for unicode emoji");
             return id;
         }
 
+        /**
+         * Whether this emoji is animated.
+         * This is always false for unicode emoji.
+         *
+         * @return True, if this emoji is animated
+         */
         public boolean isAnimated()
         {
             return animated;
         }
 
+        /**
+         * Whether this is a unicode emoji.
+         *
+         * @return True, if this is a unicode emoji
+         */
         public boolean isEmoji()
         {
             return id == 0;
         }
 
+        /**
+         * Whether this is a custom emoji (Emote)
+         *
+         * @return True, if this is a custom emoji
+         */
         public boolean isEmote()
         {
             return id != 0;
+        }
+
+        @Nonnull
+        @Override
+        public String getAsMention()
+        {
+            if (isEmoji())
+                return name; // unicode name
+            // custom emoji format (for messages)
+            return String.format("<%s:%s:%s>", isAnimated() ? "a" : "", name, getId());
         }
 
         @Override
@@ -540,8 +605,8 @@ public interface Activity
         public String toString()
         {
             if (isEmoji())
-                return "RichPresenceEmoji(" + getAsCodepoints() + ')';
-            return "RichPresenceEmoji(" + Long.toUnsignedString(id) + " / " + name + ')';
+                return "ActivityEmoji(" + getAsCodepoints() + ')';
+            return "ActivityEmoji(" + Long.toUnsignedString(id) + " / " + name + ')';
         }
     }
 }
