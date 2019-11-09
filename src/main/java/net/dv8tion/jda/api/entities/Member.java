@@ -138,7 +138,7 @@ public interface Member extends IMentionable, IPermissionHolder
      * active when actually being {@code INVISIBLE}, since they will show as {@code OFFLINE}.
      * <br>If the Member is currently not active with any Client, this returns an empty Set.
      * <br>When {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} is disabled,
-     * active clients will not be tracked and this will always return an empty Set
+     * active clients will not be tracked and this will always return an empty Set.
      * <br>Since a user can be connected from multiple different devices such as web and mobile,
      * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
      *
