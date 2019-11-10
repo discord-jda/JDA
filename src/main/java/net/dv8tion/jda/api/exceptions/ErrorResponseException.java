@@ -223,55 +223,6 @@ public class ErrorResponseException extends RuntimeException
      * // Creates a message with the provided content and deletes it 30 seconds later
      * public static void selfDestruct(MessageChannel channel, String content) {
      *     channel.sendMessage(content).queue((message) ->
-     *         message.delete().queueAfter(30, SECONDS, null, ignore(Throwable::printStackTrace, EnumSet.of(UNKNOWN_MESSAGE)))
-     *     );
-     * }
-     * }</pre>
-     *
-     * @param  orElse
-     *         Behavior to default to if the error response is not ignored
-     * @param  set
-     *         Set of ignored error responses
-     *
-     * @throws IllegalArgumentException
-     *         If provided with null or an empty collection
-     *
-     * @return {@link Consumer} decorator for the provided callback
-     *         which ignores the specified {@link ErrorResponse ErrorResponses}
-     */
-    @Nonnull
-    public static Consumer<Throwable> ignore(@Nonnull Consumer<? super Throwable> orElse, @Nonnull Collection<ErrorResponse> set)
-    {
-        Checks.notNull(orElse, "Callback");
-        Checks.notEmpty(set, "Ignored collection");
-        return (throwable) ->
-        {
-            if (throwable instanceof ErrorResponseException)
-            {
-                ErrorResponseException ex = (ErrorResponseException) throwable;
-                if (set.contains(ex.getErrorResponse()))
-                    return;
-            }
-
-            try
-            {
-                orElse.accept(throwable);
-            }
-            catch (Exception ex)
-            {
-                JDALogger.getLog(ErrorResponseException.class).error("Uncaught exception in ignore callback", throwable);
-            }
-        };
-    }
-
-    /**
-     * Ignore the specified set of error responses.
-     *
-     * <h2>Example</h2>
-     * <pre>{@code
-     * // Creates a message with the provided content and deletes it 30 seconds later
-     * public static void selfDestruct(MessageChannel channel, String content) {
-     *     channel.sendMessage(content).queue((message) ->
      *         message.delete().queueAfter(30, SECONDS, null, ignore(Throwable::printStackTrace, UNKNOWN_MESSAGE))
      *     );
      * }
@@ -294,5 +245,56 @@ public class ErrorResponseException extends RuntimeException
     public static Consumer<Throwable> ignore(@Nonnull Consumer<? super Throwable> orElse, @Nonnull ErrorResponse ignored, @Nonnull ErrorResponse... errorResponses)
     {
         return ignore(orElse, EnumSet.of(ignored, errorResponses));
+    }
+
+    /**
+     * Ignore the specified set of error responses.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Creates a message with the provided content and deletes it 30 seconds later
+     * public static void selfDestruct(MessageChannel channel, String content) {
+     *     channel.sendMessage(content).queue((message) ->
+     *         message.delete().queueAfter(30, SECONDS, null, ignore(Throwable::printStackTrace, EnumSet.of(UNKNOWN_MESSAGE)))
+     *     );
+     * }
+     * }</pre>
+     *
+     * @param  orElse
+     *         Behavior to default to if the error response is not ignored
+     * @param  set
+     *         Set of ignored error responses
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null or an empty collection
+     *
+     * @return {@link Consumer} decorator for the provided callback
+     *         which ignores the specified {@link ErrorResponse ErrorResponses}
+     */
+    @Nonnull
+    public static Consumer<Throwable> ignore(@Nonnull Consumer<? super Throwable> orElse, @Nonnull Collection<ErrorResponse> set)
+    {
+        Checks.notNull(orElse, "Callback");
+        Checks.notEmpty(set, "Ignored collection");
+        // Make an enum set copy (for performance, memory efficiency, and thread-safety)
+        final EnumSet<ErrorResponse> ignored = EnumSet.copyOf(set);
+        return (throwable) ->
+        {
+            if (throwable instanceof ErrorResponseException)
+            {
+                ErrorResponseException ex = (ErrorResponseException) throwable;
+                if (ignored.contains(ex.getErrorResponse()))
+                    return;
+            }
+
+            try
+            {
+                orElse.accept(throwable);
+            }
+            catch (Exception ex)
+            {
+                JDALogger.getLog(ErrorResponseException.class).error("Uncaught exception in ignore callback", throwable);
+            }
+        };
     }
 }
