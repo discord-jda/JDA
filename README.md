@@ -302,7 +302,7 @@ of any of the guilds available to the bot.
 ### Entity Updates
 
 When an entity is updated through its manager, they will send a request to the Discord API which will update the state
-of the entity. The success of this request **does not** imply the entity has finished updating. All entities are updated
+of the entity. The success of this request **does not** imply the entity has been updated yet. All entities are updated
 by the aforementioned **Gateway Events** which means you cannot rely on the cache being updated yet once the
 execution of a RestAction has completed. Some requests rely on the cache being updated to correctly update the entity.
 An example of this is updating roles of a member which overrides all roles of the member by sending a list of the
