@@ -34,6 +34,17 @@ import java.util.List;
  * <p>Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
  *
  * @since 3.0
+ *
+ * @see   Guild#getMember(User)
+ * @see   Guild#getMemberCache()
+ * @see   Guild#getMemberById(long)
+ * @see   Guild#getMemberByTag(String)
+ * @see   Guild#getMemberByTag(String, String)
+ * @see   Guild#getMembersByEffectiveName(String, boolean)
+ * @see   Guild#getMembersByName(String, boolean)
+ * @see   Guild#getMembersByNickname(String, boolean)
+ * @see   Guild#getMembersWithRoles(Role...)
+ * @see   Guild#getMembers()
  */
 public interface Member extends IMentionable, IPermissionHolder
 {

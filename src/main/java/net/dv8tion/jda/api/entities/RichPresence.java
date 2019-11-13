@@ -26,6 +26,8 @@ import java.util.Objects;
  * relevant to <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
  *
  * @since  3.4.0
+ *
+ * @see    Activity#asRichPresence()
  */
 public interface RichPresence extends Activity
 {

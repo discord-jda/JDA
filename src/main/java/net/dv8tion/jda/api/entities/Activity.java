@@ -31,6 +31,13 @@ import java.util.Objects;
  *
  * @since  2.1
  * @author John A. Grosh
+ *
+ * @see    #of(ActivityType, String)
+ * @see    #of(ActivityType, String, String)
+ * @see    #playing(String)
+ * @see    #watching(String)
+ * @see    #listening(String)
+ * @see    #streaming(String, String)
  */
 public interface Activity
 {
