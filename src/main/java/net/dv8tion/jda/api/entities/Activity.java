@@ -117,7 +117,7 @@ public interface Activity
     /**
      * Creates a new Activity instance with the specified name and url.
      * <br>The specified URL must be valid according to discord standards in order to display as "streaming" in the official client.
-     * A valid streaming URL must be derived from {@code https://twitch.tv/} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
+     * A valid streaming URL must be derived from {@code https://twitch.tv/} or {@code https://youtube.com/watch?v=} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
      *
      * @param  name
      *         The not-null name of the newly created game
@@ -242,7 +242,7 @@ public interface Activity
     }
 
     /**
-     * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client).
+     * Checks if a given String is a valid Twitch/Youtube streaming url (ie, one that will display "Streaming" on the Discord client).
      *
      * @param  url
      *         The url to check.
@@ -251,7 +251,7 @@ public interface Activity
      */
     static boolean isValidStreamingUrl(@Nullable String url)
     {
-        return url != null && url.matches("https?://(www\\.)?twitch\\.tv/.+");
+        return url != null && url.matches("https?://(www\\.)?(twitch\\.tv/|youtube.com/watch\\?v=).+");
     }
 
     /**
