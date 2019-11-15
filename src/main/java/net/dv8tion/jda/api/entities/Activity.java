@@ -89,7 +89,7 @@ public interface Activity
     /**
      * The emoji (or custom emoji) attached to a custom status.
      *
-     * @return {@link Emoji}
+     * @return Possibly-null {@link Emoji} used for custom status
      */
     @Nullable
     Emoji getEmoji();
@@ -251,7 +251,7 @@ public interface Activity
      */
     static boolean isValidStreamingUrl(@Nullable String url)
     {
-        return url != null && url.matches("https?://(www\\.)?(twitch\\.tv/|youtube.com/watch\\?v=).+");
+        return url != null && url.matches("https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+");
     }
 
     /**
