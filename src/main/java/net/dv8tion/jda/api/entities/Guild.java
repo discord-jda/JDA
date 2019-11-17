@@ -168,8 +168,18 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * Whether this guild has loaded members.
+     * <br>This will always be false if guild subscriptions have been disabled.
+     *
+     * @return True, if members are loaded.
+     */
+    boolean isLoaded();
+
+    /**
      * The expected member count for this guild.
      * <br>If this guild is not lazy loaded this should be identical to the size returned by {@link #getMemberCache()}.
+     *
+     * <p>When guild subscriptions are disabled, this will not be updated.
      *
      * @return The expected member count for this guild
      */

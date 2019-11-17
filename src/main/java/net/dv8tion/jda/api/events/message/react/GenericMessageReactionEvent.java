@@ -34,12 +34,15 @@ import javax.annotation.Nullable;
 public class GenericMessageReactionEvent extends GenericMessageEvent
 {
     protected User issuer;
+    protected Member member;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
+    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user,
+                                       @Nullable Member member, @Nonnull MessageReaction reaction)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
         this.issuer = user;
+        this.member = member;
         this.reaction = reaction;
     }
 
@@ -69,7 +72,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     @Nullable
     public Member getMember()
     {
-        return getGuild().getMember(getUser());
+        return member;
     }
 
     /**

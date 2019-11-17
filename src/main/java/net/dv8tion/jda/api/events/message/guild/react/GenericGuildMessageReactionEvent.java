@@ -33,10 +33,10 @@ import java.util.Objects;
  */
 public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
 {
-    protected final User issuer;
+    protected final Member issuer;
     protected final MessageReaction reaction;
 
-    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
+    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member user, @Nonnull MessageReaction reaction)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (TextChannel) reaction.getChannel());
         this.issuer = user;
@@ -51,7 +51,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     @Nonnull
     public User getUser()
     {
-        return issuer;
+        return issuer.getUser();
     }
 
     /**
@@ -62,7 +62,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     @Nonnull
     public Member getMember()
     {
-        return Objects.requireNonNull(getGuild().getMember(getUser()));
+        return issuer;
     }
 
     /**

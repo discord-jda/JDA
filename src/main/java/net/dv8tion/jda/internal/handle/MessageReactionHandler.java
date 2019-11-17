@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
@@ -29,8 +26,12 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
+
+import java.util.Optional;
 
 public class MessageReactionHandler extends SocketHandler
 {
@@ -70,7 +71,28 @@ public class MessageReactionHandler extends SocketHandler
             return null;
         }
 
+        Guild guild = getJDA().getGuildById(content.getUnsignedLong("guild_id", 0));
+        MemberImpl member = null;
+        if (guild != null)
+        {
+            member = (MemberImpl) guild.getMemberById(userId);
+            // Attempt loading the member if possible
+            Optional<DataObject> memberJson = content.optObject("member");
+            if (memberJson.isPresent()) // Check if we can load a member here
+            {
+                if (member == null || member.isIncomplete()) // do we need to load a member?
+                    member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
+            }
+            if (member == null)
+            {
+                WebSocketClient.LOG.debug("Dropping reaction event for unknown member {}", content);
+                return null;
+            }
+        }
+
         User user = getJDA().getUserById(userId);
+        if (user == null && member != null)
+            user = member.getUser(); // this happens when we have guild subscriptions disabled
         if (user == null)
             user = getJDA().getFakeUserMap().get(userId);
         if (user == null)
@@ -128,13 +150,13 @@ public class MessageReactionHandler extends SocketHandler
         MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(getJDA().getSelfUser()), -1);
 
         if (add)
-            onAdd(reaction, user);
+            onAdd(reaction, user, member);
         else
-            onRemove(reaction, user);
+            onRemove(reaction, user, member);
         return null;
     }
 
-    private void onAdd(MessageReaction reaction, User user)
+    private void onAdd(MessageReaction reaction, User user, Member member)
     {
         JDAImpl jda = getJDA();
         switch (reaction.getChannelType())
@@ -143,7 +165,7 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new GuildMessageReactionAddEvent(
                         jda, responseNumber,
-                        user, reaction));
+                        member, reaction));
                 break;
             case PRIVATE:
                 jda.handleEvent(
@@ -159,10 +181,10 @@ public class MessageReactionHandler extends SocketHandler
         jda.handleEvent(
             new MessageReactionAddEvent(
                 jda, responseNumber,
-                user, reaction));
+                user, member, reaction));
     }
 
-    private void onRemove(MessageReaction reaction, User user)
+    private void onRemove(MessageReaction reaction, User user, Member member)
     {
         JDAImpl jda = getJDA();
         switch (reaction.getChannelType())
@@ -171,7 +193,7 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new GuildMessageReactionRemoveEvent(
                         jda, responseNumber,
-                        user, reaction));
+                        member, reaction));
                 break;
             case PRIVATE:
                 jda.handleEvent(
@@ -187,6 +209,6 @@ public class MessageReactionHandler extends SocketHandler
         jda.handleEvent(
             new MessageReactionRemoveEvent(
                 jda, responseNumber,
-                user, reaction));
+                user, member, reaction));
     }
 }

@@ -155,6 +155,14 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public boolean isLoaded()
+    {
+        // Only works with guild subscriptions
+        return getJDA().isGuildSubscriptions()
+                && (long) getMemberCount() <= getMemberCache().size();
+    }
+
+    @Override
     public int getMemberCount()
     {
         return memberCount;
@@ -1537,7 +1545,7 @@ public class GuildImpl implements Guild
 
     public void startChunking()
     {
-        if (memberCache.size() == memberCount)
+        if (isLoaded())
             return;
         if (!getJDA().isGuildSubscriptions())
         {

@@ -440,6 +440,8 @@ public class MessageReaction
          * <p>For better use in consoles that do not support unicode emoji use {@link #getAsCodepoints()} for a more
          * readable representation of the emoji.
          *
+         * <p>Custom emotes may return an empty string for this if the emote was deleted.
+         *
          * @return The name for this emote/emoji
          */
         @Nonnull

@@ -1167,7 +1167,7 @@ public class EntityBuilder
         GuildImpl guild = (GuildImpl) message.getGuild();
 
         // Don't do more computations when members are loaded already
-        if (guild.getMemberCount() <= guild.getMemberCache().size())
+        if (guild.isLoaded())
             return message;
 
         // Load users/members from message object through mentions
@@ -1234,7 +1234,7 @@ public class EntityBuilder
     {
         DataObject emoji = obj.getObject("emoji");
         final Long emojiID = emoji.isNull("id") ? null : emoji.getLong("id");
-        final String name = emoji.getString("name", null);
+        final String name = emoji.getString("name", "");
         final boolean animated = emoji.getBoolean("animated");
         final int count = obj.getInt("count", -1);
         final boolean me = obj.getBoolean("me");
