@@ -20,6 +20,8 @@ import javax.annotation.Nullable;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Message} activity.
+ *
+ * @see Message#getActivity()
  */
 public class MessageActivity
 {

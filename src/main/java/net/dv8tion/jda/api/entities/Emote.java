@@ -42,9 +42,20 @@ import java.util.List;
  * <br>Fake emotes may or may not have an attached {@link Guild Guild} and thus might not be manageable though
  * {@link #getManager()} or {@link #delete()}. They also might lack attached roles for {@link #getRoles()}.
  *
- * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
  *
  * @since  2.2
+ *
+ * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
+ *
+ * @see    Guild#getEmoteCache()
+ * @see    Guild#getEmoteById(long)
+ * @see    Guild#getEmotesByName(String, boolean)
+ * @see    Guild#getEmotes()
+ *
+ * @see    JDA#getEmoteCache()
+ * @see    JDA#getEmoteById(long)
+ * @see    JDA#getEmotesByName(String, boolean)
+ * @see    JDA#getEmotes()
  */
 public interface Emote extends IMentionable, IFakeable
 {

@@ -53,6 +53,17 @@ import java.util.regex.Pattern;
  * </ul>
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
+ *
+ * @see User#openPrivateChannel()
+ *
+ * @see JDA#getUserCache()
+ * @see JDA#getUserById(long)
+ * @see JDA#getUserByTag(String)
+ * @see JDA#getUserByTag(String, String)
+ * @see JDA#getUsersByName(String, boolean)
+ * @see JDA#getUsers()
+ *
+ * @see JDA#retrieveUserById(String)
  */
 public interface User extends IMentionable, IFakeable
 {

@@ -39,6 +39,10 @@ import java.util.Objects;
  * built from Discord is needed to see changes.
  *
  * @since  3.0
+ *
+ * @see    Message#getReactions()
+ * @see    Message#getReactionByUnicode(String)
+ * @see    Message#getReactionById(long)
  */
 public class MessageReaction
 {

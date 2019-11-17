@@ -563,8 +563,7 @@ public class GuildImpl implements Guild
         if (!getSelfMember().hasPermission(Permission.KICK_MEMBERS))
             throw new InsufficientPermissionException(this, Permission.KICK_MEMBERS);
 
-        if (days < 1)
-            throw new IllegalArgumentException("Days amount must be at minimum 1 day.");
+        Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
 
         Route.CompiledRoute route = Route.Guilds.PRUNABLE_COUNT.compile(getId()).withQueryParams("days", Integer.toString(days));
         return new RestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
@@ -867,7 +866,7 @@ public class GuildImpl implements Guild
     {
         checkPermission(Permission.KICK_MEMBERS);
 
-        Checks.check(days >= 1, "Days amount must be at minimum 1 day.");
+        Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId()).withQueryParams("days", Integer.toString(days));
         return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
