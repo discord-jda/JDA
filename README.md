@@ -399,7 +399,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 **Gradle**
 ```gradle
 dependencies {
-    compile 'net.dv8tion:JDA:VERSION'
+    implementation 'net.dv8tion:JDA:VERSION'
 }
 
 repositories {
