@@ -44,6 +44,15 @@ public interface Webhook extends ISnowflake, IFakeable
     JDA getJDA();
 
     /**
+     * The {@link WebhookType} of this webhook.
+     * <br>Webhooks of type {@link WebhookType#FOLLOWER} don't have a token.
+     *
+     * @return The {@link WebhookType}
+     */
+    @Nonnull
+    WebhookType getType();
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} instance
      * for this Webhook.
      * <br>This is a shortcut for <code>{@link #getChannel()}.getGuild()</code>.

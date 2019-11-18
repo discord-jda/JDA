@@ -1151,6 +1151,7 @@ public class EntityBuilder
         final long guildId = object.getLong("guild_id");
         final long channelId = object.getLong("channel_id");
         final String token = object.getString("token", null);
+        final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
         TextChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
@@ -1183,7 +1184,7 @@ public class EntityBuilder
             }
         }
         
-        return new WebhookImpl(channel, id)
+        return new WebhookImpl(channel, id, type)
                 .setToken(token)
                 .setOwner(owner == null ? null : channel.getGuild().getMember(owner))
                 .setUser(defaultUser);
