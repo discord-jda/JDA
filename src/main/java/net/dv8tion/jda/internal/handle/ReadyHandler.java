@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -36,18 +38,28 @@ public class ReadyHandler extends SocketHandler
     {
         EntityBuilder builder = getJDA().getEntityBuilder();
 
-        //Core
         DataArray guilds = content.getArray("guilds");
+        //Make sure we don't have any duplicates here!
+        TLongObjectMap<DataObject> distinctGuilds = new TLongObjectHashMap<>();
+        for (int i = 0; i < guilds.length(); i++)
+        {
+            DataObject guild = guilds.getObject(i);
+            long id = guild.getUnsignedLong("id");
+            DataObject previous = distinctGuilds.put(id, guild);
+            if (previous != null)
+                WebSocketClient.LOG.warn("Found duplicate guild for id {} in ready payload", id);
+        }
+
         DataObject selfJson = content.getObject("user");
 
         builder.createSelfUser(selfJson);
-        if (getJDA().getGuildSetupController().setIncompleteCount(guilds.length()))
+        if (getJDA().getGuildSetupController().setIncompleteCount(distinctGuilds.size()))
         {
-            for (int i = 0; i < guilds.length(); i++)
+            distinctGuilds.forEachEntry((id, guild) ->
             {
-                DataObject guild = guilds.getObject(i);
-                getJDA().getGuildSetupController().onReady(guild.getLong("id"), guild);
-            }
+                getJDA().getGuildSetupController().onReady(id, guild);
+                return true;
+            });
         }
 
         handleReady(content);
@@ -64,6 +76,7 @@ public class ReadyHandler extends SocketHandler
             DataObject chan = privateChannels.getObject(i);
             ChannelType type = ChannelType.fromId(chan.getInt("type"));
 
+            //noinspection SwitchStatementWithTooFewBranches
             switch (type)
             {
                 case PRIVATE:

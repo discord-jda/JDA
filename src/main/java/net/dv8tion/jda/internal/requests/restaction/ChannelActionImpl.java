@@ -146,7 +146,9 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setSlowmode(int slowmode)
     {
-        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode must be between 0 and 21600 (seconds)!");
+        if (type != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Can only set slowmode on text channels");
+        Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         return this;
     }

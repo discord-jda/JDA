@@ -166,8 +166,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @param  slowmode
      *         The number of seconds required to wait between sending messages in the channel.
      *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a TextChannel
      * @throws IllegalArgumentException
-     *         If the {@code slowmode} is greater than 21600, or less than 0
+     *         If the {@code slowmode} is greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, or less than 0
      *
      * @return The current ChannelAction, for chaining convenience
      */
@@ -253,8 +255,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Sets the bitrate for the new VoiceChannel
      *
      * @param  bitrate
-     *         The bitrate for the new GuildChannel (min {@code 8000}; max {@code 96000}/{@code 128000}
-     *         (for {@link net.dv8tion.jda.api.entities.Guild#getFeatures() VIP Guilds})) or null to use default ({@code 64000})
+     *         The bitrate for the new VoiceChannel in {@code bps} (limits 8000 {@literal <}= bitrate {@literal <}= {@link Guild#getMaxBitrate()})
+     *         or {@code null} to use the default 64kbps.
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a VoiceChannel

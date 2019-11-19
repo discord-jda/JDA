@@ -25,6 +25,8 @@ import java.util.List;
 
 /**
  * Meta-data for the team of an application.
+ *
+ * @see ApplicationInfo#getTeam()
  */
 public interface ApplicationTeam extends ISnowflake
 {
