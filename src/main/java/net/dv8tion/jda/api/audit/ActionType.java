@@ -194,6 +194,11 @@ public enum ActionType
      */
     MEMBER_ROLE_UPDATE(25, TargetType.MEMBER),
 
+    // TODO: Verification and Documentation
+    MEMBER_VOICE_MOVE(26, TargetType.MEMBER),
+    MEMBER_VOICE_KICK(27, TargetType.MEMBER),
+    MEMBER_BOT_ADD(28, TargetType.MEMBER),
+
 
     /**
      * An Administrator has created a {@link net.dv8tion.jda.api.entities.Role Role}.
