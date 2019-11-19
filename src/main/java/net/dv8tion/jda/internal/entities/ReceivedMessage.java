@@ -705,20 +705,32 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> suppressEmbeds(boolean suppressed) {
+    public RestAction<Void> suppressEmbeds(boolean suppressed)
+    {
         JDAImpl jda = (JDAImpl) getJDA();
-        Route.CompiledRoute route = Route.Messages.SUPPRESS_EMBEDS.compile(getChannel().getId(), getId());
-        return new RestActionImpl<>(jda, route, DataObject.empty().put("suppress", suppressed));
+        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
+        EnumSet<MessageFlag> newFlags = getFlags();
+        if (suppressed)
+        {
+            newFlags.add(MessageFlag.EMBEDS_SUPPRESSED);
+        }
+        else
+        {
+            newFlags.remove(MessageFlag.EMBEDS_SUPPRESSED);
+        }
+        return new RestActionImpl<>(jda, route, DataObject.empty().put("flags", MessageFlag.toBitField(newFlags)));
     }
 
     @Override
-    public boolean isSuppressedEmbeds() {
+    public boolean isSuppressedEmbeds()
+    {
         return this.flags.contains(MessageFlag.EMBEDS_SUPPRESSED);
     }
 
     @Nonnull
     @Override
-    public EnumSet<MessageFlag> getFlags() {
+    public EnumSet<MessageFlag> getFlags()
+    {
         return this.flags.clone();
     }
 

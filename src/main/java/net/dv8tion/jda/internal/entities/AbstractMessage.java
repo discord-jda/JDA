@@ -450,20 +450,23 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> suppressEmbeds(boolean suppressed) {
+    public RestAction<Void> suppressEmbeds(boolean suppressed)
+    {
         unsupported();
         return null;
     }
 
     @Override
-    public boolean isSuppressedEmbeds() {
+    public boolean isSuppressedEmbeds()
+    {
         unsupported();
         return false;
     }
 
     @Nonnull
     @Override
-    public EnumSet<MessageFlag> getFlags() {
+    public EnumSet<MessageFlag> getFlags()
+    {
         unsupported();
         return null;
     }

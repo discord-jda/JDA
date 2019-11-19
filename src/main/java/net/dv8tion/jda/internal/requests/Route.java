@@ -207,7 +207,6 @@ public class Route
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
         public static final Route DELETE_MESSAGE =      new DeleteMessageRoute();
-        public static final Route SUPPRESS_EMBEDS =     new Route(POST, true, "channels/{channel_id}/messages/{message_id}/suppress-embeds", "channel_id");
         public static final Route GET_MESSAGE_HISTORY = new Route(GET,    true, "channels/{channel_id}/messages",              "channel_id");
 
         //Bot only

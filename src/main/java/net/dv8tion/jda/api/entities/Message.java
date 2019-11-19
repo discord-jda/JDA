@@ -35,11 +35,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.time.OffsetDateTime;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Formattable;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -1218,11 +1214,10 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    @Incubating
     RestAction<Void> suppressEmbeds(boolean suppressed);
 
     /**
-     * Returns wheter or not Embeds for this Message are suppressed.
+     * Returns whether or not Embeds for this Message are suppressed.
      * When Embeds are suppressed, They are not shown on Clients nor provided via API until un-suppressed.
      * <br>This is a shortcut method for checking if {@link #getFlags() getFlags()} contains {@link}
      *
@@ -1231,12 +1226,12 @@ public interface Message extends ISnowflake, Formattable
      * @return Whether or not Embeds are suppressed for this Message.
      * @see    #suppressEmbeds(boolean)
      */
-    @Incubating
     boolean isSuppressedEmbeds();
 
     /**
-     * //TODO: Fill out
-     * @return
+     * Returns an EnumSet of all {@link Message.MessageFlag MessageFlags} present for this Message.
+     * @return Never-Null EnumSet of present {@link Message.MessageFlag MessageFlags}
+     * @see    Message.MessageFlag
      */
     @Nonnull
     EnumSet<MessageFlag> getFlags();
@@ -1302,12 +1297,20 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
-     * Enum representing the flags on a Message
-     *
-     * @incubating The values in this Enum are not documented on discords end and could change at any time
+     * Enum representing the flags on a Message.
+     * <p>
+     * Note: The Values defined in this Enum are not considered final and only represent the current State of <i>known</i> Flags.
      */
-    @Incubating
-    enum MessageFlag {
+    enum MessageFlag
+    {
+        /**
+         * The Message has been published to subscribed Channels (via Channel Following)
+         */
+        CROSSPOSTED(0),
+        /**
+         * The Message originated from a Message in another Channel (via Channel Following)
+         */
+        IS_CROSSPOST(1),
         /**
          * Embeds are suppressed on the Message.
          * @see net.dv8tion.jda.api.entities.Message#isSuppressedEmbeds() Message#isSuppressedEmbeds()
@@ -1316,15 +1319,27 @@ public interface Message extends ISnowflake, Formattable
 
         private final int offset;
 
-        MessageFlag(int offset) {
+        MessageFlag(int offset)
+        {
             this.offset = offset;
         }
 
-        public static EnumSet<MessageFlag> fromValue(int value) {
+        public static EnumSet<MessageFlag> fromValue(int value)
+        {
             Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
                 .filter(e -> ((1 << e.offset) & value) > 0)
                 .collect(Collectors.toSet());
             return set.isEmpty() ? EnumSet.noneOf(MessageFlag.class) : EnumSet.copyOf(set);
+        }
+
+        public static int toBitField(Collection<MessageFlag> coll)
+        {
+            int flags = 0;
+            for (MessageFlag messageFlag : coll)
+            {
+                flags |= 1 << messageFlag.offset;
+            }
+            return flags;
         }
     }
 
