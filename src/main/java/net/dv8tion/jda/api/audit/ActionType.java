@@ -197,7 +197,7 @@ public enum ActionType
     // TODO: Verification and Documentation
     MEMBER_VOICE_MOVE(26, TargetType.MEMBER),
     MEMBER_VOICE_KICK(27, TargetType.MEMBER),
-    MEMBER_BOT_ADD(28, TargetType.MEMBER),
+    BOT_ADD(28, TargetType.MEMBER),
 
 
     /**
@@ -374,6 +374,14 @@ public enum ActionType
      */
     MESSAGE_DELETE(72, TargetType.MEMBER),
 
+    //TODO: Documentation and check target types
+    MESSAGE_BULK_DELETE(73, TargetType.UNKNOWN),
+    MESSAGE_PIN(74, TargetType.UNKNOWN),
+    MESSAGE_UNPIN(75, TargetType.UNKNOWN),
+
+    INTEGRATION_CREATE(80, TargetType.UNKNOWN),
+    INTEGRATION_UPDATE(81, TargetType.UNKNOWN),
+    INTEGRATION_DELETE(82, TargetType.UNKNOWN),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 
