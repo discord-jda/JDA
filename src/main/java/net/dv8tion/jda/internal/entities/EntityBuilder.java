@@ -868,7 +868,6 @@ public class EntityBuilder
         final OffsetDateTime editTime = jsonObject.isNull("edited_timestamp") ? null : OffsetDateTime.parse(jsonObject.getString("edited_timestamp"));
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
         final int flags = jsonObject.getInt("flags", 0);
-        final EnumSet<Message.MessageFlag> enumFlags = Message.MessageFlag.fromValue(flags);
 
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
@@ -920,13 +919,13 @@ public class EntityBuilder
             case DEFAULT:
                 return new ReceivedMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, activity, editTime, reactions, attachments, embeds, enumFlags);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds, flags);
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
                 return new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, activity, editTime, reactions, attachments, embeds, enumFlags);
+                    content, nonce, user, activity, editTime, reactions, attachments, embeds, flags);
         }
 
     }

@@ -1734,6 +1734,11 @@ public interface Message extends ISnowflake, Formattable
             this.offset = offset;
         }
 
+        public int getOffset()
+        {
+            return offset;
+        }
+
         public static EnumSet<MessageFlag> fromValue(int value)
         {
             Set<MessageFlag> set = Arrays.stream(MessageFlag.values())

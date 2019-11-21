@@ -66,6 +66,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageEmbed> embeds;
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
+    protected final int internalFlags;
     protected final EnumSet<MessageFlag> flags;
 
     // LAZY EVALUATED
@@ -82,7 +83,7 @@ public class ReceivedMessage extends AbstractMessage
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, EnumSet<MessageFlag> flags)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, int flags)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -100,7 +101,8 @@ public class ReceivedMessage extends AbstractMessage
         this.embeds = Collections.unmodifiableList(embeds);
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
-        this.flags = flags;
+        this.internalFlags = flags;
+        this.flags = MessageFlag.fromValue(internalFlags);
     }
 
     @Nonnull
@@ -799,16 +801,17 @@ public class ReceivedMessage extends AbstractMessage
     {
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
-        EnumSet<MessageFlag> newFlags = getFlags();
+        int newFlags = internalFlags;
+        int suppressionValue = 1 << MessageFlag.EMBEDS_SUPPRESSED.getOffset();
         if (suppressed)
         {
-            newFlags.add(MessageFlag.EMBEDS_SUPPRESSED);
+            newFlags |= suppressionValue;
         }
         else
         {
-            newFlags.remove(MessageFlag.EMBEDS_SUPPRESSED);
+            newFlags &= ~suppressionValue;
         }
-        return new RestActionImpl<>(jda, route, DataObject.empty().put("flags", MessageFlag.toBitField(newFlags)));
+        return new RestActionImpl<>(jda, route, DataObject.empty().put("flags", newFlags));
     }
 
     @Override
