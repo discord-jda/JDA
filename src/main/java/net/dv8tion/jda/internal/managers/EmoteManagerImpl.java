@@ -154,9 +154,8 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         withLock(this.roles, (list) ->
         {
             if (shouldUpdate(ROLES))
-                object.put("roles", list);
+                object.put("roles", new ArrayList<>(list));
         });
-
         reset();
         return getRequestBody(object);
     }
