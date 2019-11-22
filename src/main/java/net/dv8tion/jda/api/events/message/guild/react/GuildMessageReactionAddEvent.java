@@ -32,6 +32,22 @@ public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEve
 {
     public GuildMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull MessageReaction reaction)
     {
-        super(api, responseNumber, member, reaction);
+        super(api, responseNumber, member, reaction, member.getIdLong());
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public User getUser()
+    {
+        return super.getUser();
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public Member getMember()
+    {
+        return super.getMember();
     }
 }

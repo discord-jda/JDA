@@ -31,6 +31,7 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class MessageReactionHandler extends SocketHandler
@@ -83,7 +84,7 @@ public class MessageReactionHandler extends SocketHandler
                 if (member == null || member.isIncomplete()) // do we need to load a member?
                     member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
             }
-            if (member == null)
+            if (member == null && add && guild.isLoaded())
             {
                 WebSocketClient.LOG.debug("Dropping reaction event for unknown member {}", content);
                 return null;
@@ -97,15 +98,13 @@ public class MessageReactionHandler extends SocketHandler
             user = getJDA().getFakeUserMap().get(userId);
         if (user == null)
         {
-            if (!add)
+            if (add && guild != null)
             {
-                //This can be caused by a ban, we should just drop it in that case
+                getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
+                EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
+                        "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
                 return null;
             }
-            getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
-                                 "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
-            return null;
         }
 
         MessageChannel channel = getJDA().getTextChannelById(channelId);
@@ -147,16 +146,16 @@ public class MessageReactionHandler extends SocketHandler
         {
             rEmote = MessageReaction.ReactionEmote.fromUnicode(emojiName, getJDA());
         }
-        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, user.equals(getJDA().getSelfUser()), -1);
+        MessageReaction reaction = new MessageReaction(channel, rEmote, messageId, userId == getJDA().getSelfUser().getIdLong(), -1);
 
         if (add)
-            onAdd(reaction, user, member);
+            onAdd(reaction, user, member, userId);
         else
-            onRemove(reaction, user, member);
+            onRemove(reaction, user, member, userId);
         return null;
     }
 
-    private void onAdd(MessageReaction reaction, User user, Member member)
+    private void onAdd(MessageReaction reaction, User user, Member member, long userId)
     {
         JDAImpl jda = getJDA();
         switch (reaction.getChannelType())
@@ -165,13 +164,13 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new GuildMessageReactionAddEvent(
                         jda, responseNumber,
-                        member, reaction));
+                        Objects.requireNonNull(member), reaction));
                 break;
             case PRIVATE:
                 jda.handleEvent(
                     new PrivateMessageReactionAddEvent(
                         jda, responseNumber,
-                        user, reaction));
+                        user, reaction, userId));
                 break;
             case GROUP:
                 WebSocketClient.LOG.debug("Received a reaction add for a group which should not be possible");
@@ -181,10 +180,10 @@ public class MessageReactionHandler extends SocketHandler
         jda.handleEvent(
             new MessageReactionAddEvent(
                 jda, responseNumber,
-                user, member, reaction));
+                user, member, reaction, userId));
     }
 
-    private void onRemove(MessageReaction reaction, User user, Member member)
+    private void onRemove(MessageReaction reaction, User user, Member member, long userId)
     {
         JDAImpl jda = getJDA();
         switch (reaction.getChannelType())
@@ -193,13 +192,13 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new GuildMessageReactionRemoveEvent(
                         jda, responseNumber,
-                        member, reaction));
+                        member, reaction, userId));
                 break;
             case PRIVATE:
                 jda.handleEvent(
                     new PrivateMessageReactionRemoveEvent(
                         jda, responseNumber,
-                        user, reaction));
+                        user, reaction, userId));
                 break;
             case GROUP:
                 WebSocketClient.LOG.debug("Received a reaction remove for a group which should not be possible");
@@ -209,6 +208,6 @@ public class MessageReactionHandler extends SocketHandler
         jda.handleEvent(
             new MessageReactionRemoveEvent(
                 jda, responseNumber,
-                user, member, reaction));
+                user, member, reaction, userId));
     }
 }

@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed in a TextChannel.
@@ -33,33 +33,60 @@ import java.util.Objects;
  */
 public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
 {
+    protected final long userId;
     protected final Member issuer;
     protected final MessageReaction reaction;
 
-    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member user, @Nonnull MessageReaction reaction)
+    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable Member user, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (TextChannel) reaction.getChannel());
         this.issuer = user;
         this.reaction = reaction;
+        this.userId = userId;
+    }
+
+    /**
+     * The id for the user who added/removed their reaction.
+     *
+     * @return The user id
+     */
+    @Nonnull
+    public String getUserId()
+    {
+        return Long.toUnsignedString(userId);
+    }
+
+    /**
+     * The id for the user who added/removed their reaction.
+     *
+     * @return The user id
+     */
+    public long getUserIdLong()
+    {
+        return userId;
     }
 
     /**
      * The reacting {@link net.dv8tion.jda.api.entities.User User}
+     * <br>This might be missing if the user was not previously cached or the member was removed.
      *
-     * @return The reacting user
+     * @return The reacting user or null if this information is missing
+     *
+     * @see    #getUserIdLong()
      */
-    @Nonnull
+    @Nullable
     public User getUser()
     {
-        return issuer.getUser();
+        return issuer == null ? getJDA().getUserById(userId) : issuer.getUser();
     }
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user
+     * <br>This might be missing if the user was not previously cached or the member was removed.
      *
-     * @return The member instance for the reacting user
+     * @return The member instance for the reacting user or null if this information is missing
      */
-    @Nonnull
+    @Nullable
     public Member getMember()
     {
         return issuer;
