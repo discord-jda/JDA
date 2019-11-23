@@ -21,6 +21,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -38,6 +40,8 @@ import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -2910,6 +2914,111 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> addRoleToMember(@Nonnull Member member, @Nonnull Role role);
 
     /**
+     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is already present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will receive the new role
+     * @param  role
+     *         The role which should be assigned atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>If the role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> addRoleToMember(long userId, @Nonnull Role role)
+    {
+        Checks.notNull(role, "Role");
+        Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
+
+        Member member = getMemberById(userId);
+        if (member != null)
+            return addRoleToMember(member, role);
+        if (!getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            throw new InsufficientPermissionException(this, Permission.MANAGE_ROLES);
+        if (!getSelfMember().canInteract(role))
+            throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
+        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getId(), Long.toUnsignedString(userId), role.getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    /**
+     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is already present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will receive the new role
+     * @param  role
+     *         The role which should be assigned atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>If the role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> addRoleToMember(@Nonnull String userId, @Nonnull Role role)
+    {
+        return addRoleToMember(MiscUtil.parseSnowflake(userId), role);
+    }
+
+    /**
      * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
      *
@@ -2952,6 +3061,111 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> removeRoleFromMember(@Nonnull Member member, @Nonnull Role role);
+
+    /**
+     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is not present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will lose the specified role
+     * @param  role
+     *         The role which should be removed atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>The role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> removeRoleFromMember(long userId, @Nonnull Role role)
+    {
+        Checks.notNull(role, "Role");
+        Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
+
+        Member member = getMemberById(userId);
+        if (member != null)
+            return removeRoleFromMember(member, role);
+        if (!getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            throw new InsufficientPermissionException(this, Permission.MANAGE_ROLES);
+        if (!getSelfMember().canInteract(role))
+            throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
+        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getId(), Long.toUnsignedString(userId), role.getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    /**
+     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is not present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will lose the specified role
+     * @param  role
+     *         The role which should be removed atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>The role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> removeRoleFromMember(@Nonnull String userId, @Nonnull Role role)
+    {
+        return removeRoleFromMember(MiscUtil.parseSnowflake(userId), role);
+    }
 
     /**
      * Modifies the {@link net.dv8tion.jda.api.entities.Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
