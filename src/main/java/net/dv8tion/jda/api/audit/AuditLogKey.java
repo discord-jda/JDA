@@ -35,6 +35,11 @@ public enum AuditLogKey
      */
     ID("id"),
 
+
+    //TODO: Documentation
+    TYPE("type"),
+    APPLICATION_ID("application_id"),
+
     // GUILD
     /**
      * Change for the {@link net.dv8tion.jda.api.entities.Guild#getName() Guild.getName()} value
@@ -95,14 +100,14 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>String</b>
      */
-    GUILD_ICON("icon"),
+    GUILD_ICON("icon_hash"),
 
     /**
      * Change of the {@link net.dv8tion.jda.api.entities.Guild#getSplashId() Splash ID} of a Guild.
      *
      * <p>Expected type: <b>String</b>
      */
-    GUILD_SPLASH("splash"),
+    GUILD_SPLASH("splash_hash"),
 
     /**
      * Change of the {@link net.dv8tion.jda.api.entities.Guild#getVerificationLevel() Guild.getVerificationLevel()} value.
@@ -127,6 +132,12 @@ public enum AuditLogKey
      * <p>Expected type: <b>Integer</b>
      */
     GUILD_MFA_LEVEL("mfa_level"),
+
+    //TODO: Documentation
+    GUILD_VANITY_URL_CODE("vanity_url_code"),
+    GUILD_PRUNE_DELETE_DAYS("prune_delete_days"),
+    GUILD_WIDGET_ENABLED("widget_enabled"),
+    GUILD_WIDGET_CHANNEL_ID("widget_channel_id"),
 
 
     // CHANNEL
