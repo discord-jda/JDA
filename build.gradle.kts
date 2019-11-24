@@ -301,7 +301,7 @@ bintray {
 fun getProjectProperty(propertyName: String): String {
     var property = ""
     if (hasProperty(propertyName)) {
-        property = this.properties[propertyName] as? String ?: ""
+        property = project.properties[propertyName] as? String ?: ""
     }
     return property
 }
