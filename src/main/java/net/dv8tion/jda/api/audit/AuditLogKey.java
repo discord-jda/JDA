@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.audit;
 
+import net.dv8tion.jda.api.entities.Guild;
+
 /**
  * Enum of possible/expected keys that can be provided
  * to {@link AuditLogEntry#getChangeByKey(AuditLogKey) AuditLogEntry.getChangeByKey(AuditLogEntry.AuditLogKey}.
@@ -35,9 +37,18 @@ public enum AuditLogKey
      */
     ID("id"),
 
-
-    //TODO: Documentation
+    /**
+     * Entity type (like channel type or webhook type)
+     *
+     * <p>Expected type: <b>String or int</b>
+     */
     TYPE("type"),
+
+    /**
+     * The id for an authorized application (webhook/bot/integration)
+     *
+     * <p>Expected type: <b>String</b>
+     */
     APPLICATION_ID("application_id"),
 
     // GUILD
@@ -133,10 +144,32 @@ public enum AuditLogKey
      */
     GUILD_MFA_LEVEL("mfa_level"),
 
-    //TODO: Documentation
+    /**
+     * Change of the {@link Guild#getVanityCode()} value.
+     *
+     * <p>Expected type: <b>String</b>
+     */
     GUILD_VANITY_URL_CODE("vanity_url_code"),
+
+    /**
+     * Days of inactivity for a prune event.
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
     GUILD_PRUNE_DELETE_DAYS("prune_delete_days"),
+
+    /**
+     * Whether the guild widget is disabled or enabled
+     *
+     * <p>Expected type: <b>Boolean</b>
+     */
     GUILD_WIDGET_ENABLED("widget_enabled"),
+
+    /**
+     * The target channel for a widget
+     *
+     * <p>Expected type: <b>String</b>
+     */
     GUILD_WIDGET_CHANNEL_ID("widget_channel_id"),
 
 
