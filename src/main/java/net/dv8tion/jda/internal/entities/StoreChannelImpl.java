@@ -31,6 +31,13 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
         super(id, guild);
     }
 
+    @Override
+    public StoreChannelImpl setPosition(int rawPosition)
+    {
+        getGuild().getStoreChannelView().clearCachedLists();
+        return super.setPosition(rawPosition);
+    }
+
     @Nonnull
     @Override
     public ChannelType getType()

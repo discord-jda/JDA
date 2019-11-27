@@ -39,6 +39,13 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     }
 
     @Override
+    public VoiceChannelImpl setPosition(int rawPosition)
+    {
+        getGuild().getVoiceChannelsView().clearCachedLists();
+        return super.setPosition(rawPosition);
+    }
+
+    @Override
     public int getUserLimit()
     {
         return userLimit;
