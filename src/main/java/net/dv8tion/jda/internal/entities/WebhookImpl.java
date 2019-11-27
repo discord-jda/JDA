@@ -44,15 +44,24 @@ public class WebhookImpl implements Webhook
     private final ReentrantLock mngLock = new ReentrantLock();
     private final TextChannel channel;
     private final long id;
+    private final WebhookType type;
 
     private Member owner;
     private User user;
     private String token;
 
-    public WebhookImpl(TextChannel channel, long id)
+    public WebhookImpl(TextChannel channel, long id, WebhookType type)
     {
         this.channel = channel;
         this.id = id;
+        this.type = type;
+    }
+
+    @Nonnull
+    @Override
+    public WebhookType getType()
+    {
+        return type;
     }
 
     @Nonnull
