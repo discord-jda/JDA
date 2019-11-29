@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Represents a Discord {@link Activity Activity}.
@@ -35,6 +36,9 @@ import java.util.Objects;
  */
 public interface Activity
 {
+    /** The Pattern used for {@link #isValidStreamingUrl(String)} */
+    Pattern STREAMING_URL = Pattern.compile("https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+", Pattern.CASE_INSENSITIVE);
+
     /**
      * Whether this is a <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>
      * <br>If {@code false} the result of {@link #asRichPresence()} is {@code null}
@@ -251,7 +255,7 @@ public interface Activity
      */
     static boolean isValidStreamingUrl(@Nullable String url)
     {
-        return url != null && url.matches("https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+");
+        return url != null && STREAMING_URL.matcher(url).matches();
     }
 
     /**

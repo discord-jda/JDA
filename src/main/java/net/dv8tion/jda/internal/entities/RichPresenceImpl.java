@@ -66,22 +66,12 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         return this;
     }
 
-    /**
-     * The ID for the responsible application.
-     *
-     * @return The ID for the application
-     */
     @Override
     public long getApplicationIdLong()
     {
         return applicationId;
     }
 
-    /**
-     * The ID for the responsible application.
-     *
-     * @return The ID for the application
-     */
     @Nonnull
     @Override
     public String getApplicationId()
@@ -89,12 +79,6 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         return Long.toUnsignedString(applicationId);
     }
 
-    /**
-     * Session ID for this presence.
-     * <br>Used by spotify integration.
-     *
-     * @return Session ID
-     */
     @Nullable
     @Override
     public String getSessionId()
@@ -102,12 +86,6 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         return sessionId;
     }
 
-    /**
-     * Sync ID for this presence.
-     * <br>Used by spotify integration.
-     *
-     * @return Sync ID
-     */
     @Nullable
     @Override
     public String getSyncId()
@@ -115,40 +93,18 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         return syncId;
     }
 
-    /**
-     * Flags for this presence
-     *
-     * @return The flags for this presence
-     *
-     * @see    ActivityFlag
-     * @see    ActivityFlag#getFlags(int)
-     */
     @Override
     public int getFlags()
     {
         return flags;
     }
 
-    /**
-     * Flags for this presence in an enum set
-     *
-     * @return The flags for this presence
-     *
-     * @see    ActivityFlag
-     * @see    ActivityFlag#getFlags(int)
-     */
     @Override
     public EnumSet<ActivityFlag> getFlagSet()
     {
         return ActivityFlag.getFlags(getFlags());
     }
 
-    /**
-     * The user's current party status
-     * <br>Example: "Looking to Play", "Playing Solo", "In a Group"
-     *
-     * @return The user's current party status
-     */
     @Nullable
     @Override
     public String getState()
@@ -156,12 +112,6 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         return state;
     }
 
-    /**
-     * What the player is currently doing
-     * <br>Example: "Competitive - Captain's Mode", "In Queue", "Unranked PvP"
-     *
-     * @return What the player is currently doing
-     */
     @Nullable
     @Override
     public String getDetails()
@@ -169,11 +119,6 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
         return details;
     }
 
-    /**
-     * Information on the active party of the player
-     *
-     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Party Party} wrapper or {@code null} if unset
-     */
     @Nullable
     @Override
     public Party getParty()
@@ -183,28 +128,11 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
 
     @Nullable
     @Override
-    public Emoji getEmoji()
-    {
-        return this.emoji;
-    }
-
-    /**
-     * Information on the large image displayed in the profile view
-     *
-     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Image Image} wrapper or {@code null} if unset
-     */
-    @Nullable
-    @Override
     public Image getLargeImage()
     {
         return largeImage;
     }
 
-    /**
-     * Information on the small corner image displayed in the profile view
-     *
-     * @return {@link net.dv8tion.jda.api.entities.RichPresence.Image Image} wrapper or {@code null} if unset
-     */
     @Nullable
     @Override
     public Image getSmallImage()

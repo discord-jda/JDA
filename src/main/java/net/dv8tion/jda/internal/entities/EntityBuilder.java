@@ -517,6 +517,15 @@ public class EntityBuilder
             emoji = new Activity.Emoji(emojiName, emojiId, emojiAnimated);
         }
 
+        if (type == Activity.ActivityType.CUSTOM_STATUS)
+        {
+            if (gameJson.hasKey("state") && name.equalsIgnoreCase("Custom Status"))
+            {
+                name = gameJson.getString("state", "");
+                gameJson = gameJson.remove("state");
+            }
+        }
+
         if (!CollectionUtils.containsAny(gameJson.keys(), richGameFields))
             return new ActivityImpl(name, url, type, timestamps, emoji);
 
