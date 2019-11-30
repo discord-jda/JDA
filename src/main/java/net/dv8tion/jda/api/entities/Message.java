@@ -898,7 +898,7 @@ public interface Message extends ISnowflake, Formattable
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
      *
      * <p><u>To delete many messages at once in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * you should use {@link net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(Collection)} instead.</u>
+     * you should use {@link net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(List)} instead.</u>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
