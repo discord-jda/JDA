@@ -507,8 +507,27 @@ public class EntityBuilder
             timestamps = new RichPresence.Timestamps(start, end);
         }
 
+        Activity.Emoji emoji = null;
+        if (!gameJson.isNull("emoji"))
+        {
+            DataObject emojiJson = gameJson.getObject("emoji");
+            String emojiName = emojiJson.getString("name");
+            long emojiId = emojiJson.getUnsignedLong("id", 0);
+            boolean emojiAnimated = emojiJson.getBoolean("animated");
+            emoji = new Activity.Emoji(emojiName, emojiId, emojiAnimated);
+        }
+
+        if (type == Activity.ActivityType.CUSTOM_STATUS)
+        {
+            if (gameJson.hasKey("state") && name.equalsIgnoreCase("Custom Status"))
+            {
+                name = gameJson.getString("state", "");
+                gameJson = gameJson.remove("state");
+            }
+        }
+
         if (!CollectionUtils.containsAny(gameJson.keys(), richGameFields))
-            return new ActivityImpl(name, url, type, timestamps);
+            return new ActivityImpl(name, url, type, timestamps, emoji);
 
         // data for spotify
         long id = gameJson.getLong("application_id", 0L);
@@ -551,7 +570,7 @@ public class EntityBuilder
         }
 
         return new RichPresenceImpl(type, name, url,
-            id, party, details, state, timestamps, syncId, sessionId, flags,
+            id, emoji, party, details, state, timestamps, syncId, sessionId, flags,
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
