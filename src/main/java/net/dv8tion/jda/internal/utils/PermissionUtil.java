@@ -48,9 +48,9 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided members must both be Member objects of the same Guild!");
-        if(guild.getOwner().equals(issuer))
+        if(issuer.equals(guild.getOwner()))
             return true;
-        if(guild.getOwner().equals(target))
+        if(target.equals(guild.getOwner()))
             return false;
         List<Role> issuerRoles = issuer.getRoles();
         List<Role> targetRoles = target.getRoles();
@@ -80,7 +80,7 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided Member issuer and Role target must be from the same Guild!");
-        if(guild.getOwner().equals(issuer))
+        if(issuer.equals(guild.getOwner()))
             return true;
         List<Role> issuerRoles = issuer.getRoles();
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
