@@ -17,6 +17,8 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -44,9 +46,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
@@ -64,6 +64,7 @@ import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -82,8 +83,10 @@ public class GuildImpl implements Guild
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
-    private final TLongObjectMap<DataObject> cachedPresences = MiscUtil.newLongMap();
+    // user -> channel -> override
+    private final TLongObjectMap<TLongObjectMap<DataObject>> overrideMap = MiscUtil.newLongMap();
 
+    private final CompletableFuture<Void> chunkingCallback = new CompletableFuture<>();
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
 
@@ -108,6 +111,7 @@ public class GuildImpl implements Guild
     private BoostTier boostTier = BoostTier.NONE;
     private boolean available;
     private boolean canSendVerification = false;
+    private int memberCount;
 
     public GuildImpl(JDAImpl api, long id)
     {
@@ -148,6 +152,20 @@ public class GuildImpl implements Guild
         if (!getSelfMember().hasPermission(Permission.CREATE_INSTANT_INVITE))
             throw new InsufficientPermissionException(this, Permission.CREATE_INSTANT_INVITE);
         return new MemberActionImpl(getJDA(), this, userId, accessToken);
+    }
+
+    @Override
+    public boolean isLoaded()
+    {
+        // Only works with guild subscriptions
+        return getJDA().isGuildSubscriptions()
+                && (long) getMemberCount() <= getMemberCache().size();
+    }
+
+    @Override
+    public int getMemberCount()
+    {
+        return memberCount;
     }
 
     @Nonnull
@@ -596,7 +614,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> leave()
     {
-        if (owner.equals(getSelfMember()))
+        if (getSelfMember().isOwner())
             throw new IllegalStateException("Cannot leave a guild that you are the owner of! Transfer guild ownership first!");
 
         Route.CompiledRoute route = Route.Self.LEAVE_GUILD.compile(getId());
@@ -617,7 +635,7 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Void> delete(String mfaCode)
     {
-        if (!owner.equals(getSelfMember()))
+        if (!getSelfMember().isOwner())
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
         DataObject mfaBody = null;
@@ -736,9 +754,18 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    @Deprecated
     public boolean isAvailable()
     {
         return available;
+    }
+
+    @Nonnull
+    @Override
+    public CompletableFuture<Void> retrieveMembers()
+    {
+        startChunking();
+        return chunkingCallback;
     }
 
     @Override
@@ -853,14 +880,28 @@ public class GuildImpl implements Guild
         checkGuild(member.getGuild(), "member");
         checkPermission(Permission.KICK_MEMBERS);
         checkPosition(member);
+        return kick0(member.getUser().getId(), reason);
+    }
 
-        final String userId = member.getUser().getId();
-        final String guildId = getId();
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
+    {
+        Member member = getMemberById(userId);
+        if (member != null)
+            return kick(member, reason);
+        // Check permissions and whether the user is the owner, otherwise attempt a kick
+        Checks.check(!userId.equals(getOwnerId()), "Cannot kick the owner of a guild!");
+        checkPermission(Permission.KICK_MEMBERS);
+        return kick0(userId, reason);
+    }
 
-        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(guildId, userId);
-        if (reason != null && !reason.isEmpty())
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
-
+    @Nonnull
+    private AuditableRestAction<Void> kick0(@Nonnull String userId, @Nullable String reason)
+    {
+        Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
+        if (!Helpers.isBlank(reason))
+            route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -1075,7 +1116,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(newOwner, "Member");
         checkGuild(newOwner.getGuild(), "Member");
-        if (!getSelfMember().equals(getOwner()))
+        if (!getSelfMember().isOwner())
             throw new PermissionException("The logged in account must be the owner of this Guild to be able to transfer ownership");
 
         Checks.check(!getSelfMember().equals(newOwner),
@@ -1378,6 +1419,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setMemberCount(int count)
+    {
+        this.memberCount = count;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
@@ -1415,11 +1462,127 @@ public class GuildImpl implements Guild
         return memberCache;
     }
 
-    public TLongObjectMap<DataObject> getCachedPresenceMap()
+    // -- Member Tracking --
+
+    public TLongObjectMap<DataObject> getOverrideMap(long userId)
     {
-        return cachedPresences;
+        return overrideMap.get(userId);
     }
 
+    public TLongObjectMap<DataObject> removeOverrideMap(long userId)
+    {
+        return overrideMap.remove(userId);
+    }
+
+    public void pruneChannelOverrides(long channelId)
+    {
+        WebSocketClient.LOG.debug("Pruning cached overrides for channel with id {}", channelId);
+        overrideMap.transformValues((value) -> {
+            DataObject removed = value.remove(channelId);
+            return value.isEmpty() ? null : value;
+        });
+    }
+
+    public void cacheOverride(long userId, long channelId, DataObject obj)
+    {
+        if (!getJDA().isGuildSubscriptions())
+            return;
+        EntityBuilder.LOG.debug("Caching permission override of unloaded member {}", obj);
+        TLongObjectMap<DataObject> channelMap = overrideMap.get(userId);
+        if (channelMap == null)
+            overrideMap.put(userId, channelMap = MiscUtil.newLongMap());
+        channelMap.put(channelId, obj);
+    }
+
+    public void updateCachedOverrides(AbstractChannelImpl<?, ?> channel, DataArray newOverrides)
+    {
+        if (!getJDA().isGuildSubscriptions())
+            return;
+        long channelId = channel.getIdLong();
+        // extract user ids
+        TLongSet users = new TLongHashSet();
+        for (int i = 0; i < newOverrides.length(); i++)
+        {
+            DataObject obj = newOverrides.getObject(i);
+            if (!obj.getString("type", "").equals("member"))
+                continue;
+            long id = obj.getUnsignedLong("id");
+            // remember that this user has an override
+            users.add(id);
+        }
+
+        // now remove the overrides that are missing
+        TLongSet toRemove = new TLongHashSet();
+        overrideMap.forEachEntry((userId, overrides) ->
+        {
+            if (users.contains(userId))
+                return true;
+            // remove for the channel
+            overrides.remove(channelId);
+            // remember to remove this map if its empty now
+            if (overrides.isEmpty())
+                toRemove.add(userId);
+            return true;
+        });
+        // remove all empty maps
+        overrideMap.keySet().removeAll(toRemove);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Member> retrieveMemberById(long id)
+    {
+        Member member = getMemberById(id);
+        // If guild subscriptions are disabled this member might not be up-to-date
+        if (member != null && getJDA().isGuildSubscriptions())
+            return new EmptyRestAction<>(getJDA(), member);
+
+        Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
+        return new RestActionImpl<>(getJDA(), route, (resp, req) ->
+            getJDA().getEntityBuilder().createMember(this, resp.getObject()));
+    }
+
+    public void startChunking()
+    {
+        if (isLoaded())
+            return;
+        if (!getJDA().isGuildSubscriptions())
+        {
+            chunkingCallback.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled guild subscriptions"));
+            return;
+        }
+
+        DataObject request = DataObject.empty()
+            .put("limit", 0)
+            .put("query", "")
+            .put("guild_id", getId());
+
+        DataObject packet = DataObject.empty()
+            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+            .put("d", request);
+
+        getJDA().getClient().chunkOrSyncRequest(packet);
+    }
+
+    public void onMemberAdd()
+    {
+        memberCount++;
+    }
+
+    public void onMemberRemove()
+    {
+        memberCount--;
+        acknowledgeMembers();
+    }
+
+    public void acknowledgeMembers()
+    {
+        if (memberCache.size() == memberCount && !chunkingCallback.isDone())
+        {
+            JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
+            chunkingCallback.complete(null);
+        }
+    }
 
     // -- Object overrides --
 

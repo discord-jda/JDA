@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed.
@@ -31,22 +32,46 @@ import javax.annotation.Nonnull;
  */
 public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {
+    protected final long userId;
     protected final User issuer;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
+    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
+        this.userId = userId;
         this.issuer = user;
         this.reaction = reaction;
     }
 
     /**
+     * The id for the user who added/removed their reaction.
+     *
+     * @return The user id
+     */
+    @Nonnull
+    public String getUserId()
+    {
+        return Long.toUnsignedString(userId);
+    }
+
+    /**
+     * The id for the user who added/removed their reaction.
+     *
+     * @return The user id
+     */
+    public long getUserIdLong()
+    {
+        return userId;
+    }
+
+    /**
      * The reacting {@link net.dv8tion.jda.api.entities.User User}
+     * <br>This might be missing if the user was not cached.
      *
      * @return The reacting user
      */
-    @Nonnull
+    @Nullable
     public User getUser()
     {
         return issuer;

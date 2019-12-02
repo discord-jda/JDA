@@ -56,6 +56,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
     protected final User author;
+    protected final Member member;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
     protected final List<MessageReaction> reactions;
@@ -69,6 +70,7 @@ public class ReceivedMessage extends AbstractMessage
     protected String strippedContent = null;
 
     protected List<User> userMentions = null;
+    protected List<Member> memberMentions = null;
     protected List<Emote> emoteMentions = null;
     protected List<Role> roleMentions = null;
     protected List<TextChannel> channelMentions = null;
@@ -77,7 +79,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
-        String content, String nonce, User author, MessageActivity activity, OffsetDateTime editTime,
+        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
@@ -89,6 +91,7 @@ public class ReceivedMessage extends AbstractMessage
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
+        this.member = member;
         this.activity = activity;
         this.editedTime = editTime;
         this.reactions = Collections.unmodifiableList(reactions);
@@ -275,6 +278,8 @@ public class ReceivedMessage extends AbstractMessage
         User user = getJDA().getUserById(userId);
         if (user == null)
             user = api.getFakeUserMap().get(userId);
+        if (user == null && userMentions != null)
+            user = userMentions.stream().filter(it -> it.getIdLong() == userId).findFirst().orElse(null);
         return user;
     }
 
@@ -348,6 +353,8 @@ public class ReceivedMessage extends AbstractMessage
     public List<Member> getMentionedMembers(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        if (isFromGuild() && guild.equals(getGuild()) && memberMentions != null)
+            return memberMentions;
         List<User> mentionedUsers = getMentionedUsers();
         List<Member> members = new ArrayList<>();
         for (User user : mentionedUsers)
@@ -539,7 +546,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Member getMember()
     {
-        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
+        return member;
     }
 
     @Nonnull
@@ -832,6 +839,21 @@ public class ReceivedMessage extends AbstractMessage
             out = out.toUpperCase(formatter.locale());
 
         appendFormat(formatter, width, precision, leftJustified, out);
+    }
+
+    public void setMentions(List<User> users, List<Member> members)
+    {
+        users.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                        content.indexOf("<@!" + user.getId() + ">")
+                )));
+        members.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                         content.indexOf("<@!" + user.getId() + ">")
+                )));
+
+        this.userMentions = Collections.unmodifiableList(users);
+        this.memberMentions = Collections.unmodifiableList(members);
     }
 
     private <T, C extends Collection<T>> C processMentions(MentionType type, C collection, boolean distinct, Function<Matcher, T> map)

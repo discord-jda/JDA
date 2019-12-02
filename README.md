@@ -103,6 +103,22 @@ public static void main(String[] args) {
 > See [JDABuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html)
   and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
+You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
+Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter` or disabling `guild_subscriptions`.
+
+```java
+public void configureMemoryUsage(JDABuilder builder) {
+    // Disable cache for member activities (streaming/games/spotify)
+    builder.setDisabledCacheFlags(
+        EnumSet.of(CacheFlag.ACTIVITY)
+    );
+    // Disable user/member cache and related events
+    builder.setGuildSubscriptionsEnabled(false);
+    // Disable member chunking on startup (ignored if guild subscriptions are turned off)
+    builder.setChunkingFilter(ChunkingFilter.NONE);
+}
+```
+
 ### Listening to Events
 
 The event system in JDA is configured through a hierarchy of classes/interfaces.

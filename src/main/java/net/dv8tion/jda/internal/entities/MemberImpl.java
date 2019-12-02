@@ -257,8 +257,15 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean isOwner() {
-        return this.equals(getGuild().getOwner());
+    public boolean isOwner()
+    {
+        return this.user.getIdLong() == getGuild().getOwnerIdLong();
+    }
+
+    @Override
+    public boolean isFake()
+    {
+        return getGuild().getMemberById(getIdLong()) == null;
     }
 
     @Override
@@ -316,6 +323,12 @@ public class MemberImpl implements Member
     public long getBoostDateRaw()
     {
         return boostDate;
+    }
+
+    public boolean isIncomplete()
+    {
+        // the joined_at is only present on complete members, this implies the member is completely loaded
+        return !isOwner() && Objects.equals(getGuild().getTimeCreated(), getTimeJoined());
     }
 
     @Override

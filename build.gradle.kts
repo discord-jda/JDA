@@ -75,6 +75,9 @@ dependencies {
         isTransitive = true
     }
 
+    //Collections Utility
+    api("org.apache.commons:commons-collections4:4.1")
+
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
     // since jna is a transitive runtime dependency of opus-java we don't include it explicitly as dependency
@@ -83,7 +86,6 @@ dependencies {
     /* Internal dependencies */
 
     //General Utility
-    api("org.apache.commons:commons-collections4:4.1")
     implementation("net.sf.trove4j:trove4j:3.0.3")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.9.8")
 
@@ -299,7 +301,7 @@ bintray {
 fun getProjectProperty(propertyName: String): String {
     var property = ""
     if (hasProperty(propertyName)) {
-        property = this.properties[propertyName] as? String ?: ""
+        property = project.properties[propertyName] as? String ?: ""
     }
     return property
 }

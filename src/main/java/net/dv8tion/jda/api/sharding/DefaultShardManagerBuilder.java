@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -47,8 +48,9 @@ import java.util.stream.Collectors;
  * <p>A single DefaultShardManagerBuilder can be reused multiple times. Each call to {@link #build()}
  * creates a new {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance using the same information.
  *
- * @since  3.4
  * @author Aljoscha Grebe
+ *
+ * @since  3.4.0
  */
 public class  DefaultShardManagerBuilder
 {
@@ -62,6 +64,7 @@ public class  DefaultShardManagerBuilder
     protected Compression compression = Compression.ZLIB;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
+    protected int largeThreshold = 250;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
@@ -77,6 +80,7 @@ public class  DefaultShardManagerBuilder
     protected WebSocketFactory wsFactory = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
+    protected ChunkingFilter chunkingFilter;
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
@@ -1207,6 +1211,74 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * The {@link ChunkingFilter} to filter which guilds should use member chunking.
+     * <br>By default this uses {@link ChunkingFilter#ALL}.
+     *
+     * <p>This filter is useless when {@link #setGuildSubscriptionsEnabled(boolean)} is false.
+     *
+     * @param  filter
+     *         The filter to apply
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     *
+     * @see    ChunkingFilter#NONE
+     * @see    ChunkingFilter#include(long...)
+     * @see    ChunkingFilter#exclude(long...)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setChunkingFilter(@Nullable ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter;
+        return this;
+    }
+
+    /**
+     * Enable typing and presence update events.
+     * <br>These events cover the majority of traffic happening on the gateway and thus cause a lot
+     * of bandwidth usage. Disabling these events means the cache for users might become outdated since
+     * user properties are only updated by presence updates.
+     * <br>Default: true
+     *
+     * <h2>Notice</h2>
+     * This disables the majority of member cache and related events. If anything in your project
+     * relies on member state you should keep this enabled.
+     *
+     * @param  enabled
+     *         True, if guild subscriptions should be enabled
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setGuildSubscriptionsEnabled(boolean enabled)
+    {
+        return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+    }
+
+    /**
+     * Decides the total number of members at which a guild should start to use lazy loading.
+     * <br>This is limited to a number between 50 and 250 (inclusive).
+     * If the {@link #setChunkingFilter(ChunkingFilter) chunking filter} is set to {@link ChunkingFilter#ALL}
+     * this should be set to {@code 250} (default) to minimize the amount of guilds that need to request members.
+     *
+     * @param  threshold
+     *         The threshold in {@code [50, 250]}
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setLargeThreshold(int threshold)
+    {
+        this.largeThreshold = Math.max(50, Math.min(250, threshold)); // enforce 50 <= t <= 250
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
@@ -1236,9 +1308,9 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
-        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay);
+        final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, flags, compression);
-        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig);
+        final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 
         manager.login();
 

@@ -98,14 +98,11 @@ public class UserImpl implements User
         if (privateChannel != null)
             return new EmptyRestAction<>(getJDA(), privateChannel);
 
-        if (fake)
-            throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");
-
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         DataObject body = DataObject.empty().put("recipient_id", getId());
         return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
         {
-            PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject());
+            PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject(), this);
             UserImpl.this.privateChannel = priv;
             return priv;
         });

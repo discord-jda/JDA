@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -39,6 +40,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -98,7 +100,7 @@ public class JDAImpl implements JDA
     protected final PresenceImpl presence;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
-    protected final EventCache eventCache = new EventCache();
+    protected final EventCache eventCache;
     protected final EventManagerProxy eventManager = new EventManagerProxy(new InterfacedEventManager());
 
     protected final GuildSetupController guildSetupController;
@@ -118,6 +120,7 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long gatewayPing = -1;
     protected String gatewayUrl;
+    protected ChunkingFilter chunkingFilter;
 
     protected String clientId = null;
     protected ShardManager shardManager = null;
@@ -141,6 +144,7 @@ public class JDAImpl implements JDA
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
+        this.eventCache = new EventCache(isGuildSubscriptions());
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -161,6 +165,34 @@ public class JDAImpl implements JDA
     public boolean isCacheFlagSet(CacheFlag flag)
     {
         return metaConfig.getCacheFlags().contains(flag);
+    }
+
+    public boolean isGuildSubscriptions()
+    {
+        return metaConfig.isGuildSubscriptions();
+    }
+
+    public int getLargeThreshold()
+    {
+        return sessionConfig.getLargeThreshold();
+    }
+
+    public boolean chunkGuild(long id)
+    {
+        try
+        {
+            return isGuildSubscriptions() && chunkingFilter.filter(id);
+        }
+        catch (Exception e)
+        {
+            LOG.error("Uncaught exception from chunking filter", e);
+            return true;
+        }
+    }
+
+    public void setChunkingFilter(ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter;
     }
 
     public SessionController getSessionController()
@@ -428,17 +460,20 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public JDA awaitStatus(@Nonnull Status status) throws InterruptedException
+    public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn) throws InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
         if (getStatus() == Status.CONNECTED)
             return this;
+        List<Status> failStatus = Arrays.asList(failOn);
         while (!getStatus().isInit()                         // JDA might disconnect while starting
                 || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
         {
             if (getStatus() == Status.SHUTDOWN)
                 throw new IllegalStateException("Was shutdown trying to await status");
+            else if (failStatus.contains(getStatus()))
+                return this;
             Thread.sleep(50);
         }
         return this;
@@ -514,7 +549,8 @@ public class JDAImpl implements JDA
 
         // check cache
         User user = this.getUserById(id);
-        if (user != null)
+        // If guild subscriptions are disabled this user might not be up-to-date
+        if (user != null && isGuildSubscriptions())
             return new EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
@@ -534,6 +570,16 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
+    }
+
+    @Nonnull
+    @Override
+    public Set<String> getUnavailableGuilds()
+    {
+        TLongSet unavailableGuilds = guildSetupController.getUnavailableGuilds();
+        Set<String> copy = new HashSet<>();
+        unavailableGuilds.forEach(id -> copy.add(Long.toUnsignedString(id)));
+        return copy;
     }
 
     @Nonnull
