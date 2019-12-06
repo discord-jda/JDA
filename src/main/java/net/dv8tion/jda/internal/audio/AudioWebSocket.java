@@ -615,7 +615,7 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Get our port which is stored as little endian at the end of the packet
             // We AND it with 0xFFFF to ensure that it isn't sign extended
-            int ourPort = (int) IOUtil.getShortLittleEndian(received, received.length - 2) & 0xFFFF;
+            int ourPort = (int) IOUtil.getShortBigEndian(received, received.length - 2) & 0xFFFF;
             this.address = address;
             return new InetSocketAddress(ourIP, ourPort);
         }
