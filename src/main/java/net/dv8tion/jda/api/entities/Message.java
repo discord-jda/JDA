@@ -913,7 +913,7 @@ public interface Message extends ISnowflake, Formattable
      *         or lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The message got already deleted at the time the request was send.</li>
+     *         The message was already deleted at the time the request was sent.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
