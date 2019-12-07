@@ -265,8 +265,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public boolean isNSFW() {
-        return nsfw || name.equals("nsfw") || name.startsWith("nsfw-");
+    public boolean isNSFW()
+    {
+        return nsfw;
     }
 
     @Override
