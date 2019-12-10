@@ -257,7 +257,7 @@ public interface SessionController
          *
          * @param  isLast
          *         True, if this is the last node in a queue worker.
-         *         When false this will not wait for the payload to be delivered.
+         *         When true this will not wait for the payload to be delivered.
          *
          * @throws InterruptedException
          *         If the calling thread is interrupted
