@@ -1288,7 +1288,9 @@ public class GuildImpl implements Guild
 
     public GuildImpl setOwner(Member owner)
     {
-        this.owner = owner;
+        // Only cache owner if user cache is enabled
+        if (getJDA().isGuildSubscriptions())
+            this.owner = owner;
         return this;
     }
 
