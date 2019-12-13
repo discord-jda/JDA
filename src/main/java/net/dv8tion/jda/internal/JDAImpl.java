@@ -338,6 +338,7 @@ public class JDAImpl implements JDA
             if (userResponse != null)
             {
                 verifyAccountType(userResponse);
+                getEntityBuilder().createSelfUser(userResponse);
                 return;
             }
         }
