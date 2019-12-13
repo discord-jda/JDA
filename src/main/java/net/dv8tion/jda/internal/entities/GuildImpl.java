@@ -768,6 +768,19 @@ public class GuildImpl implements Guild
         return chunkingCallback;
     }
 
+    @Nonnull
+    @Override
+    public RestAction<Member> retrieveMemberById(long id)
+    {
+        Member member = getMemberById(id);
+        if (member != null)
+            return new EmptyRestAction<>(getJDA(), member);
+
+        Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
+        return new RestActionImpl<>(getJDA(), route, (resp, req) ->
+                getJDA().getEntityBuilder().createMember(this, resp.getObject()));
+    }
+
     @Override
     public long getIdLong()
     {
@@ -1528,20 +1541,6 @@ public class GuildImpl implements Guild
         });
         // remove all empty maps
         overrideMap.keySet().removeAll(toRemove);
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Member> retrieveMemberById(long id)
-    {
-        Member member = getMemberById(id);
-        // If guild subscriptions are disabled this member might not be up-to-date
-        if (member != null && getJDA().isGuildSubscriptions())
-            return new EmptyRestAction<>(getJDA(), member);
-
-        Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
-        return new RestActionImpl<>(getJDA(), route, (resp, req) ->
-            getJDA().getEntityBuilder().createMember(this, resp.getObject()));
     }
 
     public void startChunking()
