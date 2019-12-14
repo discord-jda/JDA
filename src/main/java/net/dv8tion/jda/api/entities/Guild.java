@@ -2145,7 +2145,7 @@ public interface Guild extends ISnowflake
     /**
      * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
      * <br>This will retrieve the current owner of the guild.
-     * It is possible that the owner of a guild is no longer a registered disocrd user in which case this will fail.
+     * It is possible that the owner of a guild is no longer a registered discord user in which case this will fail.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
