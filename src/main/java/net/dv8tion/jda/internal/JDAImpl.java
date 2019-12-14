@@ -546,7 +546,7 @@ public class JDAImpl implements JDA
     public RestAction<User> retrieveUserById(long id)
     {
         AccountTypeException.check(getAccountType(), AccountType.BOT);
-        return new EmptyRestAction<>(this, User.class, () -> getUserById(id), () -> {
+        return new DeferredRestAction<>(this, User.class, () -> getUserById(id), () -> {
             Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
             return new RestActionImpl<>(this, route,
                     (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));

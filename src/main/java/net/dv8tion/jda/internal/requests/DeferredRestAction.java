@@ -27,7 +27,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class EmptyRestAction<T, R extends RestAction<T>> implements AuditableRestAction<T>
+public class DeferredRestAction<T, R extends RestAction<T>> implements AuditableRestAction<T>
 {
     private final JDA api;
     private final Class<T> type;
@@ -37,24 +37,24 @@ public class EmptyRestAction<T, R extends RestAction<T>> implements AuditableRes
     private BooleanSupplier isAction;
     private BooleanSupplier transitiveChecks;
 
-    public EmptyRestAction(JDA api)
+    public DeferredRestAction(JDA api)
     {
         this(api, null, null, null);
     }
 
-    public EmptyRestAction(JDA api, Class<T> type, T value)
+    public DeferredRestAction(JDA api, Class<T> type, T value)
     {
         this(api, type, () -> value, null);
     }
 
-    public EmptyRestAction(JDA api, Supplier<R> actionSupplier)
+    public DeferredRestAction(JDA api, Supplier<R> actionSupplier)
     {
         this(api, null, null, actionSupplier);
     }
 
-    public EmptyRestAction(JDA api, Class<T> type,
-                           Supplier<T> valueSupplier,
-                           Supplier<R> actionSupplier)
+    public DeferredRestAction(JDA api, Class<T> type,
+                              Supplier<T> valueSupplier,
+                              Supplier<R> actionSupplier)
     {
         this.api = api;
         this.type = type;

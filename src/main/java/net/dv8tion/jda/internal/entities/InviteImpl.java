@@ -28,7 +28,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -103,7 +103,7 @@ public class InviteImpl implements Invite
     public RestAction<Invite> expand()
     {
         if (this.expanded)
-            return new EmptyRestAction<>(getJDA(), Invite.class, this);
+            return new DeferredRestAction<>(getJDA(), Invite.class, this);
 
         if (this.type != Invite.InviteType.GUILD)
             throw new IllegalStateException("Only guild invites can be expanded");

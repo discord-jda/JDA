@@ -23,7 +23,8 @@ import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -114,11 +115,9 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public RestAction<List<Invite>> retrieveInvites()
     {
-        List<Invite> empty = Collections.emptyList();
-        return new EmptyRestAction<>(getJDA(), (Class<List<Invite>>) empty.getClass(), empty);
+        return new CompletedRestAction<>(getJDA(), Collections.emptyList());
     }
 
     @Nonnull

@@ -496,7 +496,7 @@ public class GuildImpl implements Guild
         Checks.isSnowflake(id, "Emote ID");
 
         JDAImpl jda = getJDA();
-        return new EmptyRestAction<>(jda, ListedEmote.class,
+        return new DeferredRestAction<>(jda, ListedEmote.class,
         () -> {
             Emote emote = getEmoteById(id);
             if (emote != null)
@@ -777,7 +777,7 @@ public class GuildImpl implements Guild
     public RestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
-        return new EmptyRestAction<>(jda, Member.class, () -> getMemberById(id), () -> {
+        return new DeferredRestAction<>(jda, Member.class, () -> getMemberById(id), () -> {
             Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
             return new RestActionImpl<>(jda, route, (resp, req) ->
                     jda.getEntityBuilder().createMember(this, resp.getObject()));
@@ -860,7 +860,7 @@ public class GuildImpl implements Guild
         }
 
         JDAImpl jda = getJDA();
-        return new EmptyRestAction<>(jda, () -> {
+        return new DeferredRestAction<>(jda, () -> {
             DataObject body = DataObject.empty().put("nick", nickname == null ? "" : nickname);
 
             Route.CompiledRoute route;
@@ -992,7 +992,7 @@ public class GuildImpl implements Guild
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
             if (voiceState.isGuildDeafened() == deafen)
-                return new EmptyRestAction<>(getJDA(), null);
+                return new DeferredRestAction<>(getJDA(), null);
         }
 
         DataObject body = DataObject.empty().put("deaf", deafen);
@@ -1014,7 +1014,7 @@ public class GuildImpl implements Guild
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only mute members who are currently in a voice channel");
             if (voiceState.isGuildMuted() == mute)
-                return new EmptyRestAction<>(getJDA(), null);
+                return new DeferredRestAction<>(getJDA(), null);
         }
 
         DataObject body = DataObject.empty().put("mute", mute);
@@ -1094,7 +1094,7 @@ public class GuildImpl implements Guild
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
         if (Helpers.deepEqualsUnordered(roles, memberRoles))
-            return new EmptyRestAction<>(getJDA());
+            return new DeferredRestAction<>(getJDA());
 
         // Check removed roles
         for (Role r : memberRoles)
