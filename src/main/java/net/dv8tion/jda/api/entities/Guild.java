@@ -500,11 +500,14 @@ public interface Guild extends ISnowflake
      * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
      * Sometimes owners of guilds delete their account or get banned by Discord.
      *
+     * <p>If lazy-loading is used it is recommended to use {@link #retrieveOwner()} instead.
+     *
      * <p>Ownership can be transferred using {@link net.dv8tion.jda.api.entities.Guild#transferOwnership(Member)}.
      *
      * @return Possibly-null Member object for the Guild owner.
      *
      * @see    #getOwnerIdLong()
+     * @see    #retrieveOwner()
      */
     @Nullable
     Member getOwner();
@@ -2132,6 +2135,32 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     RestAction<Member> retrieveMemberById(long id);
+
+    /**
+     * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
+     * <br>This will retrieve the current owner of the guild.
+     * It is possible that the owner of a guild is no longer a registered discord user in which case this will fail.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #getOwner()
+     * @see    #getOwnerIdLong()
+     * @see    #retrieveMemberById(long)
+     */
+    @Nonnull
+    default RestAction<Member> retrieveOwner()
+    {
+        return retrieveMemberById(getOwnerIdLong());
+    }
 
     /* From GuildController */
 
