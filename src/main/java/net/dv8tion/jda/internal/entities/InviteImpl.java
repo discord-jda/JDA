@@ -103,7 +103,7 @@ public class InviteImpl implements Invite
     public RestAction<Invite> expand()
     {
         if (this.expanded)
-            return new EmptyRestAction<>(getJDA(), this);
+            return new EmptyRestAction<>(getJDA(), Invite.class, this);
 
         if (this.type != Invite.InviteType.GUILD)
             throw new IllegalStateException("Only guild invites can be expanded");

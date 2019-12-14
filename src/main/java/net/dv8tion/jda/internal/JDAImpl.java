@@ -546,16 +546,11 @@ public class JDAImpl implements JDA
     public RestAction<User> retrieveUserById(long id)
     {
         AccountTypeException.check(getAccountType(), AccountType.BOT);
-
-        // check cache
-        User user = this.getUserById(id);
-        // If guild subscriptions are disabled this user might not be up-to-date
-        if (user != null && isGuildSubscriptions())
-            return new EmptyRestAction<>(this, user);
-
-        Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(this, route,
-            (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+        return new EmptyRestAction<>(this, User.class, () -> getUserById(id), () -> {
+            Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
+            return new RestActionImpl<>(this, route,
+                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+        });
     }
 
     @Nonnull

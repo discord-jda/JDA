@@ -1828,6 +1828,6 @@ public interface JDA
             }
         }
         else throw new IllegalStateException("No port available");
-        return new EmptyRestAction<>(this, port);
+        return new EmptyRestAction<>(this, Integer.class, port);
     }
 }

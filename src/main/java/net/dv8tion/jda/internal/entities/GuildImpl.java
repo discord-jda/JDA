@@ -47,10 +47,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
@@ -497,18 +494,25 @@ public class GuildImpl implements Guild
     public RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id)
     {
         Checks.isSnowflake(id, "Emote ID");
-        Emote emote = getEmoteById(id);
-        if (emote != null)
-        {
-            ListedEmote listedEmote = (ListedEmote) emote;
-            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new EmptyRestAction<>(getJDA(), listedEmote);
-        }
-        Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
-            EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-            return builder.createEmote(GuildImpl.this, response.getObject(), true);
+
+        JDAImpl jda = getJDA();
+        return new EmptyRestAction<>(jda, ListedEmote.class,
+        () -> {
+            Emote emote = getEmoteById(id);
+            if (emote != null)
+            {
+                ListedEmote listedEmote = (ListedEmote) emote;
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                    return listedEmote;
+            }
+            return null;
+        }, () -> {
+            Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
+            return new AuditableRestActionImpl<>(jda, route, (response, request) ->
+            {
+                EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
+                return builder.createEmote(GuildImpl.this, response.getObject(), true);
+            });
         });
     }
 
@@ -772,13 +776,12 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Member> retrieveMemberById(long id)
     {
-        Member member = getMemberById(id);
-        if (member != null)
-            return new EmptyRestAction<>(getJDA(), member);
-
-        Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
-        return new RestActionImpl<>(getJDA(), route, (resp, req) ->
-                getJDA().getEntityBuilder().createMember(this, resp.getObject()));
+        JDAImpl jda = getJDA();
+        return new EmptyRestAction<>(jda, Member.class, () -> getMemberById(id), () -> {
+            Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
+            return new RestActionImpl<>(jda, route, (resp, req) ->
+                    jda.getEntityBuilder().createMember(this, resp.getObject()));
+        });
     }
 
     @Override
@@ -856,21 +859,18 @@ public class GuildImpl implements Guild
             checkPosition(member);
         }
 
-        if (Objects.equals(nickname, member.getNickname()))
-            return new EmptyRestAction<>(getJDA(), null);
+        JDAImpl jda = getJDA();
+        return new EmptyRestAction<>(jda, () -> {
+            DataObject body = DataObject.empty().put("nick", nickname == null ? "" : nickname);
 
-        if (nickname == null)
-            nickname = "";
+            Route.CompiledRoute route;
+            if (member.equals(getSelfMember()))
+                route = Route.Guilds.MODIFY_SELF_NICK.compile(getId());
+            else
+                route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
-        DataObject body = DataObject.empty().put("nick", nickname);
-
-        Route.CompiledRoute route;
-        if (member.equals(getSelfMember()))
-            route = Route.Guilds.MODIFY_SELF_NICK.compile(getId());
-        else
-            route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
-
-        return new AuditableRestActionImpl<>(getJDA(), route, body);
+            return new AuditableRestActionImpl<Void>(jda, route, body);
+        }).setCacheCheck(() -> !Objects.equals(nickname, member.getNickname()));
     }
 
     @Nonnull

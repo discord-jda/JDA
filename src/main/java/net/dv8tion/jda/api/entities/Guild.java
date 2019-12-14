@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -1628,13 +1629,18 @@ public interface Guild extends ISnowflake
         Checks.notNull(emote, "Emote");
         if (emote.getGuild() != null)
             Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
-        if (emote instanceof ListedEmote && !emote.isFake())
-        {
-            ListedEmote listedEmote = (ListedEmote) emote;
-            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new EmptyRestAction<>(getJDA(), listedEmote);
-        }
-        return retrieveEmoteById(emote.getId());
+
+        JDA jda = getJDA();
+        return new EmptyRestAction<>(jda, ListedEmote.class,
+        () -> {
+            if (emote instanceof ListedEmote && !emote.isFake())
+            {
+                ListedEmote listedEmote = (ListedEmote) emote;
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                    return listedEmote;
+            }
+            return null;
+        }, () -> retrieveEmoteById(emote.getId()));
     }
 
     /**
@@ -2139,7 +2145,7 @@ public interface Guild extends ISnowflake
     /**
      * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
      * <br>This will retrieve the current owner of the guild.
-     * It is possible that the owner of a guild is no longer a registered discord user in which case this will fail.
+     * It is possible that the owner of a guild is no longer a registered disocrd user in which case this will fail.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>

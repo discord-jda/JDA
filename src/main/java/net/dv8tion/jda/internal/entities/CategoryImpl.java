@@ -114,9 +114,11 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
+    @SuppressWarnings("unchecked")
     public RestAction<List<Invite>> retrieveInvites()
     {
-        return new EmptyRestAction<>(getJDA(), Collections.emptyList());
+        List<Invite> empty = Collections.emptyList();
+        return new EmptyRestAction<>(getJDA(), (Class<List<Invite>>) empty.getClass(), empty);
     }
 
     @Nonnull

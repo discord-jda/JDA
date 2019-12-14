@@ -96,7 +96,7 @@ public class UserImpl implements User
     public RestAction<PrivateChannel> openPrivateChannel()
     {
         if (privateChannel != null)
-            return new EmptyRestAction<>(getJDA(), privateChannel);
+            return new EmptyRestAction<>(getJDA(), PrivateChannel.class, privateChannel);
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         DataObject body = DataObject.empty().put("recipient_id", getId());
