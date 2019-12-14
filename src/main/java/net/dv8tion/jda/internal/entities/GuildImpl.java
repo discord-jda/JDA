@@ -992,7 +992,7 @@ public class GuildImpl implements Guild
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
             if (voiceState.isGuildDeafened() == deafen)
-                return new DeferredRestAction<>(getJDA(), null);
+                return new CompletedRestAction<>(getJDA(), null);
         }
 
         DataObject body = DataObject.empty().put("deaf", deafen);
@@ -1014,7 +1014,7 @@ public class GuildImpl implements Guild
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only mute members who are currently in a voice channel");
             if (voiceState.isGuildMuted() == mute)
-                return new DeferredRestAction<>(getJDA(), null);
+                return new CompletedRestAction<>(getJDA(), null);
         }
 
         DataObject body = DataObject.empty().put("mute", mute);
@@ -1094,7 +1094,7 @@ public class GuildImpl implements Guild
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
         if (Helpers.deepEqualsUnordered(roles, memberRoles))
-            return new DeferredRestAction<>(getJDA());
+            return new CompletedRestAction<>(getJDA(), null);
 
         // Check removed roles
         for (Role r : memberRoles)
