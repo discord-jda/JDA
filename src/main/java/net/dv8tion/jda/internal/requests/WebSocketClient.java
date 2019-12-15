@@ -1214,12 +1214,22 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("MESSAGE_REACTION_REMOVE",     new MessageReactionHandler(api, false));
         handlers.put("MESSAGE_REACTION_REMOVE_ALL", new MessageReactionBulkRemoveHandler(api));
         handlers.put("MESSAGE_UPDATE",              new MessageUpdateHandler(api));
-        handlers.put("PRESENCE_UPDATE",             new PresenceUpdateHandler(api));
         handlers.put("READY",                       new ReadyHandler(api));
-        handlers.put("TYPING_START",                new TypingStartHandler(api));
         handlers.put("USER_UPDATE",                 new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",         new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",          new VoiceStateUpdateHandler(api));
+
+        if (api.isGuildSubscriptions())
+        {
+            // These events are not expected if guild subscriptions are disabled
+            handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
+            handlers.put("TYPING_START",    new TypingStartHandler(api));
+        }
+        else
+        {
+            handlers.put("PRESENCE_UPDATE", nopHandler);
+            handlers.put("TYPING_START",    nopHandler);
+        }
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);
