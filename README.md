@@ -617,7 +617,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
-   * Version: **2.10.2**
+   * Version: **2.10.1**
    * [Github](https://github.com/FasterXML/jackson)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j
