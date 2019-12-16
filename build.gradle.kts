@@ -67,7 +67,7 @@ dependencies {
     api("org.slf4j:slf4j-api:1.7.25")
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.5")
+    api("com.neovisionaries:nv-websocket-client:2.9")
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
@@ -87,7 +87,7 @@ dependencies {
 
     //General Utility
     implementation("net.sf.trove4j:trove4j:3.0.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.8")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
 
     //Sets the dependencies for the examples
     configurations.asMap["examplesCompile"] = configurations["apiElements"]

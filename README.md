@@ -605,7 +605,7 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.5**
+   * Version: **2.9**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
@@ -617,7 +617,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
-   * Version: **2.9.8**
+   * Version: **2.10.1**
    * [Github](https://github.com/FasterXML/jackson)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j
