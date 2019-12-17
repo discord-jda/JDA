@@ -788,7 +788,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 final DataArray payload = raw.getArray("d");
                 final List<DataObject> converted = convertPresencesReplace(responseTotal, payload);
-                final PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
+                final SocketHandler handler = getHandler("PRESENCE_UPDATE");
                 LOG.trace("{} -> {}", type, payload);
                 for (DataObject o : converted)
                 {
