@@ -350,7 +350,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         else
             LOG.debug("Connected to WebSocket");
         connected = true;
-        reconnectTimeoutS = 2;
+        //reconnectTimeoutS = 2; We will reset this when the session was started successfully (ready/resume)
         messagesSent.set(0);
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
@@ -815,6 +815,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 //INIT types
                 case "READY":
+                    reconnectTimeoutS = 2;
                     api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                     processingReady = true;
                     handleIdentifyRateLimit = false;
@@ -825,6 +826,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     sessionId = content.getString("session_id");
                     break;
                 case "RESUMED":
+                    reconnectTimeoutS = 2;
                     sentAuthInfo = true;
                     if (!processingReady)
                     {
