@@ -219,6 +219,8 @@ public interface Guild extends ISnowflake
      *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
      *     <li>VERIFIED - Guild is "verified"</li>
      *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
+     *     <li>PUBLIC - Guild is "public"</li>
+     *     <li>PUBLIC_DISABLED - Guild cannot be public</li>
      * </ul>
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
