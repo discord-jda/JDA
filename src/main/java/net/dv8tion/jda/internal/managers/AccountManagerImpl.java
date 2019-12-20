@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.managers.AccountManager;
@@ -33,7 +34,7 @@ import javax.annotation.Nonnull;
 
 public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager
 {
-    protected final UpstreamReference<SelfUser> selfUser;
+    protected final SelfUser selfUser;
 
     protected String currentPassword;
 
@@ -51,14 +52,14 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     public AccountManagerImpl(SelfUser selfUser)
     {
         super(selfUser.getJDA(), Route.Self.MODIFY_SELF.compile());
-        this.selfUser = new UpstreamReference<>(selfUser);
+        this.selfUser = selfUser;
     }
 
     @Nonnull
     @Override
     public SelfUser getSelfUser()
     {
-        return selfUser.get();
+        return selfUser;
     }
 
     @Nonnull
@@ -177,7 +178,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     protected void handleSuccess(Response response, Request<Void> request)
     {
         String newToken = response.getObject().getString("token").replace("Bot ", "");
-        api.get().setToken(newToken);
+        api.setToken(newToken);
         request.onSuccess(null);
     }
 }

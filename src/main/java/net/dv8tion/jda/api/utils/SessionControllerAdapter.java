@@ -109,7 +109,7 @@ public class SessionControllerAdapter implements SessionController
                     }
                     else if (response.code == 401)
                     {
-                        api.get().verifyToken(true);
+                        api.verifyToken(true);
                     }
                     else
                     {

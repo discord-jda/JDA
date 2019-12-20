@@ -68,7 +68,7 @@ public class AudioConnection
     private final HashMap<User, Queue<AudioData>> combinedQueue = new HashMap<>();
     private final String threadIdentifier;
     private final AudioWebSocket webSocket;
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
 
     private UpstreamReference<VoiceChannel> channel;
     private PointerByReference opusEncoder;
@@ -89,10 +89,11 @@ public class AudioConnection
 
     public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token)
     {
-        VoiceChannel channel = manager.getQueuedAudioConnection();
-        this.channel = new UpstreamReference<>(channel);
+        VoiceChannel channel = Objects.requireNonNull(manager.getQueuedAudioConnection(), "Failed to create AudioConnection without queued channel!");
+
+        this.api = (JDAImpl) channel.getJDA();
+        this.channel = new UpstreamReference<>(channel, api::getVoiceChannelById);
         final JDAImpl api = (JDAImpl) channel.getJDA();
-        this.api = new UpstreamReference<>(api);
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
         this.webSocket = new AudioWebSocket(this, manager.getListenerProxy(), endpoint, channel.getGuild(), sessionId, token, manager.isAutoReconnect());
     }
@@ -148,17 +149,17 @@ public class AudioConnection
 
     public VoiceChannel getChannel()
     {
-        return channel.get();
+        return channel.resolve();
     }
 
     public void setChannel(VoiceChannel channel)
     {
-        this.channel = channel == null ? null : new UpstreamReference<>(channel);
+        this.channel = channel == null ? null : new UpstreamReference<>(channel, api::getVoiceChannelById);
     }
 
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     public Guild getGuild()
@@ -278,7 +279,7 @@ public class AudioConnection
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
                 LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
-                      channel.get().getId(), ssrc, previousId, userId);
+                      channel.resolve().getId(), ssrc, previousId, userId);
             }
         }
         else

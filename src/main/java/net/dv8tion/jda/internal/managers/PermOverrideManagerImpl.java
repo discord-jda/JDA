@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.internal.managers;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -31,6 +32,7 @@ import javax.annotation.Nonnull;
 public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager
 {
     protected final UpstreamReference<PermissionOverride> override;
+    protected final boolean role;
 
     protected long allowed;
     protected long denied;
@@ -45,14 +47,36 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     {
         super(override.getJDA(),
               Route.Channels.MODIFY_PERM_OVERRIDE.compile(
-                  override.getChannel().getId(),
-                  override.isMemberOverride() ? override.getMember().getUser().getId()
-                                              : override.getRole().getId()));
-        this.override = new UpstreamReference<>(override);
+                  override.getChannel().getId(), override.getId()));
+        this.override = setupReferent(override);
+        this.role = override.isRoleOverride();
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
         if (isPermissionChecksEnabled())
             checkPermissions();
+    }
+
+    private UpstreamReference<PermissionOverride> setupReferent(PermissionOverride override)
+    {
+        JDA api = override.getJDA();
+        GuildChannel channel = override.getChannel();
+        long channelId = channel.getIdLong();
+        ChannelType type = channel.getType();
+        boolean role = override.isRoleOverride();
+        return new UpstreamReference<>(override, (holderId) -> {
+            GuildChannel targetChannel = api.getGuildChannelById(type, channelId);
+            if (targetChannel == null)
+                return null;
+            Guild guild = targetChannel.getGuild();
+            IPermissionHolder holder;
+            if (role)
+                holder = guild.getRoleById(holderId);
+            else
+                holder = guild.getMemberById(holderId);
+            if (holder == null)
+                return null;
+            return targetChannel.getPermissionOverride(holder);
+        });
     }
 
     private void setupValues()
@@ -67,7 +91,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Override
     public PermissionOverride getPermissionOverride()
     {
-        return override.get();
+        return override.resolve();
     }
 
     @Nonnull
@@ -149,13 +173,13 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Override
     protected RequestBody finalizeData()
     {
-        String targetId = getPermissionOverride().isMemberOverride() ? getPermissionOverride().getMember().getUser().getId() : getPermissionOverride().getRole().getId();
+        String targetId = override.getId();
         // setup missing values here
         setupValues();
         RequestBody data = getRequestBody(
             DataObject.empty()
                 .put("id", targetId)
-                .put("type", getPermissionOverride().isMemberOverride() ? "member" : "role")
+                .put("type", role ? "role" : "member")
                 .put("allow", this.allowed)
                 .put("deny",  this.denied));
         reset();

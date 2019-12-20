@@ -46,8 +46,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoleImpl implements Role
 {
     private final long id;
-    private final long guildId;
-    private final UpstreamReference<JDAImpl> api;
+    private final UpstreamReference<Guild> guild;
+    private final JDAImpl api;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
@@ -63,8 +63,8 @@ public class RoleImpl implements Role
     public RoleImpl(long id, Guild guild)
     {
         this.id = id;
-        this.guildId = guild.getIdLong();
-        this.api = new UpstreamReference<>((JDAImpl) guild.getJDA());
+        this.api =(JDAImpl) guild.getJDA();
+        this.guild = new UpstreamReference<>(guild, api::getGuildById);
     }
 
     @Override
@@ -220,10 +220,7 @@ public class RoleImpl implements Role
     @Override
     public Guild getGuild()
     {
-        Guild guild = getJDA().getGuildById(guildId);
-        if (guild == null)
-            throw new IllegalStateException("Cannot get reference to upstream Guild with id: " + Long.toUnsignedString(guildId));
-        return guild;
+        return guild.resolve();
     }
 
     @Nonnull
@@ -268,7 +265,7 @@ public class RoleImpl implements Role
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
-        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(Long.toUnsignedString(guildId), getId());
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -276,7 +273,7 @@ public class RoleImpl implements Role
     @Override
     public JDA getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull
@@ -316,12 +313,15 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public int compareTo(Role r)
+    public int compareTo(@Nonnull Role r)
     {
         if (this == r)
             return 0;
+        if (!(r instanceof RoleImpl))
+            throw new IllegalArgumentException("Cannot compare different role implementations");
+        RoleImpl impl = (RoleImpl) r;
 
-        if (!this.getGuild().equals(r.getGuild()))
+        if (this.guild.getIdLong() != impl.guild.getIdLong())
             throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
 
         if (this.getPositionRaw() != r.getPositionRaw())

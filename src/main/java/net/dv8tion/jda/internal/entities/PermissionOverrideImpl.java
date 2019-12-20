@@ -36,11 +36,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PermissionOverrideImpl implements PermissionOverride
 {
     private final long id;
-    private final long channelId;
-    private final long holderId;
+    private final UpstreamReference<GuildChannel> channel;
+    private final UpstreamReference<IPermissionHolder> holder;
     private final ChannelType channelType;
     private final boolean role;
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile PermissionOverrideAction manager;
@@ -50,12 +50,16 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     public PermissionOverrideImpl(GuildChannel channel, long id, IPermissionHolder permissionHolder)
     {
-        this.channelId = channel.getIdLong();
-        this.holderId = permissionHolder.getIdLong();
-        this.channelType = channel.getType();
-        this.role = permissionHolder instanceof Role;
         this.id = id;
-        this.api = new UpstreamReference<>((JDAImpl) channel.getJDA());
+        this.role = permissionHolder instanceof Role;
+        this.channelType = channel.getType();
+        this.api = (JDAImpl) channel.getJDA();
+        this.channel = new UpstreamReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
+        this.holder = new UpstreamReference<>(permissionHolder, (holderId) -> {
+            Guild guild = this.channel.resolve().getGuild();
+            return role ? guild.getRoleById(holderId) : guild.getMemberById(holderId);
+        });
+
     }
 
     @Override
@@ -101,30 +105,26 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public JDA getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Override
     public Member getMember()
     {
-        return getGuild().getMemberById(holderId);
+        return getGuild().getMemberById(id);
     }
 
     @Override
     public Role getRole()
     {
-        return getGuild().getRoleById(holderId);
+        return getGuild().getRoleById(id);
     }
 
     @Nonnull
     @Override
     public GuildChannel getChannel()
     {
-        JDAImpl jda = api.get();
-        GuildChannel channel = jda.getGuildChannelById(channelType, channelId);
-        if (channel == null)
-            throw new IllegalStateException("Cannot get reference to upstream " + channelType.name() + " Channel with id: " + Long.toUnsignedString(channelId));
-        return channel;
+        return channel.resolve();
     }
 
     @Nonnull
@@ -172,10 +172,14 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
-        @SuppressWarnings("ConstantConditions")
-        String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
-        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(getChannel().getId(), targetId);
+        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(channel.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return this.id;
     }
 
     public PermissionOverrideImpl setAllow(long allow)
@@ -198,7 +202,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
-        return this.holderId == oPerm.holderId && this.channelId == oPerm.channelId;
+        return this.id == oPerm.id && this.channel.getIdLong() == oPerm.channel.getIdLong();
     }
 
     @Override
@@ -210,7 +214,6 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public String toString()
     {
-        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + getChannel().getId() + " | " + id + ")";
+        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + getId() + ")";
     }
-
 }

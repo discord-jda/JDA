@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.managers;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -33,8 +34,7 @@ import javax.annotation.Nonnull;
 
 public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements WebhookManager
 {
-    protected final UpstreamReference<Webhook> webhook;
-
+    protected final Webhook webhook;
     protected String name;
     protected String channel;
     protected Icon avatar;
@@ -48,7 +48,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     public WebhookManagerImpl(Webhook webhook)
     {
         super(webhook.getJDA(), Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId()));
-        this.webhook = new UpstreamReference<>(webhook);
+        this.webhook = webhook;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -57,7 +57,7 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     @Override
     public Webhook getWebhook()
     {
-        return webhook.get();
+        return webhook;
     }
 
     @Nonnull

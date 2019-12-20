@@ -28,18 +28,18 @@ import javax.annotation.Nonnull;
 
 public class DirectAudioControllerImpl implements DirectAudioController
 {
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
 
     public DirectAudioControllerImpl(JDAImpl api)
     {
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
     }
 
     @Nonnull
     @Override
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Override

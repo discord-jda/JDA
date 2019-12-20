@@ -36,8 +36,8 @@ import java.util.concurrent.CompletableFuture;
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
-    private final long userId;
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
+    private final UpstreamReference<User> user;
 
     private long lastMessageId;
     private boolean fake = false;
@@ -45,18 +45,15 @@ public class PrivateChannelImpl implements PrivateChannel
     public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
-        this.userId = user.getIdLong();
-        this.api = new UpstreamReference<>((JDAImpl) user.getJDA());
+        this.api = (JDAImpl) user.getJDA();
+        this.user = new UpstreamReference<>(user, api::getUserById);
     }
 
     @Nonnull
     @Override
     public User getUser()
     {
-        User user = getJDA().getUserById(userId);
-        if (user == null)
-            throw new IllegalStateException("Cannot get reference to upstream User with id: " + Long.toUnsignedString(userId));
-        return user;
+        return user.resolve();
     }
 
     @Override
@@ -92,7 +89,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public JDA getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull

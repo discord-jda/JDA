@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.managers;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
@@ -52,7 +53,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     public GuildManagerImpl(Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
-        this.guild = new UpstreamReference<>(guild);
+        JDA api = guild.getJDA();
+        this.guild = new UpstreamReference<>(guild, api::getGuildById);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -61,7 +63,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     public Guild getGuild()
     {
-        return guild.get();
+        return guild.resolve();
     }
 
     @Nonnull

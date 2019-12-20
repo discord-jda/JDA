@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.managers;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -63,7 +64,9 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
-        this.channel = new UpstreamReference<>(channel);
+        JDA jda = channel.getJDA();
+        ChannelType type = channel.getType();
+        this.channel = new UpstreamReference<>(channel, (channelId) -> jda.getGuildChannelById(type, channelId));
         if (isPermissionChecksEnabled())
             checkPermissions();
         this.overridesAdd = new TLongObjectHashMap<>();
@@ -74,7 +77,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @Override
     public GuildChannel getChannel()
     {
-        return channel.get();
+        return channel.resolve();
     }
 
     @Nonnull

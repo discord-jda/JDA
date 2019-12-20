@@ -50,8 +50,8 @@ import java.util.stream.Collectors;
 public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
 {
     protected final long id;
-    protected final long guildId;
-    protected final UpstreamReference<JDAImpl> api;
+    protected final UpstreamReference<Guild> guild;
+    protected final JDAImpl api;
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
@@ -65,8 +65,8 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     public AbstractChannelImpl(long id, GuildImpl guild)
     {
         this.id = id;
-        this.guildId = guild.getIdLong();
-        this.api = new UpstreamReference<>(guild.getJDA());
+        this.api = guild.getJDA();
+        this.guild = new UpstreamReference<>(guild, api::getGuildById);
     }
 
     @Override
@@ -102,10 +102,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public GuildImpl getGuild()
     {
-        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-            throw new IllegalStateException("Cannot get reference to upstream Guild with id: " + Long.toUnsignedString(guildId));
-        return guild;
+        return (GuildImpl) guild.resolve();
     }
 
     @Override
@@ -124,7 +121,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public JDA getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Override

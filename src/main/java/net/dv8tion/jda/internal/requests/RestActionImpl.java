@@ -64,7 +64,7 @@ public class RestActionImpl<T> implements RestAction<T>
 
     protected static boolean passContext = true;
 
-    protected final UpstreamReference<JDAImpl> api;
+    protected final JDAImpl api;
 
     private final Route.CompiledRoute route;
     private final RequestBody data;
@@ -132,7 +132,7 @@ public class RestActionImpl<T> implements RestAction<T>
     public RestActionImpl(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler)
     {
         Checks.notNull(api, "api");
-        this.api = new UpstreamReference<>((JDAImpl) api);
+        this.api = (JDAImpl) api;
         this.route = route;
         this.data = data;
         this.handler = handler;
@@ -142,7 +142,7 @@ public class RestActionImpl<T> implements RestAction<T>
     @Override
     public JDA getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull
@@ -165,7 +165,7 @@ public class RestActionImpl<T> implements RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.get().getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
     }
 
     @Nonnull

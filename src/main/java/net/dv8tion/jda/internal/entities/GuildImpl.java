@@ -73,7 +73,7 @@ import java.util.stream.Stream;
 public class GuildImpl implements Guild
 {
     private final long id;
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
@@ -116,7 +116,7 @@ public class GuildImpl implements Guild
     public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
     }
 
     @Nonnull
@@ -292,7 +292,7 @@ public class GuildImpl implements Guild
         {
             DataArray array = response.getArray();
             List<Webhook> webhooks = new ArrayList<>(array.length());
-            EntityBuilder builder = api.get().getEntityBuilder();
+            EntityBuilder builder = api.getEntityBuilder();
 
             for (int i = 0; i < array.length(); i++)
             {
@@ -522,7 +522,7 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-            EntityBuilder builder = api.get().getEntityBuilder();
+            EntityBuilder builder = api.getEntityBuilder();
             List<Ban> bans = new LinkedList<>();
             DataArray bannedArr = response.getArray();
 
@@ -549,7 +549,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
 
-            EntityBuilder builder = api.get().getEntityBuilder();
+            EntityBuilder builder = api.getEntityBuilder();
             DataObject bannedObj = response.getObject();
             DataObject user = bannedObj.getObject("user");
             return new Ban(builder.createFakeUser(user, false), bannedObj.getString("reason", null));
@@ -678,7 +678,7 @@ public class GuildImpl implements Guild
     @Override
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull
@@ -798,7 +798,7 @@ public class GuildImpl implements Guild
 
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-            EntityBuilder entityBuilder = api.get().getEntityBuilder();
+            EntityBuilder entityBuilder = api.getEntityBuilder();
             DataArray array = response.getArray();
             List<Invite> invites = new ArrayList<>(array.length());
             for (int i = 0; i < array.length(); i++)

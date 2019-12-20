@@ -80,16 +80,16 @@ public class EntityBuilder
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
-    protected final UpstreamReference<JDAImpl> api;
+    protected final JDAImpl api;
 
     public EntityBuilder(JDA api)
     {
-        this.api = new UpstreamReference<>((JDAImpl) api);
+        this.api = (JDAImpl) api;
     }
 
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     public SelfUser createSelfUser(DataObject self)

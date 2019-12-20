@@ -16,47 +16,61 @@
 
 package net.dv8tion.jda.internal.utils.cache;
 
+import net.dv8tion.jda.api.entities.ISnowflake;
+
 import javax.annotation.Nonnull;
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
+import java.util.function.LongFunction;
 
-public class UpstreamReference<T> extends WeakReference<T>
+public class UpstreamReference<T extends ISnowflake> implements ISnowflake
 {
-    public UpstreamReference(T referent)
-    {
-        super(referent);
-    }
+    private final LongFunction<T> fallbackProvider;
+    private final long id;
 
-    public UpstreamReference(T referent, ReferenceQueue<? super T> q)
+    private WeakReference<T> reference;
+
+    public UpstreamReference(T referent, LongFunction<T> fallback)
     {
-        super(referent, q);
+        this.fallbackProvider = fallback;
+        this.reference = new WeakReference<>(referent);
+        this.id = referent.getIdLong();
     }
 
     @Nonnull
-    @Override
-    public T get()
+    public T resolve()
     {
-        T tmp = super.get();
-        if (tmp == null)
-            throw new IllegalStateException("Cannot get reference as it has already been Garbage Collected");
-        return tmp;
+        T referent = reference.get();
+        if (referent == null)
+        {
+            referent = fallbackProvider.apply(id);
+            if (referent == null)
+                throw new IllegalStateException("Cannot get reference as it has already been Garbage Collected");
+        }
+        reference = new WeakReference<>(referent);
+        return referent;
     }
 
     @Override
     public int hashCode()
     {
-        return get().hashCode();
+        return resolve().hashCode();
     }
 
     @Override
     public boolean equals(Object obj)
     {
-        return get().equals(obj);
+        return resolve().equals(obj);
     }
 
     @Override
     public String toString()
     {
-        return get().toString();
+        return resolve().toString();
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return resolve().getIdLong();
     }
 }
