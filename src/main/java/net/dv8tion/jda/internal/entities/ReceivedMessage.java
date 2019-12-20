@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
@@ -26,16 +25,22 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
+import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.bag.HashBag;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,6 +56,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
     protected final User author;
+    protected final Member member;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
     protected final List<MessageReaction> reactions;
@@ -64,6 +70,7 @@ public class ReceivedMessage extends AbstractMessage
     protected String strippedContent = null;
 
     protected List<User> userMentions = null;
+    protected List<Member> memberMentions = null;
     protected List<Emote> emoteMentions = null;
     protected List<Role> roleMentions = null;
     protected List<TextChannel> channelMentions = null;
@@ -72,7 +79,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
-        String content, String nonce, User author, MessageActivity activity, OffsetDateTime editTime,
+        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
@@ -84,6 +91,7 @@ public class ReceivedMessage extends AbstractMessage
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
+        this.member = member;
         this.activity = activity;
         this.editedTime = editTime;
         this.reactions = Collections.unmodifiableList(reactions);
@@ -126,11 +134,12 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(emote, "Emote");
 
-        MessageReaction reaction = reactions.stream()
-                .filter(r -> Objects.equals(r.getReactionEmote().getId(), emote.getId()))
-                .findFirst().orElse(null);
+        boolean missingReaction = reactions.stream()
+                   .map(MessageReaction::getReactionEmote)
+                   .filter(MessageReaction.ReactionEmote::isEmote)
+                   .noneMatch(r -> r.getIdLong() == emote.getIdLong());
 
-        if (reaction == null)
+        if (missingReaction)
         {
             Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
                          "Cannot react with the provided emote because it is not available in the current channel.");
@@ -156,6 +165,93 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    {
+        return channel.removeReactionById(getId(), emote);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    {
+        return getTextChannel().removeReactionById(getIdLong(), emote, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode)
+    {
+        return channel.removeReactionById(getId(), unicode);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
+    {
+        return getTextChannel().removeReactionById(getId(), unicode, user);
+    }
+
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getEmote().equals(emote))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, String.format("%s:%s", emote, emote.getId()));
+        return new ReactionPaginationActionImpl(reaction);
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    {
+        Checks.noWhitespace(unicode, "Emoji");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, EncodingUtil.encodeUTF8(unicode));
+        return new ReactionPaginationActionImpl(reaction);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    {
+        Checks.noWhitespace(unicode, "Emoji");
+
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmoji() && r.getEmoji().equals(unicode))
+            .findFirst().orElse(null);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
+    {
+        return getReactionById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(long id)
+    {
+        Checks.notNull(id, "Reaction ID");
+
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmote() && r.getIdLong() == id)
+            .findFirst().orElse(null);
+    }
+
+    @Nonnull
+    @Override
     public MessageType getType()
     {
         return type;
@@ -171,7 +267,20 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return String.format("https://discordapp.com/channels/%s/%s/%s", getGuild() == null ? "@me" : getGuild().getId(), getChannel().getId(), getId());
+        return String.format("https://discordapp.com/channels/%s/%s/%s", isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
+    }
+
+    private User matchUser(Matcher matcher)
+    {
+        long userId = MiscUtil.parseSnowflake(matcher.group(1));
+        if (!mentionedUsers.contains(userId))
+            return null;
+        User user = getJDA().getUserById(userId);
+        if (user == null)
+            user = api.getFakeUserMap().get(userId);
+        if (user == null && userMentions != null)
+            user = userMentions.stream().filter(it -> it.getIdLong() == userId).findFirst().orElse(null);
+        return user;
     }
 
     @Nonnull
@@ -179,27 +288,21 @@ public class ReceivedMessage extends AbstractMessage
     public synchronized List<User> getMentionedUsers()
     {
         if (userMentions == null)
-        {
-            userMentions = new ArrayList<>();
-            Matcher matcher = MentionType.USER.getPattern().matcher(content);
-            while (matcher.find())
-            {
-                try
-                {
-                    long id = MiscUtil.parseSnowflake(matcher.group(1));
-                    if (!mentionedUsers.contains(id))
-                        continue;
-                    User user = getJDA().getUserById(id);
-                    if (user == null)
-                        user = api.getFakeUserMap().get(id);
-                    if (user != null && !userMentions.contains(user))
-                        userMentions.add(user);
-                } catch (NumberFormatException ignored) {}
-            }
-            userMentions = Collections.unmodifiableList(userMentions);
-        }
-
+            userMentions = Collections.unmodifiableList(processMentions(MentionType.USER, new ArrayList<>(), true, this::matchUser));
         return userMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<User> getMentionedUsersBag()
+    {
+        return processMentions(MentionType.USER, new HashBag<>(), false, this::matchUser);
+    }
+
+    private TextChannel matchTextChannel(Matcher matcher)
+    {
+        long channelId = MiscUtil.parseSnowflake(matcher.group(1));
+        return getJDA().getTextChannelById(channelId);
     }
 
     @Nonnull
@@ -207,24 +310,26 @@ public class ReceivedMessage extends AbstractMessage
     public synchronized List<TextChannel> getMentionedChannels()
     {
         if (channelMentions == null)
-        {
-            channelMentions = new ArrayList<>();
-            Matcher matcher = MentionType.CHANNEL.getPattern().matcher(content);
-            while (matcher.find())
-            {
-                try
-                {
-                    String id = matcher.group(1);
-                    TextChannel channel = getJDA().getTextChannelById(id);
-                    if (channel != null && !channelMentions.contains(channel))
-                        channelMentions.add(channel);
-                }
-                catch (NumberFormatException ignored) {}
-            }
-            channelMentions = Collections.unmodifiableList(channelMentions);
-        }
-
+            channelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchTextChannel));
         return channelMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<TextChannel> getMentionedChannelsBag()
+    {
+        return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchTextChannel);
+    }
+
+    private Role matchRole(Matcher matcher)
+    {
+        long roleId = MiscUtil.parseSnowflake(matcher.group(1));
+        if (!mentionedRoles.contains(roleId))
+            return null;
+        if (getChannelType().isGuild())
+            return getGuild().getRoleById(roleId);
+        else
+            return getJDA().getRoleById(roleId);
     }
 
     @Nonnull
@@ -232,30 +337,15 @@ public class ReceivedMessage extends AbstractMessage
     public synchronized List<Role> getMentionedRoles()
     {
         if (roleMentions == null)
-        {
-            roleMentions = new ArrayList<>();
-            Matcher matcher = MentionType.ROLE.getPattern().matcher(content);
-            while (matcher.find())
-            {
-                try
-                {
-                    long id = MiscUtil.parseSnowflake(matcher.group(1));
-                    if (!mentionedRoles.contains(id))
-                        continue;
-                    Role role = null;
-                    if (isFromType(ChannelType.TEXT)) // role lookup is faster if its in the same guild (no global map)
-                        role = getGuild().getRoleById(id);
-                    if (role == null)
-                        role = getJDA().getRoleById(id);
-                    if (role != null && !roleMentions.contains(role))
-                        roleMentions.add(role);
-                }
-                catch (NumberFormatException ignored) {}
-            }
-            roleMentions = Collections.unmodifiableList(roleMentions);
-        }
-
+            roleMentions = Collections.unmodifiableList(processMentions(MentionType.ROLE, new ArrayList<>(), true, this::matchRole));
         return roleMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<Role> getMentionedRolesBag()
+    {
+        return processMentions(MentionType.ROLE, new HashBag<>(), false, this::matchRole);
     }
 
     @Nonnull
@@ -263,6 +353,8 @@ public class ReceivedMessage extends AbstractMessage
     public List<Member> getMentionedMembers(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        if (isFromGuild() && guild.equals(getGuild()) && memberMentions != null)
+            return memberMentions;
         List<User> mentionedUsers = getMentionedUsers();
         List<Member> members = new ArrayList<>();
         for (User user : mentionedUsers)
@@ -454,7 +546,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Member getMember()
     {
-        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
+        return member;
     }
 
     @Nonnull
@@ -564,7 +656,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (!isFromType(ChannelType.PRIVATE))
             throw new IllegalStateException("This message was not sent in a private channel");
-        return isFromType(ChannelType.PRIVATE) ? (PrivateChannel) channel : null;
+        return (PrivateChannel) channel;
     }
 
     @Nonnull
@@ -573,7 +665,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("This message was not sent in a text channel");
-        return isFromType(ChannelType.TEXT) ? (TextChannel) channel : null;
+        return (TextChannel) channel;
     }
 
     @Override
@@ -603,39 +695,31 @@ public class ReceivedMessage extends AbstractMessage
         return embeds;
     }
 
+    private Emote matchEmote(Matcher m)
+    {
+        long emoteId = MiscUtil.parseSnowflake(m.group(2));
+        String name = m.group(1);
+        boolean animated = m.group(0).startsWith("<a:");
+        Emote emote = getJDA().getEmoteById(emoteId);
+        if (emote == null)
+            emote = new EmoteImpl(emoteId, api).setName(name).setAnimated(animated);
+        return emote;
+    }
+
     @Nonnull
     @Override
     public synchronized List<Emote> getEmotes()
     {
         if (this.emoteMentions == null)
-        {
-            TLongSet foundIds = new TLongHashSet();
-            emoteMentions = new ArrayList<>();
-            Matcher matcher = MentionType.EMOTE.getPattern().matcher(getContentRaw());
-            while (matcher.find())
-            {
-                try
-                {
-                    final long emoteId = MiscUtil.parseSnowflake(matcher.group(2));
-                    // ensure distinct
-                    if (foundIds.contains(emoteId))
-                        continue;
-                    else
-                        foundIds.add(emoteId);
-                    final String emoteName = matcher.group(1);
-                    // Check animated by verifying whether or not it starts with <a: or <:
-                    final boolean animated = matcher.group(0).startsWith("<a:");
-
-                    Emote emote = getJDA().getEmoteById(emoteId);
-                    if (emote == null)
-                        emote = new EmoteImpl(emoteId, api).setAnimated(animated).setName(emoteName);
-                    emoteMentions.add(emote);
-                }
-                catch (NumberFormatException ignored) {}
-            }
-            emoteMentions = Collections.unmodifiableList(emoteMentions);
-        }
+            emoteMentions = Collections.unmodifiableList(processMentions(MentionType.EMOTE, new ArrayList<>(), true, this::matchEmote));
         return emoteMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<Emote> getEmotesBag()
+    {
+        return processMentions(MentionType.EMOTE, new HashBag<>(), false, this::matchEmote);
     }
 
     @Nonnull
@@ -706,7 +790,7 @@ public class ReceivedMessage extends AbstractMessage
                 throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
             else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
+                throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
         }
         return channel.deleteMessageById(getIdLong());
     }
@@ -755,6 +839,38 @@ public class ReceivedMessage extends AbstractMessage
             out = out.toUpperCase(formatter.locale());
 
         appendFormat(formatter, width, precision, leftJustified, out);
+    }
+
+    public void setMentions(List<User> users, List<Member> members)
+    {
+        users.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                        content.indexOf("<@!" + user.getId() + ">")
+                )));
+        members.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                         content.indexOf("<@!" + user.getId() + ">")
+                )));
+
+        this.userMentions = Collections.unmodifiableList(users);
+        this.memberMentions = Collections.unmodifiableList(members);
+    }
+
+    private <T, C extends Collection<T>> C processMentions(MentionType type, C collection, boolean distinct, Function<Matcher, T> map)
+    {
+        Matcher matcher = type.getPattern().matcher(getContentRaw());
+        while (matcher.find())
+        {
+            try
+            {
+                T elem = map.apply(matcher);
+                if (elem == null || (distinct && collection.contains(elem)))
+                    continue;
+                collection.add(elem);
+            }
+            catch (NumberFormatException ignored) {}
+        }
+        return collection;
     }
 
     private static class FormatToken

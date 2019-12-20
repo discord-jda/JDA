@@ -18,12 +18,14 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.temporal.TemporalUnit;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Represents a Discord {@link Activity Activity}.
@@ -31,9 +33,19 @@ import java.util.Objects;
  *
  * @since  2.1
  * @author John A. Grosh
+ *
+ * @see    #of(ActivityType, String)
+ * @see    #of(ActivityType, String, String)
+ * @see    #playing(String)
+ * @see    #watching(String)
+ * @see    #listening(String)
+ * @see    #streaming(String, String)
  */
 public interface Activity
 {
+    /** The Pattern used for {@link #isValidStreamingUrl(String)} */
+    Pattern STREAMING_URL = Pattern.compile("https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+", Pattern.CASE_INSENSITIVE);
+
     /**
      * Whether this is a <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>
      * <br>If {@code false} the result of {@link #asRichPresence()} is {@code null}
@@ -52,7 +64,8 @@ public interface Activity
     RichPresence asRichPresence();
 
     /**
-     * The displayed name of the {@link Activity Activity}. If no name has been set, this returns null.
+     * The displayed name of the {@link Activity Activity}.
+     * <br>For {@link ActivityType#CUSTOM_STATUS} this will return the custom status text.
      *
      * @return String containing the Activity's name.
      */
@@ -85,6 +98,14 @@ public interface Activity
     Timestamps getTimestamps();
 
     /**
+     * The emoji (or custom emoji) attached to a custom status.
+     *
+     * @return Possibly-null {@link Emoji} used for custom status
+     */
+    @Nullable
+    Emoji getEmoji();
+
+    /**
      * Creates a new Activity instance with the specified name.
      * <br>In order to appear as "streaming" in the official client you must
      * provide a valid (see documentation of method) streaming URL in {@link #streaming(String, String) Activity.streaming(String, String)}.
@@ -101,13 +122,13 @@ public interface Activity
     static Activity playing(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        return EntityBuilder.createAcitvity(name, null, ActivityType.DEFAULT);
+        return EntityBuilder.createActivity(name, null, ActivityType.DEFAULT);
     }
 
     /**
      * Creates a new Activity instance with the specified name and url.
      * <br>The specified URL must be valid according to discord standards in order to display as "streaming" in the official client.
-     * A valid streaming URL must be derived from {@code https://twitch.tv/} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
+     * A valid streaming URL must be derived from {@code https://twitch.tv/} or {@code https://youtube.com/watch?v=} and can be verified using {@link #isValidStreamingUrl(String)}. (see documentation)
      *
      * @param  name
      *         The not-null name of the newly created game
@@ -130,7 +151,7 @@ public interface Activity
             type = ActivityType.STREAMING;
         else
             type = ActivityType.DEFAULT;
-        return EntityBuilder.createAcitvity(name, url, type);
+        return EntityBuilder.createActivity(name, url, type);
     }
 
     /**
@@ -149,7 +170,7 @@ public interface Activity
     static Activity listening(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        return EntityBuilder.createAcitvity(name, null, ActivityType.LISTENING);
+        return EntityBuilder.createActivity(name, null, ActivityType.LISTENING);
     }
 
     /**
@@ -171,7 +192,7 @@ public interface Activity
     static Activity watching(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        return EntityBuilder.createAcitvity(name, null, ActivityType.WATCHING);
+        return EntityBuilder.createActivity(name, null, ActivityType.WATCHING);
     }
 
     /**
@@ -232,7 +253,7 @@ public interface Activity
     }
 
     /**
-     * Checks if a given String is a valid Twitch url (ie, one that will display "Streaming" on the Discord client).
+     * Checks if a given String is a valid Twitch/Youtube streaming url (ie, one that will display "Streaming" on the Discord client).
      *
      * @param  url
      *         The url to check.
@@ -241,7 +262,7 @@ public interface Activity
      */
     static boolean isValidStreamingUrl(@Nullable String url)
     {
-        return url != null && url.matches("https?://(www\\.)?twitch\\.tv/.+");
+        return url != null && STREAMING_URL.matcher(url).matches();
     }
 
     /**
@@ -270,7 +291,15 @@ public interface Activity
          * @incubating This feature is not yet confirmed for the official bot API
          */
         @Incubating
-        WATCHING(3);
+        WATCHING(3),
+        /**
+         * Used to indicate that the {@link Activity Activity} should display as a custom status
+         * in the official client.
+         *
+         * @incubating This feature is currently not officially documented and might change
+         */
+        @Incubating
+        CUSTOM_STATUS(4);
 
         private final int key;
 
@@ -312,6 +341,8 @@ public interface Activity
                     return LISTENING;
                 case 3:
                     return WATCHING;
+                case 4:
+                    return CUSTOM_STATUS;
             }
         }
     }
@@ -448,6 +479,145 @@ public interface Activity
         public int hashCode()
         {
             return Objects.hash(start, end);
+        }
+    }
+
+    /**
+     * Emoji for a custom status.
+     * <br>This can be a unicode emoji or a custom emoji (Emote).
+     */
+    class Emoji implements ISnowflake, IMentionable
+    {
+        private final String name;
+        private final long id;
+        private final boolean animated;
+
+        public Emoji(String name, long id, boolean animated)
+        {
+            this.name = name;
+            this.id = id;
+            this.animated = animated;
+        }
+
+        public Emoji(String name)
+        {
+            this(name, 0, false);
+        }
+
+        /**
+         * The name of this emoji. This will be the unicode characters for a unicode emoji
+         * and the name of the custom emote otherwise.
+         *
+         * @return The emoji name
+         *
+         * @see    #getAsCodepoints()
+         */
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * The codepoint notation ({@code "U+XXXX"}) for the unicode of this emoji.
+         * Not available for custom emotes.
+         *
+         * @throws IllegalStateException
+         *         If {@link #isEmoji()} is false
+         *
+         * @return The codepoint notation
+         *
+         * @see    #getName()
+         */
+        @Nonnull
+        public String getAsCodepoints()
+        {
+            if (!isEmoji())
+                throw new IllegalStateException("Cannot convert custom emote to codepoints");
+            return EncodingUtil.encodeCodepoints(name);
+        }
+
+        /**
+         * The id for this custom emoji.
+         *
+         * @throws IllegalStateException
+         *         If {@link #isEmote()} is false
+         *
+         * @return The emoji id
+         */
+        @Override
+        public long getIdLong()
+        {
+            if (!isEmote())
+                throw new IllegalStateException("Cannot get id for unicode emoji");
+            return id;
+        }
+
+        /**
+         * Whether this emoji is animated.
+         * This is always false for unicode emoji.
+         *
+         * @return True, if this emoji is animated
+         */
+        public boolean isAnimated()
+        {
+            return animated;
+        }
+
+        /**
+         * Whether this is a unicode emoji.
+         *
+         * @return True, if this is a unicode emoji
+         */
+        public boolean isEmoji()
+        {
+            return id == 0;
+        }
+
+        /**
+         * Whether this is a custom emoji (Emote)
+         *
+         * @return True, if this is a custom emoji
+         */
+        public boolean isEmote()
+        {
+            return id != 0;
+        }
+
+        @Nonnull
+        @Override
+        public String getAsMention()
+        {
+            if (isEmoji())
+                return name; // unicode name
+            // custom emoji format (for messages)
+            return String.format("<%s:%s:%s>", isAnimated() ? "a" : "", name, getId());
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return id == 0 ? name.hashCode() : Long.hashCode(id);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof Emoji))
+                return false;
+            Emoji other = (Emoji) obj;
+            return id == 0 ? other.name.equals(this.name)
+                           : other.id == this.id;
+        }
+
+        @Override
+        public String toString()
+        {
+            if (isEmoji())
+                return "ActivityEmoji(" + getAsCodepoints() + ')';
+            return "ActivityEmoji(" + Long.toUnsignedString(id) + " / " + name + ')';
         }
     }
 }

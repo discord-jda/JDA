@@ -20,10 +20,12 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 public class SessionConfig
 {
@@ -31,32 +33,30 @@ public class SessionConfig
     private final OkHttpClient httpClient;
     private final WebSocketFactory webSocketFactory;
     private final VoiceDispatchInterceptor interceptor;
-    private boolean autoReconnect;
-    private boolean retryOnTimeout;
-    private boolean bulkDeleteSplittingEnabled;
-    private boolean audioEnabled;
+    private final int largeThreshold;
+    private EnumSet<ConfigFlag> flags;
     private int maxReconnectDelay;
 
     public SessionConfig(
         @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
         @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
-        boolean audioEnabled, boolean retryOnTimeout, boolean autoReconnect,
-        boolean bulkDeleteSplittingEnabled, int maxReconnectDelay)
+        EnumSet<ConfigFlag> flags, int maxReconnectDelay, int largeThreshold)
     {
         this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
         this.httpClient = httpClient;
         this.webSocketFactory = webSocketFactory == null ? new WebSocketFactory() : webSocketFactory;
         this.interceptor = interceptor;
-        this.audioEnabled = audioEnabled;
-        this.autoReconnect = autoReconnect;
-        this.retryOnTimeout = retryOnTimeout;
-        this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
+        this.flags = flags;
         this.maxReconnectDelay = maxReconnectDelay;
+        this.largeThreshold = largeThreshold;
     }
 
     public void setAutoReconnect(boolean autoReconnect)
     {
-        this.autoReconnect = autoReconnect;
+        if (autoReconnect)
+            flags.add(ConfigFlag.AUTO_RECONNECT);
+        else
+            flags.remove(ConfigFlag.AUTO_RECONNECT);
     }
 
     @Nonnull
@@ -85,22 +85,27 @@ public class SessionConfig
 
     public boolean isAutoReconnect()
     {
-        return autoReconnect;
+        return flags.contains(ConfigFlag.AUTO_RECONNECT);
     }
 
     public boolean isRetryOnTimeout()
     {
-        return retryOnTimeout;
+        return flags.contains(ConfigFlag.RETRY_TIMEOUT);
     }
 
     public boolean isBulkDeleteSplittingEnabled()
     {
-        return bulkDeleteSplittingEnabled;
+        return flags.contains(ConfigFlag.BULK_DELETE_SPLIT);
     }
 
-    public boolean isAudioEnabled()
+    public boolean isRawEvents()
     {
-        return audioEnabled;
+        return flags.contains(ConfigFlag.RAW_EVENTS);
+    }
+
+    public boolean isRelativeRateLimit()
+    {
+        return flags.contains(ConfigFlag.USE_RELATIVE_RATELIMIT);
     }
 
     public int getMaxReconnectDelay()
@@ -108,9 +113,19 @@ public class SessionConfig
         return maxReconnectDelay;
     }
 
+    public int getLargeThreshold()
+    {
+        return largeThreshold;
+    }
+
+    public EnumSet<ConfigFlag> getFlags()
+    {
+        return flags;
+    }
+
     @Nonnull
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, null, null, null, true, true, true, true, 900);
+        return new SessionConfig(null, null, null, null, ConfigFlag.getDefault(), 900, 250);
     }
 }

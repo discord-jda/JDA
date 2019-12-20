@@ -38,7 +38,7 @@ public abstract class ReadWriteLockCache<T>
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         writeLock.lock();
         onAcquireWriteLock();
-        clearCache();
+        clearCachedLists();
         return new UnlockHook(writeLock);
     }
 
@@ -50,7 +50,7 @@ public abstract class ReadWriteLockCache<T>
         return new UnlockHook(readLock);
     }
 
-    private void clearCache()
+    public void clearCachedLists()
     {
         cachedList = null;
         cachedSet = null;

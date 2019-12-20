@@ -23,7 +23,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.Route.RateLimit;
+import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -73,7 +73,7 @@ public class ClientRateLimiter extends RateLimiter
             int code = response.code();
             if (code == 429)
             {
-                try (InputStream in = Requester.getBody(response))
+                try (InputStream in = IOUtil.getBody(response))
                 {
                     DataObject limitObj = DataObject.fromJson(in);
                     long retryAfter = limitObj.getLong("retry_after");
@@ -108,7 +108,7 @@ public class ClientRateLimiter extends RateLimiter
                 bucket = (Bucket) buckets.get(baseRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(baseRoute, route.getBaseRoute().getRatelimit());
+                    bucket = new Bucket(baseRoute);
                     buckets.put(baseRoute, bucket);
                 }
             }
@@ -119,14 +119,12 @@ public class ClientRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         final String route;
-        final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long retryAfter = 0;
 
-        public Bucket(String route, RateLimit rateLimit)
+        public Bucket(String route)
         {
             this.route = route;
-            this.rateLimit = rateLimit;
         }
 
         void addToQueue(Request request)
@@ -206,7 +204,8 @@ public class ClientRateLimiter extends RateLimiter
                             request = it.next();
                             if (isSkipped(it, request))
                                 continue;
-                            Long retryAfter = requester.execute(request);
+                            // Blocking code because I'm lazy and client accounts are not priority
+                            Long retryAfter = requester.execute(request).get();
                             if (retryAfter != null)
                                 break;
                             else
@@ -244,15 +243,9 @@ public class ClientRateLimiter extends RateLimiter
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();
-                    api.getEventManager().handle(new ExceptionEvent(api, err, true));
+                    api.handleEvent(new ExceptionEvent(api, err, true));
                 }
             }
-        }
-
-        @Override
-        public RateLimit getRatelimit()
-        {
-            return rateLimit;
         }
 
         @Override

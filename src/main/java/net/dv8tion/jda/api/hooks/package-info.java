@@ -28,6 +28,6 @@
  * <p>The {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}
  * can forward events directly to methods that have the {@link net.dv8tion.jda.api.hooks.SubscribeEvent SubscribeEvent} annotation.
  *
- * <p><b>Note: All of the standard EventManager implementations are synchronized</b>
+ * <p><b>Note: All of the standard EventManager implementations are single-threaded</b>
  */
 package net.dv8tion.jda.api.hooks;

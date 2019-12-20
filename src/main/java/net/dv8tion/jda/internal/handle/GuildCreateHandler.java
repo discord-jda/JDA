@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
-import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -36,30 +34,17 @@ public class GuildCreateHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
         if (guild == null)
         {
+            // This can happen in 3 scenarios:
+            //
+            //   1) The guild is provided in guild streaming during initial session setup
+            //   2) The guild has just been joined by the bot (added through moderator)
+            //   3) The guild was marked unavailable and has come back
+            //
+            // The controller will fire an appropriate event for each case.
             getJDA().getGuildSetupController().onCreate(id, content);
-            return null;
         }
 
-        boolean unavailable = content.getBoolean("unavailable");
-        if (guild.isAvailable() && unavailable)
-        {
-            guild.setAvailable(false);
-            getJDA().getEventManager().handle(
-                new GuildUnavailableEvent(
-                    getJDA(), responseNumber,
-                    guild));
-        }
-        else if (!guild.isAvailable() && !unavailable)
-        {
-            guild.setAvailable(true);
-            getJDA().getEventManager().handle(
-                new GuildAvailableEvent(
-                    getJDA(), responseNumber,
-                    guild));
-            // I'm not sure if this is actually needed, but if discord sends us an updated field here
-            //  we can just use the same logic we use for GUILD_UPDATE in order to update it and fire events
-            getJDA().getClient().<GuildUpdateHandler>getHandler("GUILD_UPDATE").handle(responseNumber, allContent);
-        }
+        // Anything else is either a duplicate event or unexpected behavior
         return null;
     }
 }

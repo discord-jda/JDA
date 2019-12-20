@@ -66,7 +66,7 @@ public class MessageListenerExample extends ListenerAdapter
      *  a method from a super class properly. You should do this every time you override a method!
      *
      * As stated above, this method is overriding a hook method in the
-     * {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} class. It has convience methods for all JDA events!
+     * {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} class. It has convenience methods for all JDA events!
      * Consider looking through the events it offers if you plan to use the ListenerAdapter.
      *
      * In this example, when a message is received it is printed to the console.
@@ -207,7 +207,7 @@ public class MessageListenerExample extends ListenerAdapter
 
                         //Remember, due to the fact that we're using queue we will never have to deal with RateLimits.
                         // JDA will do it all for you so long as you are using queue!
-                        guild.getController().kick(member).queue(
+                        guild.kick(member).queue(
                             success -> channel.sendMessage("Kicked ").append(member.getEffectiveName()).append("! Cya!").queue(),
                             error ->
                             {

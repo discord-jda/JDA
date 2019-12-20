@@ -21,7 +21,9 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -101,6 +103,30 @@ public abstract class AbstractMessage implements Message
         {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Nonnull
+    @Override
+    public Bag<User> getMentionedUsersBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<TextChannel> getMentionedChannelsBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<Role> getMentionedRolesBag()
+    {
+        unsupported();
+        return null;
     }
 
     @Nonnull
@@ -313,6 +339,14 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public Bag<Emote> getEmotesBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public List<MessageReaction> getReactions()
     {
         unsupported();
@@ -409,6 +443,75 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public RestAction<Void> clearReactions()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(long id)
     {
         unsupported();
         return null;

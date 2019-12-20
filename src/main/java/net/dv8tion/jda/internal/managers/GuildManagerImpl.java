@@ -32,6 +32,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class GuildManagerImpl extends ManagerBase<GuildManager> implements GuildManager
 {
@@ -39,10 +40,9 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
 
     protected String name;
     protected String region;
-    protected Icon icon;
-    protected Icon splash;
-    protected String afkChannel;
-    protected String systemChannel;
+    protected Icon icon, splash, banner;
+    protected String afkChannel, systemChannel;
+    protected String description, vanityCode;
     protected int afkTimeout;
     protected int mfaLevel;
     protected int notificationLevel;
@@ -82,6 +82,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             this.afkChannel = null;
         if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL)
             this.systemChannel = null;
+        if ((fields & DESCRIPTION) == DESCRIPTION)
+            this.description = null;
+        if ((fields & BANNER) == BANNER)
+            this.banner = null;
         return this;
     }
 
@@ -104,6 +108,9 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         this.region = null;
         this.icon = null;
         this.splash = null;
+        this.vanityCode = null;
+        this.description = null;
+        this.banner = null;
         this.afkChannel = null;
         this.systemChannel = null;
         return this;
@@ -149,7 +156,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl setSplash(Icon splash)
     {
-        Checks.check(splash == null || getGuild().getFeatures().contains("INVITE_SPLASH"), "Cannot set a splash on this guild");
+        checkFeature("INVITE_SPLASH");
         this.splash = splash;
         set |= SPLASH;
         return this;
@@ -236,6 +243,36 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         return this;
     }
 
+    @Nonnull
+    @Override
+    public GuildManager setBanner(@Nullable Icon banner)
+    {
+        checkFeature("BANNER");
+        this.banner = banner;
+        set |= BANNER;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager setVanityCode(@Nullable String code)
+    {
+        checkFeature("VANITY_URL");
+        this.vanityCode = code;
+        set |= VANITY_URL;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public GuildManager setDescription(@Nullable String description)
+    {
+        checkFeature("VERIFIED");
+        this.description = description;
+        set |= DESCRIPTION;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -262,6 +299,12 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("mfa_level", mfaLevel);
         if (shouldUpdate(EXPLICIT_CONTENT_LEVEL))
             body.put("explicit_content_filter", explicitContentLevel);
+        if (shouldUpdate(BANNER))
+            body.put("banner", banner == null ? null : banner.getEncoding());
+        if (shouldUpdate(VANITY_URL))
+            body.put("vanity_code", vanityCode);
+        if (shouldUpdate(DESCRIPTION))
+            body.put("description", description);
 
         reset(); //now that we've built our JSON object, reset the manager back to the non-modified state
         return getRequestBody(body);
@@ -271,7 +314,13 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected boolean checkPermissions()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_SERVER))
-            throw new InsufficientPermissionException(Permission.MANAGE_SERVER);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_SERVER);
         return super.checkPermissions();
+    }
+
+    private void checkFeature(String feature)
+    {
+        if (!getGuild().getFeatures().contains(feature))
+            throw new IllegalStateException("This guild doesn't have the " + feature + " feature enabled");
     }
 }

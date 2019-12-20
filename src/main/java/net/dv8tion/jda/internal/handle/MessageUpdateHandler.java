@@ -48,6 +48,7 @@ public class MessageUpdateHandler extends SocketHandler
                 return guildId;
         }
 
+        //TODO: Rewrite this entire handler
         if (content.hasKey("author"))
         {
             if (content.hasKey("type"))
@@ -58,11 +59,11 @@ public class MessageUpdateHandler extends SocketHandler
                     case DEFAULT:
                         return handleMessage(content);
                     default:
-                        WebSocketClient.LOG.debug("JDA received a message of unknown type. Type: {} JSON: {}", type, content);
+                        WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
                         return null;
                 }
             }
-            else
+            else if (!content.isNull("embeds"))
             {
                 //Received update with no "type" field which means its an update for a rich embed message
                 handleMessageEmbed(content);
@@ -74,8 +75,9 @@ public class MessageUpdateHandler extends SocketHandler
             handleCallMessage(content);
             return null;
         }
-        else
+        else if (!content.isNull("embeds"))
             return handleMessageEmbed(content);
+        return null;
     }
 
     private Long handleMessage(DataObject content)
@@ -115,7 +117,7 @@ public class MessageUpdateHandler extends SocketHandler
                 TextChannel channel = message.getTextChannel();
                 if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
                     return channel.getGuild().getIdLong();
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new GuildMessageUpdateEvent(
                                 getJDA(), responseNumber,
                                 message));
@@ -123,7 +125,7 @@ public class MessageUpdateHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new PrivateMessageUpdateEvent(
                                 getJDA(), responseNumber,
                                 message));
@@ -141,7 +143,7 @@ public class MessageUpdateHandler extends SocketHandler
         }
 
         //Combo event
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
                 new MessageUpdateEvent(
                         getJDA(), responseNumber,
                         message));
@@ -176,26 +178,26 @@ public class MessageUpdateHandler extends SocketHandler
                 TextChannel tChannel = (TextChannel) channel;
                 if (getJDA().getGuildSetupController().isLocked(tChannel.getGuild().getIdLong()))
                     return tChannel.getGuild().getIdLong();
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new GuildMessageEmbedEvent(
                         getJDA(), responseNumber,
                         messageId, tChannel, embeds));
                 break;
             case PRIVATE:
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new PrivateMessageEmbedEvent(
                         getJDA(), responseNumber,
                         messageId, (PrivateChannel) channel, embeds));
                 break;
             case GROUP:
-                WebSocketClient.LOG.error("Rceived a message update for a group which should not be possible");
+                WebSocketClient.LOG.error("Received a message update for a group which should not be possible");
                 return null;
             default:
                 WebSocketClient.LOG.warn("No event handled for message update of type {}", channel.getType());
 
         }
         //Combo event
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
                 new MessageEmbedEvent(
                         getJDA(), responseNumber,
                         messageId, channel, embeds));

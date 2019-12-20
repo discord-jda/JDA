@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
@@ -26,7 +24,6 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -43,11 +40,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioManagerImpl implements AudioManager
 {
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("3.8.1")
-    public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
-
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
     protected final ListenerProxy connectionListener = new ListenerProxy();
@@ -87,9 +79,6 @@ public class AudioManagerImpl implements AudioManager
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
-        if (!getGuild().isAvailable())
-            throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
-                    "Please wait until this Guild is available to open a connection.");
         final Member self = getGuild().getSelfMember();
         //if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
@@ -120,7 +109,7 @@ public class AudioManagerImpl implements AudioManager
     {
         EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, self));
         if (!perms.contains(Permission.VOICE_CONNECT))
-            throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
+            throw new InsufficientPermissionException(channel, Permission.VOICE_CONNECT);
         final int userLimit = channel.getUserLimit(); // userLimit is 0 if no limit is set!
         if (userLimit > 0 && !perms.contains(Permission.ADMINISTRATOR))
         {
@@ -133,7 +122,7 @@ public class AudioManagerImpl implements AudioManager
             if (userLimit <= channel.getMembers().size()
                 && !perms.contains(Permission.VOICE_MOVE_OTHERS))
             {
-                throw new InsufficientPermissionException(Permission.VOICE_MOVE_OTHERS,
+                throw new InsufficientPermissionException(channel, Permission.VOICE_MOVE_OTHERS,
                     "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
         }
@@ -177,7 +166,6 @@ public class AudioManagerImpl implements AudioManager
         return EnumSet.copyOf(this.speakingModes);
     }
 
-    @Nonnull
     @Override
     public void setSpeakingDelay(int millis)
     {
@@ -186,6 +174,7 @@ public class AudioManagerImpl implements AudioManager
             audioConnection.setSpeakingDelay(millis);
     }
 
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {

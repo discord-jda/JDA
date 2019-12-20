@@ -52,7 +52,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             String oldName = self.getName();
             self.setName(name);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new SelfUpdateNameEvent(
                     getJDA(), responseNumber,
                     oldName));
@@ -62,7 +62,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             String oldAvatarId = self.getAvatarId();
             self.setAvatarId(avatarId);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new SelfUpdateAvatarEvent(
                     getJDA(), responseNumber,
                     oldAvatarId));
@@ -72,7 +72,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new SelfUpdateVerifiedEvent(
                     getJDA(), responseNumber,
                     wasVerified));
@@ -82,7 +82,7 @@ public class UserUpdateHandler extends SocketHandler
         {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new SelfUpdateMFAEvent(
                     getJDA(), responseNumber,
                     wasMfaEnabled));
@@ -94,7 +94,7 @@ public class UserUpdateHandler extends SocketHandler
             {
                 String oldEmail = self.getEmail();
                 self.setEmail(email);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new SelfUpdateEmailEvent(
                         getJDA(), responseNumber,
                         oldEmail));
@@ -104,7 +104,7 @@ public class UserUpdateHandler extends SocketHandler
             {
                 boolean oldMobile = self.isMobile();
                 self.setMobile(mobile);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new SelfUpdateMobileEvent(
                         getJDA(), responseNumber,
                         oldMobile));
@@ -114,7 +114,7 @@ public class UserUpdateHandler extends SocketHandler
             {
                 boolean oldNitro = self.isNitro();
                 self.setNitro(nitro);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new SelfUpdateNitroEvent(
                         getJDA(), responseNumber,
                         oldNitro));
@@ -124,7 +124,7 @@ public class UserUpdateHandler extends SocketHandler
             {
                 String oldPhoneNumber = self.getPhoneNumber();
                 self.setPhoneNumber(phoneNumber);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new SelfUpdatePhoneNumberEvent(
                         getJDA(), responseNumber,
                         oldPhoneNumber));

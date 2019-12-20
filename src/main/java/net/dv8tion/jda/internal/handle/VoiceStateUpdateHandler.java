@@ -17,16 +17,20 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
+import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.UnlockHook;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
 import java.util.Objects;
+import java.util.Optional;
 
 public class VoiceStateUpdateHandler extends SocketHandler
 {
@@ -75,24 +79,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return;
         }
 
-        MemberImpl member = (MemberImpl) guild.getMemberById(userId);
-        if (member == null)
-        {
-            //Caching of this might not be valid. It is possible that we received this
-            // update due to this Member leaving the guild while still connected to a voice channel.
-            // In that case, we should not cache this because it could cause problems if they rejoined.
-            //However, we can't just ignore it completely because it could be a user that joined off of
-            // an invite to a VoiceChannel, so the GUILD_MEMBER_ADD and the VOICE_STATE_UPDATE may have
-            // come out of order. Not quite sure what to do. Going to cache for now however.
-            //At the worst, this will just cause a few events to fire with bad data if the member rejoins the guild if
-            // in fact the issue was that the VOICE_STATE_UPDATE was sent after they had left, however, by caching
-            // it we will preserve the integrity of the cache in the event that it was actually a mis-ordering of
-            // GUILD_MEMBER_ADD and VOICE_STATE_UPDATE. I'll take some bad-data events over an invalid cache.
-            long idHash = guildId ^ userId;
-            getJDA().getEventCache().cache(EventCache.Type.MEMBER, idHash, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a Member that has yet to be cached. HASH_ID: {} JSON: {}", idHash, content);
-            return;
-        }
+        MemberImpl member = getLazyMember(content, userId, (GuildImpl) guild, channelId != null);
+        if (member == null) return;
 
         GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
         if (vState == null)
@@ -107,32 +95,32 @@ public class VoiceStateUpdateHandler extends SocketHandler
         if (selfMuted != vState.isSelfMuted())
         {
             vState.setSelfMuted(selfMuted);
-            getJDA().getEventManager().handle(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, member));
         }
         if (selfDeafened != vState.isSelfDeafened())
         {
             vState.setSelfDeafened(selfDeafened);
-            getJDA().getEventManager().handle(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, member));
         }
         if (guildMuted != vState.isGuildMuted())
         {
             vState.setGuildMuted(guildMuted);
-            getJDA().getEventManager().handle(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, member));
         }
         if (guildDeafened != vState.isGuildDeafened())
         {
             vState.setGuildDeafened(guildDeafened);
-            getJDA().getEventManager().handle(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, member));
         }
         if (suppressed != vState.isSuppressed())
         {
             vState.setSuppressed(suppressed);
-            getJDA().getEventManager().handle(new GuildVoiceSuppressEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceSuppressEvent(getJDA(), responseNumber, member));
         }
         if (wasMute != vState.isMuted())
-            getJDA().getEventManager().handle(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
         if (wasDeaf != vState.isDeafened())
-            getJDA().getEventManager().handle(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
+            getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
             
         if (!Objects.equals(channel, vState.getChannel()))
         {
@@ -142,7 +130,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (oldChannel == null)
             {
                 channel.getConnectedMembersMap().put(userId, member);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new GuildVoiceJoinEvent(
                                 getJDA(), responseNumber,
                                 member));
@@ -152,7 +140,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new GuildVoiceLeaveEvent(
                                 getJDA(), responseNumber,
                                 member, oldChannel));
@@ -179,7 +167,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
                 channel.getConnectedMembersMap().put(userId, member);
                 oldChannel.getConnectedMembersMap().remove(userId);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                         new GuildVoiceMoveEvent(
                                 getJDA(), responseNumber,
                                 member, oldChannel));
@@ -190,5 +178,79 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
                 getJDA().getDirectAudioController().update(guild, channel);
         }
+    }
+
+    private MemberImpl getLazyMember(DataObject content, long userId, GuildImpl guild, boolean connected)
+    {
+        // Check for existing member
+        Optional<DataObject> memberJson = content.optObject("member");
+        MemberImpl member = (MemberImpl) guild.getMemberById(userId);
+        if (!memberJson.isPresent() || userId == getJDA().getSelfUser().getIdLong())
+            return member;
+
+        // Handle cache changes
+        boolean subscriptions = getJDA().isGuildSubscriptions();
+        if (member == null)
+        {
+            if (subscriptions || (connected && getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE)))
+            {
+                // this means either:
+                // - the member just connected to a voice channel, otherwise we would know about it already!
+                // - the member is not connect to a voice channel but we can load it here because subscriptions are enabled
+                member = loadMember(userId, guild, memberJson.get(), "Initializing");
+            }
+        }
+        else
+        {
+            if (subscriptions && member.isIncomplete())
+            {
+                // the member can be updated with new information that was missing before
+                member = loadMember(userId, guild, memberJson.get(), "Updating");
+            }
+            else if (!subscriptions && !connected)
+            {
+                EntityBuilder.LOG.debug("Unloading member who just left a voice channel {}", memberJson);
+                // the member just disconnected from the voice channel - remove it from cache
+                unloadMember(userId, member);
+                return null;
+            }
+        }
+        return member;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void unloadMember(long userId, MemberImpl member)
+    {
+        MemberCacheViewImpl membersView = member.getGuild().getMembersView();
+        VoiceChannelImpl channelLeft = (VoiceChannelImpl) member.getVoiceState().getChannel();
+        ((GuildVoiceStateImpl) member.getVoiceState()).setConnectedChannel(null);
+        if (channelLeft != null)
+            channelLeft.getConnectedMembersMap().remove(userId);
+        getJDA().handleEvent(
+            new GuildVoiceLeaveEvent(
+                getJDA(), responseNumber,
+                member, channelLeft));
+        membersView.remove(userId);
+        User user = member.getUser();
+        boolean dropUser = getJDA().getGuildsView().applyStream(stream -> stream.noneMatch(it -> it.isMember(user)));
+        if (dropUser)
+            getJDA().getUsersView().remove(userId);
+    }
+
+    private MemberImpl loadMember(long userId, GuildImpl guild, DataObject memberJson, String comment)
+    {
+        EntityBuilder entityBuilder = getJDA().getEntityBuilder();
+        MemberCacheViewImpl membersView = guild.getMembersView();
+        SnowflakeCacheViewImpl<User> usersView = getJDA().getUsersView();
+        MemberImpl member;
+        EntityBuilder.LOG.debug("{} member from VOICE_STATE_UPDATE {}", comment, memberJson);
+        member = entityBuilder.createMember(guild, memberJson);
+        try (UnlockHook h1 = membersView.writeLock();
+             UnlockHook h2 = usersView.writeLock())
+        {
+            membersView.getMap().put(userId, member);
+            usersView.getMap().put(userId, member.getUser());
+        }
+        return member;
     }
 }

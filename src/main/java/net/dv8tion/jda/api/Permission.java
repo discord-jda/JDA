@@ -53,6 +53,7 @@ public enum Permission
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
 
     // Voice Permissions
+    VOICE_STREAM(      9, true, true, "Stream"),
     VOICE_CONNECT(    20, true, true, "Connect"),
     VOICE_SPEAK(      21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
@@ -105,7 +106,7 @@ public enum Permission
      * All voice channel specific permissions which are only available in voice channel permission overrides
      */
     public static final long ALL_VOICE_PERMISSIONS
-            = Permission.getRaw(VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
+            = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
                                 VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD);
 
     private final int offset;
@@ -221,13 +222,10 @@ public enum Permission
 
     /**
      * A set of all {@link net.dv8tion.jda.api.Permission Permissions} that are specified by this raw long representation of
-     * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.api.entities.Role Role},
-     * {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} or {@link net.dv8tion.jda.internal.utils.PermissionUtil}.
+     * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.api.entities.Role Role} or
+     * {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
      *
-     * <p>Examples:
-     * <br>{@link net.dv8tion.jda.api.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
-     * <br>{@link net.dv8tion.jda.internal.utils.PermissionUtil#getEffectivePermission(net.dv8tion.jda.api.entities.GuildChannel, net.dv8tion.jda.api.entities.Member)
-     * PermissionUtil.getEffectivePermission(GuildChannel, Member)}
+     * <p>Example: {@link net.dv8tion.jda.api.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
      *
      * @param  permissions
      *         The raw {@code long} representation of permissions.

@@ -49,7 +49,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return null;
         }
 
-        final long userId = content.getObject("user").getLong("id");
+        final long userId = content.getObject("user").getUnsignedLong("id");
         if (userId == getJDA().getSelfUser().getIdLong())
         {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
@@ -59,9 +59,12 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
         if (member == null)
         {
-            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild.");
+            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);
             return null;
         }
+
+        // Update the memberCount
+        guild.onMemberRemove();
 
         GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
         if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
@@ -69,7 +72,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             VoiceChannel channel = voiceState.getChannel();
             voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new GuildVoiceLeaveEvent(
                             getJDA(), responseNumber,
                             member, channel));
@@ -96,7 +99,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
-        getJDA().getEventManager().handle(
+        getJDA().handleEvent(
             new GuildMemberLeaveEvent(
                 getJDA(), responseNumber,
                 member));

@@ -48,9 +48,9 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided members must both be Member objects of the same Guild!");
-        if(guild.getOwner().equals(issuer))
+        if(issuer.isOwner())
             return true;
-        if(guild.getOwner().equals(target))
+        if(target.isOwner())
             return false;
         List<Role> issuerRoles = issuer.getRoles();
         List<Role> targetRoles = target.getRoles();
@@ -80,7 +80,7 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided Member issuer and Role target must be from the same Guild!");
-        if(guild.getOwner().equals(issuer))
+        if(issuer.isOwner())
             return true;
         List<Role> issuerRoles = issuer.getRoles();
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
@@ -203,7 +203,7 @@ public class PermissionUtil
                 TextChannel text = (TextChannel) channel;
                 member = text.getGuild().getMemberById(issuer.getIdLong());
                 return emote.getGuild().equals(text.getGuild()) // within the same guild
-                    || (external && member.hasPermission(text, Permission.MESSAGE_EXT_EMOJI)); // in different guild
+                    || (external && member != null && member.hasPermission(text, Permission.MESSAGE_EXT_EMOJI)); // in different guild
             default:
                 return external; // In Group or Private it only needs to be external
         }
@@ -430,23 +430,11 @@ public class PermissionUtil
         if (!guild.equals(role.getGuild()))
             throw new IllegalArgumentException("Provided channel and role are not of the same guild!");
 
-        long permissions = role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw();
-
-        PermissionOverride publicOverride = channel.getPermissionOverride(guild.getPublicRole());
-        PermissionOverride roleOverride = channel.getPermissionOverride(role);
-
-        if (publicOverride != null)
-        {
-            permissions &= ~publicOverride.getDeniedRaw();
-            permissions |= publicOverride.getAllowedRaw();
-        }
-
-        if (roleOverride != null)
-        {
-            permissions &= ~roleOverride.getDeniedRaw();
-            permissions |= roleOverride.getAllowedRaw();
-        }
-
+        long permissions = getExplicitPermission(channel, role);
+        if (isApplied(permissions, Permission.ADMINISTRATOR.getRawValue()))
+            return Permission.ALL_CHANNEL_PERMISSIONS;
+        else if (!isApplied(permissions, Permission.VIEW_CHANNEL.getRawValue()))
+            return 0;
         return permissions;
     }
 
@@ -571,10 +559,6 @@ public class PermissionUtil
             : apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
     }
 
-    /**
-     * Pushes all deny/allow values to the specified BiConsumer
-     * <br>First parameter is allow, second is deny
-     */
     private static void getExplicitOverrides(GuildChannel channel, Member member, AtomicLong allow, AtomicLong deny)
     {
         PermissionOverride override = channel.getPermissionOverride(member.getGuild().getPublicRole());

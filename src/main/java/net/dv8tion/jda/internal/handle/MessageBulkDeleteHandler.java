@@ -70,7 +70,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
 
             LinkedList<String> msgIds = new LinkedList<>();
             content.getArray("ids").forEach(id -> msgIds.add((String) id));
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new MessageBulkDeleteEvent(
                             getJDA(), responseNumber,
                             channel, msgIds));

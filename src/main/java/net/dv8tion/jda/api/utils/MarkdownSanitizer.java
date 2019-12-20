@@ -28,43 +28,54 @@ import java.util.regex.Pattern;
  * Implements and algorithm that can strip or replace markdown in any supplied string.
  *
  * @see #sanitize(String, net.dv8tion.jda.api.utils.MarkdownSanitizer.SanitizationStrategy)
+ *
+ * @since  4.0.0
  */
 public class MarkdownSanitizer
 {
     /** Normal characters that are not special for markdown, ignoring this has no effect */
-    public static final int NORMAL    = 0;
+    public static final int NORMAL      = 0;
     /** Bold region such as "**Hello**" */
-    public static final int BOLD      = 1 << 0;
+    public static final int BOLD        = 1 << 0;
     /** Italics region for underline such as "_Hello_" */
-    public static final int ITALICS_U = 1 << 1;
+    public static final int ITALICS_U   = 1 << 1;
     /** Italics region for asterisks such as "*Hello*" */
-    public static final int ITALICS_A = 1 << 2;
+    public static final int ITALICS_A   = 1 << 2;
     /** Monospace region such as "`Hello`" */
-    public static final int MONO      = 1 << 3;
+    public static final int MONO        = 1 << 3;
     /** Monospace region such as "``Hello``" */
-    public static final int MONO_TWO  = 1 << 4;
+    public static final int MONO_TWO    = 1 << 4;
     /** Codeblock region such as "```Hello```" */
-    public static final int BLOCK     = 1 << 5;
+    public static final int BLOCK       = 1 << 5;
     /** Spoiler region such as "||Hello||" */
-    public static final int SPOILER   = 1 << 6;
+    public static final int SPOILER     = 1 << 6;
     /** Underline region such as "__Hello__" */
-    public static final int UNDERLINE = 1 << 7;
+    public static final int UNDERLINE   = 1 << 7;
     /** Strikethrough region such as "~~Hello~~" */
-    public static final int STRIKE    = 1 << 8;
+    public static final int STRIKE      = 1 << 8;
+    /** Quote region such as {@code "> text here"} */
+    public static final int QUOTE       = 1 << 9;
+    /** Quote block region such as {@code ">>> text here"} */
+    public static final int QUOTE_BLOCK = 1 << 10;
 
-    private static final int ESCAPED_BOLD      = Integer.MIN_VALUE | BOLD;
-    private static final int ESCAPED_ITALICS_U = Integer.MIN_VALUE | ITALICS_U;
-    private static final int ESCAPED_ITALICS_A = Integer.MIN_VALUE | ITALICS_A;
-    private static final int ESCAPED_MONO      = Integer.MIN_VALUE | MONO;
-    private static final int ESCAPED_MONO_TWO  = Integer.MIN_VALUE | MONO_TWO;
-    private static final int ESCAPED_BLOCK     = Integer.MIN_VALUE | BLOCK;
-    private static final int ESCAPED_SPOILER   = Integer.MIN_VALUE | SPOILER;
-    private static final int ESCAPED_UNDERLINE = Integer.MIN_VALUE | UNDERLINE;
-    private static final int ESCAPED_STRIKE    = Integer.MIN_VALUE | STRIKE;
+    private static final int ESCAPED_BOLD        = Integer.MIN_VALUE | BOLD;
+    private static final int ESCAPED_ITALICS_U   = Integer.MIN_VALUE | ITALICS_U;
+    private static final int ESCAPED_ITALICS_A   = Integer.MIN_VALUE | ITALICS_A;
+    private static final int ESCAPED_MONO        = Integer.MIN_VALUE | MONO;
+    private static final int ESCAPED_MONO_TWO    = Integer.MIN_VALUE | MONO_TWO;
+    private static final int ESCAPED_BLOCK       = Integer.MIN_VALUE | BLOCK;
+    private static final int ESCAPED_SPOILER     = Integer.MIN_VALUE | SPOILER;
+    private static final int ESCAPED_UNDERLINE   = Integer.MIN_VALUE | UNDERLINE;
+    private static final int ESCAPED_STRIKE      = Integer.MIN_VALUE | STRIKE;
+    private static final int ESCAPED_QUOTE       = Integer.MIN_VALUE | QUOTE;
+    private static final int ESCAPED_QUOTE_BLOCK = Integer.MIN_VALUE | QUOTE_BLOCK;
 
     private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
+    private static final Pattern quote = Pattern.compile("> +\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern quoteBlock = Pattern.compile(">>>\\s+\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
 
     private static final TIntObjectMap<String> tokens;
+
     static
     {
         tokens = new TIntObjectHashMap<>();
@@ -380,6 +391,7 @@ public class MarkdownSanitizer
             case ESCAPED_ITALICS_A:
             case ESCAPED_ITALICS_U:
             case ESCAPED_MONO:
+            case ESCAPED_QUOTE:
             case ITALICS_A:
             case ITALICS_U:
             case MONO:
@@ -404,6 +416,10 @@ public class MarkdownSanitizer
             throw new IllegalStateException("Found illegal region for strategy ESCAPE '" + region + "' with no known format token!");
         if (region == UNDERLINE)
             token = "_\\_"; // UNDERLINE needs special handling because the client thinks its ITALICS_U if you only escape once
+        else if (region == BOLD)
+            token = "*\\*"; // BOLD needs special handling because the client thinks its ITALICS_A if you only escape once
+        else if (region == (BOLD | ITALICS_A))
+            token = "*\\*\\*"; // BOLD | ITALICS_A needs special handling because the client thinks its BOLD if you only escape once
         builder.append("\\").append(token)
                .append(seq)
                .append("\\").append(token);
@@ -449,11 +465,21 @@ public class MarkdownSanitizer
     {
         Checks.notNull(sequence, "Input");
         StringBuilder builder = new StringBuilder();
+        String end = handleQuote(sequence, false);
+        if (end != null) return end;
+
         for (int i = 0; i < sequence.length();)
         {
             int nextRegion = getRegion(i, sequence);
             if (nextRegion == NORMAL)
             {
+                if (sequence.charAt(i) == '\n' && i + 1 < sequence.length())
+                {
+                    String result = handleQuote(sequence.substring(i + 1), true);
+                    if (result != null)
+                        return builder.append(result).toString();
+                }
+
                 builder.append(sequence.charAt(i++));
                 continue;
             }
@@ -471,6 +497,33 @@ public class MarkdownSanitizer
             i = endRegion + delta;
         }
         return builder.toString();
+    }
+
+    private String handleQuote(@Nonnull String sequence, boolean newline)
+    {
+        // Special handling for quote
+        if (!isIgnored(QUOTE) && quote.matcher(sequence).matches())
+        {
+            int end = sequence.indexOf('\n');
+            if (end < 0)
+                end = sequence.length();
+            StringBuilder builder = new StringBuilder(compute(sequence.substring(2, end)));
+            if (strategy == SanitizationStrategy.ESCAPE)
+                builder.insert(0, "\\> ");
+            if (newline)
+                builder.insert(0, '\n');
+            if (end < sequence.length())
+                builder.append(compute(sequence.substring(end)));
+            return builder.toString();
+
+        }
+        else if (!isIgnored(QUOTE_BLOCK) && quoteBlock.matcher(sequence).matches())
+        {
+            if (strategy == SanitizationStrategy.ESCAPE)
+                return compute("\\".concat(sequence));
+            return compute(sequence.substring(4));
+        }
+        return null;
     }
 
     public enum SanitizationStrategy

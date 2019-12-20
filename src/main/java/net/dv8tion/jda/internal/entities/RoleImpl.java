@@ -33,10 +33,11 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -128,6 +129,27 @@ public class RoleImpl implements Role
         return Permission.getPermissions(rawPermissions);
     }
 
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit()
+    {
+        return getPermissions();
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
+    }
+
     @Override
     public Color getColor()
     {
@@ -209,7 +231,7 @@ public class RoleImpl implements Role
     public RoleAction createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        return guild.getController().createRole()
+        return guild.createRole()
                     .setColor(color)
                     .setHoisted(hoisted)
                     .setMentionable(mentionable)
@@ -240,7 +262,7 @@ public class RoleImpl implements Role
     {
         Guild guild = getGuild();
         if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
         if(!PermissionUtil.canInteract(guild.getSelfMember(), this))
             throw new HierarchyException("Can't delete role >= highest self-role");
         if (managed)
@@ -354,6 +376,8 @@ public class RoleImpl implements Role
 
     public RoleImpl setRawPosition(int rawPosition)
     {
+        SortedSnowflakeCacheViewImpl<Role> roleCache = (SortedSnowflakeCacheViewImpl<Role>) getGuild().getRoleCache();
+        roleCache.clearCachedLists();
         this.rawPosition = rawPosition;
         return this;
     }

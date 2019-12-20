@@ -69,7 +69,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         {
             String oldName = role.getName();
             role.setName(name);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new RoleUpdateNameEvent(
                             getJDA(), responseNumber,
                             role, oldName));
@@ -78,7 +78,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         {
             int oldColor = role.getColorRaw();
             role.setColor(color);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new RoleUpdateColorEvent(
                             getJDA(), responseNumber,
                             role, oldColor));
@@ -88,7 +88,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
             int oldPosition = role.getPosition();
             int oldPositionRaw = role.getPositionRaw();
             role.setRawPosition(position);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new RoleUpdatePositionEvent(
                             getJDA(), responseNumber,
                             role, oldPosition, oldPositionRaw));
@@ -97,7 +97,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         {
             long oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new RoleUpdatePermissionsEvent(
                             getJDA(), responseNumber,
                             role, oldPermissionsRaw));
@@ -107,7 +107,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         {
             boolean wasHoisted = role.isHoisted();
             role.setHoisted(hoisted);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new RoleUpdateHoistedEvent(
                             getJDA(), responseNumber,
                             role, wasHoisted));
@@ -116,7 +116,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         {
             boolean wasMentionable = role.isMentionable();
             role.setMentionable(mentionable);
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                     new RoleUpdateMentionableEvent(
                             getJDA(), responseNumber,
                             role, wasMentionable));

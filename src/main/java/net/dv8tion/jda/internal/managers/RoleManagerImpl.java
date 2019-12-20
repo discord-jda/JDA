@@ -125,7 +125,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
         {
             EnumSet<Permission> permissionList = Permission.getPermissions(missingPerms);
             if (!permissionList.isEmpty())
-                throw new InsufficientPermissionException(permissionList.iterator().next());
+                throw new InsufficientPermissionException(getGuild(), permissionList.iterator().next());
         }
         this.permissions = perms;
         set |= PERMISSION;
@@ -205,7 +205,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     {
         Member selfMember = getGuild().getSelfMember();
         if (!selfMember.hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(Permission.MANAGE_ROLES);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
         if (!selfMember.canInteract(getRole()))
             throw new HierarchyException("Cannot modify a role that is higher or equal in hierarchy");
         return super.checkPermissions();

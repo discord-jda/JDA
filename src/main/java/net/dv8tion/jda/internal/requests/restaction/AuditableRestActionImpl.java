@@ -68,6 +68,7 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
         super(api, route, data, handler);
     }
 
+    @Nonnull
     @Override
     @SuppressWarnings("unchecked")
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)

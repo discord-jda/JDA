@@ -24,7 +24,7 @@
  *     <li>{@link net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction Roles}</li>
  * </ul>
  *
- * <p>Abstract base implementation can be found at {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction OrderAction}
+ * <p>The abstract base can be found at {@link net.dv8tion.jda.api.requests.restaction.order.OrderAction OrderAction}.
  *
  * @since 3.0
  */

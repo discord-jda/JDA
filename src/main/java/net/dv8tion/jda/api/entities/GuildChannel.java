@@ -32,6 +32,12 @@ import java.util.List;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild} channel.
+ *
+ * @see Guild#getGuildChannelById(long)
+ * @see Guild#getGuildChannelById(ChannelType, long)
+ *
+ * @see JDA#getGuildChannelById(long)
+ * @see JDA#getGuildChannelById(ChannelType, long)
  */
 public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
 {
@@ -73,12 +79,14 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
 
     /**
      * A List of all {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel
-     * For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
+     * <br>For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
      * this returns all Members with the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ} Permission.
-     * In {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
+     * <br>For {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
      * this returns all Members that joined that VoiceChannel.
+     * <br>For {@link net.dv8tion.jda.api.entities.Category Categories},
+     * this returns all Members who are in its child channels.
      *
-     * @return A List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
      */
     @Nonnull
     List<Member> getMembers();
@@ -137,7 +145,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * If you would like only {@link net.dv8tion.jda.api.entities.Member Member} overrides or only {@link net.dv8tion.jda.api.entities.Role Role}
      * overrides, use {@link #getMemberPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for this {@link GuildChannel GuildChannel}.
      */
     @Nonnull
@@ -147,7 +155,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * Gets all of the {@link net.dv8tion.jda.api.entities.Member Member} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Member Member}
      *         for this {@link GuildChannel GuildChannel}.
      */
@@ -158,7 +166,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * Gets all of the {@link net.dv8tion.jda.api.entities.Role Role} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
      *
-     * @return Possibly-empty list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Role Roles}
      *         for this {@link GuildChannel GuildChannel}.
      */
@@ -187,7 +195,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      *     <br>The channel could not be created due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
+     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
      * </ul>
      *
      * @param  guild
@@ -224,7 +232,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      *     <br>The channel could not be created due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
+     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
@@ -345,13 +353,15 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
      *         <br>With the current settings of an existing override or a fresh override with no permissions set
+     *
+     * @since  4.0.0
      */
     @Nonnull
     @CheckReturnValue
     default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
     {
         if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(this, Permission.MANAGE_PERMISSIONS);
         PermissionOverride override = getPermissionOverride(permissionHolder);
         return override != null ? override.getManager() : putPermissionOverride(permissionHolder);
     }

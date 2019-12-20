@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Controls states and behaviour of one or multiple {@link net.dv8tion.jda.api.JDA JDA} instances.
@@ -85,8 +87,7 @@ public interface SessionController
     int IDENTIFY_DELAY = 5;
 
     /**
-     * Called by {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} when
-     * a WebSocket should be started. (Connecting and Reconnecting)
+     * Called by a JDA session when a WebSocket should be started. (Connecting and Reconnecting)
      * <br>This should only add the node to a queue and execute the queue with respect to the {@link #IDENTIFY_DELAY}.
      *
      * @param  node
@@ -95,8 +96,7 @@ public interface SessionController
     void appendSession(@Nonnull SessionConnectNode node);
 
     /**
-     * Called by {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient} when
-     * a JDA session has been shutdown.
+     * Called by a JDA session when a shutdown has been requested.
      * <br>When this happened the {@link net.dv8tion.jda.api.utils.SessionController.SessionConnectNode#run(boolean) SessionConnectNode.run(boolean)}
      * will be a no-op and does not contribute to the {@link #IDENTIFY_DELAY}.
      *
@@ -113,8 +113,7 @@ public interface SessionController
     long getGlobalRatelimit();
 
     /**
-     * Called by the {@link net.dv8tion.jda.internal.requests.RateLimiter RateLimiter} if the global rest ratelimit
-     * has changed.
+     * Called by the RateLimiter if the global rest ratelimit has changed.
      *
      * @param ratelimit
      *        The new global ratelimit
@@ -122,8 +121,7 @@ public interface SessionController
     void setGlobalRatelimit(long ratelimit);
 
     /**
-     * Called by {@link net.dv8tion.jda.internal.requests.WebSocketClient WebSocketClient}
-     * when a new session starts (Connecting, Reconnecting).
+     * Called by a JDA session when a new gateway session starts (Connecting, Reconnecting).
      * <br>Should provide the gateway endpoint (wss) to connect to.
      *
      * @param  api
@@ -145,9 +143,81 @@ public interface SessionController
      * @return The Pair consisting of the gateway endpoint to connect to and the shardTotal
      *
      * @see    #getGateway(net.dv8tion.jda.api.JDA)
+     *
+     * @deprecated
+     *         Use {@link #getShardedGateway(JDA)} instead, an implementation for this is ignored
+     *         if {@link #getShardedGateway(JDA)} is implemented instead.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("getShardedGateway(api)")
+    @SuppressWarnings("DeprecatedIsStillUsed")
     Pair<String, Integer> getGatewayBot(@Nonnull JDA api);
+
+    /**
+     * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
+     * when a new shards is starting.
+     * <br>Should provide a {@link ShardedGateway} with {@code (gateway, shardTotal)}.
+     *
+     * @param  api
+     *         The current JDA instance (used for RestActions and ShardInfo)
+     *
+     * @return The ShardedGateway instance consisting of the gateway endpoint to connect to and the shardTotal
+     *
+     * @see    #getGateway(net.dv8tion.jda.api.JDA)
+     */
+    @Nonnull
+    @SuppressWarnings({"deprecation", "RedundantSuppression"})
+    default ShardedGateway getShardedGateway(@Nonnull JDA api)
+    {
+        Pair<String, Integer> tuple = getGatewayBot(api);
+        return new ShardedGateway(tuple.getLeft(), tuple.getRight());
+    }
+
+    /**
+     * POJO containing the gateway endpoint and recommended shard total for a shard manager.
+     */
+    class ShardedGateway
+    {
+        private final String url;
+        private final int shardTotal;
+
+        /**
+         * Creates a new GatewayBot instance with the provided properties
+         *
+         * @param url
+         *        The gateway endpoint (wss)
+         * @param shardTotal
+         *        The recommended shard total
+         */
+        public ShardedGateway(String url, int shardTotal)
+        {
+            this.url = url;
+            this.shardTotal = shardTotal;
+        }
+
+        /**
+         * The gateway endpoint
+         *
+         * @return The endpoint
+         */
+        public String getUrl()
+        {
+            return url;
+        }
+
+        /**
+         * The recommended shard total
+         *
+         * @return The shard total
+         */
+        public int getShardTotal()
+        {
+            return shardTotal;
+        }
+    }
 
     /**
      * Represents a WebSocketClient request to start a session.
@@ -178,7 +248,7 @@ public interface SessionController
          *
          * @return The ShardInfo
          */
-        @Nullable
+        @Nonnull
         JDA.ShardInfo getShardInfo();
 
         /**
@@ -187,7 +257,7 @@ public interface SessionController
          *
          * @param  isLast
          *         True, if this is the last node in a queue worker.
-         *         When false this will not wait for the payload to be delivered.
+         *         When true this will not wait for the payload to be delivered.
          *
          * @throws InterruptedException
          *         If the calling thread is interrupted

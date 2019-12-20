@@ -19,11 +19,20 @@ package net.dv8tion.jda.internal.utils;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.Okio;
+import org.slf4j.Logger;
 
 import java.io.*;
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 public class IOUtil
 {
+    private static final Logger log = JDALogger.getLog(IOUtil.class);
+
     public static void silentClose(AutoCloseable closeable)
     {
         try
@@ -40,6 +49,11 @@ public class IOUtil
             closeable.close();
         }
         catch (IOException ignored) {}
+    }
+
+    public static String getHost(String uri)
+    {
+        return URI.create(uri).getHost();
     }
 
     /**
@@ -146,5 +160,76 @@ public class IOUtil
     public static RequestBody createRequestBody(final MediaType contentType, final InputStream stream)
     {
         return new BufferedRequestBody(Okio.source(stream), contentType);
+    }
+
+    public static short getShortBigEndian(byte[] arr, int offset)
+    {
+        return (short) ((arr[offset    ] & 0xff) << 8
+                       | arr[offset + 1] & 0xff);
+    }
+
+    public static short getShortLittleEndian(byte[] arr, int offset)
+    {
+        // Same as big endian but reversed order of bytes (java uses big endian)
+        return (short) ((arr[offset    ] & 0xff)
+                      | (arr[offset + 1] & 0xff) << 8);
+    }
+
+    public static int getIntBigEndian(byte[] arr, int offset)
+    {
+        return arr[offset + 3] & 0xFF
+            | (arr[offset + 2] & 0xFF) << 8
+            | (arr[offset + 1] & 0xFF) << 16
+            | (arr[offset    ] & 0xFF) << 24;
+    }
+
+    public static void setIntBigEndian(byte[] arr, int offset, int it)
+    {
+        arr[offset    ] = (byte) ((it >>> 24) & 0xFF);
+        arr[offset + 1] = (byte) ((it >>> 16) & 0xFF);
+        arr[offset + 2] = (byte) ((it >>> 8)  & 0xFF);
+        arr[offset + 3] = (byte) ( it         & 0xFF);
+    }
+
+    public static ByteBuffer reallocate(ByteBuffer original, int length)
+    {
+        ByteBuffer buffer = ByteBuffer.allocate(length);
+        buffer.put(original);
+        return buffer;
+    }
+
+    /**
+     * Retrieves an {@link InputStream InputStream} for the provided {@link okhttp3.Response Response}.
+     * <br>When the header for {@code content-encoding} is set with {@code gzip} this will wrap the body
+     * in a {@link java.util.zip.GZIPInputStream GZIPInputStream} which decodes the data.
+     *
+     * <p>This is used to make usage of encoded responses more user-friendly in various parts of JDA.
+     *
+     * @param  response
+     *         The not-null Response object
+     *
+     * @return InputStream representing the body of this response
+     */
+    @SuppressWarnings("ConstantConditions") // methods here don't return null despite the annotations on them, read the docs
+    public static InputStream getBody(okhttp3.Response response) throws IOException
+    {
+        String encoding = response.header("content-encoding", "");
+        InputStream data = new BufferedInputStream(response.body().byteStream());
+        data.mark(256);
+        try
+        {
+            if (encoding.equalsIgnoreCase("gzip"))
+                return new GZIPInputStream(data);
+            else if (encoding.equalsIgnoreCase("deflate"))
+                return new InflaterInputStream(data, new Inflater(true));
+        }
+        catch (ZipException | EOFException ex)
+        {
+            data.reset(); // reset to get full content
+            log.error("Failed to read gzip content for response. Headers: {}\nContent: '{}'",
+                response.headers(), JDALogger.getLazyString(() -> new String(readFully(data))), ex);
+            return null;
+        }
+        return data;
     }
 }

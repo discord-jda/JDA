@@ -72,6 +72,14 @@ public interface ApplicationInfo extends ISnowflake
     String getIconUrl();
 
     /**
+     * The team information for this application.
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.ApplicationTeam}, or null if this application is not in a team.
+     */
+    @Nullable
+    ApplicationTeam getTeam();
+
+    /**
      * Creates a OAuth invite-link used to invite the bot.
      * 
      * <p>The link is provided in the following format:

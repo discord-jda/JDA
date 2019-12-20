@@ -44,6 +44,12 @@ import java.util.*;
  * {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
  * <br><b>Note:</b> Message order is always in recent to past order. I.e: A message at index 0
  * of a list is more recent than a message at index 1.
+ *
+ * @see MessageChannel#getHistory()
+ * @see MessageChannel#getHistoryAfter(String, int)
+ * @see MessageChannel#getHistoryBefore(String, int)
+ * @see MessageChannel#getHistoryAround(String, int)
+ * @see MessageChannel#getHistoryFromBeginning(int)
  */
 public class MessageHistory
 {
@@ -65,7 +71,7 @@ public class MessageHistory
         {
             TextChannel tc = (TextChannel) channel;
             if (!tc.getGuild().getSelfMember().hasPermission(tc, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(tc, Permission.MESSAGE_HISTORY);
         }
     }
 
@@ -182,14 +188,14 @@ public class MessageHistory
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder builder = jda.getEntityBuilder();
-            LinkedList<Message> msgs  = new LinkedList<>();
+            LinkedList<Message> messages  = new LinkedList<>();
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                msgs.add(builder.createMessage(historyJson.getObject(i)));
+                messages.add(builder.createMessage(historyJson.getObject(i)));
 
-            msgs.forEach(msg -> history.put(msg.getIdLong(), msg));
-            return msgs;
+            messages.forEach(msg -> history.put(msg.getIdLong(), msg));
+            return messages;
         });
     }
 
@@ -251,28 +257,31 @@ public class MessageHistory
         return new RestActionImpl<>(jda, route, (response, request) ->
         {
             EntityBuilder builder = jda.getEntityBuilder();
-            LinkedList<Message> msgs  = new LinkedList<>();
+            LinkedList<Message> messages  = new LinkedList<>();
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                msgs.add(builder.createMessage(historyJson.getObject(i)));
+                messages.add(builder.createMessage(historyJson.getObject(i)));
 
-            for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
+            for (Iterator<Message> it = messages.descendingIterator(); it.hasNext();)
             {
                 Message m = it.next();
                 history.put(0, m.getIdLong(), m);
             }
 
-            return msgs;
+            return messages;
         });
     }
 
     /**
-     * Returns a List of Messages, sorted starting from newest to oldest, of all message that have already been retrieved
+     * The List of Messages, sorted starting from newest to oldest, of all message that have already been retrieved
      * from Discord with this MessageHistory object using the {@link #retrievePast(int)}, {@link #retrieveFuture(int)}, and
      * {@link net.dv8tion.jda.api.entities.MessageChannel#getHistoryAround(String, int)} methods.
      *
-     * @return A List of Messages, sorted newest to oldest.
+     * <p>This will be empty if it was just created using {@link MessageChannel#getHistory()} or similar
+     * methods. You first have to retrieve messages.
+     *
+     * @return An immutable List of Messages, sorted newest to oldest.
      */
     @Nonnull
     public List<Message> getRetrievedHistory()
@@ -502,7 +511,7 @@ public class MessageHistory
         {
             TextChannel t = (TextChannel) channel;
             if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY))
-                throw new InsufficientPermissionException(Permission.MESSAGE_HISTORY);
+                throw new InsufficientPermissionException(t, Permission.MESSAGE_HISTORY);
         }
     }
 

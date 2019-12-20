@@ -28,10 +28,11 @@ import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,7 +46,7 @@ public class MemberImpl implements Member
     private final Map<ClientType, OnlineStatus> clientStatus;
 
     private String nickname;
-    private long joinDate;
+    private long joinDate, boostDate;
     private List<Activity> activities = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
 
@@ -58,7 +59,7 @@ public class MemberImpl implements Member
         boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
         boolean cacheOnline = jda.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
-        this.clientStatus = cacheOnline ? new ConcurrentHashMap<>(5) : null;
+        this.clientStatus = cacheOnline ? Collections.synchronizedMap(new EnumMap<>(ClientType.class)) : null;
     }
 
     @Nonnull
@@ -95,6 +96,13 @@ public class MemberImpl implements Member
         return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
     }
 
+    @Nullable
+    @Override
+    public OffsetDateTime getTimeBoosted()
+    {
+        return boostDate != 0 ? OffsetDateTime.ofInstant(Instant.ofEpochMilli(boostDate), OFFSET) : null;
+    }
+
     @Override
     public GuildVoiceState getVoiceState()
     {
@@ -124,6 +132,15 @@ public class MemberImpl implements Member
             return OnlineStatus.OFFLINE;
         OnlineStatus status = this.clientStatus.get(type);
         return status == null ? OnlineStatus.OFFLINE : status;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<ClientType> getActiveClients()
+    {
+        if (clientStatus == null || clientStatus.isEmpty())
+            return EnumSet.noneOf(ClientType.class);
+        return EnumSet.copyOf(clientStatus.keySet());
     }
 
     @Override
@@ -186,6 +203,20 @@ public class MemberImpl implements Member
         return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
     }
 
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit()
+    {
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(this));
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
+    }
+
     @Override
     public boolean hasPermission(@Nonnull Permission... permissions)
     {
@@ -233,8 +264,15 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean isOwner() {
-        return this.equals(getGuild().getOwner());
+    public boolean isOwner()
+    {
+        return this.user.getIdLong() == getGuild().getOwnerIdLong();
+    }
+
+    @Override
+    public boolean isFake()
+    {
+        return getGuild().getMemberById(getIdLong()) == null;
     }
 
     @Override
@@ -252,6 +290,12 @@ public class MemberImpl implements Member
     public MemberImpl setJoinDate(long joinDate)
     {
         this.joinDate = joinDate;
+        return this;
+    }
+
+    public MemberImpl setBoostDate(long boostDate)
+    {
+        this.boostDate = boostDate;
         return this;
     }
 
@@ -281,6 +325,17 @@ public class MemberImpl implements Member
     public Set<Role> getRoleSet()
     {
         return roles;
+    }
+
+    public long getBoostDateRaw()
+    {
+        return boostDate;
+    }
+
+    public boolean isIncomplete()
+    {
+        // the joined_at is only present on complete members, this implies the member is completely loaded
+        return !isOwner() && Objects.equals(getGuild().getTimeCreated(), getTimeJoined());
     }
 
     @Override

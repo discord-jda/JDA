@@ -37,6 +37,9 @@ import java.util.Objects;
  * <br>A visual representation of an Embed can be found at:
  * <a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/01-Overview.png" target="_blank">Embed Overview</a>
  * <br>This class has many possibilities for null values, so be careful!
+ *
+ * @see EmbedBuilder
+ * @see Message#getEmbeds()
  */
 public class MessageEmbed implements SerializableData
 {
@@ -267,7 +270,7 @@ public class MessageEmbed implements SerializableData
      * to determine if it will fall in-line with other fields. If the embed contains no
      * fields, an empty list will be returned.
      *
-     * @return Never-null (but possibly empty) List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Field} objects
+     * @return Never-null (but possibly empty) immutable  List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Field} objects
      *         containing field information.
      */
     @Nonnull

@@ -15,13 +15,10 @@
  */
 
 /**
- * The api JDA features that are both available for
- * BOT and CLIENT applications.
+ * The API features of JDA.
  *
  * <p>This package contains information about the JDA version used by this library.
  * See {@link net.dv8tion.jda.api.JDAInfo JDAInfo}!
- *
- * <p>It includes enums that can be found at various locations throughout {@link net.dv8tion.jda} not only the api package!
  *
  * <p>To build a JDA instance you
  * would use the {@link net.dv8tion.jda.api.JDABuilder JDABuilder} with a specified {@link net.dv8tion.jda.api.AccountType AccountType}

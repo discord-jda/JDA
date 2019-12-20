@@ -36,6 +36,8 @@ public class JsonTest
     public void testJsonToString()
     {
         DataObject object = DataObject.fromJson(json);
-        Assertions.assertEquals(json, object.toString()); // lucky that this works here :)
+        String result = object.toString();
+        DataObject symmetric = DataObject.fromJson(result);
+        Assertions.assertEquals(object.toMap(), symmetric.toMap()); // lucky that this works here :)
     }
 }

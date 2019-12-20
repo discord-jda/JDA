@@ -71,7 +71,7 @@ public class PermissionOverrideActionImpl
     {
         return () -> {
             if (!getGuild().getSelfMember().hasPermission(channel, Permission.MANAGE_PERMISSIONS))
-                throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+                throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
             return true;
         };
     }

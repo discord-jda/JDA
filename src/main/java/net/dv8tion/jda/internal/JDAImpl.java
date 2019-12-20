@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -25,6 +26,8 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.GatewayPingEvent;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -37,6 +40,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -47,6 +51,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
+import net.dv8tion.jda.internal.hooks.EventManagerProxy;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -62,7 +67,6 @@ import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
@@ -96,7 +100,8 @@ public class JDAImpl implements JDA
     protected final PresenceImpl presence;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
-    protected final EventCache eventCache = new EventCache();
+    protected final EventCache eventCache;
+    protected final EventManagerProxy eventManager = new EventManagerProxy(new InterfacedEventManager());
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
@@ -108,14 +113,14 @@ public class JDAImpl implements JDA
 
     protected UpstreamReference<WebSocketClient> client;
     protected Requester requester;
-    protected IEventManager eventManager = new InterfacedEventManager();
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected Status status = Status.INITIALIZING;
     protected SelfUser selfUser;
     protected ShardInfo shardInfo;
     protected long responseTotal;
-    protected long ping = -1;
+    protected long gatewayPing = -1;
     protected String gatewayUrl;
+    protected ChunkingFilter chunkingFilter;
 
     protected String clientId = null;
     protected ShardManager shardManager = null;
@@ -139,11 +144,55 @@ public class JDAImpl implements JDA
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
+        this.eventCache = new EventCache(isGuildSubscriptions());
+    }
+
+    public void handleEvent(@Nonnull GenericEvent event)
+    {
+        eventManager.handle(event);
+    }
+
+    public boolean isRawEvents()
+    {
+        return sessionConfig.isRawEvents();
+    }
+
+    public boolean isRelativeRateLimit()
+    {
+        return sessionConfig.isRelativeRateLimit();
     }
 
     public boolean isCacheFlagSet(CacheFlag flag)
     {
         return metaConfig.getCacheFlags().contains(flag);
+    }
+
+    public boolean isGuildSubscriptions()
+    {
+        return metaConfig.isGuildSubscriptions();
+    }
+
+    public int getLargeThreshold()
+    {
+        return sessionConfig.getLargeThreshold();
+    }
+
+    public boolean chunkGuild(long id)
+    {
+        try
+        {
+            return isGuildSubscriptions() && chunkingFilter.filter(id);
+        }
+        catch (Exception e)
+        {
+            LOG.error("Uncaught exception from chunking filter", e);
+            return true;
+        }
+    }
+
+    public void setChunkingFilter(ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter;
     }
 
     public SessionController getSessionController()
@@ -222,9 +271,9 @@ public class JDAImpl implements JDA
 
 
     // This method also checks for a valid bot token as it is required to get the recommended shard count.
-    public Pair<String, Integer> getGatewayBot()
+    public SessionController.ShardedGateway getShardedGateway()
     {
-        return getSessionController().getGatewayBot(this);
+        return getSessionController().getShardedGateway(this);
     }
 
     public ConcurrentMap<String, String> getContextMap()
@@ -251,7 +300,7 @@ public class JDAImpl implements JDA
             Status oldStatus = this.status;
             this.status = status;
 
-            eventManager.handle(new StatusChangeEvent(this, status, oldStatus));
+            handleEvent(new StatusChangeEvent(this, status, oldStatus));
         }
     }
 
@@ -289,6 +338,7 @@ public class JDAImpl implements JDA
             if (userResponse != null)
             {
                 verifyAccountType(userResponse);
+                getEntityBuilder().createSelfUser(userResponse);
                 return;
             }
         }
@@ -368,11 +418,6 @@ public class JDAImpl implements JDA
         return authConfig.getToken();
     }
 
-    @Override
-    public boolean isAudioEnabled()
-    {
-        return sessionConfig.isAudioEnabled();
-    }
 
     @Override
     public boolean isBulkDeleteSplittingEnabled()
@@ -411,22 +456,25 @@ public class JDAImpl implements JDA
     @Override
     public long getGatewayPing()
     {
-        return ping;
+        return gatewayPing;
     }
 
     @Nonnull
     @Override
-    public JDA awaitStatus(@Nonnull Status status) throws InterruptedException
+    public JDA awaitStatus(@Nonnull Status status, @Nonnull Status... failOn) throws InterruptedException
     {
         Checks.notNull(status, "Status");
         Checks.check(status.isInit(), "Cannot await the status %s as it is not part of the login cycle!", status);
         if (getStatus() == Status.CONNECTED)
             return this;
+        List<Status> failStatus = Arrays.asList(failOn);
         while (!getStatus().isInit()                         // JDA might disconnect while starting
                 || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
         {
             if (getStatus() == Status.SHUTDOWN)
                 throw new IllegalStateException("Was shutdown trying to await status");
+            else if (failStatus.contains(getStatus()))
+                return this;
             Thread.sleep(50);
         }
         return this;
@@ -469,22 +517,6 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public List<String> getCloudflareRays()
-    {
-        WebSocketClient client = getClient();
-        return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getCfRays()));
-    }
-
-    @Nonnull
-    @Override
-    public List<String> getWebSocketTrace()
-    {
-        WebSocketClient client = getClient();
-        return client == null ? Collections.emptyList() : Collections.unmodifiableList(new LinkedList<>(client.getTraces()));
-    }
-
-    @Nonnull
-    @Override
     public List<Guild> getMutualGuilds(@Nonnull User... users)
     {
         Checks.notNull(users, "users");
@@ -518,7 +550,8 @@ public class JDAImpl implements JDA
 
         // check cache
         User user = this.getUserById(id);
-        if (user != null)
+        // If guild subscriptions are disabled this user might not be up-to-date
+        if (user != null && isGuildSubscriptions())
             return new EmptyRestAction<>(this, user);
 
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
@@ -538,6 +571,16 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<Guild> getGuildCache()
     {
         return guildCache;
+    }
+
+    @Nonnull
+    @Override
+    public Set<String> getUnavailableGuilds()
+    {
+        TLongSet unavailableGuilds = guildSetupController.getUnavailableGuilds();
+        Set<String> copy = new HashSet<>();
+        unavailableGuilds.forEach(id -> copy.add(Long.toUnsignedString(id)));
+        return copy;
     }
 
     @Nonnull
@@ -682,10 +725,11 @@ public class JDAImpl implements JDA
         return sessionConfig.getMaxReconnectDelay();
     }
 
+    @Nonnull
     @Override
     public ShardInfo getShardInfo()
     {
-        return shardInfo;
+        return shardInfo == null ? ShardInfo.SINGLE : shardInfo;
     }
 
     @Nonnull
@@ -699,7 +743,7 @@ public class JDAImpl implements JDA
     @Override
     public IEventManager getEventManager()
     {
-        return eventManager;
+        return eventManager.getSubject();
     }
 
     @Nonnull
@@ -712,7 +756,7 @@ public class JDAImpl implements JDA
     @Override
     public void setEventManager(IEventManager eventManager)
     {
-        this.eventManager = eventManager == null ? new InterfacedEventManager() : eventManager;
+        this.eventManager.setSubject(eventManager);
     }
 
     @Override
@@ -737,7 +781,7 @@ public class JDAImpl implements JDA
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return Collections.unmodifiableList(eventManager.getRegisteredListeners());
+        return eventManager.getRegisteredListeners();
     }
 
     @Nonnull
@@ -843,9 +887,11 @@ public class JDAImpl implements JDA
         this.audioSendFactory = factory;
     }
 
-    public void setPing(long ping)
+    public void setGatewayPing(long ping)
     {
-        this.ping = ping;
+        long oldPing = this.gatewayPing;
+        this.gatewayPing = ping;
+        handleEvent(new GatewayPingEvent(this, oldPing));
     }
 
     public Requester getRequester()

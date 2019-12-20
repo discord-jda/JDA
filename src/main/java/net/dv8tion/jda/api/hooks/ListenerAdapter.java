@@ -49,6 +49,7 @@ import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
 import net.dv8tion.jda.api.events.guild.member.*;
 import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
@@ -82,10 +83,10 @@ import javax.annotation.Nonnull;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.api.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.api.events.Event Events}
- * for you.
+ * for you. You should <b><u>override</u></b> the methods provided by this class for your event listener implementation.
  *
- * <p><b>Example:</b>
- * <br><pre><code>
+ * <h2>Example:</h2>
+ * <pre><code>
  * public class MyReadyListener extends ListenerAdapter
  * {
  *    {@literal @Override}
@@ -109,6 +110,8 @@ public abstract class ListenerAdapter implements EventListener
 {
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
+    public void onRawGateway(@Nonnull RawGatewayEvent event) {}
+    public void onGatewayPing(@Nonnull GatewayPingEvent event) {}
 
     //JDA Events
     public void onReady(@Nonnull ReadyEvent event) {}
@@ -227,6 +230,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
     public void onGuildUpdateVerificationLevel(@Nonnull GuildUpdateVerificationLevelEvent event) {}
     public void onGuildUpdateFeatures(@Nonnull GuildUpdateFeaturesEvent event) {}
+    public void onGuildUpdateVanityCode(@Nonnull GuildUpdateVanityCodeEvent event) {}
+    public void onGuildUpdateBanner(@Nonnull GuildUpdateBannerEvent event) {}
+    public void onGuildUpdateDescription(@Nonnull GuildUpdateDescriptionEvent event) {}
+    public void onGuildUpdateBoostTier(@Nonnull GuildUpdateBoostTierEvent event) {}
+    public void onGuildUpdateBoostCount(@Nonnull GuildUpdateBoostCountEvent event) {}
+    public void onGuildUpdateMaxMembers(@Nonnull GuildUpdateMaxMembersEvent event) {}
+    public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
 
     //Guild Member Events
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {}
@@ -236,6 +246,7 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Member Update Events
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
+    public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
 
     //Guild Voice Events
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {}
@@ -307,6 +318,9 @@ public abstract class ListenerAdapter implements EventListener
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
+        else if (event instanceof RawGatewayEvent)
+            onRawGateway((RawGatewayEvent) event);
+
         //JDA Events
         if (event instanceof ReadyEvent)
             onReady((ReadyEvent) event);
@@ -322,6 +336,8 @@ public abstract class ListenerAdapter implements EventListener
             onStatusChange((StatusChangeEvent) event);
         else if (event instanceof ExceptionEvent)
             onException((ExceptionEvent) event);
+        else if (event instanceof GatewayPingEvent)
+            onGatewayPing((GatewayPingEvent) event);
 
         //Message Events
         //Guild (TextChannel) Message Events
@@ -515,6 +531,20 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUpdateVerificationLevel((GuildUpdateVerificationLevelEvent) event);
         else if (event instanceof GuildUpdateFeaturesEvent)
             onGuildUpdateFeatures((GuildUpdateFeaturesEvent) event);
+        else if (event instanceof GuildUpdateVanityCodeEvent)
+            onGuildUpdateVanityCode((GuildUpdateVanityCodeEvent) event);
+        else if (event instanceof GuildUpdateBannerEvent)
+            onGuildUpdateBanner((GuildUpdateBannerEvent) event);
+        else if (event instanceof GuildUpdateDescriptionEvent)
+            onGuildUpdateDescription((GuildUpdateDescriptionEvent) event);
+        else if (event instanceof GuildUpdateBoostTierEvent)
+            onGuildUpdateBoostTier((GuildUpdateBoostTierEvent) event);
+        else if (event instanceof GuildUpdateBoostCountEvent)
+            onGuildUpdateBoostCount((GuildUpdateBoostCountEvent) event);
+        else if (event instanceof GuildUpdateMaxMembersEvent)
+            onGuildUpdateMaxMembers((GuildUpdateMaxMembersEvent) event);
+        else if (event instanceof GuildUpdateMaxPresencesEvent)
+            onGuildUpdateMaxPresences((GuildUpdateMaxPresencesEvent) event);
 
         //Guild Member Events
         else if (event instanceof GuildMemberJoinEvent)
@@ -529,6 +559,8 @@ public abstract class ListenerAdapter implements EventListener
         //Guild Member Update Events
         else if (event instanceof GuildMemberUpdateNicknameEvent)
             onGuildMemberUpdateNickname((GuildMemberUpdateNicknameEvent) event);
+        else if (event instanceof GuildMemberUpdateBoostTimeEvent)
+            onGuildMemberUpdateBoostTime((GuildMemberUpdateBoostTimeEvent) event);
 
         //Guild Voice Events
         else if (event instanceof GuildVoiceJoinEvent)

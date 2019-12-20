@@ -57,7 +57,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getOldIconUrl()
     {
-        return previous == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + previous + ".png";
+        return previous == null ? null : String.format(Guild.ICON_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
     /**
@@ -79,6 +79,6 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
     @Nullable
     public String getNewIconUrl()
     {
-        return next == null ? null : "https://cdn.discordapp.com/icons/" + guild.getId() + "/" + next + ".png";
+        return next == null ? null : String.format(Guild.ICON_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 }

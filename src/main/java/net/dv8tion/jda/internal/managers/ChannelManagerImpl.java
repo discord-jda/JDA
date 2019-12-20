@@ -162,7 +162,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
         withLock(lock, (lock) ->
@@ -182,7 +182,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         withLock(lock, (lock) ->
         {
@@ -205,7 +205,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             return this;
 
         if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(Permission.MANAGE_PERMISSIONS);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
         withLock(lock, (lock) ->
         {
@@ -304,7 +304,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set slowmode on text channels");
-        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode per user must be between 0 and 21600 (seconds)!");
+        Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
         return this;
@@ -331,7 +331,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         if (getType() != ChannelType.VOICE)
             throw new IllegalStateException("Can only set bitrate on voice channels");
-        final int maxBitrate = getGuild().getFeatures().contains("VIP_REGIONS") ? 128000 : 96000;
+        final int maxBitrate = getGuild().getMaxBitrate();
         Checks.check(bitrate >= 8000, "Bitrate must be greater or equal to 8000");
         Checks.check(bitrate <= maxBitrate, "Bitrate must be less or equal to %s", maxBitrate);
         this.bitrate = bitrate;
@@ -374,7 +374,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         final Member selfMember = getGuild().getSelfMember();
         if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(Permission.MANAGE_CHANNEL);
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_CHANNEL);
         return super.checkPermissions();
     }
 

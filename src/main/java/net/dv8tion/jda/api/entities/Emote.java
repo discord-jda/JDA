@@ -42,12 +42,26 @@ import java.util.List;
  * <br>Fake emotes may or may not have an attached {@link Guild Guild} and thus might not be manageable though
  * {@link #getManager()} or {@link #delete()}. They also might lack attached roles for {@link #getRoles()}.
  *
- * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
  *
  * @since  2.2
+ *
+ * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
+ *
+ * @see    Guild#getEmoteCache()
+ * @see    Guild#getEmoteById(long)
+ * @see    Guild#getEmotesByName(String, boolean)
+ * @see    Guild#getEmotes()
+ *
+ * @see    JDA#getEmoteCache()
+ * @see    JDA#getEmoteById(long)
+ * @see    JDA#getEmotesByName(String, boolean)
+ * @see    JDA#getEmotes()
  */
 public interface Emote extends IMentionable, IFakeable
 {
+    /** Template for {@link #getImageUrl()} */
+    String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
+
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.
      *
@@ -59,8 +73,8 @@ public interface Emote extends IMentionable, IFakeable
     Guild getGuild();
 
     /**
-     * Roles this emote is active for
-     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
+     * Roles this emote is active for.
+     * <br><a href="https://discordapp.com/developers/docs/resources/emoji#emoji-object" target="_blank">Learn More</a>
      *
      * @throws IllegalStateException
      *         If this Emote does not have attached roles according to {@link #canProvideRoles()}
@@ -101,7 +115,8 @@ public interface Emote extends IMentionable, IFakeable
     boolean canProvideRoles();
 
     /**
-     * The name of this emote
+     * The name of this emote.
+     * <br>Does not include colons.
      *
      * @return String representation of this emote's name
      */
@@ -110,8 +125,8 @@ public interface Emote extends IMentionable, IFakeable
 
     /**
      * Whether this emote is managed. A managed Emote is controlled by Discord, not the Guild administrator, typical
-     * via a service like BBTV in conjunction with Twitch.
-     * <br><a href="https://discordapp.com/developers/docs/resources/guild#emoji-object" target="_blank">Learn More</a>
+     * via a service like BTTV in conjunction with Twitch.
+     * <br><a href="https://discordapp.com/developers/docs/resources/emoji#emoji-object" target="_blank">Learn More</a>
      *
      * @return True, if this emote is managed
      */
@@ -187,7 +202,7 @@ public interface Emote extends IMentionable, IFakeable
     @Nonnull
     default String getImageUrl()
     {
-        return "https://cdn.discordapp.com/emojis/" + getId() + (isAnimated() ? ".gif" : ".png");
+        return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
     /**
@@ -212,9 +227,6 @@ public interface Emote extends IMentionable, IFakeable
      *         The User to test
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(Member issuer)
     {
@@ -231,9 +243,6 @@ public interface Emote extends IMentionable, IFakeable
      *         The MessageChannel to test
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(User issuer, MessageChannel channel)
     {
@@ -252,9 +261,6 @@ public interface Emote extends IMentionable, IFakeable
      *         Whether bots can use non-managed emotes in other guilds
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel, boolean)
      */
     default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride)
     {

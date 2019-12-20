@@ -44,6 +44,8 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      *
      * @throws NullPointerException
      *         If provided with null
+     *
+     * @since  4.0.0
      */
     void forEachUnordered(@Nonnull final Consumer<? super T> action);
 
@@ -55,6 +57,8 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      * Behavior similar to {@link CacheView#stream()} which does not preserve order.
      *
      * @return Stream of the contained elements
+     *
+     * @since  4.0.0
      */
     @Nonnull
     Stream<T> streamUnordered();
@@ -63,6 +67,8 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      * Behavior similar to {@link CacheView#parallelStream()} which does not preserve order.
      *
      * @return (Parallel) Stream of contained elements
+     *
+     * @since  4.0.0
      */
     @Nonnull
     Stream<T> parallelStreamUnordered();

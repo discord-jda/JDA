@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.EmoteManager;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -154,9 +155,8 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         withLock(this.roles, (list) ->
         {
             if (shouldUpdate(ROLES))
-                object.put("roles", list);
+                object.put("roles", DataArray.fromCollection(list));
         });
-
         reset();
         return getRequestBody(object);
     }
@@ -165,7 +165,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     protected boolean checkPermissions()
     {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-            throw new InsufficientPermissionException(Permission.MANAGE_EMOTES);
+            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES);
         return super.checkPermissions();
     }
 }

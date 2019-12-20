@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
+import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
@@ -36,9 +37,10 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final String description;
     private final String name;
     private final User owner;
+    private final ApplicationTeam team;
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
-            boolean isBotPublic, String name, User owner)
+            boolean isBotPublic, String name, User owner, ApplicationTeam team)
     {
         this.api = api;
         this.description = description;
@@ -48,6 +50,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         this.isBotPublic = isBotPublic;
         this.name = name;
         this.owner = owner;
+        this.team = team;
     }
 
     @Override
@@ -80,6 +83,13 @@ public class ApplicationInfoImpl implements ApplicationInfo
     {
         return this.iconId == null ? null
                 : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+    }
+
+    @Nonnull
+    @Override
+    public ApplicationTeam getTeam()
+    {
+        return team;
     }
 
     @Override

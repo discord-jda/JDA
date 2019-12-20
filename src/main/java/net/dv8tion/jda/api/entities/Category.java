@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
@@ -30,6 +31,16 @@ import java.util.List;
  * <br>Categories are used to keep order in a Guild by dividing the channels into groups.
  *
  * @since 3.4.0
+ *
+ * @see   Guild#getCategoryCache()
+ * @see   Guild#getCategories()
+ * @see   Guild#getCategoriesByName(String, boolean)
+ * @see   Guild#getCategoryById(long)
+ *
+ * @see   JDA#getCategoryCache()
+ * @see   JDA#getCategories()
+ * @see   JDA#getCategoriesByName(String, boolean)
+ * @see   JDA#getCategoryById(long)
  */
 public interface Category extends GuildChannel
 {
@@ -50,6 +61,8 @@ public interface Category extends GuildChannel
      * listed for this Category
      *
      * @return Immutable list of all child StoreChannels
+     *
+     * @since  4.0.0
      */
     @Nonnull
     List<StoreChannel> getStoreChannels();
@@ -86,7 +99,10 @@ public interface Category extends GuildChannel
      *     <br>The channel could not be created due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
+     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
      * </ul>
      *
      * @param  name
@@ -118,7 +134,10 @@ public interface Category extends GuildChannel
      *     <br>The channel could not be created due to a permission discrepancy</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>We were removed from the Guild before finishing the task</li>
+     *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
      * </ul>
      *
      * @param  name

@@ -17,11 +17,13 @@
 package net.dv8tion.jda.internal.utils.compress;
 
 import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
@@ -29,7 +31,10 @@ import java.util.zip.InflaterOutputStream;
 
 public class ZlibDecompressor implements Decompressor
 {
+    private static final int Z_SYNC_FLUSH = 0x0000FFFF;
+
     private final Inflater inflater = new Inflater();
+    private ByteBuffer flushBuffer = null;
     private SoftReference<ByteArrayOutputStream> decompressBuffer = null;
 
     private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
@@ -47,6 +52,36 @@ public class ZlibDecompressor implements Decompressor
         if (buffer == null) // create a ne buffer because the GC got it
             decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(1024));
         return buffer;
+    }
+
+    private boolean isFlush(byte[] data)
+    {
+        if (data.length < 4)
+            return false;
+        int suffix = IOUtil.getIntBigEndian(data, data.length - 4);
+        return suffix == Z_SYNC_FLUSH;
+    }
+
+    private void buffer(byte[] data)
+    {
+        if (flushBuffer == null)
+            flushBuffer = ByteBuffer.allocate(data.length * 2);
+
+        //Ensure the capacity can hold the new data, ByteBuffer doesn't grow automatically
+        if (flushBuffer.capacity() < data.length + flushBuffer.position())
+        {
+            //Flip to make it a read buffer
+            flushBuffer.flip();
+            //Reallocate for the new capacity
+            flushBuffer = IOUtil.reallocate(flushBuffer, (flushBuffer.capacity() + data.length) * 2);
+        }
+
+        flushBuffer.put(data);
+    }
+
+    private Object lazy(byte[] data)
+    {
+        return JDALogger.getLazyString(() -> Arrays.toString(data));
     }
 
     @Override
@@ -71,7 +106,26 @@ public class ZlibDecompressor implements Decompressor
     @SuppressWarnings("CharsetObjectCanBeUsed")
     public String decompress(byte[] data) throws DataFormatException
     {
-        LOG.trace("Decompressing data {}", JDALogger.getLazyString(() -> Arrays.toString(data)));
+        //Handle split messages
+        if (!isFlush(data))
+        {
+            //There is no flush suffix so this is not the end of the message
+            LOG.debug("Received incomplete data, writing to buffer. Length: {}", data.length);
+            buffer(data);
+            return null; // signal failure to decompress
+        }
+        else if (flushBuffer != null)
+        {
+            //This has a flush suffix and we have an incomplete package buffered
+            //concatenate the package with the new data and decompress it below
+            LOG.debug("Received final part of incomplete data");
+            buffer(data);
+            byte[] arr = flushBuffer.array();
+            data = new byte[flushBuffer.position()];
+            System.arraycopy(arr, 0, data, 0, data.length);
+            flushBuffer = null;
+        }
+        LOG.trace("Decompressing data {}", lazy(data));
         //Get the compressed message and inflate it
         //We use the same buffer here to optimize gc use
         ByteArrayOutputStream buffer = getDecompressBuffer();

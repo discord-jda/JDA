@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.slf4j.Logger;
@@ -53,11 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AudioConnection
 {
     public static final Logger LOG = JDALogger.getLog(AudioConnection.class);
-    public static final int OPUS_SAMPLE_RATE = 48000;   //(Hz) We want to use the highest of qualities! All the bandwidth!
-    public static final int OPUS_FRAME_SIZE = 960;      //An opus frame size of 960 at 48000hz represents 20 milliseconds of audio.
-    public static final int OPUS_FRAME_TIME_AMOUNT = 20;//This is 20 milliseconds. We are only dealing with 20ms opus packets.
-    public static final int OPUS_CHANNEL_COUNT = 2;     //We want to use stereo. If the audio given is mono, the encoder promotes it
-                                                        // to Left and Right mono (stereo that is the same on both sides)
+
     public static final long MAX_UINT_32 = 4294967295L;
 
     private static final int NOT_SPEAKING = 0;
@@ -246,7 +243,7 @@ public class AudioConnection
         {
             LOG.error("Uncaught exception in Audio ready-thread", throwable);
             JDAImpl api = getJDA();
-            api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+            api.handleEvent(new ExceptionEvent(api, throwable, true));
         });
         readyThread.setDaemon(true);
         readyThread.setName(threadIdentifier + " Ready Thread");
@@ -367,7 +364,9 @@ public class AudioConnection
                     {
                         udpSocket.receive(receivedPacket);
 
-                        if (receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined()) && webSocket.getSecretKey() != null)
+                        boolean shouldDecode = receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined());
+                        boolean canReceive = receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined() || receiveHandler.canReceiveEncoded());
+                        if (canReceive && webSocket.getSecretKey() != null)
                         {
                             if (!couldReceive)
                             {
@@ -398,17 +397,17 @@ public class AudioConnection
                                 {
                                     opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
                                 }
-                                else
+                                else if (!receiveHandler.canReceiveEncoded())
                                 {
                                     LOG.error("Unable to decode audio due to missing opus binaries!");
                                     break;
                                 }
                             }
-                            if (!decoder.isInOrder(decryptedPacket.getSequence()))
-                            {
-                                LOG.trace("Got out-of-order audio packet. Ignoring.");
+                            OpusPacket opusPacket = new OpusPacket(decryptedPacket, userId, decoder);
+                            if (receiveHandler.canReceiveEncoded())
+                                receiveHandler.handleEncodedAudio(opusPacket);
+                            if (!shouldDecode || !opusPacket.canDecode())
                                 continue;
-                            }
 
                             User user = getJDA().getUserById(userId);
                             if (user == null)
@@ -416,8 +415,7 @@ public class AudioConnection
                                 LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
                                 continue;
                             }
-                            short[] decodedAudio = decoder.decodeFromOpus(decryptedPacket);
-
+                            short[] decodedAudio = opusPacket.decode();
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
                             if (decodedAudio == null)
                             {
@@ -465,7 +463,7 @@ public class AudioConnection
             {
                 LOG.error("There was some uncaught exception in the audio receive thread", throwable);
                 JDAImpl api = getJDA();
-                api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+                api.handleEvent(new ExceptionEvent(api, throwable, true));
             });
             receiveThread.setDaemon(true);
             receiveThread.setName(threadIdentifier + " Receiving Thread");
@@ -490,7 +488,7 @@ public class AudioConnection
                 {
                     LOG.error("I have no idea how, but there was an uncaught exception in the combinedAudioExecutor", throwable);
                     JDAImpl api = getJDA();
-                    api.getEventManager().handle(new ExceptionEvent(api, throwable, true));
+                    api.handleEvent(new ExceptionEvent(api, throwable, true));
                 });
                 return t;
             });
@@ -584,7 +582,7 @@ public class AudioConnection
         }
         ((Buffer) nonEncodedBuffer).flip();
 
-        int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OPUS_FRAME_SIZE, encoded, encoded.capacity());
+        int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
         if (result <= 0)
         {
             LOG.error("Received error code from opus_encode(...): {}", result);
@@ -736,7 +734,7 @@ public class AudioConnection
             }
 
             if (nextPacket != null)
-                timestamp += OPUS_FRAME_SIZE;
+                timestamp += OpusPacket.OPUS_FRAME_SIZE;
 
             return nextPacket;
         }
@@ -753,7 +751,7 @@ public class AudioConnection
                     return null;
                 }
                 IntBuffer error = IntBuffer.allocate(1);
-                opusEncoder = Opus.INSTANCE.opus_encoder_create(OPUS_SAMPLE_RATE, OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
+                opusEncoder = Opus.INSTANCE.opus_encoder_create(OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
                 if (error.get() != Opus.OPUS_OK && opusEncoder == null)
                 {
                     LOG.error("Received error status from opus_encoder_create(...): {}", error.get());
@@ -809,10 +807,7 @@ public class AudioConnection
 
         private void loadNextNonce(long nonce)
         {
-            nonceBuffer[0] = (byte) ((nonce >>> 24) & 0xFF);
-            nonceBuffer[1] = (byte) ((nonce >>> 16) & 0xFF);
-            nonceBuffer[2] = (byte) ((nonce >>>  8) & 0xFF);
-            nonceBuffer[3] = (byte) ( nonce         & 0xFF);
+            IOUtil.setIntBigEndian(nonceBuffer, 0, (int) nonce);
         }
 
         @Override

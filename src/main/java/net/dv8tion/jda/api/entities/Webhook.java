@@ -28,6 +28,10 @@ import javax.annotation.Nullable;
  * An object representing Webhooks in Discord
  *
  * @since  3.0
+ *
+ * @see    TextChannel#retrieveWebhooks()
+ * @see    Guild#retrieveWebhooks()
+ * @see    JDA#retrieveWebhookById(String)
  */
 public interface Webhook extends ISnowflake, IFakeable
 {
@@ -38,6 +42,15 @@ public interface Webhook extends ISnowflake, IFakeable
      */
     @Nonnull
     JDA getJDA();
+
+    /**
+     * The {@link WebhookType} of this webhook.
+     * <br>Webhooks of type {@link WebhookType#FOLLOWER} don't have a token.
+     *
+     * @return The {@link WebhookType}
+     */
+    @Nonnull
+    WebhookType getType();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} instance
@@ -132,8 +145,22 @@ public interface Webhook extends ISnowflake, IFakeable
     /**
      * Deletes this Webhook.
      *
-     * @throws IllegalStateException 
-     *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The delete was attempted after the account lost permission to view the channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The delete was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in
+     *         the channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The delete was attempted after the Webhook had already been deleted.</li>
+     * </ul>
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the Webhook is fake, such as the Webhooks retrieved from Audit Logs and the currently
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS} in this channel.
      * 
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
@@ -143,15 +170,46 @@ public interface Webhook extends ISnowflake, IFakeable
     AuditableRestAction<Void> delete();
 
     /**
+     * Deletes this Webhook.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The delete was attempted after the account lost permission to view the channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The delete was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS} in
+     *         the channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The delete was attempted after the Webhook had already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVALID_WEBHOOK_TOKEN INVALID_WEBHOOK_TOKEN}
+     *     <br>If the provided webhook token is not valid.</li>
+     * </ul>
+     *
+     * @param  token
+     *         The webhook token (this is not the bot authorization token!)
+     *
+     * @throws IllegalArgumentException
+     *         If the provided token is null
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     *         <br>The rest action to delete this Webhook.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> delete(@Nonnull String token);
+
+    /**
      * The {@link WebhookManager WebhookManager} for this Webhook.
-     * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     * <br>You can modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS Permission.MANAGE_WEBHOOKS}
      *
-     * @throws IllegalStateException 
-     *         if the Webhook is fake, such as the Webhooks retrieved from Audit Logs
-     * 
      * @return The {@link WebhookManager WebhookManager} for this Webhook
      */
     @Nonnull

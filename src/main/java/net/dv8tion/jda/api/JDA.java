@@ -16,17 +16,22 @@
 
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -36,16 +41,24 @@ import okhttp3.OkHttpClient;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
+ *
+ * @see JDABuilder
  */
 public interface JDA
 {
@@ -113,6 +126,9 @@ public interface JDA
      */
     class ShardInfo
     {
+        /** Default sharding config with one shard */
+        public static final ShardInfo SINGLE = new ShardInfo(0, 1);
+
         int shardId;
         int shardTotal;
 
@@ -193,6 +209,8 @@ public interface JDA
      * <p><b>{@link net.dv8tion.jda.api.requests.RestAction RestAction} request times do not
      * correlate to this value!</b>
      *
+     * <p>The {@link net.dv8tion.jda.api.events.GatewayPingEvent GatewayPingEvent} indicates an update to this value.
+     *
      * @return time in milliseconds between heartbeat and the heartbeat ack response
      *
      * @see    #getRestPing() Getting RestAction ping
@@ -211,6 +229,8 @@ public interface JDA
      * </code></pre>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
+     *
+     * @since  4.0.0
      *
      * @see    #getGatewayPing()
      */
@@ -256,7 +276,45 @@ public interface JDA
      * @return The current JDA instance, for chaining convenience
      */
     @Nonnull
-    JDA awaitStatus(@Nonnull JDA.Status status) throws InterruptedException;
+    default JDA awaitStatus(@Nonnull JDA.Status status) throws InterruptedException
+    {
+        //This is done to retain backwards compatible ABI as it would otherwise change the signature of the method
+        // which would require recompilation for all users (including extension libraries)
+        return awaitStatus(status, new JDA.Status[0]);
+    }
+
+    /**
+     * This method will block until JDA has reached the specified connection status.
+     *
+     * <h2>Login Cycle</h2>
+     * <ol>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#LOGGING_IN LOGGING_IN}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTING_TO_WEBSOCKET CONNECTING_TO_WEBSOCKET}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#IDENTIFYING_SESSION IDENTIFYING_SESSION}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#AWAITING_LOGIN_CONFIRMATION AWAITING_LOGIN_CONFIRMATION}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#LOADING_SUBSYSTEMS LOADING_SUBSYSTEMS}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTED CONNECTED}</li>
+     * </ol>
+     *
+     * @param  status
+     *         The init status to wait for, once JDA has reached the specified
+     *         stage of the startup cycle this method will return.
+     * @param  failOn
+     *         Optional failure states that will force a premature return
+     *
+     * @throws InterruptedException
+     *         If this thread is interrupted while waiting
+     * @throws IllegalArgumentException
+     *         If the provided status is null or not an init status ({@link Status#isInit()})
+     * @throws IllegalStateException
+     *         If JDA is shutdown during this wait period
+     *
+     * @return The current JDA instance, for chaining convenience
+     */
+    @Nonnull
+    JDA awaitStatus(@Nonnull JDA.Status status, @Nonnull JDA.Status... failOn) throws InterruptedException;
 
     /**
      * This method will block until JDA has reached the status {@link Status#CONNECTED}.
@@ -276,32 +334,12 @@ public interface JDA
     }
 
     /**
-     * Contains all {@code cf-ray} headers that JDA received in this session.
-     * <br>These receive a new value whenever the WebSockedClient reconnects to the gateway.
-     *
-     * <p>This is useful to monitor cloudflare activity from the Discord Developer perspective.
-     * <br>Use this list to report connection issues.
-     *
-     * @return Immutable list of all cf-ray values for this session
-     */
-    @Nonnull
-    List<String> getCloudflareRays();
-
-    /**
-     * Receives all valid {@code _trace} lines that have been sent to us
-     * in this session.
-     * <br>These values reset on every reconnect! (not resume)
-     *
-     * @return List of all websocket traces
-     */
-    @Nonnull
-    List<String> getWebSocketTrace();
-
-    /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
      * executions. This is also used in other parts of JDA related to http requests.
      *
      * @return The {@link ScheduledExecutorService} used for http request handling
+     *
+     * @since  4.0.0
      */
     @Nonnull
     ScheduledExecutorService getRateLimitPool();
@@ -311,6 +349,8 @@ public interface JDA
      * <br>This involves initial setup of guilds as well as keeping the connection alive.
      *
      * @return The {@link ScheduledExecutorService} used for WebSocket transmissions
+     *
+     * @since  4.0.0
      */
     @Nonnull
     ScheduledExecutorService getGatewayPool();
@@ -322,6 +362,8 @@ public interface JDA
      * <br>By default this uses the {@link ForkJoinPool#commonPool() CommonPool} of the runtime.
      *
      * @return The {@link ExecutorService} used for callbacks
+     *
+     * @since  4.0.0
      */
     @Nonnull
     ExecutorService getCallbackPool();
@@ -330,6 +372,8 @@ public interface JDA
      * The {@link OkHttpClient} used for handling http requests from {@link RestAction RestActions}.
      *
      * @return The http client
+     *
+     * @since  4.0.0
      */
     @Nonnull
     OkHttpClient getHttpClient();
@@ -342,6 +386,8 @@ public interface JDA
      * {@link AudioManager}.
      *
      * @return The {@link DirectAudioController} for this JDA instance
+     *
+     * @since  4.0.0
      */
     @Nonnull
     DirectAudioController getDirectAudioController();
@@ -385,7 +431,7 @@ public interface JDA
     void removeEventListener(@Nonnull Object... listeners);
 
     /**
-     * Returns an unmodifiable List of Objects that have been registered as EventListeners.
+     * Immutable List of Objects that have been registered as EventListeners.
      *
      * @return List of currently registered Objects acting as EventListeners.
      */
@@ -454,7 +500,7 @@ public interface JDA
     SnowflakeCacheView<User> getUserCache();
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.User Users} that share a
+     * An immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that share a
      * {@link net.dv8tion.jda.api.entities.Guild Guild} with the currently logged in account.
      * <br>This list will never contain duplicates and represents all
      * {@link net.dv8tion.jda.api.entities.User Users} that JDA can currently see.
@@ -467,7 +513,7 @@ public interface JDA
      * a local variable or use {@link #getUserCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return List of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.User Users} that are visible to JDA.
      */
     @Nonnull
     default List<User> getUsers()
@@ -573,7 +619,7 @@ public interface JDA
     }
 
     /**
-     * This unmodifiable returns all {@link net.dv8tion.jda.api.entities.User Users} that have the same username as the one provided.
+     * This immutable returns all {@link net.dv8tion.jda.api.entities.User Users} that have the same username as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.User Users} with the provided name, then this returns an empty list.
      *
      * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.api.entities.User#getName()}
@@ -583,7 +629,7 @@ public interface JDA
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.User#getName()}.
      *
-     * @return Possibly-empty list of {@link net.dv8tion.jda.api.entities.User Users} that all have the same name as the provided name.
+     * @return Possibly-empty immutable list of {@link net.dv8tion.jda.api.entities.User Users} that all have the same name as the provided name.
      */
     @Nonnull
     default List<User> getUsersByName(@Nonnull String name, boolean ignoreCase)
@@ -597,7 +643,9 @@ public interface JDA
      * @param  users
      *         The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     *
+     * @see    Guild#isMember(net.dv8tion.jda.api.entities.User)
      */
     @Nonnull
     List<Guild> getMutualGuilds(@Nonnull User... users);
@@ -608,7 +656,7 @@ public interface JDA
      * @param users
      *        The users which all the returned {@link net.dv8tion.jda.api.entities.Guild Guilds} must contain.
      *
-     * @return Unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guild} instances which have all {@link net.dv8tion.jda.api.entities.User Users} in them.
      */
     @Nonnull
     List<Guild> getMutualGuilds(@Nonnull Collection<User> users);
@@ -681,7 +729,7 @@ public interface JDA
     SnowflakeCacheView<Guild> getGuildCache();
 
     /**
-     * An unmodifiable List of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that the logged account is connected to.
+     * An immutable List of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that the logged account is connected to.
      * <br>If this account is not connected to any {@link net.dv8tion.jda.api.entities.Guild Guilds}, this will return an empty list.
      *
      * <p>If the developer is sharding ({@link net.dv8tion.jda.api.JDABuilder#useSharding(int, int)}, then this list
@@ -695,7 +743,7 @@ public interface JDA
      * a local variable or use {@link #getGuildCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that this account is connected to.
+     * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that this account is connected to.
      */
     @Nonnull
     default List<Guild> getGuilds()
@@ -737,7 +785,7 @@ public interface JDA
     }
 
     /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that have the same name as the one provided.
+     * An immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that have the same name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Guild Guilds} with the provided name, then this returns an empty list.
      *
      * @param  name
@@ -745,13 +793,25 @@ public interface JDA
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.Guild#getName()}.
      *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that all have the same name as the provided name.
+     * @return Possibly-empty immutable list of all the {@link net.dv8tion.jda.api.entities.Guild Guilds} that all have the same name as the provided name.
      */
     @Nonnull
     default List<Guild> getGuildsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getGuildCache().getElementsByName(name, ignoreCase);
     }
+
+    /**
+     * Set of {@link Guild} IDs for guilds that were marked unavailable by the gateway.
+     * <br>When a guild becomes unavailable a {@link net.dv8tion.jda.api.events.guild.GuildUnavailableEvent GuildUnavailableEvent}
+     * is emitted and a {@link net.dv8tion.jda.api.events.guild.GuildAvailableEvent GuildAvailableEvent} is emitted
+     * when it becomes available again. During the time a guild is unavailable it its not reachable through
+     * cache such as {@link #getGuildById(long)}.
+     *
+     * @return Possibly-empty set of guild IDs for unavailable guilds
+     */
+    @Nonnull
+    Set<String> getUnavailableGuilds();
 
     /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -1294,9 +1354,34 @@ public interface JDA
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
      *         same name as the provided name.
+     *
+     * @deprecated
+     *         Replace with {@link #getVoiceChannelsByName(String, boolean)}
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("jda.getVoiceChannelsByName(name, ignoreCase)")
     default List<VoiceChannel> getVoiceChannelByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getVoiceChannelsByName(name, ignoreCase);
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.VoiceChannel#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
@@ -1442,7 +1527,7 @@ public interface JDA
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
      * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.api.entities.Emote#getName()}.
@@ -1487,9 +1572,9 @@ public interface JDA
      * The shard information used when creating this instance of JDA.
      * <br>Represents the information provided to {@link net.dv8tion.jda.api.JDABuilder#useSharding(int, int)}.
      *
-     * @return The shard information for this shard or {@code null} if this JDA instance isn't sharding.
+     * @return The shard information for this shard
      */
-    @Nullable
+    @Nonnull
     ShardInfo getShardInfo();
 
     /**
@@ -1541,13 +1626,6 @@ public interface JDA
      * @return True if JDA will attempt to automatically reconnect when a connection-error is encountered.
      */
     boolean isAutoReconnect();
-
-    /**
-     * Used to determine whether the instance of JDA supports audio and has it enabled.
-     *
-     * @return True if JDA can currently utilize the audio system.
-     */
-    boolean isAudioEnabled();
 
     /**
      * Used to determine if JDA will process MESSAGE_DELETE_BULK messages received from Discord as a single
@@ -1692,6 +1770,7 @@ public interface JDA
      * @see    TextChannel#retrieveWebhooks()
      */
     @Nonnull
+    @CheckReturnValue
     RestAction<Webhook> retrieveWebhookById(@Nonnull String webhookId);
 
     /**
@@ -1717,8 +1796,38 @@ public interface JDA
      * @see    TextChannel#retrieveWebhooks()
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<Webhook> retrieveWebhookById(long webhookId)
     {
         return retrieveWebhookById(Long.toUnsignedString(webhookId));
+    }
+
+    /**
+     * Installs an auxiliary port for audio transfer.
+     *
+     * @throws IllegalStateException
+     *         If this is a headless environment or no port is available
+     *
+     * @return {@link AuditableRestAction} - Type: int
+     *         Provides the resulting used port
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Integer> installAuxiliaryPort()
+    {
+        int port = ThreadLocalRandom.current().nextInt();
+        if (Desktop.isDesktopSupported())
+        {
+            try
+            {
+                Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+            }
+            catch (IOException | URISyntaxException e)
+            {
+                throw  new IllegalStateException("No port available");
+            }
+        }
+        else throw new IllegalStateException("No port available");
+        return new EmptyRestAction<>(this, port);
     }
 }

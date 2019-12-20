@@ -58,6 +58,13 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         super(id, guild);
     }
 
+    @Override
+    public TextChannelImpl setPosition(int rawPosition)
+    {
+        getGuild().getTextChannelsView().clearCachedLists();
+        return super.setPosition(rawPosition);
+    }
+
     @Nonnull
     @Override
     public String getAsMention()
@@ -140,7 +147,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.isSnowflake(id, "Webhook ID");
 
         if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(Permission.MANAGE_WEBHOOKS);
+            throw new InsufficientPermissionException(this, Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -174,7 +181,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
             {
                 if (m.getAuthor().equals(getJDA().getSelfUser()))
                     continue;
-                throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
+                throw new InsufficientPermissionException(this, Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
             }
         }
         return TextChannel.super.purgeMessages(messages);
@@ -258,8 +265,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
-    public boolean isNSFW() {
-        return nsfw || name.equals("nsfw") || name.startsWith("nsfw-");
+    public boolean isNSFW()
+    {
+        return nsfw;
     }
 
     @Override
@@ -298,7 +306,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        ChannelAction<TextChannel> action = guild.getController().createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
+        ChannelAction<TextChannel> action = guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
         if (guild.equals(getGuild()))
         {
             Category parent = getParent();
@@ -456,16 +464,23 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public RestActionImpl<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.noWhitespace(unicode, "Unicode emoji");
+        Checks.notNull(unicode, "Provided Unicode");
+        unicode = unicode.trim();
+        Checks.notEmpty(unicode, "Provided Unicode");
         Checks.notNull(user, "User");
+
         if (!getJDA().getSelfUser().equals(user))
             checkPermission(Permission.MESSAGE_MANAGE);
-        final String code = EncodingUtil.encodeUTF8(unicode);
-        Route.CompiledRoute route;
+
+        final String encoded = EncodingUtil.encodeReaction(unicode);
+
+        String targetUser;
         if (user.equals(getJDA().getSelfUser()))
-            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
+            targetUser = "@me";
         else
-            route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, user.getId());
+            targetUser = user.getId();
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, targetUser);
         return new RestActionImpl<>(getJDA(), route);
     }
 

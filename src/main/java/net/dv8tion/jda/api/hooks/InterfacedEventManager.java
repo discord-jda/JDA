@@ -17,10 +17,11 @@ package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.JDALogger;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -60,12 +61,21 @@ public class InterfacedEventManager implements IEventManager
         {
             throw new IllegalArgumentException("Listener must implement EventListener");
         }
-        listeners.add(((EventListener) listener));
+        listeners.add((EventListener) listener);
     }
 
     @Override
     public void unregister(@Nonnull Object listener)
     {
+        if (!(listener instanceof EventListener))
+        {
+            //noinspection ConstantConditions
+            JDALogger.getLog(getClass()).warn(
+                    "Trying to remove a listener that does not implement EventListener: {}",
+                    listener == null ? "null" : listener.getClass().getName());
+        }
+
+        //noinspection SuspiciousMethodCalls
         listeners.remove(listener);
     }
 
@@ -73,7 +83,7 @@ public class InterfacedEventManager implements IEventManager
     @Override
     public List<Object> getRegisteredListeners()
     {
-        return Collections.unmodifiableList(new LinkedList<>(listeners));
+        return Collections.unmodifiableList(new ArrayList<>(listeners));
     }
 
     @Override

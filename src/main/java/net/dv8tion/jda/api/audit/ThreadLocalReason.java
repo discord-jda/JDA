@@ -33,28 +33,26 @@ import java.util.function.Consumer;
  * String previousReason = ThreadLocalReason.getCurrent();
  * ThreadLocalReason.setCurrent("Hello World");
  * try {
- *     GuildController c = guild.getController();
- *     c.ban(user, 0).queue(v -&gt; {
- *         c.unban(user).queue(); // also uses the reason "Hello World"
+ *     guild.ban(user, 0).queue(v -&gt; {
+ *         guild.unban(user).queue(); // also uses the reason "Hello World"
  *     });
  * } finally {
  *     //Forwarding the reason is not async so resetting it here is fine.
  *     ThreadLocalReason.setCurrent(previousReason);
  * }
  * //This will not use the reason "Hello World" but the previous, or none if none was set previously
- * c.kick(user).queue();
+ * guild.kick(user).queue();
  * </code></pre>
  *
  * <h1>Example with closable</h1>
  * <pre><code>
  * try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable("Hello World")) {
- *     GuildController c = guild.getController();
- *     c.ban(user, 0).queue(v -&gt; {
- *         c.unban(user).queue(); // also uses the reason "Hello World"
+ *     guild.ban(user, 0).queue(v -&gt; {
+ *         guild.unban(user).queue(); // also uses the reason "Hello World"
  *     });
  * } // automatically changes reason back
  * //This will not use the reason "Hello World" but the previous, or none if none was set previously
- * c.kick(user).queue();
+ * guild.kick(user).queue();
  * </code></pre>
  *
  *
@@ -132,9 +130,9 @@ public final class ThreadLocalReason
      * <pre><code>
      * try (ThreadLocalReason.Closable closable = new ThreadLocalReason.Closable("Massban")) { // calls setCurrent("Massban")
      *     {@literal List<Member>} mentions = event.getMessage().getMentionedMembers();
-     *     GuildController controller = event.getGuild().getController();
+     *     Guild guild = event.getGuild();
      *     mentions.stream()
-     *             .map(m -&gt; controller.ban(m, 7))
+     *             .map(m -&gt; guild.ban(m, 7))
      *             .forEach(RestAction::queue);
      * } // calls resetCurrent()
      * </code></pre>

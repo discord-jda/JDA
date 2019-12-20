@@ -348,7 +348,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * Sets the <b><u>position</u></b> of the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
      *
      * <p><b>To modify multiple channels you should use
-     * <code>Guild.{@link net.dv8tion.jda.api.managers.GuildController getController()}.{@link GuildController#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
+     * <code>Guild.{@link net.dv8tion.jda.api.entities.Guild#modifyTextChannelPositions() modifyTextChannelPositions()}</code>
      * instead! This is not the same as looping through channels and using this to update positions!</b>
      *
      * @param  position
@@ -402,7 +402,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * Sets the <b><u>slowmode</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      * <br>Provide {@code 0} to reset the slowmode of the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *
-     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@code 21600}!
+     * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
      * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}</b>
      *
      * <p>Note that only {@link net.dv8tion.jda.api.AccountType#CLIENT CLIENT} type accounts are
@@ -418,7 +418,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
      * @throws IllegalArgumentException
-     *         If the provided slowmode is negative or greater than {@code 21600}
+     *         If the provided slowmode is negative or greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}
      *
      * @return ChannelManager for chaining convenience
      */
@@ -451,8 +451,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * Sets the <b><u>bitrate</u></b> of the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      * <br>The default value is {@code 64000}
      *
-     * <p>A channel bitrate <b>must not</b> be less than {@code 8000} nor greater than {@code 96000} (for non-vip Guilds)!
-     * {@link net.dv8tion.jda.api.entities.Guild#getFeatures() VIP Guilds} allow a bitrate for up to {@code 128000}.
+     * <p>A channel bitrate <b>must not</b> be less than {@code 8000} nor greater than {@link Guild#getMaxBitrate()}!
      * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}</b>
      *
      * @param  bitrate
@@ -461,7 +460,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
      * @throws IllegalArgumentException
-     *         If the provided bitrate is not between 8000-96000 (or 128000 for VIP Guilds)
+     *         If the provided bitrate is less than 8000 or greater than {@link net.dv8tion.jda.api.entities.Guild#getMaxBitrate()}.
      *
      * @return ChannelManager for chaining convenience
      *

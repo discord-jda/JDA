@@ -1,35 +1,52 @@
 [version]: https://api.bintray.com/packages/dv8fromtheworld/maven/JDA/images/download.svg
 [download]: https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
-[license]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
-[jenkins]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
-[FAQ]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
-[Troubleshooting]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
+[migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
+[jenkins]: https://ci.dv8tion.net/job/JDA
+[license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
+[faq]: https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ
+[troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
+[discord-shield]: https://discordapp.com/api/guilds/125227483518861312/widget.png
+[faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
+[troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
+[jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
+[license-shield]: https://img.shields.io/badge/License-Apache%202.0-lightgrey.svg
+[migration-shield]: https://img.shields.io/badge/Wiki-Migrating%20from%20V3-green.svg
 [ ![version][] ][download]
-[ ![jenkins][] ](https://ci.dv8tion.net/job/JDA)
-[ ![license][] ](https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE)
-[ ![Discord](https://discordapp.com/api/guilds/125227483518861312/widget.png) ][discord-invite]
-[ ![FAQ] ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ)
-[ ![Troubleshooting] ](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting)
+[ ![jenkins-shield][] ][jenkins]
+[ ![license-shield][] ][license]
+[ ![discord-shield][] ][discord-invite]
+[ ![faq-shield] ][faq]
+[ ![troubleshooting-shield] ][troubleshooting]
+[ ![migration-shield][] ][migration]
 
-<img align="right" src="https://i.imgur.com/OG7Tne8.png" height="200" width="200">
+<img align="right" src="https://github.com/DV8FromTheWorld/JDA/blob/assets/assets/readme/logo.png?raw=true" height="200" width="200">
 
 # JDA (Java Discord API)
-JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
 
-## JDA 3.x
-JDA will be continued with version 3.x and will support Bot-features (for bot-accounts) and Client-features (for user-accounts).
+JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
+This library is a helpful tool that provides the functionality to create a discord bot in java.
+
+## Summary
+
+Due to official statements made by the Discord developers we will no longer support unofficial features. These features
+are undocumented API endpoints or protocols that are not available to bot-accounts. We will however continue support
+for the usage of JDA through the client account type through `JDABuilder(AccountType.CLIENT)`. This does not mean
+it is encouraged or recommended to create applications such as selfbots or custom clients which are prohibited by
+the Discord Terms of Service.
+
 _Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
-1. [Examples](#creating-the-jda-object)
+1. [Introduction](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
-3. [Download](#download)
-4. [Documentation](#documentation)
-5. [Support](#getting-help)
-6. [Extensions And Plugins](#third-party-recommendations)
-7. [Contributing](#contributing-to-jda)
-8. [Dependencies](#dependencies)
-9. [Other Libraries](#related-projects)
+3. [Entity Lifetimes](#entity-lifetimes)
+4. [Download](#download)
+5. [Documentation](#documentation)
+6. [Support](#getting-help)
+7. [Extensions And Plugins](#third-party-recommendations)
+8. [Contributing](#contributing-to-jda)
+9. [Dependencies](#dependencies)
+10. [Other Libraries](#related-projects)
 
 ## UserBots and SelfBots
 
@@ -59,6 +76,61 @@ JDA jda = new JDABuilder("token").build();
 **Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
 You can change this to use `AccountType.CLIENT`, however you will be risking account termination.
 Use `new JDABuilder(AccountType)` to change to a different account type.
+
+### Configuration
+
+Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of configurations to improve the experience.
+
+**Example**:
+
+```java
+public static void main(String[] args) {
+    JDABuilder builder = new JDABuilder(args[0]);
+    
+    // Disable parts of the cache
+    builder.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE));
+    // Enable the bulk delete event
+    builder.setBulkDeleteSplittingEnabled(false);
+    // Disable compression (not recommended)
+    builder.setCompression(Compression.NONE);
+    // Set activity (like "playing Something")
+    builder.setActivity(Activity.watching("TV"));
+    
+    builder.build();
+}
+```
+
+> See [JDABuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html)
+  and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
+
+You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
+Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter` or disabling `guild_subscriptions`.
+
+```java
+public void configureMemoryUsage(JDABuilder builder) {
+    // Disable cache for member activities (streaming/games/spotify)
+    builder.setDisabledCacheFlags(
+        EnumSet.of(CacheFlag.ACTIVITY)
+    );
+    // Disable user/member cache and related events
+    builder.setGuildSubscriptionsEnabled(false);
+    // Disable member chunking on startup (ignored if guild subscriptions are turned off)
+    builder.setChunkingFilter(ChunkingFilter.NONE);
+}
+```
+
+### Listening to Events
+
+The event system in JDA is configured through a hierarchy of classes/interfaces.
+We offer two implementations for the `IEventManager`:
+
+- **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
+- **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
+
+By default the **InterfacedEventManager** is used.
+Since you can create your own implementation of `IEventManager` this is a very versatile and configurable system.
+If the aforementioned implementations don't suit your use-case you can simply create a custom implementation and
+configure it on the `JDABuilder` with `setEventManager(...)`.
 
 #### Examples:
 
@@ -97,6 +169,9 @@ public class MessageListener extends ListenerAdapter
             throws LoginException
     {
         JDA jda = new JDABuilder("token").build();
+        //You can also add event listeners to the already built JDA instance
+        // Note that some events may not be received if the listener is added after calling build()
+        // This includes events such as the ReadyEvent
         jda.addEventListener(new MessageListener());
     }
 
@@ -118,18 +193,57 @@ public class MessageListener extends ListenerAdapter
 }
 ```
 
+**Ping-Pong Bot**:
+
+```java
+public class Bot extends ListenerAdapter
+{
+    public static void main(String[] args) throws LoginException
+    {
+        new JDABuilder(args[0])
+            .addEventListener(new Bot())
+            .setActivity(Activity.playing("Type !ping"))
+            .build();
+    }
+    
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event)
+    {
+        Message msg = event.getMessage();
+        if (msg.getContentRaw().equals("!ping"))
+        {
+            MessageChannel channel = event.getChannel();
+            long time = System.currentTimeMillis();
+            channel.sendMessage("Pong!") /* => RestAction<Message> */
+                   .queue(response /* => Message */ -> {
+                       response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
+                   });
+        }
+    }
+}
+```
+
+### RestAction
+
+Through [RestAction](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html) we provide request handling with
+ 
+ - [callbacks](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#queue%28java.util.function.Consumer%29)
+ - [promises](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#submit%28%29)
+ - and [sync](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#complete%28%29)
+
+and it is up to the user to decide which pattern to utilize.
+It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
+
 ### More Examples
+
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
 
-In addition you can look at the many Discord Bots that were implemented using JDA:
-- [Yui](https://github.com/DV8FromTheWorld/Yui)
-- [Vortex](https://github.com/jagrosh/Vortex)
-- [FredBoat](https://github.com/Frederikam/FredBoat)
+<!--
+TODO: Find good examples
+- [JDA Butler](https://github.com/Almighty-Alpaca/JDA-Butler)
 
 [And many more!](https://github.com/search?q=JDA+discord+bot&type=Repositories&utf8=%E2%9C%93)
-
-> **Note**: In these examples we override methods from the inheriting class `ListenerAdapter`.<br>
-> The usage of the `@Override` annotation is recommended to validate methods.
+-->
 
 ## Sharding a Bot
 
@@ -142,7 +256,7 @@ To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId,
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
-The [`SessionController`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/core/utils/SessionController.html) is a tool of the JDABuilder
+The [`SessionController`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
 of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
 
@@ -177,8 +291,89 @@ public static void main(String[] args) throws Exception
 }
 ```
 
+## Entity Lifetimes
+
+An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities
+that Discord provides.
+Instances of these entities are created and deleted by JDA when Discord instructs it. This means
+the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
+This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
+When Discord instructs JDA to delete entities they are simply removed from the JDA cache and lose their references.
+Once that happens nothing in JDA interacts or updates the instances of those entities and they become useless. Discord
+may instruct to delete these entities randomly for cache synchronization with the API.
+
+**It is not recommended to store _any_ of these entities for a longer period of time!**
+Instead of keeping (e.g.) a `User` instance in some field an ID should be used. With the ID of a user
+you can use `getUserById(id)` to get and keep the user reference in a local variable. (see below)
+
+### Fake Entities
+
+Some entities in JDA are marked through an interface called `IFakeable`. These entities can exist outside
+of the JDA cache and are inaccessible through the common `get...ById(id)` methods.
+Fake entities are essentially instances that are not directly referenced by the JDA cache and are only
+temporarily created for a specific usage. It may be used for the author of a message that has left the guild
+when requesting the history of a `MessageChannel` or for `Emote` instances used in a `Message` that are not part
+of any of the guilds available to the bot.
+
+### Entity Updates
+
+When an entity is updated through its manager they will send a request to the Discord API which will update the state
+of the entity. The success of this request **does not** imply the entity has been updated yet. All entities are updated
+by the aforementioned **Gateway Events** which means you cannot rely on the cache being updated yet once the
+execution of a RestAction has completed. Some requests rely on the cache being updated to correctly update the entity.
+An example of this is updating roles of a member which overrides all roles of the member by sending a list of the
+new set of roles. This is done by first checking the current cache, the roles the member has right now, and appending
+or removing the requested roles. If the cache has not yet been updated by an event this will result in unexpected behavior.
+
+### Entity Deletion
+
+Discord may request that a client (the JDA session) invalidates its entire cache. When this happens JDA will
+remove all of its current entities and reconnect the session. This is signaled through the `ReconnectEvent`.
+When entities are removed from the JDA cache they lose access to the encapsulating entities. For instance
+a channel loses access to its guild. Once that happens they are unable to make any API requests through RestAction
+and instead throw an `IllegalStateException`. It is **highly recommended** to only keep references to entities
+by storing their **id** and using the respective `get...ById(id)` method when needed.
+
+#### Example
+
+```java
+public class UserLogger extends ListenerAdapter 
+{
+    private final long userId;
+    
+    public UserLogger(User user)
+    {
+        this.userId = user.getIdLong();
+    }
+    
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event)
+    {
+        User author = event.getAuthor();
+        Message message = event.getMessage();
+        if (author.getIdLong() == userId)
+        {
+            // Print the message of the user
+            System.out.println(author.getAsTag() + ": " + message.getContentDisplay());
+        }
+    }
+    
+    @Override
+    public void onGuildJoin(GuildJoinEvent event)
+    {
+        JDA api = event.getJDA();
+        User user = api.getUserById(userId); // Acquire a reference to the User instance through the id
+        user.openPrivateChannel().queue((channel) ->
+        {
+            // Send a private message to the user
+            channel.sendMessageFormat("I have joined a new guild: **%s**", event.getGuild().getName()).queue();
+        });
+    }
+}
+```
 
 ## Download
+
 Latest Stable Version: [GitHub Release](https://github.com/DV8FromTheWorld/JDA/releases/latest)
 Latest Version:
 [ ![version][] ][download]
@@ -197,7 +392,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 <repository>
     <id>jcenter</id>
     <name>jcenter-bintray</name>
-    <url>http://jcenter.bintray.com</url>
+    <url>https://jcenter.bintray.com</url>
 </repository>
 
 ```
@@ -249,6 +444,7 @@ the audio api of JDA. This works without `opus-java-natives` as it only requires
 See [opus-java](https://github.com/discord-java/opus-java)
 
 ### Logging Framework - SLF4J
+
 JDA is using [SLF4J](https://www.slf4j.org/) to log its messages.
 
 That means you should add some SLF4J implementation to your build path in addition to JDA.
@@ -265,7 +461,8 @@ We strongly recommend to use one though, as that can improve speed and allows yo
 The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
 
 ## Documentation
-Docs can be found on the [Jenkins](https://ci.dv8tion.net/job/JDA) or directly [here](https://ci.dv8tion.net/job/JDA/javadoc/)
+
+Docs can be found on the [Jenkins][jenkins] or directly [here](https://ci.dv8tion.net/job/JDA/javadoc/)
 <br>A simple Wiki can also be found in this repository's [Wiki section](https://github.com/DV8FromTheWorld/JDA/wiki)
 
 ### Annotations
@@ -311,7 +508,6 @@ to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
-
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
 Created and maintained by [jagrosh](https://github.com/jagrosh).
@@ -321,6 +517,9 @@ Features include:
 - Paginated Message using Reactions
 - EventWaiter allowing to wait for a response and other events
 
+
+<!--
+TODO: Ensure this is compatible with version 4
 ### [JDAction](https://github.com/sedmelluq/jdaction)
 
 Created and maintained by [sedmelluq](https://github.com/sedmelluq)
@@ -330,16 +529,52 @@ and it is often only discovered after noticing that something doesn't work,
 this plugin will help catch those cases quickly as it will cause a build failure in such case.
 
 More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction)
+-->
+
+### [jda-nas](https://github.com/sedmelluq/jda-nas)
+
+Created and maintained by [sedmelluq](https://github.com/sedmelluq)
+<br>Provides a native implementation for the JDA Audio Send-System to avoid GC pauses.
+
+Note that this send system creates an extra UDP-Client which causes audio receive to no longer function properly
+since discord identifies the sending UDP-Client as the receiver.
+
+```java
+JDABuilder builder = new JDABuilder(BOT_TOKEN)
+    .setAudioSendFactory(new NativeAudioSendFactory());
+```
+
+### [jda-reactor](https://github.com/MinnDevelopment/jda-reactor)
+
+Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
+<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](http://reactivex.io/intro.html) alternative to common JDA interfaces.
+
+```kotlin
+fun main() {
+    val manager = ReactiveEventManager()
+    manager.on<ReadyEvent>()
+           .subscribe { println("Ready to serve!") }
+    manager.on<MessageReceivedEvent>()
+           .filter { it.message.contentRaw == "!ping" }
+           .subscribe { it.channel.sendMessage("Pong!").queue() }
+
+    val jda = JDABuilder(BOT_TOKEN)
+               .setEventManager(manager)
+               .build()
+}
+```
+
+An example bot for this can be found at [Reactive JDA Bot](https://github.com/MinnDevelopment/reactive-jda-bot).
 
 ------
 
 More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
 
 ## Contributing to JDA
-If you want to contribute to JDA, make sure to base your branch off of our **development** branch (or a feature-branch)
+If you want to contribute to JDA, make sure to base your branch off of our **v4** branch (or a feature-branch)
 and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 
-It is also highly recommended to get in touch with the Devs before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
+It is also highly recommended to get in touch with the Developers before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
 It is very possible that your change might already be in development or you missed something.
 
 More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
@@ -366,10 +601,11 @@ The `RR` in version `3.4.RR` should be replaced by the latest version that was p
 version was by looking at the [release page](https://github.com/DV8FromTheWorld/JDA/releases)
 
 ## Dependencies:
-This project requires **Java 8**.<br>
+
+This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.5**
+   * Version: **2.9**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
@@ -381,7 +617,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
-   * Version: **2.9.8**
+   * Version: **2.10.1**
    * [Github](https://github.com/FasterXML/jackson)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j
@@ -392,16 +628,16 @@ All dependencies are managed automatically by Gradle.
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
- * opus-java
+ * opus-java (optional)
    * Version: **1.0.4**
    * [GitHub](https://github.com/discord-java/opus-java)
    * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
 ## Related Projects
 
-- [Discord4J](https://github.com/austinv11/Discord4J)
-- [Discord.NET](https://github.com/RogueException/Discord.Net)
+- [Discord4J](https://github.com/Discord4J/Discord4J)
+- [Discord.NET](https://github.com/discord-net/Discord.Net)
 - [discord.py](https://github.com/Rapptz/discord.py)
-- [serenity](https://github.com/zeyla/serenity)
+- [serenity](https://github.com/serenity-rs/serenity)
 
 **See also:** https://discordapp.com/developers/docs/topics/community-resources#libraries

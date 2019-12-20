@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
+import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -39,18 +40,21 @@ public class EmptyRestAction<T> implements AuditableRestAction<T>
         this.returnObj = returnObj;
     }
 
+    @Nonnull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<T> reason(String reason)
     {
         return this;
     }
 
+    @Nonnull
     @Override
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
@@ -64,6 +68,7 @@ public class EmptyRestAction<T> implements AuditableRestAction<T>
             success.accept(returnObj);
     }
 
+    @Nonnull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {

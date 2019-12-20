@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ParsingException;
@@ -49,6 +50,12 @@ public class ReactionPaginationActionImpl
         this.reaction = reaction;
     }
 
+    public ReactionPaginationActionImpl(Message message, String code)
+    {
+        super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannel().getId(), message.getId(), code), 1, 100, 100);
+        this.reaction = null;
+    }
+
     protected static String getCode(MessageReaction reaction)
     {
         MessageReaction.ReactionEmote emote = reaction.getReactionEmote();
@@ -62,6 +69,8 @@ public class ReactionPaginationActionImpl
     @Override
     public MessageReaction getReaction()
     {
+        if (reaction == null)
+            throw new IllegalStateException("Cannot get reaction for this action");
         return reaction;
     }
 

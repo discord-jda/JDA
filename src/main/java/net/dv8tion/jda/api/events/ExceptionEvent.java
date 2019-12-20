@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
  * <br>For instance this is fired for events in internal WebSocket handling or audio threads.
  * This includes {@link java.lang.Error Errors} and {@link com.neovisionaries.ws.client.WebSocketException WebSocketExceptions}
  *
- * <p>It is not recommended to simply use this and print each event as some throwables where already logged
+ * <p>It is not recommended to simply use this and print each event as some throwables were already logged
  * by JDA. See {@link #isLogged()}.
  */
 public class ExceptionEvent extends Event

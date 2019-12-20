@@ -71,32 +71,11 @@ public class UserImpl implements User
         return avatarId;
     }
 
-    @Override
-    public String getAvatarUrl()
-    {
-        return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
-                + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
-    }
-
     @Nonnull
     @Override
     public String getDefaultAvatarId()
     {
-        return DefaultAvatar.values()[Integer.parseInt(getDiscriminator()) % DefaultAvatar.values().length].toString();
-    }
-
-    @Nonnull
-    @Override
-    public String getDefaultAvatarUrl()
-    {
-        return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
-    }
-
-    @Nonnull
-    @Override
-    public String getEffectiveAvatarUrl()
-    {
-        return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
+        return String.valueOf(discriminator % 5);
     }
 
     @Nonnull
@@ -119,14 +98,11 @@ public class UserImpl implements User
         if (privateChannel != null)
             return new EmptyRestAction<>(getJDA(), privateChannel);
 
-        if (fake)
-            throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");
-
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
         DataObject body = DataObject.empty().put("recipient_id", getId());
         return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
         {
-            PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject());
+            PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject(), this);
             UserImpl.this.privateChannel = priv;
             return priv;
         });
@@ -256,27 +232,5 @@ public class UserImpl implements User
             out = getAsTag();
 
         MiscUtil.appendTo(formatter, width, precision, leftJustified, out);
-    }
-
-    public enum DefaultAvatar
-    {
-        BLURPLE("6debd47ed13483642cf09e832ed0bc1b"),
-        GREY("322c936a8c8be1b803cd94861bdfa868"),
-        GREEN("dd4dbc0016779df1378e7812eabaa04d"),
-        ORANGE("0e291f67c9274a1abdddeb3fd919cbaa"),
-        RED("1cbd08c76f8af6dddce02c5138971129");
-
-        private final String text;
-
-        DefaultAvatar(String text)
-        {
-            this.text = text;
-        }
-
-        @Override
-        public String toString()
-        {
-            return text;
-        }
     }
 }

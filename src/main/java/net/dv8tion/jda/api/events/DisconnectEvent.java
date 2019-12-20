@@ -22,16 +22,15 @@ import net.dv8tion.jda.api.requests.CloseCode;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
-import java.util.List;
 
 /**
  * Indicates that JDA has been disconnected from the remote server.
  * <br>When this event is fired JDA will try to reconnect if possible
  * unless {@link net.dv8tion.jda.api.JDABuilder#setAutoReconnect(boolean) JDABuilder.setAutoReconnect(Boolean)}
- * has been provided {@code false} or the disconnect was too fatal.
+ * has been provided {@code false} or the disconnect was too fatal in which case a {@link ShutdownEvent} is fired.
  *
  * <p>When reconnecting was successful either a {@link net.dv8tion.jda.api.events.ReconnectedEvent ReconnectEvent}
- * or a {@link net.dv8tion.jda.api.events.ResumedEvent ResumedEvent} is fired.
+ * <b>or</b> {@link net.dv8tion.jda.api.events.ResumedEvent ResumedEvent} is fired.
  */
 public class DisconnectEvent extends Event
 {
@@ -65,21 +64,6 @@ public class DisconnectEvent extends Event
     public CloseCode getCloseCode()
     {
         return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
-    }
-
-    /**
-     * Contains all {@code cf-ray} headers that JDA received in this session.
-     * <br>These receive a new value whenever the WebSockedClient reconnects to the gateway.
-     *
-     * <p>This is useful to monitor cloudflare activity from the Discord Developer perspective.
-     * <br>Use this list to report connection issues.
-     *
-     * @return Immutable list of all cf-ray values for this session
-     */
-    @Nonnull
-    public List<String> getCloudflareRays()
-    {
-        return api.getCloudflareRays();
     }
 
     /**

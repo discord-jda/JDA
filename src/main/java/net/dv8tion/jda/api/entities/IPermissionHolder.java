@@ -26,6 +26,9 @@ import java.util.EnumSet;
  * Marker for entities that hold Permissions within JDA
  *
  * @since 3.0
+ *
+ * @see Role
+ * @see Member
  */
 public interface IPermissionHolder extends ISnowflake
 {
@@ -45,6 +48,52 @@ public interface IPermissionHolder extends ISnowflake
      */
     @Nonnull
     EnumSet<Permission> getPermissions();
+
+    /**
+     * The Permissions this PermissionHolder holds in the specified {@link GuildChannel GuildChannel}.
+     * <br>Permissions returned by this may be different from {@link #getPermissions()}
+     * due to the GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
+     *
+     * @param  channel
+     *         The {@link GuildChannel GuildChannel} of which to get Permissions for
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the channel is null
+     *
+     * @return Set of Permissions granted to this Permission Holder in the specified channel.
+     */
+    @Nonnull
+    EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel);
+
+    /**
+     * The explicitly granted permissions for this permission holder in the guild.
+     * <br>This disregards owner and administrator privileges.
+     * For a role this is identical to {@link #getPermissions()} and members have all their roles taken into consideration.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
+     *
+     * @return EnumSet of the explicitly granted permissions
+     */
+    @Nonnull
+    EnumSet<Permission> getPermissionsExplicit();
+
+    /**
+     * The explicitly granted permissions for this permission holder in the guild.
+     * <br>This disregards owner and administrator privileges.
+     * <br>Permissions returned by this may be different from {@link #getPermissionsExplicit()}
+     * due to the GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}.
+     * <br><u>Changes to the returned set do not affect this entity directly.</u>
+     *
+     * @param  channel
+     *         The {@link GuildChannel GuildChannel} of which to get Permissions for
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the channel is null
+     *
+     * @return EnumSet of the explicitly granted permissions in the specified channel
+     */
+    @Nonnull
+    EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel);
 
     /**
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.api.Permission Permissions} in the Guild.

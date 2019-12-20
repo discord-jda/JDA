@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
+import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
 import javax.annotation.Nonnull;
@@ -74,17 +76,14 @@ public class JDABuilder
     protected IEventManager eventManager = null;
     protected IAudioSendFactory audioSendFactory = null;
     protected JDA.ShardInfo shardInfo = null;
+    protected Compression compression = Compression.ZLIB;
     protected Activity activity = null;
     protected OnlineStatus status = OnlineStatus.ONLINE;
-    protected int maxReconnectDelay = 900;
-    protected boolean enableContext = true;
-    protected boolean enableVoice = true;
-    protected boolean enableShutdownHook = true;
-    protected boolean enableBulkDeleteSplitting = true;
-    protected boolean autoReconnect = true;
     protected boolean idle = false;
-    protected boolean requestTimeoutRetry = true;
-    protected Compression compression = Compression.ZLIB;
+    protected int maxReconnectDelay = 900;
+    protected int largeThreshold = 250;
+    protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
+    protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -135,6 +134,48 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    /**
+     * Whether JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent} for every discord event.
+     * <br>Default: {@code false}
+     *
+     * @param  enable
+     *         True, if JDA should fire {@link net.dv8tion.jda.api.events.RawGatewayEvent}.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    public JDABuilder setRawEventsEnabled(boolean enable)
+    {
+        return setFlag(ConfigFlag.RAW_EVENTS, enable);
+    }
+
+    /**
+     * Whether the rate-limit should be relative to the current time plus latency.
+     * <br>By default we use the {@code X-RateLimit-Rest-After} header to determine when
+     * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
+     * to the latency which is ignored by the reset-after relative delay.
+     *
+     * <p>When disabled, we will use the {@code X-RateLimit-Reset} absolute timestamp instead which accounts for
+     * latency but requires a properly NTP synchronized clock to be present.
+     * If your system does have this feature you might gain a little quicker rate-limit handling than the default allows.
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @param  enable
+     *         True, if the relative {@code X-RateLimit-Reset-After} header should be used.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    public JDABuilder setRelativeRateLimit(boolean enable)
+    {
+        return setFlag(ConfigFlag.USE_RELATIVE_RATELIMIT, enable);
     }
 
     /**
@@ -193,7 +234,7 @@ public class JDABuilder
     {
         this.contextMap = map;
         if (map != null)
-            this.enableContext = true;
+            setContextEnabled(true);
         return this;
     }
 
@@ -212,8 +253,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setContextEnabled(boolean enable)
     {
-        this.enableContext = enable;
-        return this;
+        return setFlag(ConfigFlag.MDC_CONTEXT, enable);
     }
 
     /**
@@ -259,8 +299,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setRequestTimeoutRetry(boolean retryOnTimeout)
     {
-        this.requestTimeoutRetry = retryOnTimeout;
-        return this;
+        return setFlag(ConfigFlag.RETRY_TIMEOUT, retryOnTimeout);
     }
 
     /**
@@ -502,24 +541,6 @@ public class JDABuilder
     }
 
     /**
-     * Enables/Disables Voice functionality.
-     * <br>This is useful, if your current system doesn't support Voice and you do not need it.
-     *
-     * <p>Default: <b>true (enabled)</b>
-     *
-     * @param  enabled
-     *         True - enables voice support.
-     *
-     * @return The JDABuilder instance. Useful for chaining.
-     */
-    @Nonnull
-    public JDABuilder setAudioEnabled(boolean enabled)
-    {
-        this.enableVoice = enabled;
-        return this;
-    }
-
-    /**
      * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
      * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
      * should instead handle the {@link net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
@@ -534,8 +555,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setBulkDeleteSplittingEnabled(boolean enabled)
     {
-        this.enableBulkDeleteSplitting = enabled;
-        return this;
+        return setFlag(ConfigFlag.BULK_DELETE_SPLIT, enabled);
     }
 
     /**
@@ -553,8 +573,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setEnableShutdownHook(boolean enable)
     {
-        this.enableShutdownHook = enable;
-        return this;
+        return setFlag(ConfigFlag.SHUTDOWN_HOOK, enable);
     }
 
     /**
@@ -571,8 +590,7 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setAutoReconnect(boolean autoReconnect)
     {
-        this.autoReconnect = autoReconnect;
-        return this;
+        return setFlag(ConfigFlag.AUTO_RECONNECT, autoReconnect);
     }
 
     /**
@@ -627,7 +645,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean) Presence#setIdle(boolean)
+     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean) Presence.setIdle(boolean)
      */
     @Nonnull
     public JDABuilder setIdle(boolean idle)
@@ -675,7 +693,8 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
     @Nonnull
-    public JDABuilder setStatus(@Nullable OnlineStatus status)
+    @SuppressWarnings("ConstantConditions") // we have to enforce the nonnull at runtime
+    public JDABuilder setStatus(@Nonnull OnlineStatus status)
     {
         if (status == null || status == OnlineStatus.UNKNOWN)
             throw new IllegalArgumentException("OnlineStatus cannot be null or unknown!");
@@ -700,7 +719,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.JDA#addEventListener(Object...) JDA.addEventListeners(Object...)
+     * @see    net.dv8tion.jda.api.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
     @Nonnull
     public JDABuilder addEventListeners(@Nonnull Object... listeners)
@@ -722,7 +741,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.JDA#removeEventListener(Object...) JDA.removeEventListeners(Object...)
+     * @see    net.dv8tion.jda.api.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
     @Nonnull
     public JDABuilder removeEventListeners(@Nonnull Object... listeners)
@@ -787,7 +806,7 @@ public class JDABuilder
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,
-            "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
+                "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }
@@ -822,6 +841,8 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
+     * @since 4.0.0
+     *
      * @see    VoiceDispatchInterceptor
      */
     @Nonnull
@@ -832,11 +853,79 @@ public class JDABuilder
     }
 
     /**
+     * The {@link ChunkingFilter} to filter which guilds should use member chunking.
+     * <br>By default this uses {@link ChunkingFilter#ALL}.
+     *
+     * <p>This filter is useless when {@link #setGuildSubscriptionsEnabled(boolean)} is false.
+     *
+     * @param  filter
+     *         The filter to apply
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     *
+     * @see    ChunkingFilter#NONE
+     * @see    ChunkingFilter#include(long...)
+     * @see    ChunkingFilter#exclude(long...)
+     */
+    @Nonnull
+    public JDABuilder setChunkingFilter(@Nullable ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter == null ? ChunkingFilter.ALL : filter;
+        return this;
+    }
+
+    /**
+     * Enable typing and presence update events.
+     * <br>These events cover the majority of traffic happening on the gateway and thus cause a lot
+     * of bandwidth usage. Disabling these events means the cache for users might become outdated since
+     * user properties are only updated by presence updates.
+     * <br>Default: true
+     *
+     * <h2>Notice</h2>
+     * This disables the majority of member cache and related events. If anything in your project
+     * relies on member state you should keep this enabled.
+     *
+     * @param  enabled
+     *         True, if guild subscriptions should be enabled
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
+    {
+        return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+    }
+
+    /**
+     * Decides the total number of members at which a guild should start to use lazy loading.
+     * <br>This is limited to a number between 50 and 250 (inclusive).
+     * If the {@link #setChunkingFilter(ChunkingFilter) chunking filter} is set to {@link ChunkingFilter#ALL}
+     * this should be set to {@code 250} (default) to minimize the amount of guilds that need to request members.
+     *
+     * @param  threshold
+     *         The threshold in {@code [50, 250]}
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    public JDABuilder setLargeThreshold(int threshold)
+    {
+        this.largeThreshold = Math.max(50, Math.min(250, threshold)); // enforce 50 <= t <= 250
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
-     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
-     * being performed like database connection or local resource loading.
+     * For example {@link JDA#getGuilds()} might return an empty list or {@link net.dv8tion.jda.api.JDA#getUserById(long)} might return null
+     * for arbitrary user IDs.
      *
      * <p>If you wish to be sure that the {@link net.dv8tion.jda.api.JDA} information is correct, please use
      * {@link net.dv8tion.jda.api.JDA#awaitReady() JDA.awaitReady()} or register an
@@ -850,6 +939,8 @@ public class JDABuilder
      *
      * @return A {@link net.dv8tion.jda.api.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
+     *
+     * @see    net.dv8tion.jda.api.JDA#awaitReady()
      */
     @Nonnull
     public JDA build() throws LoginException
@@ -872,10 +963,11 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, enableVoice, requestTimeoutRetry,autoReconnect, enableBulkDeleteSplitting, maxReconnectDelay);
-        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, enableContext, enableShutdownHook);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
+        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        jda.setChunkingFilter(chunkingFilter);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
@@ -893,5 +985,14 @@ public class JDABuilder
                 .setCacheStatus(status);
         jda.login(shardInfo, compression, true);
         return jda;
+    }
+
+    private JDABuilder setFlag(ConfigFlag flag, boolean enable)
+    {
+        if (enable)
+            this.flags.add(flag);
+        else
+            this.flags.remove(flag);
+        return this;
     }
 }

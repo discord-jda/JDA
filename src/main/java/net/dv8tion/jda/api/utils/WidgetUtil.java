@@ -18,17 +18,14 @@ package net.dv8tion.jda.api.utils;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -219,7 +216,7 @@ public class WidgetUtil
         try (Response response = client.newCall(request).execute())
         {
             final int code = response.code();
-            InputStream data = Requester.getBody(response);
+            InputStream data = IOUtil.getBody(response);
 
             switch (code)
             {
@@ -313,7 +310,7 @@ public class WidgetUtil
          * Constructs an available Widget
          *
          * @param json
-         *        The {@link org.json.JSONObject JSONObject} to construct the Widget from
+         *        The {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to construct the Widget from
          */
         private Widget(@Nonnull DataObject json)
         {
@@ -567,7 +564,7 @@ public class WidgetUtil
                 this.avatar = json.getString("avatar", null);
                 this.nickname = json.getString("nick", null);
                 this.status = OnlineStatus.fromKey(json.getString("status"));
-                this.game = json.isNull("game") ? null : EntityBuilder.createAcitvity(json.getObject("game"));
+                this.game = json.isNull("game") ? null : EntityBuilder.createActivity(json.getObject("game"));
             }
             
             private void setVoiceState(VoiceState voiceState)
@@ -643,8 +640,8 @@ public class WidgetUtil
             @Nullable
             public String getAvatarUrl()
             {
-                return getAvatarId() == null ? null : "https://cdn.discordapp.com/avatars/" + getId() + "/" + getAvatarId()
-                        + (getAvatarId().startsWith("a_") ? ".gif" : ".png");
+                String avatarId = getAvatarId();
+                return avatarId == null ? null : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
             }
 
             /**
@@ -656,7 +653,7 @@ public class WidgetUtil
             @Nonnull
             public String getDefaultAvatarId()
             {
-                return UserImpl.DefaultAvatar.values()[Integer.parseInt(getDiscriminator()) % UserImpl.DefaultAvatar.values().length].toString();
+                return String.valueOf(Integer.parseInt(getDiscriminator()) % 5);
             }
 
             /**
@@ -668,7 +665,7 @@ public class WidgetUtil
             @Nonnull
             public String getDefaultAvatarUrl()
             {
-                return "https://discordapp.com/assets/" + getDefaultAvatarId() + ".png";
+                return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
             }
 
             /**
@@ -681,7 +678,8 @@ public class WidgetUtil
             @Nonnull
             public String getEffectiveAvatarUrl()
             {
-                return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
+                String avatarUrl = getAvatarUrl();
+                return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
             }
             
             /**

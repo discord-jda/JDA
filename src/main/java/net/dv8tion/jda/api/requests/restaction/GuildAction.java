@@ -255,7 +255,7 @@ public interface GuildAction extends RestAction<Void>
      * Creates and add a new {@link RoleData RoleData} object
      * representing a Role for the resulting Guild.
      *
-     * <p>This can be used in {@link ChannelData#addPermissionOverride(RoleData, long, long) ChannelData.addPermissionOverride(...)}.
+     * <p>This can be used in {@link GuildAction.ChannelData#addPermissionOverride(GuildAction.RoleData, long, long) ChannelData.addPermissionOverride(...)}.
      * <br>You may change any properties of this {@link RoleData RoleData} instance!
      *
      * @return RoleData for the new Role
@@ -268,7 +268,7 @@ public interface GuildAction extends RestAction<Void>
      * Mutable object containing information on a {@link net.dv8tion.jda.api.entities.Role Role}
      * of the resulting {@link net.dv8tion.jda.api.entities.Guild Guild} that is constructed by a GuildAction instance
      *
-     * <p>This may be used in {@link ChannelData#addPermissionOverride(RoleData, long, long)}  ChannelData.addPermissionOverride(...)}!
+     * <p>This may be used in {@link GuildAction.ChannelData#addPermissionOverride(GuildAction.RoleData, long, long)}  ChannelData.addPermissionOverride(...)}!
      */
     class RoleData implements SerializableData
     {
@@ -678,8 +678,8 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Adds a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} to this channel
-         * with the provided {@link GuildActionImpl.RoleData RoleData}!
-         * <br>Use {@link GuildActionImpl#newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
+         * with the provided {@link GuildAction.RoleData RoleData}!
+         * <br>Use {@link #newRole() GuildAction.newRole()} to retrieve an instance of RoleData.
          *
          * @param  role
          *         The target role

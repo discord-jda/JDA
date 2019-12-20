@@ -120,7 +120,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
         //cleanup old emotes that don't exist anymore
         for (Emote e : oldEmotes)
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new EmoteRemovedEvent(
                     getJDA(), responseNumber,
                     e));
@@ -128,7 +128,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         for (Emote e : newEmotes)
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new EmoteAddedEvent(
                     getJDA(), responseNumber,
                     e));
@@ -143,7 +143,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         if (!Objects.equals(oldEmote.getName(), newEmote.getName()))
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new EmoteUpdateNameEvent(
                     getJDA(), responseNumber,
                     newEmote, oldEmote.getName()));
@@ -151,7 +151,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
 
         if (!CollectionUtils.isEqualCollection(oldEmote.getRoles(), newEmote.getRoles()))
         {
-            getJDA().getEventManager().handle(
+            getJDA().handleEvent(
                 new EmoteUpdateRolesEvent(
                     getJDA(), responseNumber,
                     newEmote, oldEmote.getRoles()));

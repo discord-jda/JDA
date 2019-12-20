@@ -39,6 +39,10 @@ import java.util.Objects;
  * built from Discord is needed to see changes.
  *
  * @since  3.0
+ *
+ * @see    Message#getReactions()
+ * @see    Message#getReactionByUnicode(String)
+ * @see    Message#getReactionById(long)
  */
 public class MessageReaction
 {
@@ -84,6 +88,9 @@ public class MessageReaction
 
     /**
      * Whether the currently logged in account has reacted with this reaction
+     *
+     * <p><b>This will always be false for events. Discord does not provide this information for reaction events.</b>
+     * You can use {@link MessageChannel#retrieveMessageById(String)} to get this information on a complete message.
      *
      * @return True, if we reacted with this reaction
      */
@@ -312,11 +319,13 @@ public class MessageReaction
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code user} is null.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the provided User is not us and we do not have permission to
+     *         If the provided User is not us and we do not have permission to
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE manage messages}
      *         in the channel this reaction was used in
+     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     *         If the message is from another user in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Void
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      *         Nothing is returned on success
      */
     @Nonnull
@@ -324,13 +333,14 @@ public class MessageReaction
     public RestAction<Void> removeReaction(@Nonnull User user)
     {
         Checks.notNull(user, "User");
-        if (!user.equals(getJDA().getSelfUser()))
+        boolean self = user.equals(getJDA().getSelfUser());
+        if (!self)
         {
             if (channel.getType() == ChannelType.TEXT)
             {
                 GuildChannel channel = (GuildChannel) this.channel;
                 if (!channel.getGuild().getSelfMember().hasPermission(channel, Permission.MESSAGE_MANAGE))
-                    throw new InsufficientPermissionException(Permission.MESSAGE_MANAGE);
+                    throw new InsufficientPermissionException(channel, Permission.MESSAGE_MANAGE);
             }
             else
             {
@@ -341,11 +351,8 @@ public class MessageReaction
         String code = emote.isEmote()
                     ? emote.getName() + ":" + emote.getId()
                     : EncodingUtil.encodeUTF8(emote.getName());
-        Route.CompiledRoute route;
-        if (user.equals(getJDA().getSelfUser()))
-            route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, "@me");
-        else
-            route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, user.getId());
+        String target = self ? "@me" : user.getId();
+        Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -439,6 +446,8 @@ public class MessageReaction
          *
          * <p>For better use in consoles that do not support unicode emoji use {@link #getAsCodepoints()} for a more
          * readable representation of the emoji.
+         *
+         * <p>Custom emotes may return an empty string for this if the emote was deleted.
          *
          * @return The name for this emote/emoji
          */

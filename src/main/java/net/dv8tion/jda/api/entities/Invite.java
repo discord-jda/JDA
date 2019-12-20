@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -35,6 +37,12 @@ import java.util.Set;
  *
  * @since  3.0
  * @author Aljoscha Grebe
+ *
+ * @see    #resolve(JDA, String)
+ * @see    #resolve(JDA, String, boolean)
+ *
+ * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
+ * @see    GuildChannel#retrieveInvites()
  */
 public interface Invite
 {
@@ -188,8 +196,14 @@ public interface Invite
      *
      * @see    #expand()
      * @see    #isExpanded()
+     *
+     * @deprecated
+     *         Use {@link #getTimeCreated()} instead
      */
     @Nonnull
+    @Deprecated
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("getTimeCreated()")
     OffsetDateTime getCreationTime();
 
     /**
@@ -248,6 +262,22 @@ public interface Invite
     * @see    #isExpanded()
     */
     int getMaxUses();
+
+    /**
+     * Returns creation date of this invite.
+     *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
+     *
+     * @throws IllegalStateException
+     *         if this invite is not expanded
+     *
+     * @return The creation date of this invite
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
+     */
+    @Nonnull
+    OffsetDateTime getTimeCreated();
 
     /**
      * How often this invite has been used.

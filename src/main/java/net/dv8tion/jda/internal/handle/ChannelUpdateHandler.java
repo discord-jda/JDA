@@ -78,27 +78,27 @@ public class ChannelUpdateHandler extends SocketHandler
                     return null;
                 }
                 final String oldName = storeChannel.getName();
-                final int oldPositon = storeChannel.getPositionRaw();
+                final int oldPosition = storeChannel.getPositionRaw();
 
                 if (!Objects.equals(oldName, name))
                 {
                     storeChannel.setName(name);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                         new StoreChannelUpdateNameEvent(
                             getJDA(), responseNumber,
                             storeChannel, oldName));
                 }
-                if (!Objects.equals(oldPositon, position))
+                if (!Objects.equals(oldPosition, position))
                 {
                     storeChannel.setPosition(position);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                         new StoreChannelUpdatePositionEvent(
                             getJDA(), responseNumber,
-                            storeChannel, oldPositon));
+                            storeChannel, oldPosition));
                 }
 
                 applyPermissions(storeChannel, content, permOverwrites, contained, changed);
-                getJDA().getEventManager().handle(
+                getJDA().handleEvent(
                     new StoreChannelUpdatePermissionsEvent(
                         getJDA(), responseNumber,
                         storeChannel, changed));
@@ -126,7 +126,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldName, name))
                 {
                     textChannel.setName(name);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new TextChannelUpdateNameEvent(
                                     getJDA(), responseNumber,
                                     textChannel, oldName));
@@ -134,7 +134,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldParent, parentId))
                 {
                     textChannel.setParent(parentId == null ? 0 : parentId);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                            new TextChannelUpdateParentEvent(
                                getJDA(), responseNumber,
                                textChannel, parent));
@@ -142,7 +142,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldTopic, topic))
                 {
                     textChannel.setTopic(topic);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new TextChannelUpdateTopicEvent(
                                     getJDA(), responseNumber,
                                     textChannel, oldTopic));
@@ -150,7 +150,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldPosition != position)
                 {
                     textChannel.setPosition(position);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new TextChannelUpdatePositionEvent(
                                     getJDA(), responseNumber,
                                     textChannel, oldPosition));
@@ -159,7 +159,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldNsfw != nsfw)
                 {
                     textChannel.setNSFW(nsfw);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new TextChannelUpdateNSFWEvent(
                                     getJDA(), responseNumber,
                                     textChannel, oldNsfw));
@@ -168,7 +168,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldSlowmode != slowmode)
                 {
                     textChannel.setSlowmode(slowmode);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new TextChannelUpdateSlowmodeEvent(
                                     getJDA(), responseNumber,
                                     textChannel, oldSlowmode));
@@ -179,7 +179,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
                 {
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new TextChannelUpdatePermissionsEvent(
                                     getJDA(), responseNumber,
                                     textChannel, changed));
@@ -207,7 +207,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldName, name))
                 {
                     voiceChannel.setName(name);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new VoiceChannelUpdateNameEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, oldName));
@@ -215,7 +215,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldParent, parentId))
                 {
                     voiceChannel.setParent(parentId == null ? 0 : parentId);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new VoiceChannelUpdateParentEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, parent));
@@ -223,7 +223,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldPosition != position)
                 {
                     voiceChannel.setPosition(position);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new VoiceChannelUpdatePositionEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, oldPosition));
@@ -231,7 +231,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldLimit != userLimit)
                 {
                     voiceChannel.setUserLimit(userLimit);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new VoiceChannelUpdateUserLimitEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, oldLimit));
@@ -239,7 +239,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (oldBitrate != bitrate)
                 {
                     voiceChannel.setBitrate(bitrate);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new VoiceChannelUpdateBitrateEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, oldBitrate));
@@ -250,7 +250,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
                 {
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new VoiceChannelUpdatePermissionsEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, changed));
@@ -272,7 +272,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldName, name))
                 {
                     category.setName(name);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new CategoryUpdateNameEvent(
                                 getJDA(), responseNumber,
                                 category, oldName));
@@ -280,7 +280,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 if (!Objects.equals(oldPosition, position))
                 {
                     category.setPosition(position);
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new CategoryUpdatePositionEvent(
                                 getJDA(), responseNumber,
                                 category, oldPosition));
@@ -290,7 +290,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 //If this update modified permissions in any way.
                 if (!changed.isEmpty())
                 {
-                    getJDA().getEventManager().handle(
+                    getJDA().handleEvent(
                             new CategoryUpdatePermissionsEvent(
                                 getJDA(), responseNumber,
                                 category, changed));
@@ -331,6 +331,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 toRemove.add(permHolder.getIdLong());
             });
 
+        channel.getGuild().updateCachedOverrides(channel, permOverwrites);
         toRemove.forEach((id) ->
         {
             overridesMap.remove(id);
@@ -372,9 +373,8 @@ public class ChannelUpdateHandler extends SocketHandler
                 permHolder = channel.getGuild().getMemberById(id);
                 if (permHolder == null)
                 {
-                    getJDA().getEventCache().cache(EventCache.Type.USER, id, responseNumber, allContent, (a, b) ->
-                            handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: {} JSON: {}", id, content);
+                    // cache override for unloaded member (maybe loaded later)
+                    channel.getGuild().cacheOverride(id, channel.getIdLong(), override);
                     return;
                 }
                 break;

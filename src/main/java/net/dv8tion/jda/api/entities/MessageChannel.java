@@ -71,6 +71,9 @@ import java.util.function.Function;
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
  * <br><b>{@link net.dv8tion.jda.api.entities.TextChannel TextChannel} is a special case which uses {@link IMentionable#getAsMention() IMentionable.getAsMention()}
  * by default and uses the <code>#{@link #getName()}</code> format as <u>alternative</u></b>
+ *
+ * @see TextChannel
+ * @see PrivateChannel
  */
 public interface MessageChannel extends ISnowflake, Formattable
 {
@@ -307,25 +310,18 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Sends a plain text message to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     * use {@link net.dv8tion.jda.api.entities.TextChannel#canTalk() TextChannel.canTalk()}.
-     *
-     * <p>This method is a shortcut to {@link #sendMessage(Message)} by way of using a {@link net.dv8tion.jda.api.MessageBuilder MessageBuilder}
-     * internally to build the provided {@code text} into a Message.
-     * <pre>sendMessage(new MessageBuilder().append(text).build())</pre>
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
      *
      * @param  text
-     *         the text to build into a Message to send to the MessageChannel.
+     *         the text to send to the MessageChannel.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does
-     *         not have
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
-     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
-     *         </ul>
+     *         not have {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
      * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
      *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
@@ -342,6 +338,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see net.dv8tion.jda.api.MessageBuilder
      */
     @Nonnull
+    @CheckReturnValue
     default MessageAction sendMessage(@Nonnull CharSequence text)
     {
         Checks.notEmpty(text, "Provided text for message");
@@ -358,12 +355,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Sends a formatted text message to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     * use {@link net.dv8tion.jda.api.entities.TextChannel#canTalk() TextChannel.canTalk()}.
-     *
-     * <p>This method is a shortcut to {@link #sendMessage(Message)} by way of using a {@link net.dv8tion.jda.api.MessageBuilder MessageBuilder}
-     * and using its {@link net.dv8tion.jda.api.MessageBuilder#appendFormat(String, Object...)} method.
-     * <br>For more information on how to format your input, refer to the docs of the method mentioned above.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
      *
@@ -413,12 +407,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     * use {@link net.dv8tion.jda.api.entities.TextChannel#canTalk() TextChannel#canTalk}.
-     *
-     * <p>This method is a shortcut to {@link #sendMessage(Message)} by way of using a {@link net.dv8tion.jda.api.MessageBuilder MessageBuilder}
-     * internally to build the provided {@code embed} into a Message.
-     * <pre>sendMessage(new MessageBuilder().setEmbed(embed).build())</pre>
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)}.
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
      *
@@ -464,8 +455,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      * Sends a specified {@link net.dv8tion.jda.api.entities.Message Message} to this channel.
      * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
      * the currently logged in account does not have permissions to send a message to this channel.
-     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     * use {@link net.dv8tion.jda.api.entities.TextChannel#canTalk() TextChannel#canTalk}.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1784,12 +1776,9 @@ public interface MessageChannel extends ISnowflake, Formattable
         unicode = unicode.trim();
         Checks.notEmpty(unicode, "Provided Unicode");
 
-        String encoded;
-        if (unicode.startsWith("U+"))
-            encoded = EncodingUtil.encodeCodepointsUTF8(unicode);
-        else
-            encoded = EncodingUtil.encodeUTF8(unicode);
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded);
+        final String encoded = EncodingUtil.encodeReaction(unicode);
+
+        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -1927,11 +1916,8 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> addReactionById(@Nonnull String messageId, @Nonnull Emote emote)
     {
-        Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(emote, "Emote");
-
-        Route.CompiledRoute route = Route.Messages.ADD_REACTION.compile(getId(), messageId, String.format("%s:%s", emote.getName(), emote.getId()));
-        return new RestActionImpl<Void>(getJDA(), route);
+        return addReactionById(messageId, emote.getName() + ":" + emote.getId());
     }
 
     /**
@@ -2054,10 +2040,13 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Checks.noWhitespace(unicode, "Emoji");
+        Checks.notNull(unicode, "Provided Unicode");
+        unicode = unicode.trim();
+        Checks.notEmpty(unicode, "Provided Unicode");
 
-        final String code = EncodingUtil.encodeUTF8(unicode);
-        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, code, "@me");
+        final String encoded = EncodingUtil.encodeReaction(unicode);
+
+        final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, "@me");
         return new RestActionImpl<>(getJDA(), route);
     }
 
@@ -2227,8 +2216,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote)
     {
-        Checks.notNull(emote, "Emote");
-        return removeReactionById(messageId, emote.getName() + ":" + emote.getId());
+        return removeReactionById(Long.toUnsignedString(messageId), emote);
     }
 
     /**
@@ -2433,7 +2421,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Message}{@literal >}
-     *         <br>An immutable list of pinned messages
+     *         <br>Retrieves an immutable list of pinned messages
      */
     @Nonnull
     @CheckReturnValue
