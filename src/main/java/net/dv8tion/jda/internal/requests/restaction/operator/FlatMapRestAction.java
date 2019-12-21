@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests.restaction.stages;
+package net.dv8tion.jda.internal.requests.restaction.operator;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;

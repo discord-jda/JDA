@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests.restaction.stages;
+package net.dv8tion.jda.internal.requests.restaction.operator;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
@@ -40,7 +40,7 @@ public class DelayRestAction<T> implements RestAction<T>
         this.action = action;
         this.unit = unit;
         this.delay = delay;
-        this.scheduler = scheduler;
+        this.scheduler = scheduler == null ? action.getJDA().getRateLimitPool() : scheduler;
     }
 
     @Nonnull
@@ -60,19 +60,35 @@ public class DelayRestAction<T> implements RestAction<T>
     @Override
     public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
     {
-        action.queueAfter(delay, unit, success, failure, scheduler);
+        action.queue((result) -> scheduler.schedule(() -> {
+            if (success == null)
+                RestAction.getDefaultSuccess().accept(result);
+            else
+                success.accept(result);
+        }, delay, unit), failure);
     }
 
     @Override
     public T complete(boolean shouldQueue) throws RateLimitedException
     {
-        return action.completeAfter(delay, unit);
+        T result = action.complete(shouldQueue);
+        try
+        {
+            unit.sleep(delay);
+            return result;
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Nonnull
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {
-        return action.submitAfter(delay, unit, scheduler);
+        CompletableFuture<T> future = new CompletableFuture<>();
+        queue(future::complete, future::completeExceptionally);
+        return future;
     }
 }

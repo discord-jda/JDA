@@ -20,9 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.stages.DelayRestAction;
-import net.dv8tion.jda.internal.requests.restaction.stages.FlatMapRestAction;
-import net.dv8tion.jda.internal.requests.restaction.stages.MapRestAction;
+import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
+import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
+import net.dv8tion.jda.internal.requests.restaction.operator.MapRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
 
@@ -432,8 +432,28 @@ public interface RestAction<T>
     @Nonnull
     CompletableFuture<T> submit(boolean shouldQueue);
 
-    //TODO: Documentation
-
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on successful execution.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<String> retrieveMemberNickname(Guild guild, String userId) {
+     *     return guild.retrieveMemberById(userId)
+     *                 .map(Member::getNickname);
+     * }
+     * }</pre>
+     *
+     * @param  map
+     *         The mapping function to apply to the action result
+     *
+     * @param  <O>
+     *         The target output type
+     *
+     * @return RestAction for the mapped type
+     */
     @Nonnull
     @CheckReturnValue
     default <O> RestAction<O> map(@Nonnull Function<? super T, ? extends O> map)
@@ -442,6 +462,31 @@ public interface RestAction<T>
         return new MapRestAction<>(this, map);
     }
 
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on successful execution. This will compute the result of both RestActions.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> initializeGiveaway(Guild guild, String channelName) {
+     *     return guild.createTextChannel(channelName)
+     *          .addPermissionOverride(guild.getPublicRole(), null, EnumSet.of(Permission.MESSAGE_WRITE)) // deny write for everyone
+     *          .addPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_WRITE), null) // allow for self user
+     *          .flatMap((channel) -> channel.sendMessage("React to enter giveaway!")) // send message
+     *          .flatMap((message) -> message.addReaction(REACTION)); // add reaction
+     * }
+     * }</pre>
+     *
+     * @param  flatMap
+     *         The mapping function to apply to the action result, must return a RestAction
+     *
+     * @param  <O>
+     *         The target output type
+     *
+     * @return RestAction for the mapped type
+     */
     @Nonnull
     @CheckReturnValue
     default <O> RestAction<O> flatMap(@Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
@@ -450,6 +495,27 @@ public interface RestAction<T>
         return new FlatMapRestAction<>(this, flatMap);
     }
 
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(Duration.ofSeconds(10)) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(Duration.ofMinutes(1)) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  duration
+     *         The delay
+     *
+     * @return RestAction with delay
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<T> delay(@Nonnull Duration duration)
@@ -457,6 +523,29 @@ public interface RestAction<T>
         return delay(duration, null);
     }
 
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(Duration.ofSeconds(10), scheduler) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(Duration.ofMinutes(1), scheduler) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  duration
+     *         The delay
+     * @param  scheduler
+     *         The scheduler to use, null to use {@link JDA#getRateLimitPool()}
+     *
+     * @return RestAction with delay
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<T> delay(@Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler)
@@ -465,6 +554,29 @@ public interface RestAction<T>
         return new DelayRestAction<>(this, TimeUnit.MILLISECONDS, duration.toMillis(), scheduler);
     }
 
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(10, SECONDS) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(1, MINUTES) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  delay
+     *         The delay value
+     * @param  unit
+     *         The time unit for the delay value
+     *
+     * @return RestAction with delay
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<T> delay(long delay, @Nonnull TimeUnit unit)
@@ -472,6 +584,31 @@ public interface RestAction<T>
         return delay(delay, unit, null);
     }
 
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(10, SECONDS, scheduler) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(1, MINUTES, scheduler) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  delay
+     *         The delay value
+     * @param  unit
+     *         The time unit for the delay value
+     * @param  scheduler
+     *         The scheduler to use, null to use {@link JDA#getRateLimitPool()}
+     *
+     * @return RestAction with delay
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<T> delay(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler)
