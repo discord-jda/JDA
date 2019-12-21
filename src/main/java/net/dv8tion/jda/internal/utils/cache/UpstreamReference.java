@@ -48,8 +48,8 @@ public class UpstreamReference<T extends ISnowflake> implements ISnowflake
             referent = fallbackProvider.apply(id);
             if (referent == null)
                 throw new IllegalStateException("Cannot get reference as it has already been Garbage Collected");
+            reference = new WeakReference<>(referent);
         }
-        reference = new WeakReference<>(referent);
         return referent;
     }
 
