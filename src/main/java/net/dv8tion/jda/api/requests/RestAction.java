@@ -515,6 +515,8 @@ public interface RestAction<T>
      *         The delay
      *
      * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit)
      */
     @Nonnull
     @CheckReturnValue
@@ -545,6 +547,8 @@ public interface RestAction<T>
      *         The scheduler to use, null to use {@link JDA#getRateLimitPool()}
      *
      * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
      */
     @Nonnull
     @CheckReturnValue
@@ -576,6 +580,8 @@ public interface RestAction<T>
      *         The time unit for the delay value
      *
      * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit)
      */
     @Nonnull
     @CheckReturnValue
@@ -608,6 +614,8 @@ public interface RestAction<T>
      *         The scheduler to use, null to use {@link JDA#getRateLimitPool()}
      *
      * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
      */
     @Nonnull
     @CheckReturnValue
