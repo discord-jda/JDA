@@ -442,6 +442,12 @@ public enum ActionType
      */
     INTEGRATION_DELETE(82, TargetType.INTEGRATION),
 
+    /**
+     * When Ryan falls asleep on voice for the 10th time and you have to move him to another channel
+     * According to Discord's Change Log for 2019 December 19
+     */
+    NOT_AGAIN_RYAN(-2, TargetType.UNKNOWN)
+    
     UNKNOWN(-1, TargetType.UNKNOWN);
 
     private final int key;
