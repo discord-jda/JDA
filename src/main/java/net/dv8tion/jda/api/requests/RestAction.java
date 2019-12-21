@@ -20,17 +20,23 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.stages.DelayRestAction;
+import net.dv8tion.jda.internal.requests.restaction.stages.FlatMapRestAction;
+import net.dv8tion.jda.internal.requests.restaction.stages.MapRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -425,6 +431,54 @@ public interface RestAction<T>
      */
     @Nonnull
     CompletableFuture<T> submit(boolean shouldQueue);
+
+    //TODO: Documentation
+
+    @Nonnull
+    @CheckReturnValue
+    default <O> RestAction<O> map(@Nonnull Function<? super T, ? extends O> map)
+    {
+        Checks.notNull(map, "Function");
+        return new MapRestAction<>(this, map);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default <O> RestAction<O> flatMap(@Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
+    {
+        Checks.notNull(flatMap, "Function");
+        return new FlatMapRestAction<>(this, flatMap);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(@Nonnull Duration duration)
+    {
+        return delay(duration, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(@Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler)
+    {
+        Checks.notNull(duration, "Duration");
+        return new DelayRestAction<>(this, TimeUnit.MILLISECONDS, duration.toMillis(), scheduler);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit)
+    {
+        return delay(delay, unit, null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        return new DelayRestAction<>(this, unit, delay, scheduler);
+    }
 
     /**
      * Schedules a call to {@link #queue()} to be executed after the specified {@code delay}.
