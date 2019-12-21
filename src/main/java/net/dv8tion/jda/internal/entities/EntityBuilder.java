@@ -1431,7 +1431,7 @@ public class EntityBuilder
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(permHolder);
         if (permOverride == null)
         {
-            permOverride = new PermissionOverrideImpl(chan, permHolder.getIdLong(), permHolder);
+            permOverride = new PermissionOverrideImpl(chan, permHolder);
             chan.getOverrideMap().put(permHolder.getIdLong(), permOverride);
         }
         return permOverride.setAllow(allow).setDeny(deny);

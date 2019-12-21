@@ -35,7 +35,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class PermissionOverrideImpl implements PermissionOverride
 {
-    private final long id;
     private final UpstreamReference<GuildChannel> channel;
     private final UpstreamReference<IPermissionHolder> holder;
     private final ChannelType channelType;
@@ -48,9 +47,8 @@ public class PermissionOverrideImpl implements PermissionOverride
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(GuildChannel channel, long id, IPermissionHolder permissionHolder)
+    public PermissionOverrideImpl(GuildChannel channel, IPermissionHolder permissionHolder)
     {
-        this.id = id;
         this.role = permissionHolder instanceof Role;
         this.channelType = channel.getType();
         this.api = (JDAImpl) channel.getJDA();
@@ -59,7 +57,6 @@ public class PermissionOverrideImpl implements PermissionOverride
             Guild guild = this.channel.resolve().getGuild();
             return role ? guild.getRoleById(holderId) : guild.getMemberById(holderId);
         });
-
     }
 
     @Override
@@ -111,13 +108,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public Member getMember()
     {
-        return getGuild().getMemberById(id);
+        return isMemberOverride() ? (Member) holder.resolve() : null;
     }
 
     @Override
     public Role getRole()
     {
-        return getGuild().getRoleById(id);
+        return isRoleOverride() ? (Role) holder.resolve() : null;
     }
 
     @Nonnull
@@ -179,7 +176,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public long getIdLong()
     {
-        return this.id;
+        return holder.getIdLong();
     }
 
     public PermissionOverrideImpl setAllow(long allow)
@@ -202,7 +199,8 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
-        return this.id == oPerm.id && this.channel.getIdLong() == oPerm.channel.getIdLong();
+        return this.getIdLong() == oPerm.getIdLong()
+                && this.channel.getIdLong() == oPerm.channel.getIdLong();
     }
 
     @Override

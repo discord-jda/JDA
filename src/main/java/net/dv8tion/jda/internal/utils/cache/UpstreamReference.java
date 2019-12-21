@@ -27,6 +27,9 @@ public class UpstreamReference<T extends ISnowflake> implements ISnowflake
     private final LongFunction<T> fallbackProvider;
     private final long id;
 
+    //We intentionally use a WeakReference rather than a SoftReference:
+    // The reasoning is that we want to replace an old reference as soon as possible with a more up-to-date instance.
+    // A soft reference would not be released until the user stops using it (ideally) so that is the wrong reference to use.
     private WeakReference<T> reference;
 
     public UpstreamReference(T referent, LongFunction<T> fallback)
@@ -71,6 +74,6 @@ public class UpstreamReference<T extends ISnowflake> implements ISnowflake
     @Override
     public long getIdLong()
     {
-        return resolve().getIdLong();
+        return id;
     }
 }
