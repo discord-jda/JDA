@@ -26,16 +26,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class FlatMapRestAction<I, O> implements RestAction<O>
 {
     private final RestAction<I> input;
     private final Function<? super I, ? extends RestAction<O>> function;
+    private final Predicate<? super I> condition;
 
-    public FlatMapRestAction(RestAction<I> input, Function<? super I, ? extends RestAction<O>> function)
+    public FlatMapRestAction(RestAction<I> input, Predicate<? super I> condition,
+                             Function<? super I, ? extends RestAction<O>> function)
     {
         this.input = input;
         this.function = function;
+        this.condition = condition;
     }
 
     @Nonnull
@@ -57,7 +61,19 @@ public class FlatMapRestAction<I, O> implements RestAction<O>
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
         input.queue((result) -> {
+            if (condition != null && !condition.test(result))
+                return;
             RestAction<O> then = function.apply(result);
+            if (then == null)
+            {
+                Throwable error = new IllegalStateException("FlatMap operand is null");
+                if (failure == null)
+                    RestAction.getDefaultFailure().accept(error);
+                else
+                    failure.accept(error);
+                return;
+            }
+
             then.queue(success, failure);
         }, failure);
     }

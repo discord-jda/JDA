@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -467,6 +468,7 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on successful execution. This will compute the result of both RestActions.
+     * <br>If the provided RestAction is {@code null} the queue callbacks will not be executed and the chain of execution ends.
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -491,8 +493,52 @@ public interface RestAction<T>
     @CheckReturnValue
     default <O> RestAction<O> flatMap(@Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
     {
+        return flatMap(null, flatMap);
+    }
+
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on successful execution. This will compute the result of both RestActions.
+     * <br>The provided RestAction must not be null!
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * private static final int MAX_COUNT = 1000;
+     * public void updateCount(MessageChannel channel, String messageId, int count) {
+     *     channel.retrieveMessageById(messageId) // retrieve message for check
+     *         .map(Message::getContentRaw) // get content of the message
+     *         .map(Integer::parseInt) // convert it to an int
+     *         .flatMap(
+     *             (currentCount) -> currentCount + count <= MAX_COUNT, // Only edit if new count does not exceed maximum
+     *             (currentCount) -> channel.editMessageById(messageId, String.valueOf(currentCount + count)) // edit message
+     *         )
+     *         .map(Message::getContentRaw) // get content of the message
+     *         .map(Integer::parseInt) // convert it to an int
+     *         .queue((newCount) -> System.out.println("Updated count to " + newCount));
+     * }
+     * }</pre>
+     *
+     * @param  condition
+     *         A condition predicate that decides whether to apply the flat map operator or not
+     * @param  flatMap
+     *         The mapping function to apply to the action result, must return a RestAction
+     *
+     * @param  <O>
+     *         The target output type
+     *
+     * @return RestAction for the mapped type
+     *
+     * @see    #flatMap(Function)
+     * @see    #map(Function)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default <O> RestAction<O> flatMap(@Nullable Predicate<? super T> condition, @Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
+    {
         Checks.notNull(flatMap, "Function");
-        return new FlatMapRestAction<>(this, flatMap);
+        return new FlatMapRestAction<>(this, condition, flatMap);
     }
 
     /**
