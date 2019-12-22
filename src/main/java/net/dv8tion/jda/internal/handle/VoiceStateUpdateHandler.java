@@ -192,11 +192,9 @@ public class VoiceStateUpdateHandler extends SocketHandler
         boolean subscriptions = getJDA().isGuildSubscriptions();
         if (member == null)
         {
-            if (subscriptions || (connected && getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE)))
+            if (connected && (subscriptions || getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE)))
             {
-                // this means either:
-                // - the member just connected to a voice channel, otherwise we would know about it already!
-                // - the member is not connect to a voice channel but we can load it here because subscriptions are enabled
+                // the member just connected to a voice channel, otherwise we would know about it already!
                 member = loadMember(userId, guild, memberJson.get(), "Initializing");
             }
         }
