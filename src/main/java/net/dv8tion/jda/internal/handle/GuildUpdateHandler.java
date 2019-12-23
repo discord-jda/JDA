@@ -134,26 +134,34 @@ public class GuildUpdateHandler extends SocketHandler
         }
         if (maxMembers != guild.getMaxMembers())
         {
-            int oldMax = guild.getMaxMembers();
-            guild.setMaxMembers(maxMembers);
             if (updateMemberLimits)
             {
+                int oldMax = guild.getMaxMembers();
+                guild.setMaxMembers(maxMembers);
                 getJDA().handleEvent(
                     new GuildUpdateMaxMembersEvent(
                         getJDA(), responseNumber,
                         guild, oldMax));
             }
+            else
+            {
+                guild.setMaxMembers(maxMembers);
+            }
         }
         if (maxPresences != guild.getMaxPresences())
         {
-            int oldMax = guild.getMaxPresences();
-            guild.setMaxPresences(maxPresences);
             if (updateMemberLimits)
             {
+                int oldMax = guild.getMaxPresences();
+                guild.setMaxPresences(maxPresences);
                 getJDA().handleEvent(
                     new GuildUpdateMaxPresencesEvent(
                         getJDA(), responseNumber,
                         guild, oldMax));
+            }
+            else
+            {
+                guild.setMaxPresences(maxPresences);
             }
         }
         if (boostCount != guild.getBoostCount())
