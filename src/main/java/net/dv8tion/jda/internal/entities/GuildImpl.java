@@ -258,12 +258,14 @@ public class GuildImpl implements Guild
     @Override
     public int getMaxMembers()
     {
+        loadMemberLimits();
         return maxMembers;
     }
 
     @Override
     public int getMaxPresences()
     {
+        loadMemberLimits();
         return maxPresences;
     }
 
@@ -1478,6 +1480,25 @@ public class GuildImpl implements Guild
     }
 
     // -- Member Tracking --
+
+    public void loadMemberLimits()
+    {
+        if (isMemberLimitsLoaded())
+            return;
+
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD.compile(getId());
+        new RestActionImpl<Void>(getJDA(), route, (response, request) -> {
+            DataObject guildJson = response.getObject();
+            this.maxMembers = guildJson.getInt("max_members");
+            this.maxPresences = guildJson.getInt("max_presences", 5000);
+            return null;
+        }).complete();
+    }
+
+    public boolean isMemberLimitsLoaded()
+    {
+        return maxMembers != 0;
+    }
 
     public TLongObjectMap<DataObject> getOverrideMap(long userId)
     {

@@ -55,10 +55,9 @@ public class GuildUpdateHandler extends SocketHandler
             return null;
         }
 
-        //////////////
-        //  WARNING //
-        //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
-        //////////////
+        //When member limits aren't initialized we don't fire an update event for them
+        boolean updateMemberLimits = guild.isMemberLimitsLoaded();
+
         long ownerId = content.getLong("owner_id");
         int maxMembers = content.getInt("max_members", 0);
         int maxPresences = content.getInt("max_presences", 5000);
@@ -137,19 +136,25 @@ public class GuildUpdateHandler extends SocketHandler
         {
             int oldMax = guild.getMaxMembers();
             guild.setMaxMembers(maxMembers);
-            getJDA().handleEvent(
-                new GuildUpdateMaxMembersEvent(
-                    getJDA(), responseNumber,
-                    guild, oldMax));
+            if (updateMemberLimits)
+            {
+                getJDA().handleEvent(
+                    new GuildUpdateMaxMembersEvent(
+                        getJDA(), responseNumber,
+                        guild, oldMax));
+            }
         }
         if (maxPresences != guild.getMaxPresences())
         {
             int oldMax = guild.getMaxPresences();
             guild.setMaxPresences(maxPresences);
-            getJDA().handleEvent(
-                new GuildUpdateMaxPresencesEvent(
-                    getJDA(), responseNumber,
-                    guild, oldMax));
+            if (updateMemberLimits)
+            {
+                getJDA().handleEvent(
+                    new GuildUpdateMaxPresencesEvent(
+                        getJDA(), responseNumber,
+                        guild, oldMax));
+            }
         }
         if (boostCount != guild.getBoostCount())
         {
