@@ -33,6 +33,14 @@ public enum AuditLogOption
     COUNT("count"),
 
     /**
+     * Possible message id for actions of type {@link ActionType#MESSAGE_PIN} and {@link ActionType#MESSAGE_UNPIN}.
+     * <br>Use with {@link net.dv8tion.jda.api.entities.MessageChannel#retrieveMessageById(String)}.
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    MESSAGE("message_id"),
+
+    /**
      * Possible secondary target of an {@link net.dv8tion.jda.api.audit.ActionType ActionType}
      * such as {@link net.dv8tion.jda.api.audit.ActionType#CHANNEL_OVERRIDE_CREATE ActionType.CHANNEL_OVERRIDE_CREATE}
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getTextChannelById(String) Guild.getTextChannelById(String)}
@@ -59,6 +67,14 @@ public enum AuditLogOption
      * <p>Expected type: <b>String</b>
      */
     ROLE("role_id"),
+
+    /**
+     * Possible name of the role if the target type is {@link TargetType#ROLE}
+     *
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    ROLE_NAME("role_name"),
 
     /**
      * Possible option indicating the type of an entity.

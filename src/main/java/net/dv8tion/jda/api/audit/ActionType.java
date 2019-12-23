@@ -194,6 +194,32 @@ public enum ActionType
      */
     MEMBER_ROLE_UPDATE(25, TargetType.MEMBER),
 
+    /**
+     * One or more members were moved from one voice channel to another by an Administrator
+     *
+     * <h2>Possible Options</h2>
+     * <ul>
+     *     <li>{@link AuditLogOption#COUNT} The amount of users moved</li>
+     *     <li>{@link AuditLogOption#CHANNEL} The target channel</li>
+     * </ul>
+     */
+    MEMBER_VOICE_MOVE(26, TargetType.MEMBER),
+
+    /**
+     * One or more members were disconnected from a voice channel by an Administrator
+     *
+     * <h2>Possible Options</h2>
+     * <ul>
+     *     <li>{@link AuditLogOption#COUNT} The amount of users who were disconnected</li>
+     * </ul>
+     */
+    MEMBER_VOICE_KICK(27, TargetType.MEMBER),
+
+    /**
+     * An Administrator has added a bot to the server.
+     */
+    BOT_ADD(28, TargetType.MEMBER),
+
 
     /**
      * An Administrator has created a {@link net.dv8tion.jda.api.entities.Role Role}.
@@ -369,6 +395,52 @@ public enum ActionType
      */
     MESSAGE_DELETE(72, TargetType.MEMBER),
 
+    /**
+     * An Administrator has performed a bulk delete of messages in a channel
+     *
+     * <h2>Possible Options</h2>
+     * <ul>
+     *     <li>{@link AuditLogOption#COUNT}</li>
+     * </ul>
+     */
+    MESSAGE_BULK_DELETE(73, TargetType.CHANNEL),
+
+    /**
+     * An Administrator has pinned a message in the channel
+     *
+     * <h2>Possible Options</h2>
+     * <ul>
+     *     <li>{@link AuditLogOption#CHANNEL}</li>
+     *     <li>{@link AuditLogOption#MESSAGE}</li>
+     * </ul>
+     */
+    MESSAGE_PIN(74, TargetType.CHANNEL),
+
+    /**
+     * An Administrator has unpinned a message in the channel
+     *
+     * <h2>Possible Options</h2>
+     * <ul>
+     *     <li>{@link AuditLogOption#CHANNEL}</li>
+     *     <li>{@link AuditLogOption#MESSAGE}</li>
+     * </ul>
+     */
+    MESSAGE_UNPIN(75, TargetType.CHANNEL),
+
+    /**
+     * An Administrator has added an integration to the guild
+     */
+    INTEGRATION_CREATE(80, TargetType.INTEGRATION),
+
+    /**
+     * An Administrator has updated an integration of the guild
+     */
+    INTEGRATION_UPDATE(81, TargetType.INTEGRATION),
+
+    /**
+     * An Administrator has removed an integration from the guild
+     */
+    INTEGRATION_DELETE(82, TargetType.INTEGRATION),
 
     UNKNOWN(-1, TargetType.UNKNOWN);
 

@@ -33,22 +33,49 @@ import javax.annotation.Nullable;
  */
 public class GenericMessageReactionEvent extends GenericMessageEvent
 {
+    protected final long userId;
     protected User issuer;
+    protected Member member;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
+    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user,
+                                       @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
+        this.userId = userId;
         this.issuer = user;
+        this.member = member;
         this.reaction = reaction;
     }
 
     /**
-     * The reacting {@link net.dv8tion.jda.api.entities.User User}
+     * The id for the user who added/removed their reaction.
      *
-     * @return The reacting user
+     * @return The user id
      */
     @Nonnull
+    public String getUserId()
+    {
+        return Long.toUnsignedString(userId);
+    }
+
+    /**
+     * The id for the user who added/removed their reaction.
+     *
+     * @return The user id
+     */
+    public long getUserIdLong()
+    {
+        return userId;
+    }
+
+    /**
+     * The reacting {@link net.dv8tion.jda.api.entities.User User}
+     * <br>This might be missing if the user was not cached.
+     *
+     * @return The reacting user or null if this information is missing
+     */
+    @Nullable
     public User getUser()
     {
         return issuer;
@@ -69,7 +96,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     @Nullable
     public Member getMember()
     {
-        return getGuild().getMember(getUser());
+        return member;
     }
 
     /**

@@ -80,4 +80,10 @@ public class ConnectionRequest
     {
         return guildId;
     }
+
+    @Override
+    public String toString()
+    {
+        return stage + "(" + Long.toUnsignedString(guildId) + "#" + Long.toUnsignedString(channelId) + ")";
+    }
 }

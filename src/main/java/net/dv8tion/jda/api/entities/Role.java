@@ -27,6 +27,16 @@ import java.awt.Color;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild}'s Role. Used to control permissions for Members.
+ *
+ * @see Guild#getRoleCache()
+ * @see Guild#getRoleById(long)
+ * @see Guild#getRolesByName(String, boolean)
+ * @see Guild#getRoles()
+ *
+ * @see JDA#getRoleCache()
+ * @see JDA#getRoleById(long)
+ * @see JDA#getRolesByName(String, boolean)
+ * @see JDA#getRoles()
  */
 public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 {

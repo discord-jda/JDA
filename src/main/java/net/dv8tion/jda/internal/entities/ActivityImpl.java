@@ -28,6 +28,7 @@ public class ActivityImpl implements Activity
     protected final String url;
     protected final ActivityType type;
     protected final Timestamps timestamps;
+    protected final Emoji emoji;
 
     protected ActivityImpl(String name)
     {
@@ -41,15 +42,16 @@ public class ActivityImpl implements Activity
 
     protected ActivityImpl(String name, String url, ActivityType type)
     {
-        this(name, url, type, null);
+        this(name, url, type, null, null);
     }
 
-    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps)
+    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, Emoji emoji)
     {
         this.name = name;
         this.url = url;
         this.type = type;
         this.timestamps = timestamps;
+        this.emoji = emoji;
     }
 
     @Override
@@ -88,6 +90,13 @@ public class ActivityImpl implements Activity
     public RichPresence.Timestamps getTimestamps()
     {
         return timestamps;
+    }
+
+    @Nullable
+    @Override
+    public Emoji getEmoji()
+    {
+        return emoji;
     }
 
     @Override

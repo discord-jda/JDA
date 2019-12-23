@@ -42,6 +42,13 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     }
 
     @Override
+    public CategoryImpl setPosition(int rawPosition)
+    {
+        getGuild().getCategoriesView().clearCachedLists();
+        return super.setPosition(rawPosition);
+    }
+
+    @Override
     public Category getParent()
     {
         return null;

@@ -25,10 +25,13 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
@@ -53,6 +56,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
     protected final User author;
+    protected final Member member;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
     protected final List<MessageReaction> reactions;
@@ -66,6 +70,7 @@ public class ReceivedMessage extends AbstractMessage
     protected String strippedContent = null;
 
     protected List<User> userMentions = null;
+    protected List<Member> memberMentions = null;
     protected List<Emote> emoteMentions = null;
     protected List<Role> roleMentions = null;
     protected List<TextChannel> channelMentions = null;
@@ -74,7 +79,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
-        String content, String nonce, User author, MessageActivity activity, OffsetDateTime editTime,
+        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds)
     {
         super(content, nonce, tts);
@@ -86,6 +91,7 @@ public class ReceivedMessage extends AbstractMessage
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
         this.author = author;
+        this.member = member;
         this.activity = activity;
         this.editedTime = editTime;
         this.reactions = Collections.unmodifiableList(reactions);
@@ -159,6 +165,93 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    {
+        return channel.removeReactionById(getId(), emote);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    {
+        return getTextChannel().removeReactionById(getIdLong(), emote, user);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode)
+    {
+        return channel.removeReactionById(getId(), unicode);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
+    {
+        return getTextChannel().removeReactionById(getId(), unicode, user);
+    }
+
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getEmote().equals(emote))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, String.format("%s:%s", emote, emote.getId()));
+        return new ReactionPaginationActionImpl(reaction);
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    {
+        Checks.noWhitespace(unicode, "Emoji");
+
+        MessageReaction reaction = this.reactions.stream()
+            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
+            .findFirst().orElse(null);
+
+        if (reaction == null)
+            return new ReactionPaginationActionImpl(this, EncodingUtil.encodeUTF8(unicode));
+        return new ReactionPaginationActionImpl(reaction);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    {
+        Checks.noWhitespace(unicode, "Emoji");
+
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmoji() && r.getEmoji().equals(unicode))
+            .findFirst().orElse(null);
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
+    {
+        return getReactionById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Override
+    public MessageReaction.ReactionEmote getReactionById(long id)
+    {
+        Checks.notNull(id, "Reaction ID");
+
+        return this.reactions.stream()
+            .map(MessageReaction::getReactionEmote)
+            .filter(r -> r.isEmote() && r.getIdLong() == id)
+            .findFirst().orElse(null);
+    }
+
+    @Nonnull
+    @Override
     public MessageType getType()
     {
         return type;
@@ -174,7 +267,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        return String.format("https://discordapp.com/channels/%s/%s/%s", getGuild() == null ? "@me" : getGuild().getId(), getChannel().getId(), getId());
+        return String.format("https://discordapp.com/channels/%s/%s/%s", isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
     }
 
     private User matchUser(Matcher matcher)
@@ -185,6 +278,8 @@ public class ReceivedMessage extends AbstractMessage
         User user = getJDA().getUserById(userId);
         if (user == null)
             user = api.getFakeUserMap().get(userId);
+        if (user == null && userMentions != null)
+            user = userMentions.stream().filter(it -> it.getIdLong() == userId).findFirst().orElse(null);
         return user;
     }
 
@@ -258,6 +353,8 @@ public class ReceivedMessage extends AbstractMessage
     public List<Member> getMentionedMembers(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        if (isFromGuild() && guild.equals(getGuild()) && memberMentions != null)
+            return memberMentions;
         List<User> mentionedUsers = getMentionedUsers();
         List<Member> members = new ArrayList<>();
         for (User user : mentionedUsers)
@@ -449,7 +546,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Member getMember()
     {
-        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getAuthor()) : null;
+        return member;
     }
 
     @Nonnull
@@ -742,6 +839,21 @@ public class ReceivedMessage extends AbstractMessage
             out = out.toUpperCase(formatter.locale());
 
         appendFormat(formatter, width, precision, leftJustified, out);
+    }
+
+    public void setMentions(List<User> users, List<Member> members)
+    {
+        users.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                        content.indexOf("<@!" + user.getId() + ">")
+                )));
+        members.sort(Comparator.comparing((user) ->
+                Math.max(content.indexOf("<@" + user.getId() + ">"),
+                         content.indexOf("<@!" + user.getId() + ">")
+                )));
+
+        this.userMentions = Collections.unmodifiableList(users);
+        this.memberMentions = Collections.unmodifiableList(members);
     }
 
     private <T, C extends Collection<T>> C processMentions(MentionType type, C collection, boolean distinct, Function<Matcher, T> map)

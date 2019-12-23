@@ -25,6 +25,8 @@ import java.util.List;
 
 /**
  * Indicates that one or more {@link net.dv8tion.jda.api.entities.Role Roles} were removed from a {@link net.dv8tion.jda.api.entities.Member Member}.
+ * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
+ * to be enabled.
  *
  * <p>Can be used to retrieve affected member and guild. Provides a list of removed roles.
  */

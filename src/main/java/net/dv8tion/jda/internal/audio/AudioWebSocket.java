@@ -581,8 +581,11 @@ class AudioWebSocket extends WebSocketAdapter
             audioConnection.udpSocket = new DatagramSocket();
 
             //Create a byte array of length 70 containing our ssrc.
-            ByteBuffer buffer = ByteBuffer.allocate(70);    //70 taken from https://github.com/Rapptz/discord.py/blob/async/discord/voice_client.py#L208
-            buffer.putInt(ssrc);                            //Put the ssrc that we were given into the packet to send back to discord.
+            ByteBuffer buffer = ByteBuffer.allocate(70);    //70 taken from documentation
+            buffer.putShort((short) 1);                     // 1 = send (receive will be 2)
+            buffer.putShort((short) 70);                    // length = 70 bytes (required)
+            buffer.putInt(ssrc);                            // Put the ssrc that we were given into the packet to send back to discord.
+            // rest of the bytes are used only in the response (address/port)
 
             //Construct our packet to be sent loaded with the byte buffer we store the ssrc in.
             DatagramPacket discoveryPacket = new DatagramPacket(buffer.array(), buffer.array().length, address);
@@ -615,7 +618,7 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Get our port which is stored as little endian at the end of the packet
             // We AND it with 0xFFFF to ensure that it isn't sign extended
-            int ourPort = (int) IOUtil.getShortLittleEndian(received, received.length - 2) & 0xFFFF;
+            int ourPort = (int) IOUtil.getShortBigEndian(received, received.length - 2) & 0xFFFF;
             this.address = address;
             return new InetSocketAddress(ourIP, ourPort);
         }

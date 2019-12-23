@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.Color;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -33,8 +34,19 @@ import java.util.List;
  * <p>Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
  *
  * @since 3.0
+ *
+ * @see   Guild#getMember(User)
+ * @see   Guild#getMemberCache()
+ * @see   Guild#getMemberById(long)
+ * @see   Guild#getMemberByTag(String)
+ * @see   Guild#getMemberByTag(String, String)
+ * @see   Guild#getMembersByEffectiveName(String, boolean)
+ * @see   Guild#getMembersByName(String, boolean)
+ * @see   Guild#getMembersByNickname(String, boolean)
+ * @see   Guild#getMembersWithRoles(Role...)
+ * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder
+public interface Member extends IMentionable, IPermissionHolder, IFakeable
 {
     /**
      * The user wrapped by this Entity.
@@ -62,6 +74,8 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
+     * <br>If the member was loaded through a presence update (lazy loading) this will be identical
+     * to the creation time of the guild.
      *
      * @return The Join Date.
      */
@@ -128,6 +142,25 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
+
+    /**
+     * A Set of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes} of this Member.
+     * Every {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} other than {@code OFFLINE} and {@code UNKNOWN}
+     * is interpreted as active.
+     * Since {@code INVISIBLE} is only possible for the SelfUser, other Members will never have ClientTypes show as
+     * active when actually being {@code INVISIBLE}, since they will show as {@code OFFLINE}.
+     * <br>If the Member is currently not active with any Client, this returns an empty Set.
+     * <br>When {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} is disabled,
+     * active clients will not be tracked and this will always return an empty Set.
+     * <br>Since a user can be connected from multiple different devices such as web and mobile,
+     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
+     *
+     * @return EnumSet of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    EnumSet<ClientType> getActiveClients();
 
     /**
      * Returns the current nickname of this Member for the parent Guild.

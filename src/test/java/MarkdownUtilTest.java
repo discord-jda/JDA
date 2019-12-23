@@ -25,7 +25,7 @@ public class MarkdownUtilTest
     public void testBold()
     {
         Assertions.assertEquals("**Hello World**", bold("Hello World"));
-        Assertions.assertEquals("**Hello \\**Test\\** World**", bold("Hello **Test** World"));
+        Assertions.assertEquals("**Hello \\*\\*Test\\*\\* World**", bold("Hello **Test** World"));
         Assertions.assertEquals("**Hello *Test* World**", bold("Hello *Test* World"));
     }
 

@@ -27,6 +27,7 @@ public enum Region
 {
     AMSTERDAM("amsterdam", "Amsterdam", "\uD83C\uDDF3\uD83C\uDDF1", false),
     BRAZIL("brazil", "Brazil", "\uD83C\uDDE7\uD83C\uDDF7", false),
+    EUROPE("europe", "Europe", "\uD83C\uDDEA\uD83C\uDDFA", false),
     EU_CENTRAL("eu-central", "EU Central", "\uD83C\uDDEA\uD83C\uDDFA", false),
     EU_WEST("eu-west", "EU West", "\uD83C\uDDEA\uD83C\uDDFA", false),
     FRANKFURT("frankfurt", "Frankfurt", "\uD83C\uDDE9\uD83C\uDDEA", false),
@@ -34,6 +35,7 @@ public enum Region
     JAPAN("japan", "Japan", "\uD83C\uDDEF\uD83C\uDDF5", false),
     LONDON("london", "London", "\uD83C\uDDEC\uD83C\uDDE7", false),
     RUSSIA("russia", "Russia", "\uD83C\uDDF7\uD83C\uDDFA", false),
+    INDIA("india", "India", "\uD83C\uDDEE\uD83C\uDDF3", false),
     SINGAPORE("singapore", "Singapore", "\uD83C\uDDF8\uD83C\uDDEC", false),
     SOUTH_AFRICA("southafrica", "South Africa", "\uD83C\uDDFF\uD83C\uDDE6", false),
     SYDNEY("sydney", "Sydney", "\uD83C\uDDE6\uD83C\uDDFA", false),

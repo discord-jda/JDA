@@ -53,6 +53,17 @@ import java.util.regex.Pattern;
  * </ul>
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
+ *
+ * @see User#openPrivateChannel()
+ *
+ * @see JDA#getUserCache()
+ * @see JDA#getUserById(long)
+ * @see JDA#getUserByTag(String)
+ * @see JDA#getUserByTag(String, String)
+ * @see JDA#getUsersByName(String, boolean)
+ * @see JDA#getUsers()
+ *
+ * @see JDA#retrieveUserById(String)
  */
 public interface User extends IMentionable, IFakeable
 {
@@ -181,8 +192,6 @@ public interface User extends IMentionable, IFakeable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})
-     * @throws java.lang.IllegalStateException
-     *         If this User is {@link #isFake() fake}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.

@@ -48,9 +48,9 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided members must both be Member objects of the same Guild!");
-        if(guild.getOwner().equals(issuer))
+        if(issuer.isOwner())
             return true;
-        if(guild.getOwner().equals(target))
+        if(target.isOwner())
             return false;
         List<Role> issuerRoles = issuer.getRoles();
         List<Role> targetRoles = target.getRoles();
@@ -80,7 +80,7 @@ public class PermissionUtil
         Guild guild = issuer.getGuild();
         if (!guild.equals(target.getGuild()))
             throw new IllegalArgumentException("Provided Member issuer and Role target must be from the same Guild!");
-        if(guild.getOwner().equals(issuer))
+        if(issuer.isOwner())
             return true;
         List<Role> issuerRoles = issuer.getRoles();
         return !issuerRoles.isEmpty() && canInteract(issuerRoles.get(0), target);
@@ -203,7 +203,7 @@ public class PermissionUtil
                 TextChannel text = (TextChannel) channel;
                 member = text.getGuild().getMemberById(issuer.getIdLong());
                 return emote.getGuild().equals(text.getGuild()) // within the same guild
-                    || (external && member.hasPermission(text, Permission.MESSAGE_EXT_EMOJI)); // in different guild
+                    || (external && member != null && member.hasPermission(text, Permission.MESSAGE_EXT_EMOJI)); // in different guild
             default:
                 return external; // In Group or Private it only needs to be external
         }
