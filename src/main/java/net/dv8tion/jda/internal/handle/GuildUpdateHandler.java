@@ -56,11 +56,16 @@ public class GuildUpdateHandler extends SocketHandler
         }
 
         //When member limits aren't initialized we don't fire an update event for them
-        boolean updateMemberLimits = guild.isMemberLimitsLoaded();
-
-        long ownerId = content.getLong("owner_id");
         int maxMembers = content.getInt("max_members", 0);
         int maxPresences = content.getInt("max_presences", 5000);
+        if (!guild.isMemberLimitsLoaded())
+        {
+            // Initialize member limits to avoid unwanted update events
+            guild.setMaxPresences(maxPresences);
+            guild.setMaxMembers(maxMembers);
+        }
+
+        long ownerId = content.getLong("owner_id");
         int boostCount = content.getInt("premium_subscription_count", 0);
         int boostTier = content.getInt("premium_tier", 0);
         String description = content.getString("description", null);
@@ -134,35 +139,21 @@ public class GuildUpdateHandler extends SocketHandler
         }
         if (maxMembers != guild.getMaxMembers())
         {
-            if (updateMemberLimits)
-            {
-                int oldMax = guild.getMaxMembers();
-                guild.setMaxMembers(maxMembers);
-                getJDA().handleEvent(
-                    new GuildUpdateMaxMembersEvent(
-                        getJDA(), responseNumber,
-                        guild, oldMax));
-            }
-            else
-            {
-                guild.setMaxMembers(maxMembers);
-            }
+            int oldMax = guild.getMaxMembers();
+            guild.setMaxMembers(maxMembers);
+            getJDA().handleEvent(
+                new GuildUpdateMaxMembersEvent(
+                    getJDA(), responseNumber,
+                    guild, oldMax));
         }
         if (maxPresences != guild.getMaxPresences())
         {
-            if (updateMemberLimits)
-            {
-                int oldMax = guild.getMaxPresences();
-                guild.setMaxPresences(maxPresences);
-                getJDA().handleEvent(
-                    new GuildUpdateMaxPresencesEvent(
-                        getJDA(), responseNumber,
-                        guild, oldMax));
-            }
-            else
-            {
-                guild.setMaxPresences(maxPresences);
-            }
+            int oldMax = guild.getMaxPresences();
+            guild.setMaxPresences(maxPresences);
+            getJDA().handleEvent(
+                new GuildUpdateMaxPresencesEvent(
+                    getJDA(), responseNumber,
+                    guild, oldMax));
         }
         if (boostCount != guild.getBoostCount())
         {
