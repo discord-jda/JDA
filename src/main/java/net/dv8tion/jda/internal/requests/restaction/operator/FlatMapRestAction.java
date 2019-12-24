@@ -16,52 +16,34 @@
 
 package net.dv8tion.jda.internal.requests.restaction.operator;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class FlatMapRestAction<I, O> extends RestActionOperator<O>
+public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
 {
-    private final RestAction<I> input;
     private final Function<? super I, ? extends RestAction<O>> function;
     private final Predicate<? super I> condition;
 
-    public FlatMapRestAction(RestAction<I> input, Predicate<? super I> condition,
+    public FlatMapRestAction(RestAction<I> action, Predicate<? super I> condition,
                              Function<? super I, ? extends RestAction<O>> function)
     {
-        this.input = input;
+        super(action);
         this.function = function;
         this.condition = condition;
-    }
-
-    @Nonnull
-    @Override
-    public JDA getJDA()
-    {
-        return input.getJDA();
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
-    {
-        input.setCheck(checks);
-        return this;
     }
 
     @Override
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
         Consumer<? super Throwable> onFailure = contextWrap(failure);
-        input.queue((result) -> {
+        action.queue((result) -> {
             if (condition != null && !condition.test(result))
                 return;
             RestAction<O> then = function.apply(result);
@@ -82,14 +64,14 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<O>
     @Override
     public O complete(boolean shouldQueue) throws RateLimitedException
     {
-        return function.apply(input.complete(shouldQueue)).complete(shouldQueue);
+        return function.apply(action.complete(shouldQueue)).complete(shouldQueue);
     }
 
     @Nonnull
     @Override
     public CompletableFuture<O> submit(boolean shouldQueue)
     {
-        return input.submit(shouldQueue)
+        return action.submit(shouldQueue)
                 .thenCompose((result) -> function.apply(result).submit(shouldQueue));
     }
 }

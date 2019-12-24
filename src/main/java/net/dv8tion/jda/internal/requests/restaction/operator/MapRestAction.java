@@ -16,47 +16,29 @@
 
 package net.dv8tion.jda.internal.requests.restaction.operator;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class MapRestAction<I, O> extends RestActionOperator<O>
+public class MapRestAction<I, O> extends RestActionOperator<I, O>
 {
-    private final RestAction<I> input;
     private final Function<? super I, ? extends O> function;
 
-    public MapRestAction(RestAction<I> input, Function<? super I, ? extends O> function)
+    public MapRestAction(RestAction<I> action, Function<? super I, ? extends O> function)
     {
-        this.input = input;
+        super(action);
         this.function = function;
-    }
-
-    @Nonnull
-    @Override
-    public JDA getJDA()
-    {
-        return input.getJDA();
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
-    {
-        input.setCheck(checks);
-        return this;
     }
 
     @Override
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
-        input.queue((result) ->
+        action.queue((result) ->
         {
             O mapped = function.apply(result);
             if (success == null)
@@ -69,13 +51,13 @@ public class MapRestAction<I, O> extends RestActionOperator<O>
     @Override
     public O complete(boolean shouldQueue) throws RateLimitedException
     {
-        return function.apply(input.complete(shouldQueue));
+        return function.apply(action.complete(shouldQueue));
     }
 
     @Nonnull
     @Override
     public CompletableFuture<O> submit(boolean shouldQueue)
     {
-        return input.submit(shouldQueue).thenApply(function);
+        return action.submit(shouldQueue).thenApply(function);
     }
 }

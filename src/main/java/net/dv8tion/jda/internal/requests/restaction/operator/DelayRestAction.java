@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests.restaction.operator;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 
@@ -25,36 +24,20 @@ import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public class DelayRestAction<T> extends RestActionOperator<T>
+public class DelayRestAction<T> extends RestActionOperator<T, T>
 {
-    private final RestAction<T> action;
     private final TimeUnit unit;
     private final long delay;
     private final ScheduledExecutorService scheduler;
 
     public DelayRestAction(RestAction<T> action, TimeUnit unit, long delay, ScheduledExecutorService scheduler)
     {
-        this.action = action;
+        super(action);
         this.unit = unit;
         this.delay = delay;
         this.scheduler = scheduler == null ? action.getJDA().getRateLimitPool() : scheduler;
-    }
-
-    @Nonnull
-    @Override
-    public JDA getJDA()
-    {
-        return action.getJDA();
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<T> setCheck(@Nullable BooleanSupplier checks)
-    {
-        return action.setCheck(checks);
     }
 
     @Override

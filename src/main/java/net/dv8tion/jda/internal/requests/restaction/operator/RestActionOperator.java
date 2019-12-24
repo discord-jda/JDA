@@ -16,14 +16,39 @@
 
 package net.dv8tion.jda.internal.requests.restaction.operator;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.requests.RestAction;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class RestActionOperator<T> implements RestAction<T>
+public abstract class RestActionOperator<I, O> implements RestAction<O>
 {
+    protected final RestAction<I> action;
+
+    public RestActionOperator(RestAction<I> action)
+    {
+        this.action = action;
+    }
+
+    @Nonnull
+    @Override
+    public JDA getJDA()
+    {
+        return action.getJDA();
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
+    {
+        action.setCheck(checks);
+        return this;
+    }
+
     protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback)
     {
         if (callback instanceof ContextException.ContextConsumer)
