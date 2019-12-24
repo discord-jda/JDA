@@ -43,12 +43,11 @@ public class DelayRestAction<T> extends RestActionOperator<T, T>
     @Override
     public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
     {
-        action.queue((result) -> scheduler.schedule(() -> {
-            if (success == null)
-                RestAction.getDefaultSuccess().accept(result);
-            else
-                success.accept(result);
-        }, delay, unit), contextWrap(failure));
+        action.queue((result) ->
+            scheduler.schedule(() ->
+                doSuccess(success, result),
+            delay, unit),
+        contextWrap(failure));
     }
 
     @Override

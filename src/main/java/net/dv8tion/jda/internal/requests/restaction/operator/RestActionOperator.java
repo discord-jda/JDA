@@ -34,6 +34,22 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
         this.action = action;
     }
 
+    protected <E> void doSuccess(Consumer<? super E> callback, E value)
+    {
+        if (callback == null)
+            RestAction.getDefaultSuccess().accept(value);
+        else
+            callback.accept(value);
+    }
+
+    protected void doFailure(Consumer<? super Throwable> callback, Throwable throwable)
+    {
+        if (callback == null)
+            RestAction.getDefaultFailure().accept(throwable);
+        else
+            callback.accept(throwable);
+    }
+
     @Nonnull
     @Override
     public JDA getJDA()

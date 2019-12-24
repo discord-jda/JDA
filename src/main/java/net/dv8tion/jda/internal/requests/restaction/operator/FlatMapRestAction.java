@@ -48,16 +48,9 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
                 return;
             RestAction<O> then = function.apply(result);
             if (then == null)
-            {
-                Throwable error = new IllegalStateException("FlatMap operand is null");
-                if (onFailure == null)
-                    RestAction.getDefaultFailure().accept(error);
-                else
-                    onFailure.accept(error);
-                return;
-            }
-
-            then.queue(success, onFailure);
+                doFailure(onFailure, new IllegalStateException("FlatMap operand is null"));
+            else
+                then.queue(success, onFailure);
         }, onFailure);
     }
 
