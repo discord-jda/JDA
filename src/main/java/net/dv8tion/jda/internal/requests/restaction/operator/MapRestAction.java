@@ -27,7 +27,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-public class MapRestAction<I, O> implements RestAction<O>
+public class MapRestAction<I, O> extends RestActionOperator<O>
 {
     private final RestAction<I> input;
     private final Function<? super I, ? extends O> function;
@@ -63,7 +63,7 @@ public class MapRestAction<I, O> implements RestAction<O>
                 RestAction.getDefaultSuccess().accept(mapped);
             else
                 success.accept(mapped);
-        }, failure);
+        }, contextWrap(failure));
     }
 
     @Override

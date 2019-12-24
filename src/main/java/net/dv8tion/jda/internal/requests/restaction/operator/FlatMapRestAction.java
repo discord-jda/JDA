@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class FlatMapRestAction<I, O> implements RestAction<O>
+public class FlatMapRestAction<I, O> extends RestActionOperator<O>
 {
     private final RestAction<I> input;
     private final Function<? super I, ? extends RestAction<O>> function;
@@ -60,6 +60,7 @@ public class FlatMapRestAction<I, O> implements RestAction<O>
     @Override
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
+        Consumer<? super Throwable> onFailure = contextWrap(failure);
         input.queue((result) -> {
             if (condition != null && !condition.test(result))
                 return;
@@ -74,8 +75,8 @@ public class FlatMapRestAction<I, O> implements RestAction<O>
                 return;
             }
 
-            then.queue(success, failure);
-        }, failure);
+            then.queue(success, onFailure);
+        }, onFailure);
     }
 
     @Override

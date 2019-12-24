@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -731,7 +732,14 @@ public interface RestAction<T>
         if (executor == null)
             executor = getJDA().getRateLimitPool();
         return DelayedCompletableFuture.make(executor, delay, unit,
-                (task) -> new ContextRunnable<>(() -> queue(task::complete, task::completeExceptionally)));
+                (task) -> {
+                    final Consumer<? super Throwable> onFailure;
+                    if (isPassContext())
+                        onFailure = ContextException.here(task::completeExceptionally);
+                    else
+                        onFailure = task::completeExceptionally;
+                    return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
+                });
     }
 
     /**
@@ -958,6 +966,14 @@ public interface RestAction<T>
         Checks.notNull(unit, "TimeUnit");
         if (executor == null)
             executor = getJDA().getRateLimitPool();
-        return executor.schedule((Runnable) new ContextRunnable<>(() -> queue(success, failure)), delay, unit);
+
+        final Consumer<? super Throwable> onFailure;
+        if (isPassContext())
+            onFailure = ContextException.here(failure == null ? getDefaultFailure() : failure);
+        else
+            onFailure = failure;
+
+        Runnable task = new ContextRunnable<Void>(() -> queue(success, onFailure));
+        return executor.schedule(task, delay, unit);
     }
 }

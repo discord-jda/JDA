@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public class DelayRestAction<T> implements RestAction<T>
+public class DelayRestAction<T> extends RestActionOperator<T>
 {
     private final RestAction<T> action;
     private final TimeUnit unit;
@@ -65,7 +65,7 @@ public class DelayRestAction<T> implements RestAction<T>
                 RestAction.getDefaultSuccess().accept(result);
             else
                 success.accept(result);
-        }, delay, unit), failure);
+        }, delay, unit), contextWrap(failure));
     }
 
     @Override
