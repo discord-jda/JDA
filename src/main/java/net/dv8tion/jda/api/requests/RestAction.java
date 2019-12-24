@@ -455,6 +455,8 @@ public interface RestAction<T>
      *         The target output type
      *
      * @return RestAction for the mapped type
+     *
+     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
@@ -489,6 +491,8 @@ public interface RestAction<T>
      *         The target output type
      *
      * @return RestAction for the mapped type
+     *
+     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
@@ -533,6 +537,8 @@ public interface RestAction<T>
      *
      * @see    #flatMap(Function)
      * @see    #map(Function)
+     *
+     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
@@ -564,6 +570,8 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit)
+     *
+     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
@@ -596,6 +604,8 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
+     *
+     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
@@ -629,6 +639,8 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit)
+     *
+     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
@@ -663,6 +675,8 @@ public interface RestAction<T>
      * @return RestAction with delay
      *
      * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
+     *
+     * @since  4.1.1
      */
     @Nonnull
     @CheckReturnValue
