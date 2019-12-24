@@ -50,10 +50,10 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
             if (then == null)
             {
                 Throwable error = new IllegalStateException("FlatMap operand is null");
-                if (failure == null)
+                if (onFailure == null)
                     RestAction.getDefaultFailure().accept(error);
                 else
-                    failure.accept(error);
+                    onFailure.accept(error);
                 return;
             }
 
