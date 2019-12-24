@@ -176,17 +176,17 @@ public interface User extends IMentionable, IFakeable
      * <pre>{@code
      * // Send message without response handling
      * public void sendMessage(User user, String content) {
-     *     user.openPrivateChannel().queue(channel ->
-     *         channel.sendMessage(content).queue());
+     *     user.openPrivateChannel()
+     *         .flatMap(channel -> channel.sendMessage(content))
+     *         .queue();
      * }
      *
-     * // Send message and provide it to the future for further handling
-     * public CompletableFuture<Message> awaitMessage(User user, String content) {
-     *     return user.openPrivateChannel().submit()
-     *                .thenCompose(channel -> channel.sendMessage(content).submit())
-     *                .whenComplete((m, error) -> {
-     *                    if (error != null) error.printStackTrace());
-     *                });
+     * // Send message and delete 30 seconds later
+     * public RestAction<Void> sendSecretMessage(User user, String content) {
+     *     return user.openPrivateChannel() // RestAction<PrivateChannel>
+     *                .flatMap(channel -> channel.sendMessage(content)) // RestAction<Message>
+     *                .delay(30, TimeUnit.SECONDS) // RestAction<Message> with delayed response
+     *                .flatMap(Message::delete); // RestAction<Void> (executed 30 seconds after sending)
      * }
      * }</pre>
      *
