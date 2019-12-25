@@ -37,7 +37,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
 {
     protected final long id;
-    protected final UpstreamReference<Guild> guild;
+    protected final SnowflakeReference<Guild> guild;
     protected final JDAImpl api;
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
@@ -66,7 +66,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         this.id = id;
         this.api = guild.getJDA();
-        this.guild = new UpstreamReference<>(guild, api::getGuildById);
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
     }
 
     @Override

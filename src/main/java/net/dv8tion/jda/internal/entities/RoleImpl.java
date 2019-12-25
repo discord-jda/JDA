@@ -34,7 +34,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -46,7 +46,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoleImpl implements Role
 {
     private final long id;
-    private final UpstreamReference<Guild> guild;
+    private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
 
     private final ReentrantLock mngLock = new ReentrantLock();
@@ -64,7 +64,7 @@ public class RoleImpl implements Role
     {
         this.id = id;
         this.api =(JDAImpl) guild.getJDA();
-        this.guild = new UpstreamReference<>(guild, api::getGuildById);
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
     }
 
     @Override

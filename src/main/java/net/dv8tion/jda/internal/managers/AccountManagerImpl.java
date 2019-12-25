@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.managers.AccountManager;
@@ -26,7 +25,6 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;

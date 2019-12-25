@@ -37,7 +37,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
@@ -70,7 +70,7 @@ public class AudioConnection
     private final AudioWebSocket webSocket;
     private final JDAImpl api;
 
-    private UpstreamReference<VoiceChannel> channel;
+    private SnowflakeReference<VoiceChannel> channel;
     private PointerByReference opusEncoder;
     private ScheduledExecutorService combinedAudioExecutor;
     private IAudioSendSystem sendSystem;
@@ -92,7 +92,7 @@ public class AudioConnection
         VoiceChannel channel = Objects.requireNonNull(manager.getQueuedAudioConnection(), "Failed to create AudioConnection without queued channel!");
 
         this.api = (JDAImpl) channel.getJDA();
-        this.channel = new UpstreamReference<>(channel, api::getVoiceChannelById);
+        this.channel = new SnowflakeReference<>(channel, api::getVoiceChannelById);
         final JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
         this.webSocket = new AudioWebSocket(this, manager.getListenerProxy(), endpoint, channel.getGuild(), sessionId, token, manager.isAutoReconnect());
@@ -154,7 +154,7 @@ public class AudioConnection
 
     public void setChannel(VoiceChannel channel)
     {
-        this.channel = channel == null ? null : new UpstreamReference<>(channel, api::getVoiceChannelById);
+        this.channel = channel == null ? null : new SnowflakeReference<>(channel, api::getVoiceChannelById);
     }
 
     public JDAImpl getJDA()

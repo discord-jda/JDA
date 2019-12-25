@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.function.LongFunction;
 
-public class UpstreamReference<T extends ISnowflake> implements ISnowflake
+public class SnowflakeReference<T extends ISnowflake> implements ISnowflake
 {
     private final LongFunction<T> fallbackProvider;
     private final long id;
@@ -32,7 +32,7 @@ public class UpstreamReference<T extends ISnowflake> implements ISnowflake
     // A soft reference would not be released until the user stops using it (ideally) so that is the wrong reference to use.
     private WeakReference<T> reference;
 
-    public UpstreamReference(T referent, LongFunction<T> fallback)
+    public SnowflakeReference(T referent, LongFunction<T> fallback)
     {
         this.fallbackProvider = fallback;
         this.reference = new WeakReference<>(referent);

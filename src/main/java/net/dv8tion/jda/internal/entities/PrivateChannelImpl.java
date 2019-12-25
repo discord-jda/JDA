@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
     private final JDAImpl api;
-    private final UpstreamReference<User> user;
+    private final SnowflakeReference<User> user;
 
     private long lastMessageId;
     private boolean fake = false;
@@ -46,7 +46,7 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         this.id = id;
         this.api = (JDAImpl) user.getJDA();
-        this.user = new UpstreamReference<>(user, api::getUserById);
+        this.user = new SnowflakeReference<>(user, api::getUserById);
     }
 
     @Nonnull

@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
 

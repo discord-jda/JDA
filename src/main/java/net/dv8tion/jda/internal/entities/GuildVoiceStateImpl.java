@@ -21,14 +21,14 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final UpstreamReference<Guild> guild;
-    private final UpstreamReference<Member> member;
+    private final SnowflakeReference<Guild> guild;
+    private final SnowflakeReference<Member> member;
     private final JDA api;
 
     private VoiceChannel connectedChannel;
@@ -42,8 +42,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl(Member member)
     {
         this.api = member.getJDA();
-        this.guild = new UpstreamReference<>(member.getGuild(), api::getGuildById);
-        this.member = new UpstreamReference<>(member, (id) -> guild.resolve().getMemberById(id));
+        this.guild = new SnowflakeReference<>(member.getGuild(), api::getGuildById);
+        this.member = new SnowflakeReference<>(member, (id) -> guild.resolve().getMemberById(id));
     }
 
     @Override

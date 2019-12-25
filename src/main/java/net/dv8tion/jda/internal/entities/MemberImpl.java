@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,8 +39,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
-    private final UpstreamReference<Guild> guild;
-    private final UpstreamReference<User> user;
+    private final SnowflakeReference<Guild> guild;
+    private final SnowflakeReference<User> user;
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
@@ -54,8 +54,8 @@ public class MemberImpl implements Member
     public MemberImpl(GuildImpl guild, User user)
     {
         this.api = (JDAImpl) user.getJDA();
-        this.guild = new UpstreamReference<>(guild, api::getGuildById);
-        this.user = new UpstreamReference<>(user, api::getUserById);
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.user = new SnowflakeReference<>(user, api::getUserById);
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;

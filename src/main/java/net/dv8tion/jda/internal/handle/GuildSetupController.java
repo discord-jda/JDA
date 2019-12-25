@@ -33,7 +33,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;

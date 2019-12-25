@@ -27,16 +27,17 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PermissionOverrideImpl implements PermissionOverride
 {
-    private final UpstreamReference<GuildChannel> channel;
-    private final UpstreamReference<IPermissionHolder> holder;
+    private final long id;
+    private final SnowflakeReference<GuildChannel> channel;
     private final ChannelType channelType;
     private final boolean role;
     private final JDAImpl api;
@@ -52,11 +53,8 @@ public class PermissionOverrideImpl implements PermissionOverride
         this.role = permissionHolder instanceof Role;
         this.channelType = channel.getType();
         this.api = (JDAImpl) channel.getJDA();
-        this.channel = new UpstreamReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
-        this.holder = new UpstreamReference<>(permissionHolder, (holderId) -> {
-            Guild guild = this.channel.resolve().getGuild();
-            return role ? guild.getRoleById(holderId) : guild.getMemberById(holderId);
-        });
+        this.channel = new SnowflakeReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
+        this.id = permissionHolder.getIdLong();
     }
 
     @Override
@@ -108,13 +106,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public Member getMember()
     {
-        return isMemberOverride() ? (Member) holder.resolve() : null;
+        return getGuild().getMemberById(id);
     }
 
     @Override
     public Role getRole()
     {
-        return isRoleOverride() ? (Role) holder.resolve() : null;
+        return getGuild().getRoleById(id);
     }
 
     @Nonnull
@@ -176,7 +174,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public long getIdLong()
     {
-        return holder.getIdLong();
+        return id;
     }
 
     public PermissionOverrideImpl setAllow(long allow)
@@ -199,14 +197,13 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
-        return this.getIdLong() == oPerm.getIdLong()
-                && this.channel.getIdLong() == oPerm.channel.getIdLong();
+        return id == oPerm.id && this.channel.getIdLong() == oPerm.channel.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return toString().hashCode();
+        return Objects.hash(id, channel.getIdLong());
     }
 
     @Override

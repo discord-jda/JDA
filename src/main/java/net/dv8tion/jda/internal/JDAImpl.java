@@ -62,7 +62,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;

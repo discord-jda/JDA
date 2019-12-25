@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;

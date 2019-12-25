@@ -29,7 +29,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -47,7 +47,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EmoteImpl implements ListedEmote
 {
     private final long id;
-    private final UpstreamReference<Guild> guild;
+    private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
     private final Set<Role> roles;
     private final boolean fake;
@@ -69,7 +69,7 @@ public class EmoteImpl implements ListedEmote
     {
         this.id = id;
         this.api = guild.getJDA();
-        this.guild = new UpstreamReference<>(guild, api::getGuildById);
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.roles = ConcurrentHashMap.newKeySet();
         this.fake = fake;
     }

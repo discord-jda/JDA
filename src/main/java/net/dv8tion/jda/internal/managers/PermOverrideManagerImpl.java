@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 
 public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager
 {
-    protected final UpstreamReference<PermissionOverride> override;
+    protected final SnowflakeReference<PermissionOverride> override;
     protected final boolean role;
 
     protected long allowed;
@@ -56,14 +56,14 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
             checkPermissions();
     }
 
-    private UpstreamReference<PermissionOverride> setupReferent(PermissionOverride override)
+    private SnowflakeReference<PermissionOverride> setupReferent(PermissionOverride override)
     {
         JDA api = override.getJDA();
         GuildChannel channel = override.getChannel();
         long channelId = channel.getIdLong();
         ChannelType type = channel.getType();
         boolean role = override.isRoleOverride();
-        return new UpstreamReference<>(override, (holderId) -> {
+        return new SnowflakeReference<>(override, (holderId) -> {
             GuildChannel targetChannel = api.getGuildChannelById(type, channelId);
             if (targetChannel == null)
                 return null;
