@@ -234,6 +234,27 @@ Through [RestAction](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/
 and it is up to the user to decide which pattern to utilize.
 It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
 
+The RestAction interface also supports a number of operators to avoid callback hell:
+
+- [`map`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
+    Convert the result of the `RestAction` to a different value
+- [`flatMap`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
+    Chain another `RestAction` on the result
+- [`delay`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
+    Delay the element of the previous step
+
+**Example**:
+
+```java
+public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+    return channel.sendMessage("The following message will destroy itself in 1 minute!")
+        .delay(10, SECONDS, scheduler) // edit 10 seconds later
+        .flatMap((it) -> it.editMessage(content))
+        .delay(1, MINUTES, scheduler) // delete 1 minute later
+        .flatMap(Message::delete);
+}
+```
+
 ### More Examples
 
 We provide a small set of Examples in the [Example Directory](https://github.com/DV8FromTheWorld/JDA/tree/master/src/examples/java).
