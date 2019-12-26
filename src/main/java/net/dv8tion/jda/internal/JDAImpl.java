@@ -502,6 +502,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    @SuppressWarnings("ConstantConditions") // this can't really happen unless you pass bad configs
     public OkHttpClient getHttpClient()
     {
         return sessionConfig.getHttpClient();
