@@ -22,9 +22,10 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
@@ -35,7 +36,8 @@ import java.util.concurrent.CompletableFuture;
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
-    private final UpstreamReference<User> user;
+    private final JDAImpl api;
+    private final SnowflakeReference<User> user;
 
     private long lastMessageId;
     private boolean fake = false;
@@ -43,14 +45,15 @@ public class PrivateChannelImpl implements PrivateChannel
     public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
-        this.user = new UpstreamReference<>(user);
+        this.api = (JDAImpl) user.getJDA();
+        this.user = new SnowflakeReference<>(user, api::getUserById);
     }
 
     @Nonnull
     @Override
     public User getUser()
     {
-        return user.get();
+        return user.resolve();
     }
 
     @Override
@@ -86,7 +89,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public JDA getJDA()
     {
-        return getUser().getJDA();
+        return api;
     }
 
     @Nonnull

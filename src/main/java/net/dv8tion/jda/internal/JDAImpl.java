@@ -62,7 +62,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
@@ -111,7 +110,7 @@ public class JDAImpl implements JDA
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
 
-    protected UpstreamReference<WebSocketClient> client;
+    protected WebSocketClient client;
     protected Requester requester;
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected Status status = Status.INITIALIZING;
@@ -253,7 +252,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new UpstreamReference<>(new WebSocketClient(this, compression));
+        client = new WebSocketClient(this, compression);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -338,6 +337,7 @@ public class JDAImpl implements JDA
             if (userResponse != null)
             {
                 verifyAccountType(userResponse);
+                getEntityBuilder().createSelfUser(userResponse);
                 return;
             }
         }
@@ -900,7 +900,7 @@ public class JDAImpl implements JDA
 
     public WebSocketClient getClient()
     {
-        return client == null ? null : client.get();
+        return client;
     }
 
     public SnowflakeCacheViewImpl<User> getUsersView()

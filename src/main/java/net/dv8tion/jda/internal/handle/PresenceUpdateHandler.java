@@ -125,7 +125,7 @@ public class PresenceUpdateHandler extends SocketHandler
             getJDA().handleEvent(
                 new UserUpdateOnlineStatusEvent(
                     getJDA(), responseNumber,
-                    user, guild, oldStatus));
+                    member, oldStatus));
         }
         return null;
     }

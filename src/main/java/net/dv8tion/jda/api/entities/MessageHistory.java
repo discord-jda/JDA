@@ -566,7 +566,7 @@ public class MessageHistory
         {
             final MessageHistory result = new MessageHistory(channel);
             final DataArray array = response.getArray();
-            final EntityBuilder builder = api.get().getEntityBuilder();
+            final EntityBuilder builder = api.getEntityBuilder();
             for (int i = 0; i < array.length(); i++)
             {
                 try
