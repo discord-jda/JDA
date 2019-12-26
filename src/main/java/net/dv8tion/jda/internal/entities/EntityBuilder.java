@@ -1002,7 +1002,7 @@ public class EntityBuilder
             getJDA().getFakePrivateChannelMap().put(channelId, priv);
             getJDA().getFakeUserMap().put(user.getIdLong(), user);
         }
-        else
+        else if (api.isGuildSubscriptions())
         {
             SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
             try (UnlockHook hook = privateView.writeLock())
