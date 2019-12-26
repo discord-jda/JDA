@@ -974,11 +974,18 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(DataObject json)
     {
+        final long channelId = json.getUnsignedLong("id");
+        PrivateChannel channel = api.getPrivateChannelById(channelId);
+        if (channel == null)
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        if (channel != null)
+            return channel;
+
         DataObject recipient = json.hasKey("recipients") ?
             json.getArray("recipients").getObject(0) :
             json.getObject("recipient");
         final long userId = recipient.getLong("id");
-        UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
+        UserImpl user = (UserImpl) getJDA().getUserById(userId);
         if (user == null)
         {   //The getJDA() can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
