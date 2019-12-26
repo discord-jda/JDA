@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.managers;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
@@ -26,7 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -36,7 +37,7 @@ import java.util.EnumSet;
 
 public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleManager
 {
-    protected final UpstreamReference<Role> role;
+    protected final SnowflakeReference<Role> role;
 
     protected String name;
     protected int color;
@@ -53,7 +54,8 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     public RoleManagerImpl(Role role)
     {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
-        this.role = new UpstreamReference<>(role);
+        JDA api = role.getJDA();
+        this.role = new SnowflakeReference<>(role, api::getRoleById);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -62,7 +64,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     public Role getRole()
     {
-        return role.get();
+        return role.resolve();
     }
 
     @Nonnull

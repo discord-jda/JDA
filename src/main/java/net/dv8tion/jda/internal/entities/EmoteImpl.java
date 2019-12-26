@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ListedEmote;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -28,7 +29,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -46,8 +47,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EmoteImpl implements ListedEmote
 {
     private final long id;
-    private final UpstreamReference<GuildImpl> guild;
-    private final UpstreamReference<JDAImpl> api;
+    private final SnowflakeReference<Guild> guild;
+    private final JDAImpl api;
     private final Set<Role> roles;
     private final boolean fake;
 
@@ -67,8 +68,8 @@ public class EmoteImpl implements ListedEmote
     public EmoteImpl(long id, GuildImpl guild, boolean fake)
     {
         this.id = id;
-        this.guild = new UpstreamReference<>(guild);
-        this.api = new UpstreamReference<>(guild.getJDA());
+        this.api = guild.getJDA();
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.roles = ConcurrentHashMap.newKeySet();
         this.fake = fake;
     }
@@ -76,7 +77,7 @@ public class EmoteImpl implements ListedEmote
     public EmoteImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
         this.guild = null;
         this.roles = null;
         this.fake = true;
@@ -85,7 +86,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public GuildImpl getGuild()
     {
-        return guild == null ? null : guild.get();
+        return guild == null ? null : (GuildImpl) guild.resolve();
     }
 
     @Nonnull
@@ -132,7 +133,7 @@ public class EmoteImpl implements ListedEmote
     @Override
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull
@@ -255,6 +256,5 @@ public class EmoteImpl implements ListedEmote
         EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;
-
     }
 }

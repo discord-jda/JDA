@@ -82,7 +82,7 @@ public class MessagePaginationActionImpl
     {
         DataArray array = response.getArray();
         List<Message> messages = new ArrayList<>(array.length());
-        EntityBuilder builder = api.get().getEntityBuilder();
+        EntityBuilder builder = api.getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
             try

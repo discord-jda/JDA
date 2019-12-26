@@ -33,7 +33,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -48,7 +47,7 @@ public class GuildSetupController
     protected static final int CHUNK_TIMEOUT = 10000;
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
 
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
     private final TLongLongMap pendingChunks = new TLongLongHashMap();
@@ -64,7 +63,7 @@ public class GuildSetupController
 
     public GuildSetupController(JDAImpl api)
     {
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
         if (isClient())
             syncingGuilds = new TLongHashSet();
         else
@@ -73,7 +72,7 @@ public class GuildSetupController
 
     JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     boolean isClient()

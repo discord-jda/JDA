@@ -26,7 +26,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.EmptyRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
 import java.util.FormattableFlags;
@@ -36,7 +35,7 @@ import java.util.List;
 public class UserImpl implements User
 {
     protected final long id;
-    protected final UpstreamReference<JDAImpl> api;
+    protected final JDAImpl api;
 
     protected short discriminator;
     protected String name;
@@ -48,7 +47,7 @@ public class UserImpl implements User
     public UserImpl(long id, JDAImpl api)
     {
         this.id = id;
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
     }
 
     @Nonnull
@@ -102,7 +101,7 @@ public class UserImpl implements User
         DataObject body = DataObject.empty().put("recipient_id", getId());
         return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
         {
-            PrivateChannel priv = api.get().getEntityBuilder().createPrivateChannel(response.getObject(), this);
+            PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
             UserImpl.this.privateChannel = priv;
             return priv;
         });
@@ -133,14 +132,14 @@ public class UserImpl implements User
     @Override
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull
     @Override
     public String getAsMention()
     {
-        return "<@" + id + '>';
+        return "<@" + getId() + '>';
     }
 
     @Override
