@@ -914,7 +914,7 @@ public class GuildImpl implements Guild
     {
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
         if (!Helpers.isBlank(reason))
-            route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -928,19 +928,7 @@ public class GuildImpl implements Guild
         if (isMember(user)) // If user is in guild. Check if we are able to ban.
             checkPosition(getMember(user));
 
-        Checks.notNegative(delDays, "Deletion Days");
-
-        Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
-
-        final String userId = user.getId();
-
-        Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
-        if (reason != null && !reason.isEmpty())
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
-        if (delDays > 0)
-            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
-
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return ban0(user.getId(), delDays, reason);
     }
 
     @Nonnull
@@ -954,12 +942,17 @@ public class GuildImpl implements Guild
         if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
             return ban(user, delDays, reason);
 
-        Checks.notNegative(delDays, "Deletion Days");
+        return ban0(userId, delDays, reason);
+    }
 
+    @Nonnull
+    private AuditableRestAction<Void> ban0(@Nonnull String userId, int delDays, String reason)
+    {
+        Checks.notNegative(delDays, "Deletion Days");
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
-        if (reason != null && !reason.isEmpty())
+        if (!Helpers.isBlank(reason))
             route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
