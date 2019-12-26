@@ -177,6 +177,11 @@ public class JDAImpl implements JDA
         return sessionConfig.getLargeThreshold();
     }
 
+    public int getMaxBufferSize()
+    {
+        return metaConfig.getMaxBufferSize();
+    }
+
     public boolean chunkGuild(long id)
     {
         try
