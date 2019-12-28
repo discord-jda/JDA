@@ -61,6 +61,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.zip.DataFormatException;
@@ -99,6 +100,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
     protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
+    protected final TLongObjectMap<Consumer<DataObject>> memberRequests = MiscUtil.newLongMap();
 
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
@@ -837,6 +839,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         jda.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                     }
                     break;
+                case "GUILD_MEMBERS_CHUNK":
+                    Consumer<DataObject> callback = memberRequests.remove(content.getLong("guild_id"));
+                    if (callback != null)
+                    {
+                        callback.accept(content);
+                        break;
+                    }
                 default:
                     SocketHandler handler = handlers.get(type);
                     if (handler != null)
@@ -1104,6 +1113,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         //If the channel is not the one we are looking for!
         return null;
+    }
+
+    public void requestMembers(Consumer<DataObject> callback, long guildId, long... userId)
+    {
+        send(DataObject.empty()
+            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+            .put("d", DataObject.empty()
+                .put("guild_id", guildId)
+                .put("user_ids", userId)
+                .put("presences", true))
+            .toString());
+        memberRequests.put(guildId, callback);
     }
 
     private SoftReference<ByteArrayOutputStream> newDecompressBuffer()

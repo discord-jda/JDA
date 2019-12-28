@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -56,7 +57,10 @@ import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
-import net.dv8tion.jda.internal.utils.cache.*;
+import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -779,6 +783,57 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
         return new RestActionImpl<>(getJDA(), route, (resp, req) ->
                 getJDA().getEntityBuilder().createMember(this, resp.getObject()));
+    }
+
+    @Override
+    public CompletableFuture<List<Activity>> retrieveMemberActivities(long memberId)
+    {
+        Member member = getMemberById(memberId);
+        if (member != null && api.isCacheFlagSet(CacheFlag.ACTIVITY))
+            return CompletableFuture.completedFuture(member.getActivities());
+
+        //TODO: Abstraction
+        CompletableFuture<List<Activity>> future = new CompletableFuture<>();
+        api.getClient().requestMembers((response) -> {
+            System.out.println(response);
+            boolean notFound = response.optArray("not_found").map((i) -> !i.isEmpty()).orElse(false);
+            if (notFound)
+            {
+                future.completeExceptionally(new IllegalArgumentException("Member with the specified userId does not exist"));
+                return;
+            }
+
+            DataArray presences = response.getArray("presences");
+            if (presences.isEmpty())
+            {
+                future.complete(Collections.emptyList());
+            }
+            else
+            {
+                DataArray activities = null;
+                for (int i = 0; i < presences.length(); i++)
+                {
+                    DataObject presence = presences.getObject(i);
+                    long userId = presence.optObject("user").map((user) -> user.getUnsignedLong("id")).orElse(0L);
+                    if (userId != memberId)
+                        continue;
+                    activities = presence.getArray("activities");
+                    break;
+                }
+                if (activities == null || activities.isEmpty())
+                    future.complete(Collections.emptyList());
+                else
+                {
+                    List<Activity> list = new ArrayList<>(activities.length());
+                    for (int i = 0; i < activities.length(); i++)
+                    {
+                        list.add(EntityBuilder.createActivity(activities.getObject(i)));
+                    }
+                    future.complete(list);
+                }
+            }
+        }, id, memberId);
+        return future;
     }
 
     @Override
