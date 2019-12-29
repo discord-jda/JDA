@@ -2162,10 +2162,35 @@ public interface Guild extends ISnowflake
         return retrieveMemberById(getOwnerIdLong());
     }
 
+    /**
+     * Retrieves the presence of a member through the gateway connection.
+     * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
+     *
+     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     *
+     * @param  memberId
+     *         The member id
+     *
+     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     */
     @Nonnull
     @CheckReturnValue
     CompletableFuture<MemberPresence> retrieveMemberPresence(long memberId);
 
+    /**
+     * Retrieves the presence of a member through the gateway connection.
+     * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
+     *
+     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     *
+     * @param  memberId
+     *         The member id
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     */
     @Nonnull
     @CheckReturnValue
     default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull String memberId)
@@ -2173,6 +2198,20 @@ public interface Guild extends ISnowflake
         return retrieveMemberPresence(MiscUtil.parseSnowflake(memberId));
     }
 
+    /**
+     * Retrieves the presence of a member through the gateway connection.
+     * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
+     *
+     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     *
+     * @param  member
+     *         The member
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     */
     @Nonnull
     @CheckReturnValue
     default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull Member member)
@@ -2181,6 +2220,20 @@ public interface Guild extends ISnowflake
         return retrieveMemberPresence(member.getIdLong());
     }
 
+    /**
+     * Retrieves the presence of a member through the gateway connection.
+     * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
+     *
+     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     *
+     * @param  user
+     *         The user
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     */
     @Nonnull
     @CheckReturnValue
     default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull User user)
