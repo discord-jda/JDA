@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -100,7 +101,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
     protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
-    protected final TLongObjectMap<Consumer<DataObject>> memberRequests = MiscUtil.newLongMap();
+    protected final TLongObjectMap<Set<Consumer<DataObject>>> memberRequests = new TLongObjectHashMap<>();
 
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
@@ -840,11 +841,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     }
                     break;
                 case "GUILD_MEMBERS_CHUNK":
-                    Consumer<DataObject> callback = memberRequests.remove(content.getLong("guild_id"));
-                    if (callback != null && content.opt("not_found").isPresent())
+                    synchronized (memberRequests)
                     {
-                        callback.accept(content);
-                        break;
+                        Set<Consumer<DataObject>> callback = memberRequests.remove(content.getUnsignedLong("guild_id"));
+                        if (callback != null && content.opt("not_found").isPresent())
+                        {
+                            safeCall(content, callback, (ex) -> {
+                                LOG.error("Encountered unexpected exception trying to execute callback for member request", ex);
+                                api.getEventManager().handle(new ExceptionEvent(api, ex, true));
+                            });
+                            break;
+                        }
                     }
                 default:
                     SocketHandler handler = handlers.get(type);
@@ -1117,14 +1124,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void requestMembers(Consumer<DataObject> callback, long guildId, long userId)
     {
-        send(DataObject.empty()
-            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-            .put("d", DataObject.empty()
-                .put("guild_id", guildId)
-                .put("user_ids", Arrays.asList(userId, 0L))
-                .put("presences", true))
-            .toString());
-        memberRequests.put(guildId, callback);
+        synchronized (memberRequests)
+        {
+            Set<Consumer<DataObject>> callbacks = memberRequests.get(guildId);
+            if (callbacks == null)
+                memberRequests.put(guildId, callbacks = new HashSet<>());
+            callbacks.add(callback);
+
+            send(DataObject.empty()
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+                .put("d", DataObject.empty()
+                    .put("guild_id", guildId)
+                    .put("user_ids", Arrays.asList(userId, 0L))
+                    .put("presences", true))
+                .toString());
+        }
     }
 
     private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
@@ -1272,6 +1286,20 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             // Unused client events
             handlers.put("MESSAGE_ACK", nopHandler);
         }
+    }
+
+    private static void safeCall(DataObject content, Iterable<Consumer<DataObject>> callback, Consumer<Exception> failure)
+    {
+        callback.forEach((it) -> {
+            try
+            {
+                it.accept(content);
+            }
+            catch (Exception ex)
+            {
+                failure.accept(ex);
+            }
+        });
     }
 
     protected abstract class ConnectNode implements SessionController.SessionConnectNode
