@@ -785,18 +785,26 @@ public class GuildImpl implements Guild
                 getJDA().getEntityBuilder().createMember(this, resp.getObject()));
     }
 
+    @Nonnull
     @Override
-    public CompletableFuture<List<Activity>> retrieveMemberActivities(long memberId)
+    public CompletableFuture<MemberPresence> retrieveMemberPresence(long memberId)
     {
         Member member = getMemberById(memberId);
-        if (member != null && api.isCacheFlagSet(CacheFlag.ACTIVITY))
-            return CompletableFuture.completedFuture(member.getActivities());
+        if (member != null
+                && api.isCacheFlagSet(CacheFlag.ACTIVITY)
+                && api.isCacheFlagSet(CacheFlag.CLIENT_STATUS))
+            return CompletableFuture.completedFuture(new MemberPresenceImpl(member));
 
-        //TODO: Abstraction
-        CompletableFuture<List<Activity>> future = new CompletableFuture<>();
+        CompletableFuture<MemberPresence> future = new CompletableFuture<>();
+        if (memberId == 0)
+        {
+            future.completeExceptionally(new IllegalArgumentException("Member with the specified userId does not exist"));
+            return future;
+        }
+
         api.getClient().requestMembers((response) -> {
             System.out.println(response);
-            boolean notFound = response.optArray("not_found").map((i) -> !i.isEmpty()).orElse(false);
+            boolean notFound = response.optArray("not_found").map((i) -> i.length() > 1).orElse(false);
             if (notFound)
             {
                 future.completeExceptionally(new IllegalArgumentException("Member with the specified userId does not exist"));
@@ -806,32 +814,25 @@ public class GuildImpl implements Guild
             DataArray presences = response.getArray("presences");
             if (presences.isEmpty())
             {
-                future.complete(Collections.emptyList());
+                future.complete(MemberPresenceImpl.EMPTY);
+                return;
             }
-            else
+
+            DataObject presence = null;
+            for (int i = 0; i < presences.length(); i++)
             {
-                DataArray activities = null;
-                for (int i = 0; i < presences.length(); i++)
+                DataObject tmp = presences.getObject(i);
+                long userId = tmp.optObject("user").map((user) -> user.getUnsignedLong("id")).orElse(0L);
+                if (userId == memberId)
                 {
-                    DataObject presence = presences.getObject(i);
-                    long userId = presence.optObject("user").map((user) -> user.getUnsignedLong("id")).orElse(0L);
-                    if (userId != memberId)
-                        continue;
-                    activities = presence.getArray("activities");
+                    presence = tmp;
                     break;
                 }
-                if (activities == null || activities.isEmpty())
-                    future.complete(Collections.emptyList());
-                else
-                {
-                    List<Activity> list = new ArrayList<>(activities.length());
-                    for (int i = 0; i < activities.length(); i++)
-                    {
-                        list.add(EntityBuilder.createActivity(activities.getObject(i)));
-                    }
-                    future.complete(list);
-                }
             }
+            if (presence == null)
+                future.complete(MemberPresenceImpl.EMPTY);
+            else
+                future.complete(EntityBuilder.createMemberPresence(presence));
         }, id, memberId);
         return future;
     }

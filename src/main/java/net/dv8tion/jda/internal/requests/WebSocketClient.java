@@ -841,7 +841,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     break;
                 case "GUILD_MEMBERS_CHUNK":
                     Consumer<DataObject> callback = memberRequests.remove(content.getLong("guild_id"));
-                    if (callback != null)
+                    if (callback != null && content.opt("not_found").isPresent())
                     {
                         callback.accept(content);
                         break;
@@ -1115,13 +1115,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return null;
     }
 
-    public void requestMembers(Consumer<DataObject> callback, long guildId, long... userId)
+    public void requestMembers(Consumer<DataObject> callback, long guildId, long userId)
     {
         send(DataObject.empty()
             .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
             .put("d", DataObject.empty()
                 .put("guild_id", guildId)
-                .put("user_ids", userId)
+                .put("user_ids", Arrays.asList(userId, 0L))
                 .put("presences", true))
             .toString());
         memberRequests.put(guildId, callback);

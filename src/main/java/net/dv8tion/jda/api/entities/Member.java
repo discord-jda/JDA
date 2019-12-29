@@ -17,15 +17,13 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
-import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -46,7 +44,7 @@ import java.util.List;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder, IFakeable
+public interface Member extends IMentionable, IPermissionHolder, IFakeable, MemberPresence
 {
     /**
      * The user wrapped by this Entity.
@@ -103,64 +101,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      */
     @Nullable
     GuildVoiceState getVoiceState();
-
-    /**
-     * The activities of the user.
-     * <br>If the user does not currently have any activity, this returns an empty list.
-     *
-     * @return Immutable list of {@link Activity Activities} for the user
-     */
-    @Nonnull
-    List<Activity> getActivities();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the User.
-     * <br>If the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}.
-     *
-     * @return The current {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.api.entities.User User}.
-     */
-    @Nonnull
-    OnlineStatus getOnlineStatus();
-
-    /**
-     * The platform dependent {@link net.dv8tion.jda.api.OnlineStatus} of this member.
-     * <br>Since a user can be connected from multiple different devices such as web and mobile,
-     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
-     *
-     * <p>If a user is not online on the specified type,
-     * {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} is returned.
-     *
-     * @param  type
-     *         The type of client
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided type is null
-     *
-     * @return The status for that specific client or OFFLINE
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    OnlineStatus getOnlineStatus(@Nonnull ClientType type);
-
-    /**
-     * A Set of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes} of this Member.
-     * Every {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} other than {@code OFFLINE} and {@code UNKNOWN}
-     * is interpreted as active.
-     * Since {@code INVISIBLE} is only possible for the SelfUser, other Members will never have ClientTypes show as
-     * active when actually being {@code INVISIBLE}, since they will show as {@code OFFLINE}.
-     * <br>If the Member is currently not active with any Client, this returns an empty Set.
-     * <br>When {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} is disabled,
-     * active clients will not be tracked and this will always return an empty Set.
-     * <br>Since a user can be connected from multiple different devices such as web and mobile,
-     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
-     *
-     * @return EnumSet of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
-     *
-     * @since  4.0.0
-     */
-    @Nonnull
-    EnumSet<ClientType> getActiveClients();
 
     /**
      * Returns the current nickname of this Member for the parent Guild.

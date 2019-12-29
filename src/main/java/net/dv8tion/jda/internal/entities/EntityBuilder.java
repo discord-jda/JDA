@@ -132,6 +132,33 @@ public class EntityBuilder
         return new ActivityImpl(name, url, type);
     }
 
+    public static MemberPresenceImpl createMemberPresence(DataObject presence)
+    {
+        List<Activity> activities = new ArrayList<>();
+        EnumMap<ClientType, OnlineStatus> clientStatus = new EnumMap<>(ClientType.class);
+        OnlineStatus status = OnlineStatus.fromKey(presence.getString("status", "unknown"));
+
+        presence.optArray("activities").ifPresent((array) -> {
+            for (int i = 0; i < array.length(); i++)
+            {
+                DataObject json = array.getObject(i);
+                Activity activity = EntityBuilder.createActivity(json);
+                activities.add(activity);
+            }
+        });
+
+        presence.optObject("client_status").ifPresent((json) -> {
+            for (ClientType type : ClientType.values())
+            {
+                OnlineStatus onlineStatus = OnlineStatus.fromKey(json.getString(type.getKey(), "offline"));
+                if (onlineStatus != OnlineStatus.OFFLINE && onlineStatus != OnlineStatus.UNKNOWN)
+                    clientStatus.put(type, onlineStatus);
+            }
+        });
+
+        return new MemberPresenceImpl(status, clientStatus, activities);
+    }
+
     private void createGuildEmotePass(GuildImpl guildObj, DataArray array)
     {
         if (!getJDA().isCacheFlagSet(CacheFlag.EMOTE))

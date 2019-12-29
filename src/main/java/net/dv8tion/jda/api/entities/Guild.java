@@ -2162,7 +2162,9 @@ public interface Guild extends ISnowflake
         return retrieveMemberById(getOwnerIdLong());
     }
 
-    CompletableFuture<List<Activity>> retrieveMemberActivities(long memberId);
+    @Nonnull
+    @CheckReturnValue
+    CompletableFuture<MemberPresence> retrieveMemberPresence(long memberId);
 
     /* From GuildController */
 
