@@ -83,4 +83,13 @@ public class MemberPresenceImpl implements MemberPresence
     {
         return EnumSet.copyOf(clientStatus.keySet());
     }
+
+    @Override
+    public String toString()
+    {
+        return "MemberPresence["
+            + "status=" + status + ","
+            + "clientStatus=" + clientStatus + ","
+            + "activities=" + activities + "]";
+    }
 }

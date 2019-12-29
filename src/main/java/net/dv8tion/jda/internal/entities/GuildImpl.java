@@ -791,8 +791,8 @@ public class GuildImpl implements Guild
     {
         Member member = getMemberById(memberId);
         if (member != null
-                && api.isCacheFlagSet(CacheFlag.ACTIVITY)
-                && api.isCacheFlagSet(CacheFlag.CLIENT_STATUS))
+            && api.isCacheFlagSet(CacheFlag.ACTIVITY)
+            && api.isCacheFlagSet(CacheFlag.CLIENT_STATUS))
             return CompletableFuture.completedFuture(new MemberPresenceImpl(member));
 
         CompletableFuture<MemberPresence> future = new CompletableFuture<>();
@@ -803,7 +803,6 @@ public class GuildImpl implements Guild
         }
 
         api.getClient().requestMembers((response) -> {
-            System.out.println(response);
             boolean notFound = response.optArray("not_found").map((i) -> i.length() > 1).orElse(false);
             if (notFound)
             {

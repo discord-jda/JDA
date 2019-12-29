@@ -2166,6 +2166,29 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     CompletableFuture<MemberPresence> retrieveMemberPresence(long memberId);
 
+    @Nonnull
+    @CheckReturnValue
+    default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull String memberId)
+    {
+        return retrieveMemberPresence(MiscUtil.parseSnowflake(memberId));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return retrieveMemberPresence(member.getIdLong());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return retrieveMemberPresence(user.getIdLong());
+    }
+
     /* From GuildController */
 
     /**
