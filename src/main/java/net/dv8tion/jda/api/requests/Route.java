@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests;
+package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 

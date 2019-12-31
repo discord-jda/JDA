@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Route;
 import net.dv8tion.jda.internal.requests.ratelimit.IBucket;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;

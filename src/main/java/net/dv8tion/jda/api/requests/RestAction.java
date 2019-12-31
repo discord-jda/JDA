@@ -19,10 +19,11 @@ package net.dv8tion.jda.api.requests;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.MapRestAction;
@@ -158,6 +159,8 @@ import java.util.function.Predicate;
  */
 public interface RestAction<T>
 {
+    @Nonnull
+    @CheckReturnValue
     static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
     {
         Checks.notNull(api, "JDA");
@@ -165,6 +168,8 @@ public interface RestAction<T>
         return new RestActionImpl<>(api, route, (response, __) -> response);
     }
 
+    @Nonnull
+    @CheckReturnValue
     static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
     {
         Checks.notNull(api, "JDA");
@@ -173,12 +178,43 @@ public interface RestAction<T>
         return new RestActionImpl<>(api, route, body, (response, __) -> response);
     }
 
+    @Nonnull
+    @CheckReturnValue
     static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
     {
         Checks.notNull(api, "JDA");
         Checks.notNull(route, "Route");
         Checks.notNull(body, "Body");
         return new RestActionImpl<>(api, route, body, (response, __) -> response);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    static AuditableRestAction<Response> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
+    {
+        Checks.notNull(api, "JDA");
+        Checks.notNull(route, "Route");
+        return new AuditableRestActionImpl<>(api, route, (response, __) -> response);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    static AuditableRestAction<Response> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
+    {
+        Checks.notNull(api, "JDA");
+        Checks.notNull(route, "Route");
+        Checks.notNull(body, "Body");
+        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> response);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    static AuditableRestAction<Response> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
+    {
+        Checks.notNull(api, "JDA");
+        Checks.notNull(route, "Route");
+        Checks.notNull(body, "Body");
+        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> response);
     }
 
     /**
