@@ -67,6 +67,8 @@ public interface JDA
      */
     enum Status
     {
+        /**JDA is initialized without a gateway connection*/
+        REST_ONLY,
         /**JDA is currently setting up supporting systems like the AudioSystem.*/
         INITIALIZING(true),
         /**JDA has finished setting up supporting systems and is ready to log in.*/

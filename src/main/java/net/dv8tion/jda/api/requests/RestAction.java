@@ -20,12 +20,15 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.MapRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
+import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -155,6 +158,29 @@ import java.util.function.Predicate;
  */
 public interface RestAction<T>
 {
+    static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
+    {
+        Checks.notNull(api, "JDA");
+        Checks.notNull(route, "Route");
+        return new RestActionImpl<>(api, route, (response, __) -> response);
+    }
+
+    static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
+    {
+        Checks.notNull(api, "JDA");
+        Checks.notNull(route, "Route");
+        Checks.notNull(body, "Body");
+        return new RestActionImpl<>(api, route, body, (response, __) -> response);
+    }
+
+    static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
+    {
+        Checks.notNull(api, "JDA");
+        Checks.notNull(route, "Route");
+        Checks.notNull(body, "Body");
+        return new RestActionImpl<>(api, route, body, (response, __) -> response);
+    }
+
     /**
      * If enabled this will pass a {@link net.dv8tion.jda.api.exceptions.ContextException ContextException}
      * as root-cause to all failure consumers.

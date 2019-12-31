@@ -59,6 +59,7 @@ public class JDABuilder
     protected final List<Object> listeners;
     protected final AccountType accountType;
 
+    protected boolean gatewayEnabled = true;
     protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
     protected ScheduledExecutorService mainWsPool = null;
@@ -134,6 +135,13 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    @Nonnull
+    public JDABuilder setGatewayEnabled(boolean enable)
+    {
+        this.gatewayEnabled = enable;
+        return this;
     }
 
     /**
@@ -978,12 +986,19 @@ public class JDABuilder
         listeners.forEach(jda::addEventListener);
         jda.setStatus(JDA.Status.INITIALIZED);  //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
-        ((PresenceImpl) jda.getPresence())
-                .setCacheActivity(activity)
-                .setCacheIdle(idle)
-                .setCacheStatus(status);
-        jda.login(shardInfo, compression, true);
+        if (gatewayEnabled)
+        {
+            // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
+            ((PresenceImpl) jda.getPresence())
+                    .setCacheActivity(activity)
+                    .setCacheIdle(idle)
+                    .setCacheStatus(status);
+            jda.login(shardInfo, compression, true);
+        }
+        else
+        {
+            jda.setStatus(JDA.Status.REST_ONLY);
+        }
         return jda;
     }
 
