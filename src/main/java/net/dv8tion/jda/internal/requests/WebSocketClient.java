@@ -302,7 +302,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 case ZLIB:
                     if (decompressor == null || decompressor.getType() != Compression.ZLIB)
-                        decompressor = new ZlibDecompressor();
+                        decompressor = new ZlibDecompressor(api.getMaxBufferSize());
                     break;
                 default:
                     throw new IllegalStateException("Unknown compression");

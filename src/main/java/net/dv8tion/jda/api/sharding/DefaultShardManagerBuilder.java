@@ -65,6 +65,7 @@ public class  DefaultShardManagerBuilder
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
+    protected int maxBufferSize = 2048;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
@@ -1279,6 +1280,30 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * The maximum size, in bytes, of the buffer used for decompressing discord payloads.
+     * <br>If the maximum buffer size is exceeded a new buffer will be allocated instead.
+     * <br>Setting this to {@link Integer#MAX_VALUE} would imply the buffer will never be resized unless memory starvation is imminent.
+     * <br>Setting this to {@code 0} would imply the buffer would need to be allocated again for every payload (not recommended).
+     *
+     * <p>Default: {@code 2048}
+     *
+     * @param  bufferSize
+     *         The maximum size the buffer should allow to retain
+     *
+     * @throws IllegalArgumentException
+     *         If the provided buffer size is negative
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setMaxBufferSize(int bufferSize)
+    {
+        Checks.notNegative(bufferSize, "The buffer size");
+        this.maxBufferSize = bufferSize;
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
@@ -1309,7 +1334,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
-        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(contextProvider, cacheFlags, flags, compression);
+        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 
         manager.login();
