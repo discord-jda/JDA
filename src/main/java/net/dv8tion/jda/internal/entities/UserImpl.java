@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.api.requests.Route;
 
@@ -94,16 +94,15 @@ public class UserImpl implements User
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
-        if (privateChannel != null)
-            return new EmptyRestAction<>(getJDA(), privateChannel);
-
-        Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
-        DataObject body = DataObject.empty().put("recipient_id", getId());
-        return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
-        {
-            PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
-            UserImpl.this.privateChannel = priv;
-            return priv;
+        return new DeferredRestAction<>(getJDA(), PrivateChannel.class, () -> privateChannel, () -> {
+            Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
+            DataObject body = DataObject.empty().put("recipient_id", getId());
+            return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
+            {
+                PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
+                UserImpl.this.privateChannel = priv;
+                return priv;
+            });
         });
     }
 

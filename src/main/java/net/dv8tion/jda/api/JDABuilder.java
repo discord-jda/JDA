@@ -83,6 +83,7 @@ public class JDABuilder
     protected boolean idle = false;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
+    protected int maxBufferSize = 2048;
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
 
@@ -929,6 +930,30 @@ public class JDABuilder
     }
 
     /**
+     * The maximum size, in bytes, of the buffer used for decompressing discord payloads.
+     * <br>If the maximum buffer size is exceeded a new buffer will be allocated instead.
+     * <br>Setting this to {@link Integer#MAX_VALUE} would imply the buffer will never be resized unless memory starvation is imminent.
+     * <br>Setting this to {@code 0} would imply the buffer would need to be allocated again for every payload (not recommended).
+     *
+     * <p>Default: {@code 2048}
+     *
+     * @param  bufferSize
+     *         The maximum size the buffer should allow to retain
+     *
+     * @throws IllegalArgumentException
+     *         If the provided buffer size is negative
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setMaxBufferSize(int bufferSize)
+    {
+        Checks.notNegative(bufferSize, "The buffer size");
+        this.maxBufferSize = bufferSize;
+        return this;
+    }
+
+    /**
      * Builds a new {@link net.dv8tion.jda.api.JDA} instance and uses the provided token to start the login process.
      * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.JDA} has not
      * finished loading, thus many {@link net.dv8tion.jda.api.JDA} methods have the chance to return incorrect information.
@@ -972,7 +997,7 @@ public class JDABuilder
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
         SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
-        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
+        MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
         jda.setChunkingFilter(chunkingFilter);

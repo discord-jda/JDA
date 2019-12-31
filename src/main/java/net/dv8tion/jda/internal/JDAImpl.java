@@ -177,6 +177,11 @@ public class JDAImpl implements JDA
         return sessionConfig.getLargeThreshold();
     }
 
+    public int getMaxBufferSize()
+    {
+        return metaConfig.getMaxBufferSize();
+    }
+
     public boolean chunkGuild(long id)
     {
         try
@@ -503,6 +508,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    @SuppressWarnings("ConstantConditions") // this can't really happen unless you pass bad configs
     public OkHttpClient getHttpClient()
     {
         return sessionConfig.getHttpClient();
@@ -547,16 +553,11 @@ public class JDAImpl implements JDA
     public RestAction<User> retrieveUserById(long id)
     {
         AccountTypeException.check(getAccountType(), AccountType.BOT);
-
-        // check cache
-        User user = this.getUserById(id);
-        // If guild subscriptions are disabled this user might not be up-to-date
-        if (user != null && isGuildSubscriptions())
-            return new EmptyRestAction<>(this, user);
-
-        Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(this, route,
-            (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+        return new DeferredRestAction<>(this, User.class, () -> getUserById(id), () -> {
+            Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
+            return new RestActionImpl<>(this, route,
+                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+        });
     }
 
     @Nonnull

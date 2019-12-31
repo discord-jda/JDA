@@ -126,6 +126,6 @@ public class SessionConfig
     @Nonnull
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, null, null, null, ConfigFlag.getDefault(), 900, 250);
+        return new SessionConfig(null, new OkHttpClient(), null, null, ConfigFlag.getDefault(), 900, 250);
     }
 }
