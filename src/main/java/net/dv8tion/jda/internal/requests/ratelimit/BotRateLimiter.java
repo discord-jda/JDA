@@ -65,6 +65,7 @@ public class BotRateLimiter extends RateLimiter
     private void cleanup()
     {
         MiscUtil.locked(bucketLock, () -> {
+            int size = bucket.size();
             Iterator<String> keys = bucket.keySet().iterator();
 
             while (keys.hasNext())
@@ -77,6 +78,9 @@ public class BotRateLimiter extends RateLimiter
                 if (bucket.requests.isEmpty() && bucket.reset <= getNow())
                     keys.remove();
             }
+            size -= bucket.size();
+            if (size > 0)
+            log.debug("Removed {} outdated buckets", size);
         });
     }
 
@@ -153,7 +157,7 @@ public class BotRateLimiter extends RateLimiter
 
                 if (response.code() == 429)
                 {
-                    Requester.LOG.warn("Encountered 429 on bucket {}", bucket.bucketId);
+                    log.warn("Encountered 429 on bucket {}", bucket.bucketId);
                 }
 
                 if (global)
@@ -162,6 +166,8 @@ public class BotRateLimiter extends RateLimiter
                     requester.getJDA().getSessionController().setGlobalRatelimit(now + body.getLong("retry_after"));
                 }
 
+                if (hash == null)
+                    return bucket;
                 String limitHeader = headers.get(LIMIT_HEADER);
                 String remainingHeader = headers.get(REMAINING_HEADER);
                 String resetHeader = headers.get(RESET_AFTER_HEADER);
@@ -169,12 +175,12 @@ public class BotRateLimiter extends RateLimiter
                 bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
                 bucket.remaining = (int) parseLong(remainingHeader);
                 bucket.reset = now + parseDouble(resetHeader);
-                Requester.LOG.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, bucket.limit, bucket.reset - now);
+                log.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, bucket.limit, bucket.reset - now);
                 return bucket;
             }
             catch (Exception e)
             {
-                Requester.LOG.error("Encountered Exception while updating a bucket", e);
+                log.error("Encountered Exception while updating a bucket", e);
                 return getBucket(route, true);
             }
         });
@@ -320,13 +326,13 @@ public class BotRateLimiter extends RateLimiter
                     rateLimit = getRateLimit();
                     if (rateLimit > 0L)
                     {
-                        Requester.LOG.debug("Backing off {} ms for bucket {}", rateLimit, bucketId);
+                        log.debug("Backing off {} ms for bucket {}", rateLimit, bucketId);
                         break;
                     }
                 }
                 catch (InterruptedException | ExecutionException ex)
                 {
-                    Requester.LOG.warn("Interrupted while working on requests", ex);
+                    log.warn("Interrupted while working on requests", ex);
                     break;
                 }
             }
