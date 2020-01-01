@@ -138,6 +138,17 @@ public class JDABuilder
         this.listeners = new LinkedList<>();
     }
 
+    /**
+     * Whether JDA should connect to the gateway. Setting this to {@code false} will set the {@link net.dv8tion.jda.api.JDA.Status JDA Status} to {@code REST_ONLY}.
+     * <br>Default: {@code true}
+     *
+     * @param  enable
+     *         False, if JDA should not connect to the Gateway and only use {@link net.dv8tion.jda.api.requests.RestAction Rest Actions}.
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
+     */
     @Nonnull
     public JDABuilder setGatewayEnabled(boolean enable)
     {
