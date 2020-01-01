@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.ratelimit;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
@@ -39,9 +40,10 @@ public class BotRateLimiter extends RateLimiter
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
     private static final String GLOBAL_HEADER = "X-RateLimit-Global";
     private static final String HASH_HEADER = "X-RateLimit-Bucket";
+    private static final String UNLIMITED_BUCKET = "unlimited";
 
     private final ReentrantLock bucketLock = new ReentrantLock();
-    // Route -> Hash
+    // Method + Route -> Hash
     private final Map<String, String> hash = new ConcurrentHashMap<>();
     // Hash + Major Parameter -> Bucket
     private final Map<String, Bucket> bucket = new ConcurrentHashMap<>();
@@ -70,22 +72,18 @@ public class BotRateLimiter extends RateLimiter
             {
                 String key = keys.next();
                 Bucket bucket = this.bucket.get(key);
-                if (bucket.bucketId.equals("unlimited"))
+                if (bucket.isUnlimited())
                     continue;
 
                 if (bucket.requests.isEmpty() && bucket.reset <= getNow())
-                {
                     keys.remove();
-                    String bucketHash = key.substring(0, key.indexOf(':'));
-                    hash.values().removeIf(bucketHash::equals);
-                }
             }
         });
     }
 
-    private String getRouteHash(String baseRoute)
+    private String getRouteHash(Method method, String baseRoute)
     {
-        return hash.getOrDefault(baseRoute, "unlimited");
+        return hash.getOrDefault(method + "/" + baseRoute, UNLIMITED_BUCKET);
     }
 
     @Override
@@ -150,7 +148,7 @@ public class BotRateLimiter extends RateLimiter
 
                 if (hash != null)
                 {
-                    this.hash.put(route.getBaseRoute().getRoute(), hash);
+                    this.hash.put(route.getMethod() + "/" + route.getBaseRoute().getRoute(), hash);
                     bucket = getBucket(route, true);
                 }
 
@@ -187,9 +185,9 @@ public class BotRateLimiter extends RateLimiter
     {
         return MiscUtil.locked(bucketLock, () ->
         {
-            String hash = getRouteHash(route.getBaseRoute().getRoute());
-            if (hash.equals("unlimited"))
-                return this.bucket.get("unlimited");
+            String hash = getRouteHash(route.getMethod(), route.getBaseRoute().getRoute());
+            if (hash.equals(UNLIMITED_BUCKET))
+                return this.bucket.get(UNLIMITED_BUCKET);
             String bucketId = hash + ":" + route.getMajorParameters();
             Bucket bucket = this.bucket.get(bucketId);
             if (bucket == null && create)
@@ -272,19 +270,18 @@ public class BotRateLimiter extends RateLimiter
             return limit;
         }
 
+        private boolean isUnlimited()
+        {
+            return bucketId.equals("unlimited");
+        }
+
         private void backoff()
         {
-            bucketLock.lock();
-            try
-            {
+            MiscUtil.locked(bucketLock, () -> {
                 rateLimitQueue.remove(this);
                 if (!requests.isEmpty())
                     runBucket(this);
-            }
-            finally
-            {
-                bucketLock.unlock();
-            }
+            });
         }
 
         @Override
@@ -294,11 +291,11 @@ public class BotRateLimiter extends RateLimiter
             while (iterator.hasNext())
             {
                 Request request = iterator.next();
-                if (bucketId.equals("unlimited"))
+                if (isUnlimited())
                 {
                     boolean shouldSkip = MiscUtil.locked(bucketLock, () -> {
                         // Attempt moving request to correct bucket if it has been created
-                        Bucket bucket = getBucket(request.getRoute(), false);
+                        Bucket bucket = getBucket(request.getRoute(), true);
                         if (bucket != null && bucket != this)
                         {
                             bucket.enqueue(request);
