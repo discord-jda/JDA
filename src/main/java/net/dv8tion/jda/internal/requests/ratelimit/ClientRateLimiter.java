@@ -249,12 +249,6 @@ public class ClientRateLimiter extends RateLimiter
         }
 
         @Override
-        public String getRoute()
-        {
-            return route;
-        }
-
-        @Override
         public Queue<Request> getRequests()
         {
             return requests;

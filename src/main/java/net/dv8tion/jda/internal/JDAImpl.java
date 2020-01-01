@@ -325,7 +325,7 @@ public class JDAImpl implements JDA
                 if (response.isOk())
                     request.onSuccess(response.getObject());
                 else if (response.isRateLimit())
-                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
+                    request.onFailure(new RateLimitedException("identify:0:0:0", response.retryAfter));
                 else if (response.code == 401)
                     request.onSuccess(null);
                 else

@@ -217,7 +217,7 @@ public class Requester
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
-        if (retryAfter != null)
+        if (retryAfter != null && retryAfter > 0L)
         {
             if (handleOnRatelimit)
                 apiRequest.handleResponse(new Response(retryAfter, Collections.emptySet()));
