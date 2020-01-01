@@ -19,7 +19,6 @@ package net.dv8tion.jda.internal.requests.ratelimit;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
@@ -43,8 +42,8 @@ public class BotRateLimiter extends RateLimiter
     private static final String UNLIMITED_BUCKET = "unlimited";
 
     private final ReentrantLock bucketLock = new ReentrantLock();
-    // Method + Route -> Hash
-    private final Map<String, String> hash = new ConcurrentHashMap<>();
+    // Route -> Hash
+    private final Map<Route, String> hash = new ConcurrentHashMap<>();
     // Hash + Major Parameter -> Bucket
     private final Map<String, Bucket> bucket = new ConcurrentHashMap<>();
     // Bucket -> Rate-Limit Worker
@@ -81,9 +80,9 @@ public class BotRateLimiter extends RateLimiter
         });
     }
 
-    private String getRouteHash(Method method, String baseRoute)
+    private String getRouteHash(Route route)
     {
-        return hash.getOrDefault(method + "/" + baseRoute, UNLIMITED_BUCKET);
+        return hash.getOrDefault(route, UNLIMITED_BUCKET);
     }
 
     @Override
@@ -148,7 +147,7 @@ public class BotRateLimiter extends RateLimiter
 
                 if (hash != null)
                 {
-                    this.hash.put(route.getMethod() + "/" + route.getBaseRoute().getRoute(), hash);
+                    this.hash.put(route.getBaseRoute(), hash);
                     bucket = getBucket(route, true);
                 }
 
@@ -185,7 +184,7 @@ public class BotRateLimiter extends RateLimiter
     {
         return MiscUtil.locked(bucketLock, () ->
         {
-            String hash = getRouteHash(route.getMethod(), route.getBaseRoute().getRoute());
+            String hash = getRouteHash(route.getBaseRoute());
             if (hash.equals(UNLIMITED_BUCKET))
                 return this.bucket.get(UNLIMITED_BUCKET);
             String bucketId = hash + ":" + route.getMajorParameters();
