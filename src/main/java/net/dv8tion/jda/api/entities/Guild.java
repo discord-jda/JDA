@@ -39,7 +39,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -1628,13 +1628,18 @@ public interface Guild extends ISnowflake
         Checks.notNull(emote, "Emote");
         if (emote.getGuild() != null)
             Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
-        if (emote instanceof ListedEmote && !emote.isFake())
-        {
-            ListedEmote listedEmote = (ListedEmote) emote;
-            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new EmptyRestAction<>(getJDA(), listedEmote);
-        }
-        return retrieveEmoteById(emote.getId());
+
+        JDA jda = getJDA();
+        return new DeferredRestAction<>(jda, ListedEmote.class,
+        () -> {
+            if (emote instanceof ListedEmote && !emote.isFake())
+            {
+                ListedEmote listedEmote = (ListedEmote) emote;
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                    return listedEmote;
+            }
+            return null;
+        }, () -> retrieveEmoteById(emote.getId()));
     }
 
     /**

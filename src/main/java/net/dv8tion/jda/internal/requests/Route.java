@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.requests;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -395,6 +397,8 @@ public class Route
             this(baseRoute, ratelimitRoute, compiledRoute, false);
         }
 
+        @Nonnull
+        @CheckReturnValue
         public CompiledRoute withQueryParams(String... params)
         {
             Checks.check(params.length >= 2, "params length must be at least 2");

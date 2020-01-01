@@ -62,7 +62,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
@@ -111,7 +110,7 @@ public class JDAImpl implements JDA
     protected final SessionConfig sessionConfig;
     protected final MetaConfig metaConfig;
 
-    protected UpstreamReference<WebSocketClient> client;
+    protected WebSocketClient client;
     protected Requester requester;
     protected IAudioSendFactory audioSendFactory = new DefaultSendFactory();
     protected Status status = Status.INITIALIZING;
@@ -175,6 +174,11 @@ public class JDAImpl implements JDA
     public int getLargeThreshold()
     {
         return sessionConfig.getLargeThreshold();
+    }
+
+    public int getMaxBufferSize()
+    {
+        return metaConfig.getMaxBufferSize();
     }
 
     public boolean chunkGuild(long id)
@@ -253,7 +257,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new UpstreamReference<>(new WebSocketClient(this, compression));
+        client = new WebSocketClient(this, compression);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -503,6 +507,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    @SuppressWarnings("ConstantConditions") // this can't really happen unless you pass bad configs
     public OkHttpClient getHttpClient()
     {
         return sessionConfig.getHttpClient();
@@ -547,16 +552,11 @@ public class JDAImpl implements JDA
     public RestAction<User> retrieveUserById(long id)
     {
         AccountTypeException.check(getAccountType(), AccountType.BOT);
-
-        // check cache
-        User user = this.getUserById(id);
-        // If guild subscriptions are disabled this user might not be up-to-date
-        if (user != null && isGuildSubscriptions())
-            return new EmptyRestAction<>(this, user);
-
-        Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(this, route,
-            (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+        return new DeferredRestAction<>(this, User.class, () -> getUserById(id), () -> {
+            Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
+            return new RestActionImpl<>(this, route,
+                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+        });
     }
 
     @Nonnull
@@ -906,7 +906,7 @@ public class JDAImpl implements JDA
 
     public WebSocketClient getClient()
     {
-        return client == null ? null : client.get();
+        return client;
     }
 
     public SnowflakeCacheViewImpl<User> getUsersView()

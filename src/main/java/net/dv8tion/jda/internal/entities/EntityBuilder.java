@@ -44,7 +44,6 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
@@ -80,16 +79,16 @@ public class EntityBuilder
         richGameFields = Collections.unmodifiableSet(tmp);
     }
 
-    protected final UpstreamReference<JDAImpl> api;
+    protected final JDAImpl api;
 
     public EntityBuilder(JDA api)
     {
-        this.api = new UpstreamReference<>((JDAImpl) api);
+        this.api = (JDAImpl) api;
     }
 
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     public SelfUser createSelfUser(DataObject self)
@@ -204,6 +203,12 @@ public class EntityBuilder
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount);
 
+        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
+        try (UnlockHook hook = guildView.writeLock())
+        {
+            guildView.getMap().put(guildId, guildObj);
+        }
+
         guildObj.setFeatures(featuresArray.map(it ->
             StreamSupport.stream(it.spliterator(), false)
                          .map(String::valueOf)
@@ -272,11 +277,6 @@ public class EntityBuilder
             }
         });
 
-        SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
-        try (UnlockHook hook = guildView.writeLock())
-        {
-            guildView.getMap().put(guildId, guildObj);
-        }
         return guildObj;
     }
 
@@ -974,11 +974,18 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(DataObject json)
     {
+        final long channelId = json.getUnsignedLong("id");
+        PrivateChannel channel = api.getPrivateChannelById(channelId);
+        if (channel == null)
+            channel = api.getFakePrivateChannelMap().get(channelId);
+        if (channel != null)
+            return channel;
+
         DataObject recipient = json.hasKey("recipients") ?
             json.getArray("recipients").getObject(0) :
             json.getObject("recipient");
         final long userId = recipient.getLong("id");
-        UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
+        UserImpl user = (UserImpl) getJDA().getUserById(userId);
         if (user == null)
         {   //The getJDA() can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
@@ -1002,7 +1009,7 @@ public class EntityBuilder
             getJDA().getFakePrivateChannelMap().put(channelId, priv);
             getJDA().getFakeUserMap().put(user.getIdLong(), user);
         }
-        else
+        else if (api.isGuildSubscriptions())
         {
             SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
             try (UnlockHook hook = privateView.writeLock())
@@ -1430,7 +1437,7 @@ public class EntityBuilder
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(permHolder);
         if (permOverride == null)
         {
-            permOverride = new PermissionOverrideImpl(chan, permHolder.getIdLong(), permHolder);
+            permOverride = new PermissionOverrideImpl(chan, permHolder);
             chan.getOverrideMap().put(permHolder.getIdLong(), permOverride);
         }
         return permOverride.setAllow(allow).setDeny(deny);

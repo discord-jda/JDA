@@ -37,7 +37,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -47,7 +46,7 @@ import java.util.Optional;
 public class GuildSetupNode
 {
     private final long id;
-    private final UpstreamReference<GuildSetupController> controller;
+    private final GuildSetupController controller;
     private final List<DataObject> cachedEvents = new LinkedList<>();
     private TLongObjectMap<DataObject> members;
     private TLongSet removedMembers;
@@ -65,7 +64,7 @@ public class GuildSetupNode
     GuildSetupNode(long id, GuildSetupController controller, Type type)
     {
         this.id = id;
-        this.controller = new UpstreamReference<>(controller);
+        this.controller = controller;
         this.type = type;
         this.sync = controller.isClient();
     }
@@ -166,7 +165,7 @@ public class GuildSetupNode
 
     private GuildSetupController getController()
     {
-        return controller.get();
+        return controller;
     }
 
     void updateStatus(GuildSetupController.Status status)
