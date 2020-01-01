@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.ratelimit;
 
 import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -46,16 +47,47 @@ public class BotRateLimiter extends RateLimiter
     private final Map<String, Bucket> bucket = new ConcurrentHashMap<>();
     // Bucket -> Rate-Limit Worker
     private final Map<Bucket, Future<?>> rateLimitQueue = new ConcurrentHashMap<>();
+    private final Future<?> cleanupWorker;
 
     public BotRateLimiter(Requester requester)
     {
         super(requester);
         bucket.put("unlimited", new Bucket("unlimited"));
+        cleanupWorker = requester.getJDA().getRateLimitPool().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
+    }
+
+    private void cleanup()
+    {
+        MiscUtil.locked(bucketLock, () -> {
+            Iterator<String> keys = bucket.keySet().iterator();
+
+            while (keys.hasNext())
+            {
+                String key = keys.next();
+                Bucket bucket = this.bucket.get(key);
+                if (bucket.bucketId.equals("unlimited"))
+                    continue;
+
+                if (bucket.requests.isEmpty() && bucket.reset <= getNow())
+                {
+                    keys.remove();
+                    String bucketHash = key.substring(0, key.indexOf(':'));
+                    hash.values().removeIf(bucketHash::equals);
+                }
+            }
+        });
     }
 
     private String getRouteHash(String baseRoute)
     {
         return hash.getOrDefault(baseRoute, "unlimited");
+    }
+
+    @Override
+    protected void shutdown()
+    {
+        super.shutdown();
+        cleanupWorker.cancel(false);
     }
 
     @Override
@@ -68,17 +100,11 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected void queueRequest(Request request)
     {
-        bucketLock.lock();
-        try
-        {
+        MiscUtil.locked(bucketLock, () -> {
             Bucket bucket = getBucket(request.getRoute(), true);
             bucket.enqueue(request);
             runBucket(bucket);
-        }
-        finally
-        {
-            bucketLock.unlock();
-        }
+        });
     }
 
     @Override
@@ -106,59 +132,55 @@ public class BotRateLimiter extends RateLimiter
 
     private Bucket updateBucket(Route.CompiledRoute route, okhttp3.Response response)
     {
-        bucketLock.lock();
-        try
-        {
-            Bucket bucket = getBucket(route, true);
-
-            Headers headers = response.headers();
-
-            boolean global = headers.get(GLOBAL_HEADER) != null;
-            String hash = headers.get(HASH_HEADER);
-            long now = getNow();
-
-            if (hash != null)
+        return MiscUtil.locked(bucketLock, () -> {
+            try
             {
-                this.hash.put(route.getBaseRoute().getRoute(), hash);
-                bucket = getBucket(route, true);
-            }
+                Bucket bucket = getBucket(route, true);
 
-            if (response.code() == 429)
+                Headers headers = response.headers();
+
+                boolean global = headers.get(GLOBAL_HEADER) != null;
+                String hash = headers.get(HASH_HEADER);
+                long now = getNow();
+
+                if (hash != null)
+                {
+                    this.hash.put(route.getBaseRoute().getRoute(), hash);
+                    bucket = getBucket(route, true);
+                }
+
+                if (response.code() == 429)
+                {
+                    Requester.LOG.warn("Encountered 429 on bucket {}", bucket.bucketId);
+                }
+
+                if (global)
+                {
+                    DataObject body = DataObject.fromJson(IOUtil.getBody(response));
+                    requester.getJDA().getSessionController().setGlobalRatelimit(now + body.getLong("retry_after"));
+                }
+
+                String limitHeader = headers.get(LIMIT_HEADER);
+                String remainingHeader = headers.get(REMAINING_HEADER);
+                String resetHeader = headers.get(RESET_AFTER_HEADER);
+
+                bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
+                bucket.remaining = (int) parseLong(remainingHeader);
+                bucket.reset = now + parseDouble(resetHeader);
+                Requester.LOG.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, bucket.limit, bucket.reset - now);
+                return bucket;
+            }
+            catch (Exception e)
             {
-                Requester.LOG.warn("Encountered 429 on bucket {}", bucket.bucketId);
+                Requester.LOG.error("Encountered Exception while updating a bucket", e);
+                return getBucket(route, true);
             }
-
-            if (global)
-            {
-                DataObject body = DataObject.fromJson(IOUtil.getBody(response));
-                requester.getJDA().getSessionController().setGlobalRatelimit(now + body.getLong("retry_after"));
-            }
-
-            String limitHeader = headers.get(LIMIT_HEADER);
-            String remainingHeader = headers.get(REMAINING_HEADER);
-            String resetHeader = headers.get(RESET_AFTER_HEADER);
-
-            bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
-            bucket.remaining = (int) parseLong(remainingHeader);
-            bucket.reset = now + parseDouble(resetHeader);
-            Requester.LOG.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, bucket.limit, bucket.reset - now);
-            return bucket;
-        }
-        catch (Exception e)
-        {
-            Requester.LOG.error("Encountered Exception while updating a bucket", e);
-            return getBucket(route, true);
-        }
-        finally
-        {
-            bucketLock.unlock();
-        }
+        });
     }
 
     private Bucket getBucket(Route.CompiledRoute route, boolean create)
     {
-        bucketLock.lock();
-        try
+        return MiscUtil.locked(bucketLock, () ->
         {
             String hash = getRouteHash(route.getBaseRoute().getRoute());
             if (hash.equals("unlimited"))
@@ -169,17 +191,16 @@ public class BotRateLimiter extends RateLimiter
                 this.bucket.put(bucketId, bucket = new Bucket(bucketId));
 
             return bucket;
-        }
-        finally
-        {
-            bucketLock.unlock();
-        }
+        });
     }
 
     private Future<?> runBucket(Bucket bucket)
     {
-        return rateLimitQueue.computeIfAbsent(bucket,
-                (k) -> requester.getJDA().getRateLimitPool().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS));
+        if (isShutdown)
+            return CompletableFuture.completedFuture(null);
+        return MiscUtil.locked(bucketLock, () ->
+                rateLimitQueue.computeIfAbsent(bucket,
+                    (k) -> requester.getJDA().getRateLimitPool().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
     }
 
     private long parseLong(String input)
@@ -270,15 +291,19 @@ public class BotRateLimiter extends RateLimiter
                 Request request = iterator.next();
                 if (bucketId.equals("unlimited"))
                 {
-                    // Attempt moving request to correct bucket if it has been created
-                    Bucket bucket = getBucket(request.getRoute(), false);
-                    if (bucket != null && bucket != this)
-                    {
-                        bucket.enqueue(request);
-                        iterator.remove();
-                        runBucket(bucket);
-                        continue;
-                    }
+                    boolean shouldSkip = MiscUtil.locked(bucketLock, () -> {
+                        // Attempt moving request to correct bucket if it has been created
+                        Bucket bucket = getBucket(request.getRoute(), false);
+                        if (bucket != null && bucket != this)
+                        {
+                            bucket.enqueue(request);
+                            iterator.remove();
+                            runBucket(bucket);
+                            return true;
+                        }
+                        return false;
+                    });
+                    if (shouldSkip) continue;
                 }
 
                 if (isSkipped(iterator, request))
