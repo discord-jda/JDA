@@ -53,7 +53,12 @@ public class BotRateLimiter extends RateLimiter
     {
         super(requester);
         bucket.put("unlimited", new Bucket("unlimited"));
-        cleanupWorker = requester.getJDA().getRateLimitPool().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
+        cleanupWorker = getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
+    }
+
+    private ScheduledExecutorService getScheduler()
+    {
+        return requester.getJDA().getRateLimitPool();
     }
 
     private void cleanup()
@@ -194,13 +199,13 @@ public class BotRateLimiter extends RateLimiter
         });
     }
 
-    private Future<?> runBucket(Bucket bucket)
+    private void runBucket(Bucket bucket)
     {
         if (isShutdown)
-            return CompletableFuture.completedFuture(null);
-        return MiscUtil.locked(bucketLock, () ->
-                rateLimitQueue.computeIfAbsent(bucket,
-                    (k) -> requester.getJDA().getRateLimitPool().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
+            return;
+        MiscUtil.locked(bucketLock, () ->
+            rateLimitQueue.computeIfAbsent(bucket,
+                (k) -> getScheduler().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
     }
 
     private long parseLong(String input)
