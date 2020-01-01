@@ -314,6 +314,14 @@ public class BotRateLimiter extends RateLimiter
             Iterator<Request> iterator = requests.iterator();
             while (iterator.hasNext())
             {
+                Long rateLimit = getRateLimit();
+                if (rateLimit > 0L)
+                {
+                    // We need to backoff since we ran out of remaining uses or hit the global rate limit
+                    log.debug("Backing off {} ms for bucket {}", rateLimit, bucketId);
+                    break;
+                }
+
                 Request request = iterator.next();
                 if (isUnlimited())
                 {
@@ -337,19 +345,12 @@ public class BotRateLimiter extends RateLimiter
 
                 try
                 {
-                    Long rateLimit = requester.execute(request).get();
+                    rateLimit = requester.execute(request).get(); //TODO: Make this blocking again, the okhttp async is bad
                     if (rateLimit != null)
                         break; // this means we hit a hard rate limit (429) so the request needs to be retried
 
                     // The request went through so we can remove it
                     iterator.remove();
-                    rateLimit = getRateLimit();
-                    if (rateLimit > 0L)
-                    {
-                        // We need to backoff since we ran out of remaining uses
-                        log.debug("Backing off {} ms for bucket {}", rateLimit, bucketId);
-                        break;
-                    }
                 }
                 catch (InterruptedException | ExecutionException ex)
                 {
