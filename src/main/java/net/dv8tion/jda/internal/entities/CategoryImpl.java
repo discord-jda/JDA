@@ -16,14 +16,12 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -34,11 +32,16 @@ import java.util.stream.Collectors;
 
 public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> implements Category
 {
-    protected final TLongObjectMap<GuildChannel> channels = MiscUtil.newLongMap();
-
     public CategoryImpl(long id, GuildImpl guild)
     {
         super(id, guild);
+    }
+
+    @Override
+    public CategoryImpl setPosition(int rawPosition)
+    {
+        getGuild().getCategoriesView().clearCachedLists();
+        return super.setPosition(rawPosition);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         List<Category> channels = getGuild().getCategories();
         for (int i = 0; i < channels.size(); i++)
         {
-            if (channels.get(i) == this)
+            if (equals(channels.get(i)))
                 return i;
         }
         throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
@@ -109,7 +112,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
-        return new EmptyRestAction<>(getJDA(), Collections.emptyList());
+        return new CompletedRestAction<>(getJDA(), Collections.emptyList());
     }
 
     @Nonnull

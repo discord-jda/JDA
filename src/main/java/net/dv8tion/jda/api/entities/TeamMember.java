@@ -20,6 +20,10 @@ import javax.annotation.Nonnull;
 
 /**
  * Member of a {@link net.dv8tion.jda.api.entities.ApplicationTeam}.
+ *
+ * @see ApplicationTeam#getMembers()
+ * @see ApplicationTeam#getMember(User)
+ * @see ApplicationTeam#getMemberById(long)
  */
 public interface TeamMember
 {

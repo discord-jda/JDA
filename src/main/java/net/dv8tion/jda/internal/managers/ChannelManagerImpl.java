@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.managers;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -28,7 +29,7 @@ import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -37,7 +38,7 @@ import java.util.Collection;
 
 public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements ChannelManager
 {
-    protected final UpstreamReference<GuildChannel> channel;
+    protected final SnowflakeReference<GuildChannel> channel;
 
     protected String name;
     protected String parent;
@@ -63,7 +64,9 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
-        this.channel = new UpstreamReference<>(channel);
+        JDA jda = channel.getJDA();
+        ChannelType type = channel.getType();
+        this.channel = new SnowflakeReference<>(channel, (channelId) -> jda.getGuildChannelById(type, channelId));
         if (isPermissionChecksEnabled())
             checkPermissions();
         this.overridesAdd = new TLongObjectHashMap<>();
@@ -74,7 +77,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @Override
     public GuildChannel getChannel()
     {
-        return channel.get();
+        return channel.resolve();
     }
 
     @Nonnull
@@ -304,7 +307,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set slowmode on text channels");
-        Checks.check(slowmode <= 21600 && slowmode >= 0, "Slowmode per user must be between 0 and 21600 (seconds)!");
+        Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode per user must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
         this.slowmode = slowmode;
         set |= SLOWMODE;
         return this;

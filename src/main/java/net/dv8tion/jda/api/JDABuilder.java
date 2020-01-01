@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.SessionControllerAdapter;
@@ -80,7 +81,10 @@ public class JDABuilder
     protected OnlineStatus status = OnlineStatus.ONLINE;
     protected boolean idle = false;
     protected int maxReconnectDelay = 900;
+    protected int largeThreshold = 250;
+    protected int maxBufferSize = 2048;
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
+    protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -642,7 +646,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean) Presence#setIdle(boolean)
+     * @see    net.dv8tion.jda.api.managers.Presence#setIdle(boolean) Presence.setIdle(boolean)
      */
     @Nonnull
     public JDABuilder setIdle(boolean idle)
@@ -716,7 +720,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.JDA#addEventListener(Object...) JDA.addEventListeners(Object...)
+     * @see    net.dv8tion.jda.api.JDA#addEventListener(Object...) JDA.addEventListener(Object...)
      */
     @Nonnull
     public JDABuilder addEventListeners(@Nonnull Object... listeners)
@@ -738,7 +742,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @see    net.dv8tion.jda.api.JDA#removeEventListener(Object...) JDA.removeEventListeners(Object...)
+     * @see    net.dv8tion.jda.api.JDA#removeEventListener(Object...) JDA.removeEventListener(Object...)
      */
     @Nonnull
     public JDABuilder removeEventListeners(@Nonnull Object... listeners)
@@ -803,7 +807,7 @@ public class JDABuilder
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,
-            "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
+                "The shard ID must be lower than the shardTotal! Shard IDs are 0-based.");
         shardInfo = new JDA.ShardInfo(shardId, shardTotal);
         return this;
     }
@@ -838,7 +842,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    VoiceDispatchInterceptor
      */
@@ -846,6 +850,98 @@ public class JDABuilder
     public JDABuilder setVoiceDispatchInterceptor(@Nullable VoiceDispatchInterceptor interceptor)
     {
         this.voiceDispatchInterceptor = interceptor;
+        return this;
+    }
+
+    /**
+     * The {@link ChunkingFilter} to filter which guilds should use member chunking.
+     * <br>By default this uses {@link ChunkingFilter#ALL}.
+     *
+     * <p>This filter is useless when {@link #setGuildSubscriptionsEnabled(boolean)} is false.
+     *
+     * @param  filter
+     *         The filter to apply
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     *
+     * @see    ChunkingFilter#NONE
+     * @see    ChunkingFilter#include(long...)
+     * @see    ChunkingFilter#exclude(long...)
+     */
+    @Nonnull
+    public JDABuilder setChunkingFilter(@Nullable ChunkingFilter filter)
+    {
+        this.chunkingFilter = filter == null ? ChunkingFilter.ALL : filter;
+        return this;
+    }
+
+    /**
+     * Enable typing and presence update events.
+     * <br>These events cover the majority of traffic happening on the gateway and thus cause a lot
+     * of bandwidth usage. Disabling these events means the cache for users might become outdated since
+     * user properties are only updated by presence updates.
+     * <br>Default: true
+     *
+     * <h2>Notice</h2>
+     * This disables the majority of member cache and related events. If anything in your project
+     * relies on member state you should keep this enabled.
+     *
+     * @param  enabled
+     *         True, if guild subscriptions should be enabled
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
+    {
+        return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+    }
+
+    /**
+     * Decides the total number of members at which a guild should start to use lazy loading.
+     * <br>This is limited to a number between 50 and 250 (inclusive).
+     * If the {@link #setChunkingFilter(ChunkingFilter) chunking filter} is set to {@link ChunkingFilter#ALL}
+     * this should be set to {@code 250} (default) to minimize the amount of guilds that need to request members.
+     *
+     * @param  threshold
+     *         The threshold in {@code [50, 250]}
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    public JDABuilder setLargeThreshold(int threshold)
+    {
+        this.largeThreshold = Math.max(50, Math.min(250, threshold)); // enforce 50 <= t <= 250
+        return this;
+    }
+
+    /**
+     * The maximum size, in bytes, of the buffer used for decompressing discord payloads.
+     * <br>If the maximum buffer size is exceeded a new buffer will be allocated instead.
+     * <br>Setting this to {@link Integer#MAX_VALUE} would imply the buffer will never be resized unless memory starvation is imminent.
+     * <br>Setting this to {@code 0} would imply the buffer would need to be allocated again for every payload (not recommended).
+     *
+     * <p>Default: {@code 2048}
+     *
+     * @param  bufferSize
+     *         The maximum size the buffer should allow to retain
+     *
+     * @throws IllegalArgumentException
+     *         If the provided buffer size is negative
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public JDABuilder setMaxBufferSize(int bufferSize)
+    {
+        Checks.notNegative(bufferSize, "The buffer size");
+        this.maxBufferSize = bufferSize;
         return this;
     }
 
@@ -892,10 +988,11 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
-        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay);
-        MetaConfig metaConfig = new MetaConfig(contextMap, cacheFlags, flags);
+        SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
+        MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        jda.setChunkingFilter(chunkingFilter);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

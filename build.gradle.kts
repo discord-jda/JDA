@@ -33,7 +33,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
-val versionObj = Version(major = "4", minor = "0", revision = "0")
+val versionObj = Version(major = "4", minor = "1", revision = "0")
 
 project.group = "net.dv8tion"
 project.version = "$versionObj"
@@ -67,13 +67,16 @@ dependencies {
     api("org.slf4j:slf4j-api:1.7.25")
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.5")
+    api("com.neovisionaries:nv-websocket-client:2.9")
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
     api("club.minnced:opus-java:1.0.4@pom") {
         isTransitive = true
     }
+
+    //Collections Utility
+    api("org.apache.commons:commons-collections4:4.1")
 
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
@@ -83,9 +86,8 @@ dependencies {
     /* Internal dependencies */
 
     //General Utility
-    implementation("org.apache.commons:commons-collections4:4.1")
     implementation("net.sf.trove4j:trove4j:3.0.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.8")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
 
     //Sets the dependencies for the examples
     configurations.asMap["examplesCompile"] = configurations["apiElements"]
@@ -299,7 +301,7 @@ bintray {
 fun getProjectProperty(propertyName: String): String {
     var property = ""
     if (hasProperty(propertyName)) {
-        property = this.properties[propertyName] as? String ?: ""
+        property = project.properties[propertyName] as? String ?: ""
     }
     return property
 }

@@ -37,6 +37,12 @@ import java.util.Set;
  *
  * @since  3.0
  * @author Aljoscha Grebe
+ *
+ * @see    #resolve(JDA, String)
+ * @see    #resolve(JDA, String, boolean)
+ *
+ * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
+ * @see    GuildChannel#retrieveInvites()
  */
 public interface Invite
 {

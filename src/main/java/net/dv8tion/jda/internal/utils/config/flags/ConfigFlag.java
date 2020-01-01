@@ -26,7 +26,8 @@ public enum ConfigFlag
     BULK_DELETE_SPLIT(true),
     SHUTDOWN_HOOK(true),
     MDC_CONTEXT(true),
-    AUTO_RECONNECT(true);
+    AUTO_RECONNECT(true),
+    GUILD_SUBSCRIPTIONS(true);
 
     private final boolean isDefault;
 

@@ -21,9 +21,12 @@ import javax.annotation.Nonnull;
 /**
  * Represents an emote retrieved from {@link Guild#retrieveEmotes()} or {@link Guild#retrieveEmoteById(long)}
  *
- * @see   net.dv8tion.jda.api.entities.Emote Emote
- *
  * @since 3.8.0
+ *
+ * @see   net.dv8tion.jda.api.entities.Emote Emote
+ * @see   Guild#retrieveEmote(Emote)
+ * @see   Guild#retrieveEmoteById(String)
+ * @see   Guild#retrieveEmotes()
  */
 public interface ListedEmote extends Emote
 {

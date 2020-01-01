@@ -103,6 +103,22 @@ public static void main(String[] args) {
 > See [JDABuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html)
   and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
+You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
+Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter` or disabling `guild_subscriptions`.
+
+```java
+public void configureMemoryUsage(JDABuilder builder) {
+    // Disable cache for member activities (streaming/games/spotify)
+    builder.setDisabledCacheFlags(
+        EnumSet.of(CacheFlag.ACTIVITY)
+    );
+    // Disable user/member cache and related events
+    builder.setGuildSubscriptionsEnabled(false);
+    // Disable member chunking on startup (ignored if guild subscriptions are turned off)
+    builder.setChunkingFilter(ChunkingFilter.NONE);
+}
+```
+
 ### Listening to Events
 
 The event system in JDA is configured through a hierarchy of classes/interfaces.
@@ -128,7 +144,7 @@ public class ReadyListener implements EventListener
     {
         // Note: It is important to register your ReadyListener before building
         JDA jda = new JDABuilder("token")
-            .addEventListener(new ReadyListener())
+            .addEventListeners(new ReadyListener())
             .build();
 
         // optionally block until JDA is ready
@@ -136,7 +152,7 @@ public class ReadyListener implements EventListener
     }
 
     @Override
-    public void onEvent(Event event)
+    public void onEvent(GenericEvent event)
     {
         if (event instanceof ReadyEvent)
             System.out.println("API is ready!");
@@ -156,7 +172,7 @@ public class MessageListener extends ListenerAdapter
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
-        jda.addEventListener(new MessageListener());
+        jda.addEventListeners(new MessageListener());
     }
 
     @Override
@@ -185,7 +201,7 @@ public class Bot extends ListenerAdapter
     public static void main(String[] args) throws LoginException
     {
         new JDABuilder(args[0])
-            .addEventListener(new Bot())
+            .addEventListeners(new Bot())
             .setActivity(Activity.playing("Type !ping"))
             .build();
     }
@@ -217,6 +233,27 @@ Through [RestAction](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/
 
 and it is up to the user to decide which pattern to utilize.
 It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
+
+The RestAction interface also supports a number of operators to avoid callback hell:
+
+- [`map`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
+    Convert the result of the `RestAction` to a different value
+- [`flatMap`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
+    Chain another `RestAction` on the result
+- [`delay`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
+    Delay the element of the previous step
+
+**Example**:
+
+```java
+public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+    return channel.sendMessage("The following message will destroy itself in 1 minute!")
+        .delay(10, SECONDS, scheduler) // edit 10 seconds later
+        .flatMap((it) -> it.editMessage(content))
+        .delay(1, MINUTES, scheduler) // delete 1 minute later
+        .flatMap(Message::delete);
+}
+```
 
 ### More Examples
 
@@ -252,8 +289,8 @@ Since version **3.4.0** JDA provides a `ShardManager` which automates this build
 public static void main(String[] args) throws Exception
 {
     JDABuilder shardBuilder = new JDABuilder(args[0]);
-    //register your listeners here using shardBuilder.addEventListener(...)
-    shardBuilder.addEventListener(new MessageListener());
+    //register your listeners here using shardBuilder.addEventListeners(...)
+    shardBuilder.addEventListeners(new MessageListener());
     for (int i = 0; i < 10; i++)
     {
         shardBuilder.useSharding(i, 10)
@@ -270,7 +307,7 @@ public static void main(String[] args) throws Exception
 {
     DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
     builder.setToken(args[0]);
-    builder.addEventListener(new MessageListener());
+    builder.addEventListeners(new MessageListener());
     builder.build();
 }
 ```
@@ -282,13 +319,13 @@ that Discord provides.
 Instances of these entities are created and deleted by JDA when Discord instructs it. This means
 the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
 This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
-When Discord instructs JDA to delete entities they are simply removed from the JDA cache and lose their references.
-Once that happens nothing in JDA interacts or updates the instances of those entities and they become useless. Discord
+When Discord instructs JDA to delete entities, they are simply removed from the JDA cache and lose their references.
+Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless. Discord
 may instruct to delete these entities randomly for cache synchronization with the API.
 
 **It is not recommended to store _any_ of these entities for a longer period of time!**
-Instead of keeping (e.g.) a `User` instance in some field an ID should be used. With the ID of a user
-you can use `getUserById(id)` to get and keep the user reference in a local variable. (see below)
+Instead of keeping (e.g.) a `User` instance in some field, an ID should be used. With the ID of a user,
+you can use `getUserById(id)` to get and keep the user reference in a local variable (see below).
 
 ### Fake Entities
 
@@ -301,20 +338,20 @@ of any of the guilds available to the bot.
 
 ### Entity Updates
 
-When an entity is updated through its manager they will send a request to the Discord API which will update the state
+When an entity is updated through its manager, they will send a request to the Discord API which will update the state
 of the entity. The success of this request **does not** imply the entity has been updated yet. All entities are updated
 by the aforementioned **Gateway Events** which means you cannot rely on the cache being updated yet once the
 execution of a RestAction has completed. Some requests rely on the cache being updated to correctly update the entity.
 An example of this is updating roles of a member which overrides all roles of the member by sending a list of the
 new set of roles. This is done by first checking the current cache, the roles the member has right now, and appending
-or removing the requested roles. If the cache has not yet been updated by an event this will result in unexpected behavior.
+or removing the requested roles. If the cache has not yet been updated by an event, this will result in unexpected behavior.
 
 ### Entity Deletion
 
-Discord may request that a client (the JDA session) invalidates its entire cache. When this happens JDA will
+Discord may request that a client (the JDA session) invalidates its entire cache. When this happens, JDA will
 remove all of its current entities and reconnect the session. This is signaled through the `ReconnectEvent`.
-When entities are removed from the JDA cache they lose access to the encapsulating entities. For instance
-a channel loses access to its guild. Once that happens they are unable to make any API requests through RestAction
+When entities are removed from the JDA cache, they lose access to the encapsulating entities. For instance,
+a channel loses access to its guild. Once that happens, they are unable to make any API requests through RestAction
 and instead throw an `IllegalStateException`. It is **highly recommended** to only keep references to entities
 by storing their **id** and using the respective `get...ById(id)` method when needed.
 
@@ -492,6 +529,19 @@ to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
+### [Lavalink](https://github.com/frederikam/Lavalink)
+
+Created and maintained by [Frederik Mikkelsen](https://github.com/Frederikam), the creator of FredBoat.
+
+Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalink was built with scalability in mind,
+and allows streaming music via many servers. It supports most of Lavaplayer's features.
+
+Lavalink is used by many large bots, as well as bot developers who can not use a Java library like Lavaplayer.
+If you plan on serving music on a smaller scale with JDA it is often preferable to just use Lavaplayer directly
+as it is easier.
+
+[Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
+
 ### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
 
 Created and maintained by [jagrosh](https://github.com/jagrosh).
@@ -555,10 +605,9 @@ An example bot for this can be found at [Reactive JDA Bot](https://github.com/Mi
 More can be found in our github organization: [JDA-Applications](https://github.com/JDA-Applications)
 
 ## Contributing to JDA
-If you want to contribute to JDA, make sure to base your branch off of our **v4** branch (or a feature-branch)
-and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 
-It is also highly recommended to get in touch with the Developers before opening Pull Requests (either through an issue or the Discord servers mentioned above).<br>
+If you want to contribute to JDA, make sure to base your branch off of our **development** branch (or a feature-branch)
+and create your PR into that **same** branch. **We will be rejecting any PRs between branches or into release branches!**
 It is very possible that your change might already be in development or you missed something.
 
 More information can be found at the wiki page [Contributing](https://github.com/DV8FromTheWorld/JDA/wiki/5\)-Contributing)
@@ -589,7 +638,7 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.5**
+   * Version: **2.9**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
@@ -601,7 +650,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
-   * Version: **2.9.8**
+   * Version: **2.10.1**
    * [Github](https://github.com/FasterXML/jackson)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j

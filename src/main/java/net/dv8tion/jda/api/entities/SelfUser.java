@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
 
@@ -23,6 +24,8 @@ import javax.annotation.Nullable;
 
 /**
  * Represents the currently logged in account.
+ *
+ * @see JDA#getSelfUser()
  */
 public interface SelfUser extends User
 {

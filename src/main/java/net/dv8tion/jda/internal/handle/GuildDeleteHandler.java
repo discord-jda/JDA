@@ -46,8 +46,9 @@ public class GuildDeleteHandler extends SocketHandler
     protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("id");
-        boolean wasInit = getJDA().getGuildSetupController().onDelete(id, content);
-        if (wasInit)
+        GuildSetupController setupController = getJDA().getGuildSetupController();
+        boolean wasInit = setupController.onDelete(id, content);
+        if (wasInit || setupController.isUnavailable(id))
             return null;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(id);
@@ -61,19 +62,8 @@ public class GuildDeleteHandler extends SocketHandler
 
         //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
         // ignore the event
-        if (!guild.isAvailable() && unavailable)
+        if (setupController.isUnavailable(id) && unavailable)
             return null;
-
-        if (unavailable)
-        {
-            guild.setAvailable(false);
-            getJDA().handleEvent(
-                    new GuildUnavailableEvent(
-                            getJDA(), responseNumber,
-                            guild
-                    ));
-            return null;
-        }
 
         //Remove everything from global cache
         // this prevents some race-conditions for getting audio managers from guilds
@@ -150,10 +140,22 @@ public class GuildDeleteHandler extends SocketHandler
             });
         }
 
-        getJDA().handleEvent(
-            new GuildLeaveEvent(
-                getJDA(), responseNumber,
-                guild));
+        if (unavailable)
+        {
+            setupController.onUnavailable(id);
+            guild.setAvailable(false);
+            getJDA().handleEvent(
+                new GuildUnavailableEvent(
+                    getJDA(), responseNumber,
+                    guild));
+        }
+        else
+        {
+            getJDA().handleEvent(
+                new GuildLeaveEvent(
+                    getJDA(), responseNumber,
+                    guild));
+        }
         getJDA().getEventCache().clear(EventCache.Type.GUILD, id);
         return null;
     }

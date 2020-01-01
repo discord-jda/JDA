@@ -16,7 +16,6 @@
 package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -79,7 +78,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
     @Nullable
     public Member getMember()
     {
-        return isFromType(ChannelType.TEXT) && !isWebhookMessage() ? getGuild().getMember(getAuthor()) : null;
+        return message.getMember();
     }
 
     /**

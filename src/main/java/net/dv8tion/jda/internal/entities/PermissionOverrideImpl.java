@@ -23,20 +23,24 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class PermissionOverrideImpl implements PermissionOverride
 {
     private final long id;
-    private final UpstreamReference<GuildChannel> channel;
-    private final IPermissionHolder permissionHolder;
+    private final SnowflakeReference<GuildChannel> channel;
+    private final ChannelType channelType;
+    private final boolean role;
+    private final JDAImpl api;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile PermissionOverrideAction manager;
@@ -44,11 +48,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(GuildChannel channel, long id, IPermissionHolder permissionHolder)
+    public PermissionOverrideImpl(GuildChannel channel, IPermissionHolder permissionHolder)
     {
-        this.channel = new UpstreamReference<>(channel);
-        this.id = id;
-        this.permissionHolder = permissionHolder;
+        this.role = permissionHolder instanceof Role;
+        this.channelType = channel.getType();
+        this.api = (JDAImpl) channel.getJDA();
+        this.channel = new SnowflakeReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
+        this.id = permissionHolder.getIdLong();
     }
 
     @Override
@@ -94,26 +100,26 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public JDA getJDA()
     {
-        return getChannel().getJDA();
+        return api;
     }
 
     @Override
     public Member getMember()
     {
-        return isMemberOverride() ? (Member) permissionHolder : null;
+        return getGuild().getMemberById(id);
     }
 
     @Override
     public Role getRole()
     {
-        return isRoleOverride() ? (Role) permissionHolder : null;
+        return getGuild().getRoleById(id);
     }
 
     @Nonnull
     @Override
     public GuildChannel getChannel()
     {
-        return channel.get();
+        return channel.resolve();
     }
 
     @Nonnull
@@ -126,13 +132,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public boolean isMemberOverride()
     {
-        return permissionHolder instanceof Member;
+        return !role;
     }
 
     @Override
     public boolean isRoleOverride()
     {
-        return permissionHolder instanceof Role;
+        return role;
     }
 
     @Nonnull
@@ -161,10 +167,14 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
-        @SuppressWarnings("ConstantConditions")
-        String targetId = isRoleOverride() ? getRole().getId() : getMember().getUser().getId();
-        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(getChannel().getId(), targetId);
+        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(channel.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return id;
     }
 
     public PermissionOverrideImpl setAllow(long allow)
@@ -187,19 +197,18 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!(o instanceof PermissionOverrideImpl))
             return false;
         PermissionOverrideImpl oPerm = (PermissionOverrideImpl) o;
-        return this.permissionHolder.equals(oPerm.permissionHolder) && this.getChannel().equals(oPerm.getChannel());
+        return id == oPerm.id && this.channel.getIdLong() == oPerm.channel.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return toString().hashCode();
+        return Objects.hash(id, channel.getIdLong());
     }
 
     @Override
     public String toString()
     {
-        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + getChannel().getId() + " | " + id + ")";
+        return "PermOver:(" + (isMemberOverride() ? "M" : "R") + ")(" + channel.getId() + " | " + getId() + ")";
     }
-
 }

@@ -38,5 +38,6 @@ public enum TargetType
     INVITE,
     WEBHOOK,
     EMOTE,
+    INTEGRATION,
     UNKNOWN
 }

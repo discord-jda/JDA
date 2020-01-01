@@ -126,7 +126,7 @@ public class AuditLogPaginationActionImpl
         DataArray entries = obj.getArray("audit_log_entries");
 
         List<AuditLogEntry> list = new ArrayList<>(entries.length());
-        EntityBuilder builder = api.get().getEntityBuilder();
+        EntityBuilder builder = api.getEntityBuilder();
 
         TLongObjectMap<DataObject> userMap = new TLongObjectHashMap<>();
         for (int i = 0; i < users.length(); i++)

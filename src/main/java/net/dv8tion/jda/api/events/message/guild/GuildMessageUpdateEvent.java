@@ -70,6 +70,6 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
     @Nullable
     public Member getMember()
     {
-        return getGuild().getMember(getAuthor());
+        return message.getMember();
     }
 }

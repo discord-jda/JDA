@@ -126,6 +126,6 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Override
     protected void handleSuccess(final Response response, final Request<Invite> request)
     {
-        request.onSuccess(this.api.get().getEntityBuilder().createInvite(response.getObject()));
+        request.onSuccess(this.api.getEntityBuilder().createInvite(response.getObject()));
     }
 }
