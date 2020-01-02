@@ -336,16 +336,16 @@ public class BotRateLimiter extends RateLimiter
 
                 try
                 {
-                    rateLimit = requester.execute(request).get(); //TODO: Make this blocking again, the okhttp async is bad
+                    rateLimit = requester.execute(request);
                     if (rateLimit != null)
                         break; // this means we hit a hard rate limit (429) so the request needs to be retried
 
                     // The request went through so we can remove it
                     iterator.remove();
                 }
-                catch (InterruptedException | ExecutionException ex)
+                catch (Exception ex)
                 {
-                    log.warn("Interrupted while working on requests", ex);
+                    log.error("Encountered exception trying to execute request", ex);
                     break;
                 }
             }
@@ -357,6 +357,12 @@ public class BotRateLimiter extends RateLimiter
         public Queue<Request> getRequests()
         {
             return requests;
+        }
+
+        @Override
+        public String toString()
+        {
+            return bucketId;
         }
     }
 }
