@@ -206,9 +206,19 @@ public class BotRateLimiter extends RateLimiter
                     log.error("Encountered global rate limit! Retry-After: {} ms", retryAfter);
                 }
                 // Handle hard rate limit, pretty much just log that it happened
-                else if (response.code() == 429 && (hash == null || !wasUnlimited))
+                else if (response.code() == 429)
                 {
-                    log.warn("Encountered 429 on bucket {}", bucket.bucketId);
+                    // Update the bucket to the new information
+                    String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
+                    long retryAfter = parseLong(retryAfterHeader);
+                    bucket.remaining = 0;
+                    bucket.reset = getNow() + retryAfter;
+                    // don't log warning if we are switching bucket, this means it was an issue with an un-hashed route that is now resolved
+                    if (hash == null || !wasUnlimited)
+                        log.warn("Encountered 429 on bucket {} Retry-After: {} ms", bucket.bucketId, retryAfter);
+                    else
+                        log.debug("Encountered 429 on bucket {} Retry-After: {} ms", bucket.bucketId, retryAfter);
+                    return bucket;
                 }
 
                 // If hash is null this means we didn't get enough information to update a bucket
