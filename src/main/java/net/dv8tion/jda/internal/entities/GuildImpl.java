@@ -47,13 +47,19 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
-import net.dv8tion.jda.internal.requests.restaction.*;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
-import net.dv8tion.jda.internal.utils.cache.*;
+import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -1485,9 +1491,9 @@ public class GuildImpl implements Guild
     public void pruneChannelOverrides(long channelId)
     {
         WebSocketClient.LOG.debug("Pruning cached overrides for channel with id {}", channelId);
-        overrideMap.transformValues((value) -> {
+        overrideMap.retainEntries((key, value) -> {
             DataObject removed = value.remove(channelId);
-            return value.isEmpty() ? null : value;
+            return !value.isEmpty();
         });
     }
 
