@@ -67,21 +67,23 @@ public class BotRateLimiter extends RateLimiter
         // We will keep the hashes in memory since they are very limited (by the amount of possible routes)
         MiscUtil.locked(bucketLock, () -> {
             int size = bucket.size();
-            Iterator<String> keys = bucket.keySet().iterator();
+            Iterator<Map.Entry<String, Bucket>> entries = bucket.entrySet().iterator();
 
-            while (keys.hasNext())
+            while (entries.hasNext())
             {
-                String key = keys.next();
-                Bucket bucket = this.bucket.get(key);
+                Map.Entry<String, Bucket> entry = entries.next();
+                String key = entry.getKey();
+                Bucket bucket = entry.getValue();
                 if (bucket.isUnlimited() && bucket.requests.isEmpty())
-                    keys.remove(); // remove unlimited if requests are empty
+                    entries.remove(); // remove unlimited if requests are empty
                 // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
                 else if (bucket.requests.isEmpty() && bucket.reset <= getNow())
-                    keys.remove();
+                    entries.remove();
             }
+            // Log how many buckets were removed
             size -= bucket.size();
             if (size > 0)
-            log.debug("Removed {} outdated buckets", size);
+                log.debug("Removed {} outdated buckets", size);
         });
     }
 
