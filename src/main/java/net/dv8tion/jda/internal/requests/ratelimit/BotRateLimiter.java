@@ -185,6 +185,7 @@ public class BotRateLimiter extends RateLimiter
                 Bucket bucket = getBucket(route, true);
                 Headers headers = response.headers();
 
+                boolean wasUnlimited = bucket.isUnlimited();
                 boolean global = headers.get(GLOBAL_HEADER) != null;
                 String hash = headers.get(HASH_HEADER);
                 long now = getNow();
@@ -197,7 +198,7 @@ public class BotRateLimiter extends RateLimiter
                 }
 
                 // Handle hard rate limit, pretty much just log that it happened
-                if (response.code() == 429)
+                if (response.code() == 429 && (hash == null || !wasUnlimited))
                 {
                     log.warn("Encountered 429 on bucket {}", bucket.bucketId);
                 }
