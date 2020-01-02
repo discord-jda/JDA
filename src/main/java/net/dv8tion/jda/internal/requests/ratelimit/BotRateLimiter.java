@@ -172,11 +172,15 @@ public class BotRateLimiter extends RateLimiter
                 // Update the bucket parameters with new information
                 String limitHeader = headers.get(LIMIT_HEADER);
                 String remainingHeader = headers.get(REMAINING_HEADER);
-                String resetHeader = headers.get(RESET_AFTER_HEADER);
+                String resetAfterHeader = headers.get(RESET_AFTER_HEADER);
+                String resetHeader = headers.get(RESET_HEADER);
 
                 bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
                 bucket.remaining = (int) parseLong(remainingHeader);
-                bucket.reset = now + parseDouble(resetHeader);
+                if (requester.getJDA().isRelativeRateLimit())
+                    bucket.reset = now + parseDouble(resetAfterHeader);
+                else
+                    bucket.reset = parseDouble(resetHeader);
                 log.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, bucket.limit, bucket.reset - now);
                 return bucket;
             }
