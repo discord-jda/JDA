@@ -31,6 +31,42 @@ import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+/*
+
+** How does it work? **
+
+A bucket is determined via the Path+Method+Major in the following way:
+
+    1. Get Hash from Path+Method (we call this route)
+    2. Get bucket from Hash+Major (we call this bucketid)
+
+If no hash is known we default to the constant `unlimited` hash. The hash is loaded from HTTP responses using the "X-RateLimit-Bucket" response header.
+This hash is per Method+Path and can be stored indefinitely once received.
+Some endpoints don't return a hash, this means that the endpoint is **unlimited** and will be in queue with only the major parameter.
+
+To explain this further, lets look at the example of message history. The endpoint to fetch message history is "GET/channels/{channel.id}/messages".
+This endpoint does not have any rate limit (unlimited) and will thus use the hash "unlimited".
+The bucket id for this will be "unlimited:guild_id:{channel.id}:webhook_id" where "{channel.id}" would be replaced with the respective id.
+This means you can fetch history concurrently for multiple channels but it will be in sequence for the same channel.
+
+If the endpoint is not unlimited we will receive a hash on the first response.
+Once this happens every unlimited bucket will start moving its queue to the correct bucket.
+This is done during the queue work iteration so many requests to one endpoint would be moved correctly.
+
+For example, the first message sending:
+
+    public void onReady(ReadyEvent event) {
+      TextChannel channel = event.getJDA().getTextChannelById("123");
+      for (int i = 1; i <= 100; i++) {
+        channel.sendMessage("Message: " + i).queue();
+      }
+    }
+
+This will send 100 messages on startup. At this point we don't yet know the hash for this route so we put them all in `"unlimited:guild_id:123:webhook_id"`.
+The bucket iterates the requests in sync and gets the first response. This response provides the hash for this route and we create a bucket for it.
+Once the response is handled we continue with the next request in the unlimited bucket and notice the new bucket. We then move all related requests to this bucket.
+
+ */
 public class BotRateLimiter extends RateLimiter
 {
     private static final String RESET_AFTER_HEADER = "X-RateLimit-Reset-After";
