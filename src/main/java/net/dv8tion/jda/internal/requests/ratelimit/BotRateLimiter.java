@@ -39,7 +39,7 @@ public class BotRateLimiter extends RateLimiter
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
     private static final String GLOBAL_HEADER = "X-RateLimit-Global";
     private static final String HASH_HEADER = "X-RateLimit-Bucket";
-    private static final String UNLIMITED_BUCKET = "unlimited";
+    private static final String UNLIMITED_BUCKET = "unlimited"; // we generate an unlimited bucket for every major parameter configuration
 
     private final ReentrantLock bucketLock = new ReentrantLock();
     // Route -> Hash
@@ -53,7 +53,6 @@ public class BotRateLimiter extends RateLimiter
     public BotRateLimiter(Requester requester)
     {
         super(requester);
-        bucket.put("unlimited", new Bucket("unlimited"));
         cleanupWorker = getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
     }
 
@@ -74,11 +73,10 @@ public class BotRateLimiter extends RateLimiter
             {
                 String key = keys.next();
                 Bucket bucket = this.bucket.get(key);
-                if (bucket.isUnlimited())
-                    continue; // never remove the unlimited bucket!
-
+                if (bucket.isUnlimited() && bucket.requests.isEmpty())
+                    keys.remove(); // remove unlimited if requests are empty
                 // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
-                if (bucket.requests.isEmpty() && bucket.reset <= getNow())
+                else if (bucket.requests.isEmpty() && bucket.reset <= getNow())
                     keys.remove();
             }
             size -= bucket.size();
@@ -133,11 +131,6 @@ public class BotRateLimiter extends RateLimiter
         {
             bucketLock.unlock();
         }
-    }
-
-    private String getBucketId(Route.CompiledRoute route)
-    {
-        return route.getBaseRoute().getRoute() + ":" + route.getMajorParameters();
     }
 
     private Bucket updateBucket(Route.CompiledRoute route, okhttp3.Response response)
@@ -201,8 +194,6 @@ public class BotRateLimiter extends RateLimiter
         {
             // Retrieve the hash via the route
             String hash = getRouteHash(route.getBaseRoute());
-            if (hash.equals(UNLIMITED_BUCKET)) // unlimited = no hash present (unlimited remaining uses)
-                return this.bucket.get(UNLIMITED_BUCKET);
             // Get or create a bucket for the hash + major parameters
             String bucketId = hash + ":" + route.getMajorParameters();
             Bucket bucket = this.bucket.get(bucketId);
@@ -295,7 +286,7 @@ public class BotRateLimiter extends RateLimiter
 
         private boolean isUnlimited()
         {
-            return bucketId.equals("unlimited");
+            return bucketId.startsWith("unlimited");
         }
 
         private void backoff()
