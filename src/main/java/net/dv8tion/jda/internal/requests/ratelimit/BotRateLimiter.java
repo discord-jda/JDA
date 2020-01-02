@@ -83,11 +83,16 @@ public class BotRateLimiter extends RateLimiter
     private final Map<String, Bucket> bucket = new ConcurrentHashMap<>();
     // Bucket -> Rate-Limit Worker
     private final Map<Bucket, Future<?>> rateLimitQueue = new ConcurrentHashMap<>();
-    private final Future<?> cleanupWorker;
+    private Future<?> cleanupWorker;
 
     public BotRateLimiter(Requester requester)
     {
         super(requester);
+    }
+
+    @Override
+    public void init()
+    {
         cleanupWorker = getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
     }
 
@@ -131,7 +136,8 @@ public class BotRateLimiter extends RateLimiter
     protected void shutdown()
     {
         super.shutdown();
-        cleanupWorker.cancel(false);
+        if (cleanupWorker != null)
+            cleanupWorker.cancel(false);
     }
 
     @Override

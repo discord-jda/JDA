@@ -228,6 +228,7 @@ public class JDAImpl implements JDA
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
+        requester.getRateLimiter().init();
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
