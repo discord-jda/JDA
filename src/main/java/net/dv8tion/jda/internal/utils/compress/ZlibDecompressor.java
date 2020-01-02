@@ -56,7 +56,7 @@ public class ZlibDecompressor implements Decompressor
         // Check if the buffer has been collected by the GC or not
         ByteArrayOutputStream buffer = decompressBuffer.get();
         if (buffer == null) // create a ne buffer because the GC got it
-            decompressBuffer = newDecompressBuffer();
+            decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
         return buffer;
     }
 
