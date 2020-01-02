@@ -1610,6 +1610,8 @@ public interface Message extends ISnowflake, Formattable
      *         The suppress-embeds request was attempted after the Message had been deleted.</li>
      * </ul>
      *
+     * @param  suppressed
+     *         Whether or not the embed should be suppressed
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -1619,17 +1621,18 @@ public interface Message extends ISnowflake, Formattable
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and the message was not sent by the currently logged in account.
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      * @see    #isSuppressedEmbeds()
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> suppressEmbeds(boolean suppressed);
+    AuditableRestAction<Void> suppressEmbeds(boolean suppressed);
 
     /**
-     * Returns whether or not Embeds for this Message are suppressed.
-     * When Embeds are suppressed, They are not shown on Clients nor provided via API until un-suppressed.
-     * <br>This is a shortcut method for checking if {@link #getFlags() getFlags()} contains {@link}
+     * Whether embeds are suppressed for this message.
+     * When Embeds are suppressed, they are not displayed on clients nor provided via API until un-suppressed.
+     * <br>This is a shortcut method for checking if {@link #getFlags() getFlags()} contains
+     * {@link net.dv8tion.jda.api.entities.Message.MessageFlag#EMBEDS_SUPPRESSED MessageFlag#EMBEDS_SUPPRESSED}
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -1736,32 +1739,54 @@ public interface Message extends ISnowflake, Formattable
          */
         URGENT(4);
 
-        private final int offset;
+        private final int value;
 
         MessageFlag(int offset)
         {
-            this.offset = offset;
+            this.value = 1 << offset;
         }
 
-        public int getOffset()
+        /**
+         * Returns the value of the MessageFlag as represented in the bitfield. It is always a potency of 2 (single bit)
+         * @return Non-Zero bit value of the field
+         */
+        public int getValue()
         {
-            return offset;
+            return value;
         }
 
-        public static EnumSet<MessageFlag> fromValue(int value)
+        /**
+         * Given a bitfield, this function extracts all Enum values according to their bit values and returns
+         * an EnumSet containing all matching MessageFlags
+         * @param  bitfield
+         *         Non-Negative integer representing a bitfield of MessageFlags
+         * @return Never-Null EnumSet of MessageFlags being found in the bitfield
+         */
+        @Nonnull
+        public static EnumSet<MessageFlag> fromBitField(int bitfield)
         {
             Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
-                .filter(e -> ((1 << e.offset) & value) > 0)
+                .filter(e -> (e.value & bitfield) > 0)
                 .collect(Collectors.toSet());
             return set.isEmpty() ? EnumSet.noneOf(MessageFlag.class) : EnumSet.copyOf(set);
         }
 
-        public static int toBitField(Collection<MessageFlag> coll)
+        /**
+         * Converts a Collection of MessageFlags back to the integer representing the bitfield.
+         * This is the reverse operation of {@link #fromBitField(int)}.
+         * @param  coll
+         *         A Non-Null Collection of MessageFlags
+         * @throws IllegalArgumentException
+         *         If the provided Collection is {@code null}
+         * @return Integer value of the bitfield representing the given MessageFlags
+         */
+        public static int toBitField(@Nonnull Collection<MessageFlag> coll)
         {
+            Checks.notNull(coll, "Collection");
             int flags = 0;
             for (MessageFlag messageFlag : coll)
             {
-                flags |= 1 << messageFlag.offset;
+                flags |= messageFlag.value;
             }
             return flags;
         }

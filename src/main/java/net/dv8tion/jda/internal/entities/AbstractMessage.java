@@ -520,7 +520,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public RestAction<Void> suppressEmbeds(boolean suppressed)
+    public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
     {
         unsupported();
         return null;

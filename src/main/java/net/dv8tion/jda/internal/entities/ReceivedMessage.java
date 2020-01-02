@@ -30,8 +30,8 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
@@ -67,8 +67,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageEmbed> embeds;
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
-    protected final int internalFlags;
-    protected final EnumSet<MessageFlag> flags;
+    protected final int flags;
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -104,8 +103,7 @@ public class ReceivedMessage extends AbstractMessage
         this.embeds = Collections.unmodifiableList(embeds);
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
-        this.internalFlags = flags;
-        this.flags = MessageFlag.fromValue(internalFlags);
+        this.flags = flags;
     }
 
     @Nonnull
@@ -804,34 +802,30 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> suppressEmbeds(boolean suppressed)
+    public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
     {
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
-        int newFlags = internalFlags;
-        int suppressionValue = 1 << MessageFlag.EMBEDS_SUPPRESSED.getOffset();
+        int newFlags = flags;
+        int suppressionValue = MessageFlag.EMBEDS_SUPPRESSED.getValue();
         if (suppressed)
-        {
             newFlags |= suppressionValue;
-        }
         else
-        {
             newFlags &= ~suppressionValue;
-        }
-        return new RestActionImpl<>(jda, route, DataObject.empty().put("flags", newFlags));
+        return new AuditableRestActionImpl<>(jda, route, DataObject.empty().put("flags", newFlags));
     }
 
     @Override
     public boolean isSuppressedEmbeds()
     {
-        return this.flags.contains(MessageFlag.EMBEDS_SUPPRESSED);
+        return (this.flags | MessageFlag.EMBEDS_SUPPRESSED.getValue()) > 0;
     }
 
     @Nonnull
     @Override
     public EnumSet<MessageFlag> getFlags()
     {
-        return this.flags.clone();
+        return MessageFlag.fromBitField(flags);
     }
 
     @Override
