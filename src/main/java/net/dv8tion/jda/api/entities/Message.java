@@ -1725,7 +1725,16 @@ public interface Message extends ISnowflake, Formattable
          * Embeds are suppressed on the Message.
          * @see net.dv8tion.jda.api.entities.Message#isSuppressedEmbeds() Message#isSuppressedEmbeds()
          */
-        EMBEDS_SUPPRESSED(2);
+        EMBEDS_SUPPRESSED(2),
+        /**
+         * Indicates, that the source message of this crosspost was deleted.
+         * This should only be possible in combination with {@link #IS_CROSSPOST}
+         */
+        SOURCE_MESSAGE_DELETED(3),
+        /**
+         * Indicates, that this Message came from the urgent message system
+         */
+        URGENT(4);
 
         private final int offset;
 
