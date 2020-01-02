@@ -142,6 +142,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
+    @SuppressWarnings("rawtypes")
     protected void queueRequest(Request request)
     {
         // Create bucket and enqueue request
@@ -273,6 +274,7 @@ public class BotRateLimiter extends RateLimiter
         return System.currentTimeMillis();
     }
 
+    @SuppressWarnings("rawtypes")
     private class Bucket implements IBucket, Runnable
     {
         private final String bucketId;
