@@ -197,18 +197,18 @@ public class BotRateLimiter extends RateLimiter
                     bucket = getBucket(route, true);
                 }
 
-                // Handle hard rate limit, pretty much just log that it happened
-                if (response.code() == 429 && (hash == null || !wasUnlimited))
-                {
-                    log.warn("Encountered 429 on bucket {}", bucket.bucketId);
-                }
-
                 // Handle global rate limit if necessary
                 if (global)
                 {
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
                     long retryAfter = parseLong(retryAfterHeader);
                     requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
+                    log.error("Encountered global rate limit! Retry-After: {} ms", retryAfter);
+                }
+                // Handle hard rate limit, pretty much just log that it happened
+                else if (response.code() == 429 && (hash == null || !wasUnlimited))
+                {
+                    log.warn("Encountered 429 on bucket {}", bucket.bucketId);
                 }
 
                 // If hash is null this means we didn't get enough information to update a bucket
