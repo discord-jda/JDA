@@ -27,6 +27,8 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has stopped an {@link Activity}
  * in a {@link Guild}.
+ * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
+ * to be enabled.
  *
  * <p>This is fired for every {@link Guild} the user is part of. If the title of a stream
  * changes a start event is fired before an end event which will replace the activity.

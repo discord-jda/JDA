@@ -1018,26 +1018,17 @@ public interface MessageChannel extends ISnowflake, Formattable
      * overflows in channels with a long message history.</u></b>
      *
      * <h1>Examples</h1>
-     * <pre><code>
-     * public boolean containsMessage(MessageChannel channel, String content, int checkAmount)
-     * {
-     *     for (Message message : channel.<u>getIterableHistory()</u>)
-     *     {
-     *         if (message.getContentRaw().equals(content))
-     *             return true;
-     *         if (checkAmount--{@literal <=} 0) break;
-     *     }
-     *     return false;
+     * <pre>{@code
+     * public CompletableFuture<List<Message>> getMessagesByUser(MessageChannel channel, User user) {
+     *     return channel.getIterableHistory()
+     *         .takeAsync(1000) // Collect 1000 messages
+     *         .thenApply(list ->
+     *             list.stream()
+     *                 .filter(m -> m.getAuthor().equals(user)) // Filter messages by author
+     *                 .collect(Collectors.toList())
+     *         );
      * }
-     *
-     * public List{@literal <Message>} getMessagesByUser(MessageChannel channel, User user)
-     * {
-     *     return channel.<u>getIterableHistory()</u>.stream()
-     *         .limit(1000)
-     *         .filter(m{@literal ->} m.getAuthor().equals(user))
-     *         .collect(Collectors.toList());
-     * }
-     * </code></pre>
+     * }</pre>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}

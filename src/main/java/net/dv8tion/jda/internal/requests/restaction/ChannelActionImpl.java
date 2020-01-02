@@ -248,7 +248,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Override
     protected void handleSuccess(Response response, Request<T> request)
     {
-        EntityBuilder builder = api.get().getEntityBuilder();
+        EntityBuilder builder = api.getEntityBuilder();
         GuildChannel channel;
         switch (type)
         {

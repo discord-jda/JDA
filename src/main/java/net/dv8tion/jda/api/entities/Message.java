@@ -898,7 +898,7 @@ public interface Message extends ISnowflake, Formattable
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
      *
      * <p><u>To delete many messages at once in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * you should use {@link net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(Collection)} instead.</u>
+     * you should use {@link net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(List)} instead.</u>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -914,7 +914,7 @@ public interface Message extends ISnowflake, Formattable
      *         or lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The pin was attempted after the Message had been deleted.</li>
+     *         The message was already deleted at the time the request was sent.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
@@ -1039,7 +1039,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/emote.
+     * showing how many users have reacted with the same emoji/emote.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -1101,7 +1101,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/emote.
+     * showing how many users have reacted with the same emoji/emote.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -1200,7 +1200,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/emote.
+     * showing how many users have reacted with the same emoji/emote.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -1246,7 +1246,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/emote.
+     * showing how many users have reacted with the same emoji/emote.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -1301,7 +1301,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/unicode.
+     * showing how many users have reacted with the same emoji/unicode.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -1353,7 +1353,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/unicode.
+     * showing how many users have reacted with the same emoji/unicode.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -2091,7 +2091,7 @@ public interface Message extends ISnowflake, Formattable
          * The height of the Attachment if this Attachment is an image/video.
          * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
-         * @return int containing image/video Attachment height.
+         * @return int containing image/video Attachment height, or -1 if attachment is neither image nor video.
          */
         public int getHeight()
         {
@@ -2102,7 +2102,7 @@ public interface Message extends ISnowflake, Formattable
          * The width of the Attachment if this Attachment is an image/video.
          * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
-         * @return int containing image/video Attachment width.
+         * @return int containing image/video Attachment width, or -1 if attachment is neither image nor video.
          */
         public int getWidth()
         {

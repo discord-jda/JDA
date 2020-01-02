@@ -16,21 +16,15 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAccessor;
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GuildMemberUpdateHandler extends SocketHandler
 {
@@ -61,85 +55,12 @@ public class GuildMemberUpdateHandler extends SocketHandler
         MemberImpl member = (MemberImpl) guild.getMembersView().get(userId);
         if (member == null)
         {
-            long hashId = id ^ userId;
-            getJDA().getEventCache().cache(EventCache.Type.MEMBER, hashId, responseNumber, allContent, this::handle);
-            EventCache.LOG.debug("Got GuildMember update but Member is not currently present in Guild. HASH_ID: {} JSON: {}", hashId, content);
-            return null;
+            EntityBuilder.LOG.debug("Creating member from GUILD_MEMBER_UPDATE {}", content);
+            member = getJDA().getEntityBuilder().createMember(guild, content);
         }
 
-        Set<Role> currentRoles = member.getRoleSet();
         List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
-
-        //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
-        if (newRoles == null)
-            return null;
-
-        //Find the roles removed.
-        List<Role> removedRoles = new LinkedList<>();
-        each: for (Role role : currentRoles)
-        {
-            for (Iterator<Role> it = newRoles.iterator(); it.hasNext();)
-            {
-                Role r = it.next();
-                if (role.equals(r))
-                {
-                    it.remove();
-                    continue each;
-                }
-            }
-            removedRoles.add(role);
-        }
-
-        if (removedRoles.size() > 0)
-            currentRoles.removeAll(removedRoles);
-        if (newRoles.size() > 0)
-            currentRoles.addAll(newRoles);
-
-        if (removedRoles.size() > 0)
-        {
-            getJDA().handleEvent(
-                    new GuildMemberRoleRemoveEvent(
-                            getJDA(), responseNumber,
-                            member, removedRoles));
-        }
-        if (newRoles.size() > 0)
-        {
-            getJDA().handleEvent(
-                    new GuildMemberRoleAddEvent(
-                            getJDA(), responseNumber,
-                            member, newRoles));
-        }
-        if (content.hasKey("nick"))
-        {
-            String oldNick = member.getNickname();
-            String newNick = content.getString("nick", null);
-            if (!Objects.equals(oldNick, newNick))
-            {
-                member.setNickname(newNick);
-                getJDA().handleEvent(
-                        new GuildMemberUpdateNicknameEvent(
-                                getJDA(), responseNumber,
-                                member, oldNick));
-            }
-        }
-        if (content.hasKey("premium_since"))
-        {
-            long epoch = 0;
-            if (!content.isNull("premium_since"))
-            {
-                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(content.getString("premium_since"));
-                epoch = Instant.from(date).toEpochMilli();
-            }
-            if (epoch != member.getBoostDateRaw())
-            {
-                OffsetDateTime oldTime = member.getTimeBoosted();
-                member.setBoostDate(epoch);
-                getJDA().handleEvent(
-                    new GuildMemberUpdateBoostTimeEvent(
-                        getJDA(), responseNumber,
-                        member, oldTime));
-            }
-        }
+        getJDA().getEntityBuilder().updateMember(guild, member, content, newRoles);
         return null;
     }
 

@@ -49,15 +49,15 @@ public class ChannelDeleteHandler extends SocketHandler
                 return guildId;
         }
 
+        GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         final long channelId = content.getLong("id");
 
         switch (type)
         {
             case STORE:
             {
-                GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
                 StoreChannel channel = getJDA().getStoreChannelsView().remove(channelId);
-                if (channel == null)
+                if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a store channel that is not yet cached. JSON: {}", content);
                     return null;
@@ -72,9 +72,8 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case TEXT:
             {
-                GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
                 TextChannel channel = getJDA().getTextChannelsView().remove(channelId);
-                if (channel == null)
+                if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a text channel that is not yet cached. JSON: {}", content);
                     return null;
@@ -89,9 +88,8 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case VOICE:
             {
-                GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
                 VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);
-                if (channel == null)
+                if (channel == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a voice channel that is not yet cached. JSON: {}", content);
                     return null;
@@ -114,9 +112,8 @@ public class ChannelDeleteHandler extends SocketHandler
             }
             case CATEGORY:
             {
-                GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
                 Category category = getJDA().getCategoriesView().remove(channelId);
-                if (category == null)
+                if (category == null || guild == null)
                 {
                     WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a category channel that is not yet cached. JSON: {}", content);
                     return null;
@@ -162,6 +159,8 @@ public class ChannelDeleteHandler extends SocketHandler
                 WebSocketClient.LOG.debug("CHANNEL_DELETE provided an unknown channel type. JSON: {}", content);
         }
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
+        if (guild != null)
+            guild.pruneChannelOverrides(channelId);
         return null;
     }
 }

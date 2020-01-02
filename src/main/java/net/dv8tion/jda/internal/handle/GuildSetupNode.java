@@ -25,6 +25,7 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.guild.UnavailableGuildJoinedEvent;
@@ -36,7 +37,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -46,7 +46,7 @@ import java.util.Optional;
 public class GuildSetupNode
 {
     private final long id;
-    private final UpstreamReference<GuildSetupController> controller;
+    private final GuildSetupController controller;
     private final List<DataObject> cachedEvents = new LinkedList<>();
     private TLongObjectMap<DataObject> members;
     private TLongSet removedMembers;
@@ -55,17 +55,17 @@ public class GuildSetupNode
     private boolean requestedSync;
     boolean requestedChunk;
 
-    final boolean join;
+    final Type type;
     final boolean sync;
     boolean firedUnavailableJoin = false;
     boolean markedUnavailable = false;
     GuildSetupController.Status status = GuildSetupController.Status.INIT;
 
-    GuildSetupNode(long id, GuildSetupController controller, boolean join)
+    GuildSetupNode(long id, GuildSetupController controller, Type type)
     {
         this.id = id;
-        this.controller = new UpstreamReference<>(controller);
-        this.join = join;
+        this.controller = controller;
+        this.type = type;
         this.sync = controller.isClient();
     }
 
@@ -102,9 +102,14 @@ public class GuildSetupNode
         return knownMembers.size();
     }
 
+    public Type getType()
+    {
+        return type;
+    }
+
     public boolean isJoin()
     {
-        return join;
+        return type == Type.JOIN;
     }
 
     public boolean isMarkedUnavailable()
@@ -137,7 +142,7 @@ public class GuildSetupNode
                 "expectedMemberCount=" + expectedMemberCount + ", " +
                 "requestedSync="       + requestedSync + ", " +
                 "requestedChunk="      + requestedChunk + ", " +
-                "join="                + join + ", " +
+                "type="                + type + ", " +
                 "sync="                + sync + ", " +
                 "markedUnavailable="   + markedUnavailable +
             '}';
@@ -160,7 +165,7 @@ public class GuildSetupNode
 
     private GuildSetupController getController()
     {
-        return controller.get();
+        return controller;
     }
 
     void updateStatus(GuildSetupController.Status status)
@@ -204,7 +209,7 @@ public class GuildSetupNode
         }
         else
         {
-            getController().addGuildForSyncing(id, join);
+            getController().addGuildForSyncing(id, isJoin());
             requestedSync = true;
         }
     }
@@ -227,7 +232,7 @@ public class GuildSetupNode
         this.markedUnavailable = unavailable;
         if (unavailable)
         {
-            if (!firedUnavailableJoin && join)
+            if (!firedUnavailableJoin && isJoin())
             {
                 firedUnavailableJoin = true;
                 JDAImpl api = getController().getJDA();
@@ -240,7 +245,7 @@ public class GuildSetupNode
             // We are using a client-account and joined a guild
             //  in that case we need to sync before doing anything
             updateStatus(GuildSetupController.Status.SYNCING);
-            getController().addGuildForSyncing(id, join);
+            getController().addGuildForSyncing(id, isJoin());
             requestedSync = true;
             return;
         }
@@ -283,7 +288,7 @@ public class GuildSetupNode
             members.put(id, obj);
         }
 
-        if (members.size() >= expectedMemberCount)
+        if (members.size() >= expectedMemberCount || !getController().getJDA().chunkGuild(id))
         {
             completeSetup();
             return false;
@@ -385,25 +390,31 @@ public class GuildSetupNode
         for (TLongIterator it = removedMembers.iterator(); it.hasNext(); )
             members.remove(it.next());
         removedMembers.clear();
-        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members);
+        GuildImpl guild = api.getEntityBuilder().createGuild(id, partialGuild, members, expectedMemberCount);
         updateAudioManagerReference(guild);
-        if (join)
+        switch (type)
         {
+        case AVAILABLE:
+            api.handleEvent(new GuildAvailableEvent(api, api.getResponseTotal(), guild));
+            getController().remove(id);
+            break;
+        case JOIN:
             api.handleEvent(new GuildJoinEvent(api, api.getResponseTotal(), guild));
             if (requestedChunk)
                 getController().ready(id);
             else
                 getController().remove(id);
-        }
-        else
-        {
+            break;
+        default:
             api.handleEvent(new GuildReadyEvent(api, api.getResponseTotal(), guild));
             getController().ready(id);
+            break;
         }
         updateStatus(GuildSetupController.Status.READY);
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
+        guild.acknowledgeMembers();
     }
 
     private void ensureMembers()
@@ -412,10 +423,14 @@ public class GuildSetupNode
         members = new TLongObjectHashMap<>(expectedMemberCount);
         removedMembers = new TLongHashSet();
         DataArray memberArray = partialGuild.getArray("members");
-        if (memberArray.length() < expectedMemberCount && !requestedChunk)
+        if (!getController().getJDA().chunkGuild(id))
+        {
+            handleMemberChunk(memberArray);
+        }
+        else if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
             updateStatus(GuildSetupController.Status.CHUNKING);
-            getController().addGuildForChunking(id, join);
+            getController().addGuildForChunking(id, isJoin());
             requestedChunk = true;
         }
         else if (handleMemberChunk(memberArray) && !requestedChunk)
@@ -430,7 +445,7 @@ public class GuildSetupNode
                 expectedMemberCount, memberArray.length(), members.size(), id);
             members.clear();
             updateStatus(GuildSetupController.Status.CHUNKING);
-            getController().addGuildForChunking(id, join);
+            getController().addGuildForChunking(id, isJoin());
             requestedChunk = true;
         }
     }
@@ -479,5 +494,10 @@ public class GuildSetupNode
             }
             audioManagerMap.put(id, newMng);
         }
+    }
+
+    public enum Type
+    {
+        INIT, JOIN, AVAILABLE
     }
 }

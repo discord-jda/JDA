@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.requests;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -107,6 +109,7 @@ public class Route
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route ADD_MEMBER =         new Route(PUT,    "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route GET_MEMBER =         new Route(GET,    "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
         public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune",             "guild_id");
         public static final Route PRUNE_MEMBERS =      new Route(POST,   "guilds/{guild_id}/prune",             "guild_id");
@@ -394,6 +397,8 @@ public class Route
             this(baseRoute, ratelimitRoute, compiledRoute, false);
         }
 
+        @Nonnull
+        @CheckReturnValue
         public CompiledRoute withQueryParams(String... params)
         {
             Checks.check(params.length >= 2, "params length must be at least 2");

@@ -46,7 +46,7 @@ import java.util.List;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder
+public interface Member extends IMentionable, IPermissionHolder, IFakeable
 {
     /**
      * The user wrapped by this Entity.
@@ -74,6 +74,8 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
+     * <br>If the member was loaded through a presence update (lazy loading) this will be identical
+     * to the creation time of the guild.
      *
      * @return The Join Date.
      */
