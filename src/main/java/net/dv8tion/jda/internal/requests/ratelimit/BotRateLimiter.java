@@ -18,11 +18,9 @@ package net.dv8tion.jda.internal.requests.ratelimit;
 
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.Headers;
 
 import java.util.Iterator;
@@ -75,6 +73,7 @@ public class BotRateLimiter extends RateLimiter
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
     private static final String GLOBAL_HEADER = "X-RateLimit-Global";
     private static final String HASH_HEADER = "X-RateLimit-Bucket";
+    private static final String RETRY_AFTER_HEADER = "Retry-After";
     private static final String UNLIMITED_BUCKET = "unlimited"; // we generate an unlimited bucket for every major parameter configuration
 
     private final ReentrantLock bucketLock = new ReentrantLock();
@@ -199,8 +198,9 @@ public class BotRateLimiter extends RateLimiter
                 // Handle global rate limit if necessary
                 if (global)
                 {
-                    DataObject body = DataObject.fromJson(IOUtil.getBody(response));
-                    requester.getJDA().getSessionController().setGlobalRatelimit(now + body.getLong("retry_after"));
+                    String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
+                    long retryAfter = parseLong(retryAfterHeader);
+                    requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
                 }
 
                 // If hash is null this means we didn't get enough information to update a bucket
