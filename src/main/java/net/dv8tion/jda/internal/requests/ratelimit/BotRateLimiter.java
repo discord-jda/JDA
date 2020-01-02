@@ -224,7 +224,7 @@ public class BotRateLimiter extends RateLimiter
             }
             catch (Exception e)
             {
-                log.error("Encountered Exception while updating a bucket", e);
+                log.error("Encountered Exception while updating a bucket. Code: {} Headers:\n{}", response.code(), response.headers(), e);
                 return getBucket(route, true);
             }
         });
