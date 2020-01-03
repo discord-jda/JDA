@@ -38,6 +38,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Text message received from Discord.
@@ -1590,6 +1591,65 @@ public interface Message extends ISnowflake, Formattable
     MessageReaction.ReactionEmote getReactionById(long id);
 
     /**
+     * Enables/Disables suppression of Embeds on this Message.
+     * <br>Suppressing Embeds is equivalent to pressing the {@code X} in the top-right corner of an Embed inside the Discord client.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The clear-reactions request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
+     *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The suppress-embeds request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The suppress-embeds request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  suppressed
+     *         Whether or not the embed should be suppressed
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the currently logged in account does not have
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
+     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         and the message was not sent by the currently logged in account.
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
+     * @see    #isSuppressedEmbeds()
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> suppressEmbeds(boolean suppressed);
+
+    /**
+     * Whether embeds are suppressed for this message.
+     * When Embeds are suppressed, they are not displayed on clients nor provided via API until un-suppressed.
+     * <br>This is a shortcut method for checking if {@link #getFlags() getFlags()} contains
+     * {@link net.dv8tion.jda.api.entities.Message.MessageFlag#EMBEDS_SUPPRESSED MessageFlag#EMBEDS_SUPPRESSED}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @return Whether or not Embeds are suppressed for this Message.
+     * @see    #suppressEmbeds(boolean)
+     */
+    boolean isSuppressedEmbeds();
+
+    /**
+     * Returns an EnumSet of all {@link Message.MessageFlag MessageFlags} present for this Message.
+     * @return Never-Null EnumSet of present {@link Message.MessageFlag MessageFlags}
+     * @see    Message.MessageFlag
+     */
+    @Nonnull
+    EnumSet<MessageFlag> getFlags();
+
+    /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
      *
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that
@@ -1646,6 +1706,89 @@ public interface Message extends ISnowflake, Formattable
         public Pattern getPattern()
         {
             return pattern;
+        }
+    }
+
+    /**
+     * Enum representing the flags on a Message.
+     * <p>
+     * Note: The Values defined in this Enum are not considered final and only represent the current State of <i>known</i> Flags.
+     */
+    enum MessageFlag
+    {
+        /**
+         * The Message has been published to subscribed Channels (via Channel Following)
+         */
+        CROSSPOSTED(0),
+        /**
+         * The Message originated from a Message in another Channel (via Channel Following)
+         */
+        IS_CROSSPOST(1),
+        /**
+         * Embeds are suppressed on the Message.
+         * @see net.dv8tion.jda.api.entities.Message#isSuppressedEmbeds() Message#isSuppressedEmbeds()
+         */
+        EMBEDS_SUPPRESSED(2),
+        /**
+         * Indicates, that the source message of this crosspost was deleted.
+         * This should only be possible in combination with {@link #IS_CROSSPOST}
+         */
+        SOURCE_MESSAGE_DELETED(3),
+        /**
+         * Indicates, that this Message came from the urgent message system
+         */
+        URGENT(4);
+
+        private final int value;
+
+        MessageFlag(int offset)
+        {
+            this.value = 1 << offset;
+        }
+
+        /**
+         * Returns the value of the MessageFlag as represented in the bitfield. It is always a power of 2 (single bit)
+         * @return Non-Zero bit value of the field
+         */
+        public int getValue()
+        {
+            return value;
+        }
+
+        /**
+         * Given a bitfield, this function extracts all Enum values according to their bit values and returns
+         * an EnumSet containing all matching MessageFlags
+         * @param  bitfield
+         *         Non-Negative integer representing a bitfield of MessageFlags
+         * @return Never-Null EnumSet of MessageFlags being found in the bitfield
+         */
+        @Nonnull
+        public static EnumSet<MessageFlag> fromBitField(int bitfield)
+        {
+            Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
+                .filter(e -> (e.value & bitfield) > 0)
+                .collect(Collectors.toSet());
+            return set.isEmpty() ? EnumSet.noneOf(MessageFlag.class) : EnumSet.copyOf(set);
+        }
+
+        /**
+         * Converts a Collection of MessageFlags back to the integer representing the bitfield.
+         * This is the reverse operation of {@link #fromBitField(int)}.
+         * @param  coll
+         *         A Non-Null Collection of MessageFlags
+         * @throws IllegalArgumentException
+         *         If the provided Collection is {@code null}
+         * @return Integer value of the bitfield representing the given MessageFlags
+         */
+        public static int toBitField(@Nonnull Collection<MessageFlag> coll)
+        {
+            Checks.notNull(coll, "Collection");
+            int flags = 0;
+            for (MessageFlag messageFlag : coll)
+            {
+                flags |= messageFlag.value;
+            }
+            return flags;
         }
     }
 
