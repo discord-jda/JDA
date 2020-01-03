@@ -193,7 +193,12 @@ public class BotRateLimiter extends RateLimiter
                 // Create a new bucket for the hash if needed
                 if (hash != null)
                 {
-                    this.hash.put(route.getBaseRoute(), hash);
+                    if (!this.hash.containsKey(route.getBaseRoute()))
+                    {
+                        this.hash.put(route.getBaseRoute(), hash);
+                        log.debug("Caching bucket hash {} -> {}", route.getBaseRoute(), hash);
+                    }
+
                     bucket = getBucket(route, true);
                 }
 
