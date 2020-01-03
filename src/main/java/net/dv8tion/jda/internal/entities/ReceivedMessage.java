@@ -818,7 +818,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public boolean isSuppressedEmbeds()
     {
-        return (this.flags | MessageFlag.EMBEDS_SUPPRESSED.getValue()) > 0;
+        return (this.flags & MessageFlag.EMBEDS_SUPPRESSED.getValue()) > 0;
     }
 
     @Nonnull
