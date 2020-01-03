@@ -123,7 +123,7 @@ public class BotRateLimiter extends RateLimiter
             // Log how many buckets were removed
             size -= bucket.size();
             if (size > 0)
-                log.debug("Removed {} outdated buckets", size);
+                log.debug("Removed {} expired buckets", size);
         });
     }
 
