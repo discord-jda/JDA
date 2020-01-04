@@ -311,7 +311,7 @@ public class Route
     @Override
     public String toString()
     {
-        return "Route(" + method + ": " + route + ")";
+        return method + "/" + route;
     }
 
     public class CompiledRoute

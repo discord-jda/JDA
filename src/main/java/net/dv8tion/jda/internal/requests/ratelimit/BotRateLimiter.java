@@ -191,12 +191,13 @@ public class BotRateLimiter extends RateLimiter
                 long now = getNow();
 
                 // Create a new bucket for the hash if needed
+                Route baseRoute = route.getBaseRoute();
                 if (hash != null)
                 {
-                    if (!this.hash.containsKey(route.getBaseRoute()))
+                    if (!this.hash.containsKey(baseRoute))
                     {
-                        this.hash.put(route.getBaseRoute(), hash);
-                        log.debug("Caching bucket hash {} -> {}", route.getBaseRoute(), hash);
+                        this.hash.put(baseRoute, hash);
+                        log.debug("Caching bucket hash {} -> {}", baseRoute, hash);
                     }
 
                     bucket = getBucket(route, true);
@@ -220,9 +221,9 @@ public class BotRateLimiter extends RateLimiter
                     bucket.reset = getNow() + retryAfter;
                     // don't log warning if we are switching bucket, this means it was an issue with an un-hashed route that is now resolved
                     if (hash == null || !wasUnlimited)
-                        log.warn("Encountered 429 on bucket {} Retry-After: {} ms", bucket.bucketId, retryAfter);
+                        log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
                     else
-                        log.debug("Encountered 429 on bucket {} Retry-After: {} ms", bucket.bucketId, retryAfter);
+                        log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
                     return bucket;
                 }
 
