@@ -225,15 +225,44 @@ public class Route
         public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
     }
 
-    public static class Custom
+    @Nonnull
+    public static Route custom(@Nonnull Method method, @Nonnull String route)
     {
-        public static final Route DELETE_ROUTE = new Route(DELETE, "{}");
-        public static final Route GET_ROUTE =    new Route(GET, "{}");
-        public static final Route POST_ROUTE =   new Route(POST, "{}");
-        public static final Route PUT_ROUTE =    new Route(PUT, "{}");
-        public static final Route PATCH_ROUTE =  new Route(PATCH, "{}");
+        Checks.notNull(method, "Method");
+        Checks.notEmpty(route, "Route");
+        Checks.noWhitespace(route, "Route");
+        return new Route(method, route);
     }
 
+    @Nonnull
+    public static Route delete(@Nonnull String route)
+    {
+        return custom(DELETE, route);
+    }
+
+    @Nonnull
+    public static Route post(@Nonnull String route)
+    {
+        return custom(POST, route);
+    }
+
+    @Nonnull
+    public static Route put(@Nonnull String route)
+    {
+        return custom(PUT, route);
+    }
+
+    @Nonnull
+    public static Route patch(@Nonnull String route)
+    {
+        return custom(PATCH, route);
+    }
+
+    @Nonnull
+    public static Route get(@Nonnull String route)
+    {
+        return custom(GET, route);
+    }
 
     private static final String majorParameters = "guild_id:channel_id:webhook_id";
     private final String route;
