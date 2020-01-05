@@ -22,6 +22,7 @@ import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.Headers;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -38,13 +39,13 @@ A bucket is determined via the Path+Method+Major in the following way:
     1. Get Hash from Path+Method (we call this route)
     2. Get bucket from Hash+Major (we call this bucketid)
 
-If no hash is known we default to the constant `unlimited` hash. The hash is loaded from HTTP responses using the "X-RateLimit-Bucket" response header.
+If no hash is known we default to the constant "unlimited" hash. The hash is loaded from HTTP responses using the "X-RateLimit-Bucket" response header.
 This hash is per Method+Path and can be stored indefinitely once received.
 Some endpoints don't return a hash, this means that the endpoint is **unlimited** and will be in queue with only the major parameter.
 
 To explain this further, lets look at the example of message history. The endpoint to fetch message history is "GET/channels/{channel.id}/messages".
-This endpoint does not have any rate limit (unlimited) and will thus use the hash "unlimited".
-The bucket id for this will be "unlimited:guild_id:{channel.id}:webhook_id" where "{channel.id}" would be replaced with the respective id.
+This endpoint does not have any rate limit (unlimited) and will thus use the hash "unlimited+GET/channels/{channel.id}/messages".
+The bucket id for this will be "unlimited+GET/channels/{channel.id}/messages:guild_id:{channel.id}:webhook_id" where "{channel.id}" would be replaced with the respective id.
 This means you can fetch history concurrently for multiple channels but it will be in sequence for the same channel.
 
 If the endpoint is not unlimited we will receive a hash on the first response.
@@ -60,7 +61,7 @@ For example, the first message sending:
       }
     }
 
-This will send 100 messages on startup. At this point we don't yet know the hash for this route so we put them all in `"unlimited:guild_id:123:webhook_id"`.
+This will send 100 messages on startup. At this point we don't yet know the hash for this route so we put them all in "unlimited+POST/channels/{channel.id}/messages:guild_id:123:webhook_id".
 The bucket iterates the requests in sync and gets the first response. This response provides the hash for this route and we create a bucket for it.
 Once the response is handled we continue with the next request in the unlimited bucket and notice the new bucket. We then move all related requests to this bucket.
 
@@ -129,7 +130,7 @@ public class BotRateLimiter extends RateLimiter
 
     private String getRouteHash(Route route)
     {
-        return hash.getOrDefault(route, UNLIMITED_BUCKET);
+        return hash.getOrDefault(route, UNLIMITED_BUCKET + "+" + route);
     }
 
     @Override
@@ -256,6 +257,7 @@ public class BotRateLimiter extends RateLimiter
         });
     }
 
+    @Contract("_,true->!null")
     private Bucket getBucket(Route.CompiledRoute route, boolean create)
     {
         return MiscUtil.locked(bucketLock, () ->
@@ -371,6 +373,7 @@ public class BotRateLimiter extends RateLimiter
         @Override
         public void run()
         {
+            log.trace("Bucket {} is running {} requests", bucketId, requests.size());
             Iterator<Request> iterator = requests.iterator();
             while (iterator.hasNext())
             {
@@ -388,7 +391,7 @@ public class BotRateLimiter extends RateLimiter
                     boolean shouldSkip = MiscUtil.locked(bucketLock, () -> {
                         // Attempt moving request to correct bucket if it has been created
                         Bucket bucket = getBucket(request.getRoute(), true);
-                        if (bucket != null && bucket != this)
+                        if (bucket != this)
                         {
                             bucket.enqueue(request);
                             iterator.remove();
