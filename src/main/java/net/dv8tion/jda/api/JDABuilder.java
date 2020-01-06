@@ -140,7 +140,7 @@ public class JDABuilder
 
     /**
      * Whether JDA should connect to the gateway. Setting this to {@code false} will set the {@link net.dv8tion.jda.api.JDA.Status JDA Status} to {@code REST_ONLY}.
-     * <br>In {@code REST_ONLY} mode will JDA not connect to the gateway of Discord and only rely on rest actions performed from/to Discord.
+     * <br>In {@code REST_ONLY} mode JDA will not connect to the gateway of Discord and only rely on rest actions performed from/to Discord.
      * <br>Default: {@code true}
      *
      * @param  enable
