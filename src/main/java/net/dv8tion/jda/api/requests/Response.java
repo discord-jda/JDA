@@ -112,6 +112,12 @@ public class Response implements Closeable
     }
 
     @Nonnull
+    public InputStream getBody()
+    {
+        return body;
+    }
+
+    @Nonnull
     public String getString()
     {
         return parseBody(String.class, this::readString)

@@ -29,11 +29,14 @@ import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.MapRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -161,60 +164,114 @@ public interface RestAction<T>
 {
     @Nonnull
     @CheckReturnValue
-    static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
+    static RestAction<RestPayload> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
     {
         Checks.notNull(api, "JDA");
         Checks.notNull(route, "Route");
-        return new RestActionImpl<>(api, route, (response, __) -> response);
+        return new RestActionImpl<>(api, route, (response, __) -> {
+            try
+            {
+                return new RestPayload(IOUtil.readFully(response.getBody()));
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     @Nonnull
     @CheckReturnValue
-    static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
+    static RestAction<RestPayload> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
     {
         Checks.notNull(api, "JDA");
         Checks.notNull(route, "Route");
         Checks.notNull(body, "Body");
-        return new RestActionImpl<>(api, route, body, (response, __) -> response);
+        return new RestActionImpl<>(api, route, body, (response, __) -> {
+            try
+            {
+                return new RestPayload(IOUtil.readFully(response.getBody()));
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     @Nonnull
     @CheckReturnValue
-    static RestAction<Response> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
+    static RestAction<RestPayload> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
     {
         Checks.notNull(api, "JDA");
         Checks.notNull(route, "Route");
         Checks.notNull(body, "Body");
-        return new RestActionImpl<>(api, route, body, (response, __) -> response);
+        return new RestActionImpl<>(api, route, body, (response, __) -> {
+            try
+            {
+                return new RestPayload(IOUtil.readFully(response.getBody()));
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     @Nonnull
     @CheckReturnValue
-    static AuditableRestAction<Response> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
+    static AuditableRestAction<RestPayload> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
     {
         Checks.notNull(api, "JDA");
         Checks.notNull(route, "Route");
-        return new AuditableRestActionImpl<>(api, route, (response, __) -> response);
+        return new AuditableRestActionImpl<>(api, route, (response, __) -> {
+            try
+            {
+                return new RestPayload(IOUtil.readFully(response.getBody()));
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     @Nonnull
     @CheckReturnValue
-    static AuditableRestAction<Response> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
+    static AuditableRestAction<RestPayload> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
     {
         Checks.notNull(api, "JDA");
         Checks.notNull(route, "Route");
         Checks.notNull(body, "Body");
-        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> response);
+        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> {
+            try
+            {
+                return new RestPayload(IOUtil.readFully(response.getBody()));
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     @Nonnull
     @CheckReturnValue
-    static AuditableRestAction<Response> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
+    static AuditableRestAction<RestPayload> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
     {
         Checks.notNull(api, "JDA");
         Checks.notNull(route, "Route");
         Checks.notNull(body, "Body");
-        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> response);
+        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> {
+            try
+            {
+                return new RestPayload(IOUtil.readFully(response.getBody()));
+            }
+            catch (IOException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
     /**
