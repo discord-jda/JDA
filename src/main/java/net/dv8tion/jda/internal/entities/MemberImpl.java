@@ -40,7 +40,7 @@ public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     private final SnowflakeReference<Guild> guild;
-    private final SnowflakeReference<User> user;
+    private final User user;
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
@@ -55,7 +55,7 @@ public class MemberImpl implements Member
     {
         this.api = (JDAImpl) user.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
-        this.user = new SnowflakeReference<>(user, api::getUserById);
+        this.user = user;
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
@@ -66,7 +66,7 @@ public class MemberImpl implements Member
     @Override
     public User getUser()
     {
-        return user.resolve();
+        return user;
     }
 
     @Nonnull

@@ -350,7 +350,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         else
             LOG.debug("Connected to WebSocket");
         connected = true;
-        reconnectTimeoutS = 2;
+        //reconnectTimeoutS = 2; We will reset this when the session was started successfully (ready/resume)
         messagesSent.set(0);
         ratelimitResetTime = System.currentTimeMillis() + 60000;
         if (sessionId == null)
@@ -538,6 +538,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
             int delay = reconnectTimeoutS;
+            // Exponential backoff, reset on session creation (ready/resume)
+            reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
             Thread.sleep(delay * 1000);
             handleIdentifyRateLimit = false;
             api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
@@ -556,7 +558,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             }
             catch (RuntimeException ex)
             {
-                reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
+                // reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
                 LOG.warn("Reconnect failed! Next attempt in {}s", reconnectTimeoutS);
             }
         }
@@ -815,6 +817,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 //INIT types
                 case "READY":
+                    reconnectTimeoutS = 2;
                     api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
                     processingReady = true;
                     handleIdentifyRateLimit = false;
@@ -825,6 +828,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     sessionId = content.getString("session_id");
                     break;
                 case "RESUMED":
+                    reconnectTimeoutS = 2;
                     sentAuthInfo = true;
                     if (!processingReady)
                     {
