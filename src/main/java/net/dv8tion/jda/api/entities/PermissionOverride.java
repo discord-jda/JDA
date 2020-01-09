@@ -109,12 +109,12 @@ public interface PermissionOverride extends ISnowflake
      *
      * <h2>Example</h2>
      * <pre><code>
-     * private static final List{@literal <}Permission{@literal >} HIGH_PERMISSIONS = Arrays.asList(Permission.ADMINISTRATOR, Permission.BAN_MEMBERS,
+     * private static final {@literal List<Permission>} HIGH_PERMISSIONS = Arrays.asList(Permission.ADMINISTRATOR, Permission.BAN_MEMBERS,
      *      Permission.MANAGE_SERVER, Permission.KICK_MEMBERS);  // list because the order matters
      *
      * guild.getTextChannelCache().stream().filter(tc -{@literal >}
      * {
-     *     List{@literal <}PermissionOverride{@literal >} permissionOverrides = tc.getPermissionOverrides();
+     *     {@literal List<PermissionOverride>} permissionOverrides = tc.getPermissionOverrides();
      *
      *     // OLD
      *     for (Permission perm : HIGH_PERMISSIONS)
