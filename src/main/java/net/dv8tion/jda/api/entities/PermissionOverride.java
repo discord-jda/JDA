@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
 import java.util.EnumSet;
 
 /**
@@ -99,6 +100,63 @@ public interface PermissionOverride extends ISnowflake
      */
     @Nonnull
     JDA getJDA();
+
+    /**
+     * This method will return the {@link net.dv8tion.jda.api.entities.IPermissionHolder PermissionHolder} of this {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
+     * It can be used to e. g. get the general permissions of that PermissionHolder no matter if it is a {@link net.dv8tion.jda.api.entities.Member Member} or a {@link net.dv8tion.jda.api.entities.Role Role}.
+     *
+     * <p><b>To get the concrete Member or Role, use {@link PermissionOverride#getMember()} or {@link PermissionOverride#getRole()}!</b>
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * private static final List{@literal <}Permission{@literal >} HIGH_PERMISSIONS = Arrays.asList(Permission.ADMINISTRATOR, Permission.BAN_MEMBERS,
+     *      Permission.MANAGE_SERVER, Permission.KICK_MEMBERS);  // list because the order matters
+     *
+     * guild.getTextChannelCache().stream().filter(tc -{@literal >}
+     * {
+     *     List{@literal <}PermissionOverride{@literal >} permissionOverrides = tc.getPermissionOverrides();
+     *
+     *     // OLD
+     *     for (Permission perm : HIGH_PERMISSIONS)
+     *     {
+     *         // Any member with an override has a high permission?
+     *         boolean highMemberOverride = permissionOverrides.stream()
+     *             .filter(PermissionOverride::isMemberOverride)
+     *             .anyMatch(po -{@literal >} po.getMember().hasPermission(perm));
+     *         if (highMemberOverride)
+     *             return true;
+     *
+     *         // Any role with an override has a high permission?
+     *         boolean highRoleOverride = permissionOverrides.stream()
+     *             .filter(PermissionOverride::isRoleOverride)
+     *             .anyMatch(po -{@literal >} po.getRole().hasPermission(perm));
+     *         if (highRoleOverride)
+     *           return true;
+     *     }
+     *
+     *     // NEW
+     *     for (Permission perm : HIGH_PERMISSIONS)
+     *     {
+     *         // Any permission holder with an override has a high permission?
+     *         boolean highOverride = permissionOverrides.stream()
+     *             .anyMatch(po -{@literal >} po.getPermissionHolder().hasPermission(perm));
+     *         if (highOverride)
+     *             return true;
+     *     }
+     *
+     *     return false;
+     * });
+     * </code></pre>
+     *
+     * @return Never-null {@link net.dv8tion.jda.api.entities.IPermissionHolder PermissionHolder} of this {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
+     *
+     * @see    PermissionOverride#getRole()
+     * @see    PermissionOverride#getMember()
+     * @see    net.dv8tion.jda.api.entities.IPermissionHolder#getPermissions() IPermissionHolder#getPermissions
+     * @see    net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(Permission... permissions) IPermissionHolder#hasPermission
+     */
+    @Nonnull
+    IPermissionHolder getPermissionHolder();
 
     /**
      * If this {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} is an override dealing with

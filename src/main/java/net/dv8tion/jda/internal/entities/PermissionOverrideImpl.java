@@ -30,6 +30,8 @@ import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl
 import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
@@ -103,12 +105,21 @@ public class PermissionOverrideImpl implements PermissionOverride
         return api;
     }
 
+    @Nonnull
+    @Override
+    public IPermissionHolder getPermissionHolder()
+    {
+        return (IPermissionHolder) (role ? getRole() : getMember());  // permissionHolder is no longer a field
+    }
+
+    @Nullable
     @Override
     public Member getMember()
     {
         return getGuild().getMemberById(id);
     }
 
+    @Nullable
     @Override
     public Role getRole()
     {
