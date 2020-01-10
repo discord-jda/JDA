@@ -246,6 +246,7 @@ public class GuildSetupController
                 remove(id);
             else
                 ready(id);
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
         }
         log.debug("Updated incompleteCount to {} and syncCount to {}", incompleteCount, syncingCount);
         return true;
