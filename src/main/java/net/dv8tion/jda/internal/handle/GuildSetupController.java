@@ -118,6 +118,7 @@ public class GuildSetupController
 
     void remove(long id)
     {
+        unavailableGuilds.remove(id);
         setupNodes.remove(id);
         chunkingGuilds.remove(id);
         synchronized (pendingChunks) { pendingChunks.remove(id); }
@@ -200,6 +201,13 @@ public class GuildSetupController
     public boolean onDelete(long id, DataObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
+        if (isUnavailable(id) && available)
+        {
+            log.debug("Leaving unavailable guild with id {}", id);
+            remove(id);
+            return true;
+        }
+
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
             return false;

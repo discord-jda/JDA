@@ -583,6 +583,12 @@ public class JDAImpl implements JDA
         return copy;
     }
 
+    @Override
+    public boolean isUnavailable(long guildId)
+    {
+        return guildSetupController.isUnavailable(guildId);
+    }
+
     @Nonnull
     @Override
     public SnowflakeCacheView<Role> getRoleCache()
