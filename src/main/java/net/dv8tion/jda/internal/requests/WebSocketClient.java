@@ -420,7 +420,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
             if (decompressor != null)
                 decompressor.shutdown();
-            api.shutdownInternals();
+            api.shutdownInternals(false);
             api.handleEvent(new ShutdownEvent(api, OffsetDateTime.now(), rawCloseCode));
         }
         else
