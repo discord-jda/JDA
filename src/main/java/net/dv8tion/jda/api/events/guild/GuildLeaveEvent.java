@@ -22,8 +22,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that you left a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * <br>This requires that the guild is available when the guild leave happens. Otherwise a {@link UnavailableGuildLeaveEvent} is fired instead.
  *
  * <p>Can be used to detect when you leave a Guild.
+ *
+ * @see UnavailableGuildLeaveEvent
  */
 public class GuildLeaveEvent extends GenericGuildEvent
 {

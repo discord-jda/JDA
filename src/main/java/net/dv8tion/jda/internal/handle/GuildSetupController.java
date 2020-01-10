@@ -26,6 +26,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.events.guild.UnavailableGuildLeaveEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -205,6 +206,7 @@ public class GuildSetupController
         {
             log.debug("Leaving unavailable guild with id {}", id);
             remove(id);
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
             return true;
         }
 
