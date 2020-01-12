@@ -29,9 +29,12 @@ import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.data.MemberData;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateDigestEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
@@ -554,12 +557,14 @@ public class EntityBuilder
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
     {
+        MutableMemberData data = member.getMutableMemberData();
+        MemberData oldData = data.copy();
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
-        long responseNumber = getJDA().getResponseTotal();
+        JDAImpl jda = getJDA();
+        long responseNumber = jda.getResponseTotal();
         if (newRoles != null)
-        {
             updateMemberRoles(member, newRoles, responseNumber);
-        }
+
         if (content.hasKey("nick"))
         {
             String oldNick = member.getNickname();
@@ -567,9 +572,9 @@ public class EntityBuilder
             if (!Objects.equals(oldNick, newNick))
             {
                 member.setNickname(newNick);
-                getJDA().handleEvent(
+                jda.handleEvent(
                     new GuildMemberUpdateNicknameEvent(
-                        getJDA(), responseNumber,
+                        jda, responseNumber,
                         member, oldNick));
             }
         }
@@ -585,11 +590,19 @@ public class EntityBuilder
             {
                 OffsetDateTime oldTime = member.getTimeBoosted();
                 member.setBoostDate(epoch);
-                getJDA().handleEvent(
+                jda.handleEvent(
                     new GuildMemberUpdateBoostTimeEvent(
-                        getJDA(), responseNumber,
+                        jda, responseNumber,
                         member, oldTime));
             }
+        }
+
+        if (!data.equals(oldData))
+        {
+            jda.handleEvent(
+                new GuildMemberUpdateDigestEvent(
+                    jda, responseNumber,
+                    member, oldData));
         }
     }
 

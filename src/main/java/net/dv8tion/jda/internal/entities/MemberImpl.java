@@ -39,7 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MemberImpl implements Member
 {
-    private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
+    public static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     private final SnowflakeReference<Guild> guild;
     private final User user;
     private final JDAImpl api;
@@ -56,6 +56,11 @@ public class MemberImpl implements Member
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
         this.data = api.provideMemberData(user.getIdLong());
+    }
+
+    public MutableMemberData getMutableMemberData()
+    {
+        return data;
     }
 
     @Nonnull

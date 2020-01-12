@@ -108,6 +108,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class ListenerAdapter implements EventListener
 {
+    //TODO: Add digest events
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
