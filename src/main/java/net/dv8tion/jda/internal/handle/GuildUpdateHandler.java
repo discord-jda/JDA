@@ -117,15 +117,6 @@ public class GuildUpdateHandler extends SocketHandler
                     getJDA(), responseNumber,
                     guild, oldName));
         }
-        if (!Objects.equals(vanityCode, guild.getVanityCode()))
-        {
-            String oldCode = guild.getVanityCode();
-            guild.setVanityCode(vanityCode);
-            getJDA().handleEvent(
-                new GuildUpdateVanityCodeEvent(
-                    getJDA(), responseNumber,
-                    guild, oldCode));
-        }
         if (!features.equals(guild.getFeatures()))
         {
             Set<String> oldFeatures = guild.getFeatures();
@@ -264,6 +255,13 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateSystemChannelEvent(
                             getJDA(), responseNumber,
                             guild, guild.getTextChannelById(oldData.getSystemChannelId())));
+        }
+        if (!Objects.equals(oldData.getVanityCode(), data.getVanityCode()))
+        {
+            getJDA().handleEvent(
+                    new GuildUpdateVanityCodeEvent(
+                            getJDA(), responseNumber,
+                            guild, oldData.getVanityCode()));
         }
     }
 }
