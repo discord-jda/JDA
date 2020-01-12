@@ -20,12 +20,13 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.data.MutableGuildData;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class RichGuildData implements MutableGuildData
 {
     private String iconId, splashId, bannerId;
-    private String description, region = "";
+    private String description, vanityCode, region = "";
     private int maxMembers, maxPresences, boostCount;
     private Guild.BoostTier boostTier;
     private Guild.NotificationLevel notificationLevel;
@@ -56,6 +57,7 @@ public class RichGuildData implements MutableGuildData
         data.setAfkTimeout(afkTimeout);
         data.setSystemChannelId(systemChannelId);
         data.setAfkChannelId(afkChannelId);
+        data.setVanityCode(vanityCode);
         return data;
     }
 
@@ -73,6 +75,7 @@ public class RichGuildData implements MutableGuildData
             && Objects.equals(bannerId, data.bannerId)
             && Objects.equals(description, data.description)
             && Objects.equals(region, data.region)
+            && Objects.equals(vanityCode, data.vanityCode)
             && maxMembers == data.maxMembers
             && maxPresences == data.maxPresences
             && boostCount == data.boostCount
@@ -91,7 +94,7 @@ public class RichGuildData implements MutableGuildData
     {
         return Objects.hash(
             iconId, splashId, bannerId,
-            description, region,
+            description, region, vanityCode,
             maxMembers, maxPresences, boostCount,
             boostTier, notificationLevel, explicitContentLevel,
             mfaLevel, verificationLevel, afkTimeout,
@@ -234,6 +237,15 @@ public class RichGuildData implements MutableGuildData
         return oldRegion;
     }
 
+    @Nullable
+    @Override
+    public String setVanityCode(@Nullable String code)
+    {
+        String oldCode = this.vanityCode;
+        this.vanityCode = code;
+        return oldCode;
+    }
+
     @Override
     public String getIconId()
     {
@@ -335,5 +347,12 @@ public class RichGuildData implements MutableGuildData
     public String getRegion()
     {
         return region;
+    }
+
+    @Nullable
+    @Override
+    public String getVanityCode()
+    {
+        return vanityCode;
     }
 }

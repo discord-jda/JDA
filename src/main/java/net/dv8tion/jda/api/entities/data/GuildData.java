@@ -53,4 +53,6 @@ public interface GuildData
     Guild.ExplicitContentLevel getExplicitContentLevel();
     @Nonnull
     String getRegion();
+    @Nullable
+    String getVanityCode();
 }

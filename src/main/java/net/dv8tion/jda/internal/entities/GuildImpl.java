@@ -97,7 +97,6 @@ public class GuildImpl implements Guild
     private final MutableGuildData guildData;
     private Member owner;
     private String name;
-    private String vanityCode;
     private long ownerId;
     private Set<String> features;
     private Role publicRole;
@@ -212,7 +211,7 @@ public class GuildImpl implements Guild
     @Override
     public String getVanityCode()
     {
-        return vanityCode;
+        return guildData.getVanityCode();
     }
 
     @Nullable
@@ -1333,7 +1332,7 @@ public class GuildImpl implements Guild
 
     public GuildImpl setVanityCode(String code)
     {
-        this.vanityCode = code;
+        guildData.setVanityCode(code);
         return this;
     }
 

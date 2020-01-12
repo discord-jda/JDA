@@ -57,4 +57,6 @@ public interface MutableGuildData extends GuildData
     Guild.MFALevel setMFALevel(@Nonnull Guild.MFALevel level);
     @Nonnull
     String setRegion(@Nonnull String region);
+    @Nullable
+    String setVanityCode(@Nullable String code);
 }

@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.data.GuildData;
 import net.dv8tion.jda.api.entities.data.MutableGuildData;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class LightGuildData implements MutableGuildData
 {
@@ -139,6 +140,13 @@ public class LightGuildData implements MutableGuildData
         return region;
     }
 
+    @Nullable
+    @Override
+    public String setVanityCode(@Nullable String code)
+    {
+        return code;
+    }
+
     @Override
     public String getIconId()
     {
@@ -240,5 +248,12 @@ public class LightGuildData implements MutableGuildData
     public String getRegion()
     {
         return Region.UNKNOWN.getKey();
+    }
+
+    @Nullable
+    @Override
+    public String getVanityCode()
+    {
+        return null;
     }
 }
