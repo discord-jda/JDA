@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.bean.MutableMemberData;
-import net.dv8tion.jda.api.entities.bean.light.LightMemberData;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -46,7 +45,7 @@ public class MemberImpl implements Member
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
-    private final MutableMemberData data = LightMemberData.SINGLETON; //TODO: Configuration
+    private final MutableMemberData data;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -56,6 +55,7 @@ public class MemberImpl implements Member
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
+        this.data = api.provideMemberData(user.getIdLong());
     }
 
     @Nonnull
@@ -126,9 +126,20 @@ public class MemberImpl implements Member
     @Override
     public EnumSet<ClientType> getActiveClients()
     {
-        if (clientStatus == null || clientStatus.isEmpty())
-            return EnumSet.noneOf(ClientType.class);
-        return EnumSet.copyOf(clientStatus.keySet());
+        EnumSet<ClientType> clients = EnumSet.noneOf(ClientType.class);
+        for (ClientType type : ClientType.values())
+        {
+            switch (getOnlineStatus(type))
+            {
+            case UNKNOWN:
+            case OFFLINE:
+            case INVISIBLE:
+                continue;
+            default:
+                clients.add(type);
+            }
+        }
+        return clients;
     }
 
     @Override

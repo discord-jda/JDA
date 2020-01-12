@@ -14,11 +14,29 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-public interface MutableTextChannelData extends TextChannelData
+import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.ClientType;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.List;
+
+public interface MemberData
 {
-    String setTopic(String topic);
-    boolean setNSFW(boolean nsfw);
-    int setSlowmode(int slowmode);
+    @Nonnull
+    MemberData copy();
+
+    @Nullable
+    String getNickname();
+    long getTimeJoined();
+    long getTimeBoosted();
+    @Nonnull
+    List<Activity> getActivities();
+    @Nonnull
+    OnlineStatus getOnlineStatus();
+    @Nonnull
+    OnlineStatus getOnlineStatus(ClientType type);
 }

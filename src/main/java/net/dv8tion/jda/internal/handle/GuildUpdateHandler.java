@@ -17,8 +17,8 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.bean.GuildData;
-import net.dv8tion.jda.api.entities.bean.MutableGuildData;
+import net.dv8tion.jda.api.entities.data.GuildData;
+import net.dv8tion.jda.api.entities.data.MutableGuildData;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;

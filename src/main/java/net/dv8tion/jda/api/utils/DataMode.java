@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.utils;
 
-public interface MutableRoleData extends RoleData
+public enum DataMode
 {
-    int setColor(int color);
-    String setName(String name);
+    LIGHT, RICH
 }

@@ -14,29 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.ClientType;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
-
-public interface MemberData
+public interface MutableUserData extends UserData
 {
-    @Nonnull
-    MemberData copy();
-
-    @Nullable
-    String getNickname();
-    long getTimeJoined();
-    long getTimeBoosted();
-    @Nonnull
-    List<Activity> getActivities();
-    @Nonnull
-    OnlineStatus getOnlineStatus();
-    @Nonnull
-    OnlineStatus getOnlineStatus(ClientType type);
+    String setAvatarId(String id);
 }

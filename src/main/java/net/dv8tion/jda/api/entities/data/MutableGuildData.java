@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.bean.light.LightGuildData;
-import net.dv8tion.jda.api.entities.bean.rich.RichGuildData;
+import net.dv8tion.jda.api.entities.data.light.LightGuildData;
+import net.dv8tion.jda.api.entities.data.rich.RichGuildData;
 import net.dv8tion.jda.api.utils.DataProvider;
 
 import javax.annotation.Nonnull;

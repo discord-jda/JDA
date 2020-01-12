@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.internal.utils.config;
 
-import net.dv8tion.jda.api.entities.bean.MutableGuildData;
+import net.dv8tion.jda.api.entities.data.MutableGuildData;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
+import net.dv8tion.jda.api.utils.DataMode;
 import net.dv8tion.jda.api.utils.DataProvider;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
@@ -26,16 +28,63 @@ public class DataProviderConfig
 {
     private static final DataProviderConfig DEFAULT = new DataProviderConfig();
 
+    private DataMode mode = DataMode.RICH;
     private DataProvider<? extends MutableGuildData> guildProvider = MutableGuildData.RICH_PROVIDER;
+    private DataProvider<? extends MutableMemberData> memberProvider = MutableMemberData.RICH_PROVIDER;
 
     public void setGuildProvider(DataProvider<? extends MutableGuildData> provider)
     {
-        this.guildProvider = provider;
+        if (provider == null)
+        {
+            if (mode == DataMode.LIGHT)
+                this.guildProvider = MutableGuildData.LIGHT_PROVIDER;
+            else
+                this.guildProvider = MutableGuildData.RICH_PROVIDER;
+        }
+        else
+        {
+            this.guildProvider = provider;
+        }
     }
 
     public MutableGuildData provideGuildData(long guildId, EnumSet<CacheFlag> flags)
     {
         return guildProvider.provide(guildId, flags);
+    }
+
+    public void setMemberProvider(DataProvider<? extends MutableMemberData> provider)
+    {
+        if (provider == null)
+        {
+            if (mode == DataMode.LIGHT)
+                this.memberProvider = MutableMemberData.LIGHT_PROVIDER;
+            else
+                this.memberProvider = MutableMemberData.RICH_PROVIDER;
+        }
+        else
+        {
+            this.memberProvider = provider;
+        }
+    }
+
+    public MutableMemberData provideMemberData(long userId, EnumSet<CacheFlag> flag)
+    {
+        return memberProvider.provide(userId, flag);
+    }
+
+    public void setMode(DataMode mode)
+    {
+        this.mode = mode;
+        switch (mode)
+        {
+        case RICH:
+            guildProvider = MutableGuildData.RICH_PROVIDER;
+            memberProvider = MutableMemberData.RICH_PROVIDER;
+            break;
+        case LIGHT:
+            guildProvider = MutableGuildData.LIGHT_PROVIDER;
+            memberProvider = MutableMemberData.LIGHT_PROVIDER;
+        }
     }
 
     public static DataProviderConfig getDefault()

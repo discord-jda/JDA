@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-public interface SelfUserData extends UserData
+public interface TextChannelData
 {
-    boolean isVerified();
-    boolean isMfaEnabled();
-    boolean isMobile();
-    boolean isNitro();
-    String getEmail();
-    String getPhoneNumber();
+    String getTopic();
+    boolean isNSFW();
+    int getSlowmode();
 }

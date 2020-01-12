@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-public interface TextChannelData
+public interface MutableRoleData extends RoleData
 {
-    String getTopic();
-    boolean isNSFW();
-    int getSlowmode();
+    int setColor(int color);
+    String setName(String name);
 }

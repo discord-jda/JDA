@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-public interface RoleData
+public interface UserData
 {
-    int getColor();
-    String getName();
+    String getAvatarId();
+    boolean isBot();
 }

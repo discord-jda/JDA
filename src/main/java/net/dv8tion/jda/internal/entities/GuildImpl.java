@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.bean.MutableGuildData;
+import net.dv8tion.jda.api.entities.data.MutableGuildData;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -109,6 +109,7 @@ public class GuildImpl implements Guild
     {
         this.id = id;
         this.api = api;
+        this.guildData = api.provideGuildData(id);
     }
 
     public MutableGuildData getMutableGuildData()

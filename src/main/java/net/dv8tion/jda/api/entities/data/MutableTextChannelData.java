@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-public interface MutableUserData extends UserData
+public interface MutableTextChannelData extends TextChannelData
 {
-    String setAvatarId(String id);
+    String setTopic(String topic);
+    boolean setNSFW(boolean nsfw);
+    int setSlowmode(int slowmode);
 }

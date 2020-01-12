@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-public interface MutableSelfUserData extends SelfUserData, MutableUserData
+public interface MutableVoiceChannelData extends VoiceChannelData
 {
-    boolean setVerified(boolean verified);
-    boolean setMfaEnabled(boolean enabled);
-    boolean setMobile(boolean mobile);
-    boolean setNitro(boolean nitro);
-    String setEmail(String email);
-    String setPhoneNumber(String number);
+    int getUserLimit();
+    int getBitrate();
 }

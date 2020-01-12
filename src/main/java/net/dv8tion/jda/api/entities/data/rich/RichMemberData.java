@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean.rich;
+package net.dv8tion.jda.api.entities.data.rich;
 
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ClientType;
-import net.dv8tion.jda.api.entities.bean.MemberData;
-import net.dv8tion.jda.api.entities.bean.MutableMemberData;
+import net.dv8tion.jda.api.entities.data.MemberData;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.Nonnull;

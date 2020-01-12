@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.bean;
+package net.dv8tion.jda.api.entities.data;
 
-public interface MutableVoiceChannelData extends VoiceChannelData
+public interface VoiceChannelData
 {
     int getUserLimit();
     int getBitrate();

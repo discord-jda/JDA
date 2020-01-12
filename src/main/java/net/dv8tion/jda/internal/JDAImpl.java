@@ -26,7 +26,8 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.entities.bean.MutableGuildData;
+import net.dv8tion.jda.api.entities.data.MutableGuildData;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
@@ -1020,5 +1021,10 @@ public class JDAImpl implements JDA
     {
         // TODO: Catch exceptions
         return dataProviderConfig.provideGuildData(id, metaConfig.getCacheFlags());
+    }
+
+    public MutableMemberData provideMemberData(long id)
+    {
+        return dataProviderConfig.provideMemberData(id, metaConfig.getCacheFlags());
     }
 }

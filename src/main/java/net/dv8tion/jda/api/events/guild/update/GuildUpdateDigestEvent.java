@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.bean.GuildData;
+import net.dv8tion.jda.api.entities.data.GuildData;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 
 import javax.annotation.Nonnull;
