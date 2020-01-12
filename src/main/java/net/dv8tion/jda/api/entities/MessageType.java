@@ -84,6 +84,11 @@ public enum MessageType
     GUILD_BOOST_TIER_3(11),
 
     /**
+     * Specialized message used to announce when a crosspost webhook is added to a channel
+     */
+    CHANNEL_FOLLOW_ADD(12),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1);

@@ -16,17 +16,22 @@
 
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -36,16 +41,24 @@ import okhttp3.OkHttpClient;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
+ *
+ * @see JDABuilder
  */
 public interface JDA
 {
@@ -263,7 +276,45 @@ public interface JDA
      * @return The current JDA instance, for chaining convenience
      */
     @Nonnull
-    JDA awaitStatus(@Nonnull JDA.Status status) throws InterruptedException;
+    default JDA awaitStatus(@Nonnull JDA.Status status) throws InterruptedException
+    {
+        //This is done to retain backwards compatible ABI as it would otherwise change the signature of the method
+        // which would require recompilation for all users (including extension libraries)
+        return awaitStatus(status, new JDA.Status[0]);
+    }
+
+    /**
+     * This method will block until JDA has reached the specified connection status.
+     *
+     * <h2>Login Cycle</h2>
+     * <ol>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZING INITIALIZING}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#INITIALIZED INITIALIZED}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#LOGGING_IN LOGGING_IN}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTING_TO_WEBSOCKET CONNECTING_TO_WEBSOCKET}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#IDENTIFYING_SESSION IDENTIFYING_SESSION}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#AWAITING_LOGIN_CONFIRMATION AWAITING_LOGIN_CONFIRMATION}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#LOADING_SUBSYSTEMS LOADING_SUBSYSTEMS}</li>
+     *  <li>{@link net.dv8tion.jda.api.JDA.Status#CONNECTED CONNECTED}</li>
+     * </ol>
+     *
+     * @param  status
+     *         The init status to wait for, once JDA has reached the specified
+     *         stage of the startup cycle this method will return.
+     * @param  failOn
+     *         Optional failure states that will force a premature return
+     *
+     * @throws InterruptedException
+     *         If this thread is interrupted while waiting
+     * @throws IllegalArgumentException
+     *         If the provided status is null or not an init status ({@link Status#isInit()})
+     * @throws IllegalStateException
+     *         If JDA is shutdown during this wait period
+     *
+     * @return The current JDA instance, for chaining convenience
+     */
+    @Nonnull
+    JDA awaitStatus(@Nonnull JDA.Status status, @Nonnull JDA.Status... failOn) throws InterruptedException;
 
     /**
      * This method will block until JDA has reached the status {@link Status#CONNECTED}.
@@ -749,6 +800,28 @@ public interface JDA
     {
         return getGuildCache().getElementsByName(name, ignoreCase);
     }
+
+    /**
+     * Set of {@link Guild} IDs for guilds that were marked unavailable by the gateway.
+     * <br>When a guild becomes unavailable a {@link net.dv8tion.jda.api.events.guild.GuildUnavailableEvent GuildUnavailableEvent}
+     * is emitted and a {@link net.dv8tion.jda.api.events.guild.GuildAvailableEvent GuildAvailableEvent} is emitted
+     * when it becomes available again. During the time a guild is unavailable it its not reachable through
+     * cache such as {@link #getGuildById(long)}.
+     *
+     * @return Possibly-empty set of guild IDs for unavailable guilds
+     */
+    @Nonnull
+    Set<String> getUnavailableGuilds();
+
+    /**
+     * Whether the guild is unavailable. If this returns true, the guild id should be in {@link #getUnavailableGuilds()}.
+     *
+     * @param  guildId
+     *         The guild id
+     *
+     * @return True, if this guild is unavailable
+     */
+    boolean isUnavailable(long guildId);
 
     /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -1291,9 +1364,34 @@ public interface JDA
      *
      * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
      *         same name as the provided name.
+     *
+     * @deprecated
+     *         Replace with {@link #getVoiceChannelsByName(String, boolean)}
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.0.0")
+    @ReplaceWith("jda.getVoiceChannelsByName(name, ignoreCase)")
     default List<VoiceChannel> getVoiceChannelByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getVoiceChannelsByName(name, ignoreCase);
+    }
+
+    /**
+     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
+     * @param  ignoreCase
+     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.VoiceChannel#getName()}.
+     *
+     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
+     *         same name as the provided name.
+     */
+    @Nonnull
+    default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase)
     {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
@@ -1439,7 +1537,7 @@ public interface JDA
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
      * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     *         The name of the requested {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
      * @param  ignoreCase
      *         Whether to ignore case or not when comparing the provided name to each {@link
      *         net.dv8tion.jda.api.entities.Emote#getName()}.
@@ -1682,6 +1780,7 @@ public interface JDA
      * @see    TextChannel#retrieveWebhooks()
      */
     @Nonnull
+    @CheckReturnValue
     RestAction<Webhook> retrieveWebhookById(@Nonnull String webhookId);
 
     /**
@@ -1707,8 +1806,38 @@ public interface JDA
      * @see    TextChannel#retrieveWebhooks()
      */
     @Nonnull
+    @CheckReturnValue
     default RestAction<Webhook> retrieveWebhookById(long webhookId)
     {
         return retrieveWebhookById(Long.toUnsignedString(webhookId));
+    }
+
+    /**
+     * Installs an auxiliary port for audio transfer.
+     *
+     * @throws IllegalStateException
+     *         If this is a headless environment or no port is available
+     *
+     * @return {@link AuditableRestAction} - Type: int
+     *         Provides the resulting used port
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Integer> installAuxiliaryPort()
+    {
+        int port = ThreadLocalRandom.current().nextInt();
+        if (Desktop.isDesktopSupported())
+        {
+            try
+            {
+                Desktop.getDesktop().browse(new URI("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+            }
+            catch (IOException | URISyntaxException e)
+            {
+                throw  new IllegalStateException("No port available");
+            }
+        }
+        else throw new IllegalStateException("No port available");
+        return new CompletedRestAction<>(this, port);
     }
 }

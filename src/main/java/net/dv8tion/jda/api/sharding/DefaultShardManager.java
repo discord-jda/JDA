@@ -21,7 +21,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -31,7 +33,6 @@ import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
 import net.dv8tion.jda.internal.utils.config.*;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
-import net.dv8tion.jda.internal.utils.tuple.Pair;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
 
@@ -132,6 +133,11 @@ public class DefaultShardManager implements ShardManager
      */
     protected final ShardingMetaConfig metaConfig;
 
+    /**
+     * {@link ChunkingFilter} used to determine whether a guild should be lazy loaded or chunk members by default.
+     */
+    protected final ChunkingFilter chunkingFilter;
+
     public DefaultShardManager(@Nonnull String token)
     {
         this(token, null);
@@ -139,14 +145,15 @@ public class DefaultShardManager implements ShardManager
 
     public DefaultShardManager(@Nonnull String token, @Nullable Collection<Integer> shardIds)
     {
-        this(token, shardIds, null, null, null, null, null, null);
+        this(token, shardIds, null, null, null, null, null, null, null);
     }
 
     public DefaultShardManager(
         @Nonnull String token, @Nullable Collection<Integer> shardIds,
         @Nullable ShardingConfig shardingConfig, @Nullable EventConfig eventConfig,
         @Nullable PresenceProviderConfig presenceConfig, @Nullable ThreadingProviderConfig threadingConfig,
-        @Nullable ShardingSessionConfig sessionConfig, @Nullable ShardingMetaConfig metaConfig)
+        @Nullable ShardingSessionConfig sessionConfig, @Nullable ShardingMetaConfig metaConfig,
+        @Nullable ChunkingFilter chunkingFilter)
     {
         this.token = token;
         this.eventConfig = eventConfig == null ? EventConfig.getDefault() : eventConfig;
@@ -155,6 +162,7 @@ public class DefaultShardManager implements ShardManager
         this.sessionConfig = sessionConfig == null ? ShardingSessionConfig.getDefault() : sessionConfig;
         this.presenceConfig = presenceConfig == null ? PresenceProviderConfig.getDefault() : presenceConfig;
         this.metaConfig = metaConfig == null ? ShardingMetaConfig.getDefault() : metaConfig;
+        this.chunkingFilter = chunkingFilter == null ? ChunkingFilter.ALL : chunkingFilter;
         this.executor = createExecutor(this.threadingConfig.getThreadFactory());
         this.shutdownHook = this.metaConfig.isUseShutdownHook() ? new Thread(this::shutdown, "JDA Shutdown Hook") : null;
 
@@ -470,15 +478,14 @@ public class DefaultShardManager implements ShardManager
         boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
         AuthorizationConfig authConfig = new AuthorizationConfig(AccountType.BOT, token);
-        SessionConfig sessionConfig = new SessionConfig(this.sessionConfig.getSessionController(), httpClient,
-            this.sessionConfig.getWebSocketFactory(), this.sessionConfig.getVoiceDispatchInterceptor(),
-            this.sessionConfig.getFlags(), this.sessionConfig.getMaxReconnectDelay());
+        SessionConfig sessionConfig = this.sessionConfig.toSessionConfig(httpClient);
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
-        MetaConfig metaConfig = new MetaConfig(this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
+        MetaConfig metaConfig = new MetaConfig(this.metaConfig.getMaxBufferSize(), this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, DataProviderConfig.getDefault()); //TODO: Don't use default
+        jda.setChunkingFilter(chunkingFilter);
         threadingConfig.init(jda::getIdentifierString);
 
         jda.setShardManager(this);
@@ -506,8 +513,8 @@ public class DefaultShardManager implements ShardManager
         {
             try
             {
-                Pair<String, Integer> gateway = jda.getGatewayBot();
-                this.gatewayURL = gateway.getLeft();
+                SessionController.ShardedGateway gateway = jda.getShardedGateway();
+                this.gatewayURL = gateway.getUrl();
                 if (this.gatewayURL == null)
                     LOG.error("Acquired null gateway url from SessionController");
                 else
@@ -515,7 +522,7 @@ public class DefaultShardManager implements ShardManager
 
                 if (getShardsTotal() == -1)
                 {
-                    shardingConfig.setShardsTotal(gateway.getRight());
+                    shardingConfig.setShardsTotal(gateway.getShardTotal());
                     this.shards = new ShardCacheViewImpl(getShardsTotal());
 
                     synchronized (queue)

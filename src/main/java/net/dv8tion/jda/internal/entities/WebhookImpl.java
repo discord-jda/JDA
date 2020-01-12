@@ -17,7 +17,9 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -25,6 +27,7 @@ import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.locks.ReentrantLock;
@@ -41,15 +44,24 @@ public class WebhookImpl implements Webhook
     private final ReentrantLock mngLock = new ReentrantLock();
     private final TextChannel channel;
     private final long id;
+    private final WebhookType type;
 
     private Member owner;
     private User user;
     private String token;
 
-    public WebhookImpl(TextChannel channel, long id)
+    public WebhookImpl(TextChannel channel, long id, WebhookType type)
     {
         this.channel = channel;
         this.id = id;
+        this.type = type;
+    }
+
+    @Nonnull
+    @Override
+    public WebhookType getType()
+    {
+        return type;
     }
 
     @Nonnull
@@ -110,9 +122,21 @@ public class WebhookImpl implements Webhook
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (isFake())
-            throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
-                    + "cannot be used for deletion!");
+        if (token != null)
+            return delete(token);
+
+        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
+            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_WEBHOOKS);
+
+        Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> delete(@Nonnull String token)
+    {
+        Checks.notNull(token, "Token");
         Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
@@ -121,9 +145,6 @@ public class WebhookImpl implements Webhook
     @Override
     public WebhookManager getManager()
     {
-        if (isFake())
-            throw new IllegalStateException("Fake Webhooks (such as those retrieved from Audit Logs) "
-                    + "cannot provide a WebhookManager!");
         WebhookManager mng = manager;
         if (mng == null)
         {

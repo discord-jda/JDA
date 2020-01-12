@@ -28,8 +28,17 @@ import java.util.EnumSet;
 /**
  * Represents the specific {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}
  * permission overrides that can be set for channels.
+ *
+ * @see GuildChannel#upsertPermissionOverride(IPermissionHolder)
+ * @see GuildChannel#createPermissionOverride(IPermissionHolder)
+ * @see GuildChannel#putPermissionOverride(IPermissionHolder)
+ *
+ * @see GuildChannel#getPermissionOverrides()
+ * @see GuildChannel#getPermissionOverride(IPermissionHolder)
+ * @see GuildChannel#getMemberPermissionOverrides()
+ * @see GuildChannel#getRolePermissionOverrides()
  */
-public interface PermissionOverride
+public interface PermissionOverride extends ISnowflake
 {
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.

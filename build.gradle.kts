@@ -30,10 +30,10 @@ plugins {
 
     id("com.jfrog.bintray") version "1.8.1"
     id("com.github.ben-manes.versions") version "0.19.0"
-    id("com.github.johnrengelman.shadow") version "2.0.4"
+    id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
-val versionObj = Version(major="4", minor="BETA", revision="0")
+val versionObj = Version(major = "4", minor = "1", revision = "0")
 
 project.group = "net.dv8tion"
 project.version = "$versionObj"
@@ -67,13 +67,16 @@ dependencies {
     api("org.slf4j:slf4j-api:1.7.25")
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.5")
+    api("com.neovisionaries:nv-websocket-client:2.9")
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
     api("club.minnced:opus-java:1.0.4@pom") {
         isTransitive = true
     }
+
+    //Collections Utility
+    api("org.apache.commons:commons-collections4:4.1")
 
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore
@@ -83,9 +86,8 @@ dependencies {
     /* Internal dependencies */
 
     //General Utility
-    implementation("org.apache.commons:commons-collections4:4.1")
     implementation("net.sf.trove4j:trove4j:3.0.3")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.9.8")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
 
     //Sets the dependencies for the examples
     configurations.asMap["examplesCompile"] = configurations["apiElements"]
@@ -95,25 +97,25 @@ dependencies {
 }
 
 val bintrayUpload: BintrayUploadTask by tasks
-val compileJava  : JavaCompile by tasks
-val shadowJar    : ShadowJar by tasks
-val javadoc      : Javadoc by tasks
-val jar          : Jar by tasks
-val build        : Task by tasks
-val clean        : Task by tasks
-val test         : Task by tasks
-val check        : Task by tasks
+val compileJava: JavaCompile by tasks
+val shadowJar: ShadowJar by tasks
+val javadoc: Javadoc by tasks
+val jar: Jar by tasks
+val build: Task by tasks
+val clean: Task by tasks
+val test: Test by tasks
+val check: Task by tasks
 
 shadowJar.classifier = "withDependencies"
 
 val sourcesForRelease = task<Copy>("sourcesForRelease") {
-    from ("src/main/java") {
+    from("src/main/java") {
         include("**/JDAInfo.java")
         val tokens = mapOf(
-            "versionMajor"    to versionObj.major,
-            "versionMinor"    to versionObj.minor,
-            "versionRevision" to versionObj.revision,
-            "versionBuild"    to getBuild()
+                "versionMajor" to versionObj.major,
+                "versionMinor" to versionObj.minor,
+                "versionRevision" to versionObj.revision,
+                "versionBuild" to getBuild()
         )
         filter<ReplaceTokens>(mapOf("tokens" to tokens))
     }
@@ -146,9 +148,22 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
     manifest.inheritFrom(jar.manifest)
 }
 
+val minimalJar = task<ShadowJar>("minimalJar") {
+    dependsOn(shadowJar)
+    minimize()
+    classifier = shadowJar.classifier + "-min"
+    configurations = shadowJar.configurations
+    from(sourceSets["main"].output)
+    exclude("natives/**")     // ~2 MB
+    exclude("com/sun/jna/**") // ~1 MB
+    exclude("club/minnced/opus/util/*")
+    exclude("tomp2p/opuswrapper/*")
+    manifest.inheritFrom(jar.manifest)
+}
+
 val sourcesJar = task<Jar>("sourcesJar") {
     classifier = "sources"
-    from ("src/main/java") {
+    from("src/main/java") {
         exclude("**/JDAInfo.java")
     }
     from(sourcesForRelease.destinationDir)
@@ -160,6 +175,10 @@ val javadocJar = task<Jar>("javadocJar") {
     dependsOn(javadoc)
     classifier = "javadoc"
     from(javadoc.destinationDir)
+}
+
+tasks.withType<ShadowJar> {
+    exclude("*.pom")
 }
 
 tasks.withType<JavaCompile> {
@@ -183,8 +202,8 @@ compileJava.apply {
 jar.apply {
     baseName = project.name
     manifest.attributes(mapOf(
-        "Implementation-Version" to version,
-        "Automatic-Module-Name"  to "net.dv8tion.jda"))
+            "Implementation-Version" to version,
+            "Automatic-Module-Name" to "net.dv8tion.jda"))
 }
 
 javadoc.apply {
@@ -197,9 +216,9 @@ javadoc.apply {
         opt.author()
         opt.tags("incubating:a:Incubating:")
         opt.links(
-            "https://docs.oracle.com/javase/8/docs/api/",
-            "https://takahikokawasaki.github.io/nv-websocket-client/",
-            "https://square.github.io/okhttp/3.x/okhttp/")
+                "https://docs.oracle.com/javase/8/docs/api/",
+                "https://takahikokawasaki.github.io/nv-websocket-client/",
+                "https://square.github.io/okhttp/3.x/okhttp/")
         if (JavaVersion.current().isJava9Compatible) {
             opt.addBooleanOption("html5", true)
             opt.addStringOption("-release", "8")
@@ -224,6 +243,7 @@ build.apply {
     dependsOn(sourcesJar)
     dependsOn(shadowJar)
     dependsOn(noOpusJar)
+    dependsOn(minimalJar)
 
     jar.mustRunAfter(clean)
     javadocJar.mustRunAfter(jar)
@@ -239,6 +259,11 @@ bintrayUpload.apply {
     onlyIf { getProjectProperty("bintrayUsername").isNotEmpty() }
     onlyIf { getProjectProperty("bintrayApiKey").isNotEmpty() }
     onlyIf { System.getenv("BUILD_NUMBER") != null }
+}
+
+test.apply {
+    useJUnitPlatform()
+    failFast = true
 }
 
 publishing {
@@ -276,22 +301,22 @@ bintray {
 fun getProjectProperty(propertyName: String): String {
     var property = ""
     if (hasProperty(propertyName)) {
-        property = this.properties[propertyName] as? String ?: ""
+        property = project.properties[propertyName] as? String ?: ""
     }
     return property
 }
 
 fun getBuild(): String {
     return System.getenv("BUILD_NUMBER")
-        ?: System.getProperty("BUILD_NUMBER")
-        ?: System.getenv("GIT_COMMIT")?.substring(0, 7)
-        ?: System.getProperty("GIT_COMMIT")?.substring(0, 7)
-        ?:"DEV"
+            ?: System.getProperty("BUILD_NUMBER")
+            ?: System.getenv("GIT_COMMIT")?.substring(0, 7)
+            ?: System.getProperty("GIT_COMMIT")?.substring(0, 7)
+            ?: "DEV"
 }
 
 class Version(
-    val major: String,
-    val minor: String,
-    val revision: String) {
-    override fun toString()="$major.$minor.${revision}_${getBuild()}"
+        val major: String,
+        val minor: String,
+        val revision: String) {
+    override fun toString() = "$major.$minor.${revision}_${getBuild()}"
 }

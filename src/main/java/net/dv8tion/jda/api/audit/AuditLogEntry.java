@@ -50,10 +50,12 @@ public class AuditLogEntry implements ISnowflake
     protected final Map<String, AuditLogChange> changes;
     protected final Map<String, Object> options;
     protected final ActionType type;
+    protected final int rawType;
 
-    public AuditLogEntry(ActionType type, long id, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook, 
-                        String reason, Map<String, AuditLogChange> changes, Map<String, Object> options)
+    public AuditLogEntry(ActionType type, int rawType, long id, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook,
+                         String reason, Map<String, AuditLogChange> changes, Map<String, Object> options)
     {
+        this.rawType = rawType;
         this.type = type;
         this.id = id;
         this.targetId = targetId;
@@ -99,10 +101,10 @@ public class AuditLogEntry implements ISnowflake
     {
         return Long.toUnsignedString(targetId);
     }
-    
+
     /**
      * The {@link net.dv8tion.jda.api.entities.Webhook Webhook} that the target id of this audit-log entry refers to
-     * 
+     *
      * @return Possibly-null Webhook instance
      */
     @Nullable
@@ -324,6 +326,17 @@ public class AuditLogEntry implements ISnowflake
     public ActionType getType()
     {
         return type;
+    }
+
+    /**
+     * The raw type value used to derive {@link #getType()}.
+     * <br>This can be used when a new action type is not yet supported by JDA.
+     *
+     * @return The raw type value
+     */
+    public int getTypeRaw()
+    {
+        return rawType;
     }
 
     /**

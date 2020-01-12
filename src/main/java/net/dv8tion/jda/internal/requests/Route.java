@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.requests;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -107,6 +109,7 @@ public class Route
         public static final Route KICK_MEMBER =        new Route(DELETE, "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_MEMBER =      new Route(PATCH,  "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route ADD_MEMBER =         new Route(PUT,    "guilds/{guild_id}/members/{user_id}", "guild_id");
+        public static final Route GET_MEMBER =         new Route(GET,    "guilds/{guild_id}/members/{user_id}", "guild_id");
         public static final Route MODIFY_SELF_NICK =   new Route(PATCH,  "guilds/{guild_id}/members/@me/nick",  "guild_id");
         public static final Route PRUNABLE_COUNT =     new Route(GET,    "guilds/{guild_id}/prune",             "guild_id");
         public static final Route PRUNE_MEMBERS =      new Route(POST,   "guilds/{guild_id}/prune",             "guild_id");
@@ -203,7 +206,7 @@ public class Route
 
         public static final Route ADD_REACTION =             new ReactionRoute(PUT);
         public static final Route REMOVE_REACTION =          new ReactionRoute(DELETE);
-        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions",    "channel_id");
+        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions", "channel_id");
         public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}",           "channel_id");
 
         public static final Route DELETE_MESSAGE =      new DeleteMessageRoute();
@@ -241,29 +244,17 @@ public class Route
     private final int paramCount;
     private final Method method;
     private final List<Integer> majorParamIndexes = new ArrayList<>();
-    private final RateLimit ratelimit;
     private final boolean missingHeaders;
 
     private Route(Method method, String route, String... majorParameters)
     {
-        this(method, null, false, route, majorParameters);
-    }
-
-    private Route(Method method, RateLimit rateLimit, String route, String... majorParameters)
-    {
-        this(method, rateLimit, false, route, majorParameters);
+        this(method, false, route, majorParameters);
     }
 
     private Route(Method method, boolean missingHeaders, String route, String... majorParameters)
     {
-        this(method, null, missingHeaders, route, majorParameters);
-    }
-
-    private Route(Method method, RateLimit rateLimit, boolean missingHeaders, String route, String... majorParameters)
-    {
         this.method = method;
         this.missingHeaders = missingHeaders;
-        this.ratelimit = rateLimit;
         this.route = route;
         this.paramCount = Helpers.countMatches(route, '{'); //All parameters start with {
 
@@ -324,11 +315,6 @@ public class Route
     public String getRatelimitRoute()
     {
         return ratelimitRoute;
-    }
-
-    public final RateLimit getRatelimit()
-    {
-        return this.ratelimit;
     }
 
     public String getCompilableRoute()
@@ -411,6 +397,8 @@ public class Route
             this(baseRoute, ratelimitRoute, compiledRoute, false);
         }
 
+        @Nonnull
+        @CheckReturnValue
         public CompiledRoute withQueryParams(String... params)
         {
             Checks.check(params.length >= 2, "params length must be at least 2");
@@ -468,28 +456,6 @@ public class Route
         }
     }
     
-    public static class RateLimit
-    {
-        final int usageLimit;
-        final int resetTime; // in ms
-
-        public RateLimit(int usageLimit, int resetTime)
-        {
-            this.usageLimit = usageLimit;
-            this.resetTime = resetTime;
-        }
-
-        public final int getUsageLimit()
-        {
-            return this.usageLimit;
-        }
-
-        public final int getResetTime()
-        {
-            return this.resetTime;
-        }
-    }
-
     //edit message uses a different rate-limit bucket as delete message and thus we need a special handling
 
     /*
@@ -521,7 +487,7 @@ public class Route
     {
         private ReactionRoute(Method method)
         {
-            super(method, new RateLimit(1, 250), "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}", "channel_id");
+            super(method, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}", "channel_id");
         }
 
         @Override

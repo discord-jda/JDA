@@ -216,7 +216,7 @@ public class PermissionOverrideActionImpl
     {
         long id = permissionHolder.getIdLong();
         DataObject object = (DataObject) request.getRawBody();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, permissionHolder);
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, permissionHolder);
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
 

@@ -37,6 +37,9 @@ import java.util.Objects;
  * <br>A visual representation of an Embed can be found at:
  * <a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/01-Overview.png" target="_blank">Embed Overview</a>
  * <br>This class has many possibilities for null values, so be careful!
+ *
+ * @see EmbedBuilder
+ * @see Message#getEmbeds()
  */
 public class MessageEmbed implements SerializableData
 {

@@ -20,11 +20,14 @@ import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.*;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.CheckReturnValue;
@@ -32,10 +35,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.time.OffsetDateTime;
-import java.util.Formattable;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Text message received from Discord.
@@ -88,6 +91,20 @@ import java.util.regex.Pattern;
  * </ul>
  *
  * <p>More information on formatting syntax can be found in the {@link java.util.Formatter format syntax documentation}!
+ *
+ * @see net.dv8tion.jda.api.MessageBuilder MessageBuilder
+ * @see MessageChannel#sendMessage(Message)
+ *
+ * @see MessageChannel#getIterableHistory()
+ * @see MessageChannel#getHistory()
+ * @see MessageChannel#getHistoryAfter(String, int)
+ * @see MessageChannel#getHistoryBefore(String, int)
+ * @see MessageChannel#getHistoryAround(String, int)
+ * @see MessageChannel#getHistoryFromBeginning(int)
+ * @see MessageChannel#retrieveMessageById(String)
+ *
+ * @see MessageChannel#deleteMessageById(String)
+ * @see MessageChannel#editMessageById(String, CharSequence)
  */
 public interface Message extends ISnowflake, Formattable
 {
@@ -881,7 +898,7 @@ public interface Message extends ISnowflake, Formattable
      * {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
      *
      * <p><u>To delete many messages at once in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     * you should use {@link net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(Collection)} instead.</u>
+     * you should use {@link net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(List) MessageChannel.purgeMessages(List)} instead.</u>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -897,7 +914,7 @@ public interface Message extends ISnowflake, Formattable
      *         or lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The pin was attempted after the Message had been deleted.</li>
+     *         The message was already deleted at the time the request was sent.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
@@ -1022,7 +1039,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/emote.
+     * showing how many users have reacted with the same emoji/emote.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -1084,7 +1101,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
-     * showing how many users have reacted with same emoji/emote.
+     * showing how many users have reacted with the same emoji/emote.
      *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
@@ -1166,8 +1183,8 @@ public interface Message extends ISnowflake, Formattable
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         and the currently logged in account does not have
-     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
+     *         and the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the channel.
      * @throws java.lang.IllegalStateException
      *         If this message was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -1176,6 +1193,461 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
+
+    /**
+     * Removes a reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
+     *
+     * <p>This message instance will not be updated by this operation.
+     *
+     * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
+     * showing how many users have reacted with the same emoji/emote.
+     *
+     * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  emote
+     *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to remove as a reaction from this Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
+     *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> removeReaction(@Nonnull Emote emote);
+
+    /**
+     * Removes a {@link net.dv8tion.jda.api.entities.User User's} reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
+     *
+     * <p>This message instance will not be updated by this operation.
+     *
+     * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
+     * showing how many users have reacted with the same emoji/emote.
+     *
+     * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when removing the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  emote
+     *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to remove as a reaction from this Message.
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is fake {@link net.dv8tion.jda.api.entities.Emote#isFake() Emote.isFake()}.</li>
+     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
+     *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user);
+
+    /**
+     * Removes a reaction from this Message using a unicode emoji.
+     * <br>A reference of unicode emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     *
+     * <p>This message instance will not be updated by this operation.
+     *
+     * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
+     * showing how many users have reacted with the same emoji/unicode.
+     *
+     * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <h2>Examples</h2>
+     * <code>
+     * // custom<br>
+     * message.removeReaction("minn:245267426227388416").queue();<br>
+     * // unicode escape<br>
+     * message.removeReaction("&#92;uD83D&#92;uDE02").queue();<br>
+     * // codepoint notation<br>
+     * message.removeReaction("U+1F602").queue();
+     * </code>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  unicode
+     *         The unicode emoji to add as a reaction to this Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided unicode emoji is null or empty.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> removeReaction(@Nonnull String unicode);
+
+    /**
+     * Removes a reaction from this Message using a unicode emoji.
+     * <br>A reference of unicode emojis can be found here:
+     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     *
+     * <p>This message instance will not be updated by this operation.
+     *
+     * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
+     * showing how many users have reacted with the same emoji/unicode.
+     *
+     * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when removing the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  unicode
+     *         The unicode emoji to add as a reaction to this Message.
+     * @param  user
+     *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
+     *         </ul>
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided unicode emoji is null or empty.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user);
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given {@link net.dv8tion.jda.api.entities.Emote emote}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  emote
+     *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.
+     *
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote);
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted using the given unicode emoji.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  unicode
+     *         The unicode emote to retrieve users for.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided unicode emoji is null or empty.
+     *
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     *
+     * @since  4.1.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode);
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given unicode reaction on this message.
+     *
+     * <p>Messages also store reactions using unicode values.
+     *
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * obtained through this method by using the emoji's unicode value.
+     *
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  unicode
+     *         The unicode value of the reaction emoji.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided unicode value is null or empty.
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     *
+     * @since  4.1.0
+     */
+    @Nullable
+    @CheckReturnValue
+    MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode);
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     *
+     * <p>Messages store reactions by keeping a list of reaction names.
+     *
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * obtained through this method by using the emoji's id.
+     *
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The string id of the reaction emoji.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided id is not a valid snowflake.
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     *
+     * @since  4.1.0
+     */
+    @Nullable
+    @CheckReturnValue
+    MessageReaction.ReactionEmote getReactionById(@Nonnull String id);
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} for the given reaction id on this message.
+     *
+     * <p>Messages store reactions by keeping a list of reaction names.
+     *
+     * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
+     * obtained through this method by using the emoji's id.
+     *
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The reaction request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  id
+     *         The long id of the reaction emoji.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided id is not a valid snowflake.
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
+     *
+     * @since  4.1.0
+     */
+    @Nullable
+    @CheckReturnValue
+    MessageReaction.ReactionEmote getReactionById(long id);
+
+    /**
+     * Enables/Disables suppression of Embeds on this Message.
+     * <br>Suppressing Embeds is equivalent to pressing the {@code X} in the top-right corner of an Embed inside the Discord client.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The clear-reactions request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked, or the
+     *         account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The suppress-embeds request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *         The suppress-embeds request was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  suppressed
+     *         Whether or not the embed should be suppressed
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         and the currently logged in account does not have
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the channel.
+     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         and the message was not sent by the currently logged in account.
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
+     * @see    #isSuppressedEmbeds()
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Void> suppressEmbeds(boolean suppressed);
+
+    /**
+     * Whether embeds are suppressed for this message.
+     * When Embeds are suppressed, they are not displayed on clients nor provided via API until un-suppressed.
+     * <br>This is a shortcut method for checking if {@link #getFlags() getFlags()} contains
+     * {@link net.dv8tion.jda.api.entities.Message.MessageFlag#EMBEDS_SUPPRESSED MessageFlag#EMBEDS_SUPPRESSED}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @return Whether or not Embeds are suppressed for this Message.
+     * @see    #suppressEmbeds(boolean)
+     */
+    boolean isSuppressedEmbeds();
+
+    /**
+     * Returns an EnumSet of all {@link Message.MessageFlag MessageFlags} present for this Message.
+     * @return Never-Null EnumSet of present {@link Message.MessageFlag MessageFlags}
+     * @see    Message.MessageFlag
+     */
+    @Nonnull
+    EnumSet<MessageFlag> getFlags();
 
     /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
@@ -1238,10 +1710,97 @@ public interface Message extends ISnowflake, Formattable
     }
 
     /**
+     * Enum representing the flags on a Message.
+     * <p>
+     * Note: The Values defined in this Enum are not considered final and only represent the current State of <i>known</i> Flags.
+     */
+    enum MessageFlag
+    {
+        /**
+         * The Message has been published to subscribed Channels (via Channel Following)
+         */
+        CROSSPOSTED(0),
+        /**
+         * The Message originated from a Message in another Channel (via Channel Following)
+         */
+        IS_CROSSPOST(1),
+        /**
+         * Embeds are suppressed on the Message.
+         * @see net.dv8tion.jda.api.entities.Message#isSuppressedEmbeds() Message#isSuppressedEmbeds()
+         */
+        EMBEDS_SUPPRESSED(2),
+        /**
+         * Indicates, that the source message of this crosspost was deleted.
+         * This should only be possible in combination with {@link #IS_CROSSPOST}
+         */
+        SOURCE_MESSAGE_DELETED(3),
+        /**
+         * Indicates, that this Message came from the urgent message system
+         */
+        URGENT(4);
+
+        private final int value;
+
+        MessageFlag(int offset)
+        {
+            this.value = 1 << offset;
+        }
+
+        /**
+         * Returns the value of the MessageFlag as represented in the bitfield. It is always a power of 2 (single bit)
+         * @return Non-Zero bit value of the field
+         */
+        public int getValue()
+        {
+            return value;
+        }
+
+        /**
+         * Given a bitfield, this function extracts all Enum values according to their bit values and returns
+         * an EnumSet containing all matching MessageFlags
+         * @param  bitfield
+         *         Non-Negative integer representing a bitfield of MessageFlags
+         * @return Never-Null EnumSet of MessageFlags being found in the bitfield
+         */
+        @Nonnull
+        public static EnumSet<MessageFlag> fromBitField(int bitfield)
+        {
+            Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
+                .filter(e -> (e.value & bitfield) > 0)
+                .collect(Collectors.toSet());
+            return set.isEmpty() ? EnumSet.noneOf(MessageFlag.class) : EnumSet.copyOf(set);
+        }
+
+        /**
+         * Converts a Collection of MessageFlags back to the integer representing the bitfield.
+         * This is the reverse operation of {@link #fromBitField(int)}.
+         * @param  coll
+         *         A Non-Null Collection of MessageFlags
+         * @throws IllegalArgumentException
+         *         If the provided Collection is {@code null}
+         * @return Integer value of the bitfield representing the given MessageFlags
+         */
+        public static int toBitField(@Nonnull Collection<MessageFlag> coll)
+        {
+            Checks.notNull(coll, "Collection");
+            int flags = 0;
+            for (MessageFlag messageFlag : coll)
+            {
+                flags |= messageFlag.value;
+            }
+            return flags;
+        }
+    }
+
+    /**
      * Represents a {@link net.dv8tion.jda.api.entities.Message Message} file attachment.
      */
     class Attachment implements ISnowflake
     {
+        private static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(Arrays.asList("jpg",
+                "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
+        private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(Arrays.asList("webm",
+                "flv", "vob", "avi", "mov", "wmv", "amv", "mp4", "mpg", "mpeg", "gifv"));
         private final long id;
         private final String url;
         private final String proxyUrl;
@@ -1315,6 +1874,20 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
+         * The file extension of the Attachment when it was first uploaded.
+         * <br>Null is returned if no characters follow the last occurrence of the '{@code .}' character
+         * (or if the character is not present in {@link #getFileName()}).
+         *
+         * @return Non-null String containing the Attachment file extension, or null if it can't be determined.
+         */
+        @Nullable
+        public String getFileExtension()
+        {
+            int index = fileName.lastIndexOf('.') + 1;
+            return index == 0 || index == fileName.length() ? null : fileName.substring(index);
+        }
+
+        /**
          * Enqueues a request to retrieve the contents of this Attachment.
          * <br><b>The receiver is expected to close the retrieved {@link java.io.InputStream}.</b>
          *
@@ -1347,20 +1920,12 @@ public interface Message extends ISnowflake, Formattable
             CompletableFuture<InputStream> future = new CompletableFuture<>();
             Request req = getRequest();
             OkHttpClient httpClient = getJDA().getHttpClient();
-            httpClient.newCall(req).enqueue(new Callback()
-            {
-                @Override
-                public void onFailure(@Nonnull Call call, @Nonnull IOException e)
-                {
-                    future.completeExceptionally(new UncheckedIOException(e));
-                }
-
-                @Override
-                public void onResponse(@Nonnull Call call, @Nonnull Response response) throws IOException
-                {
+            httpClient.newCall(req).enqueue(FunctionalCallback
+                .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
+                .onSuccess((call, response) -> {
                     if (response.isSuccessful())
                     {
-                        InputStream body = Requester.getBody(response);
+                        InputStream body = IOUtil.getBody(response);
                         if (!future.complete(body))
                             IOUtil.silentClose(response);
                     }
@@ -1369,8 +1934,7 @@ public interface Message extends ISnowflake, Formattable
                         future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
                         IOUtil.silentClose(response);
                     }
-                }
-            });
+                }).build());
             return future;
         }
 
@@ -1466,7 +2030,7 @@ public interface Message extends ISnowflake, Formattable
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
-            Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
+            Checks.check(!file.exists() || file.canWrite(), "Cannot write to file %s", file.getName());
             return retrieveInputStream().thenApplyAsync((stream) -> {
                 try (FileOutputStream out = new FileOutputStream(file))
                 {
@@ -1558,10 +2122,10 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The height of the Attachment if this Attachment is an image.
-         * <br>If this Attachment is not an image, this returns -1.
+         * The height of the Attachment if this Attachment is an image/video.
+         * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
-         * @return int containing image Attachment height.
+         * @return int containing image/video Attachment height, or -1 if attachment is neither image nor video.
          */
         public int getHeight()
         {
@@ -1569,10 +2133,10 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * The width of the Attachment if this Attachment is an image.
-         * <br>If this Attachment is not an image, this returns -1.
+         * The width of the Attachment if this Attachment is an image/video.
+         * <br>If this Attachment is neither an image, nor a video, this returns -1.
          *
-         * @return int containing image Attachment width.
+         * @return int containing image/video Attachment width, or -1 if attachment is neither image nor video.
          */
         public int getWidth()
         {
@@ -1580,14 +2144,29 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Whether or not this attachment is an Image.
-         * <br>Based on the values of getHeight and getWidth being larger than zero.
+         * Whether or not this attachment is an Image,
+         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getFileExtension()}.
          *
-         * @return True if width and height are greater than zero.
+         * @return True if this attachment is an image
          */
         public boolean isImage()
         {
-            return height > 0 && width > 0;
+            if (width < 0) return false; //if width is -1, so is height
+            String extension = getFileExtension();
+            return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase());
+        }
+
+        /**
+         * Whether or not this attachment is a video,
+         * based on {@link #getWidth()}, {@link #getHeight()}, and {@link #getFileExtension()}.
+         *
+         * @return True if this attachment is a video
+         */
+        public boolean isVideo()
+        {
+            if (width < 0) return false; //if width is -1, so is height
+            String extension = getFileExtension();
+            return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
         }
     }
 }

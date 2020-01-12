@@ -27,15 +27,17 @@ import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -44,7 +46,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoleImpl implements Role
 {
     private final long id;
-    private final UpstreamReference<Guild> guild;
+    private final SnowflakeReference<Guild> guild;
+    private final JDAImpl api;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
@@ -60,20 +63,22 @@ public class RoleImpl implements Role
     public RoleImpl(long id, Guild guild)
     {
         this.id = id;
-        this.guild = new UpstreamReference<>(guild);
+        this.api =(JDAImpl) guild.getJDA();
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
     }
 
     @Override
     public int getPosition()
     {
-        if (this == getGuild().getPublicRole())
+        Guild guild = getGuild();
+        if (equals(guild.getPublicRole()))
             return -1;
 
         //Subtract 1 to get into 0-index, and 1 to disregard the everyone role.
-        int i = getGuild().getRoles().size() - 2;
-        for (Role r : getGuild().getRoles())
+        int i = guild.getRoles().size() - 2;
+        for (Role r : guild.getRoles())
         {
-            if (r == this)
+            if (equals(r))
                 return i;
             i--;
         }
@@ -122,6 +127,27 @@ public class RoleImpl implements Role
     public EnumSet<Permission> getPermissions()
     {
         return Permission.getPermissions(rawPermissions);
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit()
+    {
+        return getPermissions();
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    {
+        return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
 
     @Override
@@ -194,7 +220,7 @@ public class RoleImpl implements Role
     @Override
     public Guild getGuild()
     {
-        return guild.get();
+        return guild.resolve();
     }
 
     @Nonnull
@@ -231,22 +257,23 @@ public class RoleImpl implements Role
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES))
-            throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_ROLES);
-        if(!PermissionUtil.canInteract(getGuild().getSelfMember(), this))
+        Guild guild = getGuild();
+        if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
+        if(!PermissionUtil.canInteract(guild.getSelfMember(), this))
             throw new HierarchyException("Can't delete role >= highest self-role");
         if (managed)
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
-        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(getGuild().getId(), getId());
-        return new AuditableRestActionImpl<Void>(getJDA(), route);
+        Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
     public JDA getJDA()
     {
-        return getGuild().getJDA();
+        return api;
     }
 
     @Nonnull
@@ -286,12 +313,15 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public int compareTo(Role r)
+    public int compareTo(@Nonnull Role r)
     {
         if (this == r)
             return 0;
+        if (!(r instanceof RoleImpl))
+            throw new IllegalArgumentException("Cannot compare different role implementations");
+        RoleImpl impl = (RoleImpl) r;
 
-        if (!this.getGuild().equals(r.getGuild()))
+        if (this.guild.getIdLong() != impl.guild.getIdLong())
             throw new IllegalArgumentException("Cannot compare roles that aren't from the same guild!");
 
         if (this.getPositionRaw() != r.getPositionRaw())
@@ -346,6 +376,8 @@ public class RoleImpl implements Role
 
     public RoleImpl setRawPosition(int rawPosition)
     {
+        SortedSnowflakeCacheViewImpl<Role> roleCache = (SortedSnowflakeCacheViewImpl<Role>) getGuild().getRoleCache();
+        roleCache.clearCachedLists();
         this.rawPosition = rawPosition;
         return this;
     }

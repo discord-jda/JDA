@@ -83,10 +83,10 @@ import javax.annotation.Nonnull;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.api.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.api.events.Event Events}
- * for you.
+ * for you. You should <b><u>override</u></b> the methods provided by this class for your event listener implementation.
  *
- * <p><b>Example:</b>
- * <br><pre><code>
+ * <h2>Example:</h2>
+ * <pre><code>
  * public class MyReadyListener extends ListenerAdapter
  * {
  *    {@literal @Override}
@@ -213,6 +213,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildAvailable(@Nonnull GuildAvailableEvent event) {}
     public void onGuildUnavailable(@Nonnull GuildUnavailableEvent event) {}
     public void onUnavailableGuildJoined(@Nonnull UnavailableGuildJoinedEvent event) {}
+    public void onUnavailableGuildLeave(@Nonnull UnavailableGuildLeaveEvent event) {}
     public void onGuildBan(@Nonnull GuildBanEvent event) {}
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {}
 
@@ -500,6 +501,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUnavailable((GuildUnavailableEvent) event);
         else if (event instanceof UnavailableGuildJoinedEvent)
             onUnavailableGuildJoined((UnavailableGuildJoinedEvent) event);
+        else if (event instanceof UnavailableGuildLeaveEvent)
+            onUnavailableGuildLeave((UnavailableGuildLeaveEvent) event);
         else if (event instanceof GuildBanEvent)
             onGuildBan((GuildBanEvent) event);
         else if (event instanceof GuildUnbanEvent)

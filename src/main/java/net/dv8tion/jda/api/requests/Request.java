@@ -58,7 +58,9 @@ public class Request<T>
     {
         this.restAction = restAction;
         this.onSuccess = onSuccess;
-        if (RestActionImpl.isPassContext())
+        if (onFailure instanceof ContextException.ContextConsumer)
+            this.onFailure = onFailure;
+        else if (RestActionImpl.isPassContext())
             this.onFailure = ContextException.here(onFailure);
         else
             this.onFailure = onFailure;

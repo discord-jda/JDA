@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
 import net.dv8tion.jda.api.audio.AudioSendHandler;
@@ -26,7 +24,6 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -43,11 +40,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class AudioManagerImpl implements AudioManager
 {
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("3.8.1")
-    public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
-
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
     protected final ListenerProxy connectionListener = new ListenerProxy();
@@ -87,9 +79,6 @@ public class AudioManagerImpl implements AudioManager
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
-        if (!getGuild().isAvailable())
-            throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
-                    "Please wait until this Guild is available to open a connection.");
         final Member self = getGuild().getSelfMember();
         //if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);

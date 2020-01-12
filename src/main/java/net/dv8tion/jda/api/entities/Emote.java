@@ -42,9 +42,20 @@ import java.util.List;
  * <br>Fake emotes may or may not have an attached {@link Guild Guild} and thus might not be manageable though
  * {@link #getManager()} or {@link #delete()}. They also might lack attached roles for {@link #getRoles()}.
  *
- * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
  *
  * @since  2.2
+ *
+ * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
+ *
+ * @see    Guild#getEmoteCache()
+ * @see    Guild#getEmoteById(long)
+ * @see    Guild#getEmotesByName(String, boolean)
+ * @see    Guild#getEmotes()
+ *
+ * @see    JDA#getEmoteCache()
+ * @see    JDA#getEmoteById(long)
+ * @see    JDA#getEmotesByName(String, boolean)
+ * @see    JDA#getEmotes()
  */
 public interface Emote extends IMentionable, IFakeable
 {
@@ -104,7 +115,8 @@ public interface Emote extends IMentionable, IFakeable
     boolean canProvideRoles();
 
     /**
-     * The name of this emote
+     * The name of this emote.
+     * <br>Does not include colons.
      *
      * @return String representation of this emote's name
      */
@@ -215,9 +227,6 @@ public interface Emote extends IMentionable, IFakeable
      *         The User to test
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(Member issuer)
     {
@@ -234,9 +243,6 @@ public interface Emote extends IMentionable, IFakeable
      *         The MessageChannel to test
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel)
      */
     default boolean canInteract(User issuer, MessageChannel channel)
     {
@@ -255,9 +261,6 @@ public interface Emote extends IMentionable, IFakeable
      *         Whether bots can use non-managed emotes in other guilds
      *
      * @return True, if the provided Member can use this Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(User, Emote, MessageChannel, boolean)
      */
     default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride)
     {

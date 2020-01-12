@@ -39,6 +39,10 @@ import java.util.Objects;
  * built from Discord is needed to see changes.
  *
  * @since  3.0
+ *
+ * @see    Message#getReactions()
+ * @see    Message#getReactionByUnicode(String)
+ * @see    Message#getReactionById(long)
  */
 public class MessageReaction
 {
@@ -84,6 +88,9 @@ public class MessageReaction
 
     /**
      * Whether the currently logged in account has reacted with this reaction
+     *
+     * <p><b>This will always be false for events. Discord does not provide this information for reaction events.</b>
+     * You can use {@link MessageChannel#retrieveMessageById(String)} to get this information on a complete message.
      *
      * @return True, if we reacted with this reaction
      */
@@ -439,6 +446,8 @@ public class MessageReaction
          *
          * <p>For better use in consoles that do not support unicode emoji use {@link #getAsCodepoints()} for a more
          * readable representation of the emoji.
+         *
+         * <p>Custom emotes may return an empty string for this if the emote was deleted.
          *
          * @return The name for this emote/emoji
          */

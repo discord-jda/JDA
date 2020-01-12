@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -35,8 +34,19 @@ import java.util.List;
  * <p>Contains all guild-specific information about a User. (Roles, Nickname, VoiceStatus etc.)
  *
  * @since 3.0
+ *
+ * @see   Guild#getMember(User)
+ * @see   Guild#getMemberCache()
+ * @see   Guild#getMemberById(long)
+ * @see   Guild#getMemberByTag(String)
+ * @see   Guild#getMemberByTag(String, String)
+ * @see   Guild#getMembersByEffectiveName(String, boolean)
+ * @see   Guild#getMembersByName(String, boolean)
+ * @see   Guild#getMembersByNickname(String, boolean)
+ * @see   Guild#getMembersWithRoles(Role...)
+ * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder
+public interface Member extends IMentionable, IPermissionHolder, IFakeable
 {
     /**
      * The user wrapped by this Entity.
@@ -64,6 +74,8 @@ public interface Member extends IMentionable, IPermissionHolder
 
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
+     * <br>If the member was loaded through a presence update (lazy loading) this will be identical
+     * to the creation time of the guild.
      *
      * @return The Join Date.
      */
@@ -132,6 +144,25 @@ public interface Member extends IMentionable, IPermissionHolder
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
 
     /**
+     * A Set of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes} of this Member.
+     * Every {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} other than {@code OFFLINE} and {@code UNKNOWN}
+     * is interpreted as active.
+     * Since {@code INVISIBLE} is only possible for the SelfUser, other Members will never have ClientTypes show as
+     * active when actually being {@code INVISIBLE}, since they will show as {@code OFFLINE}.
+     * <br>If the Member is currently not active with any Client, this returns an empty Set.
+     * <br>When {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} is disabled,
+     * active clients will not be tracked and this will always return an empty Set.
+     * <br>Since a user can be connected from multiple different devices such as web and mobile,
+     * discord specifies a status for each {@link net.dv8tion.jda.api.entities.ClientType}.
+     *
+     * @return EnumSet of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
+     *
+     * @since  4.0.0
+     */
+    @Nonnull
+    EnumSet<ClientType> getActiveClients();
+
+    /**
      * Returns the current nickname of this Member for the parent Guild.
      *
      * <p>This can be changed using
@@ -189,23 +220,6 @@ public interface Member extends IMentionable, IPermissionHolder
     int getColorRaw();
 
     /**
-     * The Permissions this Member holds in the specified {@link GuildChannel GuildChannel}.
-     * <br>Permissions returned by this may be different from {@link #getPermissions()}
-     * due to the GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}.
-     * <br><u>Changes to the returned set do not affect this entity directly.</u>
-     *
-     * @param  channel
-     *         The {@link GuildChannel GuildChannel} of which to get Permissions for
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the channel is null
-     *
-     * @return Set of Permissions granted to this Member.
-     */
-    @Nonnull
-    EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel);
-
-    /**
      * Whether this Member can interact with the provided Member
      * (kick/ban/etc.)
      *
@@ -218,14 +232,14 @@ public interface Member extends IMentionable, IPermissionHolder
      *         if the specified Member is not from the same guild
      *
      * @return True, if this Member is able to interact with the specified Member
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member)
      */
     boolean canInteract(@Nonnull Member member);
 
     /**
      * Whether this Member can interact with the provided {@link net.dv8tion.jda.api.entities.Role Role}
      * (kick/ban/move/modify/delete/etc.)
+     *
+     * <p>If this returns true this member can assign the role to other members.
      *
      * @param  role
      *         The target Role to check
@@ -236,8 +250,6 @@ public interface Member extends IMentionable, IPermissionHolder
      *         if the specified Role is not from the same guild
      *
      * @return True, if this member is able to interact with the specified Role
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Role)
      */
     boolean canInteract(@Nonnull Role role);
 
@@ -254,8 +266,6 @@ public interface Member extends IMentionable, IPermissionHolder
      *         if the specified Emote is not from the same guild
      *
      * @return True, if this Member is able to interact with the specified Emote
-     *
-     * @see    net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Emote)
      */
     boolean canInteract(@Nonnull Emote emote);
 
@@ -307,7 +317,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -355,7 +365,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#BAN_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot ban the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
@@ -397,7 +407,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -436,7 +446,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link Member#canInteract(Member)}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -566,7 +576,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If attempting to set nickname for another member and the logged in account cannot manipulate the other user due to permission hierarchy position.
-     *         <br>See {@link net.dv8tion.jda.internal.utils.PermissionUtil#canInteract(Member, Member) PermissionUtil.canInteract(Member, Member)}
+     *         <br>See {@link #canInteract(Member)}.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *

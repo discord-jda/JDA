@@ -23,6 +23,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Represents the connection used for direct messaging.
+ *
+ * @see User#openPrivateChannel()
  */
 public interface PrivateChannel extends MessageChannel, IFakeable
 {

@@ -95,16 +95,18 @@ public class GuildUpdateHandler extends SocketHandler
 
         if (ownerId != guild.getOwnerIdLong())
         {
+            long oldOwnerId = guild.getOwnerIdLong();
             Member oldOwner = guild.getOwner();
             Member newOwner = guild.getMembersView().get(ownerId);
             if (newOwner == null)
-                WebSocketClient.LOG.warn("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
+                WebSocketClient.LOG.debug("Received {} with owner not in cache. UserId: {} GuildId: {}", allContent.get("t"), ownerId, id);
             guild.setOwner(newOwner);
             guild.setOwnerId(ownerId);
             getJDA().handleEvent(
                 new GuildUpdateOwnerEvent(
                     getJDA(), responseNumber,
-                    guild, oldOwner));
+                    guild, oldOwner,
+                    oldOwnerId, ownerId));
         }
         if (!Objects.equals(name, guild.getName()))
         {
