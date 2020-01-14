@@ -16,35 +16,75 @@
 
 package net.dv8tion.jda.internal.requests.ratelimit;
 
-import net.dv8tion.jda.api.events.ExceptionEvent;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import net.dv8tion.jda.internal.utils.UnlockHook;
 import okhttp3.Headers;
+import org.jetbrains.annotations.Contract;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UncheckedIOException;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
+/*
+
+** How does it work? **
+
+A bucket is determined via the Path+Method+Major in the following way:
+
+    1. Get Hash from Path+Method (we call this route)
+    2. Get bucket from Hash+Major (we call this bucketid)
+
+If no hash is known we default to the constant "unlimited" hash. The hash is loaded from HTTP responses using the "X-RateLimit-Bucket" response header.
+This hash is per Method+Path and can be stored indefinitely once received.
+Some endpoints don't return a hash, this means that the endpoint is **unlimited** and will be in queue with only the major parameter.
+
+To explain this further, lets look at the example of message history. The endpoint to fetch message history is "GET/channels/{channel.id}/messages".
+This endpoint does not have any rate limit (unlimited) and will thus use the hash "unlimited+GET/channels/{channel.id}/messages".
+The bucket id for this will be "unlimited+GET/channels/{channel.id}/messages:guild_id:{channel.id}:webhook_id" where "{channel.id}" would be replaced with the respective id.
+This means you can fetch history concurrently for multiple channels but it will be in sequence for the same channel.
+
+If the endpoint is not unlimited we will receive a hash on the first response.
+Once this happens every unlimited bucket will start moving its queue to the correct bucket.
+This is done during the queue work iteration so many requests to one endpoint would be moved correctly.
+
+For example, the first message sending:
+
+    public void onReady(ReadyEvent event) {
+      TextChannel channel = event.getJDA().getTextChannelById("123");
+      for (int i = 1; i <= 100; i++) {
+        channel.sendMessage("Message: " + i).queue();
+      }
+    }
+
+This will send 100 messages on startup. At this point we don't yet know the hash for this route so we put them all in "unlimited+POST/channels/{channel.id}/messages:guild_id:123:webhook_id".
+The bucket iterates the requests in sync and gets the first response. This response provides the hash for this route and we create a bucket for it.
+Once the response is handled we continue with the next request in the unlimited bucket and notice the new bucket. We then move all related requests to this bucket.
+
+ */
 public class BotRateLimiter extends RateLimiter
 {
     private static final String RESET_AFTER_HEADER = "X-RateLimit-Reset-After";
     private static final String RESET_HEADER = "X-RateLimit-Reset";
     private static final String LIMIT_HEADER = "X-RateLimit-Limit";
     private static final String REMAINING_HEADER = "X-RateLimit-Remaining";
+    private static final String GLOBAL_HEADER = "X-RateLimit-Global";
+    private static final String HASH_HEADER = "X-RateLimit-Bucket";
+    private static final String RETRY_AFTER_HEADER = "Retry-After";
+    private static final String UNLIMITED_BUCKET = "unlimited"; // we generate an unlimited bucket for every major parameter configuration
+
+    private final ReentrantLock bucketLock = new ReentrantLock();
+    // Route -> Hash
+    private final Map<Route, String> hash = new ConcurrentHashMap<>();
+    // Hash + Major Parameter -> Bucket
+    private final Map<String, Bucket> bucket = new ConcurrentHashMap<>();
+    // Bucket -> Rate-Limit Worker
+    private final Map<Bucket, Future<?>> rateLimitQueue = new ConcurrentHashMap<>();
+    private Future<?> cleanupWorker;
 
     public BotRateLimiter(Requester requester)
     {
@@ -52,92 +92,208 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    public Long getRateLimit(Route.CompiledRoute route)
+    public void init()
     {
-        Bucket bucket = getBucket(route);
-        synchronized (bucket)
-        {
-            return bucket.getRateLimit();
-        }
+        cleanupWorker = getScheduler().scheduleAtFixedRate(this::cleanup, 30, 30, TimeUnit.SECONDS);
+    }
+
+    private ScheduledExecutorService getScheduler()
+    {
+        return requester.getJDA().getRateLimitPool();
+    }
+
+    private void cleanup()
+    {
+        // This will remove buckets that are no longer needed every 30 seconds to avoid memory leakage
+        // We will keep the hashes in memory since they are very limited (by the amount of possible routes)
+        MiscUtil.locked(bucketLock, () -> {
+            int size = bucket.size();
+            Iterator<Map.Entry<String, Bucket>> entries = bucket.entrySet().iterator();
+
+            while (entries.hasNext())
+            {
+                Map.Entry<String, Bucket> entry = entries.next();
+                String key = entry.getKey();
+                Bucket bucket = entry.getValue();
+                if (bucket.isUnlimited() && bucket.requests.isEmpty())
+                    entries.remove(); // remove unlimited if requests are empty
+                // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
+                else if (bucket.requests.isEmpty() && bucket.reset <= getNow())
+                    entries.remove();
+            }
+            // Log how many buckets were removed
+            size -= bucket.size();
+            if (size > 0)
+                log.debug("Removed {} expired buckets", size);
+        });
+    }
+
+    private String getRouteHash(Route route)
+    {
+        return hash.getOrDefault(route, UNLIMITED_BUCKET + "+" + route);
     }
 
     @Override
+    protected void shutdown()
+    {
+        super.shutdown();
+        if (cleanupWorker != null)
+            cleanupWorker.cancel(false);
+    }
+
+    @Override
+    public Long getRateLimit(Route.CompiledRoute route)
+    {
+        Bucket bucket = getBucket(route, false);
+        return bucket == null ? 0L : bucket.getRateLimit();
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
     protected void queueRequest(Request request)
     {
-        Bucket bucket = getBucket(request.getRoute());
-        synchronized (bucket)
-        {
-            bucket.addToQueue(request);
-        }
+        // Create bucket and enqueue request
+        MiscUtil.locked(bucketLock, () -> {
+            Bucket bucket = getBucket(request.getRoute(), true);
+            bucket.enqueue(request);
+            runBucket(bucket);
+        });
     }
 
     @Override
     protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
-        Bucket bucket = getBucket(route);
-        synchronized (bucket)
+        bucketLock.lock();
+        try
         {
-            Headers headers = response.headers();
-            int code = response.code();
-
-            if (code == 429)
-            {
-                String global = headers.get("X-RateLimit-Global");
-                String retry = headers.get("Retry-After");
-                if (retry == null || retry.isEmpty())
-                {
-                    try (InputStream in = IOUtil.getBody(response))
-                    {
-                        DataObject limitObj = DataObject.fromJson(in);
-                        retry = limitObj.get("retry_after").toString();
-                    }
-                    catch (IOException e)
-                    {
-                        throw new UncheckedIOException(e);
-                    }
-                }
-                long retryAfter = Long.parseLong(retry);
-                if (Boolean.parseBoolean(global))  //global ratelimit
-                {
-                    //If it is global, lock down the threads.
-                    log.warn("Encountered global rate-limit! Retry-After: {}", retryAfter);
-                    requester.getJDA().getSessionController().setGlobalRatelimit(getNow() + retryAfter);
-                }
-                else
-                {
-                    log.warn("Encountered 429 on route /{}", bucket.getRoute());
-                    updateBucket(bucket, headers, retryAfter);
-                }
-
-                return retryAfter;
-            }
+            long rateLimit = updateBucket(route, response).getRateLimit();
+            if (response.code() == 429)
+                return rateLimit;
             else
-            {
-                updateBucket(bucket, headers, -1);
                 return null;
-            }
         }
-
+        finally
+        {
+            bucketLock.unlock();
+        }
     }
 
-    private Bucket getBucket(Route.CompiledRoute route)
+    private Bucket updateBucket(Route.CompiledRoute route, okhttp3.Response response)
     {
-        String rateLimitRoute = route.getRatelimitRoute();
-        Bucket bucket = (Bucket) buckets.get(rateLimitRoute);
-        if (bucket == null)
-        {
-            synchronized (buckets)
+        return MiscUtil.locked(bucketLock, () -> {
+            try
             {
-                bucket = (Bucket) buckets.get(rateLimitRoute);
-                if (bucket == null)
+                Bucket bucket = getBucket(route, true);
+                Headers headers = response.headers();
+
+                boolean wasUnlimited = bucket.isUnlimited();
+                boolean global = headers.get(GLOBAL_HEADER) != null;
+                String hash = headers.get(HASH_HEADER);
+                long now = getNow();
+
+                // Create a new bucket for the hash if needed
+                Route baseRoute = route.getBaseRoute();
+                if (hash != null)
                 {
-                    Route baseRoute = route.getBaseRoute();
-                    bucket = new Bucket(rateLimitRoute, baseRoute.isMissingHeaders());
-                    buckets.put(rateLimitRoute, bucket);
+                    if (!this.hash.containsKey(baseRoute))
+                    {
+                        this.hash.put(baseRoute, hash);
+                        log.debug("Caching bucket hash {} -> {}", baseRoute, hash);
+                    }
+
+                    bucket = getBucket(route, true);
                 }
+
+                // Handle global rate limit if necessary
+                if (global)
+                {
+                    String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
+                    long retryAfter = parseLong(retryAfterHeader);
+                    requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
+                    log.error("Encountered global rate limit! Retry-After: {} ms", retryAfter);
+                }
+                // Handle hard rate limit, pretty much just log that it happened
+                else if (response.code() == 429)
+                {
+                    // Update the bucket to the new information
+                    String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
+                    long retryAfter = parseLong(retryAfterHeader);
+                    bucket.remaining = 0;
+                    bucket.reset = getNow() + retryAfter;
+                    // don't log warning if we are switching bucket, this means it was an issue with an un-hashed route that is now resolved
+                    if (hash == null || !wasUnlimited)
+                        log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                    else
+                        log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                    return bucket;
+                }
+
+                // If hash is null this means we didn't get enough information to update a bucket
+                if (hash == null)
+                    return bucket;
+
+                // Update the bucket parameters with new information
+                String limitHeader = headers.get(LIMIT_HEADER);
+                String remainingHeader = headers.get(REMAINING_HEADER);
+                String resetAfterHeader = headers.get(RESET_AFTER_HEADER);
+                String resetHeader = headers.get(RESET_HEADER);
+
+                bucket.limit = (int) Math.max(1L, parseLong(limitHeader));
+                bucket.remaining = (int) parseLong(remainingHeader);
+                if (requester.getJDA().isRelativeRateLimit())
+                    bucket.reset = now + parseDouble(resetAfterHeader);
+                else
+                    bucket.reset = parseDouble(resetHeader);
+                log.trace("Updated bucket {} to ({}/{}, {})", bucket.bucketId, bucket.remaining, bucket.limit, bucket.reset - now);
+                return bucket;
             }
-        }
-        return bucket;
+            catch (Exception e)
+            {
+                Bucket bucket = getBucket(route, true);
+                log.error("Encountered Exception while updating a bucket. Route: {} Bucket: {} Code: {} Headers:\n{}",
+                        route.getBaseRoute(), bucket, response.code(), response.headers(), e);
+                return bucket;
+            }
+        });
+    }
+
+    @Contract("_,true->!null")
+    private Bucket getBucket(Route.CompiledRoute route, boolean create)
+    {
+        return MiscUtil.locked(bucketLock, () ->
+        {
+            // Retrieve the hash via the route
+            String hash = getRouteHash(route.getBaseRoute());
+            // Get or create a bucket for the hash + major parameters
+            String bucketId = hash + ":" + route.getMajorParameters();
+            Bucket bucket = this.bucket.get(bucketId);
+            if (bucket == null && create)
+                this.bucket.put(bucketId, bucket = new Bucket(bucketId));
+
+            return bucket;
+        });
+    }
+
+    private void runBucket(Bucket bucket)
+    {
+        if (isShutdown)
+            return;
+        // Schedule a new bucket worker if no worker is running
+        MiscUtil.locked(bucketLock, () ->
+            rateLimitQueue.computeIfAbsent(bucket,
+                (k) -> getScheduler().schedule(bucket, bucket.getRateLimit(), TimeUnit.MILLISECONDS)));
+    }
+
+    private long parseLong(String input)
+    {
+        return input == null ? 0L : Long.parseLong(input);
+    }
+
+    private long parseDouble(String input)
+    {
+        //The header value is using a double to represent milliseconds and seconds:
+        // 5.250 this is 5 seconds and 250 milliseconds (5250 milliseconds)
+        return input == null ? 0L : (long) (Double.parseDouble(input) * 1000);
     }
 
     public long getNow()
@@ -145,285 +301,128 @@ public class BotRateLimiter extends RateLimiter
         return System.currentTimeMillis();
     }
 
-    private void updateBucket(Bucket bucket, Headers headers, long retryAfter)
-    {
-        int headerCount = 0;
-        if (retryAfter > 0)
-        {
-            bucket.resetTime = getNow() + retryAfter;
-            bucket.routeUsageRemaining = 0;
-        }
-
-        // relative = reset-after
-        if (requester.getJDA().isRelativeRateLimit())
-            headerCount += parseDouble(headers.get(RESET_AFTER_HEADER), bucket, (time, b)  -> b.resetTime = getNow() + (long) (time * 1000)); //Seconds to milliseconds
-        else // absolute = reset
-            headerCount += parseDouble(headers.get(RESET_HEADER), bucket, (time, b)  -> b.resetTime = (long) (time * 1000)); //Seconds to milliseconds
-
-        headerCount += parseInt(headers.get(LIMIT_HEADER),  bucket, (limit, b) -> b.routeUsageLimit = limit);
-
-        //Currently, we check the remaining amount even for hardcoded ratelimits just to further respect Discord
-        // however, if there should ever be a case where Discord informs that the remaining is less than what
-        // it actually is and we add a custom ratelimit to handle that, we will need to instead move this to the
-        // above else statement and add a bucket.routeUsageRemaining-- decrement to the above if body.
-        //An example of this statement needing to be moved would be if the custom ratelimit reset time interval is
-        // equal to or greater than 1000ms, and the remaining count provided by discord is less than the ACTUAL
-        // amount that their systems allow in such a way that isn't a bug.
-        //The custom ratelimit system is primarily for ratelimits that can't be properly represented by Discord's
-        // header system due to their headers only supporting accuracy to the second. The custom ratelimit system
-        // allows for hardcoded ratelimits that allow accuracy to the millisecond which is important for some
-        // ratelimits like Reactions which is 1/0.25s, but discord reports the ratelimit as 1/1s with headers.
-        headerCount += parseInt(headers.get(REMAINING_HEADER), bucket, (remaining, b) -> b.routeUsageRemaining = remaining);
-        if (!bucket.missingHeaders && headerCount < 3)
-        {
-            log.debug("Encountered issue with headers when updating a bucket\n" +
-                      "Route: {}\nHeaders: {}", bucket.getRoute(), headers);
-        }
-    }
-
-    private int parseInt(String input, Bucket bucket, IntObjectConsumer<? super Bucket> consumer)
-    {
-        try
-        {
-            int parsed = Integer.parseInt(input);
-            consumer.accept(parsed, bucket);
-            return 1;
-        }
-        catch (NumberFormatException ignored) {}
-        catch (Exception e)
-        {
-            log.error("Uncaught exception parsing header value: {}", input, e);
-        }
-        return 0;
-    }
-    private int parseDouble(String input, Bucket bucket, DoubleObjectConsumer<? super Bucket> consumer)
-    {
-        try
-        {
-            double parsed = Double.parseDouble(input);
-            consumer.accept(parsed, bucket);
-            return 1;
-        }
-        catch (NumberFormatException | NullPointerException ignored) {}
-        catch (Exception e)
-        {
-            log.error("Uncaught exception parsing header value: {}", input, e);
-        }
-        return 0;
-    }
-
+    @SuppressWarnings("rawtypes")
     private class Bucket implements IBucket, Runnable
     {
-        final String route;
-        final boolean missingHeaders;
-        final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
-        final ReentrantLock requestLock = new ReentrantLock();
-        volatile boolean processing = false;
-        volatile long resetTime = 0;
-        volatile int routeUsageRemaining = 1;    //These are default values to only allow 1 request until we have properly
-        volatile int routeUsageLimit = 1;        // ratelimit information.
+        private final String bucketId;
+        private final Queue<Request> requests = new ConcurrentLinkedQueue<>();
 
-        public Bucket(String route, boolean missingHeaders)
+        private long reset = 0;
+        private int remaining = 1;
+        private int limit = 1;
+
+        public Bucket(String bucketId)
         {
-            this.route = route;
-            this.missingHeaders = missingHeaders;
+            this.bucketId = bucketId;
         }
 
-        void addToQueue(Request request)
+        public void enqueue(Request request)
         {
             requests.add(request);
-            submitForProcessing();
         }
 
-        void submitForProcessing()
+        public long getRateLimit()
         {
-            synchronized (submittedBuckets)
+            long now = getNow();
+            long global = requester.getJDA().getSessionController().getGlobalRatelimit();
+            // Global rate limit is more important to handle
+            if (global > now)
+                return global - now;
+            // Check if the bucket reset time has expired
+            if (reset <= now)
             {
-                if (!submittedBuckets.contains(this))
-                {
-                    Long delay = getRateLimit();
-                    if (delay == null)
-                        delay = 0L;
-
-                    if (delay > 0)
-                    {
-                        log.debug("Backing off {} milliseconds on route /{}", delay, getRoute());
-                        requester.getJDA().getRateLimitPool().schedule(this, delay, TimeUnit.MILLISECONDS);
-                    }
-                    else
-                    {
-                        requester.getJDA().getRateLimitPool().execute(this);
-                    }
-                    submittedBuckets.add(this);
-                }
+                // Update the remaining uses to the limit (we don't know better)
+                remaining = limit;
+                return 0L;
             }
+
+            // If there are remaining requests we don't need to do anything, otherwise return backoff in milliseconds
+            return remaining < 1 ? reset - now : 0L;
         }
 
-        Long getRateLimit()
+        public long getReset()
         {
-            long gCooldown = requester.getJDA().getSessionController().getGlobalRatelimit();
-            if (gCooldown > 0) //Are we on global cooldown?
-            {
-                long now = getNow();
-                if (now > gCooldown)   //Verify that we should still be on cooldown.
-                {
-                    //If we are done cooling down, reset the globalCooldown and continue.
-                    requester.getJDA().getSessionController().setGlobalRatelimit(Long.MIN_VALUE);
-                }
-                else
-                {
-                    //If we should still be on cooldown, return when we can go again.
-                    return gCooldown - now;
-                }
-            }
-            if (this.routeUsageRemaining <= 0)
-            {
-                if (getNow() > this.resetTime)
-                {
-                    this.routeUsageRemaining = this.routeUsageLimit;
-                    this.resetTime = 0;
-                }
-            }
-            if (this.routeUsageRemaining > 0)
-                return null;
-            else
-                return this.resetTime - getNow();
+            return reset;
         }
 
-        @Override
-        public boolean equals(Object o)
+        public int getRemaining()
         {
-            if (!(o instanceof Bucket))
-                return false;
-
-            Bucket oBucket = (Bucket) o;
-            return route.equals(oBucket.route);
+            return remaining;
         }
 
-        @Override
-        public int hashCode()
+        public int getLimit()
         {
-            return route.hashCode();
+            return limit;
         }
 
-        private void handleResponse(Iterator<Request> it, Long retryAfter)
+        private boolean isUnlimited()
         {
-            if (retryAfter == null)
-            {
-                // We were not rate-limited! Then just continue with the rest of the requests
-                it.remove();
-                processIterator(it);
-            }
-            else
-            {
-                // Rate-limited D: Guess we have to backoff for now
-                finishProcess();
-            }
+            return bucketId.startsWith("unlimited");
         }
 
-        private void processIterator(Iterator<Request> it)
+        private void backoff()
         {
-            Request request = null;
-            try
-            {
-                do
-                {
-                    if (!it.hasNext())
-                    {
-                        // End loop, no more requests left
-                        finishProcess();
-                        return;
-                    }
-                    request = it.next();
-                } while (isSkipped(it, request));
-
-                CompletableFuture<Long> handle = requester.execute(request);
-                final Request request0 = request;
-                // Hook the callback for the request
-                handle.whenComplete((retryAfter, error) ->
-                {
-                    requester.setContext();
-                    if (error != null)
-                    {
-                        // There was an error, handle it and continue with the next request
-                        log.error("Requester system encountered internal error", error);
-                        it.remove();
-                        request0.onFailure(error);
-                        processIterator(it);
-                    }
-                    else
-                    {
-                        // Handle the response and backoff if necessary
-                        handleResponse(it, retryAfter);
-                    }
-                });
-            }
-            catch (Throwable t)
-            {
-                log.error("Requester system encountered an internal error", t);
-                it.remove();
-                if (request != null)
-                    request.onFailure(t);
-                // don't forget to end the loop and start over
-                finishProcess();
-            }
-        }
-
-        private void finishProcess()
-        {
-            // We are done with processing
-            MiscUtil.locked(requestLock, () ->
-            {
-                processing = false;
-            });
-            // Re-submit if new requests were added or rate-limit was hit
-            synchronized (submittedBuckets)
-            {
-                submittedBuckets.remove(this);
+            // Schedule backoff if requests are not done
+            MiscUtil.locked(bucketLock, () -> {
+                rateLimitQueue.remove(this);
                 if (!requests.isEmpty())
-                {
-                    try
-                    {
-                        this.submitForProcessing();
-                    }
-                    catch (RejectedExecutionException e)
-                    {
-                        log.debug("Caught RejectedExecutionException when re-queuing a ratelimited request. The requester is probably shutdown, thus, this can be ignored.");
-                    }
-                }
-            }
+                    runBucket(this);
+            });
         }
 
         @Override
         public void run()
         {
-            requester.setContext();
-            requestLock.lock();
-            try (UnlockHook hook = new UnlockHook(requestLock))
+            log.trace("Bucket {} is running {} requests", bucketId, requests.size());
+            Iterator<Request> iterator = requests.iterator();
+            while (iterator.hasNext())
             {
-                // Ensure the processing is synchronized
-                if (processing)
-                    return;
-                processing = true;
-                // Start processing loop
-                Iterator<Request> it = requests.iterator();
-                processIterator(it);
-            }
-            catch (Throwable err)
-            {
-                log.error("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!", err);
-                if (err instanceof Error)
+                Long rateLimit = getRateLimit();
+                if (rateLimit > 0L)
                 {
-                    JDAImpl api = requester.getJDA();
-                    api.handleEvent(new ExceptionEvent(api, err, true));
+                    // We need to backoff since we ran out of remaining uses or hit the global rate limit
+                    log.debug("Backing off {} ms for bucket {}", rateLimit, bucketId);
+                    break;
+                }
+
+                Request request = iterator.next();
+                if (isUnlimited())
+                {
+                    boolean shouldSkip = MiscUtil.locked(bucketLock, () -> {
+                        // Attempt moving request to correct bucket if it has been created
+                        Bucket bucket = getBucket(request.getRoute(), true);
+                        if (bucket != this)
+                        {
+                            bucket.enqueue(request);
+                            iterator.remove();
+                            runBucket(bucket);
+                            return true;
+                        }
+                        return false;
+                    });
+                    if (shouldSkip) continue;
+                }
+
+                if (isSkipped(iterator, request))
+                    continue;
+
+                try
+                {
+                    rateLimit = requester.execute(request);
+                    if (rateLimit != null)
+                        break; // this means we hit a hard rate limit (429) so the request needs to be retried
+
+                    // The request went through so we can remove it
+                    iterator.remove();
+                }
+                catch (Exception ex)
+                {
+                    log.error("Encountered exception trying to execute request", ex);
+                    break;
                 }
             }
-        }
 
-        @Override
-        public String getRoute()
-        {
-            return route;
+            backoff();
         }
 
         @Override
@@ -431,15 +430,11 @@ public class BotRateLimiter extends RateLimiter
         {
             return requests;
         }
-    }
 
-    private interface IntObjectConsumer<T>
-    {
-        void accept(int n, T t);
-    }
-
-    private interface DoubleObjectConsumer<T>
-    {
-        void accept(double n, T t);
+        @Override
+        public String toString()
+        {
+            return bucketId;
+        }
     }
 }

@@ -37,10 +37,10 @@ import org.slf4j.MDC;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Map.Entry;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
+import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
 public class Requester
@@ -121,82 +121,7 @@ public class Requester
             || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
     }
 
-    private void attemptRequest(CompletableFuture<Long> task, okhttp3.Request request,
-                                List<okhttp3.Response> responses, Set<String> rays,
-                                Request apiRequest, String url,
-                                boolean handleOnRatelimit, boolean timeout, int attempt)
-    {
-        Route.CompiledRoute route = apiRequest.getRoute();
-        okhttp3.Response lastResponse = responses.isEmpty() ? null : responses.get(responses.size() - 1);
-        // If the request has been canceled via the Future, don't execute.
-        if (apiRequest.isCanceled())
-        {
-            apiRequest.onFailure(new CancellationException("RestAction has been cancelled"));
-            task.complete(null);
-            return;
-        }
-
-        if (attempt >= 4)
-        {
-            //Epic failure from other end. Attempted 4 times.
-            Response response = new Response(Objects.requireNonNull(lastResponse), -1, rays);
-            apiRequest.handleResponse(response);
-            task.complete(null);
-            return;
-        }
-        Call call = httpClient.newCall(request);
-        call.enqueue(FunctionalCallback.onFailure((c, e) -> {
-            if (isRetry(e))
-            {
-                if (retryOnTimeout && !timeout)
-                {
-                    // Retry once on timeout
-                    attemptRequest(task, request, responses, rays, apiRequest, url, true, true, attempt + 1);
-                }
-                else
-                {
-                    // Second attempt failed or we don't want to retry
-                    LOG.error("Requester timed out while executing a request", e);
-                    apiRequest.handleResponse(new Response(null, e, rays));
-                    task.complete(null);
-                }
-                return;
-            }
-            // Unexpected error, failed request
-            LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
-            apiRequest.handleResponse(new Response(null, e, rays));
-            task.complete(null);
-        })
-        .onSuccess((c, response) -> {
-            responses.add(response);
-            String cfRay = response.header("CF-RAY");
-            if (cfRay != null)
-                rays.add(cfRay);
-
-            if (response.code() >= 500)
-            {
-                LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
-                          route.getMethod(), url, response.code(), attempt);
-                attemptRequest(task, request, responses, rays, apiRequest, url, true, timeout, attempt + 1);
-                return;
-            }
-
-            Long retryAfter = rateLimiter.handleResponse(route, response);
-            if (!rays.isEmpty())
-                LOG.debug("Received response with following cf-rays: {}", rays);
-
-            LOG.trace("Finished Request {} {} with code {}", route.getMethod(), response.request().url(), response.code());
-
-            if (retryAfter == null)
-                apiRequest.handleResponse(new Response(response, -1, rays));
-            else if (handleOnRatelimit)
-                apiRequest.handleResponse(new Response(response, retryAfter, rays));
-
-            task.complete(retryAfter);
-        }).build());
-    }
-
-    public CompletableFuture<Long> execute(Request<?> apiRequest)
+    public Long execute(Request<?> apiRequest)
     {
         return execute(apiRequest, false);
     }
@@ -206,44 +131,142 @@ public class Requester
      *
      * @param  apiRequest
      *         The API request that needs to be sent
-     * @param  handleOnRatelimit
+     * @param  handleOnRateLimit
      *         Whether to forward rate-limits, false if rate limit handling should take over
      *
      * @return Non-null if the request was ratelimited. Returns a Long containing retry_after milliseconds until
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public CompletableFuture<Long> execute(Request<?> apiRequest, boolean handleOnRatelimit)
+    public Long execute(Request<?> apiRequest, boolean handleOnRateLimit)
+    {
+        return execute(apiRequest, false, handleOnRateLimit);
+    }
+
+    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
-        if (retryAfter != null)
+        if (retryAfter != null && retryAfter > 0)
         {
             if (handleOnRatelimit)
                 apiRequest.handleResponse(new Response(retryAfter, Collections.emptySet()));
-            return CompletableFuture.completedFuture(retryAfter);
+            return retryAfter;
         }
 
-        // Build the request
         okhttp3.Request.Builder builder = new okhttp3.Request.Builder();
+
         String url = DISCORD_API_PREFIX + route.getCompiledRoute();
         builder.url(url);
-        applyBody(apiRequest, builder);
-        applyHeaders(apiRequest, builder, url.startsWith(DISCORD_API_PREFIX));
+
+        String method = apiRequest.getRoute().getMethod().toString();
+        RequestBody body = apiRequest.getBody();
+
+        if (body == null && HttpMethod.requiresRequestBody(method))
+            body = EMPTY_BODY;
+
+        builder.method(method, body)
+                .header("X-RateLimit-Precision", "millisecond")
+                .header("user-agent", USER_AGENT)
+                .header("accept-encoding", "gzip");
+
+        //adding token to all requests to the discord api or cdn pages
+        //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
+        if (url.startsWith(DISCORD_API_PREFIX))
+            builder.header("authorization", api.getToken());
+
+        // Apply custom headers like X-Audit-Log-Reason
+        // If customHeaders is null this does nothing
+        if (apiRequest.getHeaders() != null)
+        {
+            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
+                builder.addHeader(header.getKey(), header.getValue());
+        }
+
         okhttp3.Request request = builder.build();
 
-        // Setup response handling
         Set<String> rays = new LinkedHashSet<>();
-        List<okhttp3.Response> responses = new ArrayList<>(4);
-        CompletableFuture<Long> task = new CompletableFuture<>();
-        task.whenComplete((i1, i2) -> {
+        okhttp3.Response[] responses = new okhttp3.Response[4];
+        // we have an array of all responses to later close them all at once
+        //the response below this comment is used as the first successful response from the server
+        okhttp3.Response lastResponse = null;
+        try
+        {
+            LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
+            int attempt = 0;
+            do
+            {
+                //If the request has been canceled via the Future, don't execute.
+                //if (apiRequest.isCanceled())
+                //    return null;
+                Call call = httpClient.newCall(request);
+                lastResponse = call.execute();
+                responses[attempt] = lastResponse;
+                String cfRay = lastResponse.header("CF-RAY");
+                if (cfRay != null)
+                    rays.add(cfRay);
+
+                if (lastResponse.code() < 500)
+                    break; // break loop, got a successful response!
+
+                attempt++;
+                LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
+                        apiRequest.getRoute().getMethod(),
+                        url, lastResponse.code(), attempt);
+                try
+                {
+                    Thread.sleep(50 * attempt);
+                }
+                catch (InterruptedException ignored) {}
+            }
+            while (attempt < 3 && lastResponse.code() >= 500);
+
+            LOG.trace("Finished Request {} {} with code {}", route.getMethod(), lastResponse.request().url(), lastResponse.code());
+
+            if (lastResponse.code() >= 500)
+            {
+                //Epic failure from other end. Attempted 4 times.
+                Response response = new Response(lastResponse, -1, rays);
+                apiRequest.handleResponse(response);
+                return null;
+            }
+
+            retryAfter = rateLimiter.handleResponse(route, lastResponse);
+            if (!rays.isEmpty())
+                LOG.debug("Received response with following cf-rays: {}", rays);
+
+            if (retryAfter == null)
+                apiRequest.handleResponse(new Response(lastResponse, -1, rays));
+            else if (handleOnRatelimit)
+                apiRequest.handleResponse(new Response(lastResponse, retryAfter, rays));
+
+            return retryAfter;
+        }
+        catch (SocketTimeoutException e)
+        {
+            if (retryOnTimeout && !retried)
+                return execute(apiRequest, true, handleOnRatelimit);
+            LOG.error("Requester timed out while executing a request", e);
+            apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            return null;
+        }
+        catch (Exception e)
+        {
+            if (retryOnTimeout && !retried && isRetry(e))
+                return execute(apiRequest, true, handleOnRatelimit);
+            LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
+            apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            return null;
+        }
+        finally
+        {
             for (okhttp3.Response r : responses)
+            {
+                if (r == null)
+                    break;
                 r.close();
-        });
-        LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
-        // Initialize state-machine
-        attemptRequest(task, request, responses, rays, apiRequest, url, handleOnRatelimit, false, 0);
-        return task;
+            }
+        }
     }
 
     private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder)

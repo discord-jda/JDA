@@ -28,7 +28,7 @@ public class RateLimitedException extends Exception
 
     public RateLimitedException(Route.CompiledRoute route, long retryAfter)
     {
-        this(route.getRatelimitRoute(), retryAfter);
+        this(route.getBaseRoute().getRoute() + ":" + route.getMajorParameters(), retryAfter);
     }
 
     public RateLimitedException(String route, long retryAfter)

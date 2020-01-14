@@ -156,7 +156,7 @@ public class JDABuilder
 
     /**
      * Whether the rate-limit should be relative to the current time plus latency.
-     * <br>By default we use the {@code X-RateLimit-Rest-After} header to determine when
+     * <br>By default we use the {@code X-RateLimit-Reset-After} header to determine when
      * a rate-limit is no longer imminent. This has the disadvantage that it might wait longer than needed due
      * to the latency which is ignored by the reset-after relative delay.
      *
