@@ -26,6 +26,7 @@ import javax.annotation.Nonnull;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 //TODO: Documentation
 public class RestPayload implements SerializableData
@@ -84,6 +85,23 @@ public class RestPayload implements SerializableData
     public String toString()
     {
         return new String(data, StandardCharsets.UTF_8);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Arrays.hashCode(data);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof RestPayload))
+            return false;
+        RestPayload p = (RestPayload) obj;
+        return Arrays.equals(data, p.data);
     }
 
     @Nonnull
