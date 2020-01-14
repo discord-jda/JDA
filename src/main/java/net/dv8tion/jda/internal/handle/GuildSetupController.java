@@ -26,6 +26,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.events.guild.UnavailableGuildLeaveEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -118,6 +119,7 @@ public class GuildSetupController
 
     void remove(long id)
     {
+        unavailableGuilds.remove(id);
         setupNodes.remove(id);
         chunkingGuilds.remove(id);
         synchronized (pendingChunks) { pendingChunks.remove(id); }
@@ -200,6 +202,14 @@ public class GuildSetupController
     public boolean onDelete(long id, DataObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
+        if (isUnavailable(id) && available)
+        {
+            log.debug("Leaving unavailable guild with id {}", id);
+            remove(id);
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
+            return true;
+        }
+
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
             return false;
@@ -236,6 +246,7 @@ public class GuildSetupController
                 remove(id);
             else
                 ready(id);
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
         }
         log.debug("Updated incompleteCount to {} and syncCount to {}", incompleteCount, syncingCount);
         return true;

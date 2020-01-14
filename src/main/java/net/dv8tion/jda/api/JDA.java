@@ -816,6 +816,16 @@ public interface JDA
     Set<String> getUnavailableGuilds();
 
     /**
+     * Whether the guild is unavailable. If this returns true, the guild id should be in {@link #getUnavailableGuilds()}.
+     *
+     * @param  guildId
+     *         The guild id
+     *
+     * @return True, if this guild is unavailable
+     */
+    boolean isUnavailable(long guildId);
+
+    /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.Role Roles} visible to this JDA session.
      *

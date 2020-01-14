@@ -326,7 +326,7 @@ public class EntityBuilder
             VoiceChannelImpl voiceChannel =
                     (VoiceChannelImpl) guildObj.getVoiceChannelsView().get(channelId);
             if (voiceChannel != null)
-                voiceChannel.getConnectedMembersMap().put(member.getUser().getIdLong(), member);
+                voiceChannel.getConnectedMembersMap().put(member.getIdLong(), member);
             else
                 LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                     channelId, guildObj.getId(), userId);

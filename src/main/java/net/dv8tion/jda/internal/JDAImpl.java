@@ -232,6 +232,7 @@ public class JDAImpl implements JDA
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
+        requester.getRateLimiter().init();
         this.gatewayUrl = gatewayUrl == null ? getGateway() : gatewayUrl;
         Checks.notNull(this.gatewayUrl, "Gateway URL");
 
@@ -585,6 +586,12 @@ public class JDAImpl implements JDA
         Set<String> copy = new HashSet<>();
         unavailableGuilds.forEach(id -> copy.add(Long.toUnsignedString(id)));
         return copy;
+    }
+
+    @Override
+    public boolean isUnavailable(long guildId)
+    {
+        return guildSetupController.isUnavailable(guildId);
     }
 
     @Nonnull
