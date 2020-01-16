@@ -1295,6 +1295,22 @@ public class  DefaultShardManagerBuilder
         return this;
     }
 
+    @Nonnull
+    public DefaultShardManagerBuilder setEnabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "Intents");
+        Checks.notNull(intents, "Intents");
+        EnumSet<GatewayIntent> set = EnumSet.of(intent);
+        Collections.addAll(set, intents);
+        return setDisabledIntents(EnumSet.complementOf(set));
+    }
+
+    @Nonnull
+    public DefaultShardManagerBuilder setEnabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    {
+        return setDisabledIntents(intents == null ? EnumSet.allOf(GatewayIntent.class) : EnumSet.complementOf(intents));
+    }
+
     /**
      * Decides the total number of members at which a guild should start to use lazy loading.
      * <br>This is limited to a number between 50 and 250 (inclusive).
@@ -1364,10 +1380,7 @@ public class  DefaultShardManagerBuilder
         if (!flags.contains(ConfigFlag.GUILD_SUBSCRIPTIONS))
         {
             intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
-            if (cacheFlags.contains(CacheFlag.VOICE_STATE))
-                memberCachePolicy = MemberCachePolicy.VOICE;
-            else
-                memberCachePolicy = MemberCachePolicy.NONE;
+            memberCachePolicy = MemberCachePolicy.VOICE;
         }
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
         final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);

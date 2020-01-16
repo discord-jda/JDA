@@ -935,6 +935,22 @@ public class JDABuilder
         return this;
     }
 
+    @Nonnull
+    public JDABuilder setEnabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "Intents");
+        Checks.notNull(intents, "Intents");
+        EnumSet<GatewayIntent> set = EnumSet.of(intent);
+        Collections.addAll(set, intents);
+        return setDisabledIntents(EnumSet.complementOf(set));
+    }
+
+    @Nonnull
+    public JDABuilder setEnabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    {
+        return setDisabledIntents(intents == null ? EnumSet.allOf(GatewayIntent.class) : EnumSet.complementOf(intents));
+    }
+
     /**
      * Decides the total number of members at which a guild should start to use lazy loading.
      * <br>This is limited to a number between 50 and 250 (inclusive).
@@ -1032,10 +1048,7 @@ public class JDABuilder
         if (!jda.isGuildSubscriptions())
         {
             intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
-            if (jda.isCacheFlagSet(CacheFlag.VOICE_STATE))
-                jda.setMemberCachePolicy(MemberCachePolicy.VOICE);
-            else
-                jda.setMemberCachePolicy(MemberCachePolicy.NONE);
+            jda.setMemberCachePolicy(MemberCachePolicy.VOICE);
         }
 
         if (eventManager != null)
