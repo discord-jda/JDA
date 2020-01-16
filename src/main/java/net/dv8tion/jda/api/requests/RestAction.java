@@ -471,7 +471,8 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on successful execution. This will compute the result of both RestActions.
-     * <br>If the provided RestAction is {@code null} the queue callbacks will not be executed and the chain of execution ends.
+     * <br>The returned RestAction must not be null!
+     * To terminate the execution chain on a specific condition you can use {@link #flatMap(Predicate, Function)}.
      *
      * <h2>Example</h2>
      * <pre>{@code
