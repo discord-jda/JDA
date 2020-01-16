@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
@@ -66,6 +67,7 @@ public class  DefaultShardManagerBuilder
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
     protected int maxBufferSize = 2048;
+    protected int intents = GatewayIntent.ALL_INTENTS;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;
@@ -1256,7 +1258,27 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setGuildSubscriptionsEnabled(boolean enabled)
     {
+        intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
         return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+    }
+
+    @Nonnull
+    public DefaultShardManagerBuilder setDisabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "Intents");
+        Checks.notNull(intents, "Intents");
+        EnumSet<GatewayIntent> set = EnumSet.of(intent);
+        Collections.addAll(set, intents);
+        return setDisabledIntents(set);
+    }
+
+    @Nonnull
+    public DefaultShardManagerBuilder setDisabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    {
+        this.intents = GatewayIntent.ALL_INTENTS;
+        if (intents != null)
+            this.intents &= ~GatewayIntent.getRaw(intents);
+        return this;
     }
 
     /**
@@ -1324,7 +1346,7 @@ public class  DefaultShardManagerBuilder
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
-        final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow);
+        final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents);
         final EventConfig eventConfig = new EventConfig(eventManagerProvider);
         listeners.forEach(eventConfig::addEventListener);
         listenerProviders.forEach(eventConfig::addEventListenerProvider);

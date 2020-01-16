@@ -79,6 +79,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Compression compression;
+    protected final int gatewayIntents;
 
     public WebSocket socket;
     protected String sessionId = null;
@@ -115,12 +116,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, Compression compression)
+    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents)
     {
         this.api = api;
         this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
         this.compression = compression;
+        this.gatewayIntents = gatewayIntents;
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
         setupHandlers();
@@ -601,11 +603,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("$referring_domain", "")
             .put("$referrer", "");
         DataObject payload = DataObject.empty()
+            .put("intents", gatewayIntents)
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
             .put("v", DISCORD_GATEWAY_VERSION)
-            .put("guild_subscriptions", api.isGuildSubscriptions())
+//            .put("guild_subscriptions", api.isGuildSubscriptions()) superseded by intents
             .put("large_threshold", api.getLargeThreshold());
             //Used to make the READY event be given
             // as compressed binary data when over a certain size. TY @ShadowLordAlpha

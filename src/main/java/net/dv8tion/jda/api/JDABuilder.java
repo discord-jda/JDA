@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
@@ -83,6 +84,7 @@ public class JDABuilder
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
     protected int maxBufferSize = 2048;
+    protected int intents = GatewayIntent.ALL_INTENTS; // enable all events by default
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
 
@@ -898,7 +900,27 @@ public class JDABuilder
     @Nonnull
     public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
     {
+        intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
         return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+    }
+
+    @Nonnull
+    public JDABuilder setDisabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "Intents");
+        Checks.notNull(intents, "Intents");
+        EnumSet<GatewayIntent> set = EnumSet.of(intent);
+        Collections.addAll(set, intents);
+        return setDisabledIntents(set);
+    }
+
+    @Nonnull
+    public JDABuilder setDisabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    {
+        this.intents = GatewayIntent.ALL_INTENTS;
+        if (intents != null)
+            this.intents &= ~GatewayIntent.getRaw(intents);
+        return this;
     }
 
     /**
@@ -1008,7 +1030,7 @@ public class JDABuilder
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(shardInfo, compression, true);
+        jda.login(shardInfo, compression, true, intents);
         return jda;
     }
 

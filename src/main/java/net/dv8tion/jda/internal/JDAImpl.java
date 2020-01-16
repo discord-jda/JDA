@@ -36,6 +36,7 @@ import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -216,15 +217,15 @@ public class JDAImpl implements JDA
 
     public int login() throws LoginException
     {
-        return login(null, null, Compression.ZLIB, true);
+        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS);
     }
 
-    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken) throws LoginException
+    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
     {
-        return login(null, shardInfo, compression, validateToken);
+        return login(null, shardInfo, compression, validateToken, intents);
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
@@ -258,7 +259,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression);
+        client = new WebSocketClient(this, compression, intents);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
