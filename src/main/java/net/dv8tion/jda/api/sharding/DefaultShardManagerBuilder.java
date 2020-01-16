@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.Compression;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -84,6 +85,7 @@ public class  DefaultShardManagerBuilder
     protected IAudioSendFactory audioSendFactory = null;
     protected ThreadFactory threadFactory = null;
     protected ChunkingFilter chunkingFilter;
+    protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
@@ -182,6 +184,16 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
+    }
+
+    @Nonnull
+    public DefaultShardManagerBuilder setMemberCachePolicy(@Nullable MemberCachePolicy policy)
+    {
+        if (policy == null)
+            this.memberCachePolicy = MemberCachePolicy.ALL;
+        else
+            this.memberCachePolicy = policy;
+        return this;
     }
 
     /**
@@ -1256,9 +1268,11 @@ public class  DefaultShardManagerBuilder
      * @since  4.0.0
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setDisabledIntents(...).setMemberCachePolicy(...)")
+    @DeprecatedSince("4.2.0")
     public DefaultShardManagerBuilder setGuildSubscriptionsEnabled(boolean enabled)
     {
-        intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
         return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
     }
 
@@ -1345,8 +1359,18 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
+        int intents = this.intents;
+        MemberCachePolicy memberCachePolicy = this.memberCachePolicy;
+        if (!flags.contains(ConfigFlag.GUILD_SUBSCRIPTIONS))
+        {
+            intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
+            if (cacheFlags.contains(CacheFlag.VOICE_STATE))
+                memberCachePolicy = MemberCachePolicy.VOICE;
+            else
+                memberCachePolicy = MemberCachePolicy.NONE;
+        }
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
-        final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents);
+        final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);
         final EventConfig eventConfig = new EventConfig(eventManagerProvider);
         listeners.forEach(eventConfig::addEventListener);
         listenerProviders.forEach(eventConfig::addEventListenerProvider);

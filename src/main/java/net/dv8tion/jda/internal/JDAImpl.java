@@ -41,10 +41,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.SessionController;
+import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
@@ -124,6 +121,7 @@ public class JDAImpl implements JDA
 
     protected String clientId = null;
     protected ShardManager shardManager = null;
+    private MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
@@ -198,6 +196,17 @@ public class JDAImpl implements JDA
     public void setChunkingFilter(ChunkingFilter filter)
     {
         this.chunkingFilter = filter;
+    }
+
+    //TODO: Use this
+    public boolean cacheMember(Member member)
+    {
+        return memberCachePolicy.cacheMember(member);
+    }
+
+    public void setMemberCachePolicy(MemberCachePolicy policy)
+    {
+        this.memberCachePolicy = policy;
     }
 
     public SessionController getSessionController()

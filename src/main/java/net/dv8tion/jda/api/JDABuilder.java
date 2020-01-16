@@ -16,7 +16,9 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.Incubating;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
@@ -24,10 +26,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.api.utils.SessionController;
-import net.dv8tion.jda.api.utils.SessionControllerAdapter;
+import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -87,6 +86,7 @@ public class JDABuilder
     protected int intents = GatewayIntent.ALL_INTENTS; // enable all events by default
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
+    protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -214,6 +214,16 @@ public class JDABuilder
     public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
+    }
+
+    @Nonnull
+    public JDABuilder setMemberCachePolicy(@Nullable MemberCachePolicy policy)
+    {
+        if (policy == null)
+            this.memberCachePolicy = MemberCachePolicy.ALL;
+        else
+            this.memberCachePolicy = policy;
+        return this;
     }
 
     /**
@@ -898,9 +908,11 @@ public class JDABuilder
      * @since  4.1.0
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setDisabledIntents(...).setMemberCachePolicy(...)")
+    @DeprecatedSince("4.2.0")
     public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
     {
-        intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
         return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
     }
 
@@ -1015,6 +1027,16 @@ public class JDABuilder
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
         jda.setChunkingFilter(chunkingFilter);
+        jda.setMemberCachePolicy(memberCachePolicy);
+        int intents = this.intents;
+        if (!jda.isGuildSubscriptions())
+        {
+            intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
+            if (jda.isCacheFlagSet(CacheFlag.VOICE_STATE))
+                jda.setMemberCachePolicy(MemberCachePolicy.VOICE);
+            else
+                jda.setMemberCachePolicy(MemberCachePolicy.NONE);
+        }
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
