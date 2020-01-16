@@ -24,11 +24,11 @@ public interface MemberCachePolicy
 {
     MemberCachePolicy NONE = (member) -> false;
     MemberCachePolicy ALL = (member) -> true;
+    MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
     MemberCachePolicy VOICE = (member) -> {
         GuildVoiceState voiceState = member.getVoiceState();
         return voiceState != null && voiceState.getChannel() != null;
     };
-    MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE;
 
     boolean cacheMember(Member member);
 }
