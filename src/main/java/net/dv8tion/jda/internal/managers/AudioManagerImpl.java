@@ -144,7 +144,7 @@ public class AudioManagerImpl implements AudioManager
             this.queuedAudioConnection = null;
             if (audioConnection != null)
                 this.audioConnection.close(reason);
-            else
+            else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
                 getJDA().getDirectAudioController().disconnect(getGuild());
             this.audioConnection = null;
         });
