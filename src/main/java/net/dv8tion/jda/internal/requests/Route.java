@@ -200,10 +200,11 @@ public class Route
         public static final Route ADD_PINNED_MESSAGE =    new Route(PUT,    "channels/{channel_id}/pins/{message_id}");
         public static final Route REMOVE_PINNED_MESSAGE = new Route(DELETE, "channels/{channel_id}/pins/{message_id}");
 
-        public static final Route ADD_REACTION =             new Route(PUT,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
-        public static final Route REMOVE_REACTION =          new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
-        public static final Route REMOVE_ALL_REACTIONS =     new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions");
-        public static final Route GET_REACTION_USERS =       new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
+        public static final Route ADD_REACTION =          new Route(PUT,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
+        public static final Route REMOVE_REACTION =       new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}/{user_id}");
+        public static final Route REMOVE_ALL_REACTIONS =  new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions");
+        public static final Route GET_REACTION_USERS =    new Route(GET,    "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
+        public static final Route CLEAR_EMOTE_REACTIONS = new Route(DELETE, "channels/{channel_id}/messages/{message_id}/reactions/{reaction_code}");
 
         public static final Route DELETE_MESSAGE =      new Route(DELETE, "channels/{channel_id}/messages/{message_id}");
         public static final Route GET_MESSAGE_HISTORY = new Route(GET,    "channels/{channel_id}/messages");

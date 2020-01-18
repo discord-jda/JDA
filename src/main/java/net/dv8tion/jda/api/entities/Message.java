@@ -1194,6 +1194,14 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     RestAction<Void> clearReactions();
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactions(@Nonnull String unicode);
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactions(@Nonnull Emote emote);
+
     /**
      * Removes a reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *

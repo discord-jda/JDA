@@ -348,12 +348,33 @@ public class MessageReaction
             }
         }
 
-        String code = emote.isEmote()
-                    ? emote.getName() + ":" + emote.getId()
-                    : EncodingUtil.encodeUTF8(emote.getName());
+        String code = getReactionCode();
         String target = self ? "@me" : user.getId();
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> clearReactions()
+    {
+        // Requires permission, only works in guilds
+        if (!getChannelType().isGuild())
+            throw new UnsupportedOperationException("Cannot clear reactions on a message sent from a private channel");
+        TextChannel guildChannel = Objects.requireNonNull(getTextChannel());
+        if (!guildChannel.getGuild().getSelfMember().hasPermission(guildChannel, Permission.MESSAGE_MANAGE))
+            throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
+
+        String code = getReactionCode();
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(channel.getId(), code);
+        return new RestActionImpl<>(getJDA(), route);
+    }
+
+    private String getReactionCode()
+    {
+        return emote.isEmote()
+                ? emote.getName() + ":" + emote.getId()
+                : EncodingUtil.encodeUTF8(emote.getName());
     }
 
     @Override

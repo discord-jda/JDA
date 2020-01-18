@@ -351,6 +351,19 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
         return clearReactionsById(Long.toUnsignedString(messageId));
     }
 
+    RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode);
+    RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote);
+
+    default RestAction<Void> clearReactionsById(long messageId, @Nonnull String unicode)
+    {
+        return clearReactionsById(Long.toUnsignedString(messageId), unicode);
+    }
+
+    default RestAction<Void> clearReactionsById(long messageId, @Nonnull Emote emote)
+    {
+        return clearReactionsById(Long.toUnsignedString(messageId), emote);
+    }
+
     /**
      * Attempts to remove the reaction from a message represented by the specified {@code messageId}
      * in this MessageChannel.
