@@ -26,6 +26,7 @@ public interface MemberCachePolicy
 {
     MemberCachePolicy NONE = (member) -> false;
     MemberCachePolicy ALL = (member) -> true;
+    MemberCachePolicy OWNER = Member::isOwner;
     MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
     MemberCachePolicy VOICE = (member) -> {
         GuildVoiceState voiceState = member.getVoiceState();
