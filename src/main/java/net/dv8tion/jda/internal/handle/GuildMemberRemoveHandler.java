@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
@@ -61,6 +62,18 @@ public class GuildMemberRemoveHandler extends SocketHandler
         if (member == null)
         {
             WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);
+            // Remove user from voice channel if applicable
+            guild.getVoiceChannelsView().forEachUnordered((channel) -> {
+                VoiceChannelImpl impl = (VoiceChannelImpl) channel;
+                Member connected = impl.getConnectedMembersMap().remove(userId);
+                if (connected != null) // user left channel!
+                {
+                    getJDA().handleEvent(
+                        new GuildVoiceLeaveEvent(
+                            getJDA(), responseNumber,
+                            connected, channel));
+                }
+            });
             return null;
         }
 
