@@ -492,10 +492,7 @@ public class EntityBuilder
         final long channelId = voiceStateJson.getLong("channel_id");
         VoiceChannelImpl voiceChannel = (VoiceChannelImpl) guild.getVoiceChannelsView().get(channelId);
         if (voiceChannel != null)
-        {
             voiceChannel.getConnectedMembersMap().put(member.getIdLong(), member);
-            voiceState.setConnectedChannel(voiceChannel);
-        }
         else
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                       channelId, guild.getId(), user.getId());
@@ -506,7 +503,8 @@ public class EntityBuilder
                   .setGuildMuted(voiceStateJson.getBoolean("mute"))
                   .setGuildDeafened(voiceStateJson.getBoolean("deaf"))
                   .setSuppressed(voiceStateJson.getBoolean("suppress"))
-                  .setSessionId(voiceStateJson.getString("session_id"));
+                  .setSessionId(voiceStateJson.getString("session_id"))
+                  .setConnectedChannel(voiceChannel);
     }
 
     private void loadMember(GuildImpl guild, DataObject memberJson, User user, MemberImpl member)
