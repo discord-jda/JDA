@@ -55,6 +55,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -155,13 +156,13 @@ public class EntityBuilder
         }
     }
 
-    private TLongObjectMap<DataObject> convertToUserMap(DataArray array)
+    private TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
     {
         TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
         for (int i = 0; i < array.length(); i++)
         {
             DataObject obj = array.getObject(i);
-            long userId = obj.getUnsignedLong("user_id", 0);
+            long userId = getId.applyAsLong(obj);
             map.put(userId, obj);
         }
         return map;
@@ -250,8 +251,8 @@ public class EntityBuilder
             createGuildChannel(guildObj, channelJson);
         }
 
-        TLongObjectMap<DataObject> voiceStates = convertToUserMap(voiceStateArray);
-        TLongObjectMap<DataObject> presences = presencesArray.map(this::convertToUserMap).orElseGet(TLongObjectHashMap::new);
+        TLongObjectMap<DataObject> voiceStates = convertToUserMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
+        TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> convertToUserMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
         try (UnlockHook h1 = guildObj.getMembersView().writeLock();
              UnlockHook h2 = getJDA().getUsersView().writeLock())
         {
