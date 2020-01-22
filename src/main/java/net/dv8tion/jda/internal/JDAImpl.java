@@ -17,8 +17,10 @@
 package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
+import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -47,6 +49,7 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
@@ -102,6 +105,7 @@ public class JDAImpl implements JDA
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
+    protected final TLongSet chunkingRequested = TCollections.synchronizedSet(new TLongHashSet());
 
     protected final AuthorizationConfig authConfig;
     protected final ThreadingConfig threadConfig;
@@ -121,7 +125,7 @@ public class JDAImpl implements JDA
 
     protected String clientId = null;
     protected ShardManager shardManager = null;
-    private MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
+    protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
     public JDAImpl(AuthorizationConfig authConfig)
     {
@@ -143,6 +147,16 @@ public class JDAImpl implements JDA
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
+    }
+
+    public void requestedChunks(GuildImpl guild)
+    {
+        this.chunkingRequested.add(guild.getIdLong());
+    }
+
+    public void finishedChunks(GuildImpl guild)
+    {
+        this.chunkingRequested.remove(guild.getIdLong());
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -189,6 +203,8 @@ public class JDAImpl implements JDA
 
     public boolean chunkGuild(long id)
     {
+        if (chunkingRequested.contains(id))
+            return true;
         try
         {
             return isIntent(GatewayIntent.GUILD_MEMBERS) && chunkingFilter.filter(id);
@@ -205,12 +221,13 @@ public class JDAImpl implements JDA
         this.chunkingFilter = filter;
     }
 
-    //TODO: Use this
     public boolean cacheMember(Member member)
     {
         try
         {
-            return member.getUser().equals(getSelfUser()) || memberCachePolicy.cacheMember(member);
+            return member.getUser().equals(getSelfUser()) // always cache self
+                    || chunkGuild(member.getGuild().getIdLong())  // always cache if chunking
+                    || memberCachePolicy.cacheMember(member); // ask policy, should we cache?
         }
         catch (Exception e)
         {

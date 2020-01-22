@@ -43,7 +43,7 @@ public class GuildMembersChunkHandler extends SocketHandler
             for (int i = 0; i < members.length(); i++)
             {
                 DataObject object = members.getObject(i);
-                builder.createMember(guild, object);
+                builder.updateMemberCache(builder.createMember(guild, object));
             }
             guild.acknowledgeMembers();
         }

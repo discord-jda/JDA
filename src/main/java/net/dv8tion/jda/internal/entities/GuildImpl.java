@@ -90,10 +90,10 @@ public class GuildImpl implements Guild
     // user -> channel -> override
     private final TLongObjectMap<TLongObjectMap<DataObject>> overrideMap = MiscUtil.newLongMap();
 
-    private final CompletableFuture<Void> chunkingCallback = new CompletableFuture<>();
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
 
+    private CompletableFuture<Void> chunkingCallback = new CompletableFuture<>();
     private Member owner;
     private String name;
     private String iconId, splashId;
@@ -1548,11 +1548,17 @@ public class GuildImpl implements Guild
     {
         if (isLoaded())
             return;
-        if (!getJDA().isGuildSubscriptions()) //TODO: Figure this one out
+
+        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
         {
-            chunkingCallback.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled guild subscriptions"));
+            chunkingCallback.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled GUILD_MEMBERS intent"));
             return;
         }
+
+        if (chunkingCallback.isDone())
+            chunkingCallback = new CompletableFuture<>();
+
+        getJDA().requestedChunks(this);
 
         DataObject request = DataObject.empty()
             .put("limit", 0)
@@ -1583,6 +1589,7 @@ public class GuildImpl implements Guild
         {
             JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
             chunkingCallback.complete(null);
+            getJDA().finishedChunks(this);
         }
     }
 
