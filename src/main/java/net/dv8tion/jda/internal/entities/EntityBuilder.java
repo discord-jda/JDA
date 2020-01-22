@@ -396,7 +396,6 @@ public class EntityBuilder
 
     public boolean updateMemberCache(MemberImpl member)
     {
-        member.updateUser();
         GuildImpl guild = member.getGuild();
         UserImpl user = (UserImpl) member.getUser();
         MemberCacheViewImpl membersView = guild.getMembersView();

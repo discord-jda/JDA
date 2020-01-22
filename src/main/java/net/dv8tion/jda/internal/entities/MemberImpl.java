@@ -73,6 +73,7 @@ public class MemberImpl implements Member
     @Override
     public User getUser()
     {
+        updateUser();
         return user;
     }
 
