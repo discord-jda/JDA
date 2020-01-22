@@ -394,15 +394,16 @@ public class EntityBuilder
         }
     }
 
-    public boolean updateMemberCache(Member member)
+    public boolean updateMemberCache(MemberImpl member)
     {
-        GuildImpl guild = (GuildImpl) member.getGuild();
+        member.updateUser();
+        GuildImpl guild = member.getGuild();
         UserImpl user = (UserImpl) member.getUser();
         MemberCacheViewImpl membersView = guild.getMembersView();
         if (!getJDA().cacheMember(member))
         {
             membersView.remove(member.getIdLong());
-            if (user.getMutualGuilds().isEmpty() && !user.isFake())
+            if (!user.isFake() && user.getMutualGuilds().isEmpty())
             {
                 // we no longer share any guilds with this user so remove it from cache
                 user.setFake(true);
@@ -415,7 +416,7 @@ public class EntityBuilder
         else if (guild.getMemberById(member.getIdLong()) != null) return true;
 
 
-        if (user.isFake())
+        if (getJDA().getUserById(user.getIdLong()) == null)
         {
             // promote fake user to real user
             user.setFake(false);
@@ -461,11 +462,7 @@ public class EntityBuilder
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
         {
-            MemberCacheViewImpl memberView = guild.getMembersView();
-            try (UnlockHook hook = memberView.writeLock())
-            {
-                member = new MemberImpl(guild, user);
-            }
+            member = new MemberImpl(guild, user);
         }
         else
         {
@@ -495,7 +492,10 @@ public class EntityBuilder
         final long channelId = voiceStateJson.getLong("channel_id");
         VoiceChannelImpl voiceChannel = (VoiceChannelImpl) guild.getVoiceChannelsView().get(channelId);
         if (voiceChannel != null)
+        {
             voiceChannel.getConnectedMembersMap().put(member.getIdLong(), member);
+            voiceState.setConnectedChannel(voiceChannel);
+        }
         else
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                       channelId, guild.getId(), user.getId());
@@ -1088,7 +1088,7 @@ public class EntityBuilder
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
-        Member member = null;
+        MemberImpl member = null;
 
         if (chan.getType().isGuild() && !jsonObject.isNull("member") && modifyCache)
         {
@@ -1133,7 +1133,7 @@ public class EntityBuilder
             case TEXT:
                 Guild guild = ((TextChannel) chan).getGuild();
                 if (member == null)
-                    member = guild.getMemberById(authorId);
+                    member = (MemberImpl) guild.getMemberById(authorId);
                 user = member != null ? member.getUser() : null;
                 if (user == null)
                 {

@@ -15,11 +15,11 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
 
 public class GuildMemberAddHandler extends SocketHandler
 {
@@ -54,7 +54,7 @@ public class GuildMemberAddHandler extends SocketHandler
 
         // Update memberCount
         guild.onMemberAdd();
-        Member member = getJDA().getEntityBuilder().createMember(guild, content);
+        MemberImpl member = getJDA().getEntityBuilder().createMember(guild, content);
         getJDA().getEntityBuilder().updateMemberCache(member);
         getJDA().handleEvent(
             new GuildMemberJoinEvent(
