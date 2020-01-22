@@ -184,6 +184,8 @@ public interface Guild extends ISnowflake
      */
     boolean isLoaded();
 
+    void unloadMembers(); //TODO: Docs
+
     /**
      * The expected member count for this guild.
      * <br>If this guild is not lazy loaded this should be identical to the size returned by {@link #getMemberCache()}.

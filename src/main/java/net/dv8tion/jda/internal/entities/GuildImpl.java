@@ -167,6 +167,17 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    public void unloadMembers()
+    {
+        try (UnlockHook h = memberCache.writeLock())
+        {
+            EntityBuilder builder = getJDA().getEntityBuilder();
+            Set<Member> members = memberCache.asSet();
+            members.forEach(m -> builder.updateMemberCache((MemberImpl) m));
+        }
+    }
+
+    @Override
     public int getMemberCount()
     {
         return memberCount;
