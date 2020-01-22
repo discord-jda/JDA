@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
-import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -565,7 +564,7 @@ public interface ShardManager
 
         JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject(), false));
+        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject()));
     }
 
     /**

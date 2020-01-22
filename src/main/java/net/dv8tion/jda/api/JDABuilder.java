@@ -56,6 +56,7 @@ import java.util.concurrent.*;
  */
 public class JDABuilder
 {
+    public static final int GUILD_SUBSCRIPTIONS = GatewayIntent.getRaw(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING);
     protected final List<Object> listeners;
     protected final AccountType accountType;
 
@@ -913,7 +914,13 @@ public class JDABuilder
     @DeprecatedSince("4.2.0")
     public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
     {
-        return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+        if (!enabled)
+        {
+            setMemberCachePolicy(MemberCachePolicy.VOICE);
+            intents &= ~GUILD_SUBSCRIPTIONS;
+        }
+        return this;
+        //return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
     }
 
     @Nonnull
@@ -1044,12 +1051,6 @@ public class JDABuilder
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
         jda.setChunkingFilter(chunkingFilter);
         jda.setMemberCachePolicy(memberCachePolicy);
-        int intents = this.intents;
-        if (!jda.isGuildSubscriptions())
-        {
-            intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
-            jda.setMemberCachePolicy(MemberCachePolicy.VOICE);
-        }
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

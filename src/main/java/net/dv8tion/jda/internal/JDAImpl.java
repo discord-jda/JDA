@@ -142,7 +142,7 @@ public class JDAImpl implements JDA
         this.requester.setRetryOnTimeout(this.sessionConfig.isRetryOnTimeout());
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
-        this.eventCache = new EventCache(isGuildSubscriptions());
+        this.eventCache = new EventCache();
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -165,9 +165,16 @@ public class JDAImpl implements JDA
         return metaConfig.getCacheFlags().contains(flag);
     }
 
+    @Deprecated
     public boolean isGuildSubscriptions()
     {
         return metaConfig.isGuildSubscriptions();
+    }
+
+    public boolean isIntent(GatewayIntent intent)
+    {
+        int raw = intent.getRawValue();
+        return (client.getGatewayIntents() & raw) == raw;
     }
 
     public int getLargeThreshold()
@@ -184,7 +191,7 @@ public class JDAImpl implements JDA
     {
         try
         {
-            return isGuildSubscriptions() && chunkingFilter.filter(id);
+            return isIntent(GatewayIntent.GUILD_MEMBERS) && chunkingFilter.filter(id);
         }
         catch (Exception e)
         {
@@ -201,7 +208,15 @@ public class JDAImpl implements JDA
     //TODO: Use this
     public boolean cacheMember(Member member)
     {
-        return memberCachePolicy.cacheMember(member);
+        try
+        {
+            return member.getUser().equals(getSelfUser()) || memberCachePolicy.cacheMember(member);
+        }
+        catch (Exception e)
+        {
+            LOG.error("Uncaught exception from member cache policy", e);
+            return true;
+        }
     }
 
     public void setMemberCachePolicy(MemberCachePolicy policy)
@@ -566,7 +581,7 @@ public class JDAImpl implements JDA
         return new DeferredRestAction<>(this, User.class, () -> getUserById(id), () -> {
             Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
             return new RestActionImpl<>(this, route,
-                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject(), false));
+                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject()));
         });
     }
 

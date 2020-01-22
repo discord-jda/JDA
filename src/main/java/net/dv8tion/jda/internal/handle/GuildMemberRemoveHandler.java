@@ -57,6 +57,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
         MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
 
+        //TODO: Event for uncached members?
         if (member == null)
         {
             WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);

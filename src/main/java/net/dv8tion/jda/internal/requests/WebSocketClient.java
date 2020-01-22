@@ -158,6 +158,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return connected;
     }
 
+    public int getGatewayIntents()
+    {
+        return gatewayIntents;
+    }
+
     public void ready()
     {
         if (initiating)
@@ -1231,18 +1236,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("USER_UPDATE",                 new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",         new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",          new VoiceStateUpdateHandler(api));
-
-        if (api.isGuildSubscriptions())
-        {
-            // These events are not expected if guild subscriptions are disabled
-            handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
-            handlers.put("TYPING_START",    new TypingStartHandler(api));
-        }
-        else
-        {
-            handlers.put("PRESENCE_UPDATE", nopHandler);
-            handlers.put("TYPING_START",    nopHandler);
-        }
+        handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
+        handlers.put("TYPING_START",    new TypingStartHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);

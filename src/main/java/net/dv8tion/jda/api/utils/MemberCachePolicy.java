@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 
+import javax.annotation.Nonnull;
+
 public interface MemberCachePolicy
 {
     MemberCachePolicy NONE = (member) -> false;
@@ -31,4 +33,32 @@ public interface MemberCachePolicy
     };
 
     boolean cacheMember(Member member);
+
+    @Nonnull
+    default MemberCachePolicy or(@Nonnull MemberCachePolicy policy)
+    {
+        return (member) -> cacheMember(member) || policy.cacheMember(member);
+    }
+
+    @Nonnull
+    default MemberCachePolicy and(@Nonnull MemberCachePolicy policy)
+    {
+        return (member) -> cacheMember(member) && policy.cacheMember(member);
+    }
+
+    @Nonnull
+    static MemberCachePolicy any(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies)
+    {
+        for (MemberCachePolicy p : policies)
+            policy = policy.or(p);
+        return policy;
+    }
+
+    @Nonnull
+    static MemberCachePolicy all(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies)
+    {
+        for (MemberCachePolicy p : policies)
+            policy = policy.and(p);
+        return policy;
+    }
 }

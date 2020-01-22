@@ -34,12 +34,8 @@ public class EventCache
     /** Sequence difference after which events will be removed from cache */
     public static final long TIMEOUT_AMOUNT = 100;
     private final EnumMap<Type, TLongObjectMap<List<CacheNode>>> eventCache = new EnumMap<>(Type.class);
-    private final boolean cacheUsers;
 
-    public EventCache(boolean cacheUsers)
-    {
-        this.cacheUsers = cacheUsers;
-    }
+    public EventCache() {}
 
     public synchronized void timeout(final long responseTotal)
     {
@@ -78,8 +74,6 @@ public class EventCache
 
     public synchronized void cache(Type type, long triggerId, long responseTotal, DataObject event, CacheConsumer handler)
     {
-        if (type == Type.USER && !cacheUsers)
-            return;
         TLongObjectMap<List<CacheNode>> triggerCache =
                 eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
 

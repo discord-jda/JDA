@@ -65,4 +65,12 @@ public enum GatewayIntent
             raw |= intent.rawValue;
         return raw;
     }
+
+    public static int getRaw(@Nonnull GatewayIntent... set)
+    {
+        int raw = 0;
+        for (GatewayIntent intent : set)
+            raw |= intent.rawValue;
+        return raw;
+    }
 }

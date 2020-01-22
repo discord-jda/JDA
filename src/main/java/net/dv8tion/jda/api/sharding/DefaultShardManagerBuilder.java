@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.sharding;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
@@ -1273,7 +1274,13 @@ public class  DefaultShardManagerBuilder
     @DeprecatedSince("4.2.0")
     public DefaultShardManagerBuilder setGuildSubscriptionsEnabled(boolean enabled)
     {
-        return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+        if (!enabled)
+        {
+            setMemberCachePolicy(MemberCachePolicy.VOICE);
+            intents &= ~JDABuilder.GUILD_SUBSCRIPTIONS;
+        }
+        return this;
+        //return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
     }
 
     @Nonnull
@@ -1375,13 +1382,6 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
-        int intents = this.intents;
-        MemberCachePolicy memberCachePolicy = this.memberCachePolicy;
-        if (!flags.contains(ConfigFlag.GUILD_SUBSCRIPTIONS))
-        {
-            intents &= ~(GatewayIntent.GUILD_MEMBERS.getRawValue() | GatewayIntent.GUILD_PRESENCES.getRawValue() | GatewayIntent.GUILD_MESSAGE_TYPING.getRawValue());
-            memberCachePolicy = MemberCachePolicy.VOICE;
-        }
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
         final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);
         final EventConfig eventConfig = new EventConfig(eventManagerProvider);

@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -161,7 +162,7 @@ public class GuildImpl implements Guild
     public boolean isLoaded()
     {
         // Only works with guild subscriptions
-        return getJDA().isGuildSubscriptions()
+        return getJDA().isIntent(GatewayIntent.GUILD_MEMBERS)
                 && (long) getMemberCount() <= getMemberCache().size();
     }
 
@@ -540,7 +541,7 @@ public class GuildImpl implements Guild
             {
                 final DataObject object = bannedArr.getObject(i);
                 DataObject user = object.getObject("user");
-                bans.add(new Ban(builder.createFakeUser(user, false), object.getString("reason", null)));
+                bans.add(new Ban(builder.createFakeUser(user), object.getString("reason", null)));
             }
             return Collections.unmodifiableList(bans);
         });
@@ -562,7 +563,7 @@ public class GuildImpl implements Guild
             EntityBuilder builder = api.getEntityBuilder();
             DataObject bannedObj = response.getObject();
             DataObject user = bannedObj.getObject("user");
-            return new Ban(builder.createFakeUser(user, false), bannedObj.getString("reason", null));
+            return new Ban(builder.createFakeUser(user), bannedObj.getString("reason", null));
         });
     }
 
@@ -1301,7 +1302,7 @@ public class GuildImpl implements Guild
     public GuildImpl setOwner(Member owner)
     {
         // Only cache owner if user cache is enabled
-        if (getJDA().isGuildSubscriptions())
+        if (!owner.isFake())
             this.owner = owner;
         return this;
     }
@@ -1497,6 +1498,7 @@ public class GuildImpl implements Guild
         });
     }
 
+    //TODO: Remove all this crap
     public void cacheOverride(long userId, long channelId, DataObject obj)
     {
         if (!getJDA().isGuildSubscriptions())
@@ -1546,7 +1548,7 @@ public class GuildImpl implements Guild
     {
         if (isLoaded())
             return;
-        if (!getJDA().isGuildSubscriptions())
+        if (!getJDA().isGuildSubscriptions()) //TODO: Figure this one out
         {
             chunkingCallback.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled guild subscriptions"));
             return;
