@@ -127,6 +127,7 @@ public class PresenceUpdateHandler extends SocketHandler
                     getJDA(), responseNumber,
                     member, oldStatus));
         }
+        getJDA().getEntityBuilder().updateMemberCache(member);
         return null;
     }
 
