@@ -58,6 +58,17 @@ public enum GatewayIntent
         return offset;
     }
 
+    public static EnumSet<GatewayIntent> getIntents(int raw)
+    {
+        EnumSet<GatewayIntent> set = EnumSet.noneOf(GatewayIntent.class);
+        for (GatewayIntent intent : values())
+        {
+            if ((intent.getRawValue() & raw) != 0)
+                set.add(intent);
+        }
+        return set;
+    }
+
     public static int getRaw(@Nonnull EnumSet<GatewayIntent> set)
     {
         int raw = 0;
