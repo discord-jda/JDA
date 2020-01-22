@@ -17,7 +17,6 @@ package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
@@ -129,9 +128,11 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *         If the given AccountType is {@code null}
      *
-     * @incubating Due to policy changes for the discord API this method may not be provided in a future version
+     * @deprecated This will be removed in a future version, replace with {@link #JDABuilder(String)}
      */
-    @Incubating
+    @Deprecated
+    @ReplaceWith("new JDABuilder(String)")
+    @DeprecatedSince("4.2.0")
     public JDABuilder(@Nonnull AccountType accountType)
     {
         Checks.notNull(accountType, "accountType");
