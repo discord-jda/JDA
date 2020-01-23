@@ -104,7 +104,7 @@ public static void main(String[] args) {
   and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
-Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter` or disabling `guild_subscriptions`.
+Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
 
 ```java
 public void configureMemoryUsage(JDABuilder builder) {
@@ -112,10 +112,19 @@ public void configureMemoryUsage(JDABuilder builder) {
     builder.setDisabledCacheFlags(
         EnumSet.of(CacheFlag.ACTIVITY)
     );
-    // Disable user/member cache and related events
-    builder.setGuildSubscriptionsEnabled(false);
+
+    // Only cache members who are either in a voice channel or owner of the guild
+    builder.setMemberCachePolicy(MemberCachePolicy.VOICE.or(MemberCachePolicy.OWNER));
+
     // Disable member chunking on startup (ignored if guild subscriptions are turned off)
     builder.setChunkingFilter(ChunkingFilter.NONE);
+
+    // Disable presence updates and typing events
+    builder.setDisabledIntents(GatewayIntent.GUILD_PRESENCE, GatewayIntent.GUILD_MESSAGE_TYPING);
+
+    // Consider guilds with more than 50 members as "large". 
+    // Large guilds will only provide online members in their setup and thus reduce bandwidth if chunking is disabled.
+    builder.setLargeThreshold(50);
 }
 ```
 
