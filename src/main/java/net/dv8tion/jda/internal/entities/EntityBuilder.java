@@ -1088,15 +1088,18 @@ public class EntityBuilder
         final long authorId = author.getLong("id");
         MemberImpl member = null;
 
-        if (chan.getType().isGuild() && !jsonObject.isNull("member") && modifyCache)
+        if (chan.getType().isGuild() && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
             GuildChannel guildChannel = (GuildChannel) chan;
             Guild guild = guildChannel.getGuild();
             member = createMember((GuildImpl) guild, memberJson);
-            // Update member cache with new information if needed
-            updateMemberCache(member);
+            if (modifyCache)
+            {
+                // Update member cache with new information if needed
+                updateMemberCache(member);
+            }
         }
 
         final String content = jsonObject.getString("content", "");
