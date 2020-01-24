@@ -215,7 +215,7 @@ public class PermissionOverrideActionImpl
     {
         long id = permissionHolder.getIdLong();
         DataObject object = (DataObject) request.getRawBody();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, permissionHolder);
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isRole());
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
         //((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override); This is added by the event later

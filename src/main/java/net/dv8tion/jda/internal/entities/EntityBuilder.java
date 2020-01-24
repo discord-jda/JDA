@@ -49,6 +49,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -820,12 +821,6 @@ public class EntityBuilder
             }
         }
 
-//        if (!json.isNull("permission_overwrites"))
-//        {
-//            DataArray overrides = json.getArray("permission_overwrites");
-//            createOverridesPass(channel, overrides);
-//        }
-
         channel
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
@@ -860,12 +855,6 @@ public class EntityBuilder
                 playbackCache = storeView.getMap().put(id, channel) == null;
             }
         }
-
-//        if (!json.isNull("permission_overwrites"))
-//        {
-//            DataArray overrides = json.getArray("permission_overwrites");
-//            createOverridesPass(channel, overrides);
-//        }
 
         channel
             .setParent(json.getLong("parent_id", 0))
@@ -903,12 +892,6 @@ public class EntityBuilder
                 playbackCache = textView.getMap().put(id, channel) == null;
             }
         }
-
-//        if (!json.isNull("permission_overwrites"))
-//        {
-//            DataArray overrides = json.getArray("permission_overwrites");
-//            createOverridesPass(channel, overrides);
-//        }
 
         channel
             .setParent(json.getLong("parent_id", 0))
@@ -949,12 +932,6 @@ public class EntityBuilder
                 playbackCache = voiceView.getMap().put(id, channel) == null;
             }
         }
-
-//        if (!json.isNull("permission_overwrites"))
-//        {
-//            DataArray overrides = json.getArray("permission_overwrites");
-//            createOverridesPass(channel, overrides);
-//        }
 
         channel
             .setParent(json.getLong("parent_id", 0))
@@ -1394,42 +1371,29 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
+    @Nullable
     public PermissionOverride createPermissionOverride(DataObject override, AbstractChannelImpl<?, ?> chan)
     {
-        IPermissionHolder permHolder;
+        String type = override.getString("type");
         final long id = override.getLong("id");
-
-        //Throwing NoSuchElementException for common issues with overrides that are not cleared properly by discord
-        // when a member leaves or a role is deleted
-        switch (override.getString("type"))
-        {
-            case "member":
-                permHolder = chan.getGuild().getMemberById(id);
-                if (permHolder == null)
-                {
-                    // cache override for later
-                    chan.getGuild().cacheOverride(id, chan.getIdLong(), override);
-                    return null;
-                }
-                break;
-            case "role":
-                permHolder = chan.getGuild().getRolesView().get(id);
-                if (permHolder == null)
-                    throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
-                break;
-            default:
-                throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
-        }
+        boolean role = type.equals("role");
+        if (role && chan.getGuild().getRoleById(id) == null)
+            throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
+        if (!role && !type.equals("member"))
+            throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
+        if (!role && id != api.getSelfUser().getIdLong() && !api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES))
+            return null;
 
         long allow = override.getLong("allow");
         long deny = override.getLong("deny");
 
-        PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getPermissionOverride(permHolder);
+        PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
         if (permOverride == null)
         {
-            permOverride = new PermissionOverrideImpl(chan, permHolder);
-            chan.getOverrideMap().put(permHolder.getIdLong(), permOverride);
+            permOverride = new PermissionOverrideImpl(chan, id, role);
+            chan.getOverrideMap().put(id, permOverride);
         }
+
         return permOverride.setAllow(allow).setDeny(deny);
     }
 

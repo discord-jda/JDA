@@ -48,13 +48,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(GuildChannel channel, IPermissionHolder permissionHolder)
+    public PermissionOverrideImpl(GuildChannel channel, long id, boolean role)
     {
-        this.role = permissionHolder instanceof Role;
+        this.role = role;
         this.channelType = channel.getType();
         this.api = (JDAImpl) channel.getJDA();
         this.channel = new SnowflakeReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
-        this.id = permissionHolder.getIdLong();
+        this.id = id;
     }
 
     @Override

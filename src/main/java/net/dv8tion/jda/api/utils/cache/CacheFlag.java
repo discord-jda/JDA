@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 
 /**
@@ -41,4 +42,8 @@ public enum CacheFlag
      * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
      */
     CLIENT_STATUS,
+    /**
+     * Enables cache for {@link GuildChannel#getMemberPermissionOverrides()}
+     */
+    MEMBER_OVERRIDES,
 }

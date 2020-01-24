@@ -16,27 +16,30 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import gnu.trove.TDecorators;
-import gnu.trove.list.TLongList;
-import gnu.trove.list.linked.TLongLinkedList;
 import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.channel.category.CategoryDeleteOverrideEvent;
+import net.dv8tion.jda.api.events.channel.category.CategoryUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteOverrideEvent;
+import net.dv8tion.jda.api.events.channel.store.StoreChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
+import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteOverrideEvent;
+import net.dv8tion.jda.api.events.channel.text.TextChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
+import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteOverrideEvent;
+import net.dv8tion.jda.api.events.channel.voice.VoiceChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class ChannelUpdateHandler extends SocketHandler
@@ -55,9 +58,6 @@ public class ChannelUpdateHandler extends SocketHandler
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
             return null;
         }
-
-        List<IPermissionHolder> changed = new ArrayList<>();
-        List<IPermissionHolder> contained = new ArrayList<>();
 
         final long channelId = content.getLong("id");
         final Long parentId = content.isNull("parent_id") ? null : content.getLong("parent_id");
@@ -97,11 +97,7 @@ public class ChannelUpdateHandler extends SocketHandler
                             storeChannel, oldPosition));
                 }
 
-                applyPermissions(storeChannel, content, permOverwrites, contained, changed);
-                getJDA().handleEvent(
-                    new StoreChannelUpdatePermissionsEvent(
-                        getJDA(), responseNumber,
-                        storeChannel, changed));
+                applyPermissions(storeChannel, permOverwrites);
                 break;
             }
             case TEXT:
@@ -174,16 +170,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     textChannel, oldSlowmode));
                 }
 
-                applyPermissions(textChannel, content, permOverwrites, contained, changed);
-
-                //If this update modified permissions in any way.
-                if (!changed.isEmpty())
-                {
-                    getJDA().handleEvent(
-                            new TextChannelUpdatePermissionsEvent(
-                                    getJDA(), responseNumber,
-                                    textChannel, changed));
-                }
+                applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case
             }
             case VOICE:
@@ -245,16 +232,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     voiceChannel, oldBitrate));
                 }
 
-                applyPermissions(voiceChannel, content, permOverwrites, contained, changed);
-
-                //If this update modified permissions in any way.
-                if (!changed.isEmpty())
-                {
-                    getJDA().handleEvent(
-                            new VoiceChannelUpdatePermissionsEvent(
-                                    getJDA(), responseNumber,
-                                    voiceChannel, changed));
-                }
+                applyPermissions(voiceChannel, permOverwrites);
                 break;  //Finish the VoiceChannelUpdate case
             }
             case CATEGORY:
@@ -286,15 +264,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                 category, oldPosition));
                 }
 
-                applyPermissions(category, content, permOverwrites, contained, changed);
-                //If this update modified permissions in any way.
-                if (!changed.isEmpty())
-                {
-                    getJDA().handleEvent(
-                            new CategoryUpdatePermissionsEvent(
-                                getJDA(), responseNumber,
-                                category, changed));
-                }
+                applyPermissions(category, permOverwrites);
                 break;  //Finish the CategoryUpdate case
             }
             default:
@@ -303,99 +273,110 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
-    private void applyPermissions(AbstractChannelImpl<?,?> channel, DataObject content,
-                                  DataArray permOverwrites, List<IPermissionHolder> contained, List<IPermissionHolder> changed)
+    private void applyPermissions(AbstractChannelImpl<?,?> channel, DataArray permOverwrites)
     {
-
-        //Determines if a new PermissionOverride was created or updated.
-        //If a PermissionOverride was created or updated it stores it in the proper Map to be reported by the Event.
+        TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getOverrideMap());
         for (int i = 0; i < permOverwrites.length(); i++)
         {
-            handlePermissionOverride(permOverwrites.getObject(i), channel, content, changed, contained);
+            DataObject overrideJson = permOverwrites.getObject(i);
+            long id = overrideJson.getUnsignedLong("id", 0);
+            handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel);
         }
 
-        //Check if any overrides were deleted because of this event.
-        //Get the current overrides. (we copy them to a new list because the Set returned is backed by the Map, meaning our removes would remove from the Map. Not good.
-        //Loop through all of the json defined overrides. If we find a match, remove the User or Role from our lists.
-        //Any entries remaining in these lists after this for loop is over will be removed from the GuildChannel's overrides.
-        final TLongList toRemove = new TLongLinkedList();
-        final TLongObjectMap<PermissionOverride> overridesMap = channel.getOverrideMap();
-
-        TDecorators.wrap(overridesMap.keySet()).stream()
-            .map(id -> mapPermissionHolder(id, channel.getGuild()))
-            .filter(Objects::nonNull)
-            .filter(permHolder -> !contained.contains(permHolder))
-            .forEach(permHolder ->
+        currentOverrides.forEachValue(override -> {
+            switch (channel.getType())
             {
-                changed.add(permHolder);
-                toRemove.add(permHolder.getIdLong());
-            });
-
-        channel.getGuild().updateCachedOverrides(channel, permOverwrites);
-        toRemove.forEach((id) ->
-        {
-            overridesMap.remove(id);
+            case CATEGORY:
+                api.handleEvent(
+                    new CategoryDeleteOverrideEvent(
+                        api, responseNumber,
+                        (Category) channel, override));
+                break;
+            case STORE:
+                api.handleEvent(
+                    new StoreChannelDeleteOverrideEvent(
+                        api, responseNumber,
+                        (StoreChannel) channel, override));
+                break;
+            case VOICE:
+                api.handleEvent(
+                    new VoiceChannelDeleteOverrideEvent(
+                        api, responseNumber,
+                        (VoiceChannel) channel, override));
+                break;
+            case TEXT:
+                api.handleEvent(
+                    new TextChannelDeleteOverrideEvent(
+                        api, responseNumber,
+                        (TextChannel) channel, override));
+                break;
+            default:
+                WebSocketClient.LOG.warn("Unable to fire permission override delete event for unknown channel type {}", channel.getType());
+            }
             return true;
         });
     }
 
-    private IPermissionHolder mapPermissionHolder(long id, Guild guild)
+    private void handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long id, AbstractChannelImpl<?,?> channel)
     {
-        final Role holder = guild.getRoleById(id);
-        return holder == null ? guild.getMemberById(id) : holder;
-    }
-
-    private void handlePermissionOverride(DataObject override, AbstractChannelImpl<?,?> channel, DataObject content,
-                                          List<IPermissionHolder> changedPermHolders, List<IPermissionHolder> containedPermHolders)
-    {
-        final long id = override.getLong("id");
         final long allow = override.getLong("allow");
         final long deny = override.getLong("deny");
-        final IPermissionHolder permHolder;
-
-        switch (override.getString("type"))
+        final String type = override.getString("type");
+        final boolean role = type.equals("role");
+        if (!role)
         {
-            case "role":
+            if (!type.equals("member"))
             {
-                permHolder = channel.getGuild().getRoleById(id);
-
-                if (permHolder == null)
-                {
-                    getJDA().getEventCache().cache(EventCache.Type.ROLE, id, responseNumber, allContent, (a, b) ->
-                            handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for a Role that doesn't exist! RoleId: {} JSON: {}", id, content);
-                    return;
-                }
-                break;
+                EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
+                return;
             }
-            case "member":
+            else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES) && id != api.getSelfUser().getIdLong())
             {
-                permHolder = channel.getGuild().getMemberById(id);
-                if (permHolder == null)
-                {
-                    // cache override for unloaded member (maybe loaded later)
-                    channel.getGuild().cacheOverride(id, channel.getIdLong(), override);
-                    return;
-                }
-                break;
+                return;
             }
-            default:
-                throw new IllegalArgumentException("CHANNEL_UPDATE provided an unrecognized PermissionOverride type. JSON: " + content);
         }
 
-        PermissionOverrideImpl permOverride = (PermissionOverrideImpl) channel.getOverrideMap().get(id);
+        long oldAllow = 0L;
+        long oldDeny = 0L;
+        if (currentOverride != null)
+        {
+            oldAllow = currentOverride.getAllowedRaw();
+            oldDeny = currentOverride.getDeniedRaw();
+            PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
+            impl.setAllow(allow);
+            impl.setDeny(deny);
+        }
+        else
+        {
+            currentOverride = new PermissionOverrideImpl(channel, id, role);
+            channel.getOverrideMap().put(id, currentOverride);
+        }
 
-        if (permOverride == null)    //Created
+        switch (channel.getType())
         {
-            getJDA().getEntityBuilder().createPermissionOverride(override, channel);
-            changedPermHolders.add(permHolder);
+        case TEXT:
+            api.handleEvent(
+                new TextChannelUpdateOverrideEvent(
+                    api, responseNumber,
+                    (TextChannel) channel, currentOverride, oldAllow, oldDeny));
+            break;
+        case VOICE:api.handleEvent(
+                new VoiceChannelUpdateOverrideEvent(
+                    api, responseNumber,
+                    (VoiceChannel) channel, currentOverride, oldAllow, oldDeny));
+            break;
+        case STORE:api.handleEvent(
+                new StoreChannelUpdateOverrideEvent(
+                    api, responseNumber,
+                    (StoreChannel) channel, currentOverride, oldAllow, oldDeny));
+            break;
+        case CATEGORY:api.handleEvent(
+                new CategoryUpdateOverrideEvent(
+                    api, responseNumber,
+                    (Category) channel, currentOverride, oldAllow, oldDeny));
+            break;
+        default:
+            WebSocketClient.LOG.warn("Unable to fire permission override update event for unknown channel type {}", channel.getType());
         }
-        else if (permOverride.getAllowedRaw() != allow || permOverride.getDeniedRaw() != deny) //Updated
-        {
-            permOverride.setAllow(allow);
-            permOverride.setDeny(deny);
-            changedPermHolders.add(permHolder);
-        }
-        containedPermHolders.add(permHolder);
     }
 }
