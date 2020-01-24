@@ -907,7 +907,7 @@ public class JDABuilder
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
      * <br>By default this uses {@link ChunkingFilter#ALL}.
      *
-     * <p>This filter is useless when {@link #setGuildSubscriptionsEnabled(boolean)} is false.
+     * <p>If a guild is configured for chunking the {@link #setMemberCachePolicy(MemberCachePolicy)} will be ignored.
      *
      * @param  filter
      *         The filter to apply

@@ -179,12 +179,6 @@ public class JDAImpl implements JDA
         return metaConfig.getCacheFlags().contains(flag);
     }
 
-    @Deprecated
-    public boolean isGuildSubscriptions()
-    {
-        return metaConfig.isGuildSubscriptions();
-    }
-
     public boolean isIntent(GatewayIntent intent)
     {
         int raw = intent.getRawValue();

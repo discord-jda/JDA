@@ -24,8 +24,6 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} updated their {@link net.dv8tion.jda.api.entities.Guild Guild} nickname.
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
  *
  * <p>Can be used to retrieve members who change their nickname, triggering guild, the old nick and the new nick.
  *

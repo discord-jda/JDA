@@ -22,8 +22,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined a {@link net.dv8tion.jda.api.entities.Guild Guild}.
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
  *
  * <p>Can be used to retrieve members who join a guild.
  */

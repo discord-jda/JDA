@@ -23,8 +23,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that the discriminator of a {@link net.dv8tion.jda.api.entities.User User} changed.
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
  *
  * <p>Can be used to retrieve the User who changed their discriminator and their previous discriminator.
  *
