@@ -14,32 +14,29 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.channel.text;
+package net.dv8tion.jda.api.events.channel.voice.override;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.channel.voice.GenericVoiceChannelEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumSet;
 
 /**
- * Indicates that a {@link PermissionOverride} of a {@link TextChannel} has been updated or created.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel's} {@link PermissionOverride} was created/deleted/updated.
+ * <br>Every voice channel override event is a subclass of this event and can be casted
  *
- * <p>Can be used to retrieve the updated override and old {@link #getOldAllow() allow} and {@link #getOldDeny() deny}.
+ * <p>Can be used to detect that any voice channel override event was fired
  */
-public class TextChannelUpdateOverrideEvent extends GenericTextChannelEvent
+public class GenericVoiceChannelOverrideEvent extends GenericVoiceChannelEvent
 {
-    private final long oldAllow, oldDeny;
-    private final PermissionOverride override;
+    protected final PermissionOverride override;
 
-    public TextChannelUpdateOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
+    public GenericVoiceChannelOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, channel);
         this.override = override;
-        this.oldAllow = oldAllow;
-        this.oldDeny = oldDeny;
     }
 
     /**
@@ -98,6 +95,7 @@ public class TextChannelUpdateOverrideEvent extends GenericTextChannelEvent
     {
         return override.getMember();
     }
+
     /**
      * The {@link Role} for the override.
      *
@@ -107,68 +105,5 @@ public class TextChannelUpdateOverrideEvent extends GenericTextChannelEvent
     public Role getRole()
     {
         return override.getRole();
-    }
-
-    /**
-     * The old allowed permissions
-     *
-     * @return The old allowed permissions
-     */
-    public long getOldAllowRaw()
-    {
-        return oldAllow;
-    }
-
-    /**
-     * The old denied permissions
-     *
-     * @return The old denied permissions
-     */
-    public long getOldDenyRaw()
-    {
-        return oldDeny;
-    }
-
-    /**
-     * The old inherited permissions
-     *
-     * @return The old inherited permissions
-     */
-    public long getOldInheritedRaw()
-    {
-        return ~(oldAllow | oldDeny);
-    }
-
-    /**
-     * The old allowed permissions
-     *
-     * @return The old allowed permissions
-     */
-    @Nonnull
-    public EnumSet<Permission> getOldAllow()
-    {
-        return Permission.getPermissions(oldAllow);
-    }
-
-    /**
-     * The old denied permissions
-     *
-     * @return The old denied permissions
-     */
-    @Nonnull
-    public EnumSet<Permission> getOldDeny()
-    {
-        return Permission.getPermissions(oldDeny);
-    }
-
-    /**
-     * The old inherited permissions
-     *
-     * @return The old inherited permissions
-     */
-    @Nonnull
-    public EnumSet<Permission> getOldInherited()
-    {
-        return Permission.getPermissions(getOldInheritedRaw());
     }
 }

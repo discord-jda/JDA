@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.channel.text;
+package net.dv8tion.jda.api.events.channel.category.override;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link PermissionOverride} of a {@link TextChannel} has been deleted.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Category Category's} {@link PermissionOverride} was created/deleted/updated.
+ * <br>Every category override event is a subclass of this event and can be casted
  *
- * <p>Can be used to retrieve the old override.
+ * <p>Can be used to detect that any category override event was fired
  */
-public class TextChannelDeleteOverrideEvent extends GenericTextChannelEvent
+public class GenericCategoryOverrideEvent extends GenericCategoryEvent
 {
-    private final PermissionOverride override;
+    protected final PermissionOverride override;
 
-    public TextChannelDeleteOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull PermissionOverride override)
+    public GenericCategoryOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category, @Nonnull PermissionOverride override)
     {
-        super(api, responseNumber, channel);
+        super(api, responseNumber, category);
         this.override = override;
     }
 
     /**
-     * The affected {@link PermissionOverride} that was deleted.
+     * The affected {@link PermissionOverride} that was updated.
      *
      * @return The override
      */

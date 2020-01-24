@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.channel.voice;
+package net.dv8tion.jda.api.events.channel.store.override;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link PermissionOverride} of a {@link VoiceChannel} has been deleted.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel's} {@link PermissionOverride} was created/deleted/updated.
+ * <br>Every store channel override event is a subclass of this event and can be casted
  *
- * <p>Can be used to retrieve the old override.
+ * <p>Can be used to detect that any store channel override event was fired
  */
-public class VoiceChannelDeleteOverrideEvent extends GenericVoiceChannelEvent
+public class GenericStoreChannelOverrideEvent extends GenericStoreChannelEvent
 {
-    private final PermissionOverride override;
+    protected final PermissionOverride override;
 
-    public VoiceChannelDeleteOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nonnull PermissionOverride override)
+    public GenericStoreChannelOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, channel);
         this.override = override;
     }
 
     /**
-     * The affected {@link PermissionOverride} that was deleted.
+     * The affected {@link PermissionOverride} that was updated.
      *
      * @return The override
      */

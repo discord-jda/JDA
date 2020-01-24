@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.channel.store;
+package net.dv8tion.jda.api.events.channel.store.override;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.StoreChannel;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -29,84 +29,15 @@ import java.util.EnumSet;
  *
  * <p>Can be used to retrieve the updated override and old {@link #getOldAllow() allow} and {@link #getOldDeny() deny}.
  */
-public class StoreChannelUpdateOverrideEvent extends GenericStoreChannelEvent
+public class StoreChannelUpdateOverrideEvent extends GenericStoreChannelOverrideEvent
 {
     private final long oldAllow, oldDeny;
-    private final PermissionOverride override;
 
     public StoreChannelUpdateOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
     {
-        super(api, responseNumber, channel);
-        this.override = override;
+        super(api, responseNumber, channel, override);
         this.oldAllow = oldAllow;
         this.oldDeny = oldDeny;
-    }
-
-    /**
-     * The affected {@link PermissionOverride} that was updated.
-     *
-     * @return The override
-     */
-    @Nonnull
-    public PermissionOverride getPermissionOverride()
-    {
-        return override;
-    }
-
-    /**
-     * Whether this override was for a role.
-     * <br>This means {@link #getRole()} is likely not null.
-     *
-     * @return True, if this override is for a role
-     */
-    public boolean isRoleOverride()
-    {
-        return override.isRoleOverride();
-    }
-
-    /**
-     * Whether this override was for a member.
-     * <br>Note that {@link #getMember()} might still be null if the member isn't cached or there is a discord inconsistency.
-     *
-     * @return True, if this override is for a member
-     */
-    public boolean isMemberOverride()
-    {
-        return override.isMemberOverride();
-    }
-
-    /**
-     * The {@link IPermissionHolder} for the override.
-     * <br>This can be a {@link Member} or {@link Role}. If the role or member are not cached then this will be null.
-     *
-     * @return Possibly-null permission holder
-     */
-    @Nullable
-    public IPermissionHolder getPermissionHolder()
-    {
-        return isMemberOverride() ? override.getMember() : override.getRole();
-    }
-
-    /**
-     * The {@link Member} for the override.
-     * <br>This can be null if the member is not cached or there is a discord inconsistency.
-     *
-     * @return Possibly-null member
-     */
-    @Nullable
-    public Member getMember()
-    {
-        return override.getMember();
-    }
-    /**
-     * The {@link Role} for the override.
-     *
-     * @return Possibly-null role
-     */
-    @Nullable
-    public Role getRole()
-    {
-        return override.getRole();
     }
 
     /**
