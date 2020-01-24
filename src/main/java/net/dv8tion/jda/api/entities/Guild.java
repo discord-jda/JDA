@@ -184,13 +184,17 @@ public interface Guild extends ISnowflake
      */
     boolean isLoaded();
 
-    void unloadMembers(); //TODO: Docs
+    /**
+     * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session.
+     * <br>This can be useful if used in combination with {@link #retrieveMembers()}.
+     */
+    void unloadMembers();
 
     /**
      * The expected member count for this guild.
      * <br>If this guild is not lazy loaded this should be identical to the size returned by {@link #getMemberCache()}.
      *
-     * <p>When guild subscriptions are disabled, this will not be updated.
+     * <p>When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is disabled, this will not be updated.
      *
      * @return The expected member count for this guild
      */
@@ -2054,8 +2058,8 @@ public interface Guild extends ISnowflake
     /**
      * Requests member chunks for this guild.
      * <br>This returns a completed future if the member demand is already matched.
-     * When {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions} are disabled
-     * this will do nothing since member caching is disabled.
+     * When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is disabled
+     * this will do nothing since {@link #getMemberCount()} cannot be tracked.
      *
      * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
      *
