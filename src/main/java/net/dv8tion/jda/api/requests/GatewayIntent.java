@@ -145,7 +145,7 @@ public enum GatewayIntent
     }
 
     /**
-     * Converts the given intents to a
+     * Converts the given intents to a bitmask
      *
      * @param  set
      *         The {@link EnumSet} of intents
@@ -164,7 +164,7 @@ public enum GatewayIntent
     }
 
     /**
-     * Converts the given intents to a
+     * Converts the given intents to a bitmask
      *
      * @param  intent
      *         The first intent

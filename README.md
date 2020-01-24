@@ -116,7 +116,7 @@ public void configureMemoryUsage(JDABuilder builder) {
     // Only cache members who are either in a voice channel or owner of the guild
     builder.setMemberCachePolicy(MemberCachePolicy.VOICE.or(MemberCachePolicy.OWNER));
 
-    // Disable member chunking on startup (ignored if guild subscriptions are turned off)
+    // Disable member chunking on startup
     builder.setChunkingFilter(ChunkingFilter.NONE);
 
     // Disable presence updates and typing events

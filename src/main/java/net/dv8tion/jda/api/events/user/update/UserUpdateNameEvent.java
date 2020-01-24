@@ -23,7 +23,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that the username of a {@link net.dv8tion.jda.api.entities.User User} changed. (Not Nickname)
- * to be enabled.y
  *
  * <p>Can be used to retrieve the User who changed their username and their previous username.
  *
