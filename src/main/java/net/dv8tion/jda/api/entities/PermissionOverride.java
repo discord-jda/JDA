@@ -38,7 +38,7 @@ import java.util.EnumSet;
  * @see GuildChannel#getMemberPermissionOverrides()
  * @see GuildChannel#getRolePermissionOverrides()
  */
-public interface PermissionOverride
+public interface PermissionOverride extends ISnowflake
 {
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.

@@ -26,6 +26,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.events.guild.UnavailableGuildLeaveEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -33,7 +34,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
@@ -48,7 +48,7 @@ public class GuildSetupController
     protected static final int CHUNK_TIMEOUT = 10000;
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
 
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
     private final TLongObjectMap<GuildSetupNode> setupNodes = new TLongObjectHashMap<>();
     private final TLongSet chunkingGuilds = new TLongHashSet();
     private final TLongLongMap pendingChunks = new TLongLongHashMap();
@@ -64,7 +64,7 @@ public class GuildSetupController
 
     public GuildSetupController(JDAImpl api)
     {
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
         if (isClient())
             syncingGuilds = new TLongHashSet();
         else
@@ -73,7 +73,7 @@ public class GuildSetupController
 
     JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     boolean isClient()
@@ -119,6 +119,7 @@ public class GuildSetupController
 
     void remove(long id)
     {
+        unavailableGuilds.remove(id);
         setupNodes.remove(id);
         chunkingGuilds.remove(id);
         synchronized (pendingChunks) { pendingChunks.remove(id); }
@@ -201,6 +202,14 @@ public class GuildSetupController
     public boolean onDelete(long id, DataObject obj)
     {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
+        if (isUnavailable(id) && available)
+        {
+            log.debug("Leaving unavailable guild with id {}", id);
+            remove(id);
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
+            return true;
+        }
+
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
             return false;
@@ -237,6 +246,7 @@ public class GuildSetupController
                 remove(id);
             else
                 ready(id);
+            api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
         }
         log.debug("Updated incompleteCount to {} and syncCount to {}", incompleteCount, syncingCount);
         return true;

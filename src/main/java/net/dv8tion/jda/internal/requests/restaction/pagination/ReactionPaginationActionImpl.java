@@ -96,7 +96,7 @@ public class ReactionPaginationActionImpl
     @Override
     protected void handleSuccess(Response response, Request<List<User>> request)
     {
-        final EntityBuilder builder = api.get().getEntityBuilder();
+        final EntityBuilder builder = api.getEntityBuilder();
         final DataArray array = response.getArray();
         final List<User> users = new LinkedList<>();
         for (int i = 0; i < array.length(); i++)

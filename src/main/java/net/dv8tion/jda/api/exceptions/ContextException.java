@@ -49,15 +49,29 @@ public class ContextException extends Exception
     @Nonnull
     public static Consumer<Throwable> here(@Nonnull Consumer<? super Throwable> acceptor)
     {
-        ContextException context = new ContextException();
-        return (ex) ->
+        return new ContextConsumer(new ContextException(), acceptor);
+    }
+
+    public static class ContextConsumer implements Consumer<Throwable>
+    {
+        private final ContextException context;
+        private final Consumer<? super Throwable> callback;
+
+        private ContextConsumer(ContextException context, Consumer<? super Throwable> callback)
         {
-            Throwable cause = ex;
+            this.context = context;
+            this.callback = callback;
+        }
+
+        @Override
+        public void accept(Throwable throwable)
+        {
+            Throwable cause = throwable;
             while (cause.getCause() != null)
                 cause = cause.getCause();
             cause.initCause(context);
-            if (acceptor != null)
-                acceptor.accept(ex);
-        };
+            if (callback != null)
+                callback.accept(throwable);
+        }
     }
 }

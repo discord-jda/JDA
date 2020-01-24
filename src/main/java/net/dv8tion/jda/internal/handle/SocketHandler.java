@@ -17,17 +17,16 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 public abstract class SocketHandler
 {
-    protected final UpstreamReference<JDAImpl> api;
+    protected final JDAImpl api;
     protected long responseNumber;
     protected DataObject allContent;
 
     public SocketHandler(JDAImpl api)
     {
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
     }
 
     public final synchronized void handle(long responseTotal, DataObject o)
@@ -42,7 +41,7 @@ public abstract class SocketHandler
 
     protected JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     /**

@@ -76,6 +76,6 @@ public class ShardingSessionConfig extends SessionConfig
     @Nonnull
     public static ShardingSessionConfig getDefault()
     {
-        return new ShardingSessionConfig(null, null, null, null, null, null, ConfigFlag.getDefault(), ShardingConfigFlag.getDefault(), 900, 250);
+        return new ShardingSessionConfig(null, null, new OkHttpClient(), null, null, null, ConfigFlag.getDefault(), ShardingConfigFlag.getDefault(), 900, 250);
     }
 }

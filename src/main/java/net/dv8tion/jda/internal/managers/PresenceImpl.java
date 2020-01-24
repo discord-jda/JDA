@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
 
@@ -36,7 +35,7 @@ import javax.annotation.Nonnull;
  */
 public class PresenceImpl implements Presence
 {
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
     private boolean idle = false;
     private Activity activity = null;
     private OnlineStatus status = OnlineStatus.ONLINE;
@@ -49,7 +48,7 @@ public class PresenceImpl implements Presence
      */
     public PresenceImpl(JDAImpl jda)
     {
-        this.api = new UpstreamReference<>(jda);
+        this.api = jda;
     }
 
 
@@ -60,7 +59,7 @@ public class PresenceImpl implements Presence
     @Override
     public JDA getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull
@@ -203,11 +202,10 @@ public class PresenceImpl implements Presence
 
     protected void update(DataObject data)
     {
-        JDAImpl jda = api.get();
-        JDA.Status status = jda.getStatus();
+        JDA.Status status = api.getStatus();
         if (status == JDA.Status.RECONNECT_QUEUED || status == JDA.Status.SHUTDOWN || status == JDA.Status.SHUTTING_DOWN)
             return;
-        jda.getClient().send(DataObject.empty()
+        api.getClient().send(DataObject.empty()
             .put("d", data)
             .put("op", WebSocketCode.PRESENCE).toString());
     }

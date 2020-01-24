@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -33,7 +32,7 @@ import javax.annotation.Nonnull;
 
 public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager
 {
-    protected final UpstreamReference<SelfUser> selfUser;
+    protected final SelfUser selfUser;
 
     protected String currentPassword;
 
@@ -51,14 +50,14 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     public AccountManagerImpl(SelfUser selfUser)
     {
         super(selfUser.getJDA(), Route.Self.MODIFY_SELF.compile());
-        this.selfUser = new UpstreamReference<>(selfUser);
+        this.selfUser = selfUser;
     }
 
     @Nonnull
     @Override
     public SelfUser getSelfUser()
     {
-        return selfUser.get();
+        return selfUser;
     }
 
     @Nonnull
@@ -177,7 +176,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     protected void handleSuccess(Response response, Request<Void> request)
     {
         String newToken = response.getObject().getString("token").replace("Bot ", "");
-        api.get().setToken(newToken);
+        api.setToken(newToken);
         request.onSuccess(null);
     }
 }

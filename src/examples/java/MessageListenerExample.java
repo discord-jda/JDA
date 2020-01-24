@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import javax.security.auth.login.LoginException;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class MessageListenerExample extends ListenerAdapter
 {
@@ -142,20 +143,19 @@ public class MessageListenerExample extends ListenerAdapter
         }
         else if (msg.equals("!roll"))
         {
-            //In this case, we have an example showing how to use the Success consumer for a RestAction. The Success consumer
+            //In this case, we have an example showing how to use the flatMap operator for a RestAction. The operator
             // will provide you with the object that results after you execute your RestAction. As a note, not all RestActions
-            // have object returns and will instead have Void returns. You can still use the success consumer to determine when
-            // the action has been completed!
+            // have object returns and will instead have Void returns. You can still use the flatMap operator to run chain another RestAction!
 
-            Random rand = new Random();
+            Random rand = ThreadLocalRandom.current();
             int roll = rand.nextInt(6) + 1; //This results in 1 - 6 (instead of 0 - 5)
-            channel.sendMessage("Your roll: " + roll).queue(sentMessage ->  //This is called a lambda statement. If you don't know
-            {                                                               // what they are or how they work, try google!
-                if (roll < 3)
-                {
-                    channel.sendMessage("The roll for messageId: " + sentMessage.getId() + " wasn't very good... Must be bad luck!\n").queue();
-                }
-            });
+            channel.sendMessage("Your roll: " + roll)
+                   .flatMap(
+                       (v) -> roll < 3, // This is called a lambda expression. If you don't know what they are or how they work, try google!
+                       // Send another message if the roll was bad (less than 3)
+                       sentMessage -> channel.sendMessage("The roll for messageId: " + sentMessage.getId() + " wasn't very good... Must be bad luck!\n")
+                   )
+                   .queue();
         }
         else if (msg.startsWith("!kick"))   //Note, I used "startsWith, not equals.
         {

@@ -56,7 +56,10 @@ import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.AuditLogPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.*;
-import net.dv8tion.jda.internal.utils.cache.*;
+import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
+import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +76,7 @@ import java.util.stream.Stream;
 public class GuildImpl implements Guild
 {
     private final long id;
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
 
     private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
@@ -116,7 +119,7 @@ public class GuildImpl implements Guild
     public GuildImpl(JDAImpl api, long id)
     {
         this.id = id;
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
     }
 
     @Nonnull
@@ -292,7 +295,7 @@ public class GuildImpl implements Guild
         {
             DataArray array = response.getArray();
             List<Webhook> webhooks = new ArrayList<>(array.length());
-            EntityBuilder builder = api.get().getEntityBuilder();
+            EntityBuilder builder = api.getEntityBuilder();
 
             for (int i = 0; i < array.length(); i++)
             {
@@ -497,18 +500,25 @@ public class GuildImpl implements Guild
     public RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id)
     {
         Checks.isSnowflake(id, "Emote ID");
-        Emote emote = getEmoteById(id);
-        if (emote != null)
-        {
-            ListedEmote listedEmote = (ListedEmote) emote;
-            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new EmptyRestAction<>(getJDA(), listedEmote);
-        }
-        Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-        {
-            EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-            return builder.createEmote(GuildImpl.this, response.getObject(), true);
+
+        JDAImpl jda = getJDA();
+        return new DeferredRestAction<>(jda, ListedEmote.class,
+        () -> {
+            Emote emote = getEmoteById(id);
+            if (emote != null)
+            {
+                ListedEmote listedEmote = (ListedEmote) emote;
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                    return listedEmote;
+            }
+            return null;
+        }, () -> {
+            Route.CompiledRoute route = Route.Emotes.GET_EMOTE.compile(getId(), id);
+            return new AuditableRestActionImpl<>(jda, route, (response, request) ->
+            {
+                EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
+                return builder.createEmote(GuildImpl.this, response.getObject(), true);
+            });
         });
     }
 
@@ -522,7 +532,7 @@ public class GuildImpl implements Guild
         Route.CompiledRoute route = Route.Guilds.GET_BANS.compile(getId());
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-            EntityBuilder builder = api.get().getEntityBuilder();
+            EntityBuilder builder = api.getEntityBuilder();
             List<Ban> bans = new LinkedList<>();
             DataArray bannedArr = response.getArray();
 
@@ -549,7 +559,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
 
-            EntityBuilder builder = api.get().getEntityBuilder();
+            EntityBuilder builder = api.getEntityBuilder();
             DataObject bannedObj = response.getObject();
             DataObject user = bannedObj.getObject("user");
             return new Ban(builder.createFakeUser(user, false), bannedObj.getString("reason", null));
@@ -678,7 +688,7 @@ public class GuildImpl implements Guild
     @Override
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Nonnull
@@ -772,13 +782,12 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<Member> retrieveMemberById(long id)
     {
-        Member member = getMemberById(id);
-        if (member != null)
-            return new EmptyRestAction<>(getJDA(), member);
-
-        Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
-        return new RestActionImpl<>(getJDA(), route, (resp, req) ->
-                getJDA().getEntityBuilder().createMember(this, resp.getObject()));
+        JDAImpl jda = getJDA();
+        return new DeferredRestAction<>(jda, Member.class, () -> getMemberById(id), () -> {
+            Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
+            return new RestActionImpl<>(jda, route, (resp, req) ->
+                    jda.getEntityBuilder().createMember(this, resp.getObject()));
+        });
     }
 
     @Override
@@ -798,7 +807,7 @@ public class GuildImpl implements Guild
 
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
-            EntityBuilder entityBuilder = api.get().getEntityBuilder();
+            EntityBuilder entityBuilder = api.getEntityBuilder();
             DataArray array = response.getArray();
             List<Invite> invites = new ArrayList<>(array.length());
             for (int i = 0; i < array.length(); i++)
@@ -856,21 +865,18 @@ public class GuildImpl implements Guild
             checkPosition(member);
         }
 
-        if (Objects.equals(nickname, member.getNickname()))
-            return new EmptyRestAction<>(getJDA(), null);
+        JDAImpl jda = getJDA();
+        return new DeferredRestAction<>(jda, () -> {
+            DataObject body = DataObject.empty().put("nick", nickname == null ? "" : nickname);
 
-        if (nickname == null)
-            nickname = "";
+            Route.CompiledRoute route;
+            if (member.equals(getSelfMember()))
+                route = Route.Guilds.MODIFY_SELF_NICK.compile(getId());
+            else
+                route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
-        DataObject body = DataObject.empty().put("nick", nickname);
-
-        Route.CompiledRoute route;
-        if (member.equals(getSelfMember()))
-            route = Route.Guilds.MODIFY_SELF_NICK.compile(getId());
-        else
-            route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
-
-        return new AuditableRestActionImpl<>(getJDA(), route, body);
+            return new AuditableRestActionImpl<Void>(jda, route, body);
+        }).setCacheCheck(() -> !Objects.equals(nickname, member.getNickname()));
     }
 
     @Nonnull
@@ -914,7 +920,7 @@ public class GuildImpl implements Guild
     {
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
         if (!Helpers.isBlank(reason))
-            route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -928,19 +934,7 @@ public class GuildImpl implements Guild
         if (isMember(user)) // If user is in guild. Check if we are able to ban.
             checkPosition(getMember(user));
 
-        Checks.notNegative(delDays, "Deletion Days");
-
-        Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
-
-        final String userId = user.getId();
-
-        Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
-        if (reason != null && !reason.isEmpty())
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
-        if (delDays > 0)
-            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
-
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return ban0(user.getId(), delDays, reason);
     }
 
     @Nonnull
@@ -954,12 +948,17 @@ public class GuildImpl implements Guild
         if (user != null) // If we have the user cached then we should use the additional information available to use during the ban process.
             return ban(user, delDays, reason);
 
-        Checks.notNegative(delDays, "Deletion Days");
+        return ban0(userId, delDays, reason);
+    }
 
+    @Nonnull
+    private AuditableRestAction<Void> ban0(@Nonnull String userId, int delDays, String reason)
+    {
+        Checks.notNegative(delDays, "Deletion Days");
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
-        if (reason != null && !reason.isEmpty())
+        if (!Helpers.isBlank(reason))
             route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
@@ -992,7 +991,7 @@ public class GuildImpl implements Guild
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only deafen members who are currently in a voice channel");
             if (voiceState.isGuildDeafened() == deafen)
-                return new EmptyRestAction<>(getJDA(), null);
+                return new CompletedRestAction<>(getJDA(), null);
         }
 
         DataObject body = DataObject.empty().put("deaf", deafen);
@@ -1014,7 +1013,7 @@ public class GuildImpl implements Guild
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only mute members who are currently in a voice channel");
             if (voiceState.isGuildMuted() == mute)
-                return new EmptyRestAction<>(getJDA(), null);
+                return new CompletedRestAction<>(getJDA(), null);
         }
 
         DataObject body = DataObject.empty().put("mute", mute);
@@ -1094,7 +1093,7 @@ public class GuildImpl implements Guild
         // Return an empty rest action if there were no changes
         final List<Role> memberRoles = member.getRoles();
         if (Helpers.deepEqualsUnordered(roles, memberRoles))
-            return new EmptyRestAction<>(getJDA());
+            return new CompletedRestAction<>(getJDA(), null);
 
         // Check removed roles
         for (Role r : memberRoles)
@@ -1492,9 +1491,9 @@ public class GuildImpl implements Guild
     public void pruneChannelOverrides(long channelId)
     {
         WebSocketClient.LOG.debug("Pruning cached overrides for channel with id {}", channelId);
-        overrideMap.transformValues((value) -> {
+        overrideMap.retainEntries((key, value) -> {
             DataObject removed = value.remove(channelId);
-            return value.isEmpty() ? null : value;
+            return !value.isEmpty();
         });
     }
 

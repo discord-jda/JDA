@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -216,12 +215,10 @@ public class PermissionOverrideActionImpl
     {
         long id = permissionHolder.getIdLong();
         DataObject object = (DataObject) request.getRawBody();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, permissionHolder);
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, permissionHolder);
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
-
-        ((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override);
-
+        //((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override); This is added by the event later
         request.onSuccess(override);
     }
 }

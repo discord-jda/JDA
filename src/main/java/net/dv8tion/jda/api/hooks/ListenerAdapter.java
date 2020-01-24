@@ -213,6 +213,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildAvailable(@Nonnull GuildAvailableEvent event) {}
     public void onGuildUnavailable(@Nonnull GuildUnavailableEvent event) {}
     public void onUnavailableGuildJoined(@Nonnull UnavailableGuildJoinedEvent event) {}
+    public void onUnavailableGuildLeave(@Nonnull UnavailableGuildLeaveEvent event) {}
     public void onGuildBan(@Nonnull GuildBanEvent event) {}
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {}
 
@@ -499,6 +500,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUnavailable((GuildUnavailableEvent) event);
         else if (event instanceof UnavailableGuildJoinedEvent)
             onUnavailableGuildJoined((UnavailableGuildJoinedEvent) event);
+        else if (event instanceof UnavailableGuildLeaveEvent)
+            onUnavailableGuildLeave((UnavailableGuildLeaveEvent) event);
         else if (event instanceof GuildBanEvent)
             onGuildBan((GuildBanEvent) event);
         else if (event instanceof GuildUnbanEvent)
