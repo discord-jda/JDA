@@ -218,6 +218,42 @@ public class JDABuilder
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
     }
 
+    /**
+     * Configure the member caching policy.
+     * This will decide whether to cache a member (and its respective user).
+     * <br>All members are cached by default. If a guild is enabled for chunking, all members will be cached for it.
+     *
+     * <p>You can use this to define a custom caching policy that will greatly improve memory usage.
+     * It is recommended not to disable {@link GatewayIntent#GUILD_MEMBERS} if you cache all members of a guild.
+     * Additionally, the {@link MemberCachePolicy#ONLINE} requires {@link GatewayIntent#GUILD_PRESENCES} to be enabled.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void configureCache(JDABuilder builder) {
+     *     // Cache members who are in a voice channel
+     *     MemberCachePolicy policy = MemberCachePolicy.VOICE;
+     *     // Cache members who are in a voice channel
+     *     // AND are also online
+     *     policy = policy.and(MemberCachePolicy.ONLINE);
+     *     // Cache members who are in a voice channel
+     *     // AND are also online
+     *     // OR are the owner of the guild
+     *     policy = policy.or(MemberCachePolicy.OWNER);
+     *
+     *     builder.setMemberCachePolicy(policy);
+     * }
+     * }</pre>
+     *
+     * @param  policy
+     *         The {@link MemberCachePolicy} or null to use default {@link MemberCachePolicy#ALL}
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    MemberCachePolicy
+     * @see    #setEnabledIntents(EnumSet)
+     *
+     * @since  4.2.0
+     */
     @Nonnull
     public JDABuilder setMemberCachePolicy(@Nullable MemberCachePolicy policy)
     {
@@ -908,6 +944,9 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @since  4.1.0
+     *
+     * @deprecated This is now superceded by {@link #setDisabledIntents(EnumSet)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     *             To get identical behavior you can do {@code setMemberCachePolicy(VOICE).setDisabledIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_MEMBERS)}
      */
     @Nonnull
     @Deprecated
@@ -921,19 +960,55 @@ public class JDABuilder
             intents &= ~GUILD_SUBSCRIPTIONS;
         }
         return this;
-        //return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
     }
 
+    /**
+     * Configures which events will be disabled.
+     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
+     * <br>All intents are enabled by default.
+     *
+     * <p>We recommend to not disable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     * This intent will disable the leave event which means members will never be removed from cache if they leave the guild.
+     *
+     * @param  intent
+     *         The first intent to disable
+     * @param  intents
+     *         Any other intents to disable
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
     @Nonnull
     public JDABuilder setDisabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
         Checks.notNull(intent, "Intents");
         Checks.notNull(intents, "Intents");
-        EnumSet<GatewayIntent> set = EnumSet.of(intent);
-        Collections.addAll(set, intents);
-        return setDisabledIntents(set);
+        return setDisabledIntents(EnumSet.of(intent, intents));
     }
 
+    /**
+     * Configures which events will be disabled.
+     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
+     * <br>All intents are enabled by default.
+     *
+     * <p>We recommend to not disable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     * This intent will disable the leave event which means members will never be removed from cache if they leave the guild.
+     *
+     * @param  intents
+     *         The intents to disable (default: none)
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
     @Nonnull
     public JDABuilder setDisabledIntents(@Nullable EnumSet<GatewayIntent> intents)
     {
@@ -943,6 +1018,28 @@ public class JDABuilder
         return this;
     }
 
+    /**
+     * Configures which events will be enabled.
+     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
+     * <br>All intents are enabled by default.
+     *
+     * <p>We recommend to enable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     * This intent will enable the leave event which removes members will from cache if they leave the guild.
+     *
+     * @param  intent
+     *         The intent to enable
+     * @param  intents
+     *         Any other intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
     @Nonnull
     public JDABuilder setEnabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
@@ -953,6 +1050,23 @@ public class JDABuilder
         return setDisabledIntents(EnumSet.complementOf(set));
     }
 
+    /**
+     * Configures which events will be enabled.
+     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
+     * <br>All intents are enabled by default.
+     *
+     * <p>We recommend to enable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     * This intent will enable the leave event which removes members will from cache if they leave the guild.
+     *
+     * @param  intents
+     *         The intents to enable (default: all)
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
     @Nonnull
     public JDABuilder setEnabledIntents(@Nullable EnumSet<GatewayIntent> intents)
     {

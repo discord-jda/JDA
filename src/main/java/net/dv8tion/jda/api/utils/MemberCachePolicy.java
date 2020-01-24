@@ -17,47 +17,147 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Policy which decides whether a member (and respective user) should be kept in cache.
+ * <br>This will be called throughout JDA when a member gets constructed or modified and allows for a dynamically
+ * adjusting cache of users.
+ *
+ * <p>When {@link Guild#unloadMembers()} is called, the configured policy will be used to unload any members that the policy
+ * has decided not to cache.
+ *
+ * @see #NONE
+ * @see #ALL
+ * @see #OWNER
+ * @see #VOICE
+ * @see #ONLINE
+ *
+ * @see #or(MemberCachePolicy)
+ * @see #and(MemberCachePolicy)
+ * @see #any(MemberCachePolicy, MemberCachePolicy...)
+ * @see #all(MemberCachePolicy, MemberCachePolicy...)
+ *
+ * @since 4.2.0
+ */
 public interface MemberCachePolicy
 {
+    /**
+     * Disable all member caching
+     */
     MemberCachePolicy NONE = (member) -> false;
+    /**
+     * Enable all member caching
+     */
     MemberCachePolicy ALL = (member) -> true;
+    /**
+     * Cache owner of the guild.
+     */
     MemberCachePolicy OWNER = Member::isOwner;
+    /**
+     * Cache online/idle/dnd users.
+     * <br>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} to be enabled.
+     */
     MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
+    /**
+     * Cache members who are connected to a voice channel.
+     * <br>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GatewayIntent.GUILD_VOICE_STATES} and {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled.
+     */
     MemberCachePolicy VOICE = (member) -> {
         GuildVoiceState voiceState = member.getVoiceState();
         return voiceState != null && voiceState.getChannel() != null;
     };
 
-    boolean cacheMember(Member member);
+    /**
+     * Idempotent (ideally pure) function which decided whether to cache the provided member or not.
+     * <br>The function should avoid throwing any exceptions or blocking.
+     *
+     * @param  member
+     *         The member
+     *
+     * @return True, if the member should be cached
+     */
+    boolean cacheMember(@Nonnull Member member);
 
+    /**
+     * Convenience method to concatenate another policy.
+     * <br>This is identical to {@code (member) -> policy1.cacheMember(member) || policy2.cacheMember(member)}.
+     *
+     * @param  policy
+     *         The policy to concat
+     *
+     * @throws IllegalArgumentException
+     *         If the provided policy is null
+     *
+     * @return New policy which combines both using a logical OR
+     */
     @Nonnull
     default MemberCachePolicy or(@Nonnull MemberCachePolicy policy)
     {
+        Checks.notNull(policy, "Policy");
         return (member) -> cacheMember(member) || policy.cacheMember(member);
     }
 
+    /**
+     * Convenience method to require another policy.
+     * <br>This is identical to {@code (member) -> policy1.cacheMember(member) && policy2.cacheMember(member)}.
+     *
+     * @param  policy
+     *         The policy to require in addition to this one
+     *
+     * @throws IllegalArgumentException
+     *         If the provided policy is null
+     *
+     * @return New policy which combines both using a logical AND
+     */
     @Nonnull
     default MemberCachePolicy and(@Nonnull MemberCachePolicy policy)
     {
         return (member) -> cacheMember(member) && policy.cacheMember(member);
     }
 
+    /**
+     * Composes a policy by concatenating multiple other policies.
+     * <br>This is logically identical to {@code policy1 || policy2 || policy3 || ... || policyN}.
+     *
+     * @param  policy
+     *         The first policy
+     * @param  policies
+     *         The other policies
+     *
+     * @return New policy which combines all provided polices using a logical OR
+     */
     @Nonnull
     static MemberCachePolicy any(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies)
     {
+        Checks.notNull(policy, "Policy");
+        Checks.notNull(policies, "Policy");
         for (MemberCachePolicy p : policies)
             policy = policy.or(p);
         return policy;
     }
 
+    /**
+     * Composes a policy which requires multiple other policies.
+     * <br>This is logically identical to {@code policy1 && policy2 && policy3 && ... && policyN}.
+     *
+     * @param  policy
+     *         The first policy
+     * @param  policies
+     *         The other policies
+     *
+     * @return New policy which combines all provided polices using a logical AND
+     */
     @Nonnull
     static MemberCachePolicy all(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies)
     {
+        Checks.notNull(policy, "Policy");
+        Checks.notNull(policies, "Policy");
         for (MemberCachePolicy p : policies)
             policy = policy.and(p);
         return policy;
