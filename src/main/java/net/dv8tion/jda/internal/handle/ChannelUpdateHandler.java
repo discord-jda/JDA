@@ -288,6 +288,7 @@ public class ChannelUpdateHandler extends SocketHandler
         }
 
         currentOverrides.forEachValue(override -> {
+            channel.getOverrideMap().remove(override.getIdLong());
             switch (channel.getType())
             {
             case CATEGORY:
