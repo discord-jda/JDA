@@ -23,6 +23,9 @@ import javax.annotation.Nonnull;
 /**
  * Indicates a {@link net.dv8tion.jda.api.entities.Member Member} left a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
+ * <p>This event is only fired if the member was cached.
+ * You can use {@link GuildMemberRemoveEvent} to detect any member removes, regardless of cache state.
+ *
  * <p>Can be used to retrieve members who leave a guild.
  */
 public class GuildMemberLeaveEvent extends GenericGuildMemberEvent

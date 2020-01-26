@@ -244,11 +244,9 @@ public class EntityBuilder
             }
         }
 
-        TLongObjectMap<DataArray> channelMap = new TLongObjectHashMap<>();
         for (int i = 0; i < channelArray.length(); i++)
         {
             DataObject channelJson = channelArray.getObject(i);
-            channelMap.put(channelJson.getUnsignedLong("id"), channelJson.getArray("permission_overwrites"));
             createGuildChannel(guildObj, channelJson);
         }
 
@@ -271,19 +269,6 @@ public class EntityBuilder
         if (guildObj.getOwner() == null)
             LOG.debug("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
 
-
-        guildObj.getTextChannelsView().streamUnordered()
-            .map(AbstractChannelImpl.class::cast)
-            .forEach((channel) -> createOverridesPass(channel, channelMap.get(channel.getIdLong())));
-        guildObj.getVoiceChannelsView().streamUnordered()
-            .map(AbstractChannelImpl.class::cast)
-            .forEach((channel) -> createOverridesPass(channel, channelMap.get(channel.getIdLong())));
-        guildObj.getStoreChannelView().streamUnordered()
-            .map(AbstractChannelImpl.class::cast)
-            .forEach((channel) -> createOverridesPass(channel, channelMap.get(channel.getIdLong())));
-        guildObj.getCategoriesView().streamUnordered()
-            .map(AbstractChannelImpl.class::cast)
-            .forEach((channel) -> createOverridesPass(channel, channelMap.get(channel.getIdLong())));
 
         createGuildEmotePass(guildObj, emotesArray);
 
@@ -824,6 +809,8 @@ public class EntityBuilder
         channel
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -860,6 +847,8 @@ public class EntityBuilder
             .setParent(json.getLong("parent_id", 0))
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -901,6 +890,8 @@ public class EntityBuilder
             .setPosition(json.getInt("position"))
             .setNSFW(json.getBoolean("nsfw"))
             .setSlowmode(json.getInt("rate_limit_per_user", 0));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
@@ -939,6 +930,8 @@ public class EntityBuilder
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
             .setBitrate(json.getInt("bitrate"));
+
+        createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
         return channel;
