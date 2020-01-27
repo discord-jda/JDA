@@ -57,6 +57,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         {
             EntityBuilder.LOG.debug("Creating member from GUILD_MEMBER_UPDATE {}", content);
             member = getJDA().getEntityBuilder().createMember(guild, content);
+            getJDA().getEntityBuilder().updateMemberCache(member);
         }
 
         List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
