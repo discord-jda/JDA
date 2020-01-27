@@ -56,6 +56,7 @@ public class MemberImpl implements Member
         this.api = (JDAImpl) user.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.user = user;
+        this.joinDate = guild.getTimeCreated().toInstant().toEpochMilli();
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;

@@ -445,14 +445,25 @@ public class EntityBuilder
     {
         boolean playbackCache = false;
         User user = createUser(memberJson.getObject("user"));
+        DataArray roleArray = memberJson.getArray("roles");
         MemberImpl member = (MemberImpl) guild.getMember(user);
         if (member == null)
         {
+            // Create a brand new member
             member = new MemberImpl(guild, user);
+            member.setNickname(memberJson.getString("nick", null));
+            Set<Role> roles = member.getRoleSet();
+            for (int i = 0; i < roleArray.length(); i++)
+            {
+                long roleId = roleArray.getUnsignedLong(i);
+                Role role = guild.getRoleById(roleId);
+                if (role != null)
+                    roles.add(role);
+            }
         }
         else
         {
-            DataArray roleArray = memberJson.getArray("roles");
+            // Update cached member and fire events
             List<Role> roles = new ArrayList<>(roleArray.length());
             for (int i = 0; i < roleArray.length(); i++)
             {
@@ -464,6 +475,16 @@ public class EntityBuilder
             updateMember(guild, member, memberJson, roles);
         }
 
+        // Load joined_at if necessary
+        if (memberJson.hasKey("joined_at") && member.isIncomplete())
+        {
+            String joinedAtRaw = memberJson.getString("joined_at");
+            TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
+            long joinEpoch = Instant.from(joinedAt).toEpochMilli();
+            member.setJoinDate(joinEpoch);
+        }
+
+        // Load voice state and presence if necessary
         if (voiceStateJson != null && member.getVoiceState() != null)
             createVoiceState(guild, voiceStateJson, user, member);
         if (presence != null)
@@ -493,45 +514,6 @@ public class EntityBuilder
                   .setConnectedChannel(voiceChannel);
     }
 
-    private void loadMember(GuildImpl guild, DataObject memberJson, User user, MemberImpl member)
-    {
-        GuildVoiceStateImpl state = (GuildVoiceStateImpl) member.getVoiceState();
-        if (state != null)
-        {
-            state.setGuildMuted(memberJson.getBoolean("mute"))
-                .setGuildDeafened(memberJson.getBoolean("deaf"));
-        }
-
-        if (!memberJson.isNull("premium_since"))
-        {
-            TemporalAccessor boostDate = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("premium_since"));
-            member.setBoostDate(Instant.from(boostDate).toEpochMilli());
-        }
-
-        //In some contexts this is missing (PRESENCE_UPDATE and GUILD_MEMBER_UPDATE)
-        // we call this incomplete and load the joined_at later through a MESSAGE_CREATE (if we get one)
-        String joinedAtRaw = memberJson.opt("joined_at").map(String::valueOf).orElseGet(() -> guild.getTimeCreated().toString());
-        TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
-        member.setJoinDate(Instant.from(joinedAt).toEpochMilli())
-            .setNickname(memberJson.getString("nick", null));
-
-        DataArray rolesJson = memberJson.getArray("roles");
-        for (int k = 0; k < rolesJson.length(); k++)
-        {
-            final long roleId = rolesJson.getLong(k);
-            Role r = guild.getRolesView().get(roleId);
-            if (r == null)
-            {
-                LOG.debug("Received a Member with an unknown Role. MemberId: {} GuildId: {} roleId: {}",
-                    member.getUser().getId(), guild.getId(), roleId);
-            }
-            else
-            {
-                member.getRoleSet().add(r);
-            }
-        }
-    }
-
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
     {
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
@@ -540,6 +522,7 @@ public class EntityBuilder
         {
             updateMemberRoles(member, newRoles, responseNumber);
         }
+
         if (content.hasKey("nick"))
         {
             String oldNick = member.getNickname();
