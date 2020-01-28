@@ -554,6 +554,9 @@ public class EntityBuilder
                         member, oldTime));
             }
         }
+
+        if (!member.getUser().isFake())
+            updateUser((UserImpl) member.getUser(), content.getObject("user"));
     }
 
     private void updateMemberRoles(MemberImpl member, List<Role> newRoles, long responseNumber)
