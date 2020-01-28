@@ -588,12 +588,17 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<User> retrieveUserById(long id)
     {
+        if (id == getSelfUser().getIdLong())
+            return new CompletedRestAction<>(this, getSelfUser());
+
         AccountTypeException.check(getAccountType(), AccountType.BOT);
-        return new DeferredRestAction<>(this, User.class, () -> getUserById(id), () -> {
-            Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-            return new RestActionImpl<>(this, route,
-                    (response, request) -> getEntityBuilder().createFakeUser(response.getObject()));
-        });
+        return new DeferredRestAction<>(this, User.class,
+                () -> isIntent(GatewayIntent.GUILD_PRESENCES) ? getUserById(id) : null, // TODO: This might need to be changed if they decide to make a new event
+                () -> {
+                    Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
+                    return new RestActionImpl<>(this, route,
+                            (response, request) -> getEntityBuilder().createFakeUser(response.getObject()));
+                });
     }
 
     @Nonnull

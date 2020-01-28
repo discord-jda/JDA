@@ -789,11 +789,16 @@ public class GuildImpl implements Guild
     public RestAction<Member> retrieveMemberById(long id)
     {
         JDAImpl jda = getJDA();
-        return new DeferredRestAction<>(jda, Member.class, () -> getMemberById(id), () -> {
-            Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
-            return new RestActionImpl<>(jda, route, (resp, req) ->
-                    jda.getEntityBuilder().createMember(this, resp.getObject()));
-        });
+        if (id == jda.getSelfUser().getIdLong())
+            return new CompletedRestAction<>(jda, getSelfMember());
+
+        return new DeferredRestAction<>(jda, Member.class,
+                () -> jda.isIntent(GatewayIntent.GUILD_MEMBERS) ? getMemberById(id) : null, // return member from cache if member tracking is enabled through intents
+                () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
+                    Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
+                    return new RestActionImpl<>(jda, route, (resp, req) ->
+                            jda.getEntityBuilder().createMember(this, resp.getObject()));
+                });
     }
 
     @Override
