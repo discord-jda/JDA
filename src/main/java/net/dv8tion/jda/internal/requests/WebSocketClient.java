@@ -845,7 +845,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     long guildId = content.getLong("guild_id", 0L);
                     if (api.isUnavailable(guildId) && !type.equals("GUILD_CREATE") && !type.equals("GUILD_DELETE"))
                     {
-                        LOG.warn("Ignoring {} for unavailable guild with id {}. JSON: {}", type, guildId, content);
+                        LOG.debug("Ignoring {} for unavailable guild with id {}. JSON: {}", type, guildId, content);
                         break;
                     }
                     SocketHandler handler = handlers.get(type);
