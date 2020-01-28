@@ -476,7 +476,7 @@ public class EntityBuilder
         }
 
         // Load joined_at if necessary
-        if (memberJson.hasKey("joined_at") && member.isIncomplete())
+        if (!memberJson.isNull("joined_at") && member.isIncomplete())
         {
             String joinedAtRaw = memberJson.getString("joined_at");
             TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
