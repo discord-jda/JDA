@@ -21,10 +21,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -137,7 +135,7 @@ public class ErrorHandler implements Consumer<Throwable>
     @Nonnull
     public ErrorHandler ignore(@Nonnull Collection<ErrorResponse> errorResponses)
     {
-        return handle(empty, errorResponses);
+        return handle(errorResponses, empty);
     }
 
     /**
@@ -151,8 +149,10 @@ public class ErrorHandler implements Consumer<Throwable>
      * }
      * }</pre>
      *
+     * @param  clazz
+     *         The class to ignore
      * @param  classes
-     *         The classes to ignore
+     *         Additional classes to ignore
      *
      * @throws IllegalArgumentException
      *         If provided with null
@@ -162,13 +162,16 @@ public class ErrorHandler implements Consumer<Throwable>
      * @see    java.net.SocketTimeoutException
      */
     @Nonnull
-    public ErrorHandler ignore(@Nonnull Class<?>... classes)
+    public ErrorHandler ignore(@Nonnull Class<?> clazz, @Nonnull Class<?>... classes)
     {
+        Checks.notNull(clazz, "Classes");
         Checks.noneNull(classes, "Classes");
         return ignore(it -> {
-            for (Class<?> clazz : classes)
+            if (clazz.isInstance(it))
+                return true;
+            for (Class<?> e : classes)
             {
-                if (clazz.isInstance(it))
+                if (e.isInstance(it))
                     return true;
             }
             return false;
@@ -211,18 +214,16 @@ public class ErrorHandler implements Consumer<Throwable>
      * public static void sendMessage(TextChannel context, User user, String content) {
      *     user.openPrivateChannel()
      *         .flapMap(channel -> channel.sendMessage(content))
-     *         .queue(null, new ErrorHandler().handle(
-     *             (ex) -> context.sendMessage("Cannot send direct message, please enable direct messages from server members!").queue(),
-     *             ErrorResponse.CANNOT_SEND_TO_USER));
+     *         .queue(null, new ErrorHandler()
+     *             .handle(ErrorResponse.CANNOT_SEND_TO_USER,
+     *                 (ex) -> context.sendMessage("Cannot send direct message, please enable direct messages from server members!").queue()));
      * }
      * }</pre>
      *
-     * @param  handler
-     *         The alternative handler
      * @param  response
      *         The first {@link ErrorResponse} to match
-     * @param  set
-     *         Additional error responses to match
+     * @param  handler
+     *         The alternative handler
      *
      * @throws IllegalArgumentException
      *         If provided with null
@@ -230,11 +231,10 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public ErrorHandler handle(@Nonnull Consumer<? super ErrorResponseException> handler, @Nonnull ErrorResponse response, @Nonnull ErrorResponse... set)
+    public ErrorHandler handle(@Nonnull ErrorResponse response, @Nonnull Consumer<? super ErrorResponseException> handler)
     {
         Checks.notNull(response, "ErrorResponse");
-        Checks.noneNull(set, "ErrorResponse");
-        return handle(handler, EnumSet.of(response, set));
+        return handle(EnumSet.of(response), handler);
     }
 
     /**
@@ -246,16 +246,16 @@ public class ErrorHandler implements Consumer<Throwable>
      * public static void sendMessage(TextChannel context, User user, String content) {
      *     user.openPrivateChannel()
      *         .flapMap(channel -> channel.sendMessage(content))
-     *         .queue(null, new ErrorHandler().handle(
-     *             (ex) -> context.sendMessage("Cannot send direct message, please enable direct messages from server members!").queue(),
-     *             EnumSet.of(ErrorResponse.CANNOT_SEND_TO_USER)));
+     *         .queue(null, new ErrorHandler()
+     *             .handle(EnumSet.of(ErrorResponse.CANNOT_SEND_TO_USER),
+     *                 (ex) -> context.sendMessage("Cannot send direct message, please enable direct messages from server members!").queue()));
      * }
      * }</pre>
      *
-     * @param  handler
-     *         The alternative handler
      * @param  errorResponses
      *         The {@link ErrorResponse ErrorResponses} to match
+     * @param  handler
+     *         The alternative handler
      *
      * @throws IllegalArgumentException
      *         If provided with null
@@ -263,10 +263,10 @@ public class ErrorHandler implements Consumer<Throwable>
      * @return This ErrorHandler with the applied handler
      */
     @Nonnull
-    public ErrorHandler handle(@Nonnull Consumer<? super ErrorResponseException> handler, @Nonnull Collection<ErrorResponse> errorResponses)
+    public ErrorHandler handle(@Nonnull Collection<ErrorResponse> errorResponses, @Nonnull Consumer<? super ErrorResponseException> handler)
     {
         Checks.notNull(handler, "Handler");
-        Checks.notNull(errorResponses, "EnumSet");
+        Checks.noneNull(errorResponses, "ErrorResponse");
         return handle(ErrorResponseException.class, (it) -> errorResponses.contains(it.getErrorResponse()), handler);
     }
 
@@ -335,6 +335,39 @@ public class ErrorHandler implements Consumer<Throwable>
         return handle(
             (it) -> clazz.isInstance(it) && condition.test(clazz.cast(it)),
             (ex) -> handler.accept(clazz.cast(ex)));
+    }
+
+    /**
+     * Handle specific throwable types.
+     * <br>This will apply the specified handler if the throwable is of the specified type. The check is done using {@link Class#isInstance(Object)}.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public static void logErrorResponse(RestAction<?> action) {
+     *     action.queue(null, new ErrorHandler()
+     *         .handle(Arrays.asList(Throwable.class),
+     *             (ex) -> ex instanceof Error,
+     *             (ex) -> ex.printStackTrace()));
+     * }
+     * }</pre>
+     *
+     * @param  clazz
+     *         The throwable types
+     * @param  condition
+     *         Additional condition that must apply to use this handler, or null to apply no additional condition
+     * @param  handler
+     *         The alternative handler
+     *
+     * @return This ErrorHandler with the applied handler
+     */
+    @Nonnull
+    public ErrorHandler handle(@Nonnull Collection<Class<?>> clazz, @Nullable Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler)
+    {
+        Checks.notNull(clazz, "Class");
+        Checks.notNull(handler, "Handler");
+        List<Class<?>> classes = new ArrayList<>(clazz);
+        Predicate<? super Throwable> check = (it) -> classes.stream().anyMatch(c -> c.isInstance(it)) && (condition == null || condition.test(it));
+        return handle(check, handler);
     }
 
     /**
