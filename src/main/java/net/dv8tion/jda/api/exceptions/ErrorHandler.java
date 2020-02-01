@@ -48,6 +48,8 @@ import java.util.function.Predicate;
  * @see ErrorResponse
  * @see ErrorResponseException
  * @see RestAction#queue(Consumer, Consumer)
+ *
+ * @since 4.2.0
  */
 public class ErrorHandler implements Consumer<Throwable>
 {
