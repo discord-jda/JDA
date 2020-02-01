@@ -1234,6 +1234,8 @@ public interface Message extends ISnowflake, Formattable
      *         If provided with null
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1266,6 +1268,8 @@ public interface Message extends ISnowflake, Formattable
      *         If provided with null
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue

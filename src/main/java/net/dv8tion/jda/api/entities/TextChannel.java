@@ -390,6 +390,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         If provided with null
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -422,6 +424,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         If provided with null
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -464,6 +468,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         If provided with null
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -499,6 +505,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         If provided with null
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue

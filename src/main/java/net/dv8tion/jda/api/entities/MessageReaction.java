@@ -378,6 +378,8 @@ public class MessageReaction
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue

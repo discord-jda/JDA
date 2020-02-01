@@ -28,6 +28,8 @@ import javax.annotation.Nonnull;
  * Indicates that all reactions for a specific emoji/emote were removed by a moderator.
  *
  * <p>Can be used to detect which emoji/emote was removed.
+ *
+ * @since  4.2.0
  */
 public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildEvent
 {
