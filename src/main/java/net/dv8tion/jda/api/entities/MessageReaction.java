@@ -391,7 +391,7 @@ public class MessageReaction
             throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
 
         String code = getReactionCode();
-        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(channel.getId(), code);
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(channel.getId(), getMessageId(), code);
         return new RestActionImpl<>(getJDA(), route);
     }
 
