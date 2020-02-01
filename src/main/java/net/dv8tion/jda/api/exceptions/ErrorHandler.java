@@ -40,8 +40,8 @@ import java.util.function.Predicate;
  *         .queue(null, new ErrorHandler()
  *             .ignore(ErrorResponse.UNKNOWN_MESSAGE) // if delete fails that's fine
  *             .handle(
- *                 (e) -> context.sendMessage("Failed to send message, you block private messages!").queue(),
- *                 ErrorResponse.CANNOT_SEND_TO_USER)); // Fallback handling for blocked messages
+ *                 ErrorResponse.CANNOT_SEND_TO_USER,  // Fallback handling for blocked messages
+ *                 (e) -> context.sendMessage("Failed to send message, you block private messages!").queue()));
  * }
  * }</pre>
  *
@@ -363,7 +363,7 @@ public class ErrorHandler implements Consumer<Throwable>
     @Nonnull
     public ErrorHandler handle(@Nonnull Collection<Class<?>> clazz, @Nullable Predicate<? super Throwable> condition, @Nonnull Consumer<? super Throwable> handler)
     {
-        Checks.notNull(clazz, "Class");
+        Checks.noneNull(clazz, "Class");
         Checks.notNull(handler, "Handler");
         List<Class<?>> classes = new ArrayList<>(clazz);
         Predicate<? super Throwable> check = (it) -> classes.stream().anyMatch(c -> c.isInstance(it)) && (condition == null || condition.test(it));
