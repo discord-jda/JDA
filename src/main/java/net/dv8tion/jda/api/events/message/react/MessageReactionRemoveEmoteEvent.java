@@ -23,6 +23,11 @@ import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that all reactions for a specific emoji/emote were removed by a moderator.
+ *
+ * <p>Can be used to detect which emoji/emote was removed.
+ */
 public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
 {
     private final MessageReaction reaction;
@@ -33,12 +38,23 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
         this.reaction = reaction;
     }
 
+    /**
+     * The {@link MessageReaction} that was removed.
+     *
+     * @return The removed MessageReaction
+     */
     @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote}.
+     * <br>Shortcut for {@code getReaction().getReactionEmote()}.
+     *
+     * @return The ReactionEmote
+     */
     @Nonnull
     public MessageReaction.ReactionEmote getReactionEmote()
     {

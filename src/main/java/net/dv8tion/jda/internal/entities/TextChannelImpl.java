@@ -459,6 +459,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return new RestActionImpl<>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode)
     {
@@ -471,6 +472,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return new RestActionImpl<>(getJDA(), route);
     }
 
+    @Nonnull
     @Override
     public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote)
     {

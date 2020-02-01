@@ -354,6 +354,31 @@ public class MessageReaction
         return new RestActionImpl<>(getJDA(), route);
     }
 
+    /**
+     * Removes this entire reaction from the message.
+     * <br>Unlike {@link #removeReaction(User)}, which removes the reaction of a single user, this will remove the reaction
+     * completely.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode emoji doesn't exist. Try using one of the example formats.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @throws UnsupportedOperationException
+     *         If this reaction happened in a private channel
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     public RestAction<Void> clearReactions()

@@ -24,6 +24,11 @@ import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that all reactions for a specific emoji/emote were removed by a moderator.
+ *
+ * <p>Can be used to detect which emoji/emote was removed.
+ */
 public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildEvent
 {
     private final TextChannel channel;
@@ -39,29 +44,55 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildEvent
         this.messageId = messageId;
     }
 
+    /**
+     * The {@link TextChannel} where the reaction happened
+     *
+     * @return The TextChannel
+     */
     @Nonnull
     public TextChannel getChannel()
     {
         return channel;
     }
 
+    /**
+     * The {@link MessageReaction} that was removed.
+     *
+     * @return The removed MessageReaction
+     */
     @Nonnull
     public MessageReaction getReaction()
     {
         return reaction;
     }
 
+    /**
+     * The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote}.
+     * <br>Shortcut for {@code getReaction().getReactionEmote()}.
+     *
+     * @return The ReactionEmote
+     */
     @Nonnull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();
     }
 
+    /**
+     * The id of the affected message
+     *
+     * @return The id of the message
+     */
     public long getMessageIdLong()
     {
         return messageId;
     }
 
+    /**
+     * The id of the affected message
+     *
+     * @return The id of the message
+     */
     @Nonnull
     public String getMessageId()
     {
