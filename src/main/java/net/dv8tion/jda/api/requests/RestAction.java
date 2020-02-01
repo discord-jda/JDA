@@ -152,6 +152,9 @@ import java.util.function.Predicate;
  *        The generic response type for this RestAction
  *
  * @since 3.0
+ *
+ * @see   net.dv8tion.jda.api.exceptions.ErrorHandler
+ * @see   net.dv8tion.jda.api.exceptions.ErrorResponseException
  */
 public interface RestAction<T>
 {
@@ -343,6 +346,7 @@ public interface RestAction<T>
      *         encounters an exception at its execution point. (can be null to use default)
      *
      * @see    #submit()
+     * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
 
@@ -875,6 +879,8 @@ public interface RestAction<T>
      *
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
+     *
+     * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     @Nonnull
     default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
@@ -974,6 +980,8 @@ public interface RestAction<T>
      *
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
+     *
+     * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     @Nonnull
     default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure, @Nullable ScheduledExecutorService executor)

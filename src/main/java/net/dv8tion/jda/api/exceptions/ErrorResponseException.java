@@ -31,6 +31,8 @@ import java.util.function.Consumer;
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.api.requests.RestAction RestAction}
  * <br>It holds an {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponse}
+ *
+ * @see net.dv8tion.jda.api.exceptions.ErrorHandler
  */
 public class ErrorResponseException extends RuntimeException
 {
