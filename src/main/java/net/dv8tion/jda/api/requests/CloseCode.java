@@ -39,7 +39,7 @@ public enum CloseCode
     SESSION_TIMEOUT(      4009, "Your session timed out. Reconnect and start a new one."),
     INVALID_SHARD(        4010, "You sent an invalid shard when identifying.", false),
     SHARDING_REQUIRED(    4011, "The session would have handled too many guilds - you are required to shard your connection in order to connect.", false),
-    INVALID_INTENTS(      4012, "Invalid intents", false);
+    INVALID_INTENTS(      4012, "Invalid intents. Your bot might not be eligible to request a privileged intent such as GUILD_PRESENCES or GUILD_MEMBERS.", false);
 
     private final int code;
     private final boolean isReconnect;
