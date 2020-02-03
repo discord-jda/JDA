@@ -419,6 +419,16 @@ public class GuildSetupController
 
     private void tryChunking()
     {
+        if (api.isIntents())
+        {
+            // can only send a single guild id for this
+            chunkingGuilds.forEach((id) -> {
+                sendChunkRequest(id);
+                return true;
+            });
+            return;
+        }
+
         if (chunkingGuilds.size() >= 50)
         {
             // request chunks

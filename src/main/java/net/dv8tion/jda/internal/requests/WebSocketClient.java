@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.CloseCode;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
@@ -618,7 +617,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             //Used to make the READY event be given
             // as compressed binary data when over a certain size. TY @ShadowLordAlpha
             //.put("compress", true);
-        if (gatewayIntents != GatewayIntent.ALL_INTENTS)
+        if (api.isIntents())
             payload.put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()

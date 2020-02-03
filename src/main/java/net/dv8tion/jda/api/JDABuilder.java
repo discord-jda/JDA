@@ -1164,8 +1164,12 @@ public class JDABuilder
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
-        jda.setChunkingFilter(chunkingFilter);
         jda.setMemberCachePolicy(memberCachePolicy);
+        // We can only do member chunking with the GUILD_MEMBERS intent
+        if ((intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0)
+            jda.setChunkingFilter(ChunkingFilter.NONE);
+        else
+            jda.setChunkingFilter(chunkingFilter);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);

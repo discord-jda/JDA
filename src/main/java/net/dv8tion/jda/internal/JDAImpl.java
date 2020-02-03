@@ -185,6 +185,11 @@ public class JDAImpl implements JDA
         return (client.getGatewayIntents() & raw) == raw;
     }
 
+    public boolean isIntents()
+    {
+        return client.getGatewayIntents() != GatewayIntent.ALL_INTENTS;
+    }
+
     public int getLargeThreshold()
     {
         return sessionConfig.getLargeThreshold();
