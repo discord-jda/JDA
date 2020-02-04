@@ -2311,7 +2311,7 @@ public interface Guild extends ISnowflake
 //
 //    @Nonnull
 //    @CheckReturnValue
-//    CompletableFuture<List<Member>> queryMembers(@Nonnull String prefix, int limit);
+//    CompletableFuture<List<Member>> retrieveMembersByName(@Nonnull String prefix, int limit);
 
     /* From GuildController */
 
