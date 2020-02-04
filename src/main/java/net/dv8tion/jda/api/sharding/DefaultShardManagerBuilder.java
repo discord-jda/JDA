@@ -135,6 +135,7 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Creates a DefaultShardManagerBuilder with recommended default settings.
+     * <br>Note that these defaults can potentially change in the future.
      *
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
@@ -158,6 +159,7 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Creates a DefaultShardManagerBuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
      *
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
@@ -184,6 +186,7 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Creates a DefaultShardManagerBuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
      *
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
