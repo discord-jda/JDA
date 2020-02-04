@@ -2306,6 +2306,13 @@ public interface Guild extends ISnowflake
         return retrieveMemberById(getOwnerIdLong(), update);
     }
 
+//    TODO: Wait for a "done" payload to be added to the api
+//    TODO: Without that we cannot make a good UX since we would be required to use a timeout instead.
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    CompletableFuture<List<Member>> queryMembers(@Nonnull String prefix, int limit);
+
     /* From GuildController */
 
     /**

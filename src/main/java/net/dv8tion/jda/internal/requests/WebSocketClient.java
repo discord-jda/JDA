@@ -80,6 +80,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Compression compression;
     protected final int gatewayIntents;
+    protected final MemberChunkManager chunkManager;
 
     public WebSocket socket;
     protected String sessionId = null;
@@ -123,6 +124,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.shardInfo = api.getShardInfo();
         this.compression = compression;
         this.gatewayIntents = gatewayIntents;
+        this.chunkManager = new MemberChunkManager(this);
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
         setupHandlers();
@@ -161,6 +163,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public int getGatewayIntents()
     {
         return gatewayIntents;
+    }
+
+    public MemberChunkManager getChunkManager()
+    {
+        return chunkManager;
     }
 
     public void ready()
@@ -677,6 +684,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getFakePrivateChannelMap().clear();
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
+        chunkManager.clear();
     }
 
     protected void updateAudioManagerReferences()

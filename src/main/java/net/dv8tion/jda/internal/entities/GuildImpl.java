@@ -59,6 +59,7 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.UncheckedIOException;
@@ -1488,6 +1489,34 @@ public class GuildImpl implements Guild
     }
 
     // -- Member Tracking --
+
+    @Nonnull
+    @CheckReturnValue
+    public CompletableFuture<List<Member>> queryMembers(@Nonnull String prefix, int limit)
+    {
+        Checks.notEmpty(prefix, "Prefix");
+        Checks.positive(limit, "Limit");
+        Checks.check(limit <= 100, "Limit must not be greater than 100");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+        return chunkManager.chunkGuild(id, prefix, limit)
+                .thenApplyAsync((response) -> {
+                    DataArray memberArray = response.getArray("members");
+                    List<Member> memberList = new ArrayList<>(memberArray.length());
+                    if (memberArray.isEmpty())
+                        return memberList;
+
+                    EntityBuilder entityBuilder = api.getEntityBuilder();
+                    for (int i = 0; i< memberArray.length(); i++)
+                    {
+                        DataObject json = memberArray.getObject(i);
+                        MemberImpl member = entityBuilder.createMember(this, json);
+                        entityBuilder.updateMemberCache(member);
+                        memberList.add(member);
+                    }
+
+                    return memberList;
+                });
+    }
 
     public void startChunking()
     {
