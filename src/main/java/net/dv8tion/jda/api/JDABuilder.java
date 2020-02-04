@@ -161,7 +161,7 @@ public class JDABuilder
         this.accountType = AccountType.BOT;
         this.listeners = new LinkedList<>();
         this.token = token;
-        this.intents = intents;
+        this.intents = 1 | intents;
     }
 
     /**

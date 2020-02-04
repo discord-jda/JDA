@@ -130,7 +130,7 @@ public class  DefaultShardManagerBuilder
     private DefaultShardManagerBuilder(@Nullable String token, int intents)
     {
         this.token = token;
-        this.intents = intents;
+        this.intents = 1 | intents;
     }
 
     /**
