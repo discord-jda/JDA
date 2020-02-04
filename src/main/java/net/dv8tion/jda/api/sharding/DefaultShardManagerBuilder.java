@@ -37,6 +37,7 @@ import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
@@ -91,9 +92,16 @@ public class  DefaultShardManagerBuilder
     /**
      * Creates a completely empty DefaultShardManagerBuilder.
      * <br>You need to set the token using
-     * {@link net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#build() build()}.
+     * {@link #setToken(String) setToken(String)}
+     * before calling {@link #build() build()}.
+     *
+     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
+     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
+     * the gateway intents. Use {@link #create(EnumSet)} instead.
      */
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
     public DefaultShardManagerBuilder() {}
 
     /**
@@ -106,10 +114,195 @@ public class  DefaultShardManagerBuilder
      *
      * @param token
      *        The login token
+     *
+     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
+     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
+     * the gateway intents. Use {@link #create(String, EnumSet)} instead.
      */
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
     public DefaultShardManagerBuilder(@Nonnull String token)
     {
         this.setToken(token);
+    }
+
+    private DefaultShardManagerBuilder(@Nullable String token, int intents)
+    {
+        this.token = token;
+        this.intents = intents;
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with recommended default settings.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledIntents(EnumSet)} is set to {@link GatewayIntent#DEFAULT}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     *
+     * @return The new DefaultShardManagerBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder createDefault(@Nullable String token)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT)
+                .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .setChunkingFilter(ChunkingFilter.NONE);
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with low memory profile settings.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intents
+     *         The gateway intents to use
+     *
+     * @return The new DefaultShardManagerBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents))
+                .setMemberCachePolicy(MemberCachePolicy.NONE)
+                .setChunkingFilter(ChunkingFilter.NONE)
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with low memory profile settings.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intent
+     *         The first intent to use
+     * @param  intents
+     *         The other gateway intents to use
+     *
+     * @return The new DefaultShardManagerBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents))
+                .setMemberCachePolicy(MemberCachePolicy.NONE)
+                .setChunkingFilter(ChunkingFilter.NONE)
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+    }
+
+    /**
+     * Creates a completely empty DefaultShardManagerBuilder with the predefined intents.
+     * <br>You can use {@link #create(EnumSet) DefaultShardManagerBuilder.create(EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * <br>If you use this, you need to set the token using
+     * {@link #setToken(String) setToken(String)}
+     * before calling {@link #build() build()}
+     *
+     * @param intent
+     *        The first intent
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The DefaultShardManagerBuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder create(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return create(null, intent, intents);
+    }
+
+    /**
+     * Creates a completely empty DefaultShardManagerBuilder with the predefined intents.
+     *
+     * <br>If you use this, you need to set the token using
+     * {@link #setToken(String) setToken(String)} before calling {@link #build() build()}
+     *
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The DefaultShardManagerBuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder create(@Nonnull EnumSet<GatewayIntent> intents)
+    {
+        return create(null, intents);
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with the predefined token.
+     * <br>You can use {@link #create(String, EnumSet) DefaultShardManagerBuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * @param token
+     *        The bot token to use
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The DefaultShardManagerBuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder create(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents));
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with the predefined token.
+     *
+     * @param token
+     *        The bot token to use
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The DefaultShardManagerBuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder create(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents));
     }
 
     /**

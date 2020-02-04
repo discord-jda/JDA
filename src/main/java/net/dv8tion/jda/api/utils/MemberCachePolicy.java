@@ -72,6 +72,11 @@ public interface MemberCachePolicy
         GuildVoiceState voiceState = member.getVoiceState();
         return voiceState != null && voiceState.getChannel() != null;
     };
+    /**
+     * The default policy to use with {@link net.dv8tion.jda.api.JDABuilder#createDefault(String)}.
+     * <br>This is identical to {@code VOICE.or(OWNER)}.
+     */
+    MemberCachePolicy DEFAULT = VOICE.or(OWNER);
 
     /**
      * Idempotent (ideally pure) function which decided whether to cache the provided member or not.

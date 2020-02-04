@@ -37,6 +37,7 @@ import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
@@ -95,8 +96,15 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
      *
+     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
+     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
+     * the gateway intents. Use {@link #create(EnumSet)} instead.
+     *
      * @see #JDABuilder(String)
      */
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("JDABuilder.create(GatewayIntent...)")
     public JDABuilder()
     {
         this(AccountType.BOT);
@@ -108,8 +116,15 @@ public class JDABuilder
      * @param token
      *        The bot token to use
      *
+     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
+     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
+     * the gateway intents. Use {@link #create(String, EnumSet)} instead.
+     *
      * @see   #setToken(String)
      */
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("JDABuilder.create(String, GatewayIntent...)")
     public JDABuilder(@Nullable String token)
     {
         this();
@@ -128,10 +143,10 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *         If the given AccountType is {@code null}
      *
-     * @deprecated This will be removed in a future version, replace with {@link #JDABuilder(String)}
+     * @deprecated This will be removed in a future version, replace with {@link #create(String, EnumSet)}
      */
     @Deprecated
-    @ReplaceWith("new JDABuilder(String)")
+    @ReplaceWith("JDABuilder.create(String)")
     @DeprecatedSince("4.2.0")
     public JDABuilder(@Nonnull AccountType accountType)
     {
@@ -139,6 +154,187 @@ public class JDABuilder
 
         this.accountType = accountType;
         this.listeners = new LinkedList<>();
+    }
+
+    private JDABuilder(@Nullable String token, int intents)
+    {
+        this.accountType = AccountType.BOT;
+        this.listeners = new LinkedList<>();
+        this.token = token;
+        this.intents = intents;
+    }
+
+    /**
+     * Creates a JDABuilder with recommended default settings.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledIntents(EnumSet)} is set to {@link GatewayIntent#DEFAULT}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createDefault(@Nullable String token)
+    {
+        return new JDABuilder(token, GatewayIntent.DEFAULT)
+                .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .setChunkingFilter(ChunkingFilter.NONE);
+    }
+
+    /**
+     * Creates a JDABuilder with low memory profile settings.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intents
+     *         The gateway intents to use
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createLight(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intents))
+                .setMemberCachePolicy(MemberCachePolicy.NONE)
+                .setChunkingFilter(ChunkingFilter.NONE)
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+    }
+
+    /**
+     * Creates a JDABuilder with low memory profile settings.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intent
+     *         The first intent to use
+     * @param  intents
+     *         The other gateway intents to use
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents))
+                .setMemberCachePolicy(MemberCachePolicy.NONE)
+                .setChunkingFilter(ChunkingFilter.NONE)
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+    }
+
+    /**
+     * Creates a completely empty JDABuilder with the predefined intents.
+     * <br>You can use {@link #create(EnumSet) JDABuilder.create(EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * <br>If you use this, you need to set the token using
+     * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
+     * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
+     *
+     * @param intent
+     *        The first intent
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return create(null, intent, intents);
+    }
+
+    /**
+     * Creates a completely empty JDABuilder with the predefined intents.
+     *
+     * <br>If you use this, you need to set the token using
+     * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
+     * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
+     *
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nonnull EnumSet<GatewayIntent> intents)
+    {
+        return create(null, intents);
+    }
+
+    /**
+     * Creates a JDABuilder with the predefined token.
+     * <br>You can use {@link #create(String, EnumSet) JDABuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * @param token
+     *        The bot token to use
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents));
+    }
+
+    /**
+     * Creates a JDABuilder with the predefined token.
+     *
+     * @param token
+     *        The bot token to use
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intents));
     }
 
     /**

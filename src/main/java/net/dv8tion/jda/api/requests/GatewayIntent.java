@@ -94,6 +94,11 @@ public enum GatewayIntent
      */
     public static final int ALL_INTENTS = 1 | getRaw(EnumSet.allOf(GatewayIntent.class));
 
+    /**
+     * Bitmask with disabled GUILD_MEMBERS and GUILD_PRESENCES intents
+     */
+    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES);
+
     private final int rawValue;
     private final int offset;
 

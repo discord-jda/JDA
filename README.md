@@ -70,12 +70,8 @@ Note that this method is blocking and will cause the thread to sleep until start
 **Example**:
 
 ```java
-JDA jda = new JDABuilder("token").build();
+JDA jda = JDABuilder.createDefault("token").build();
 ```
-
-**Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
-You can change this to use `AccountType.CLIENT`, however you will be risking account termination.
-Use `new JDABuilder(AccountType)` to change to a different account type.
 
 ### Configuration
 
@@ -85,7 +81,7 @@ Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of config
 
 ```java
 public static void main(String[] args) {
-    JDABuilder builder = new JDABuilder(args[0]);
+    JDABuilder builder = JDABuilder.createDefault(args[0]);
     
     // Disable parts of the cache
     builder.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE));
@@ -152,7 +148,7 @@ public class ReadyListener implements EventListener
             throws LoginException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
-        JDA jda = new JDABuilder("token")
+        JDA jda = JDABuilder.createDefault("token")
             .addEventListeners(new ReadyListener())
             .build();
 
@@ -177,7 +173,7 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
             throws LoginException
     {
-        JDA jda = new JDABuilder("token").build();
+        JDA jda = JDABuilder.createDefault("token").build();
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
@@ -209,7 +205,7 @@ public class Bot extends ListenerAdapter
 {
     public static void main(String[] args) throws LoginException
     {
-        new JDABuilder(args[0])
+        JDABuilder.createDefault(args[0])
             .addEventListeners(new Bot())
             .setActivity(Activity.playing("Type !ping"))
             .build();
@@ -297,7 +293,7 @@ Since version **3.4.0** JDA provides a `ShardManager` which automates this build
 ```java
 public static void main(String[] args) throws Exception
 {
-    JDABuilder shardBuilder = new JDABuilder(args[0]);
+    JDABuilder shardBuilder = JDABuilder.createDefault(args[0]);
     //register your listeners here using shardBuilder.addEventListeners(...)
     shardBuilder.addEventListeners(new MessageListener());
     for (int i = 0; i < 10; i++)
@@ -314,8 +310,7 @@ public static void main(String[] args) throws Exception
 ```java
 public static void main(String[] args) throws Exception
 {
-    DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
-    builder.setToken(args[0]);
+    DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(args[0]);
     builder.addEventListeners(new MessageListener());
     builder.build();
 }
@@ -601,7 +596,7 @@ fun main() {
            .filter { it.message.contentRaw == "!ping" }
            .subscribe { it.channel.sendMessage("Pong!").queue() }
 
-    val jda = JDABuilder(BOT_TOKEN)
+    val jda = JDABuilder.createDefault(BOT_TOKEN)
                .setEventManager(manager)
                .build()
 }
