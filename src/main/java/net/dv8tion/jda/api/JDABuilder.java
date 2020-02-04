@@ -172,6 +172,7 @@ public class JDABuilder
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
+     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
      * @param  token
@@ -185,7 +186,8 @@ public class JDABuilder
     {
         return new JDABuilder(token, GatewayIntent.DEFAULT)
                 .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
-                .setChunkingFilter(ChunkingFilter.NONE);
+                .setChunkingFilter(ChunkingFilter.NONE)
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY));
     }
 
     /**
