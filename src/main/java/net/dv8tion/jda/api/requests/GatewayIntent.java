@@ -25,6 +25,28 @@ import java.util.EnumSet;
 /**
  * Flags which enable or disable specific events from the discord gateway.
  *
+ * <p>The way to use these is very simple. Go through each intent in the following list and decide whether your bot
+ * will need these events or not.
+ *
+ * <ol>
+ *     <li>GUILD_MEMBERS This is a <b>whitelisted</b> gateway intent that is used to update user information and join/leaves (including kicks)</li>
+ *     <li>GUILD_BANS This will only track guild bans and unbans</li>
+ *     <li>GUILD_EMOJIS This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
+ *     <li>GUILD_INVITES This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
+ *     <li>GUILD_VOICE_STATES Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
+ *     <li>GUILD_PRESENCES This is a <b>whitelisted</b> gateway intent this is only used to track activity and online-status of a user.</li>
+ *     <li>GUILD_MESSAGES This is used to receive incoming messages in guilds (servers), most bots will need this for commands.</li>
+ *     <li>GUILD_MESSAGE_REACTIONS This is used to track reactions on messages in guilds (servers). Can be useful to make a paginated embed or reaction role management.</li>
+ *     <li>GUILD_MESSAGE_TYPING This is used to track when a user starts typing in guilds (servers). Almost no bot will have a use for this.</li>
+ *     <li>DIRECT_MESSAGES This is used to receive incoming messages in private channels (DMs). You can still send private messages without this intent.</li>
+ *     <li>DIRECT_MESSAGE_REACTIONS This is used to track reactions on messages in private channels (DMs).</li>
+ *     <li>DIRECT_MESSAGE_TYPING This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
+ * </ol>
+ *
+ * If an intent is not specifically mentioned to be <b>whitelisted</b>, it is not whitelisted.
+ * To get whitelisted you either need to contact discord support (for bots in more than 100 guilds)
+ * or enable it in the developer dashboard of your application.
+ *
  * @see net.dv8tion.jda.api.JDABuilder#setDisabledIntents(GatewayIntent, GatewayIntent...)
  * @see net.dv8tion.jda.api.JDABuilder#setEnabledIntents(GatewayIntent, GatewayIntent...)
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setDisabledIntents(GatewayIntent, GatewayIntent...)
@@ -45,14 +67,14 @@ public enum GatewayIntent
      * Emote add/update/delete events.
      */
     GUILD_EMOJIS(3),
-    /**
-     * Integration events. (unused)
-     */
-    GUILD_INTEGRATIONS(4),
-    /**
-     * Webhook events. (unused)
-     */
-    GUILD_WEBHOOKS(5),
+//    /**
+//     * Integration events. (unused)
+//     */
+//    GUILD_INTEGRATIONS(4),
+//    /**
+//     * Webhook events. (unused)
+//     */
+//    GUILD_WEBHOOKS(5),
     /**
      * Invite events.
      */
@@ -96,9 +118,16 @@ public enum GatewayIntent
     public static final int ALL_INTENTS = 1 | getRaw(EnumSet.allOf(GatewayIntent.class));
 
     /**
-     * Bitmask with disabled GUILD_MEMBERS and GUILD_PRESENCES intents
+     * All intents with some disabled:
+     *
+     * <ul>
+     *     <li>GUILD_MEMBERS (because its whitelisted)</li>
+     *     <li>GUILD_PRESENCES (because its whitelisted)</li>
+     *     <li>GUILD_MESSAGE_TYPING because its not useful for most bots</li>
+     *     <li>DIRECT_MESSAGE_TYPING because its not useful for most bots</li>
+     * </ul>
      */
-    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES);
+    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
 
     private final int rawValue;
     private final int offset;

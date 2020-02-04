@@ -162,6 +162,32 @@ public class  DefaultShardManagerBuilder
      * <br>Note that these defaults can potentially change in the future.
      *
      * <ul>
+     *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     *
+     * @return The new DefaultShardManagerBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder createLight(@Nullable String token)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT)
+                .setMemberCachePolicy(MemberCachePolicy.NONE)
+                .setChunkingFilter(ChunkingFilter.NONE)
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
