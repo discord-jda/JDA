@@ -29,12 +29,12 @@ import java.util.EnumSet;
  * will need these events or not.
  *
  * <ol>
- *     <li>GUILD_MEMBERS This is a <b>whitelisted</b> gateway intent that is used to update user information and join/leaves (including kicks)</li>
+ *     <li>GUILD_MEMBERS This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks)</li>
  *     <li>GUILD_BANS This will only track guild bans and unbans</li>
  *     <li>GUILD_EMOJIS This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
  *     <li>GUILD_INVITES This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
  *     <li>GUILD_VOICE_STATES Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
- *     <li>GUILD_PRESENCES This is a <b>whitelisted</b> gateway intent this is only used to track activity and online-status of a user.</li>
+ *     <li>GUILD_PRESENCES This is a <b>privileged</b> gateway intent this is only used to track activity and online-status of a user.</li>
  *     <li>GUILD_MESSAGES This is used to receive incoming messages in guilds (servers), most bots will need this for commands.</li>
  *     <li>GUILD_MESSAGE_REACTIONS This is used to track reactions on messages in guilds (servers). Can be useful to make a paginated embed or reaction role management.</li>
  *     <li>GUILD_MESSAGE_TYPING This is used to track when a user starts typing in guilds (servers). Almost no bot will have a use for this.</li>
@@ -43,7 +43,7 @@ import java.util.EnumSet;
  *     <li>DIRECT_MESSAGE_TYPING This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
  * </ol>
  *
- * If an intent is not specifically mentioned to be <b>whitelisted</b>, it is not whitelisted.
+ * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use this event.
  * To get whitelisted you either need to contact discord support (for bots in more than 100 guilds)
  * or enable it in the developer dashboard of your application.
  *
@@ -54,9 +54,9 @@ import java.util.EnumSet;
  */
 public enum GatewayIntent
 {
-    //GUILDS(0), we currently don't support this one
+    //GUILDS(0), we currently don't support to disable this one as its required to get a good base cache
     /**
-     * Events which inform us about member update/leave/join of a guild.
+     * <b>PRIVILEGED INTENT</b> Events which inform us about member update/leave/join of a guild.
      */
     GUILD_MEMBERS(1),
     /**
@@ -84,7 +84,7 @@ public enum GatewayIntent
      */
     GUILD_VOICE_STATES(7),
     /**
-     * Presence updates. This is used to lazy load members and update user properties such as name/avatar.
+     * <b>PRIVILEGED INTENT</b> Presence updates. This is used to lazy load members and update user properties such as name/avatar.
      */
     GUILD_PRESENCES(8),
     /**
@@ -121,8 +121,8 @@ public enum GatewayIntent
      * All intents with some disabled:
      *
      * <ul>
-     *     <li>GUILD_MEMBERS (because its whitelisted)</li>
-     *     <li>GUILD_PRESENCES (because its whitelisted)</li>
+     *     <li>GUILD_MEMBERS (because its privileged)</li>
+     *     <li>GUILD_PRESENCES (because its privileged)</li>
      *     <li>GUILD_MESSAGE_TYPING because its not useful for most bots</li>
      *     <li>DIRECT_MESSAGE_TYPING because its not useful for most bots</li>
      * </ul>

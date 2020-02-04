@@ -190,7 +190,7 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
      * </ul>
      *
      * @param  token
@@ -217,7 +217,7 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
      * </ul>
      *
      * @param  token
@@ -1543,11 +1543,10 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Configures which events will be disabled.
-     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
-     * <br>All intents are enabled by default.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
      *
-     * <p>We recommend to not disable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
-     * This intent will disable the leave event which means members will never be removed from cache if they leave the guild.
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * @param  intent
      *         The first intent to disable
@@ -1575,11 +1574,10 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Configures which events will be disabled.
-     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
-     * <br>All intents are enabled by default.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
      *
-     * <p>We recommend to not disable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
-     * This intent will disable the leave event which means members will never be removed from cache if they leave the guild.
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * @param  intents
      *         The intents to disable (default: none)
@@ -1601,11 +1599,10 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Configures which events will be enabled.
-     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
-     * <br>All intents are enabled by default.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
      *
-     * <p>We recommend to enable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
-     * This intent will enable the leave event which removes members will from cache if they leave the guild.
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * @param  intent
      *         The intent to enable
@@ -1633,11 +1630,10 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Configures which events will be enabled.
-     * Bots which did not enable presence updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES}!
-     * <br>All intents are enabled by default.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
      *
-     * <p>We recommend to enable {@link GatewayIntent#GUILD_MEMBERS} if any members are cached by the {@link #setMemberCachePolicy(MemberCachePolicy)}.
-     * This intent will enable the leave event which removes members will from cache if they leave the guild.
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * @param  intents
      *         The intents to enable (default: all)

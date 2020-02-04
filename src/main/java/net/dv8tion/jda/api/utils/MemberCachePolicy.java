@@ -32,6 +32,7 @@ import javax.annotation.Nonnull;
  * <p>When {@link Guild#unloadMembers()} is called, the configured policy will be used to unload any members that the policy
  * has decided not to cache.
  *
+ * @see #DEFAULT
  * @see #NONE
  * @see #ALL
  * @see #OWNER
@@ -56,7 +57,7 @@ public interface MemberCachePolicy
      */
     MemberCachePolicy ALL = (member) -> true;
     /**
-     * Cache owner of the guild.
+     * Cache owner of the guild. This simply checks {@link Member#isOwner()}.
      */
     MemberCachePolicy OWNER = Member::isOwner;
     /**
@@ -75,6 +76,9 @@ public interface MemberCachePolicy
     /**
      * The default policy to use with {@link net.dv8tion.jda.api.JDABuilder#createDefault(String)}.
      * <br>This is identical to {@code VOICE.or(OWNER)}.
+     *
+     * @see #VOICE
+     * @see #OWNER
      */
     MemberCachePolicy DEFAULT = VOICE.or(OWNER);
 
