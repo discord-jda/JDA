@@ -352,10 +352,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
-        if (sessionId == null) //no need to log for resume here
+        if (sessionId == null)
+        {
             LOG.info("Connected to WebSocket");
+            // Log which intents are used on debug level since most people won't know how to use the binary output anyway
+            if (api.isIntents())
+                LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
+        }
         else
+        {
+            // no need to log for resume here
             LOG.debug("Connected to WebSocket");
+        }
         connected = true;
         //reconnectTimeoutS = 2; We will reset this when the session was started successfully (ready/resume)
         messagesSent.set(0);

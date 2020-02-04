@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -153,14 +154,14 @@ public enum GatewayIntent
      * Converts the given intents to a bitmask
      *
      * @param  set
-     *         The {@link EnumSet} of intents
+     *         The {@link Collection} of intents
      *
      * @throws IllegalArgumentException
      *         If null is provided
      *
      * @return The bitmask for this set of intents
      */
-    public static int getRaw(@Nonnull EnumSet<GatewayIntent> set)
+    public static int getRaw(@Nonnull Collection<GatewayIntent> set)
     {
         int raw = 0;
         for (GatewayIntent intent : set)

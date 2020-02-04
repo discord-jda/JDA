@@ -98,7 +98,7 @@ public class JDABuilder
      *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(EnumSet)} instead.
+     * the gateway intents. Use {@link #create(Collection)} instead.
      *
      * @see #JDABuilder(String)
      */
@@ -118,7 +118,7 @@ public class JDABuilder
      *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(String, EnumSet)} instead.
+     * the gateway intents. Use {@link #create(String, Collection)} instead.
      *
      * @see   #setToken(String)
      */
@@ -143,7 +143,7 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *         If the given AccountType is {@code null}
      *
-     * @deprecated This will be removed in a future version, replace with {@link #create(String, EnumSet)}
+     * @deprecated This will be removed in a future version, replace with {@link #create(String, Collection)}
      */
     @Deprecated
     @ReplaceWith("JDABuilder.create(String)")
@@ -166,11 +166,12 @@ public class JDABuilder
 
     /**
      * Creates a JDABuilder with recommended default settings.
+     * <br>Note that these defaults can potentially change in the future.
      *
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledIntents(EnumSet)} is set to {@link GatewayIntent#DEFAULT}</li>
+     *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
      * </ul>
      *
      * @param  token
@@ -189,11 +190,12 @@ public class JDABuilder
 
     /**
      * Creates a JDABuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
      *
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
      * </ul>
      *
      * @param  token
@@ -205,7 +207,7 @@ public class JDABuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder createLight(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    public static JDABuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
         return new JDABuilder(token, GatewayIntent.getRaw(intents))
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
@@ -215,11 +217,12 @@ public class JDABuilder
 
     /**
      * Creates a JDABuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
      *
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@code EnumSet.noneOf(CacheFlag.class)}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
      * </ul>
      *
      * @param  token
@@ -243,7 +246,7 @@ public class JDABuilder
 
     /**
      * Creates a completely empty JDABuilder with the predefined intents.
-     * <br>You can use {@link #create(EnumSet) JDABuilder.create(EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     * <br>You can use {@link #create(Collection) JDABuilder.create(EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
      *
      * <br>If you use this, you need to set the token using
      * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
@@ -287,14 +290,14 @@ public class JDABuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder create(@Nonnull EnumSet<GatewayIntent> intents)
+    public static JDABuilder create(@Nonnull Collection<GatewayIntent> intents)
     {
         return create(null, intents);
     }
 
     /**
      * Creates a JDABuilder with the predefined token.
-     * <br>You can use {@link #create(String, EnumSet) JDABuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     * <br>You can use {@link #create(String, Collection) JDABuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
      *
      * @param token
      *        The bot token to use
@@ -332,7 +335,7 @@ public class JDABuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder create(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    public static JDABuilder create(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
         return new JDABuilder(token, GatewayIntent.getRaw(intents));
     }
@@ -446,7 +449,7 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    MemberCachePolicy
-     * @see    #setEnabledIntents(EnumSet)
+     * @see    #setEnabledIntents(Collection)
      *
      * @since  4.2.0
      */
@@ -1141,7 +1144,7 @@ public class JDABuilder
      *
      * @since  4.1.0
      *
-     * @deprecated This is now superceded by {@link #setDisabledIntents(EnumSet)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     * @deprecated This is now superceded by {@link #setDisabledIntents(Collection)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
      *             To get identical behavior you can do {@code setMemberCachePolicy(VOICE).setDisabledIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_MEMBERS)}
      */
     @Nonnull
@@ -1206,7 +1209,7 @@ public class JDABuilder
      * @since  4.2.0
      */
     @Nonnull
-    public JDABuilder setDisabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    public JDABuilder setDisabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null)
@@ -1264,9 +1267,15 @@ public class JDABuilder
      * @since  4.2.0
      */
     @Nonnull
-    public JDABuilder setEnabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    public JDABuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
-        return setDisabledIntents(intents == null ? EnumSet.allOf(GatewayIntent.class) : EnumSet.complementOf(intents));
+        if (intents == null || intents.isEmpty())
+            setDisabledIntents(EnumSet.allOf(GatewayIntent.class));
+        else if (intents instanceof EnumSet)
+            setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
+        else
+            setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+        return this;
     }
 
     /**

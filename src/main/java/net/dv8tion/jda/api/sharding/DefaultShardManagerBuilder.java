@@ -97,7 +97,7 @@ public class  DefaultShardManagerBuilder
      *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(EnumSet)} instead.
+     * the gateway intents. Use {@link #create(Collection)} instead.
      */
     @Deprecated
     @DeprecatedSince("4.2.0")
@@ -117,7 +117,7 @@ public class  DefaultShardManagerBuilder
      *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(String, EnumSet)} instead.
+     * the gateway intents. Use {@link #create(String, Collection)} instead.
      */
     @Deprecated
     @DeprecatedSince("4.2.0")
@@ -139,7 +139,7 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledIntents(EnumSet)} is set to {@link GatewayIntent#DEFAULT}</li>
+     *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
      * </ul>
      *
      * @param  token
@@ -174,7 +174,7 @@ public class  DefaultShardManagerBuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
         return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents))
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
@@ -212,7 +212,7 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Creates a completely empty DefaultShardManagerBuilder with the predefined intents.
-     * <br>You can use {@link #create(EnumSet) DefaultShardManagerBuilder.create(EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     * <br>You can use {@link #create(Collection) DefaultShardManagerBuilder.create(EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
      *
      * <br>If you use this, you need to set the token using
      * {@link #setToken(String) setToken(String)}
@@ -255,14 +255,14 @@ public class  DefaultShardManagerBuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static DefaultShardManagerBuilder create(@Nonnull EnumSet<GatewayIntent> intents)
+    public static DefaultShardManagerBuilder create(@Nonnull Collection<GatewayIntent> intents)
     {
         return create(null, intents);
     }
 
     /**
      * Creates a DefaultShardManagerBuilder with the predefined token.
-     * <br>You can use {@link #create(String, EnumSet) DefaultShardManagerBuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     * <br>You can use {@link #create(String, Collection) DefaultShardManagerBuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
      *
      * @param token
      *        The bot token to use
@@ -300,7 +300,7 @@ public class  DefaultShardManagerBuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static DefaultShardManagerBuilder create(@Nullable String token, @Nonnull EnumSet<GatewayIntent> intents)
+    public static DefaultShardManagerBuilder create(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
         return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents));
     }
@@ -412,7 +412,7 @@ public class  DefaultShardManagerBuilder
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
      * @see    MemberCachePolicy
-     * @see    #setEnabledIntents(EnumSet)
+     * @see    #setEnabledIntents(Collection)
      *
      * @since  4.2.0
      */
@@ -1562,7 +1562,7 @@ public class  DefaultShardManagerBuilder
      * @since  4.2.0
      */
     @Nonnull
-    public DefaultShardManagerBuilder setDisabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    public DefaultShardManagerBuilder setDisabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
         this.intents = GatewayIntent.ALL_INTENTS;
         if (intents != null)
@@ -1620,9 +1620,15 @@ public class  DefaultShardManagerBuilder
      * @since  4.2.0
      */
     @Nonnull
-    public DefaultShardManagerBuilder setEnabledIntents(@Nullable EnumSet<GatewayIntent> intents)
+    public DefaultShardManagerBuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents)
     {
-        return setDisabledIntents(intents == null ? EnumSet.allOf(GatewayIntent.class) : EnumSet.complementOf(intents));
+        if (intents == null || intents.isEmpty())
+            setDisabledIntents(EnumSet.allOf(GatewayIntent.class));
+        else if (intents instanceof EnumSet)
+            setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
+        else
+            setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+        return this;
     }
 
     /**
