@@ -55,10 +55,9 @@ public class MemberChunkManager
                 .put("limit", Math.min(100, Math.max(1, limit)))
                 .put("query", query);
 
-        CompletableFuture<DataObject> responseHandler = new CompletableFuture<>();
-        ChunkRequest chunkRequest = new ChunkRequest(request, responseHandler);
+        ChunkRequest chunkRequest = new ChunkRequest(guildId, request);
         makeRequest(guildId, request, chunkRequest);
-        return responseHandler;
+        return chunkRequest;
     }
 
     public boolean handleChunk(long guildId, DataObject response)
@@ -66,24 +65,54 @@ public class MemberChunkManager
         //TODO: We currently have no way to detect "no matches found" so the system can lock up here
         boolean[] handled = {false};
         MiscUtil.locked(lock, () -> {
-            if (!requestedChunk.remove(guildId))
-                return;
-            handled[0] = true;
             Queue<ChunkRequest> queue = requests.get(guildId);
-            ChunkRequest chunkRequest = queue.remove();
-            chunkRequest.responseHandler.complete(response);
+            if (!requestedChunk.remove(guildId))
+            {
+                // This request was probably cancelled so try the next one
+                processQueue(guildId, queue);
+                return;
+            }
 
-            if (!queue.isEmpty())
-            {
-                sendChunkRequest(queue.peek().request);
-                requestedChunk.add(guildId);
-            }
-            else
-            {
-                requests.remove(guildId);
-            }
+            handled[0] = true;
+            ChunkRequest chunkRequest = queue.remove();
+            chunkRequest.complete(response);
+
+            processQueue(guildId, queue);
         });
         return handled[0];
+    }
+
+    public void cancelRequest(ChunkRequest request)
+    {
+        MiscUtil.locked(lock, () -> {
+            Queue<ChunkRequest> queue = requests.get(request.guildId);
+            if (queue == null || queue.isEmpty())
+                return;
+
+            boolean removed = queue.removeIf(request::equals);
+            if (removed && request.requestStarted)
+                requestedChunk.remove(request.guildId);
+        });
+    }
+
+    private void processQueue(long guildId, Queue<ChunkRequest> queue)
+    {
+        while (!queue.isEmpty())
+        {
+            ChunkRequest element = queue.peek();
+            if (element.isCancelled())
+            {
+                queue.remove();
+                continue;
+            }
+
+            element.start();
+            sendChunkRequest(element.request);
+            requestedChunk.add(guildId);
+            return;
+        }
+
+        requests.remove(guildId);
     }
 
     private void makeRequest(long guildId, DataObject request, ChunkRequest chunkRequest)
@@ -106,15 +135,28 @@ public class MemberChunkManager
             .put("d", request));
     }
 
-    private class ChunkRequest
+    private class ChunkRequest extends CompletableFuture<DataObject>
     {
+        private final long guildId;
         private final DataObject request;
-        private final CompletableFuture<DataObject> responseHandler;
+        private volatile boolean requestStarted = false;
 
-        public ChunkRequest(DataObject request, CompletableFuture<DataObject> responseHandler)
+        public ChunkRequest(long guildId, DataObject request)
         {
+            this.guildId = guildId;
             this.request = request;
-            this.responseHandler = responseHandler;
+        }
+
+        public void start()
+        {
+            requestStarted = true;
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning)
+        {
+            cancelRequest(this);
+            return super.cancel(mayInterruptIfRunning);
         }
     }
 }
