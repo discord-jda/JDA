@@ -153,7 +153,7 @@ public class  DefaultShardManagerBuilder
     public static DefaultShardManagerBuilder createDefault(@Nullable String token)
     {
         return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT)
-                .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                 .setChunkingFilter(ChunkingFilter.NONE);
     }
 

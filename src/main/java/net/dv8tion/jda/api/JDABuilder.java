@@ -184,7 +184,7 @@ public class JDABuilder
     public static JDABuilder createDefault(@Nullable String token)
     {
         return new JDABuilder(token, GatewayIntent.DEFAULT)
-                .setMemberCachePolicy(MemberCachePolicy.VOICE)
+                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                 .setChunkingFilter(ChunkingFilter.NONE);
     }
 
