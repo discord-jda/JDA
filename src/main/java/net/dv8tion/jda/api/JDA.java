@@ -500,7 +500,6 @@ public interface JDA
         return getAudioManagerCache().asList();
     }
 
-
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.User Users} visible to this JDA session.
@@ -515,6 +514,8 @@ public interface JDA
      * {@link net.dv8tion.jda.api.entities.Guild Guild} with the currently logged in account.
      * <br>This list will never contain duplicates and represents all
      * {@link net.dv8tion.jda.api.entities.User Users} that JDA can currently see.
+     *
+     * <p>This will only check cached users!
      *
      * <p>If the developer is sharding, then only users from guilds connected to the specifically logged in
      * shard will be returned in the List.
@@ -536,6 +537,8 @@ public interface JDA
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
      * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
+     * <p>This will only check cached users!
+     *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
      *
@@ -543,6 +546,8 @@ public interface JDA
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User} with matching id.
+     *
+     * @see    #retrieveUserById(String)
      */
     @Nullable
     default User getUserById(@Nonnull String id)
@@ -554,10 +559,14 @@ public interface JDA
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
      * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
+     * <p>This will only check cached users!
+     *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User} with matching id.
+     *
+     * @see    #retrieveUserById(long)
      */
     @Nullable
     default User getUserById(long id)
@@ -632,6 +641,8 @@ public interface JDA
     /**
      * This immutable returns all {@link net.dv8tion.jda.api.entities.User Users} that have the same username as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.User Users} with the provided name, then this returns an empty list.
+     *
+     * <p>This will only check cached users!
      *
      * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.api.entities.User#getName()}
      *

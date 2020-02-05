@@ -570,8 +570,10 @@ public interface ShardManager
         for (JDA shard : getShardCache())
         {
             api = shard;
+            EnumSet<GatewayIntent> intents = shard.getGatewayIntents();
             User user = shard.getUserById(id);
-            if (user != null)
+            boolean isUpdated = intents.contains(GatewayIntent.GUILD_PRESENCES) || intents.contains(GatewayIntent.GUILD_MEMBERS);
+            if (user != null && isUpdated)
                 return new CompletedRestAction<>(shard, user);
         }
 
@@ -588,6 +590,8 @@ public interface ShardManager
      * <br>Format has to be in the form {@code Username#Discriminator} where the
      * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
      * must be exactly 4 digits.
+     *
+     * <p>This will only check cached users!
      *
      * <p>This only checks users that are known to the currently logged in account (shards). If a user exists
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
@@ -617,6 +621,8 @@ public interface ShardManager
      * <br>Format has to be in the form {@code Username#Discriminator} where the
      * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
      * must be exactly 4 digits.
+     *
+     * <p>This will only check cached users!
      *
      * <p>This only checks users that are known to the currently logged in account (shards). If a user exists
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.

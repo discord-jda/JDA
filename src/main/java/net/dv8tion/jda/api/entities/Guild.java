@@ -587,6 +587,8 @@ public interface Guild extends ISnowflake
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.api.entities.User User} is a member of this Guild.
      *
+     * <p>This will only check cached members!
+     *
      * @param  user
      *         The user to determine whether or not they are a member of this guild.
      *
@@ -608,6 +610,8 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.User User}.
      * <br>If the user is not in this guild, {@code null} is returned.
      *
+     * <p>This will only check cached members!
+     *
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} which to retrieve a related Member object for.
      *
@@ -615,6 +619,8 @@ public interface Guild extends ISnowflake
      *         If the provided user is null
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
+     *
+     * @see    #retrieveMember(User)
      */
     @Nullable
     Member getMember(@Nonnull User user);
@@ -625,6 +631,8 @@ public interface Guild extends ISnowflake
      * <br>This is more efficient that using {@link JDA#getUserById(String)} and {@link #getMember(User)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
+     * <p>This will only check cached members!
+     *
      * @param  userId
      *         The Discord id of the User for which a Member object is requested.
      *
@@ -632,6 +640,8 @@ public interface Guild extends ISnowflake
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
+     *
+     * @see    #retrieveMemberById(String)
      */
     @Nullable
     default Member getMemberById(@Nonnull String userId)
@@ -645,10 +655,14 @@ public interface Guild extends ISnowflake
      * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(User)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
+     * <p>This will only check cached members!
+     *
      * @param  userId
      *         The Discord id of the User for which a Member object is requested.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
+     *
+     * @see    #retrieveBanById(long)
      */
     @Nullable
     default Member getMemberById(long userId)
@@ -663,6 +677,8 @@ public interface Guild extends ISnowflake
      * must be exactly 4 digits.
      * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
      * but the username.
+     *
+     * <p>This will only check cached members!
      *
      * <p>This only checks users that are in this guild. If a user exists
      * with the tag that is not available in the {@link #getMemberCache() Member-Cache} it will not be detected.
@@ -693,6 +709,8 @@ public interface Guild extends ISnowflake
      * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
      * but the username.
      *
+     * <p>This will only check cached members!
+     *
      * <p>This only checks users that are in this guild. If a user exists
      * with the tag that is not available in the {@link #getMemberCache() Member-Cache} it will not be detected.
      * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
@@ -718,12 +736,16 @@ public interface Guild extends ISnowflake
      * A list of all {@link net.dv8tion.jda.api.entities.Member Members} in this Guild.
      * <br>The Members are not provided in any particular order.
      *
+     * <p>This will only check cached members!
+     *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
      * a local variable or use {@link #getMemberCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Immutable list of all members in this Guild.
+     * @return Immutable list of all <b>cached</b> members in this Guild.
+     *
+     * @see    #retrieveMembers()
      */
     @Nonnull
     default List<Member> getMembers()
@@ -736,12 +758,19 @@ public interface Guild extends ISnowflake
      * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getUser()}{@link net.dv8tion.jda.api.entities.User#getName() .getName()}
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
      *
+     * <p>This will only check cached members!
+     *
      * @param  name
      *         The name used to filter the returned Members.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws IllegalArgumentException
+     *         If the provided name is null
+     *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
+     *
+     * @see    #retrieveMembersByName(String)
      */
     @Nonnull
     default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
@@ -753,6 +782,8 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same nickname as the one provided.
      * <br>This compares against {@link Member#getNickname()}. If a Member does not have a nickname, the comparison results as false.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
+     *
+     * <p>This will only check cached members!
      *
      * @param  nickname
      *         The nickname used to filter the returned Members.
@@ -772,11 +803,15 @@ public interface Guild extends ISnowflake
      * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
      *
+     * <p>This will only check cached members!
      *
      * @param  name
      *         The name used to filter the returned Members.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name is null
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
      */
@@ -787,9 +822,10 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all
-     * {@link net.dv8tion.jda.api.entities.Role Roles} provided.
+     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all {@link net.dv8tion.jda.api.entities.Role Roles} provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
+     *
+     * <p>This will only check cached members!
      *
      * @param  roles
      *         The {@link net.dv8tion.jda.api.entities.Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
@@ -807,9 +843,10 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all provided
-     * {@link net.dv8tion.jda.api.entities.Role Roles}.
+     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all provided {@link net.dv8tion.jda.api.entities.Role Roles}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
+     *
+     * <p>This will only check cached members!
      *
      * @param  roles
      *         The {@link net.dv8tion.jda.api.entities.Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
@@ -831,6 +868,8 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.Member Members} of this Guild.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.MemberCacheView MemberCacheView}
+     *
+     * @see    #retrieveMembers()
      */
     @Nonnull
     MemberCacheView getMemberCache();
