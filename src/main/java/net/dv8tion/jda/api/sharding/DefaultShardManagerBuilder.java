@@ -160,6 +160,67 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * Creates a DefaultShardManagerBuilder with recommended default settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intent
+     *         The intent to enable
+     * @param  intents
+     *         Any other intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null intents
+     *
+     * @return The new DefaultShardManagerBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder createDefault(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        return createDefault(token, EnumSet.of(intent, intents));
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with recommended default settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intents
+     *         The intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null intents
+     *
+     * @return The new DefaultShardManagerBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents))
+                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
+                .setChunkingFilter(ChunkingFilter.NONE)
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY));
+    }
+
+    /**
      * Creates a DefaultShardManagerBuilder with low memory profile settings.
      * <br>Note that these defaults can potentially change in the future.
      *
@@ -1567,8 +1628,8 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setDisabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        Checks.notNull(intent, "Intents");
-        Checks.notNull(intents, "Intents");
+        Checks.notNull(intent, "Intent");
+        Checks.noneNull(intents, "Intent");
         EnumSet<GatewayIntent> set = EnumSet.of(intent);
         Collections.addAll(set, intents);
         return setDisabledIntents(set);
@@ -1623,8 +1684,8 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public DefaultShardManagerBuilder setEnabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        Checks.notNull(intent, "Intents");
-        Checks.notNull(intents, "Intents");
+        Checks.notNull(intent, "Intent");
+        Checks.noneNull(intents, "Intent");
         EnumSet<GatewayIntent> set = EnumSet.of(intent);
         Collections.addAll(set, intents);
         return setDisabledIntents(EnumSet.complementOf(set));
