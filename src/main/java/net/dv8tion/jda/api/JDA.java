@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -203,6 +205,14 @@ public interface JDA
     Status getStatus();
 
     /**
+     * The {@link GatewayIntent GatewayIntents} for this JDA session.
+     * 
+     * @return {@link EnumSet} of active gateway intents
+     */
+    @Nonnull
+    EnumSet<GatewayIntent> getGatewayIntents();
+
+    /**
      * The time in milliseconds that discord took to respond to our last heartbeat
      * <br>This roughly represents the WebSocket ping of this session
      *
@@ -230,7 +240,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #getGatewayPing()
      */
@@ -240,7 +250,8 @@ public interface JDA
         AtomicLong time = new AtomicLong();
         Route.CompiledRoute route = Route.Self.GET_SELF.compile();
         RestActionImpl<Long> action = new RestActionImpl<>(this, route, (response, request) -> System.currentTimeMillis() - time.get());
-        action.setCheck(() -> {
+        action.setCheck(() ->
+        {
             time.set(System.currentTimeMillis());
             return true;
         });
@@ -339,7 +350,7 @@ public interface JDA
      *
      * @return The {@link ScheduledExecutorService} used for http request handling
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     ScheduledExecutorService getRateLimitPool();
@@ -350,7 +361,7 @@ public interface JDA
      *
      * @return The {@link ScheduledExecutorService} used for WebSocket transmissions
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     ScheduledExecutorService getGatewayPool();
@@ -363,7 +374,7 @@ public interface JDA
      *
      * @return The {@link ExecutorService} used for callbacks
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     ExecutorService getCallbackPool();
@@ -373,7 +384,7 @@ public interface JDA
      *
      * @return The http client
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     OkHttpClient getHttpClient();
@@ -387,7 +398,7 @@ public interface JDA
      *
      * @return The {@link DirectAudioController} for this JDA instance
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     DirectAudioController getDirectAudioController();
@@ -611,10 +622,10 @@ public interface JDA
         Checks.check(discriminator.length() == 4 && Helpers.isNumeric(discriminator), "Invalid format for discriminator!");
         Checks.check(username.length() >= 2 && username.length() <= 32, "Username must be between 2 and 32 characters in length!");
         return getUserCache().applyStream(stream ->
-            stream.filter(it -> it.getDiscriminator().equals(discriminator))
-                  .filter(it -> it.getName().equals(username))
-                  .findFirst()
-                  .orElse(null)
+                stream.filter(it -> it.getDiscriminator().equals(discriminator))
+                        .filter(it -> it.getName().equals(username))
+                        .findFirst()
+                        .orElse(null)
         );
     }
 
@@ -1097,14 +1108,14 @@ public interface JDA
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
-            case TEXT:
-                return getTextChannelById(id);
-            case VOICE:
-                return getVoiceChannelById(id);
-            case STORE:
-                return getStoreChannelById(id);
-            case CATEGORY:
-                return getCategoryById(id);
+        case TEXT:
+            return getTextChannelById(id);
+        case VOICE:
+            return getVoiceChannelById(id);
+        case STORE:
+            return getStoreChannelById(id);
+        case CATEGORY:
+            return getCategoryById(id);
         }
         return null;
     }
@@ -1911,7 +1922,7 @@ public interface JDA
             }
             catch (IOException | URISyntaxException e)
             {
-                throw  new IllegalStateException("No port available");
+                throw new IllegalStateException("No port available");
             }
         }
         else throw new IllegalStateException("No port available");

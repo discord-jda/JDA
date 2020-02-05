@@ -45,6 +45,7 @@ import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -187,6 +188,13 @@ public class DefaultShardManager implements ShardManager
                 }
             }
         }
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<GatewayIntent> getGatewayIntents()
+    {
+        return GatewayIntent.getIntents(shardingConfig.getIntents());
     }
 
     @Override

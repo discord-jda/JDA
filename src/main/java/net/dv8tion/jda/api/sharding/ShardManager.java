@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -171,6 +172,21 @@ public interface ShardManager
     default int getShardsTotal()
     {
         return this.getShardsQueued() + this.getShardsRunning();
+    }
+
+    /**
+     * The {@link GatewayIntent GatewayIntents} for the JDA sessions of this shard manager.
+     *
+     * @return {@link EnumSet} of active gateway intents
+     */
+    @Nonnull
+    default EnumSet<GatewayIntent> getGatewayIntents()
+    {
+        //noinspection ConstantConditions
+        return getShardCache().applyStream((stream) ->
+                stream.map(JDA::getGatewayIntents)
+                      .findAny()
+                      .orElse(EnumSet.noneOf(GatewayIntent.class)));
     }
 
     /**

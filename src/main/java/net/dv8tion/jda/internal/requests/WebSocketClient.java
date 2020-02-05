@@ -627,11 +627,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("token", getToken())
             .put("properties", connectionProperties)
             .put("v", DISCORD_GATEWAY_VERSION)
-//            .put("guild_subscriptions", api.isGuildSubscriptions()) superseded by intents
             .put("large_threshold", api.getLargeThreshold());
-            //Used to make the READY event be given
-            // as compressed binary data when over a certain size. TY @ShadowLordAlpha
-            //.put("compress", true);
+        //We only provide intents if they are not the default (all) for backwards compatibility
+        // Discord has additional enforcements put in place even if you specify to subscribe to all intents
         if (api.isIntents())
             payload.put("intents", gatewayIntents);
 

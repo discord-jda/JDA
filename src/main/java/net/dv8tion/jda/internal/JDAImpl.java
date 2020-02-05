@@ -499,6 +499,13 @@ public class JDAImpl implements JDA
         return status;
     }
 
+    @Nonnull
+    @Override
+    public EnumSet<GatewayIntent> getGatewayIntents()
+    {
+        return GatewayIntent.getIntents(client.getGatewayIntents());
+    }
+
     @Override
     public long getGatewayPing()
     {
