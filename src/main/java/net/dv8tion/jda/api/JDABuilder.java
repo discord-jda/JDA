@@ -187,7 +187,8 @@ public class JDABuilder
         return new JDABuilder(token, GatewayIntent.DEFAULT)
                 .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY));
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -248,7 +249,8 @@ public class JDABuilder
         return new JDABuilder(token, GatewayIntent.getRaw(intents))
                 .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY));
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -274,7 +276,8 @@ public class JDABuilder
         return new JDABuilder(token, GatewayIntent.DEFAULT)
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -301,7 +304,8 @@ public class JDABuilder
         return new JDABuilder(token, GatewayIntent.getRaw(intents))
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -330,7 +334,8 @@ public class JDABuilder
         return new JDABuilder(token, GatewayIntent.getRaw(intent, intents))
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                .setLargeThreshold(50);
     }
 
     /**

@@ -156,7 +156,8 @@ public class  DefaultShardManagerBuilder
         return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT)
                 .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS));
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -217,7 +218,8 @@ public class  DefaultShardManagerBuilder
         return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents))
                 .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY));
+                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -243,7 +245,8 @@ public class  DefaultShardManagerBuilder
         return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT)
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -270,7 +273,8 @@ public class  DefaultShardManagerBuilder
         return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents))
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                .setLargeThreshold(50);
     }
 
     /**
@@ -299,7 +303,8 @@ public class  DefaultShardManagerBuilder
         return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents))
                 .setMemberCachePolicy(MemberCachePolicy.NONE)
                 .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class));
+                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                .setLargeThreshold(50);
     }
 
     /**
