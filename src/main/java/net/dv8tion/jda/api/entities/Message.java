@@ -16,7 +16,9 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -1188,11 +1190,90 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalStateException
      *         If this message was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
+
+    /**
+     * Removes all reactions for the specified emoji.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * // custom
+     * message.clearReactions("minn:245267426227388416").queue();
+     * // unicode escape
+     * message.clearReactions("&#92;uD83D&#92;uDE02").queue();
+     * // codepoint notation
+     * message.clearReactions("U+1F602").queue();
+     * </code></pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode emoji doesn't exist. Try using one of the example formats.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  unicode
+     *         The unicode emoji to remove reactions for
+     *
+     * @throws UnsupportedOperationException
+     *         If this reaction happened in a private channel
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactions(@Nonnull String unicode);
+
+    /**
+     * Removes all reactions for the specified emote.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted or doesn't exist.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  emote
+     *         The {@link Emote} to remove reactions for
+     *
+     * @throws UnsupportedOperationException
+     *         If this reaction happened in a private channel
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactions(@Nonnull Emote emote);
 
     /**
      * Removes a reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
