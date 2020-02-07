@@ -451,6 +451,22 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public RestAction<Void> clearReactions(@Nonnull String unicode)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
         unsupported();

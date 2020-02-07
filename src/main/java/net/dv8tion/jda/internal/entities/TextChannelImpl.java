@@ -461,6 +461,27 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode)
+    {
+        Checks.notNull(messageId, "Message ID");
+        Checks.notNull(unicode, "Emote Name");
+        checkPermission(Permission.MESSAGE_MANAGE);
+
+        String code = EncodingUtil.encodeReaction(unicode);
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(getId(), messageId, unicode);
+        return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+        return clearReactionsById(messageId, emote.getName() + ":" + emote.getId());
+    }
+
+    @Nonnull
+    @Override
     public RestActionImpl<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user)
     {
         Checks.isSnowflake(messageId, "Message ID");

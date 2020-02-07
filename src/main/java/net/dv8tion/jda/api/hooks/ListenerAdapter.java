@@ -56,18 +56,12 @@ import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.guild.*;
-import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.guild.react.*;
 import net.dv8tion.jda.api.events.message.priv.*;
 import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
-import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
@@ -148,6 +142,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {}
     public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {}
     public void onGuildMessageReactionRemoveAll(@Nonnull GuildMessageReactionRemoveAllEvent event) {}
+    public void onGuildMessageReactionRemoveEmote(@Nonnull GuildMessageReactionRemoveEmoteEvent event) {}
 
     //Private Message Events
     public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {}
@@ -166,6 +161,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {}
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
+    public void onMessageReactionRemoveEmote(@Nonnull MessageReactionRemoveEmoteEvent event) {}
 
     //StoreChannel Events
     public void onStoreChannelDelete(@Nonnull StoreChannelDeleteEvent event) {}
@@ -356,6 +352,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMessageReactionRemove((GuildMessageReactionRemoveEvent) event);
         else if (event instanceof GuildMessageReactionRemoveAllEvent)
             onGuildMessageReactionRemoveAll((GuildMessageReactionRemoveAllEvent) event);
+        else if (event instanceof GuildMessageReactionRemoveEmoteEvent)
+            onGuildMessageReactionRemoveEmote((GuildMessageReactionRemoveEmoteEvent) event);
 
         //Private Message Events
         else if (event instanceof PrivateMessageReceivedEvent)
@@ -388,6 +386,8 @@ public abstract class ListenerAdapter implements EventListener
             onMessageReactionRemove((MessageReactionRemoveEvent) event);
         else if (event instanceof MessageReactionRemoveAllEvent)
             onMessageReactionRemoveAll((MessageReactionRemoveAllEvent) event);
+        else if (event instanceof MessageReactionRemoveEmoteEvent)
+            onMessageReactionRemoveEmote((MessageReactionRemoveEmoteEvent) event);
 
         //User Events
         else if (event instanceof UserUpdateNameEvent)

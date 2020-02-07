@@ -170,6 +170,20 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    public RestAction<Void> clearReactions(@Nonnull String unicode)
+    {
+        return getTextChannel().clearReactionsById(getId(), unicode);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    {
+        return getTextChannel().clearReactionsById(getId(), emote);
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
         return channel.removeReactionById(getId(), emote);

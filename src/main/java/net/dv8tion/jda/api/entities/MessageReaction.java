@@ -348,12 +348,60 @@ public class MessageReaction
             }
         }
 
-        String code = emote.isEmote()
-                    ? emote.getName() + ":" + emote.getId()
-                    : EncodingUtil.encodeUTF8(emote.getName());
+        String code = getReactionCode();
         String target = self ? "@me" : user.getId();
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    /**
+     * Removes this entire reaction from the message.
+     * <br>Unlike {@link #removeReaction(User)}, which removes the reaction of a single user, this will remove the reaction
+     * completely.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode emoji doesn't exist. Try using one of the example formats.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @throws UnsupportedOperationException
+     *         If this reaction happened in a private channel
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> clearReactions()
+    {
+        // Requires permission, only works in guilds
+        if (!getChannelType().isGuild())
+            throw new UnsupportedOperationException("Cannot clear reactions on a message sent from a private channel");
+        TextChannel guildChannel = Objects.requireNonNull(getTextChannel());
+        if (!guildChannel.getGuild().getSelfMember().hasPermission(guildChannel, Permission.MESSAGE_MANAGE))
+            throw new InsufficientPermissionException(guildChannel, Permission.MESSAGE_MANAGE);
+
+        String code = getReactionCode();
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(channel.getId(), getMessageId(), code);
+        return new RestActionImpl<>(getJDA(), route);
+    }
+
+    private String getReactionCode()
+    {
+        return emote.isEmote()
+                ? emote.getName() + ":" + emote.getId()
+                : EncodingUtil.encodeUTF8(emote.getName());
     }
 
     @Override

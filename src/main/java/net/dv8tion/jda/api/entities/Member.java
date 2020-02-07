@@ -23,8 +23,9 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -186,13 +187,17 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * <br>The roles are ordered based on their position. The highest role being at index 0
      * and the lowest at the last index.
      *
-     * <p>A Member's roles can be changed using the <b>addRolesToMember</b>, <b>removeRolesFromMember</b>, and <b>modifyMemberRoles</b>
+     * <p>A Member's roles can be changed using the {@link Guild#addRoleToMember(Member, Role)}, {@link Guild#removeRoleFromMember(Member, Role)}, and {@link Guild#modifyMemberRoles(Member, Collection, Collection)}
      * methods in {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>The Public Role ({@code @everyone}) is not included in the returned immutable list of roles
      * <br>It is implicit that every member holds the Public Role in a Guild thus it is not listed here!</b>
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles} for this Member.
+     *
+     * @see    Guild#addRoleToMember(Member, Role)
+     * @see    Guild#removeRoleFromMember(Member, Role)
+     * @see    Guild#modifyMemberRoles(Member, Collection, Collection)
      */
     @Nonnull
     List<Role> getRoles();
