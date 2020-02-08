@@ -97,7 +97,7 @@ public class MemberChunkManager
 
     private void processQueue(long guildId, Queue<ChunkRequest> queue)
     {
-        while (!queue.isEmpty())
+        while (queue != null && !queue.isEmpty())
         {
             ChunkRequest element = queue.peek();
             if (element.isCancelled())

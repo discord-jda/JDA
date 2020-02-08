@@ -426,6 +426,7 @@ public class GuildSetupController
                 sendChunkRequest(id);
                 return true;
             });
+            chunkingGuilds.clear();
             return;
         }
 
