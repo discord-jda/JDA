@@ -47,7 +47,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      * from {@link net.dv8tion.jda.api.entities.Guild#retrieveAuditLogs() Guild.retrieveAuditLogs()}!
      *
      * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
-     * <br>Using methods with a reason parameter will always work and <u>override</u> this header.</b>
+     * <br>Using methods with a reason parameter will always work and <u>override</u> this header.
      * (ct. {@link net.dv8tion.jda.api.entities.Guild#ban(net.dv8tion.jda.api.entities.User, int, String) Guild.ban(User, int, String)})
      *
      * @param  reason

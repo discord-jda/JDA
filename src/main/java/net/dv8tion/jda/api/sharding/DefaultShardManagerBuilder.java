@@ -363,8 +363,10 @@ public class  DefaultShardManagerBuilder
      *
      * @param token
      *        The bot token to use
+     * @param intent
+     *        The first gateway intent to use
      * @param intents
-     *        The gateway intents to use
+     *        Additional gateway intents to use
      *
      * @throws IllegalArgumentException
      *         If the provided intents are null
