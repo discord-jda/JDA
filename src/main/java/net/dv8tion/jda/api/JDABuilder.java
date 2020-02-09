@@ -57,7 +57,6 @@ public class JDABuilder
 {
     public static final int GUILD_SUBSCRIPTIONS = GatewayIntent.getRaw(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING);
     protected final List<Object> listeners;
-    protected final AccountType accountType;
 
     protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
@@ -106,7 +105,7 @@ public class JDABuilder
     @ReplaceWith("JDABuilder.create(GatewayIntent...)")
     public JDABuilder()
     {
-        this(AccountType.BOT);
+        this(null, GatewayIntent.ALL_INTENTS);
     }
 
     /**
@@ -126,8 +125,7 @@ public class JDABuilder
     @ReplaceWith("JDABuilder.create(String, GatewayIntent...)")
     public JDABuilder(@Nullable String token)
     {
-        this();
-        setToken(token);
+        this(token, GatewayIntent.ALL_INTENTS);
     }
 
     /**
@@ -149,15 +147,12 @@ public class JDABuilder
     @DeprecatedSince("4.2.0")
     public JDABuilder(@Nonnull AccountType accountType)
     {
-        Checks.notNull(accountType, "accountType");
-
-        this.accountType = accountType;
+        Checks.check(accountType == AccountType.BOT, "Client accounts are no longer supported!");
         this.listeners = new LinkedList<>();
     }
 
     private JDABuilder(@Nullable String token, int intents)
     {
-        this.accountType = AccountType.BOT;
         this.listeners = new LinkedList<>();
         this.token = token;
         this.intents = 1 | intents;
@@ -1442,7 +1437,7 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
 
-        AuthorizationConfig authConfig = new AuthorizationConfig(accountType, token);
+        AuthorizationConfig authConfig = new AuthorizationConfig(token);
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);

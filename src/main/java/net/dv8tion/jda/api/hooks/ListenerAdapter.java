@@ -146,6 +146,11 @@ public abstract class ListenerAdapter implements EventListener
     @ReplaceWith("onCategoryUpdateOverride() and onCategoryDeleteOverride()")
     public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
+    public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
+
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
@@ -172,7 +177,6 @@ public abstract class ListenerAdapter implements EventListener
 
     //Self Events. Fires only in relation to the currently logged in account.
     public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}
-    public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
     public void onSelfUpdateMFA(@Nonnull SelfUpdateMFAEvent event) {}
     public void onSelfUpdateName(@Nonnull SelfUpdateNameEvent event) {}
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
@@ -467,8 +471,6 @@ public abstract class ListenerAdapter implements EventListener
         //Self Events
         else if (event instanceof SelfUpdateAvatarEvent)
             onSelfUpdateAvatar((SelfUpdateAvatarEvent) event);
-        else if (event instanceof SelfUpdateEmailEvent)
-            onSelfUpdateEmail((SelfUpdateEmailEvent) event);
         else if (event instanceof SelfUpdateMFAEvent)
             onSelfUpdateMFA((SelfUpdateMFAEvent) event);
         else if (event instanceof SelfUpdateNameEvent)

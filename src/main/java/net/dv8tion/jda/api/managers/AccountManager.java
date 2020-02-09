@@ -48,10 +48,6 @@ public interface AccountManager extends Manager<AccountManager>
     long NAME = 0x1;
     /** Used to reset the avatar field */
     long AVATAR = 0x2;
-    /** Used to reset the email field */
-    long EMAIL = 0x4;
-    /** Used to reset the password field */
-    long PASSWORD = 0x8;
 
     /**
      * The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} that will be
@@ -72,8 +68,6 @@ public interface AccountManager extends Manager<AccountManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #AVATAR}</li>
-     *     <li>{@link #EMAIL}</li>
-     *     <li>{@link #PASSWORD}</li>
      * </ul>
      *
      * @param  fields
@@ -95,8 +89,6 @@ public interface AccountManager extends Manager<AccountManager>
      * <ul>
      *     <li>{@link #NAME}</li>
      *     <li>{@link #AVATAR}</li>
-     *     <li>{@link #EMAIL}</li>
-     *     <li>{@link #PASSWORD}</li>
      * </ul>
      *
      * @param  fields
@@ -126,10 +118,7 @@ public interface AccountManager extends Manager<AccountManager>
      */
     @Nonnull
     @CheckReturnValue
-    default AccountManager setName(@Nonnull String name)
-    {
-        return setName(name, null);
-    }
+    AccountManager setName(@Nonnull String name);
 
     /**
      * Sets the username for the currently logged in account
@@ -158,7 +147,10 @@ public interface AccountManager extends Manager<AccountManager>
     @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
-    AccountManager setName(@Nonnull String name, @Nullable String currentPassword);
+    default AccountManager setName(@Nonnull String name, @Nullable String currentPassword)
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Sets the avatar for the currently logged in account
@@ -171,10 +163,7 @@ public interface AccountManager extends Manager<AccountManager>
      */
     @Nonnull
     @CheckReturnValue
-    default AccountManager setAvatar(@Nullable Icon avatar)
-    {
-        return setAvatar(avatar, null);
-    }
+    AccountManager setAvatar(@Nullable Icon avatar);
 
     /**
      * Sets the avatar for the currently logged in account
@@ -199,7 +188,10 @@ public interface AccountManager extends Manager<AccountManager>
     @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
-    AccountManager setAvatar(@Nullable Icon avatar, @Nullable String currentPassword);
+    default AccountManager setAvatar(@Nullable Icon avatar, @Nullable String currentPassword)
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Sets the email for the currently logged in client account.
@@ -226,7 +218,10 @@ public interface AccountManager extends Manager<AccountManager>
     @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
-    AccountManager setEmail(@Nonnull String email, @Nonnull String currentPassword);
+    default AccountManager setEmail(@Nonnull String email, @Nonnull String currentPassword)
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Sets the password for the currently logged in client account.
@@ -251,5 +246,8 @@ public interface AccountManager extends Manager<AccountManager>
     @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
-    AccountManager setPassword(@Nonnull String newPassword, @Nonnull String currentPassword);
+    default AccountManager setPassword(@Nonnull String newPassword, @Nonnull String currentPassword)
+    {
+        throw new UnsupportedOperationException();
+    }
 }

@@ -23,21 +23,18 @@ import javax.annotation.Nonnull;
 
 public final class AuthorizationConfig
 {
-    private final AccountType accountType;
     private String token;
 
-    public AuthorizationConfig(@Nonnull AccountType accountType, @Nonnull String token)
+    public AuthorizationConfig(@Nonnull String token)
     {
-        Checks.notNull(accountType, "AccountType");
         Checks.notNull(token, "Token");
-        this.accountType = accountType;
         setToken(token);
     }
 
     @Nonnull
     public AccountType getAccountType()
     {
-        return accountType;
+        return AccountType.BOT;
     }
 
     @Nonnull
@@ -48,9 +45,6 @@ public final class AuthorizationConfig
 
     public void setToken(@Nonnull String token)
     {
-        if (getAccountType() == AccountType.BOT)
-            this.token = "Bot " + token;
-        else
-            this.token = token;
+        this.token = "Bot " + token;
     }
 }

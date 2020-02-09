@@ -65,7 +65,10 @@ public interface SelfUser extends User
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    String getEmail();
+    default String getEmail()
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Shows whether there has ever been a mobile app connected to this account.
@@ -82,7 +85,10 @@ public interface SelfUser extends User
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    boolean isMobile();
+    default boolean isMobile()
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * The Discord Nitro status of this account.
@@ -99,7 +105,10 @@ public interface SelfUser extends User
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    boolean isNitro();
+    default boolean isNitro()
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Used to get the phone number of the currently logged in account if a phone number has been attached to it.
@@ -117,7 +126,10 @@ public interface SelfUser extends User
     @ForRemoval
     @DeprecatedSince("4.2.0")
     @Nullable
-    String getPhoneNumber();
+    default String getPhoneNumber()
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Returns the maximum size for files that can be uploaded with this account.

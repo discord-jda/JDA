@@ -1221,7 +1221,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    @SuppressWarnings("deprecation")
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =   new SocketHandler.NOPHandler(api);
@@ -1254,8 +1253,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("USER_UPDATE",                   new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",           new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",            new VoiceStateUpdateHandler(api));
-        handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
-        handlers.put("TYPING_START",    new TypingStartHandler(api));
+        handlers.put("PRESENCE_UPDATE",               new PresenceUpdateHandler(api));
+        handlers.put("TYPING_START",                  new TypingStartHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);
@@ -1263,20 +1262,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
         handlers.put("PRESENCES_REPLACE",         nopHandler);
         handlers.put("WEBHOOKS_UPDATE",           nopHandler);
-
-        if (api.getAccountType() == AccountType.CLIENT)
-        {
-            handlers.put("CALL_CREATE",              nopHandler);
-            handlers.put("CALL_DELETE",              nopHandler);
-            handlers.put("CALL_UPDATE",              nopHandler);
-            handlers.put("CHANNEL_RECIPIENT_ADD",    nopHandler);
-            handlers.put("CHANNEL_RECIPIENT_REMOVE", nopHandler);
-            handlers.put("RELATIONSHIP_ADD",         nopHandler);
-            handlers.put("RELATIONSHIP_REMOVE",      nopHandler);
-
-            // Unused client events
-            handlers.put("MESSAGE_ACK", nopHandler);
-        }
     }
 
     protected abstract class ConnectNode implements SessionController.SessionConnectNode

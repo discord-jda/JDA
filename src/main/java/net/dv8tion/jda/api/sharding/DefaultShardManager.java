@@ -16,7 +16,6 @@
 package net.dv8tion.jda.api.sharding;
 
 import gnu.trove.set.TIntSet;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -489,7 +488,7 @@ public class DefaultShardManager implements ShardManager
         ExecutorService callbackPool = callbackPair.executor;
         boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
-        AuthorizationConfig authConfig = new AuthorizationConfig(AccountType.BOT, token);
+        AuthorizationConfig authConfig = new AuthorizationConfig(token);
         SessionConfig sessionConfig = this.sessionConfig.toSessionConfig(httpClient);
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);

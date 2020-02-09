@@ -356,91 +356,44 @@ public class JDAImpl implements JDA
     }
 
     // @param alreadyFailed If has already been a failed attempt with the current configuration
-    @SuppressWarnings("deprecation")
     public void verifyToken(boolean alreadyFailed) throws LoginException
     {
-
-        RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
-        {
-            @Override
-            public void handleResponse(Response response, Request<DataObject> request)
-            {
-                if (response.isOk())
-                    request.onSuccess(response.getObject());
-                else if (response.isRateLimit())
-                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
-                else if (response.code == 401)
-                    request.onSuccess(null);
-                else
-                    request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                        response.toString()));
-            }
-        };
-
-        DataObject userResponse;
-
         if (!alreadyFailed)
         {
-            userResponse = checkToken(login);
+            RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
+            {
+                @Override
+                public void handleResponse(Response response, Request<DataObject> request)
+                {
+                    if (response.isOk())
+                        request.onSuccess(response.getObject());
+                    else if (response.isRateLimit())
+                        request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
+                    else if (response.code == 401)
+                        request.onSuccess(null);
+                    else
+                        request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                                response.toString()));
+                }
+            };
+
+            DataObject userResponse = checkToken(login);
             if (userResponse != null)
             {
-                verifyAccountType(userResponse);
                 getEntityBuilder().createSelfUser(userResponse);
                 return;
             }
         }
 
-        //If we received a null return for userResponse, then that means we hit a 401.
-        // 401 occurs when we attempt to access the users/@me endpoint with the wrong token prefix.
-        // e.g: If we use a Client token and prefix it with "Bot ", or use a bot token and don't prefix it.
-        // It also occurs when we attempt to access the endpoint with an invalid token.
-        //The code below already knows that something is wrong with the token. We want to determine if it is invalid
-        // or if the developer attempted to login with a token using the wrong AccountType.
-
-        //If we attempted to login as a Bot, remove the "Bot " prefix and set the Requester to be a client.
-        String token;
-        if (getAccountType() == AccountType.BOT)
-        {
-            token = getToken().substring("Bot ".length());
-            requester = new Requester(this, new AuthorizationConfig(AccountType.CLIENT, token));
-        }
-        else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
-        {
-            requester = new Requester(this, new AuthorizationConfig(AccountType.BOT, getToken()));
-        }
-
-        userResponse = checkToken(login);
         shutdownNow();
-
-        //If the response isn't null (thus it didn't 401) send it to the secondary verify method to determine
-        // which account type the developer wrongly attempted to login as
-        if (userResponse != null)
-            verifyAccountType(userResponse);
-        else    //We 401'd again. This is an invalid token
-            throw new LoginException("The provided token is invalid!");
-    }
-
-    @SuppressWarnings("deprecation")
-    private void verifyAccountType(DataObject userResponse)
-    {
-        if (getAccountType() == AccountType.BOT)
-        {
-            if (!userResponse.hasKey("bot") || !userResponse.getBoolean("bot"))
-                throw new AccountTypeException(AccountType.BOT, "Attempted to login as a BOT with a CLIENT token!");
-        }
-        else
-        {
-            if (userResponse.hasKey("bot") && userResponse.getBoolean("bot"))
-                throw new AccountTypeException(AccountType.CLIENT, "Attempted to login as a CLIENT with a BOT token!");
-        }
+        throw new LoginException("The provided token is invalid!");
     }
 
     private DataObject checkToken(RestActionImpl<DataObject> login) throws LoginException
     {
-        DataObject userResponse;
         try
         {
-            userResponse = login.complete();
+            return login.complete();
         }
         catch (RuntimeException e)
         {
@@ -451,7 +404,6 @@ public class JDAImpl implements JDA
             else
                 throw e;
         }
-        return userResponse;
     }
 
     public AuthorizationConfig getAuthorizationConfig()
@@ -851,16 +803,8 @@ public class JDAImpl implements JDA
     @Override
     public GuildActionImpl createGuild(@Nonnull String name)
     {
-        switch (getAccountType())
-        {
-            case BOT:
-                if (guildCache.size() >= 10)
-                    throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
-                break;
-            case CLIENT:
-                if (guildCache.size() >= 100)
-                    throw new IllegalStateException("Cannot be in more than 100 guilds with AccountType.CLIENT!");
-        }
+        if (guildCache.size() >= 10)
+            throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
         return new GuildActionImpl(this, name);
     }
 

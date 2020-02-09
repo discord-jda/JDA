@@ -20,7 +20,6 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audit.ActionType;
@@ -118,15 +117,6 @@ public class EntityBuilder
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
                 .setBot(self.getBoolean("bot"));
-
-        if (this.getJDA().getAccountType() == AccountType.CLIENT)
-        {
-            selfUser
-                .setEmail(self.getString("email", null))
-                .setMobile(self.getBoolean("mobile"))
-                .setNitro(self.getBoolean("premium"))
-                .setPhoneNumber(self.getString("phone", null));
-        }
 
         return selfUser;
     }
