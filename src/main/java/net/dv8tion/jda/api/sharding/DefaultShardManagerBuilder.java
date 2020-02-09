@@ -1780,7 +1780,7 @@ public class  DefaultShardManagerBuilder
      * @throws  LoginException
      *          If the provided token is invalid.
      * @throws  IllegalArgumentException
-     *          If the provided token is empty or null.
+     *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
      *
      * @return A {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
@@ -1788,6 +1788,7 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
+        checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
         final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);
         final EventConfig eventConfig = new EventConfig(eventManagerProvider);
@@ -1823,6 +1824,27 @@ public class  DefaultShardManagerBuilder
         else
             this.shardingFlags.remove(flag);
         return this;
+    }
+
+    private void checkIntents()
+    {
+        if (cacheFlags.isEmpty())
+            return;
+
+        boolean cacheEnabled = cacheFlags.contains(CacheFlag.ACTIVITY) || cacheFlags.contains(CacheFlag.CLIENT_STATUS);
+        boolean intentEnabled = (intents & GatewayIntent.GUILD_PRESENCES.getRawValue()) != 0;
+        if (cacheEnabled && !intentEnabled)
+            throw new IllegalArgumentException("Cannot use presence related cache flags with disable GUILD_PRESENCES intent!");
+
+        cacheEnabled = cacheFlags.contains(CacheFlag.VOICE_STATE);
+        intentEnabled = (intents & GatewayIntent.GUILD_VOICE_STATES.getRawValue()) != 0;
+        if (cacheEnabled && !intentEnabled)
+            throw new IllegalArgumentException("Cannot use voice state cache flag with disable GUILD_VOICE_STATES intent!");
+
+        cacheEnabled = cacheFlags.contains(CacheFlag.EMOTE);
+        intentEnabled = (intents & GatewayIntent.GUILD_EMOJIS.getRawValue()) != 0;
+        if (cacheEnabled && !intentEnabled)
+            throw new IllegalArgumentException("Cannot use emote cache flag with disable GUILD_EMOJIS intent!");
     }
 
     //Avoid having multiple anonymous classes

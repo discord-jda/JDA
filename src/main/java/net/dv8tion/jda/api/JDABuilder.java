@@ -1427,7 +1427,7 @@ public class JDABuilder
      * @throws LoginException
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
-     *         If the provided token is empty or null.
+     *         If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
      *
      * @return A {@link net.dv8tion.jda.api.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
@@ -1437,6 +1437,7 @@ public class JDABuilder
     @Nonnull
     public JDA build() throws LoginException
     {
+        checkIntents();
         OkHttpClient httpClient = this.httpClient;
         if (httpClient == null)
         {
@@ -1491,5 +1492,26 @@ public class JDABuilder
         else
             this.flags.remove(flag);
         return this;
+    }
+
+    private void checkIntents()
+    {
+        if (cacheFlags.isEmpty())
+            return;
+
+        boolean cacheEnabled = cacheFlags.contains(CacheFlag.ACTIVITY) || cacheFlags.contains(CacheFlag.CLIENT_STATUS);
+        boolean intentEnabled = (intents & GatewayIntent.GUILD_PRESENCES.getRawValue()) != 0;
+        if (cacheEnabled && !intentEnabled)
+            throw new IllegalArgumentException("Cannot use presence related cache flags with disable GUILD_PRESENCES intent!");
+
+        cacheEnabled = cacheFlags.contains(CacheFlag.VOICE_STATE);
+        intentEnabled = (intents & GatewayIntent.GUILD_VOICE_STATES.getRawValue()) != 0;
+        if (cacheEnabled && !intentEnabled)
+            throw new IllegalArgumentException("Cannot use voice state cache flag with disable GUILD_VOICE_STATES intent!");
+
+        cacheEnabled = cacheFlags.contains(CacheFlag.EMOTE);
+        intentEnabled = (intents & GatewayIntent.GUILD_EMOJIS.getRawValue()) != 0;
+        if (cacheEnabled && !intentEnabled)
+            throw new IllegalArgumentException("Cannot use emote cache flag with disable GUILD_EMOJIS intent!");
     }
 }
