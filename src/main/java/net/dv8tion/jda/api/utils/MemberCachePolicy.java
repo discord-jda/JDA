@@ -32,6 +32,9 @@ import javax.annotation.Nonnull;
  * <p>When {@link Guild#unloadMembers()} is called, the configured policy will be used to unload any members that the policy
  * has decided not to cache.
  *
+ * <p>If {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled you should not use {@link #ALL} or {@link #ONLINE}.
+ * This intent enables guild member leave events which are required to remove members from cache properly.
+ *
  * @see #DEFAULT
  * @see #NONE
  * @see #ALL
@@ -53,7 +56,10 @@ public interface MemberCachePolicy
      */
     MemberCachePolicy NONE = (member) -> false;
     /**
-     * Enable all member caching
+     * Enable all member caching.
+     *
+     * <p>Not recommended without {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent enabled.
+     * The api will only send the guild member leave events when this intent is enabled. Without those events the members will stay in cache indefinitely.
      */
     MemberCachePolicy ALL = (member) -> true;
     /**
@@ -63,6 +69,9 @@ public interface MemberCachePolicy
     /**
      * Cache online/idle/dnd users.
      * <br>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} to be enabled.
+     *
+     * <p>Not recommended without {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent enabled.
+     * The api will only send the guild member leave events when this intent is enabled. Without those events the members will stay in cache indefinitely.
      */
     MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
     /**

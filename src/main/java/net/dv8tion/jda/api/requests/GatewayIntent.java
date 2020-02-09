@@ -29,7 +29,7 @@ import java.util.EnumSet;
  * will need these events or not.
  *
  * <ol>
- *     <li>GUILD_MEMBERS This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks)</li>
+ *     <li>GUILD_MEMBERS This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks). This is required to cache all members of a guild (including chunking)</li>
  *     <li>GUILD_BANS This will only track guild bans and unbans</li>
  *     <li>GUILD_EMOJIS This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
  *     <li>GUILD_INVITES This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
@@ -47,6 +47,9 @@ import java.util.EnumSet;
  * To get whitelisted you either need to contact discord support (for bots in more than 100 guilds)
  * or enable it in the developer dashboard of your application.
  *
+ * <p>You must use {@link net.dv8tion.jda.api.utils.ChunkingFilter#NONE ChunkingFilter.NONE} if {@link #GUILD_MEMBERS} is disabled.
+ * To enable chunking the discord api requires the privileged {@link #GUILD_MEMBERS} intent.
+ *
  * @see net.dv8tion.jda.api.JDABuilder#setDisabledIntents(GatewayIntent, GatewayIntent...)
  * @see net.dv8tion.jda.api.JDABuilder#setEnabledIntents(GatewayIntent, GatewayIntent...)
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setDisabledIntents(GatewayIntent, GatewayIntent...)
@@ -57,6 +60,7 @@ public enum GatewayIntent
     //GUILDS(0), we currently don't support to disable this one as its required to get a good base cache
     /**
      * <b>PRIVILEGED INTENT</b> Events which inform us about member update/leave/join of a guild.
+     * <br>This is required to chunk all members of a guild. Without this enabled you have to use {@link net.dv8tion.jda.api.utils.ChunkingFilter#NONE ChunkingFilter.NONE}!
      */
     GUILD_MEMBERS(1),
     /**

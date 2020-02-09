@@ -25,6 +25,9 @@ import javax.annotation.Nonnull;
  * <br>The filter decides based on the provided guild id whether chunking should be done
  * on guild initialization.
  *
+ * <p><b>To use chunking, the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent must be enabled!
+ * Otherwise you <u>must</u> use {@link #NONE}!</b>
+ *
  * @since 4.1.0
  *
  * @see   #ALL
