@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.InviteImpl;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 public class InviteCreateHandler extends SocketHandler
 {
@@ -59,15 +60,21 @@ public class InviteCreateHandler extends SocketHandler
 
         String code = content.getString("code");
         boolean temporary = content.getBoolean("temporary");
-        int maxAge = content.getInt("max_age");
-        int maxUses = content.getInt("max_uses");
-        OffsetDateTime creationTime = OffsetDateTime.parse(content.getString("created_at"));
-        DataObject inviterJson = content.getObject("inviter");
+        int maxAge = content.getInt("max_age", -1);
+        int maxUses = content.getInt("max_uses", -1);
+        OffsetDateTime creationTime = content.opt("created_at")
+                .map(String::valueOf)
+                .map(OffsetDateTime::parse)
+                .orElse(null);
 
-        User inviter = getJDA().getEntityBuilder().createFakeUser(inviterJson, false);
+        Optional<DataObject> inviterJson = content.optObject("inviter");
+        boolean expanded = maxUses != -1;
+
+        User inviter = inviterJson.map(json -> getJDA().getEntityBuilder().createFakeUser(json, false)).orElse(null);
         InviteImpl.ChannelImpl channel = new InviteImpl.ChannelImpl(realChannel);
         InviteImpl.GuildImpl guild = new InviteImpl.GuildImpl(realGuild);
-        Invite invite = new InviteImpl(getJDA(), code, true, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, Invite.InviteType.GUILD);
+
+        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, Invite.InviteType.GUILD);
         getJDA().handleEvent(
             new GuildInviteCreateEvent(
                 getJDA(), responseNumber,
