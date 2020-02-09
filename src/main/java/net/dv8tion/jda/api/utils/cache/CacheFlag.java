@@ -21,25 +21,34 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 
 /**
- * Flags used to enable cache services for JDA
+ * Flags used to enable cache services for JDA.
+ * <br>Check the flag descriptions to see which {@link net.dv8tion.jda.api.requests.GatewayIntent intents} are required to use them.
  */
 public enum CacheFlag
 {
     /**
      * Enables cache for {@link Member#getActivities()}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
      */
     ACTIVITY,
     /**
      * Enables cache for {@link Member#getVoiceState()}
      * <br>This will always be cached for self member.
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled.
      */
     VOICE_STATE,
     /**
      * Enables cache for {@link Guild#getEmoteCache()}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent to be enabled.
      */
     EMOTE,
     /**
      * Enables cache for {@link Member#getOnlineStatus(net.dv8tion.jda.api.entities.ClientType) Member.getOnlineStatus(ClientType)}
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
      */
     CLIENT_STATUS,
     /**
