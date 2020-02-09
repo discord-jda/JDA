@@ -93,7 +93,6 @@ public class EntityBuilder
         return api;
     }
 
-    @SuppressWarnings("deprecation")
     public SelfUser createSelfUser(DataObject self)
     {
         SelfUserImpl selfUser = (SelfUserImpl) (getJDA().hasSelfUser() ? getJDA().getSelfUser() : null);

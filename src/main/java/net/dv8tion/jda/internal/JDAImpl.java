@@ -798,7 +798,6 @@ public class JDAImpl implements JDA
         return eventManager.getRegisteredListeners();
     }
 
-    @SuppressWarnings("deprecation")
     @Nonnull
     @Override
     public GuildActionImpl createGuild(@Nonnull String name)
