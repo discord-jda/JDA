@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
@@ -56,8 +58,13 @@ public interface SelfUser extends User
      *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
      *
      * @return The email of the currently logged in account.
+     *
+     * @deprecated This is no longer supported
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     String getEmail();
 
     /**
@@ -69,7 +76,12 @@ public interface SelfUser extends User
      *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
      *
      * @return {@code true} if the account is linked with a mobile app, otherwise {@code false}
+     *
+     * @deprecated This is no longer supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     boolean isMobile();
 
     /**
@@ -81,7 +93,12 @@ public interface SelfUser extends User
      *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
      *
      * @return The Discord Nitro status of the currently logged in account.
+     *
+     * @deprecated This is no longer supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     boolean isNitro();
 
     /**
@@ -93,19 +110,22 @@ public interface SelfUser extends User
      *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
      *
      * @return The phone of the currently logged in account or null if there's no number associated
+     *
+     * @deprecated This is no longer supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     @Nullable
     String getPhoneNumber();
 
     /**
      * Returns the maximum size for files that can be uploaded with this account.
-     * <br>Returns {@value net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE} for bots and non-nitro client accounts
-     * and {@value net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE_NITRO} for client accounts with a active nitro subscription.
+     * <br>Returns {@value net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE} for bots.
      * 
      * @return The maximum size for files that can be uploaded with this account
      * 
      * @see net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE
-     * @see net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE_NITRO
      */
     long getAllowedFileSize();
 

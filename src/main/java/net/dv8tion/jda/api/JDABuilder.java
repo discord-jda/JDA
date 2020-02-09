@@ -20,7 +20,6 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -1023,9 +1022,6 @@ public class JDABuilder
      * Sets the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} our connection will display.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.api.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Note:</b>This will not take affect for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
-     * if the status specified in the user_settings is not "online" as it is overriding our identify status.
-     *
      * @param  status
      *         Not-null OnlineStatus (default online)
      *
@@ -1125,15 +1121,11 @@ public class JDABuilder
      *
      * <p>Please note, that a shard will not know about guilds which are not assigned to it.
      *
-     * <p><b>It is not possible to use sharding with an account for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}!</b>
-     *
      * @param  shardId
      *         The id of this shard (starting at 0).
      * @param  shardTotal
      *         The number of overall shards.
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If this is used on a JDABuilder for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
      * @throws java.lang.IllegalArgumentException
      *         If the provided shard configuration is invalid
      *         ({@code 0 <= shardId < shardTotal} with {@code shardTotal > 0})
@@ -1146,7 +1138,6 @@ public class JDABuilder
     @Nonnull
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
-        AccountTypeException.check(accountType, AccountType.BOT);
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,

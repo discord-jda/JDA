@@ -1006,9 +1006,6 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} our connection will display.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.api.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Note:</b>This will not take affect for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
-     * if the statusProvider specified in the user_settings is not "online" as it is overriding our identify statusProvider.
-     *
      * @param  status
      *         Not-null OnlineStatus (default online)
      *
@@ -1031,9 +1028,6 @@ public class  DefaultShardManagerBuilder
     /**
      * Sets the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} our connection will display.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.api.managers.Presence Presence} from a JDA instance.
-     *
-     * <p><b>Note:</b>This will not take affect for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
-     * if the statusProvider specified in the user_settings is not "online" as it is overriding our identify statusProvider.
      *
      * @param  statusProvider
      *         Not-null OnlineStatus (default online)

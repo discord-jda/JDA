@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.managers;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 
@@ -110,9 +112,6 @@ public interface AccountManager extends Manager<AccountManager>
     /**
      * Sets the username for the currently logged in account
      *
-     * <p><b>Client-Accounts ({@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}) require the
-     * current password to be updated. See {@link #setName(String, String)}</b>
-     *
      * @param  name
      *         The new username
      *
@@ -151,16 +150,18 @@ public interface AccountManager extends Manager<AccountManager>
      *         </ul>
      *
      * @return AccountManager for chaining convenience
+     *
+     * @deprecated This is no longer supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
     AccountManager setName(@Nonnull String name, @Nullable String currentPassword);
 
     /**
      * Sets the avatar for the currently logged in account
-     *
-     * <p><b>Client-Accounts ({@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}) require the
-     * current password to be updated. See {@link #setAvatar(net.dv8tion.jda.api.entities.Icon, String) #setAvatar(Icon, String)}</b>
      *
      * @param  avatar
      *         An {@link net.dv8tion.jda.api.entities.Icon Icon} instance representing
@@ -190,7 +191,12 @@ public interface AccountManager extends Manager<AccountManager>
      *         logged in account is from {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
      *
      * @return AccountManager for chaining convenience
+     *
+     * @deprecated This is no longer supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
     AccountManager setAvatar(@Nullable Icon avatar, @Nullable String currentPassword);
@@ -212,7 +218,12 @@ public interface AccountManager extends Manager<AccountManager>
      *         </ul>
      *
      * @return AccountManager for chaining convenience
+     *
+     * @deprecated This is no longer supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
     AccountManager setEmail(@Nonnull String email, @Nonnull String currentPassword);
@@ -232,7 +243,12 @@ public interface AccountManager extends Manager<AccountManager>
      *         If any of the provided passwords are {@code null} or empty
      *
      * @return AccountManager for chaining convenience
+     *
+     * @deprecated This is no longer supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     @Nonnull
     @CheckReturnValue
     AccountManager setPassword(@Nonnull String newPassword, @Nonnull String currentPassword);

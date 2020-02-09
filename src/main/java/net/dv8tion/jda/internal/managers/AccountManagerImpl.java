@@ -138,6 +138,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         return this;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected RequestBody finalizeData()
     {

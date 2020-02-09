@@ -81,6 +81,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 
     @Nonnull
     @Override
+    @Deprecated
     public String getEmail() throws AccountTypeException
     {
         if (getJDA().getAccountType() != AccountType.CLIENT)
@@ -89,6 +90,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
+    @Deprecated
     public String getPhoneNumber() throws AccountTypeException
     {
         if (getJDA().getAccountType() != AccountType.CLIENT)
@@ -97,6 +99,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
+    @Deprecated
     public boolean isMobile() throws AccountTypeException
     {
         if (getJDA().getAccountType() != AccountType.CLIENT)
@@ -105,6 +108,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     }
 
     @Override
+    @Deprecated
     public boolean isNitro() throws AccountTypeException
     {
         if (getJDA().getAccountType() != AccountType.CLIENT)

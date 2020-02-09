@@ -76,6 +76,7 @@ public class GuildSetupController
         return api;
     }
 
+    @SuppressWarnings("deprecation")
     boolean isClient()
     {
         return getJDA().getAccountType() == AccountType.CLIENT;

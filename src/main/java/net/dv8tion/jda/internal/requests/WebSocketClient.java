@@ -1221,6 +1221,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
+    @SuppressWarnings("deprecation")
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =   new SocketHandler.NOPHandler(api);

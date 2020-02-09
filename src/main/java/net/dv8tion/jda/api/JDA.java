@@ -461,11 +461,7 @@ public interface JDA
      *         The name of the resulting guild
      *
      * @throws java.lang.IllegalStateException
-     *         If the currently logged in account is from
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} and the account is in 100 or more guilds</li>
-     *             <li>{@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT} and the account is in 10 or more guilds</li>
-     *         </ul>
+     *         If the currently logged in account  is in 10 or more guilds
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is empty, {@code null} or not between 2-100 characters
      *

@@ -356,6 +356,7 @@ public class JDAImpl implements JDA
     }
 
     // @param alreadyFailed If has already been a failed attempt with the current configuration
+    @SuppressWarnings("deprecation")
     public void verifyToken(boolean alreadyFailed) throws LoginException
     {
 
@@ -419,6 +420,7 @@ public class JDAImpl implements JDA
             throw new LoginException("The provided token is invalid!");
     }
 
+    @SuppressWarnings("deprecation")
     private void verifyAccountType(DataObject userResponse)
     {
         if (getAccountType() == AccountType.BOT)
@@ -844,6 +846,7 @@ public class JDAImpl implements JDA
         return eventManager.getRegisteredListeners();
     }
 
+    @SuppressWarnings("deprecation")
     @Nonnull
     @Override
     public GuildActionImpl createGuild(@Nonnull String name)

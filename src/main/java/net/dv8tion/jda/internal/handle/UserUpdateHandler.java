@@ -31,6 +31,7 @@ public class UserUpdateHandler extends SocketHandler
         super(api);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     protected Long handleInternally(DataObject content)
     {
