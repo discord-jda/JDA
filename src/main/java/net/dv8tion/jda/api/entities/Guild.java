@@ -2075,7 +2075,12 @@ public interface Guild extends ISnowflake
      *
      * @see    net.dv8tion.jda.api.entities.Guild.VerificationLevel
      *         VerificationLevel Enum with a list of possible verification-levels and their requirements
+     *
+     * @deprecated Bots don't need to check this and client accounts are not supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     boolean checkVerification();
 
     /**

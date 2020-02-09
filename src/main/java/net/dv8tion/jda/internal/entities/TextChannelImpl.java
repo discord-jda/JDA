@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.VerificationLevelException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -327,7 +326,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendMessage(@Nonnull CharSequence text)
     {
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         return TextChannel.super.sendMessage(text);
@@ -337,7 +335,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         // this is checked because you cannot send an empty message
@@ -351,7 +348,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         Checks.notNull(msg, "Message");
 
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         if (msg.getContentRaw().isEmpty() && !msg.getEmbeds().isEmpty())
@@ -365,7 +361,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
@@ -578,11 +573,5 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         DataObject body = DataObject.empty().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
         return new RestActionImpl<>(getJDA(), route, body);
-    }
-
-    private void checkVerification()
-    {
-        if (!getGuild().checkVerification())
-            throw new VerificationLevelException(getGuild().getVerificationLevel());
     }
 }

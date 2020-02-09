@@ -738,15 +738,13 @@ public class GuildImpl implements Guild
     }
 
     @Override
+    @Deprecated
     public boolean checkVerification()
     {
         if (getJDA().getAccountType() == AccountType.BOT)
             return true;
         if(canSendVerification)
             return true;
-
-        if (getJDA().getSelfUser().getPhoneNumber() != null)
-            return canSendVerification = true;
 
         switch (verificationLevel)
         {
