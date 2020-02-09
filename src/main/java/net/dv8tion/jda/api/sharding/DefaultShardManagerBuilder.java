@@ -70,7 +70,7 @@ public class  DefaultShardManagerBuilder
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
     protected int maxBufferSize = 2048;
-    protected int intents = GatewayIntent.ALL_INTENTS;
+    protected int intents = -1;
     protected String token = null;
     protected IntFunction<Boolean> idleProvider = null;
     protected IntFunction<OnlineStatus> statusProvider = null;

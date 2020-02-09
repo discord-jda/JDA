@@ -56,7 +56,7 @@ import java.util.concurrent.*;
 public class JDABuilder
 {
     public static final int GUILD_SUBSCRIPTIONS = GatewayIntent.getRaw(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING);
-    protected final List<Object> listeners;
+    protected final List<Object> listeners = new LinkedList<>();
 
     protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
@@ -82,7 +82,7 @@ public class JDABuilder
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
     protected int maxBufferSize = 2048;
-    protected int intents = GatewayIntent.ALL_INTENTS; // enable all events by default
+    protected int intents = -1; // don't use intents by default
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
@@ -103,10 +103,7 @@ public class JDABuilder
     @Deprecated
     @DeprecatedSince("4.2.0")
     @ReplaceWith("JDABuilder.create(GatewayIntent...)")
-    public JDABuilder()
-    {
-        this(null, GatewayIntent.ALL_INTENTS);
-    }
+    public JDABuilder() {}
 
     /**
      * Creates a JDABuilder with the predefined token.
@@ -125,7 +122,7 @@ public class JDABuilder
     @ReplaceWith("JDABuilder.create(String, GatewayIntent...)")
     public JDABuilder(@Nullable String token)
     {
-        this(token, GatewayIntent.ALL_INTENTS);
+        this.token = token;
     }
 
     /**
@@ -148,12 +145,10 @@ public class JDABuilder
     public JDABuilder(@Nonnull AccountType accountType)
     {
         Checks.check(accountType == AccountType.BOT, "Client accounts are no longer supported!");
-        this.listeners = new LinkedList<>();
     }
 
     private JDABuilder(@Nullable String token, int intents)
     {
-        this.listeners = new LinkedList<>();
         this.token = token;
         this.intents = 1 | intents;
     }

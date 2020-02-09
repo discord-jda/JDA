@@ -187,7 +187,7 @@ public class JDAImpl implements JDA
 
     public boolean isIntents()
     {
-        return client.getGatewayIntents() != GatewayIntent.ALL_INTENTS;
+        return client.getGatewayIntents() != -1;
     }
 
     public int getLargeThreshold()
