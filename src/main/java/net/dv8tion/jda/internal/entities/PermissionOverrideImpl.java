@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl
 import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
+
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
@@ -101,6 +102,12 @@ public class PermissionOverrideImpl implements PermissionOverride
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Override
+    public IPermissionHolder getPermissionHolder()
+    {
+        return (IPermissionHolder) (role ? getRole() : getMember());  // permissionHolder is no longer a field
     }
 
     @Override

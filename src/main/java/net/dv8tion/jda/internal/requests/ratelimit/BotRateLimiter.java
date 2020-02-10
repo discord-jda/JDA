@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Contract;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -78,6 +79,8 @@ public class BotRateLimiter extends RateLimiter
     private static final String UNLIMITED_BUCKET = "unlimited"; // we generate an unlimited bucket for every major parameter configuration
 
     private final ReentrantLock bucketLock = new ReentrantLock();
+    // Route -> Should we print warning for 429? AKA did we already hit it once before
+    private final Set<Route> hitRatelimit = ConcurrentHashMap.newKeySet(5);
     // Route -> Hash
     private final Map<Route, String> hash = new ConcurrentHashMap<>();
     // Hash + Major Parameter -> Bucket
@@ -215,16 +218,17 @@ public class BotRateLimiter extends RateLimiter
                 // Handle hard rate limit, pretty much just log that it happened
                 else if (response.code() == 429)
                 {
+                    boolean firstHit = hitRatelimit.add(baseRoute);
                     // Update the bucket to the new information
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
                     long retryAfter = parseLong(retryAfterHeader);
                     bucket.remaining = 0;
                     bucket.reset = getNow() + retryAfter;
-                    // don't log warning if we are switching bucket, this means it was an issue with an un-hashed route that is now resolved
-                    if (hash == null || !wasUnlimited)
-                        log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
-                    else
+                    // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
+                    if (firstHit)
                         log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                    else
+                        log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
                     return bucket;
                 }
 
@@ -415,9 +419,11 @@ public class BotRateLimiter extends RateLimiter
                     // The request went through so we can remove it
                     iterator.remove();
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
                     log.error("Encountered exception trying to execute request", ex);
+                    if (ex instanceof Error)
+                        throw (Error) ex;
                     break;
                 }
             }

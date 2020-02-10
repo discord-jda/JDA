@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -457,6 +457,27 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         checkPermission(Permission.MESSAGE_MANAGE);
         final Route.CompiledRoute route = Route.Messages.REMOVE_ALL_REACTIONS.compile(getId(), messageId);
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode)
+    {
+        Checks.notNull(messageId, "Message ID");
+        Checks.notNull(unicode, "Emote Name");
+        checkPermission(Permission.MESSAGE_MANAGE);
+
+        String code = EncodingUtil.encodeReaction(unicode);
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(getId(), messageId, code);
+        return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+        return clearReactionsById(messageId, emote.getName() + ":" + emote.getId());
     }
 
     @Nonnull

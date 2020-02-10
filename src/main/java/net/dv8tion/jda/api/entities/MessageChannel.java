@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -470,9 +470,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The send request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNAUTHORIZED UNAUTHORIZED}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the recipient User blocked you</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
@@ -619,9 +616,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The send request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} or
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNAUTHORIZED UNAUTHORIZED}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the recipient User blocked you</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
