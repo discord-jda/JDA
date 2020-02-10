@@ -520,6 +520,8 @@ public class JDAImpl implements JDA
     @Override
     public DirectAudioControllerImpl getDirectAudioController()
     {
+        if (!isIntent(GatewayIntent.GUILD_VOICE_STATES))
+            throw new IllegalStateException("Cannot use audio features with disabled GUILD_VOICE_STATES intent!");
         return this.audioController;
     }
 

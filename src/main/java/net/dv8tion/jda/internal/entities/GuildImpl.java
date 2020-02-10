@@ -670,6 +670,8 @@ public class GuildImpl implements Guild
     @Override
     public AudioManager getAudioManager()
     {
+        if (!getJDA().isIntent(GatewayIntent.GUILD_VOICE_STATES))
+            throw new IllegalStateException("Cannot use audio features with disabled GUILD_VOICE_STATES intent!");
         final AbstractCacheView<AudioManager> managerMap = getJDA().getAudioManagersView();
         AudioManager mng = managerMap.get(id);
         if (mng == null)

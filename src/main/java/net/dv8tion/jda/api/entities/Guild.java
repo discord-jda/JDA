@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -1957,6 +1958,9 @@ public interface Guild extends ISnowflake
      * <br>If no AudioManager exists for this Guild, this will create a new one.
      * <br>This operation is synchronized on all audio managers for this JDA instance,
      * this means that calling getAudioManager() on any other guild while a thread is accessing this method may be locked.
+     *
+     * @throws IllegalStateException
+     *         If {@link GatewayIntent#GUILD_VOICE_STATES} is disabled
      *
      * @return The AudioManager for this Guild.
      *

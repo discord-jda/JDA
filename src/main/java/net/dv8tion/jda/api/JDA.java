@@ -396,6 +396,9 @@ public interface JDA
      * <p>The correct way to open and close an audio connection is through the {@link Guild Guild's}
      * {@link AudioManager}.
      *
+     * @throws IllegalStateException
+     *         If {@link GatewayIntent#GUILD_VOICE_STATES} is disabled
+     *
      * @return The {@link DirectAudioController} for this JDA instance
      *
      * @since 4.0.0
