@@ -102,6 +102,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class ListenerAdapter implements EventListener
 {
+    //TODO: Add digest events
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
@@ -214,6 +215,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {}
 
     //Guild Update Events
+    public void onGuildUpdateDigest(@Nonnull GuildUpdateDigestEvent event) {}
     public void onGuildUpdateAfkChannel(@Nonnull GuildUpdateAfkChannelEvent event) {}
     public void onGuildUpdateSystemChannel(@Nonnull GuildUpdateSystemChannelEvent event) {}
     public void onGuildUpdateAfkTimeout(@Nonnull GuildUpdateAfkTimeoutEvent event) {}
@@ -508,6 +510,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUnban((GuildUnbanEvent) event);
 
         //Guild Update Events
+        else if (event instanceof GuildUpdateDigestEvent)
+            onGuildUpdateDigest((GuildUpdateDigestEvent) event);
         else if (event instanceof GuildUpdateAfkChannelEvent)
             onGuildUpdateAfkChannel((GuildUpdateAfkChannelEvent) event);
         else if (event instanceof GuildUpdateSystemChannelEvent)

@@ -19,22 +19,21 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.entities.data.MutableGuildData;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
+import net.dv8tion.jda.api.entities.data.id.MemberId;
+import net.dv8tion.jda.api.entities.data.provider.DataProvider;
+import net.dv8tion.jda.api.entities.data.provider.SnowflakeDataProvider;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.api.utils.SessionController;
-import net.dv8tion.jda.api.utils.SessionControllerAdapter;
+import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
-import net.dv8tion.jda.internal.utils.config.MetaConfig;
-import net.dv8tion.jda.internal.utils.config.SessionConfig;
-import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
+import net.dv8tion.jda.internal.utils.config.*;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
@@ -58,6 +57,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
     protected final AccountType accountType;
+    protected final DataProviderConfig dataProviderConfig = new DataProviderConfig();
 
     protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
@@ -853,6 +853,28 @@ public class JDABuilder
         return this;
     }
 
+    @Nonnull
+    public JDABuilder setDataProviderMode(@Nonnull DataMode mode)
+    {
+        Checks.notNull(mode, "Mode");
+        dataProviderConfig.setMode(mode);
+        return this;
+    }
+
+    @Nonnull
+    public JDABuilder setGuildDataProvider(@Nullable SnowflakeDataProvider<? extends MutableGuildData> provider)
+    {
+        this.dataProviderConfig.setGuildProvider(provider);
+        return this;
+    }
+
+    @Nonnull
+    public JDABuilder setMemberDataProvider(@Nullable DataProvider<? super MemberId, ? extends MutableMemberData> provider)
+    {
+        this.dataProviderConfig.setMemberProvider(provider);
+        return this;
+    }
+
     /**
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
      * <br>By default this uses {@link ChunkingFilter#ALL}.
@@ -991,7 +1013,7 @@ public class JDABuilder
         SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
-        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, dataProviderConfig);
         jda.setChunkingFilter(chunkingFilter);
 
         if (eventManager != null)

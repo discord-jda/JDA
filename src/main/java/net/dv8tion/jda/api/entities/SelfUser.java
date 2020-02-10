@@ -29,7 +29,6 @@ import javax.annotation.Nullable;
  */
 public interface SelfUser extends User
 {
-
     /**
      * The status of this account's verification.
      * (Have you accepted the verification email)

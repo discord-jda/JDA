@@ -22,15 +22,19 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogChange;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.data.MemberData;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateDigestEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
@@ -160,7 +164,7 @@ public class EntityBuilder
         final String name = guildJson.getString("name", "");
         final String iconId = guildJson.getString("icon", null);
         final String splashId = guildJson.getString("splash", null);
-        final String region = guildJson.getString("region", null);
+        final String region = guildJson.getString("region", Region.UNKNOWN.getKey());
         final String description = guildJson.getString("description", null);
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
@@ -553,12 +557,14 @@ public class EntityBuilder
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
     {
+        MutableMemberData data = member.getMutableMemberData();
+        MemberData oldData = data.copy();
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
-        long responseNumber = getJDA().getResponseTotal();
+        JDAImpl jda = getJDA();
+        long responseNumber = jda.getResponseTotal();
         if (newRoles != null)
-        {
             updateMemberRoles(member, newRoles, responseNumber);
-        }
+
         if (content.hasKey("nick"))
         {
             String oldNick = member.getNickname();
@@ -566,9 +572,9 @@ public class EntityBuilder
             if (!Objects.equals(oldNick, newNick))
             {
                 member.setNickname(newNick);
-                getJDA().handleEvent(
+                jda.handleEvent(
                     new GuildMemberUpdateNicknameEvent(
-                        getJDA(), responseNumber,
+                        jda, responseNumber,
                         member, oldNick));
             }
         }
@@ -584,11 +590,19 @@ public class EntityBuilder
             {
                 OffsetDateTime oldTime = member.getTimeBoosted();
                 member.setBoostDate(epoch);
-                getJDA().handleEvent(
+                jda.handleEvent(
                     new GuildMemberUpdateBoostTimeEvent(
-                        getJDA(), responseNumber,
+                        jda, responseNumber,
                         member, oldTime));
             }
+        }
+
+        if (!data.equals(oldData))
+        {
+            jda.handleEvent(
+                new GuildMemberUpdateDigestEvent(
+                    jda, responseNumber,
+                    member, oldData));
         }
     }
 

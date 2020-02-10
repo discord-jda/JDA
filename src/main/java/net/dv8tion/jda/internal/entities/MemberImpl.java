@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.data.MutableMemberData;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -38,18 +39,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class MemberImpl implements Member
 {
-    private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
+    public static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     private final SnowflakeReference<Guild> guild;
     private final User user;
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
-    private final Map<ClientType, OnlineStatus> clientStatus;
-
-    private String nickname;
-    private long joinDate, boostDate;
-    private List<Activity> activities = null;
-    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+    private final MutableMemberData data;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -59,7 +55,12 @@ public class MemberImpl implements Member
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
-        this.clientStatus = cacheOnline ? Collections.synchronizedMap(new EnumMap<>(ClientType.class)) : null;
+        this.data = api.provideMemberData(user.getIdLong(), guild.getIdLong());
+    }
+
+    public MutableMemberData getMutableMemberData()
+    {
+        return data;
     }
 
     @Nonnull
@@ -87,13 +88,14 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getTimeJoined()
     {
-        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
+        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(data.getTimeBoosted()), OFFSET);
     }
 
     @Nullable
     @Override
     public OffsetDateTime getTimeBoosted()
     {
+        long boostDate = this.data.getTimeBoosted();
         return boostDate != 0 ? OffsetDateTime.ofInstant(Instant.ofEpochMilli(boostDate), OFFSET) : null;
     }
 
@@ -107,14 +109,14 @@ public class MemberImpl implements Member
     @Override
     public List<Activity> getActivities()
     {
-        return activities == null || activities.isEmpty() ? Collections.emptyList() : activities;
+        return this.data.getActivities();
     }
 
     @Nonnull
     @Override
     public OnlineStatus getOnlineStatus()
     {
-        return onlineStatus;
+        return data.getOnlineStatus();
     }
 
     @Nonnull
@@ -122,32 +124,40 @@ public class MemberImpl implements Member
     public OnlineStatus getOnlineStatus(@Nonnull ClientType type)
     {
         Checks.notNull(type, "Type");
-        if (this.clientStatus == null || this.clientStatus.isEmpty())
-            return OnlineStatus.OFFLINE;
-        OnlineStatus status = this.clientStatus.get(type);
-        return status == null ? OnlineStatus.OFFLINE : status;
+        return data.getOnlineStatus(type);
     }
 
     @Nonnull
     @Override
     public EnumSet<ClientType> getActiveClients()
     {
-        if (clientStatus == null || clientStatus.isEmpty())
-            return EnumSet.noneOf(ClientType.class);
-        return EnumSet.copyOf(clientStatus.keySet());
+        EnumSet<ClientType> clients = EnumSet.noneOf(ClientType.class);
+        for (ClientType type : ClientType.values())
+        {
+            switch (getOnlineStatus(type))
+            {
+            case UNKNOWN:
+            case OFFLINE:
+            case INVISIBLE:
+                continue;
+            default:
+                clients.add(type);
+            }
+        }
+        return clients;
     }
 
     @Override
     public String getNickname()
     {
-        return nickname;
+        return this.data.getNickname();
     }
 
     @Nonnull
     @Override
     public String getEffectiveName()
     {
-        return nickname != null ? nickname : getUser().getName();
+        return getNickname() != null ? getNickname() : getUser().getName();
     }
 
     @Nonnull
@@ -277,42 +287,37 @@ public class MemberImpl implements Member
 
     public MemberImpl setNickname(String nickname)
     {
-        this.nickname = nickname;
+        this.data.setNickname(nickname);
         return this;
     }
 
     public MemberImpl setJoinDate(long joinDate)
     {
-        this.joinDate = joinDate;
+        this.data.setTimeBoosted(joinDate);
         return this;
     }
 
     public MemberImpl setBoostDate(long boostDate)
     {
-        this.boostDate = boostDate;
+        this.data.setTimeBoosted(boostDate);
         return this;
     }
 
     public MemberImpl setActivities(List<Activity> activities)
     {
-        this.activities = Collections.unmodifiableList(activities);
+        this.data.setActivities(activities);
         return this;
     }
 
     public MemberImpl setOnlineStatus(ClientType type, OnlineStatus status)
     {
-        if (this.clientStatus == null || type == ClientType.UNKNOWN || type == null)
-            return this;
-        if (status == null || status == OnlineStatus.UNKNOWN || status == OnlineStatus.OFFLINE)
-            this.clientStatus.remove(type);
-        else
-            this.clientStatus.put(type, status);
+        this.data.setOnlineStatus(type, status);
         return this;
     }
 
     public MemberImpl setOnlineStatus(OnlineStatus onlineStatus)
     {
-        this.onlineStatus = onlineStatus;
+        this.data.setOnlineStatus(onlineStatus);
         return this;
     }
 
@@ -323,7 +328,7 @@ public class MemberImpl implements Member
 
     public long getBoostDateRaw()
     {
-        return boostDate;
+        return data.getTimeBoosted();
     }
 
     public boolean isIncomplete()
@@ -361,7 +366,7 @@ public class MemberImpl implements Member
     @Override
     public String getAsMention()
     {
-        return (nickname == null ? "<@" : "<@!") + user.getId() + '>';
+        return getNickname() == null ? user.getAsMention() : "<@!" + user.getId() + '>';
     }
 
     @Nullable

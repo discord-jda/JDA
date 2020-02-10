@@ -31,10 +31,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.ShardCacheViewImpl;
-import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
-import net.dv8tion.jda.internal.utils.config.MetaConfig;
-import net.dv8tion.jda.internal.utils.config.SessionConfig;
-import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
+import net.dv8tion.jda.internal.utils.config.*;
 import net.dv8tion.jda.internal.utils.config.sharding.*;
 import okhttp3.OkHttpClient;
 import org.slf4j.Logger;
@@ -487,7 +484,7 @@ public class DefaultShardManager implements ShardManager
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         MetaConfig metaConfig = new MetaConfig(this.metaConfig.getMaxBufferSize(), this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
-        final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
+        final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig, DataProviderConfig.getDefault()); //TODO: Don't use default
         jda.setChunkingFilter(chunkingFilter);
         threadingConfig.init(jda::getIdentifierString);
 
