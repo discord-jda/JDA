@@ -162,7 +162,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public void unloadMembers()
+    public void updateMemberCache()
     {
         try (UnlockHook h = memberCache.writeLock())
         {
@@ -170,6 +170,18 @@ public class GuildImpl implements Guild
             Set<Member> members = memberCache.asSet();
             members.forEach(m -> builder.updateMemberCache((MemberImpl) m));
         }
+    }
+
+    @Override
+    public boolean unloadMember(long userId)
+    {
+        if (userId == api.getSelfUser().getIdLong())
+            return false;
+        MemberImpl member = (MemberImpl) getMemberById(userId);
+        if (member == null)
+            return false;
+        api.getEntityBuilder().updateMemberCache(member, true);
+        return true;
     }
 
     @Override

@@ -50,6 +50,7 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
@@ -75,6 +76,7 @@ import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -458,6 +460,28 @@ public class JDAImpl implements JDA
     public EnumSet<GatewayIntent> getGatewayIntents()
     {
         return GatewayIntent.getIntents(client.getGatewayIntents());
+    }
+
+    @Override
+    public boolean unloadUser(long userId)
+    {
+        if (userId == selfUser.getIdLong())
+            return false;
+        User user = getUserById(userId);
+        if (user == null)
+            return false;
+
+        AtomicBoolean updated = new AtomicBoolean(false);
+        user.getMutualGuilds()
+            .stream()
+            .map(guild -> guild.getMember(user))
+            .filter(Objects::nonNull)
+            .map(MemberImpl.class::cast)
+            .forEach(member -> {
+                updated.set(true);
+                entityBuilder.updateMemberCache(member, true);
+            });
+        return true;
     }
 
     @Override

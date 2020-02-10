@@ -189,7 +189,21 @@ public interface Guild extends ISnowflake
      * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session.
      * <br>This can be useful if used in combination with {@link #retrieveMembers()}.
      */
-    void unloadMembers();
+    void updateMemberCache();
+
+    /**
+     * Attempts to remove the user with the provided id from the member cache.
+     * <br>If you attempt to remove the {@link JDA#getSelfUser() SelfUser} this will simply return {@code false}.
+     *
+     * <p>This should be used by an implementation of {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * as an upstream request to remove a member.
+     *
+     * @param  userId
+     *         The target user id
+     *
+     * @return True, if the cache was changed
+     */
+    boolean unloadMember(long userId);
 
     /**
      * The expected member count for this guild.

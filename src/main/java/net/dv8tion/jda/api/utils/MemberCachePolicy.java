@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.LRUCachePolicy;
 
 import javax.annotation.Nonnull;
 
@@ -29,7 +30,7 @@ import javax.annotation.Nonnull;
  * <br>This will be called throughout JDA when a member gets constructed or modified and allows for a dynamically
  * adjusting cache of users.
  *
- * <p>When {@link Guild#unloadMembers()} is called, the configured policy will be used to unload any members that the policy
+ * <p>When {@link Guild#updateMemberCache()} is called, the configured policy will be used to unload any members that the policy
  * has decided not to cache.
  *
  * <p>If {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled you should not use {@link #ALL} or {@link #ONLINE}.
@@ -179,5 +180,25 @@ public interface MemberCachePolicy
         for (MemberCachePolicy p : policies)
             policy = policy.and(p);
         return policy;
+    }
+
+    /**
+     * Implements a Least-Recently-Used (LRU) cache (independent of guilds).
+     * <br>The cache policy will keep track of how many members are currently cached and will removed the least recently
+     * cached member once the maximum is reached.
+     *
+     * @param  max
+     *         The maximum amount of members to keep in cache.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided maximum is not greater than 0
+     *
+     * @return The LRU policy with the provided maximum
+     */
+    @Nonnull
+    static MemberCachePolicy lru(int max)
+    {
+        Checks.positive(max, "Max");
+        return new LRUCachePolicy(max);
     }
 }

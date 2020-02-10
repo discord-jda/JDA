@@ -373,10 +373,15 @@ public class EntityBuilder
 
     public boolean updateMemberCache(MemberImpl member)
     {
+        return updateMemberCache(member, false);
+    }
+
+    public boolean updateMemberCache(MemberImpl member, boolean forceRemove)
+    {
         GuildImpl guild = member.getGuild();
         UserImpl user = (UserImpl) member.getUser();
         MemberCacheViewImpl membersView = guild.getMembersView();
-        if (!getJDA().cacheMember(member))
+        if (forceRemove || !getJDA().cacheMember(member))
         {
             membersView.remove(member.getIdLong());
             if (!user.isFake() && user.getMutualGuilds().isEmpty())
@@ -387,6 +392,16 @@ public class EntityBuilder
                 if (user.hasPrivateChannel())
                     getJDA().getPrivateChannelsView().remove(user.getPrivateChannel().getIdLong());
             }
+
+            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+            if (voiceState != null)
+            {
+                VoiceChannelImpl connectedChannel = (VoiceChannelImpl) voiceState.getChannel();
+                if (connectedChannel != null)
+                    connectedChannel.getConnectedMembersMap().remove(member.getIdLong());
+                voiceState.setConnectedChannel(null);
+            }
+
             return false;
         }
         else if (guild.getMemberById(member.getIdLong()) != null) return true;

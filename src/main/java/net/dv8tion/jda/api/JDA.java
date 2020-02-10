@@ -213,6 +213,20 @@ public interface JDA
     EnumSet<GatewayIntent> getGatewayIntents();
 
     /**
+     * Attempts to remove the user with the provided id from the cache.
+     * <br>If you attempt to remove the {@link #getSelfUser() SelfUser} this will simply return {@code false}.
+     *
+     * <p>This should be used by an implementation of {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * as an upstream request to remove a member.
+     *
+     * @param  userId
+     *         The target user id
+     *
+     * @return True, if the cache was changed
+     */
+    boolean unloadUser(long userId);
+
+    /**
      * The time in milliseconds that discord took to respond to our last heartbeat
      * <br>This roughly represents the WebSocket ping of this session
      *

@@ -95,9 +95,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
             voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(member.getUser().getIdLong());
             getJDA().handleEvent(
-                    new GuildVoiceLeaveEvent(
-                            getJDA(), responseNumber,
-                            member, channel));
+                new GuildVoiceLeaveEvent(
+                    getJDA(), responseNumber,
+                    member, channel));
         }
 
         //The user is not in a different guild that we share
