@@ -22,6 +22,11 @@ import net.dv8tion.jda.api.entities.Invite;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that an {@link Invite Invite} was created in a {@link net.dv8tion.jda.api.entities.Invite.Guild Guild}.
+ *
+ * <p>Can be used to track invites for moderation purposes.
+ */
 public class GuildInviteCreateEvent extends GenericGuildInviteEvent
 {
     private final Invite invite;
@@ -32,6 +37,11 @@ public class GuildInviteCreateEvent extends GenericGuildInviteEvent
         this.invite = invite;
     }
 
+    /**
+     * The invite which was created.
+     *
+     * @return {@link Invite}
+     */
     @Nonnull
     public Invite getInvite()
     {
