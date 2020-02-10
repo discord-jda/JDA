@@ -21,6 +21,9 @@ import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.data.MutableGuildData;
 import net.dv8tion.jda.api.entities.data.MutableMemberData;
+import net.dv8tion.jda.api.entities.data.id.MemberId;
+import net.dv8tion.jda.api.entities.data.provider.DataProvider;
+import net.dv8tion.jda.api.entities.data.provider.SnowflakeDataProvider;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
@@ -859,14 +862,14 @@ public class JDABuilder
     }
 
     @Nonnull
-    public JDABuilder setGuildDataProvider(@Nullable DataProvider<? extends MutableGuildData> provider)
+    public JDABuilder setGuildDataProvider(@Nullable SnowflakeDataProvider<? extends MutableGuildData> provider)
     {
         this.dataProviderConfig.setGuildProvider(provider);
         return this;
     }
 
     @Nonnull
-    public JDABuilder setMemberDataProvider(@Nullable DataProvider<? extends MutableMemberData> provider)
+    public JDABuilder setMemberDataProvider(@Nullable DataProvider<? super MemberId, ? extends MutableMemberData> provider)
     {
         this.dataProviderConfig.setMemberProvider(provider);
         return this;

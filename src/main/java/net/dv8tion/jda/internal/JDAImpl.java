@@ -1023,8 +1023,8 @@ public class JDAImpl implements JDA
         return dataProviderConfig.provideGuildData(id, metaConfig.getCacheFlags());
     }
 
-    public MutableMemberData provideMemberData(long id)
+    public MutableMemberData provideMemberData(long userId, long guildId)
     {
-        return dataProviderConfig.provideMemberData(id, metaConfig.getCacheFlags());
+        return dataProviderConfig.provideMemberData(userId, guildId, metaConfig.getCacheFlags());
     }
 }

@@ -37,41 +37,12 @@ public class LightMemberData implements MutableMemberData
         return this;
     }
 
-    @Override
-    public String setNickname(String nickname)
-    {
-        return nickname;
-    }
-
-    @Override
-    public long setTimeJoined(long time)
-    {
-        return time;
-    }
-
-    @Override
-    public long setTimeBoosted(long time)
-    {
-        return time;
-    }
-
-    @Override
-    public List<Activity> setActivities(List<Activity> activities)
-    {
-        return activities;
-    }
-
-    @Override
-    public OnlineStatus setOnlineStatus(OnlineStatus status)
-    {
-        return status;
-    }
-
-    @Override
-    public OnlineStatus setOnlineStatus(ClientType type, OnlineStatus status)
-    {
-        return status;
-    }
+    public void setNickname(String nickname) {}
+    public void setTimeJoined(long time) {}
+    public void setTimeBoosted(long time) {}
+    public void setActivities(@Nonnull List<Activity> activities) {}
+    public void setOnlineStatus(@Nonnull OnlineStatus status) {}
+    public void setOnlineStatus(@Nonnull ClientType type, @Nonnull OnlineStatus status) {}
 
     @Override
     public String getNickname()
@@ -91,18 +62,21 @@ public class LightMemberData implements MutableMemberData
         return 0;
     }
 
+    @Nonnull
     @Override
     public List<Activity> getActivities()
     {
         return Collections.emptyList();
     }
 
+    @Nonnull
     @Override
     public OnlineStatus getOnlineStatus()
     {
         return OnlineStatus.UNKNOWN;
     }
 
+    @Nonnull
     @Override
     public OnlineStatus getOnlineStatus(ClientType type)
     {

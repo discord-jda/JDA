@@ -32,12 +32,12 @@ import java.util.List;
 
 public class RichMemberData implements MutableMemberData
 {
+    private final EnumMap<ClientType, OnlineStatus> clientStatus;
+
     private String nickname;
     private long timeJoined, timeBoosted;
     private OnlineStatus onlineStatus = OnlineStatus.UNKNOWN;
-
     private List<Activity> activities;
-    private EnumMap<ClientType, OnlineStatus> clientStatus;
 
     public RichMemberData(EnumSet<CacheFlag> flags)
     {
@@ -60,62 +60,49 @@ public class RichMemberData implements MutableMemberData
         data.setTimeBoosted(timeBoosted);
         data.setActivities(activities);
         data.setOnlineStatus(onlineStatus);
-        clientStatus.forEach(data::setOnlineStatus);
+        if (clientStatus != null)
+            clientStatus.forEach(data::setOnlineStatus);
         return data;
     }
 
     @Override
-    public String setNickname(String nickname)
+    public void setNickname(String nickname)
     {
-        String oldNick = this.nickname;
         this.nickname = nickname;
-        return oldNick;
     }
 
     @Override
-    public long setTimeJoined(long time)
+    public void setTimeJoined(long time)
     {
-        long oldTime = this.timeJoined;
         this.timeJoined = time;
-        return oldTime;
     }
 
     @Override
-    public long setTimeBoosted(long time)
+    public void setTimeBoosted(long time)
     {
-        long oldTime = this.timeBoosted;
         this.timeBoosted = time;
-        return oldTime;
     }
 
-    @Nonnull
     @Override
-    public List<Activity> setActivities(@Nonnull List<Activity> activities)
+    public void setActivities(@Nonnull List<Activity> activities)
     {
         if (this.activities == null)
-            return activities;
-        List<Activity> oldActivities = this.activities;
+            return;
         this.activities = activities;
-        return oldActivities;
     }
 
-    @Nonnull
     @Override
-    public OnlineStatus setOnlineStatus(@Nonnull OnlineStatus status)
+    public void setOnlineStatus(@Nonnull OnlineStatus status)
     {
-        OnlineStatus oldStatus = this.onlineStatus;
         this.onlineStatus = status;
-        return oldStatus;
     }
 
-    @Nonnull
     @Override
-    public OnlineStatus setOnlineStatus(@Nonnull ClientType type, @Nonnull OnlineStatus status)
+    public void setOnlineStatus(@Nonnull ClientType type, @Nonnull OnlineStatus status)
     {
         if (this.clientStatus == null)
-            return status;
-        OnlineStatus oldStatus = this.clientStatus.put(type, status);
-        return oldStatus == null ? OnlineStatus.OFFLINE : oldStatus;
+            return;
+        this.clientStatus.put(type, status);
     }
 
     @Nullable

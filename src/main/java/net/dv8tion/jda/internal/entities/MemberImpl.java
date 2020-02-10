@@ -55,7 +55,7 @@ public class MemberImpl implements Member
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
-        this.data = api.provideMemberData(user.getIdLong());
+        this.data = api.provideMemberData(user.getIdLong(), guild.getIdLong());
     }
 
     public MutableMemberData getMutableMemberData()

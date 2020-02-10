@@ -35,117 +35,23 @@ public class LightGuildData implements MutableGuildData
         return this;
     }
 
-    // EQUALS = IDENTITY (see Object)
-
-    @Override
-    public String setIconId(String id)
-    {
-        return id;
-    }
-
-    @Override
-    public String setSplashId(String id)
-    {
-        return id;
-    }
-
-    @Override
-    public String setDescription(String description)
-    {
-        return description;
-    }
-
-    @Override
-    public String setBannerId(String id)
-    {
-        return id;
-    }
-
-    @Nonnull
-    @Override
-    public Guild.BoostTier setBoostTier(@Nonnull Guild.BoostTier tier)
-    {
-        return tier;
-    }
-
-    @Override
-    public int setBoostCount(int count)
-    {
-        return count;
-    }
-
-    @Override
-    public int setMaxMembers(int members)
-    {
-        return members;
-    }
-
-    @Override
-    public int setMaxPresences(int presences)
-    {
-        return presences;
-    }
-
-    @Override
-    public long setAfkChannelId(long id)
-    {
-        return id;
-    }
-
-    @Override
-    public long setSystemChannelId(long id)
-    {
-        return id;
-    }
-
-    @Nonnull
-    @Override
-    public Guild.Timeout setAfkTimeout(@Nonnull Guild.Timeout timeout)
-    {
-        return timeout;
-    }
-
-    @Nonnull
-    @Override
-    public Guild.VerificationLevel setVerificationLevel(@Nonnull Guild.VerificationLevel level)
-    {
-        return level;
-    }
-
-    @Nonnull
-    @Override
-    public Guild.NotificationLevel setNotificationLevel(@Nonnull Guild.NotificationLevel level)
-    {
-        return level;
-    }
-
-    @Nonnull
-    @Override
-    public Guild.ExplicitContentLevel setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level)
-    {
-        return level;
-    }
-
-    @Nonnull
-    @Override
-    public Guild.MFALevel setMFALevel(@Nonnull Guild.MFALevel level)
-    {
-        return level;
-    }
-
-    @Nonnull
-    @Override
-    public String setRegion(@Nonnull String region)
-    {
-        return region;
-    }
-
-    @Nullable
-    @Override
-    public String setVanityCode(@Nullable String code)
-    {
-        return code;
-    }
+    public void setIconId(String id) {}
+    public void setSplashId(String id) {}
+    public void setDescription(String description) {}
+    public void setBannerId(String id) {}
+    public void setBoostTier(@Nonnull Guild.BoostTier tier) {}
+    public void setBoostCount(int count) {}
+    public void setMaxMembers(int members) {}
+    public void setMaxPresences(int presences) {}
+    public void setAfkChannelId(long id) {}
+    public void setSystemChannelId(long id) {}
+    public void setAfkTimeout(@Nonnull Guild.Timeout timeout) {}
+    public void setVerificationLevel(@Nonnull Guild.VerificationLevel level) {}
+    public void setNotificationLevel(@Nonnull Guild.NotificationLevel level) {}
+    public void setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level) {}
+    public void setMFALevel(@Nonnull Guild.MFALevel level) {}
+    public void setRegion(@Nonnull String region) {}
+    public void setVanityCode(@Nullable String code) {}
 
     @Override
     public String getIconId()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.data;
+package net.dv8tion.jda.api.entities.data.id;
 
-public interface MutableSelfUserData extends SelfUserData, MutableUserData
+public class MemberId
 {
-    boolean setVerified(boolean verified);
-    boolean setMfaEnabled(boolean enabled);
-    boolean setMobile(boolean mobile);
-    boolean setNitro(boolean nitro);
-    String setEmail(String email);
-    String setPhoneNumber(String number);
+    private final long userId;
+    private final long guildId;
+
+    public MemberId(long userId, long guildId)
+    {
+        this.userId = userId;
+        this.guildId = guildId;
+    }
+
+    public long getUserId()
+    {
+        return userId;
+    }
+
+    public long getGuildId()
+    {
+        return guildId;
+    }
 }

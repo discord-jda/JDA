@@ -18,8 +18,10 @@ package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.api.entities.data.MutableGuildData;
 import net.dv8tion.jda.api.entities.data.MutableMemberData;
+import net.dv8tion.jda.api.entities.data.id.MemberId;
+import net.dv8tion.jda.api.entities.data.provider.DataProvider;
+import net.dv8tion.jda.api.entities.data.provider.SnowflakeDataProvider;
 import net.dv8tion.jda.api.utils.DataMode;
-import net.dv8tion.jda.api.utils.DataProvider;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.util.EnumSet;
@@ -29,10 +31,10 @@ public class DataProviderConfig
     private static final DataProviderConfig DEFAULT = new DataProviderConfig();
 
     private DataMode mode = DataMode.RICH;
-    private DataProvider<? extends MutableGuildData> guildProvider = MutableGuildData.RICH_PROVIDER;
-    private DataProvider<? extends MutableMemberData> memberProvider = MutableMemberData.RICH_PROVIDER;
+    private SnowflakeDataProvider<? extends MutableGuildData> guildProvider = MutableGuildData.RICH_PROVIDER;
+    private DataProvider<? super MemberId, ? extends MutableMemberData> memberProvider = MutableMemberData.RICH_PROVIDER;
 
-    public void setGuildProvider(DataProvider<? extends MutableGuildData> provider)
+    public void setGuildProvider(SnowflakeDataProvider<? extends MutableGuildData> provider)
     {
         if (provider == null)
         {
@@ -52,7 +54,7 @@ public class DataProviderConfig
         return guildProvider.provide(guildId, flags);
     }
 
-    public void setMemberProvider(DataProvider<? extends MutableMemberData> provider)
+    public void setMemberProvider(DataProvider<? super MemberId, ? extends MutableMemberData> provider)
     {
         if (provider == null)
         {
@@ -67,9 +69,9 @@ public class DataProviderConfig
         }
     }
 
-    public MutableMemberData provideMemberData(long userId, EnumSet<CacheFlag> flag)
+    public MutableMemberData provideMemberData(long userId, long guildId, EnumSet<CacheFlag> flag)
     {
-        return memberProvider.provide(userId, flag);
+        return memberProvider.provide(new MemberId(userId, guildId), flag);
     }
 
     public void setMode(DataMode mode)

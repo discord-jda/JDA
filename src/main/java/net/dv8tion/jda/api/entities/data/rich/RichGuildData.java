@@ -103,147 +103,105 @@ public class RichGuildData implements MutableGuildData
     }
 
     @Override
-    public String setIconId(String id)
+    public void setIconId(String id)
     {
-        String oldIcon = this.iconId;
         this.iconId = id;
-        return oldIcon;
     }
 
     @Override
-    public String setSplashId(String id)
+    public void setSplashId(String id)
     {
-        String oldSplash = this.splashId;
         this.splashId = id;
-        return oldSplash;
     }
 
     @Override
-    public String setDescription(String description)
+    public void setDescription(String description)
     {
-        String oldDescription = this.description;
         this.description = description;
-        return oldDescription;
     }
 
     @Override
-    public String setBannerId(String id)
+    public void setBannerId(String id)
     {
-        String oldBanner = this.bannerId;
         this.bannerId = id;
-        return oldBanner;
     }
 
-    @Nonnull
     @Override
-    public Guild.BoostTier setBoostTier(@Nonnull Guild.BoostTier tier)
+    public void setBoostTier(@Nonnull Guild.BoostTier tier)
     {
-        Guild.BoostTier oldTier = this.boostTier;
         this.boostTier = tier;
-        return oldTier;
     }
 
     @Override
-    public int setBoostCount(int count)
+    public void setBoostCount(int count)
     {
-        int oldCount = this.boostCount;
         this.boostCount = count;
-        return count;
     }
 
     @Override
-    public int setMaxMembers(int members)
+    public void setMaxMembers(int members)
     {
-        int oldMax = this.maxMembers;
         this.maxMembers = members;
-        return oldMax;
     }
 
     @Override
-    public int setMaxPresences(int presences)
+    public void setMaxPresences(int presences)
     {
-        int oldMax = this.maxPresences;
         this.maxPresences = presences;
-        return oldMax;
     }
 
     @Override
-    public long setAfkChannelId(long id)
+    public void setAfkChannelId(long id)
     {
-        long oldId = this.afkChannelId;
         this.afkChannelId = id;
-        return oldId;
     }
 
     @Override
-    public long setSystemChannelId(long id)
+    public void setSystemChannelId(long id)
     {
-        long oldId = this.systemChannelId;
         this.systemChannelId = id;
-        return oldId;
     }
 
-    @Nonnull
     @Override
-    public Guild.Timeout setAfkTimeout(@Nonnull Guild.Timeout timeout)
+    public void setAfkTimeout(@Nonnull Guild.Timeout timeout)
     {
-        Guild.Timeout oldTimeout = this.afkTimeout;
         this.afkTimeout = timeout;
-        return oldTimeout;
     }
 
-    @Nonnull
     @Override
-    public Guild.VerificationLevel setVerificationLevel(@Nonnull Guild.VerificationLevel level)
+    public void setVerificationLevel(@Nonnull Guild.VerificationLevel level)
     {
-        Guild.VerificationLevel oldLevel = this.verificationLevel;
         this.verificationLevel = level;
-        return oldLevel;
     }
 
-    @Nonnull
     @Override
-    public Guild.NotificationLevel setNotificationLevel(@Nonnull Guild.NotificationLevel level)
+    public void setNotificationLevel(@Nonnull Guild.NotificationLevel level)
     {
-        Guild.NotificationLevel oldLevel = this.notificationLevel;
         this.notificationLevel = level;
-        return oldLevel;
     }
 
-    @Nonnull
     @Override
-    public Guild.ExplicitContentLevel setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level)
+    public void setExplicitContentLevel(@Nonnull Guild.ExplicitContentLevel level)
     {
-        Guild.ExplicitContentLevel oldLevel = this.explicitContentLevel;
         this.explicitContentLevel = level;
-        return oldLevel;
     }
 
-    @Nonnull
     @Override
-    public Guild.MFALevel setMFALevel(@Nonnull Guild.MFALevel level)
+    public void setMFALevel(@Nonnull Guild.MFALevel level)
     {
-        Guild.MFALevel oldLevel = this.mfaLevel;
         this.mfaLevel = level;
-        return oldLevel;
     }
 
-    @Nonnull
     @Override
-    public String setRegion(@Nonnull String region)
+    public void setRegion(@Nonnull String region)
     {
-        String oldRegion = this.region;
         this.region = region;
-        return oldRegion;
     }
 
-    @Nullable
     @Override
-    public String setVanityCode(@Nullable String code)
+    public void setVanityCode(@Nullable String code)
     {
-        String oldCode = this.vanityCode;
         this.vanityCode = code;
-        return oldCode;
     }
 
     @Override

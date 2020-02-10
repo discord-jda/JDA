@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities.data;
+package net.dv8tion.jda.api.entities.data.provider;
 
-public interface MutableRoleData extends RoleData
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
+
+import javax.annotation.Nonnull;
+import java.util.EnumSet;
+
+public interface SnowflakeDataProvider<T>
 {
-    int setColor(int color);
-    String setName(String name);
+    @Nonnull
+    T provide(long id, @Nonnull EnumSet<CacheFlag> flags);
 }
