@@ -481,7 +481,7 @@ public class JDAImpl implements JDA
                 updated.set(true);
                 entityBuilder.updateMemberCache(member, true);
             });
-        return true;
+        return updated.get();
     }
 
     @Override
