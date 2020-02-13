@@ -415,7 +415,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Message author, or {@code null} if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
      *
-     * @see    Message#isWebhookMessage()
+     * @see    #isWebhookMessage()
      */
     @Nullable
     Member getMember();
