@@ -411,9 +411,9 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 ```
 ```xml
 <repository>
-    <id>jcenter</id>
-    <name>jcenter-bintray</name>
-    <url>https://jcenter.bintray.com</url>
+    <id>bintray-dv8fromtheworld-maven</id>
+    <name>bintray</name>
+    <url>https://dl.bintray.com/dv8fromtheworld/maven</url>
 </repository>
 
 ```
