@@ -801,7 +801,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestAction<Boolean> delete()
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {

@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -92,11 +94,23 @@ public class InviteImpl implements Invite
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestAction<Boolean> delete()
     {
         final Route.CompiledRoute route = Route.Invites.DELETE_INVITE.compile(this.code);
 
-        return new AuditableRestActionImpl<>(this.api, route);
+        return new AuditableRestActionImpl<Boolean>(this.api, route)
+        {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(true);
+                else if (response.code == 404)
+                    request.onSuccess(false);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Nonnull

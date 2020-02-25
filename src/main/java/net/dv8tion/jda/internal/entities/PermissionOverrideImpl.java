@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -169,13 +172,24 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestAction<Boolean> delete()
     {
         if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
         Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(channel.getId(), getId());
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<Boolean>(getJDA(), route) {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(true);
+                else if (response.code == 404 && ErrorResponse.fromJSON(response.getObject()) == ErrorResponse.UNKNOWN_OVERRIDE)
+                    request.onSuccess(false);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Override

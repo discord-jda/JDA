@@ -38,7 +38,7 @@ import java.awt.Color;
  * @see JDA#getRolesByName(String, boolean)
  * @see JDA#getRoles()
  */
-public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
+public interface Role extends IMentionable, IDelete, IPermissionHolder, Comparable<Role>
 {
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
@@ -235,6 +235,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     RoleManager getManager();
 
     /**
+     * {@inheritDoc}
      * Deletes this Role.
      *
      * <p>Possible ErrorResponses include:
@@ -258,8 +259,9 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Boolean> delete();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Role

@@ -246,7 +246,7 @@ The RestAction interface also supports a number of operators to avoid callback h
 **Example**:
 
 ```java
-public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+public RestAction<Boolean> selfDestruct(MessageChannel channel, String content) {
     return channel.sendMessage("The following message will destroy itself in 1 minute!")
         .delay(10, SECONDS, scheduler) // edit 10 seconds later
         .flatMap((it) -> it.editMessage(content))

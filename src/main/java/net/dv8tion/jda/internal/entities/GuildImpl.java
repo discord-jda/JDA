@@ -28,6 +28,9 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -633,7 +636,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> delete()
+    public RestAction<Boolean> delete()
     {
         if (!getJDA().getSelfUser().isBot() && getJDA().getSelfUser().isMfaEnabled())
             throw new IllegalStateException("Cannot delete a guild without providing MFA code. Use Guild#delete(String)");
@@ -643,7 +646,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> delete(String mfaCode)
+    public RestAction<Boolean> delete(String mfaCode)
     {
         if (!getSelfMember().isOwner())
             throw new PermissionException("Cannot delete a guild that you do not own!");
@@ -656,7 +659,19 @@ public class GuildImpl implements Guild
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, mfaBody);
+        return new RestActionImpl<Boolean>(getJDA(), route, mfaBody)
+        {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(true);
+                else if (response.code == 404)
+                    request.onSuccess(false);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Nonnull

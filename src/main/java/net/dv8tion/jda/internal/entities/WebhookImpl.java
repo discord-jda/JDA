@@ -21,6 +21,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
@@ -120,7 +122,7 @@ public class WebhookImpl implements Webhook
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestAction<Boolean> delete()
     {
         if (token != null)
             return delete(token);
@@ -129,16 +131,40 @@ public class WebhookImpl implements Webhook
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(getId());
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<Boolean>(getJDA(), route)
+        {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(true);
+                else if (response.code == 404)
+                    request.onSuccess(false);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete(@Nonnull String token)
+    public AuditableRestAction<Boolean> delete(@Nonnull String token)
     {
         Checks.notNull(token, "Token");
         Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<Boolean>(getJDA(), route)
+        {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(true);
+                else if (response.code == 404)
+                    request.onSuccess(false);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Nonnull

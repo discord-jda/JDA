@@ -44,7 +44,7 @@ import java.util.Set;
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
  * @see    GuildChannel#retrieveInvites()
  */
-public interface Invite
+public interface Invite extends IDelete
 {
     /**
      * Retrieves a new {@link net.dv8tion.jda.api.entities.Invite Invite} instance for the given invite code.
@@ -97,6 +97,7 @@ public interface Invite
     }
 
     /**
+     * {@inheritDoc}
      * Deletes this invite.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in the invite's channel.
      * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
@@ -107,8 +108,9 @@ public interface Invite
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Boolean> delete();
 
     /**
      * Tries to retrieve a new expanded {@link net.dv8tion.jda.api.entities.Invite Invite} with more info.

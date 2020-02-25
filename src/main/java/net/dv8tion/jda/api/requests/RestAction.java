@@ -560,7 +560,7 @@ public interface RestAction<T>
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     * public RestAction<Boolean> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
      *         .delay(Duration.ofSeconds(10)) // edit 10 seconds later
      *         .flatMap((it) -> it.editMessage(content))
@@ -592,7 +592,7 @@ public interface RestAction<T>
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     * public RestAction<Boolean> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
      *         .delay(Duration.ofSeconds(10), scheduler) // edit 10 seconds later
      *         .flatMap((it) -> it.editMessage(content))
@@ -627,7 +627,7 @@ public interface RestAction<T>
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     * public RestAction<Boolean> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
      *         .delay(10, SECONDS) // edit 10 seconds later
      *         .flatMap((it) -> it.editMessage(content))
@@ -661,7 +661,7 @@ public interface RestAction<T>
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     * public RestAction<Boolean> selfDestruct(MessageChannel channel, String content) {
      *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
      *         .delay(10, SECONDS, scheduler) // edit 10 seconds later
      *         .flatMap((it) -> it.editMessage(content))

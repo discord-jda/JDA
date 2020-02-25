@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -176,12 +178,23 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestAction<Boolean> delete()
     {
         checkPermission(Permission.MANAGE_CHANNEL);
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<Boolean>(getJDA(), route) {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.code == 404)
+                    request.onSuccess(false);
+                else if (response.isOk())
+                    request.onSuccess(true);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Nonnull

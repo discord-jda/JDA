@@ -388,7 +388,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestAction<Boolean> delete()
     {
         unsupported();
         return null;

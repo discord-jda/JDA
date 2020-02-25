@@ -108,7 +108,7 @@ import java.util.stream.Collectors;
  * @see MessageChannel#deleteMessageById(String)
  * @see MessageChannel#editMessageById(String, CharSequence)
  */
-public interface Message extends ISnowflake, Formattable
+public interface Message extends ISnowflake, IDelete, Formattable
 {
     /**
      * The maximum sendable file size (8 MiB)
@@ -894,6 +894,7 @@ public interface Message extends ISnowflake, Formattable
     MessageAction editMessage(@Nonnull Message newContent);
 
     /**
+     * {@inheritDoc}
      * Deletes this Message from Discord.
      * <br>If this Message was not sent by the currently logged in account, then this will fail unless the Message is from
      * a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the current account has
@@ -914,9 +915,6 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The delete was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when deleting another Member's message
      *         or lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The message was already deleted at the time the request was sent.</li>
      * </ul>
      *
      * @throws java.lang.UnsupportedOperationException
@@ -936,8 +934,9 @@ public interface Message extends ISnowflake, Formattable
      * @see    net.dv8tion.jda.api.entities.MessageChannel#purgeMessages(java.util.List) MessageChannel.purgeMessages(List)
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Boolean> delete();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance related to this Message.

@@ -221,7 +221,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
                 for (int i = 0; i < 100 && !bulk.isEmpty(); i++)
                     toDelete.add(Long.toUnsignedString(bulk.pollLast()));
                 if (toDelete.size() == 1)
-                    list.add(deleteMessageById(toDelete.get(0)).submit());
+                    list.add(deleteMessageById(toDelete.get(0)).<Void>map(it -> null).submit());
                 else if (!toDelete.isEmpty())
                     list.add(deleteMessages0(toDelete).submit());
             }
@@ -231,7 +231,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         if (!norm.isEmpty())
         {
             for (long message : norm)
-                list.add(deleteMessageById(message).submit());
+                list.add(deleteMessageById(message).<Void>map(it -> null).submit());
         }
         return list;
     }
@@ -387,7 +387,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
+    public AuditableRestAction<Boolean> deleteMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
         checkPermission(Permission.MESSAGE_READ);

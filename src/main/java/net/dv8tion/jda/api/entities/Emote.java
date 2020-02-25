@@ -57,7 +57,7 @@ import java.util.List;
  * @see    JDA#getEmotesByName(String, boolean)
  * @see    JDA#getEmotes()
  */
-public interface Emote extends IMentionable, IFakeable
+public interface Emote extends IMentionable, IDelete, IFakeable
 {
     /** Template for {@link #getImageUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
@@ -141,6 +141,7 @@ public interface Emote extends IMentionable, IFakeable
     JDA getJDA();
 
     /**
+     * {@inheritDoc}
      * Deletes this Emote.
      *
      * <p>Possible ErrorResponses include:
@@ -166,8 +167,9 @@ public interface Emote extends IMentionable, IFakeable
      *         The RestAction to delete this Emote.
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Boolean> delete();
 
     /**
      * The {@link EmoteManager Manager} for this emote, used to modify

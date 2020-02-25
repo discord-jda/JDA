@@ -39,7 +39,7 @@ import java.util.EnumSet;
  * @see GuildChannel#getMemberPermissionOverrides()
  * @see GuildChannel#getRolePermissionOverrides()
  */
-public interface PermissionOverride extends ISnowflake
+public interface PermissionOverride extends ISnowflake, IDelete
 {
     /**
      * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.
@@ -186,6 +186,7 @@ public interface PermissionOverride extends ISnowflake
     PermissionOverrideAction getManager();
 
     /**
+     * {@inheritDoc}
      * Deletes this PermissionOverride.
      *
      * <p>Possible ErrorResponses include:
@@ -206,6 +207,7 @@ public interface PermissionOverride extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Boolean> delete();
 }

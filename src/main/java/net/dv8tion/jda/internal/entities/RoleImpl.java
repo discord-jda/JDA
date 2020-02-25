@@ -24,6 +24,9 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -255,7 +258,7 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
+    public AuditableRestAction<Boolean> delete()
     {
         Guild guild = getGuild();
         if (!guild.getSelfMember().hasPermission(Permission.MANAGE_ROLES))
@@ -266,7 +269,19 @@ public class RoleImpl implements Role
             throw new UnsupportedOperationException("Cannot delete a Role that is managed. ");
 
         Route.CompiledRoute route = Route.Roles.DELETE_ROLE.compile(guild.getId(), getId());
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<Boolean>(getJDA(), route)
+        {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(true);
+                else if (response.code == 404 && ErrorResponse.fromJSON(response.getObject()) == ErrorResponse.UNKNOWN_ROLE)
+                    request.onSuccess(false);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     @Nonnull

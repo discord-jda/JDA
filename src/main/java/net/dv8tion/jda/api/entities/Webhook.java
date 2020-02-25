@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * @see    Guild#retrieveWebhooks()
  * @see    JDA#retrieveWebhookById(String)
  */
-public interface Webhook extends ISnowflake, IFakeable
+public interface Webhook extends ISnowflake, IDelete, IFakeable
 {
     /**
      * The JDA instance of this Webhook.
@@ -143,6 +143,7 @@ public interface Webhook extends ISnowflake, IFakeable
     String getUrl();
 
     /**
+     * {@inheritDoc}
      * Deletes this Webhook.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -166,8 +167,9 @@ public interface Webhook extends ISnowflake, IFakeable
      *         <br>The rest action to delete this Webhook.
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Boolean> delete();
 
     /**
      * Deletes this Webhook.
@@ -201,7 +203,7 @@ public interface Webhook extends ISnowflake, IFakeable
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Void> delete(@Nonnull String token);
+    AuditableRestAction<Boolean> delete(@Nonnull String token);
 
     /**
      * The {@link WebhookManager WebhookManager} for this Webhook.

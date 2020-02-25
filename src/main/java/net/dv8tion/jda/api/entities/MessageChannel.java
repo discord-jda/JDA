@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.requests.ErrorResponse;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -243,7 +246,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         for (long messageId : messageIds)
             sortedIds.add(messageId);
         for (long messageId : sortedIds)
-            list.add(deleteMessageById(messageId).submit());
+            list.add(deleteMessageById(messageId).<Void>map(it -> null).submit());
         return list;
     }
 
@@ -896,6 +899,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     }
 
     /**
+     * {@inheritDoc}
      * Attempts to delete a {@link net.dv8tion.jda.api.entities.Message Message} from the Discord servers that has
      * the same id as the id provided.
      *
@@ -934,15 +938,28 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> deleteMessageById(@Nonnull String messageId)
+    default AuditableRestAction<Boolean> deleteMessageById(@Nonnull String messageId)
     {
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGE.compile(getId(), messageId);
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<Boolean>(getJDA(), route)
+        {
+            @Override
+            public void handleResponse(Response response, Request<Boolean> request)
+            {
+                if (response.isOk())
+                    request.onSuccess(true);
+                else if (response.code == 404 && ErrorResponse.fromJSON(response.getObject()) == ErrorResponse.UNKNOWN_MESSAGE)
+                    request.onSuccess(false);
+                else
+                    request.onFailure(response);
+            }
+        };
     }
 
     /**
+     * {@inheritDoc}
      * Attempts to delete a {@link net.dv8tion.jda.api.entities.Message Message} from the Discord servers that has
      * the same id as the id provided.
      *
@@ -981,7 +998,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> deleteMessageById(long messageId)
+    default AuditableRestAction<Boolean> deleteMessageById(long messageId)
     {
         return deleteMessageById(Long.toUnsignedString(messageId));
     }

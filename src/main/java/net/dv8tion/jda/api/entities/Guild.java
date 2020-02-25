@@ -59,7 +59,7 @@ import java.util.concurrent.CompletableFuture;
  * @see JDA#getGuildsByName(String, boolean)
  * @see JDA#getGuilds()
  */
-public interface Guild extends ISnowflake
+public interface Guild extends ISnowflake, IDelete
 {
     /** Template for {@link #getIconUrl()}. */
     String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
@@ -1871,6 +1871,7 @@ public interface Guild extends ISnowflake
     RestAction<Void> leave();
 
     /**
+     * {@inheritDoc}
      * Used to completely delete a Guild. This can only be done if the currently logged in account is the owner of the Guild.
      * <br>If the account has MFA enabled, use {@link #delete(String)} instead to provide the MFA code.
      *
@@ -1883,7 +1884,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> delete();
+    RestAction<Boolean> delete();
 
     /**
      * Used to completely delete a guild. This can only be done if the currently logged in account is the owner of the Guild.
@@ -1900,11 +1901,12 @@ public interface Guild extends ISnowflake
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@code mfaCode} is {@code null} or empty when {@link SelfUser#isMfaEnabled()} is true.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link java.lang.Void}
+     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@code boolean}
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    RestAction<Void> delete(@Nullable String mfaCode);
+    RestAction<Boolean> delete(@Nullable String mfaCode);
 
     /**
      * The {@link net.dv8tion.jda.api.managers.AudioManager AudioManager} that represents the

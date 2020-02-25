@@ -42,7 +42,7 @@ import java.util.List;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
+public interface GuildChannel extends ISnowflake, IDelete, Comparable<GuildChannel>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this GuildChannel
@@ -265,6 +265,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     ChannelManager getManager();
 
     /**
+     * {@inheritDoc}
      * Deletes this GuildChannel.
      *
      * <p>Possible ErrorResponses include:
@@ -287,8 +288,9 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
+    @Override
     @CheckReturnValue
-    AuditableRestAction<Void> delete();
+    AuditableRestAction<Boolean> delete();
 
     /**
      * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
