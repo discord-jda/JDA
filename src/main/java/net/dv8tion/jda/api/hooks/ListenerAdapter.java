@@ -47,6 +47,9 @@ import net.dv8tion.jda.api.events.emote.update.EmoteUpdateNameEvent;
 import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
 import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
+import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.events.guild.member.*;
 import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
@@ -235,6 +238,10 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateMaxMembers(@Nonnull GuildUpdateMaxMembersEvent event) {}
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
 
+    //Guild Invite Events
+    public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
+    public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {}
+
     //Guild Member Events
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {}
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
@@ -301,6 +308,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericCategoryUpdate(@Nonnull GenericCategoryUpdateEvent event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
+    public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}
     public void onGenericGuildMember(@Nonnull GenericGuildMemberEvent event) {}
     public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent event) {}
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
@@ -549,6 +557,12 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof GuildUpdateMaxPresencesEvent)
             onGuildUpdateMaxPresences((GuildUpdateMaxPresencesEvent) event);
 
+        //Guild Invite Events
+        else if (event instanceof GuildInviteCreateEvent)
+            onGuildInviteCreate((GuildInviteCreateEvent) event);
+        else if (event instanceof GuildInviteDeleteEvent)
+            onGuildInviteDelete((GuildInviteDeleteEvent) event);
+
         //Guild Member Events
         else if (event instanceof GuildMemberJoinEvent)
             onGuildMemberJoin((GuildMemberJoinEvent) event);
@@ -663,6 +677,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericGuildInviteEvent)
+            onGenericGuildInvite((GenericGuildInviteEvent) event);
         else if (event instanceof GenericGuildMemberEvent)
             onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericUserEvent)
