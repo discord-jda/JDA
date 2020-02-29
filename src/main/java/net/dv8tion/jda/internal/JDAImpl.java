@@ -470,13 +470,9 @@ public class JDAImpl implements JDA
             return false;
 
         // We avoid to lock both the guild cache and member cache to make a deadlock impossible
-        for (Guild guild : getGuildCache())
-        {
-            GuildImpl impl = (GuildImpl) guild;
-            impl.getMembersView().remove(userId);
-        }
-
-        return userCache.remove(userId) != null;
+        return getGuildCache().stream()
+                .filter(guild -> guild.unloadMember(userId)) // this also removes it from user cache
+                .count() > 0L; // we use count to make sure it iterates all guilds not just one
     }
 
     @Override
