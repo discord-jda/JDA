@@ -299,14 +299,15 @@ public class JDAImpl implements JDA
 
     public void setStatus(Status status)
     {
-        //noinspection SynchronizeOnNonFinalField
-        synchronized (this.status)
+        Status oldStatus;
+        synchronized (this)
         {
-            Status oldStatus = this.status;
+            oldStatus = this.status;
             this.status = status;
 
-            handleEvent(new StatusChangeEvent(this, status, oldStatus));
+            notifyAll();
         }
+        handleEvent(new StatusChangeEvent(this, status, oldStatus));
     }
 
     public void verifyToken() throws LoginException
@@ -473,14 +474,17 @@ public class JDAImpl implements JDA
         if (getStatus() == Status.CONNECTED)
             return this;
         List<Status> failStatus = Arrays.asList(failOn);
-        while (!getStatus().isInit()                         // JDA might disconnect while starting
-                || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+        synchronized (this)
         {
-            if (getStatus() == Status.SHUTDOWN)
-                throw new IllegalStateException("Was shutdown trying to await status");
-            else if (failStatus.contains(getStatus()))
-                return this;
-            Thread.sleep(50);
+            while (!getStatus().isInit()                         // JDA might disconnect while starting
+                    || getStatus().ordinal() < status.ordinal()) // Wait until status is bypassed
+            {
+                if (getStatus() == Status.SHUTDOWN)
+                    throw new IllegalStateException("Was shutdown trying to await status");
+                else if (failStatus.contains(getStatus()))
+                    return this;
+                wait();
+            }
         }
         return this;
     }
