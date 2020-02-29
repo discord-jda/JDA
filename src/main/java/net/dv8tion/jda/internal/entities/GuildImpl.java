@@ -162,7 +162,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public void updateMemberCache()
+    public void pruneMemberCache()
     {
         try (UnlockHook h = memberCache.writeLock())
         {

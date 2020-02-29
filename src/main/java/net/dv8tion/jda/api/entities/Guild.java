@@ -188,8 +188,33 @@ public interface Guild extends ISnowflake
     /**
      * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session.
      * <br>This can be useful if used in combination with {@link #retrieveMembers()}.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Check if the members of this guild have at least 50% bots (bot collection/farm)
+     * public void checkBots(Guild guild) {
+     *     // Keep in mind: This requires the GUILD_MEMBERS intent which is disabled in createDefault and createLight by default
+     *     guild.retrieveMembers() // Load members CompletableFuture<Void> (async and eager)
+     *          .thenApply((v) -> guild.getMemberCache()) // Turn into CompletableFuture<MemberCacheView>
+     *          .thenAccept((members) -> {
+     *              int total = members.size();
+     *              // Casting to double to get a double as result of division, don't need to worry about precision with small counts like this
+     *              double bots = (double) members.applyStream(stream ->
+     *                  stream.map(Member::getUser)
+     *                        .filter(User::isBot)
+     *                        .count()); // Count bots
+     *              if (bots / total > 0.5) // Check how many members are bots
+     *                  System.out.println("More than 50% of members in this guild are bots");
+     *          })
+     *          .thenRun(guild::pruneMemberCache); // Then prune the cache
+     * }
+     * }</pre>
+     *
+     * @see #unloadMember(long)
+     * @see JDA#unloadUser(long)
+     * @see #retrieveMembers()
      */
-    void updateMemberCache();
+    void pruneMemberCache();
 
     /**
      * Attempts to remove the user with the provided id from the member cache.
@@ -202,6 +227,9 @@ public interface Guild extends ISnowflake
      *         The target user id
      *
      * @return True, if the cache was changed
+     *
+     * @see    #pruneMemberCache()
+     * @see    JDA#unloadUser(long)
      */
     boolean unloadMember(long userId);
 
@@ -2126,6 +2154,8 @@ public interface Guild extends ISnowflake
      * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
      *
      * @return {@link CompletableFuture} representing the chunking task
+     *
+     * @see    #pruneMemberCache()
      */
     @Nonnull
     CompletableFuture<Void> retrieveMembers();
@@ -2154,6 +2184,9 @@ public interface Guild extends ISnowflake
      *         If provided with null
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     default RestAction<Member> retrieveMember(@Nonnull User user)
@@ -2188,6 +2221,9 @@ public interface Guild extends ISnowflake
      *         If the provided id is not a snowflake
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     default RestAction<Member> retrieveMemberById(@Nonnull String id)
@@ -2216,6 +2252,9 @@ public interface Guild extends ISnowflake
      *         The user id to load the member from
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     default RestAction<Member> retrieveMemberById(long id)
@@ -2241,6 +2280,9 @@ public interface Guild extends ISnowflake
      * </ul>
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      *
      * @see    #getOwner()
      * @see    #getOwnerIdLong()
@@ -2275,6 +2317,9 @@ public interface Guild extends ISnowflake
      *         If provided with null
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     default RestAction<Member> retrieveMember(@Nonnull User user, boolean update)
@@ -2308,6 +2353,9 @@ public interface Guild extends ISnowflake
      *         If the provided id is not a snowflake
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     default RestAction<Member> retrieveMemberById(@Nonnull String id, boolean update)
@@ -2335,6 +2383,9 @@ public interface Guild extends ISnowflake
      *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     RestAction<Member> retrieveMemberById(long id, boolean update);
@@ -2357,6 +2408,9 @@ public interface Guild extends ISnowflake
      *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      *
      * @see    #getOwner()
      * @see    #getOwnerIdLong()

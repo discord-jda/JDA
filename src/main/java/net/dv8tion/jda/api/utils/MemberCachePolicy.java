@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
  * <br>This will be called throughout JDA when a member gets constructed or modified and allows for a dynamically
  * adjusting cache of users.
  *
- * <p>When {@link Guild#updateMemberCache()} is called, the configured policy will be used to unload any members that the policy
+ * <p>When {@link Guild#pruneMemberCache()} is called, the configured policy will be used to unload any members that the policy
  * has decided not to cache.
  *
  * <p>If {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled you should not use {@link #ALL} or {@link #ONLINE}.
