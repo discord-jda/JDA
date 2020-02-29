@@ -50,7 +50,6 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
@@ -76,7 +75,6 @@ import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -471,17 +469,14 @@ public class JDAImpl implements JDA
         if (user == null)
             return false;
 
-        AtomicBoolean updated = new AtomicBoolean(false);
-        user.getMutualGuilds()
-            .stream()
-            .map(guild -> guild.getMember(user))
-            .filter(Objects::nonNull)
-            .map(MemberImpl.class::cast)
-            .forEach(member -> {
-                updated.set(true);
-                entityBuilder.updateMemberCache(member, true);
-            });
-        return updated.get();
+        // We avoid to lock both the guild cache and member cache to make a deadlock impossible
+        for (Guild guild : getGuildCache())
+        {
+            GuildImpl impl = (GuildImpl) guild;
+            impl.getMembersView().remove(userId);
+        }
+
+        return userCache.remove(userId) != null;
     }
 
     @Override
