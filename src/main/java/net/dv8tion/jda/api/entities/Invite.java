@@ -297,9 +297,9 @@ public interface Invite
     /**
      * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
      * obtained be {@link net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild#retrieveInvites()} (requires
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}) or
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}) or
      * {@link GuildChannel#retrieveInvites() Channel#retrieveInvites()} (requires
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}).
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}).
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
      *
