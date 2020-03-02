@@ -16,7 +16,6 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.api.entities.EmbedType;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -25,7 +24,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.*;
+import java.awt.Color;
 import java.time.*;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
@@ -57,7 +56,7 @@ public class EmbedBuilder
     private MessageEmbed.ImageInfo image;
 
     /**
-     * Constructs a new EmbedBuilder instance, which can be used to create {@link MessageEmbed MessageEmbeds}. These can then be sent to a channel using {@link MessageChannel#sendMessage(MessageEmbed)}.
+     * Constructs a new EmbedBuilder instance, which can be used to create {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}. These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)}.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
      */
     public EmbedBuilder() { }
