@@ -316,9 +316,9 @@ public class Requester
         this.retryOnTimeout = retryOnTimeout;
     }
 
-    public void stop()
+    public boolean stop()
     {
-        rateLimiter.stop();
+        return rateLimiter.stop();
     }
 
     public void shutdown()
