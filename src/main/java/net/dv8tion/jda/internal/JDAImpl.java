@@ -663,8 +663,8 @@ public class JDAImpl implements JDA
     @Override
     public synchronized void shutdownNow()
     {
-        shutdown();
         requester.shutdown(); // stop all requests
+        shutdown();
         threadConfig.shutdownNow();
     }
 
