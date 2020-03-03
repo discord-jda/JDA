@@ -182,19 +182,13 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
-        bucketLock.lock();
-        try
-        {
+        return MiscUtil.locked(bucketLock, () -> {
             long rateLimit = updateBucket(route, response).getRateLimit();
             if (response.code() == 429)
                 return rateLimit;
             else
                 return null;
-        }
-        finally
-        {
-            bucketLock.unlock();
-        }
+        });
     }
 
     private Bucket updateBucket(Route.CompiledRoute route, okhttp3.Response response)

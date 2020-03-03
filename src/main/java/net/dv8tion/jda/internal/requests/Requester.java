@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
+import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
@@ -249,6 +250,11 @@ public class Requester
                 return execute(apiRequest, true, handleOnRatelimit);
             LOG.error("Requester timed out while executing a request", e);
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            return null;
+        }
+        catch (InterruptedIOException e)
+        {
+            LOG.warn("Got interrupted while executing request", e);
             return null;
         }
         catch (Exception e)
