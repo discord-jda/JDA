@@ -163,7 +163,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> clearReactions()
     {
-        Checks.check(isFromType(ChannelType.TEXT), "Cannot clear reactions from a message in a Group or PrivateChannel.");
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId());
     }
 
@@ -171,7 +172,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> clearReactions(@Nonnull String unicode)
     {
-        Checks.check(isFromType(ChannelType.TEXT), "Cannot clear reactions from a message in a Group or PrivateChannel.");
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), unicode);
     }
 
@@ -179,7 +181,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> clearReactions(@Nonnull Emote emote)
     {
-        Checks.check(isFromType(ChannelType.TEXT), "Cannot clear reactions from a message in a Group or PrivateChannel.");
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), emote);
     }
 
@@ -194,7 +197,13 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
     {
-        Checks.check(isFromType(ChannelType.TEXT), "Cannot remove reactions of others from a message in a Group or PrivateChannel.");
+        // check if the passed user is the SelfUser, then the ChannelType doesn't matter
+        if (user.equals(getJDA().getSelfUser()))
+            // we can safely remove that
+            return channel.removeReactionById(getIdLong(), emote);
+
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
         return getTextChannel().removeReactionById(getIdLong(), emote, user);
     }
 
@@ -209,7 +218,11 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
     {
-        Checks.check(isFromType(ChannelType.TEXT), "Cannot remove reactions of others from a message in a Group or PrivateChannel.");
+        if (user.equals(getJDA().getSelfUser()))
+            return channel.removeReactionById(getIdLong(), unicode);
+
+        if (!isFromType(ChannelType.TEXT))
+            throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
         return getTextChannel().removeReactionById(getId(), unicode, user);
     }
 

@@ -1163,6 +1163,8 @@ public interface Message extends ISnowflake, Formattable
      * Removes all reactions from this Message.
      * <br>This is useful for moderator commands that wish to remove all reactions at once from a specific message.
      *
+     * <p>Please note that you <b>can't</b> clear reactions if this is a private message / this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -1200,6 +1202,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes all reactions for the specified emoji.
      *
+     * <p>Please note that you <b>can't</b> clear reactions if this is a private message / this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
      * <h2>Example</h2>
      * <pre><code>
      * // custom
@@ -1232,6 +1236,9 @@ public interface Message extends ISnowflake, Formattable
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      *
      * @return {@link RestAction}
      *
@@ -1243,6 +1250,8 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Removes all reactions for the specified emote.
+     *
+     * <p>Please note that you <b>can't</b> clear reactions if this is a private message / this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -1266,6 +1275,9 @@ public interface Message extends ISnowflake, Formattable
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      *
      * @return {@link RestAction}
      *
@@ -1324,6 +1336,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes a {@link net.dv8tion.jda.api.entities.User User's} reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
+     * <p>Please note that you <b>can't</b> remove reactions of other users if this is a private message / this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
@@ -1365,6 +1379,10 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1431,6 +1449,8 @@ public interface Message extends ISnowflake, Formattable
      * <br>A reference of unicode emojis can be found here:
      * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
+     * <p>Please note that you <b>can't</b> remove reactions of other users if this is a private message / this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
@@ -1469,6 +1489,10 @@ public interface Message extends ISnowflake, Formattable
      *         </ul>
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
