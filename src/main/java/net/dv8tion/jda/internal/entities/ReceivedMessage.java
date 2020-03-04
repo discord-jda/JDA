@@ -197,6 +197,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
     {
+        Checks.notNull(user, "User");  // to prevent NPEs
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter
         if (user.equals(getJDA().getSelfUser()))
             // we can safely remove that
@@ -218,6 +219,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
     {
+        Checks.notNull(user, "User");
         if (user.equals(getJDA().getSelfUser()))
             return channel.removeReactionById(getIdLong(), unicode);
 

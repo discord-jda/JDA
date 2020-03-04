@@ -1378,6 +1378,7 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is fake {@link net.dv8tion.jda.api.entities.Emote#isFake() Emote.isFake()}.</li>
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *             <li>If the provided user is null</li>
      *         </ul>
      * @throws java.lang.IllegalStateException
      *         If this message was <b>not</b> sent in a
@@ -1488,7 +1489,7 @@ public interface Message extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
      * @throws java.lang.IllegalArgumentException
-     *         If the provided unicode emoji is null or empty.
+     *         If the provided unicode emoji is null or empty or if the provided user is null.
      * @throws java.lang.IllegalStateException
      *         If this message was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
