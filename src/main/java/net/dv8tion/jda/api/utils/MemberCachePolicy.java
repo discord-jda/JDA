@@ -50,6 +50,7 @@ import javax.annotation.Nonnull;
  *
  * @since 4.2.0
  */
+@FunctionalInterface
 public interface MemberCachePolicy
 {
     /**
