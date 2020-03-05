@@ -110,6 +110,7 @@ import javax.annotation.Nonnull;
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
  */
+@SuppressWarnings("deprecation")
 public abstract class ListenerAdapter implements EventListener
 {
     //Deprecated/Unused events
@@ -485,6 +486,8 @@ public abstract class ListenerAdapter implements EventListener
             onStoreChannelUpdateName((StoreChannelUpdateNameEvent) event);
         else if (event instanceof StoreChannelUpdatePositionEvent)
             onStoreChannelUpdatePosition((StoreChannelUpdatePositionEvent) event);
+        else if (event instanceof StoreChannelUpdatePermissionsEvent)
+            onStoreChannelUpdatePermissions((StoreChannelUpdatePermissionsEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -503,6 +506,8 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelUpdateSlowmode((TextChannelUpdateSlowmodeEvent) event);
         else if (event instanceof TextChannelDeleteEvent)
             onTextChannelDelete((TextChannelDeleteEvent) event);
+        else if (event instanceof TextChannelUpdatePermissionsEvent)
+            onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
 
         //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
@@ -519,6 +524,8 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateParent((VoiceChannelUpdateParentEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
             onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
+        else if (event instanceof VoiceChannelUpdatePermissionsEvent)
+            onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
 
         //Category Events
         else if (event instanceof CategoryCreateEvent)
@@ -529,6 +536,8 @@ public abstract class ListenerAdapter implements EventListener
             onCategoryUpdatePosition((CategoryUpdatePositionEvent) event);
         else if (event instanceof CategoryDeleteEvent)
             onCategoryDelete((CategoryDeleteEvent) event);
+        else if (event instanceof CategoryUpdatePermissionsEvent)
+            onCategoryUpdatePermissions((CategoryUpdatePermissionsEvent) event);
 
         //PrivateChannel Events
         else if (event instanceof PrivateChannelCreateEvent)

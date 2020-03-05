@@ -18,12 +18,12 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.entities.Category;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.PermissionOverride;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
+import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
@@ -37,6 +37,8 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class ChannelUpdateHandler extends SocketHandler
@@ -270,27 +272,71 @@ public class ChannelUpdateHandler extends SocketHandler
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     private void applyPermissions(AbstractChannelImpl<?,?> channel, DataArray permOverwrites)
     {
         TLongObjectMap<PermissionOverride> currentOverrides = new TLongObjectHashMap<>(channel.getOverrideMap());
+        List<IPermissionHolder> changed = new ArrayList<>(currentOverrides.size());
+        Guild guild = channel.getGuild();
         for (int i = 0; i < permOverwrites.length(); i++)
         {
             DataObject overrideJson = permOverwrites.getObject(i);
             long id = overrideJson.getUnsignedLong("id", 0);
-            handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel);
+            if (handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel))
+                addChanged(changed, guild, id);
         }
 
         currentOverrides.forEachValue(override -> {
             channel.getOverrideMap().remove(override.getIdLong());
+            addChanged(changed, guild, override.getIdLong());
             api.handleEvent(
                 new PermissionOverrideDeleteEvent(
                     api, responseNumber,
                     channel, override));
             return true;
         });
+
+        if (changed.isEmpty())
+            return;
+        switch (channel.getType())
+        {
+        case CATEGORY:
+            api.handleEvent(
+                new CategoryUpdatePermissionsEvent(
+                    api, responseNumber,
+                    (Category) channel, changed));
+            break;
+        case STORE:
+            api.handleEvent(
+                new StoreChannelUpdatePermissionsEvent(
+                    api, responseNumber,
+                    (StoreChannel) channel, changed));
+            break;
+        case VOICE:
+            api.handleEvent(
+                new VoiceChannelUpdatePermissionsEvent(
+                    api, responseNumber,
+                    (VoiceChannel) channel, changed));
+            break;
+        case TEXT:
+            api.handleEvent(
+                new TextChannelUpdatePermissionsEvent(
+                    api, responseNumber,
+                    (TextChannel) channel, changed));
+            break;
+        }
     }
 
-    private void handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long id, AbstractChannelImpl<?,?> channel)
+    private void addChanged(List<IPermissionHolder> changed, Guild guild, long id)
+    {
+        IPermissionHolder holder = guild.getRoleById(id);
+        if (holder == null)
+            holder = guild.getMemberById(id);
+        if (holder != null)
+            changed.add(holder);
+    }
+
+    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long id, AbstractChannelImpl<?,?> channel)
     {
         final long allow = override.getLong("allow");
         final long deny = override.getLong("deny");
@@ -301,11 +347,11 @@ public class ChannelUpdateHandler extends SocketHandler
             if (!type.equals("member"))
             {
                 EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
-                return;
+                return false;
             }
             else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES) && id != api.getSelfUser().getIdLong())
             {
-                return;
+                return false;
             }
         }
 
@@ -314,6 +360,8 @@ public class ChannelUpdateHandler extends SocketHandler
             long oldAllow = currentOverride.getAllowedRaw();
             long oldDeny = currentOverride.getDeniedRaw();
             PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
+            if (oldAllow == allow && oldDeny == deny)
+                return false;
             impl.setAllow(allow);
             impl.setDeny(deny);
             api.handleEvent(
@@ -331,6 +379,6 @@ public class ChannelUpdateHandler extends SocketHandler
                     channel, currentOverride));
         }
 
-
+        return true;
     }
 }
