@@ -30,10 +30,7 @@ This library is a helpful tool that provides the functionality to create a disco
 ## Summary
 
 Due to official statements made by the Discord developers we will no longer support unofficial features. These features
-are undocumented API endpoints or protocols that are not available to bot-accounts. We will however continue support
-for the usage of JDA through the client account type through `JDABuilder(AccountType.CLIENT)`. This does not mean
-it is encouraged or recommended to create applications such as selfbots or custom clients which are prohibited by
-the Discord Terms of Service.
+are undocumented API endpoints or protocols that are not available to bot-accounts.
 
 _Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
 
@@ -51,8 +48,7 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 ## UserBots and SelfBots
 
 Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
-We however still have support to login with these accounts due to legacy support. That does not mean it is allowed or
-welcome to use.
+We have officially dropped support for client login as of version **4.2.0**!
 Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
 a client which does this via lazy loading instead.
 If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
