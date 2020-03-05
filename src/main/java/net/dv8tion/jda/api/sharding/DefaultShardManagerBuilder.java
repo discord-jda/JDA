@@ -1827,22 +1827,14 @@ public class  DefaultShardManagerBuilder
         if (cacheFlags.isEmpty())
             return;
 
-        boolean cacheEnabled = cacheFlags.contains(CacheFlag.ACTIVITY) || cacheFlags.contains(CacheFlag.CLIENT_STATUS);
-        boolean intentEnabled = (intents & GatewayIntent.GUILD_PRESENCES.getRawValue()) != 0;
-        if (cacheEnabled && !intentEnabled)
-            throw new IllegalArgumentException("Cannot use presence related cache flags with disable GUILD_PRESENCES intent!");
-
-        cacheEnabled = cacheFlags.contains(CacheFlag.VOICE_STATE);
-        intentEnabled = (intents & GatewayIntent.GUILD_VOICE_STATES.getRawValue()) != 0;
-        if (cacheEnabled && !intentEnabled)
-            throw new IllegalArgumentException("Cannot use voice state cache flag with disable GUILD_VOICE_STATES intent!");
-
-        cacheEnabled = cacheFlags.contains(CacheFlag.EMOTE);
-        intentEnabled = (intents & GatewayIntent.GUILD_EMOJIS.getRawValue()) != 0;
-        if (cacheEnabled && !intentEnabled)
-            throw new IllegalArgumentException("Cannot use emote cache flag with disable GUILD_EMOJIS intent!");
+        EnumSet<GatewayIntent> providedIntents = GatewayIntent.getIntents(intents);
+        for (CacheFlag flag : cacheFlags)
+        {
+            GatewayIntent intent = flag.getRequiredIntent();
+            if (intent != null && !providedIntents.contains(intent))
+                throw new IllegalArgumentException("Cannot use CacheFlag." + flag + " without GatewayIntent." + intent + "!");
+        }
     }
-
     //Avoid having multiple anonymous classes
     private static class ThreadPoolProviderImpl<T extends ExecutorService> implements ThreadPoolProvider<T>
     {

@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.channel.text.override;
+package net.dv8tion.jda.api.events.guild.override;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link PermissionOverride} of a {@link TextChannel} has been deleted.
+ * Indicates that a {@link PermissionOverride} of a {@link GuildChannel} has been deleted.
  *
  * <p>Can be used to retrieve the old override.
  */
-public class TextChannelDeleteOverrideEvent extends GenericTextChannelOverrideEvent
+public class PermissionOverrideDeleteEvent extends GenericPermissionOverrideEvent
 {
-
-    public TextChannelDeleteOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull PermissionOverride override)
+    public PermissionOverrideDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, channel, override);
     }

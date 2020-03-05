@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.channel.category.override;
+package net.dv8tion.jda.api.events.guild.override;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
- * Indicates that a {@link PermissionOverride} of a {@link Category} has been updated or created.
+ * Indicates that a {@link PermissionOverride} of a {@link GuildChannel} has been updated.
  *
  * <p>Can be used to retrieve the updated override and old {@link #getOldAllow() allow} and {@link #getOldDeny() deny}.
  */
-public class CategoryUpdateOverrideEvent extends GenericCategoryOverrideEvent
+public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEvent
 {
     private final long oldAllow, oldDeny;
 
-    public CategoryUpdateOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
+    public PermissionOverrideUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
     {
-        super(api, responseNumber, category, override);
+        super(api, responseNumber, channel, override);
         this.oldAllow = oldAllow;
         this.oldDeny = oldDeny;
     }

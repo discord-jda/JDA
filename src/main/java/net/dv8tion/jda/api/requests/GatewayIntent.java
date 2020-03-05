@@ -16,10 +16,29 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
+import net.dv8tion.jda.api.events.guild.GuildBanEvent;
+import net.dv8tion.jda.api.events.guild.GuildUnbanEvent;
+import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
+import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
+import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
+import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
+import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
+import net.dv8tion.jda.api.events.user.UserTypingEvent;
+import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
+import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 
 /**
@@ -220,5 +239,142 @@ public enum GatewayIntent
         Checks.notNull(intent, "Intent");
         Checks.notNull(set,    "Intent");
         return getRaw(EnumSet.of(intent, set));
+    }
+
+    /**
+     * Parse the required GatewayIntents from the provided {@link CacheFlag CacheFlags}.
+     * <br>This creates an {@link EnumSet} based on {@link CacheFlag#getRequiredIntent()}.
+     *
+     * @param  flag
+     *         The first cache flag
+     * @param  other
+     *         Any additional cache flags
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required intents
+     */
+    @Nonnull
+    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull CacheFlag flag, @Nonnull CacheFlag... other)
+    {
+        Checks.notNull(flag, "CacheFlag");
+        Checks.noneNull(other, "CacheFlag");
+        return fromCacheFlags(EnumSet.of(flag, other));
+    }
+
+    /**
+     * Parse the required GatewayIntents from the provided {@link CacheFlag CacheFlags}.
+     * <br>This creates an {@link EnumSet} based on {@link CacheFlag#getRequiredIntent()}.
+     *
+     * @param  flags
+     *         The cache flags
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required intents
+     */
+    @Nonnull
+    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull Collection<CacheFlag> flags)
+    {
+        EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
+        for (CacheFlag flag : flags)
+        {
+            Checks.notNull(flag, "CacheFlag");
+            GatewayIntent intent = flag.getRequiredIntent();
+            intents.add(intent);
+        }
+
+        return intents;
+    }
+
+    /**
+     * Parse the required GatewayIntents from the provided {@link GenericEvent Event Types}.
+     *
+     * @param  events
+     *         The event types
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required intents
+     */
+    @Nonnull
+    @SafeVarargs
+    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Class<? extends GenericEvent>... events)
+    {
+        Checks.noneNull(events, "Event");
+        return fromEvents(Arrays.asList(events));
+    }
+
+    /**
+     * Parse the required GatewayIntents from the provided {@link GenericEvent Event Types}.
+     *
+     * @param  events
+     *         The event types
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required intents
+     */
+    @Nonnull
+    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events)
+    {
+        EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
+        for (Class<? extends GenericEvent> event : events)
+        {
+            Checks.notNull(event, "Event");
+
+            if (GenericUserPresenceEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_PRESENCES);
+            else if (GenericUserUpdateEvent.class.isAssignableFrom(event) || GenericGuildMemberEvent.class.isAssignableFrom(event) || GuildMemberRemoveEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_MEMBERS);
+
+            else if (GuildBanEvent.class.isAssignableFrom(event) || GuildUnbanEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_BANS);
+            else if (GenericEmoteEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_EMOJIS);
+            else if (GenericGuildInviteEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_INVITES);
+            else if (GenericGuildVoiceEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_VOICE_STATES);
+
+            else if (GenericGuildMessageReactionEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_MESSAGE_REACTIONS);
+            else if (GenericGuildMessageEvent.class.isAssignableFrom(event) || MessageBulkDeleteEvent.class.isAssignableFrom(event))
+                intents.add(GUILD_MESSAGES);
+
+            else if (GenericPrivateMessageReactionEvent.class.isAssignableFrom(event))
+                intents.add(DIRECT_MESSAGE_REACTIONS);
+            else if (GenericPrivateMessageEvent.class.isAssignableFrom(event))
+                intents.add(DIRECT_MESSAGES);
+
+            else if (UserTypingEvent.class.isAssignableFrom(event))
+                Collections.addAll(intents, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
+        }
+        return intents;
+    }
+
+    /**
+     * Parse the required GatewayIntents from the provided {@link GenericEvent Event Types} and {@link CacheFlag CacheFlags}.
+     *
+     * @param  events
+     *         The event types
+     * @param  flags
+     *         The cache flags
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link EnumSet} for the required intents
+     */
+    @Nonnull
+    public static EnumSet<GatewayIntent> from(@Nonnull Collection<Class<? extends GenericEvent>> events, @Nonnull Collection<CacheFlag> flags)
+    {
+        EnumSet<GatewayIntent> intents = fromEvents(events);
+        intents.addAll(fromCacheFlags(flags));
+        return intents;
     }
 }

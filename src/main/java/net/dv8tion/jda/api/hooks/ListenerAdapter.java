@@ -22,10 +22,6 @@ import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
-import net.dv8tion.jda.api.events.channel.category.override.CategoryCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.category.override.CategoryDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.category.override.CategoryUpdateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.category.override.GenericCategoryOverrideEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
@@ -35,10 +31,6 @@ import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.store.GenericStoreChannelEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.store.override.GenericStoreChannelOverrideEvent;
-import net.dv8tion.jda.api.events.channel.store.override.StoreChannelCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.store.override.StoreChannelDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.store.override.StoreChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.store.update.GenericStoreChannelUpdateEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
@@ -46,18 +38,10 @@ import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositio
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.text.override.GenericTextChannelOverrideEvent;
-import net.dv8tion.jda.api.events.channel.text.override.TextChannelCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.text.override.TextChannelDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.text.override.TextChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
 import net.dv8tion.jda.api.events.channel.voice.GenericVoiceChannelEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
-import net.dv8tion.jda.api.events.channel.voice.override.GenericVoiceChannelOverrideEvent;
-import net.dv8tion.jda.api.events.channel.voice.override.VoiceChannelCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.voice.override.VoiceChannelDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.voice.override.VoiceChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
 import net.dv8tion.jda.api.events.emote.EmoteAddedEvent;
 import net.dv8tion.jda.api.events.emote.EmoteRemovedEvent;
@@ -73,6 +57,10 @@ import net.dv8tion.jda.api.events.guild.member.*;
 import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
@@ -128,25 +116,25 @@ public abstract class ListenerAdapter implements EventListener
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @ReplaceWith("onTextChannelUpdateOverride() and onTextChannelDeleteOverride()")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @ReplaceWith("onStoreChannelUpdateOverride() and onStoreChannelDeleteOverride()")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @ReplaceWith("onVoiceChannelUpdateOverride() and onVoiceChannelDeleteOverride()")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @ReplaceWith("onCategoryUpdateOverride() and onCategoryDeleteOverride()")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
 
     @Deprecated
@@ -219,14 +207,16 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
     public void onMessageReactionRemoveEmote(@Nonnull MessageReactionRemoveEmoteEvent event) {}
 
+    //PermissionOverride Events
+    public void onPermissionOverrideDelete(@Nonnull PermissionOverrideDeleteEvent event) {}
+    public void onPermissionOverrideUpdate(@Nonnull PermissionOverrideUpdateEvent event) {}
+    public void onPermissionOverrideCreate(@Nonnull PermissionOverrideCreateEvent event) {}
+
     //StoreChannel Events
     public void onStoreChannelDelete(@Nonnull StoreChannelDeleteEvent event) {}
     public void onStoreChannelUpdateName(@Nonnull StoreChannelUpdateNameEvent event) {}
     public void onStoreChannelUpdatePosition(@Nonnull StoreChannelUpdatePositionEvent event) {}
     public void onStoreChannelCreate(@Nonnull StoreChannelCreateEvent event) {}
-    public void onStoreChannelDeleteOverride(@Nonnull StoreChannelDeleteOverrideEvent event) {}
-    public void onStoreChannelUpdateOverride(@Nonnull StoreChannelUpdateOverrideEvent event) {}
-    public void onStoreChannelCreateOverride(@Nonnull StoreChannelCreateOverrideEvent event) {}
 
     //TextChannel Events
     public void onTextChannelDelete(@Nonnull TextChannelDeleteEvent event) {}
@@ -237,9 +227,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onTextChannelUpdateParent(@Nonnull TextChannelUpdateParentEvent event) {}
     public void onTextChannelUpdateSlowmode(@Nonnull TextChannelUpdateSlowmodeEvent event) {}
     public void onTextChannelCreate(@Nonnull TextChannelCreateEvent event) {}
-    public void onTextChannelDeleteOverride(@Nonnull TextChannelDeleteOverrideEvent event) {}
-    public void onTextChannelUpdateOverride(@Nonnull TextChannelUpdateOverrideEvent event) {}
-    public void onTextChannelCreateOverride(@Nonnull TextChannelCreateOverrideEvent event) {}
 
     //VoiceChannel Events
     public void onVoiceChannelDelete(@Nonnull VoiceChannelDeleteEvent event) {}
@@ -249,18 +236,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelUpdateBitrate(@Nonnull VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdateParent(@Nonnull VoiceChannelUpdateParentEvent event) {}
     public void onVoiceChannelCreate(@Nonnull VoiceChannelCreateEvent event) {}
-    public void onVoiceChannelDeleteOverride(@Nonnull VoiceChannelDeleteOverrideEvent event) {}
-    public void onVoiceChannelUpdateOverride(@Nonnull VoiceChannelUpdateOverrideEvent event) {}
-    public void onVoiceChannelCreateOverride(@Nonnull VoiceChannelCreateOverrideEvent event) {}
 
     //Category Events
     public void onCategoryDelete(@Nonnull CategoryDeleteEvent event) {}
     public void onCategoryUpdateName(@Nonnull CategoryUpdateNameEvent event) {}
     public void onCategoryUpdatePosition(@Nonnull CategoryUpdatePositionEvent event) {}
     public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {}
-    public void onCategoryDeleteOverride(@Nonnull CategoryDeleteOverrideEvent event) {}
-    public void onCategoryUpdateOverride(@Nonnull CategoryUpdateOverrideEvent event) {}
-    public void onCategoryCreateOverride(@Nonnull CategoryCreateOverrideEvent event) {}
 
     //PrivateChannel Events
     public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
@@ -361,16 +342,13 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericSelfUpdate(@Nonnull GenericSelfUpdateEvent event) {}
     public void onGenericStoreChannel(@Nonnull GenericStoreChannelEvent event) {}
     public void onGenericStoreChannelUpdate(@Nonnull GenericStoreChannelUpdateEvent event) {}
-    public void onGenericStoreChannelOverride(@Nonnull GenericStoreChannelOverrideEvent event) {}
     public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(@Nonnull GenericTextChannelUpdateEvent event) {}
-    public void onGenericTextChannelOverride(@Nonnull GenericTextChannelOverrideEvent event) {}
+    public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {}
     public void onGenericVoiceChannelUpdate(@Nonnull GenericVoiceChannelUpdateEvent event) {}
-    public void onGenericVoiceChannelOverride(@Nonnull GenericVoiceChannelOverrideEvent event) {}
     public void onGenericCategory(@Nonnull GenericCategoryEvent event) {}
     public void onGenericCategoryUpdate(@Nonnull GenericCategoryUpdateEvent event) {}
-    public void onGenericCategoryOverride(@Nonnull GenericCategoryOverrideEvent event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
     public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}
@@ -490,6 +468,14 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof SelfUpdateVerifiedEvent)
             onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
 
+        //PermissionOverride Events
+        else if (event instanceof PermissionOverrideDeleteEvent)
+            onPermissionOverrideDelete((PermissionOverrideDeleteEvent) event);
+        else if (event instanceof PermissionOverrideUpdateEvent)
+            onPermissionOverrideUpdate((PermissionOverrideUpdateEvent) event);
+        else if (event instanceof PermissionOverrideCreateEvent)
+            onPermissionOverrideCreate((PermissionOverrideCreateEvent) event);
+
         //StoreChannel Events
         else if (event instanceof StoreChannelCreateEvent)
             onStoreChannelCreate((StoreChannelCreateEvent) event);
@@ -499,12 +485,6 @@ public abstract class ListenerAdapter implements EventListener
             onStoreChannelUpdateName((StoreChannelUpdateNameEvent) event);
         else if (event instanceof StoreChannelUpdatePositionEvent)
             onStoreChannelUpdatePosition((StoreChannelUpdatePositionEvent) event);
-        else if (event instanceof StoreChannelDeleteOverrideEvent)
-            onStoreChannelDeleteOverride((StoreChannelDeleteOverrideEvent) event);
-        else if (event instanceof StoreChannelUpdateOverrideEvent)
-            onStoreChannelUpdateOverride((StoreChannelUpdateOverrideEvent) event);
-        else if (event instanceof StoreChannelCreateOverrideEvent)
-            onStoreChannelCreateOverride((StoreChannelCreateOverrideEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -515,12 +495,6 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelUpdateTopic((TextChannelUpdateTopicEvent) event);
         else if (event instanceof TextChannelUpdatePositionEvent)
             onTextChannelUpdatePosition((TextChannelUpdatePositionEvent) event);
-        else if (event instanceof TextChannelDeleteOverrideEvent)
-            onTextChannelDeleteOverride((TextChannelDeleteOverrideEvent) event);
-        else if (event instanceof TextChannelUpdateOverrideEvent)
-            onTextChannelUpdateOverride((TextChannelUpdateOverrideEvent) event);
-        else if (event instanceof TextChannelCreateOverrideEvent)
-            onTextChannelCreateOverride((TextChannelCreateOverrideEvent) event);
         else if (event instanceof TextChannelUpdateNSFWEvent)
             onTextChannelUpdateNSFW((TextChannelUpdateNSFWEvent) event);
         else if (event instanceof TextChannelUpdateParentEvent)
@@ -541,12 +515,6 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
         else if (event instanceof VoiceChannelUpdateBitrateEvent)
             onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
-        else if (event instanceof VoiceChannelDeleteOverrideEvent)
-            onVoiceChannelDeleteOverride((VoiceChannelDeleteOverrideEvent) event);
-        else if (event instanceof VoiceChannelUpdateOverrideEvent)
-            onVoiceChannelUpdateOverride((VoiceChannelUpdateOverrideEvent) event);
-        else if (event instanceof VoiceChannelCreateOverrideEvent)
-            onVoiceChannelCreateOverride((VoiceChannelCreateOverrideEvent) event);
         else if (event instanceof VoiceChannelUpdateParentEvent)
             onVoiceChannelUpdateParent((VoiceChannelUpdateParentEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
@@ -559,12 +527,6 @@ public abstract class ListenerAdapter implements EventListener
             onCategoryUpdateName((CategoryUpdateNameEvent) event);
         else if (event instanceof CategoryUpdatePositionEvent)
             onCategoryUpdatePosition((CategoryUpdatePositionEvent) event);
-        else if (event instanceof CategoryDeleteOverrideEvent)
-            onCategoryDeleteOverride((CategoryDeleteOverrideEvent) event);
-        else if (event instanceof CategoryUpdateOverrideEvent)
-            onCategoryUpdateOverride((CategoryUpdateOverrideEvent) event);
-        else if (event instanceof CategoryCreateOverrideEvent)
-            onCategoryCreateOverride((CategoryCreateOverrideEvent) event);
         else if (event instanceof CategoryDeleteEvent)
             onCategoryDelete((CategoryDeleteEvent) event);
 
@@ -750,14 +712,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericEmoteUpdate((GenericEmoteUpdateEvent) event);
         else if (event instanceof GenericUserPresenceEvent)
             onGenericUserPresence((GenericUserPresenceEvent) event);
-        else if (event instanceof GenericCategoryOverrideEvent)
-            onGenericCategoryOverride((GenericCategoryOverrideEvent) event);
-        else if (event instanceof GenericStoreChannelOverrideEvent)
-            onGenericStoreChannelOverride((GenericStoreChannelOverrideEvent) event);
-        else if (event instanceof GenericVoiceChannelOverrideEvent)
-            onGenericVoiceChannelOverride((GenericVoiceChannelOverrideEvent) event);
-        else if (event instanceof GenericTextChannelOverrideEvent)
-            onGenericTextChannelOverride((GenericTextChannelOverrideEvent) event);
+        else if (event instanceof GenericPermissionOverrideEvent)
+            onGenericPermissionOverride((GenericPermissionOverrideEvent) event);
 
         //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericMessageEvent)

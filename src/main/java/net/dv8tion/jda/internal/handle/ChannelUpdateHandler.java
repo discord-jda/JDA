@@ -18,25 +18,18 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.events.channel.category.override.CategoryCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.category.override.CategoryDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.category.override.CategoryUpdateOverrideEvent;
+import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.store.override.StoreChannelCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.store.override.StoreChannelDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.store.override.StoreChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
-import net.dv8tion.jda.api.events.channel.text.override.TextChannelCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.text.override.TextChannelDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.text.override.TextChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
-import net.dv8tion.jda.api.events.channel.voice.override.VoiceChannelCreateOverrideEvent;
-import net.dv8tion.jda.api.events.channel.voice.override.VoiceChannelDeleteOverrideEvent;
-import net.dv8tion.jda.api.events.channel.voice.override.VoiceChannelUpdateOverrideEvent;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -289,35 +282,10 @@ public class ChannelUpdateHandler extends SocketHandler
 
         currentOverrides.forEachValue(override -> {
             channel.getOverrideMap().remove(override.getIdLong());
-            switch (channel.getType())
-            {
-            case CATEGORY:
-                api.handleEvent(
-                    new CategoryDeleteOverrideEvent(
-                        api, responseNumber,
-                        (Category) channel, override));
-                break;
-            case STORE:
-                api.handleEvent(
-                    new StoreChannelDeleteOverrideEvent(
-                        api, responseNumber,
-                        (StoreChannel) channel, override));
-                break;
-            case VOICE:
-                api.handleEvent(
-                    new VoiceChannelDeleteOverrideEvent(
-                        api, responseNumber,
-                        (VoiceChannel) channel, override));
-                break;
-            case TEXT:
-                api.handleEvent(
-                    new TextChannelDeleteOverrideEvent(
-                        api, responseNumber,
-                        (TextChannel) channel, override));
-                break;
-            default:
-                WebSocketClient.LOG.warn("Unable to fire permission override delete event for unknown channel type {}", channel.getType());
-            }
+            api.handleEvent(
+                new PermissionOverrideDeleteEvent(
+                    api, responseNumber,
+                    channel, override));
             return true;
         });
     }
@@ -348,69 +316,19 @@ public class ChannelUpdateHandler extends SocketHandler
             PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
             impl.setAllow(allow);
             impl.setDeny(deny);
-            switch (channel.getType())
-            {
-            case TEXT:
-                api.handleEvent(
-                    new TextChannelUpdateOverrideEvent(
-                        api, responseNumber,
-                        (TextChannel) channel, currentOverride, oldAllow, oldDeny));
-                break;
-            case VOICE:
-                api.handleEvent(
-                    new VoiceChannelUpdateOverrideEvent(
-                        api, responseNumber,
-                        (VoiceChannel) channel, currentOverride, oldAllow, oldDeny));
-                break;
-            case STORE:
-                api.handleEvent(
-                    new StoreChannelUpdateOverrideEvent(
-                        api, responseNumber,
-                        (StoreChannel) channel, currentOverride, oldAllow, oldDeny));
-                break;
-            case CATEGORY:
-                api.handleEvent(
-                    new CategoryUpdateOverrideEvent(
-                        api, responseNumber,
-                        (Category) channel, currentOverride, oldAllow, oldDeny));
-                break;
-            default:
-                WebSocketClient.LOG.warn("Unable to fire permission override update event for unknown channel type {}", channel.getType());
-            }
+            api.handleEvent(
+                new PermissionOverrideUpdateEvent(
+                    api, responseNumber,
+                    channel, currentOverride, oldAllow, oldDeny));
         }
         else
         {
             currentOverride = new PermissionOverrideImpl(channel, id, role);
             channel.getOverrideMap().put(id, currentOverride);
-            switch (channel.getType())
-            {
-            case TEXT:
-                api.handleEvent(
-                    new TextChannelCreateOverrideEvent(
-                        api, responseNumber,
-                        (TextChannel) channel, currentOverride));
-                break;
-            case VOICE:
-                api.handleEvent(
-                    new VoiceChannelCreateOverrideEvent(
-                        api, responseNumber,
-                        (VoiceChannel) channel, currentOverride));
-                break;
-            case STORE:
-                api.handleEvent(
-                    new StoreChannelCreateOverrideEvent(
-                        api, responseNumber,
-                        (StoreChannel) channel, currentOverride));
-                break;
-            case CATEGORY:
-                api.handleEvent(
-                    new CategoryCreateOverrideEvent(
-                        api, responseNumber,
-                        (Category) channel, currentOverride));
-                break;
-            default:
-                WebSocketClient.LOG.warn("Unable to fire permission override update event for unknown channel type {}", channel.getType());
-            }
+            api.handleEvent(
+                new PermissionOverrideCreateEvent(
+                    api, responseNumber,
+                    channel, currentOverride));
         }
 
 
