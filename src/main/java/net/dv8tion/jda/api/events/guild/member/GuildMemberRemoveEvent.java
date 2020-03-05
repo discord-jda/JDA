@@ -31,9 +31,6 @@ import javax.annotation.Nullable;
  * If the member was not cached by JDA, due to the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
  * or disabled member chunking, then {@link #getMember()} will return {@code null}.
  *
- * <p>This is a more generalized version of {@link GuildMemberLeaveEvent}. The {@code GuildMemberLeaveEvent} will only
- * be fired if the member was previously cached.
- *
  * <p>Can be used to detect when a member is removed from a guild, either by leaving or being kicked/banned.
  */
 public class GuildMemberRemoveEvent extends GenericGuildEvent

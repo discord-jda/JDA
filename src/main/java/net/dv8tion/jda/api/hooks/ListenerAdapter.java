@@ -150,6 +150,11 @@ public abstract class ListenerAdapter implements EventListener
     public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
 
     @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("onGuildMemberRemoveEvent(GuildMemberRemoveEvent)")
+    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
+
+    @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
     public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
@@ -301,7 +306,6 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Member Events
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {}
-    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
     public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {}
 
