@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
 import net.dv8tion.jda.api.events.guild.member.GenericGuildMemberEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent;
+import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
@@ -350,6 +351,9 @@ public enum GatewayIntent
                 intents.add(DIRECT_MESSAGE_REACTIONS);
             else if (GenericPrivateMessageEvent.class.isAssignableFrom(event))
                 intents.add(DIRECT_MESSAGES);
+
+            else if (GenericMessageEvent.class.isAssignableFrom(event))
+                Collections.addAll(intents, GUILD_MESSAGES, DIRECT_MESSAGES);
 
             else if (UserTypingEvent.class.isAssignableFrom(event))
                 Collections.addAll(intents, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
