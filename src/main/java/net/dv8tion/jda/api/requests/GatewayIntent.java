@@ -284,7 +284,8 @@ public enum GatewayIntent
         {
             Checks.notNull(flag, "CacheFlag");
             GatewayIntent intent = flag.getRequiredIntent();
-            intents.add(intent);
+            if (intent != null)
+                intents.add(intent);
         }
 
         return intents;
