@@ -163,7 +163,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> clearReactions()
     {
-        if (!isFromType(ChannelType.TEXT))
+        if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId());
     }
@@ -172,7 +172,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> clearReactions(@Nonnull String unicode)
     {
-        if (!isFromType(ChannelType.TEXT))
+        if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), unicode);
     }
@@ -181,7 +181,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> clearReactions(@Nonnull Emote emote)
     {
-        if (!isFromType(ChannelType.TEXT))
+        if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), emote);
     }
@@ -203,7 +203,7 @@ public class ReceivedMessage extends AbstractMessage
             // we can safely remove that
             return channel.removeReactionById(getIdLong(), emote);
 
-        if (!isFromType(ChannelType.TEXT))
+        if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
         return getTextChannel().removeReactionById(getIdLong(), emote, user);
     }
@@ -223,7 +223,7 @@ public class ReceivedMessage extends AbstractMessage
         if (user.equals(getJDA().getSelfUser()))
             return channel.removeReactionById(getIdLong(), unicode);
 
-        if (!isFromType(ChannelType.TEXT))
+        if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
         return getTextChannel().removeReactionById(getId(), unicode, user);
     }
@@ -408,7 +408,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public List<Member> getMentionedMembers()
     {
-        if (isFromType(ChannelType.TEXT))
+        if (isFromGuild())
             return getMentionedMembers(getGuild());
         else
             throw new IllegalStateException("You must specify a Guild for Messages which are not sent from a TextChannel!");
@@ -542,7 +542,7 @@ public class ReceivedMessage extends AbstractMessage
             final Member member = (Member) mentionable;
             return CollectionUtils.containsAny(getMentionedRoles(), member.getRoles());
         }
-        else if (isFromType(ChannelType.TEXT) && mentionable instanceof User)
+        else if (isFromGuild() && mentionable instanceof User)
         {
             final Member member = getGuild().getMember((User) mentionable);
             return member != null && CollectionUtils.containsAny(getMentionedRoles(), member.getRoles());
@@ -614,7 +614,7 @@ public class ReceivedMessage extends AbstractMessage
             for (User user : getMentionedUsers())
             {
                 String name;
-                if (isFromType(ChannelType.TEXT) && getGuild().isMember(user))
+                if (isFromGuild() && getGuild().isMember(user))
                     name = getGuild().getMember(user).getEffectiveName();
                 else
                     name = user.getName();
@@ -700,7 +700,9 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public TextChannel getTextChannel()
     {
-        if (!isFromType(ChannelType.TEXT))
+        // this is not really safe but at the moment this is the only guild channel with messages
+        // and a MessageChannel can just be Text or Private to this is assumable at the moment
+        if (!isFromGuild())
             throw new IllegalStateException("This message was not sent in a text channel");
         return (TextChannel) channel;
     }
@@ -708,7 +710,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Category getCategory()
     {
-        return isFromType(ChannelType.TEXT) ? getTextChannel().getParent() : null;
+        return isFromGuild() ? getTextChannel().getParent() : null;
     }
 
     @Nonnull
