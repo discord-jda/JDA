@@ -700,8 +700,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public TextChannel getTextChannel()
     {
-        // this is not really safe but at the moment this is the only guild channel with messages
-        // and a MessageChannel can just be Text or Private to this is assumable at the moment
+        // this is not really safe but at the moment this is the only GuildChannel with messages
+        // and a MessageChannel can just be Text or Private so this is assumable as of now
         if (!isFromGuild())
             throw new IllegalStateException("This message was not sent in a text channel");
         return (TextChannel) channel;
