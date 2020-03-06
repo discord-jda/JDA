@@ -153,9 +153,6 @@ public class MessageBuilder implements Appendable
      * @param  content
      *         The content to use, or {@code null} to reset the content
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided content exceeds {@link net.dv8tion.jda.api.entities.Message#MAX_CONTENT_LENGTH Message.MAX_CONTENT_LENGTH}
-     *
      * @return The MessageBuilder instance. Useful for chaining.
      *
      * @see    net.dv8tion.jda.api.entities.Message#getContentRaw()
@@ -169,7 +166,6 @@ public class MessageBuilder implements Appendable
         }
         else
         {
-            Checks.check(content.length() <= Message.MAX_CONTENT_LENGTH, "Content length may not exceed %d!", Message.MAX_CONTENT_LENGTH);
             final int newLength = Math.max(builder.length(), content.length());
             builder.replace(0, newLength, content);
         }

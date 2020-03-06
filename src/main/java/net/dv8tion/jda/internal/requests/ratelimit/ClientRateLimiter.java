@@ -23,7 +23,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RateLimiter;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.Route.RateLimit;
 import net.dv8tion.jda.internal.utils.IOUtil;
 
 import java.io.IOException;
@@ -109,7 +108,7 @@ public class ClientRateLimiter extends RateLimiter
                 bucket = (Bucket) buckets.get(baseRoute);
                 if (bucket == null)
                 {
-                    bucket = new Bucket(baseRoute, route.getBaseRoute().getRatelimit());
+                    bucket = new Bucket(baseRoute);
                     buckets.put(baseRoute, bucket);
                 }
             }
@@ -120,14 +119,12 @@ public class ClientRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         final String route;
-        final RateLimit rateLimit;
         final ConcurrentLinkedQueue<Request> requests = new ConcurrentLinkedQueue<>();
         volatile long retryAfter = 0;
 
-        public Bucket(String route, RateLimit rateLimit)
+        public Bucket(String route)
         {
             this.route = route;
-            this.rateLimit = rateLimit;
         }
 
         void addToQueue(Request request)
@@ -208,7 +205,7 @@ public class ClientRateLimiter extends RateLimiter
                             if (isSkipped(it, request))
                                 continue;
                             // Blocking code because I'm lazy and client accounts are not priority
-                            Long retryAfter = requester.execute(request).get();
+                            Long retryAfter = requester.execute(request);
                             if (retryAfter != null)
                                 break;
                             else
@@ -249,18 +246,6 @@ public class ClientRateLimiter extends RateLimiter
                     api.handleEvent(new ExceptionEvent(api, err, true));
                 }
             }
-        }
-
-        @Override
-        public RateLimit getRatelimit()
-        {
-            return rateLimit;
-        }
-
-        @Override
-        public String getRoute()
-        {
-            return route;
         }
 
         @Override

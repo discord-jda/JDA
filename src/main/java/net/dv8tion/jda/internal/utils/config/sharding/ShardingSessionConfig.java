@@ -39,15 +39,21 @@ public class ShardingSessionConfig extends SessionConfig
         @Nullable SessionController sessionController, @Nullable VoiceDispatchInterceptor interceptor,
         @Nullable OkHttpClient httpClient, @Nullable OkHttpClient.Builder httpClientBuilder,
         @Nullable WebSocketFactory webSocketFactory, @Nullable IAudioSendFactory audioSendFactory,
-        EnumSet<ConfigFlag> flags, EnumSet<ShardingConfigFlag> shardingFlags, int maxReconnectDelay)
+        EnumSet<ConfigFlag> flags, EnumSet<ShardingConfigFlag> shardingFlags,
+        int maxReconnectDelay, int largeThreshold)
     {
-        super(sessionController, httpClient, webSocketFactory, interceptor, flags, maxReconnectDelay);
+        super(sessionController, httpClient, webSocketFactory, interceptor, flags, maxReconnectDelay, largeThreshold);
         if (httpClient == null)
             this.builder = httpClientBuilder == null ? new OkHttpClient.Builder() : httpClientBuilder;
         else
             this.builder = null;
         this.audioSendFactory = audioSendFactory;
         this.shardingFlags = shardingFlags;
+    }
+
+    public SessionConfig toSessionConfig(OkHttpClient client)
+    {
+        return new SessionConfig(getSessionController(), client, getWebSocketFactory(), getVoiceDispatchInterceptor(), getFlags(), getMaxReconnectDelay(), getLargeThreshold());
     }
 
     public EnumSet<ShardingConfigFlag> getShardingFlags()
@@ -70,6 +76,6 @@ public class ShardingSessionConfig extends SessionConfig
     @Nonnull
     public static ShardingSessionConfig getDefault()
     {
-        return new ShardingSessionConfig(null, null, null, null, null, null, ConfigFlag.getDefault(), ShardingConfigFlag.getDefault(), 900);
+        return new ShardingSessionConfig(null, null, new OkHttpClient(), null, null, null, ConfigFlag.getDefault(), ShardingConfigFlag.getDefault(), 900, 250);
     }
 }

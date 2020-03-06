@@ -54,6 +54,7 @@ public class SessionControllerAdapter implements SessionController
     @Override
     public void appendSession(@Nonnull SessionConnectNode node)
     {
+        removeSession(node);
         connectQueue.add(node);
         runWorker();
     }
@@ -108,7 +109,7 @@ public class SessionControllerAdapter implements SessionController
                     }
                     else if (response.code == 401)
                     {
-                        api.get().verifyToken(true);
+                        api.verifyToken(true);
                     }
                     else
                     {
@@ -230,7 +231,7 @@ public class SessionControllerAdapter implements SessionController
                     Throwable t = e.getCause();
                     if (t instanceof OpeningHandshakeException)
                         log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                    else
+                    else if (!JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
                         log.error("Failed to establish connection for a node, appending to queue", e);
                     appendSession(node);
                 }

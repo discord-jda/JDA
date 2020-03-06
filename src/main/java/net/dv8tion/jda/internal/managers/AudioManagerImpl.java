@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.audio.hooks.ListenerProxy;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -80,9 +79,6 @@ public class AudioManagerImpl implements AudioManager
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("The provided VoiceChannel is not a part of the Guild that this AudioManager handles." +
                     "Please provide a VoiceChannel from the proper Guild");
-        if (!getGuild().isAvailable())
-            throw new GuildUnavailableException("Cannot open an Audio Connection with an unavailable guild. " +
-                    "Please wait until this Guild is available to open a connection.");
         final Member self = getGuild().getSelfMember();
         //if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
@@ -148,7 +144,7 @@ public class AudioManagerImpl implements AudioManager
             this.queuedAudioConnection = null;
             if (audioConnection != null)
                 this.audioConnection.close(reason);
-            else
+            else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
                 getJDA().getDirectAudioController().disconnect(getGuild());
             this.audioConnection = null;
         });

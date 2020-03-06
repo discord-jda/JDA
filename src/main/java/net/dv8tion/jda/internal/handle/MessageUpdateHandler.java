@@ -48,6 +48,7 @@ public class MessageUpdateHandler extends SocketHandler
                 return guildId;
         }
 
+        //TODO: Rewrite this entire handler
         if (content.hasKey("author"))
         {
             if (content.hasKey("type"))
@@ -62,7 +63,7 @@ public class MessageUpdateHandler extends SocketHandler
                         return null;
                 }
             }
-            else
+            else if (!content.isNull("embeds"))
             {
                 //Received update with no "type" field which means its an update for a rich embed message
                 handleMessageEmbed(content);
@@ -74,8 +75,9 @@ public class MessageUpdateHandler extends SocketHandler
             handleCallMessage(content);
             return null;
         }
-        else
+        else if (!content.isNull("embeds"))
             return handleMessageEmbed(content);
+        return null;
     }
 
     private Long handleMessage(DataObject content)

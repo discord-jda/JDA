@@ -24,6 +24,8 @@ import java.time.OffsetDateTime;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} started typing. (Similar to the typing indicator in the Discord client)
+ * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
+ * to be enabled.
  *
  * <p>Can be used to retrieve the User who started typing and when and in which MessageChannel they started typing.
  */

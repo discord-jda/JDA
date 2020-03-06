@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
@@ -30,6 +31,16 @@ import java.util.List;
  * <br>Categories are used to keep order in a Guild by dividing the channels into groups.
  *
  * @since 3.4.0
+ *
+ * @see   Guild#getCategoryCache()
+ * @see   Guild#getCategories()
+ * @see   Guild#getCategoriesByName(String, boolean)
+ * @see   Guild#getCategoryById(long)
+ *
+ * @see   JDA#getCategoryCache()
+ * @see   JDA#getCategories()
+ * @see   JDA#getCategoriesByName(String, boolean)
+ * @see   JDA#getCategoryById(long)
  */
 public interface Category extends GuildChannel
 {

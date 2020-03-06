@@ -331,6 +331,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 toRemove.add(permHolder.getIdLong());
             });
 
+        channel.getGuild().updateCachedOverrides(channel, permOverwrites);
         toRemove.forEach((id) ->
         {
             overridesMap.remove(id);
@@ -372,9 +373,8 @@ public class ChannelUpdateHandler extends SocketHandler
                 permHolder = channel.getGuild().getMemberById(id);
                 if (permHolder == null)
                 {
-                    getJDA().getEventCache().cache(EventCache.Type.USER, id, responseNumber, allContent, (a, b) ->
-                            handlePermissionOverride(override, channel, content, changedPermHolders, containedPermHolders));
-                    EventCache.LOG.debug("CHANNEL_UPDATE attempted to create or update a PermissionOverride for Member that doesn't exist in this Guild! MemberId: {} JSON: {}", id, content);
+                    // cache override for unloaded member (maybe loaded later)
+                    channel.getGuild().cacheOverride(id, channel.getIdLong(), override);
                     return;
                 }
                 break;

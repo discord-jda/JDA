@@ -416,6 +416,10 @@ public class MarkdownSanitizer
             throw new IllegalStateException("Found illegal region for strategy ESCAPE '" + region + "' with no known format token!");
         if (region == UNDERLINE)
             token = "_\\_"; // UNDERLINE needs special handling because the client thinks its ITALICS_U if you only escape once
+        else if (region == BOLD)
+            token = "*\\*"; // BOLD needs special handling because the client thinks its ITALICS_A if you only escape once
+        else if (region == (BOLD | ITALICS_A))
+            token = "*\\*\\*"; // BOLD | ITALICS_A needs special handling because the client thinks its BOLD if you only escape once
         builder.append("\\").append(token)
                .append(seq)
                .append("\\").append(token);

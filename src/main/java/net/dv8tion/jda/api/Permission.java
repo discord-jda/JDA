@@ -53,6 +53,7 @@ public enum Permission
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
 
     // Voice Permissions
+    VOICE_STREAM(      9, true, true, "Stream"),
     VOICE_CONNECT(    20, true, true, "Connect"),
     VOICE_SPEAK(      21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
@@ -105,7 +106,7 @@ public enum Permission
      * All voice channel specific permissions which are only available in voice channel permission overrides
      */
     public static final long ALL_VOICE_PERMISSIONS
-            = Permission.getRaw(VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
+            = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
                                 VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD);
 
     private final int offset;

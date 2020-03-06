@@ -29,15 +29,16 @@ import java.util.function.IntFunction;
 
 public class ShardingMetaConfig extends MetaConfig
 {
-    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(null, null, ConfigFlag.getDefault(), Compression.ZLIB);
+    private static final ShardingMetaConfig defaultConfig = new ShardingMetaConfig(2048, null, null, ConfigFlag.getDefault(), Compression.ZLIB);
     private final Compression compression;
     private final IntFunction<? extends ConcurrentMap<String, String>> contextProvider;
 
     public ShardingMetaConfig(
+        int maxBufferSize,
         @Nullable IntFunction<? extends ConcurrentMap<String, String>> contextProvider,
         @Nullable EnumSet<CacheFlag> cacheFlags, EnumSet<ConfigFlag> flags, Compression compression)
     {
-        super(null, cacheFlags, flags);
+        super(maxBufferSize, null, cacheFlags, flags);
 
         this.compression = compression;
         this.contextProvider = contextProvider;

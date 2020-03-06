@@ -17,18 +17,10 @@
 package net.dv8tion.jda.internal.requests.ratelimit;
 
 import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.internal.requests.Route;
 
 import java.util.Queue;
 
 public interface IBucket
 {
-    Route.RateLimit getRatelimit();
-    String getRoute();
     Queue<Request> getRequests();
-
-    default boolean hasRatelimit()
-    {
-        return getRatelimit() != null;
-    }
 }

@@ -33,13 +33,14 @@ public class SessionConfig
     private final OkHttpClient httpClient;
     private final WebSocketFactory webSocketFactory;
     private final VoiceDispatchInterceptor interceptor;
+    private final int largeThreshold;
     private EnumSet<ConfigFlag> flags;
     private int maxReconnectDelay;
 
     public SessionConfig(
         @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
         @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
-        EnumSet<ConfigFlag> flags, int maxReconnectDelay)
+        EnumSet<ConfigFlag> flags, int maxReconnectDelay, int largeThreshold)
     {
         this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
         this.httpClient = httpClient;
@@ -47,6 +48,7 @@ public class SessionConfig
         this.interceptor = interceptor;
         this.flags = flags;
         this.maxReconnectDelay = maxReconnectDelay;
+        this.largeThreshold = largeThreshold;
     }
 
     public void setAutoReconnect(boolean autoReconnect)
@@ -101,9 +103,19 @@ public class SessionConfig
         return flags.contains(ConfigFlag.RAW_EVENTS);
     }
 
+    public boolean isRelativeRateLimit()
+    {
+        return flags.contains(ConfigFlag.USE_RELATIVE_RATELIMIT);
+    }
+
     public int getMaxReconnectDelay()
     {
         return maxReconnectDelay;
+    }
+
+    public int getLargeThreshold()
+    {
+        return largeThreshold;
     }
 
     public EnumSet<ConfigFlag> getFlags()
@@ -114,6 +126,6 @@ public class SessionConfig
     @Nonnull
     public static SessionConfig getDefault()
     {
-        return new SessionConfig(null, null, null, null, ConfigFlag.getDefault(), 900);
+        return new SessionConfig(null, new OkHttpClient(), null, null, ConfigFlag.getDefault(), 900, 250);
     }
 }

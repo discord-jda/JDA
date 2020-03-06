@@ -28,6 +28,10 @@ import javax.annotation.Nullable;
  * An object representing Webhooks in Discord
  *
  * @since  3.0
+ *
+ * @see    TextChannel#retrieveWebhooks()
+ * @see    Guild#retrieveWebhooks()
+ * @see    JDA#retrieveWebhookById(String)
  */
 public interface Webhook extends ISnowflake, IFakeable
 {
@@ -38,6 +42,15 @@ public interface Webhook extends ISnowflake, IFakeable
      */
     @Nonnull
     JDA getJDA();
+
+    /**
+     * The {@link WebhookType} of this webhook.
+     * <br>Webhooks of type {@link WebhookType#FOLLOWER} don't have a token.
+     *
+     * @return The {@link WebhookType}
+     */
+    @Nonnull
+    WebhookType getType();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} instance

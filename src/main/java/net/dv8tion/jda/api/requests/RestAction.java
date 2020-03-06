@@ -17,20 +17,28 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
+import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
+import net.dv8tion.jda.internal.requests.restaction.operator.MapRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -427,6 +435,259 @@ public interface RestAction<T>
     CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on successful execution.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<String> retrieveMemberNickname(Guild guild, String userId) {
+     *     return guild.retrieveMemberById(userId)
+     *                 .map(Member::getNickname);
+     * }
+     * }</pre>
+     *
+     * @param  map
+     *         The mapping function to apply to the action result
+     *
+     * @param  <O>
+     *         The target output type
+     *
+     * @return RestAction for the mapped type
+     *
+     * @since  4.1.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default <O> RestAction<O> map(@Nonnull Function<? super T, ? extends O> map)
+    {
+        Checks.notNull(map, "Function");
+        return new MapRestAction<>(this, map);
+    }
+
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on successful execution. This will compute the result of both RestActions.
+     * <br>The returned RestAction must not be null!
+     * To terminate the execution chain on a specific condition you can use {@link #flatMap(Predicate, Function)}.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> initializeGiveaway(Guild guild, String channelName) {
+     *     return guild.createTextChannel(channelName)
+     *          .addPermissionOverride(guild.getPublicRole(), null, EnumSet.of(Permission.MESSAGE_WRITE)) // deny write for everyone
+     *          .addPermissionOverride(guild.getSelfMember(), EnumSet.of(Permission.MESSAGE_WRITE), null) // allow for self user
+     *          .flatMap((channel) -> channel.sendMessage("React to enter giveaway!")) // send message
+     *          .flatMap((message) -> message.addReaction(REACTION)); // add reaction
+     * }
+     * }</pre>
+     *
+     * @param  flatMap
+     *         The mapping function to apply to the action result, must return a RestAction
+     *
+     * @param  <O>
+     *         The target output type
+     *
+     * @return RestAction for the mapped type
+     *
+     * @since  4.1.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default <O> RestAction<O> flatMap(@Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
+    {
+        return flatMap(null, flatMap);
+    }
+
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on successful execution. This will compute the result of both RestActions.
+     * <br>The provided RestAction must not be null!
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * private static final int MAX_COUNT = 1000;
+     * public void updateCount(MessageChannel channel, String messageId, int count) {
+     *     channel.retrieveMessageById(messageId) // retrieve message for check
+     *         .map(Message::getContentRaw) // get content of the message
+     *         .map(Integer::parseInt) // convert it to an int
+     *         .flatMap(
+     *             (currentCount) -> currentCount + count <= MAX_COUNT, // Only edit if new count does not exceed maximum
+     *             (currentCount) -> channel.editMessageById(messageId, String.valueOf(currentCount + count)) // edit message
+     *         )
+     *         .map(Message::getContentRaw) // get content of the message
+     *         .map(Integer::parseInt) // convert it to an int
+     *         .queue((newCount) -> System.out.println("Updated count to " + newCount));
+     * }
+     * }</pre>
+     *
+     * @param  condition
+     *         A condition predicate that decides whether to apply the flat map operator or not
+     * @param  flatMap
+     *         The mapping function to apply to the action result, must return a RestAction
+     *
+     * @param  <O>
+     *         The target output type
+     *
+     * @return RestAction for the mapped type
+     *
+     * @see    #flatMap(Function)
+     * @see    #map(Function)
+     *
+     * @since  4.1.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default <O> RestAction<O> flatMap(@Nullable Predicate<? super T> condition, @Nonnull Function<? super T, ? extends RestAction<O>> flatMap)
+    {
+        Checks.notNull(flatMap, "Function");
+        return new FlatMapRestAction<>(this, condition, flatMap);
+    }
+
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(Duration.ofSeconds(10)) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(Duration.ofMinutes(1)) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  duration
+     *         The delay
+     *
+     * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit)
+     *
+     * @since  4.1.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(@Nonnull Duration duration)
+    {
+        return delay(duration, null);
+    }
+
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(Duration.ofSeconds(10), scheduler) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(Duration.ofMinutes(1), scheduler) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  duration
+     *         The delay
+     * @param  scheduler
+     *         The scheduler to use, null to use {@link JDA#getRateLimitPool()}
+     *
+     * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
+     *
+     * @since  4.1.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(@Nonnull Duration duration, @Nullable ScheduledExecutorService scheduler)
+    {
+        Checks.notNull(duration, "Duration");
+        return new DelayRestAction<>(this, TimeUnit.MILLISECONDS, duration.toMillis(), scheduler);
+    }
+
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(10, SECONDS) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(1, MINUTES) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  delay
+     *         The delay value
+     * @param  unit
+     *         The time unit for the delay value
+     *
+     * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit)
+     *
+     * @since  4.1.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit)
+    {
+        return delay(delay, unit, null);
+    }
+
+    /**
+     * Intermediate operator that returns a modified RestAction.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will delay its result by the provided delay.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+     *     return channel.sendMessage("The following message will destroy itself in 1 minute!")
+     *         .delay(10, SECONDS, scheduler) // edit 10 seconds later
+     *         .flatMap((it) -> it.editMessage(content))
+     *         .delay(1, MINUTES, scheduler) // delete 1 minute later
+     *         .flatMap(Message::delete);
+     * }
+     * }</pre>
+     *
+     * @param  delay
+     *         The delay value
+     * @param  unit
+     *         The time unit for the delay value
+     * @param  scheduler
+     *         The scheduler to use, null to use {@link JDA#getRateLimitPool()}
+     *
+     * @return RestAction with delay
+     *
+     * @see    #queueAfter(long, TimeUnit, ScheduledExecutorService)
+     *
+     * @since  4.1.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> delay(long delay, @Nonnull TimeUnit unit, @Nullable ScheduledExecutorService scheduler)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        return new DelayRestAction<>(this, unit, delay, scheduler);
+    }
+
+    /**
      * Schedules a call to {@link #queue()} to be executed after the specified {@code delay}.
      * <br>This is an <b>asynchronous</b> operation that will return a
      * {@link CompletableFuture CompletableFuture} representing the task.
@@ -486,7 +747,14 @@ public interface RestAction<T>
         if (executor == null)
             executor = getJDA().getRateLimitPool();
         return DelayedCompletableFuture.make(executor, delay, unit,
-                (task) -> new ContextRunnable<>(() -> queue(task::complete, task::completeExceptionally)));
+                (task) -> {
+                    final Consumer<? super Throwable> onFailure;
+                    if (isPassContext())
+                        onFailure = ContextException.here(task::completeExceptionally);
+                    else
+                        onFailure = task::completeExceptionally;
+                    return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
+                });
     }
 
     /**
@@ -713,6 +981,14 @@ public interface RestAction<T>
         Checks.notNull(unit, "TimeUnit");
         if (executor == null)
             executor = getJDA().getRateLimitPool();
-        return executor.schedule((Runnable) new ContextRunnable<>(() -> queue(success, failure)), delay, unit);
+
+        final Consumer<? super Throwable> onFailure;
+        if (isPassContext())
+            onFailure = ContextException.here(failure == null ? getDefaultFailure() : failure);
+        else
+            onFailure = failure;
+
+        Runnable task = new ContextRunnable<Void>(() -> queue(success, onFailure));
+        return executor.schedule(task, delay, unit);
     }
 }

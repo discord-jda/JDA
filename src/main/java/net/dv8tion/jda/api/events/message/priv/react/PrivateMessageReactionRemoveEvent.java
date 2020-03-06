@@ -29,8 +29,8 @@ import javax.annotation.Nonnull;
  */
 public class PrivateMessageReactionRemoveEvent extends GenericPrivateMessageReactionEvent
 {
-    public PrivateMessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction)
+    public PrivateMessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction, long userId)
     {
-        super(api, responseNumber, user, reaction);
+        super(api, responseNumber, user, reaction, userId);
     }
 }

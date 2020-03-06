@@ -75,7 +75,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
     @Nullable
     public Member getMember()
     {
-        return isWebhookMessage() ? null : getGuild().getMember(getAuthor());
+        return message.getMember();
     }
 
     /**

@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -24,6 +25,8 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -32,6 +35,12 @@ import java.util.List;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild} channel.
+ *
+ * @see Guild#getGuildChannelById(long)
+ * @see Guild#getGuildChannelById(ChannelType, long)
+ *
+ * @see JDA#getGuildChannelById(long)
+ * @see JDA#getGuildChannelById(ChannelType, long)
  */
 public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
 {
@@ -357,7 +366,15 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
         if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(this, Permission.MANAGE_PERMISSIONS);
         PermissionOverride override = getPermissionOverride(permissionHolder);
-        return override != null ? override.getManager() : putPermissionOverride(permissionHolder);
+        if (override != null)
+            return override.getManager();
+        PermissionOverrideAction action = putPermissionOverride(permissionHolder);
+        // Check if we have some information cached already
+        TLongObjectMap<DataObject> cache = ((GuildImpl) getGuild()).getOverrideMap(permissionHolder.getIdLong());
+        DataObject json = cache == null ? null : cache.get(getIdLong());
+        if (json != null)
+            action = action.setPermissions(json.getLong("allow"), json.getLong("deny"));
+        return action;
     }
 
     /**

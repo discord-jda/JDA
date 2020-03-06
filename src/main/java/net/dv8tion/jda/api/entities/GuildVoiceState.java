@@ -24,6 +24,8 @@ import javax.annotation.Nullable;
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
  * {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ *
+ * @see Member#getVoiceState()
  */
 public interface GuildVoiceState
 {

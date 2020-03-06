@@ -103,6 +103,22 @@ public static void main(String[] args) {
 > See [JDABuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/JDABuilder.html)
   and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
+You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
+Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter` or disabling `guild_subscriptions`.
+
+```java
+public void configureMemoryUsage(JDABuilder builder) {
+    // Disable cache for member activities (streaming/games/spotify)
+    builder.setDisabledCacheFlags(
+        EnumSet.of(CacheFlag.ACTIVITY)
+    );
+    // Disable user/member cache and related events
+    builder.setGuildSubscriptionsEnabled(false);
+    // Disable member chunking on startup (ignored if guild subscriptions are turned off)
+    builder.setChunkingFilter(ChunkingFilter.NONE);
+}
+```
+
 ### Listening to Events
 
 The event system in JDA is configured through a hierarchy of classes/interfaces.
@@ -217,6 +233,27 @@ Through [RestAction](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/
 
 and it is up to the user to decide which pattern to utilize.
 It can be combined with reactive libraries such as [reactor-core](https://github.com/reactor/reactor-core) due to being lazy.
+
+The RestAction interface also supports a number of operators to avoid callback hell:
+
+- [`map`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#map%28java.util.function.Function%29)
+    Convert the result of the `RestAction` to a different value
+- [`flatMap`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#flatMap%28java.util.function.Function%29)
+    Chain another `RestAction` on the result
+- [`delay`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/requests/RestAction.html#delay%28java.time.Duration%29)
+    Delay the element of the previous step
+
+**Example**:
+
+```java
+public RestAction<Void> selfDestruct(MessageChannel channel, String content) {
+    return channel.sendMessage("The following message will destroy itself in 1 minute!")
+        .delay(10, SECONDS, scheduler) // edit 10 seconds later
+        .flatMap((it) -> it.editMessage(content))
+        .delay(1, MINUTES, scheduler) // delete 1 minute later
+        .flatMap(Message::delete);
+}
+```
 
 ### More Examples
 
@@ -601,7 +638,7 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.5**
+   * Version: **2.9**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
@@ -613,7 +650,7 @@ All dependencies are managed automatically by Gradle.
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
-   * Version: **2.9.8**
+   * Version: **2.10.1**
    * [Github](https://github.com/FasterXML/jackson)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j

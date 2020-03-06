@@ -44,6 +44,12 @@ import java.util.*;
  * {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
  * <br><b>Note:</b> Message order is always in recent to past order. I.e: A message at index 0
  * of a list is more recent than a message at index 1.
+ *
+ * @see MessageChannel#getHistory()
+ * @see MessageChannel#getHistoryAfter(String, int)
+ * @see MessageChannel#getHistoryBefore(String, int)
+ * @see MessageChannel#getHistoryAround(String, int)
+ * @see MessageChannel#getHistoryFromBeginning(int)
  */
 public class MessageHistory
 {
@@ -560,7 +566,7 @@ public class MessageHistory
         {
             final MessageHistory result = new MessageHistory(channel);
             final DataArray array = response.getArray();
-            final EntityBuilder builder = api.get().getEntityBuilder();
+            final EntityBuilder builder = api.getEntityBuilder();
             for (int i = 0; i < array.length(); i++)
             {
                 try

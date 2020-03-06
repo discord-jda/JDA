@@ -21,6 +21,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.exceptions.HierarchyException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -37,17 +39,25 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.DeferredRestAction;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
  * This should contain all information provided from Discord about a Guild.
+ *
+ * @see JDA#getGuildCache()
+ * @see JDA#getGuildById(long)
+ * @see JDA#getGuildsByName(String, boolean)
+ * @see JDA#getGuilds()
  */
 public interface Guild extends ISnowflake
 {
@@ -167,6 +177,24 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * Whether this guild has loaded members.
+     * <br>This will always be false if guild subscriptions have been disabled.
+     *
+     * @return True, if members are loaded.
+     */
+    boolean isLoaded();
+
+    /**
+     * The expected member count for this guild.
+     * <br>If this guild is not lazy loaded this should be identical to the size returned by {@link #getMemberCache()}.
+     *
+     * <p>When guild subscriptions are disabled, this will not be updated.
+     *
+     * @return The expected member count for this guild
+     */
+    int getMemberCount();
+
+    /**
      * The human readable name of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
      * This value can be modified using {@link GuildManager#setName(String)}.
@@ -212,10 +240,10 @@ public interface Guild extends ISnowflake
      *     <li>COMMERCE - Guild can sell software through a store channel</li>
      *     <li>DISCOVERABLE - Guild shows up in discovery tab</li>
      *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
-     *     <li>LURKABLE - Guild allows users to lurk</li>
      *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
      *     <li>NEWS - Guild can create news channels</li>
      *     <li>PARTNERED - Guild is "partnered"</li>
+     *     <li>PUBLIC - Guild is public</li>
      *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
      *     <li>VERIFIED - Guild is "verified"</li>
      *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
@@ -405,13 +433,12 @@ public interface Guild extends ISnowflake
      */
     default int getMaxBitrate()
     {
-        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 96000 : 128000;
+        int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 384000 : 96000;
         return Math.max(maxBitrate, getBoostTier().getMaxBitrate());
     }
 
     /**
      * The maximum amount of emotes a guild can have based on the guilds boost tier.
-     * This does not take into account if the guild has the MORE_EMOJI feature.
      *
      * @return The maximum amount of emotes
      *
@@ -419,7 +446,8 @@ public interface Guild extends ISnowflake
      */
     default int getMaxEmotes()
     {
-        return getBoostTier().getMaxEmotes();
+        int maxEmotes = getFeatures().contains("MORE_EMOJI") ? 200 : 50;
+        return Math.max(maxEmotes, getBoostTier().getMaxEmotes());
     }
 
     /**
@@ -469,14 +497,17 @@ public interface Guild extends ISnowflake
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
-     * <br>This is null when the owner is no longer in this guild. Sometimes owners of guilds delete their account
-     * or get banned by Discord.
+     * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
+     * Sometimes owners of guilds delete their account or get banned by Discord.
+     *
+     * <p>If lazy-loading is used it is recommended to use {@link #retrieveOwner()} instead.
      *
      * <p>Ownership can be transferred using {@link net.dv8tion.jda.api.entities.Guild#transferOwnership(Member)}.
      *
      * @return Possibly-null Member object for the Guild owner.
      *
      * @see    #getOwnerIdLong()
+     * @see    #retrieveOwner()
      */
     @Nullable
     Member getOwner();
@@ -1597,13 +1628,18 @@ public interface Guild extends ISnowflake
         Checks.notNull(emote, "Emote");
         if (emote.getGuild() != null)
             Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
-        if (emote instanceof ListedEmote && !emote.isFake())
-        {
-            ListedEmote listedEmote = (ListedEmote) emote;
-            if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                return new EmptyRestAction<>(getJDA(), listedEmote);
-        }
-        return retrieveEmoteById(emote.getId());
+
+        JDA jda = getJDA();
+        return new DeferredRestAction<>(jda, ListedEmote.class,
+        () -> {
+            if (emote instanceof ListedEmote && !emote.isFake())
+            {
+                ListedEmote listedEmote = (ListedEmote) emote;
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                    return listedEmote;
+            }
+            return null;
+        }, () -> retrieveEmoteById(emote.getId()));
     }
 
     /**
@@ -1736,7 +1772,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1}
+     *         If the provided days are less than {@code 1} or more than {@code 30}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: Integer
      *         <br>The amount of Members that would be affected.
@@ -1998,12 +2034,140 @@ public interface Guild extends ISnowflake
     boolean checkVerification();
 
     /**
-     * Returns whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
-     * <br>If a Guild is unavailable, no actions on it can be performed (Messages, Manager,...)
+     * Whether or not this Guild is available. A Guild can be unavailable, if the Discord server has problems.
+     * <br>If a Guild is unavailable, it will be removed from the guild cache. You cannot receive events for unavailable guilds.
      *
      * @return If the Guild is available
+     *
+     * @deprecated This will be removed in a future version,
+     *             unavailable guilds are now removed from cache.
+     *             Replace with {@link JDA#isUnavailable(long)}
      */
+    @ForRemoval
+    @Deprecated
+    @DeprecatedSince("4.1.0")
+    @ReplaceWith("getJDA().isUnavailable(guild.getIdLong())")
     boolean isAvailable();
+
+    /**
+     * Requests member chunks for this guild.
+     * <br>This returns a completed future if the member demand is already matched.
+     * When {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions} are disabled
+     * this will do nothing since member caching is disabled.
+     *
+     * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
+     *
+     * @return {@link CompletableFuture} representing the chunking task
+     */
+    @Nonnull
+    CompletableFuture<Void> retrieveMembers();
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  user
+     *         The user to load the member from
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     */
+    @Nonnull
+    default RestAction<Member> retrieveMember(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return retrieveMemberById(user.getId());
+    }
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the member from
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is empty or null
+     * @throws NumberFormatException
+     *         If the provided id is not a snowflake
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     */
+    @Nonnull
+    default RestAction<Member> retrieveMemberById(@Nonnull String id)
+    {
+        return retrieveMemberById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the member from
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     */
+    @Nonnull
+    RestAction<Member> retrieveMemberById(long id);
+
+    /**
+     * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
+     * <br>This will retrieve the current owner of the guild.
+     * It is possible that the owner of a guild is no longer a registered discord user in which case this will fail.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #getOwner()
+     * @see    #getOwnerIdLong()
+     * @see    #retrieveMemberById(long)
+     */
+    @Nonnull
+    default RestAction<Member> retrieveOwner()
+    {
+        return retrieveMemberById(getOwnerIdLong());
+    }
 
     /* From GuildController */
 
@@ -2165,7 +2329,7 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1}
+     *         If the provided days are less than {@code 1} or more than {@code 30}
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
@@ -2239,19 +2403,13 @@ public interface Guild extends ISnowflake
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
-     *         If the userId provided does not correspond to a Member in this Guild or the provided {@code userId} is blank/null.
+     *         If the user for the provided id cannot be kicked from this Guild or the provided {@code userId} is blank/null.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
-    {
-        Member member = getMemberById(userId);
-        Checks.check(member != null, "The provided userId does not correspond to a member in this guild! Provided userId: %s");
-
-        return kick(member, reason);
-    }
+    AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason);
 
     /**
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -2792,6 +2950,111 @@ public interface Guild extends ISnowflake
     AuditableRestAction<Void> addRoleToMember(@Nonnull Member member, @Nonnull Role role);
 
     /**
+     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is already present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will receive the new role
+     * @param  role
+     *         The role which should be assigned atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>If the role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> addRoleToMember(long userId, @Nonnull Role role)
+    {
+        Checks.notNull(role, "Role");
+        Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
+
+        Member member = getMemberById(userId);
+        if (member != null)
+            return addRoleToMember(member, role);
+        if (!getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            throw new InsufficientPermissionException(this, Permission.MANAGE_ROLES);
+        if (!getSelfMember().canInteract(role))
+            throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
+        Route.CompiledRoute route = Route.Guilds.ADD_MEMBER_ROLE.compile(getId(), Long.toUnsignedString(userId), role.getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    /**
+     * Atomically assigns the provided {@link net.dv8tion.jda.api.entities.Role Role} to the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is already present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will receive the new role
+     * @param  role
+     *         The role which should be assigned atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>If the role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> addRoleToMember(@Nonnull String userId, @Nonnull Role role)
+    {
+        return addRoleToMember(MiscUtil.parseSnowflake(userId), role);
+    }
+
+    /**
      * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
      *
@@ -2834,6 +3097,111 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> removeRoleFromMember(@Nonnull Member member, @Nonnull Role role);
+
+    /**
+     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is not present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will lose the specified role
+     * @param  role
+     *         The role which should be removed atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>The role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> removeRoleFromMember(long userId, @Nonnull Role role)
+    {
+        Checks.notNull(role, "Role");
+        Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
+
+        Member member = getMemberById(userId);
+        if (member != null)
+            return removeRoleFromMember(member, role);
+        if (!getSelfMember().hasPermission(Permission.MANAGE_ROLES))
+            throw new InsufficientPermissionException(this, Permission.MANAGE_ROLES);
+        if (!getSelfMember().canInteract(role))
+            throw new HierarchyException("Can't modify a role with higher or equal highest role than yourself! Role: " + role.toString());
+        Route.CompiledRoute route = Route.Guilds.REMOVE_MEMBER_ROLE.compile(getId(), Long.toUnsignedString(userId), role.getId());
+        return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    /**
+     * Atomically removes the provided {@link net.dv8tion.jda.api.entities.Role Role} from the specified member by their user id.
+     * <br><b>This can be used together with other role modification methods as it does not require an updated cache!</b>
+     *
+     * <p>If multiple roles should be added/removed (efficiently) in one request
+     * you may use {@link #modifyMemberRoles(Member, Collection, Collection) modifyMemberRoles(Member, Collection, Collection)} or similar methods.
+     *
+     * <p>If the specified role is not present in the member's set of roles this does nothing.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The Members Roles could not be modified due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER}
+     *     <br>The target Member was removed from the Guild before finishing the task</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_ROLE UNKNOWN_ROLE}
+     *     <br>If the specified Role does not exist</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The id of the target member who will lose the specified role
+     * @param  role
+     *         The role which should be removed atomically
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the specified role is not from the current Guild</li>
+     *             <li>The role is {@code null}</li>
+     *         </ul>
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_ROLES Permission.MANAGE_ROLES}
+     * @throws net.dv8tion.jda.api.exceptions.HierarchyException
+     *         If the provided roles are higher in the Guild's hierarchy
+     *         and thus cannot be modified by the currently logged in account
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default AuditableRestAction<Void> removeRoleFromMember(@Nonnull String userId, @Nonnull Role role)
+    {
+        return removeRoleFromMember(MiscUtil.parseSnowflake(userId), role);
+    }
 
     /**
      * Modifies the {@link net.dv8tion.jda.api.entities.Role Roles} of the specified {@link net.dv8tion.jda.api.entities.Member Member}
