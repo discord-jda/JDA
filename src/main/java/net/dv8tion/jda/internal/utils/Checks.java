@@ -16,15 +16,19 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.Collection;
 
 public class Checks
 {
+    @Contract("null -> fail")
     public static void isSnowflake(final String snowflake)
     {
         isSnowflake(snowflake, snowflake);
     }
 
+    @Contract("null, _ -> fail")
     public static void isSnowflake(final String snowflake, final String message)
     {
         notNull(snowflake, message);
@@ -32,30 +36,35 @@ public class Checks
             throw new IllegalArgumentException(message + " is not a valid snowflake value!");
     }
 
+    @Contract("false, _ -> fail")
     public static void check(final boolean expression, final String message)
     {
         if (!expression)
             throw new IllegalArgumentException(message);
     }
 
+    @Contract("false, _, _ -> fail")
     public static void check(final boolean expression, final String message, final Object... args)
     {
         if (!expression)
             throw new IllegalArgumentException(String.format(message, args));
     }
 
+    @Contract("false, _, _ -> fail")
     public static void check(final boolean expression, final String message, final Object arg)
     {
         if (!expression)
             throw new IllegalArgumentException(String.format(message, arg));
     }
 
+    @Contract("null, _ -> fail")
     public static void notNull(final Object argument, final String name)
     {
         if (argument == null)
             throw new IllegalArgumentException(name + " may not be null");
     }
 
+    @Contract("null, _ -> fail")
     public static void notEmpty(final CharSequence argument, final String name)
     {
         notNull(argument, name);
@@ -63,6 +72,7 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be empty");
     }
 
+    @Contract("null, _ -> fail")
     public static void notBlank(final CharSequence argument, final String name)
     {
         notNull(argument, name);
@@ -70,6 +80,7 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be blank");
     }
 
+    @Contract("null, _ -> fail")
     public static void noWhitespace(final CharSequence argument, final String name)
     {
         notNull(argument, name);
@@ -77,6 +88,7 @@ public class Checks
             throw new IllegalArgumentException(name + " may not contain blanks");
     }
 
+    @Contract("null, _ -> fail")
     public static void notEmpty(final Collection<?> argument, final String name)
     {
         notNull(argument, name);
@@ -84,6 +96,7 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be empty");
     }
 
+    @Contract("null, _ -> fail")
     public static void notEmpty(final Object[] argument, final String name)
     {
         notNull(argument, name);
@@ -91,12 +104,14 @@ public class Checks
             throw new IllegalArgumentException(name + " may not be empty");
     }
 
+    @Contract("null, _ -> fail")
     public static void noneNull(final Collection<?> argument, final String name)
     {
         notNull(argument, name);
         argument.forEach(it -> notNull(it, name));
     }
 
+    @Contract("null, _ -> fail")
     public static void noneNull(final Object[] argument, final String name)
     {
         notNull(argument, name);
@@ -105,18 +120,21 @@ public class Checks
         }
     }
 
+    @Contract("null, _ -> fail")
     public static <T extends CharSequence> void noneEmpty(final Collection<T> argument, final String name)
     {
         notNull(argument, name);
         argument.forEach(it -> notEmpty(it, name));
     }
 
+    @Contract("null, _ -> fail")
     public static <T extends CharSequence> void noneBlank(final Collection<T> argument, final String name)
     {
         notNull(argument, name);
         argument.forEach(it -> notBlank(it, name));
     }
 
+    @Contract("null, _ -> fail")
     public static <T extends CharSequence> void noneContainBlanks(final Collection<T> argument, final String name)
     {
         notNull(argument, name);
