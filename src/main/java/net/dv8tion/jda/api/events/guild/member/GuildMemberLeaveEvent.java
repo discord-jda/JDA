@@ -29,6 +29,8 @@ import javax.annotation.Nonnull;
  * You can use {@link GuildMemberRemoveEvent} to detect any member removes, regardless of cache state.
  *
  * <p>Can be used to retrieve members who leave a guild.
+ *
+ * @deprecated This was deprecated in favour of {@link GuildMemberRemoveEvent}
  */
 @Deprecated
 @DeprecatedSince("4.2.0")
