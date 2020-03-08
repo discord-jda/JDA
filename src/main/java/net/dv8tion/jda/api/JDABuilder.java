@@ -96,7 +96,7 @@ public class JDABuilder
      *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(Collection)} instead.
+     * the gateway intents. Refer to {@link #create(String, Collection)}, {@link #createDefault(String, Collection)}, and {@link #createLight(String, Collection)} instead.
      *
      * @see #JDABuilder(String)
      */
@@ -113,7 +113,7 @@ public class JDABuilder
      *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(String, Collection)} instead.
+     * the gateway intents. Refer to {@link #create(String, Collection)}, {@link #createDefault(String, Collection)}, and {@link #createLight(String, Collection)} instead.
      *
      * @see   #setToken(String)
      */
@@ -137,7 +137,8 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *         If the given AccountType is {@code null}
      *
-     * @deprecated This will be removed in a future version, replace with {@link #create(String, Collection)}
+     * @deprecated This will be removed in a future version, replace with {@link #create(String, Collection)}.
+     *             We no longer support login with {@link AccountType#CLIENT}.
      */
     @Deprecated
     @ReplaceWith("JDABuilder.create(String)")
@@ -173,11 +174,7 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder createDefault(@Nullable String token)
     {
-        return new JDABuilder(token, GatewayIntent.DEFAULT)
-                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
-                .setLargeThreshold(50);
+        return new JDABuilder(token, GatewayIntent.DEFAULT).applyDefault();
     }
 
     /**
@@ -235,11 +232,15 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intents))
-                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
-                .setLargeThreshold(50);
+        return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyDefault();
+    }
+
+    private JDABuilder applyDefault()
+    {
+        return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
+                   .setChunkingFilter(ChunkingFilter.NONE)
+                   .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                   .setLargeThreshold(250);
     }
 
     /**
@@ -262,11 +263,7 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder createLight(@Nullable String token)
     {
-        return new JDABuilder(token, GatewayIntent.DEFAULT)
-                .setMemberCachePolicy(MemberCachePolicy.NONE)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
-                .setLargeThreshold(50);
+        return new JDABuilder(token, GatewayIntent.DEFAULT).applyLight();
     }
 
     /**
@@ -290,11 +287,7 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intents))
-                .setMemberCachePolicy(MemberCachePolicy.NONE)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
-                .setLargeThreshold(50);
+        return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyLight();
     }
 
     /**
@@ -320,11 +313,15 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents))
-                .setMemberCachePolicy(MemberCachePolicy.NONE)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
-                .setLargeThreshold(50);
+        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents)).applyLight();
+    }
+
+    private JDABuilder applyLight()
+    {
+        return this.setMemberCachePolicy(MemberCachePolicy.NONE)
+                   .setChunkingFilter(ChunkingFilter.NONE)
+                   .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                   .setLargeThreshold(50);
     }
 
     /**
@@ -508,8 +505,8 @@ public class JDABuilder
      * <br>All members are cached by default. If a guild is enabled for chunking, all members will be cached for it.
      *
      * <p>You can use this to define a custom caching policy that will greatly improve memory usage.
-     * It is recommended not to disable {@link GatewayIntent#GUILD_MEMBERS} if you cache all members of a guild.
-     * Additionally, the {@link MemberCachePolicy#ONLINE} requires {@link GatewayIntent#GUILD_PRESENCES} to be enabled.
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -1318,8 +1315,7 @@ public class JDABuilder
     {
         Checks.notNull(intent, "Intents");
         Checks.noneNull(intents, "Intents");
-        EnumSet<GatewayIntent> set = EnumSet.of(intent);
-        Collections.addAll(set, intents);
+        EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
         return setDisabledIntents(EnumSet.complementOf(set));
     }
 
@@ -1479,6 +1475,10 @@ public class JDABuilder
 
     private void checkIntents()
     {
+        boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
+        if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)
+            throw new IllegalStateException("Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
+
         if (cacheFlags.isEmpty())
             return;
 

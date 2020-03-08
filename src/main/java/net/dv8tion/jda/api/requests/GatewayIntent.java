@@ -49,21 +49,21 @@ import java.util.EnumSet;
  * will need these events or not.
  *
  * <ol>
- *     <li>GUILD_MEMBERS This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks). This is required to cache all members of a guild (including chunking)</li>
- *     <li>GUILD_BANS This will only track guild bans and unbans</li>
- *     <li>GUILD_EMOJIS This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
- *     <li>GUILD_INVITES This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
- *     <li>GUILD_VOICE_STATES Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
- *     <li>GUILD_PRESENCES This is a <b>privileged</b> gateway intent this is only used to track activity and online-status of a user.</li>
- *     <li>GUILD_MESSAGES This is used to receive incoming messages in guilds (servers), most bots will need this for commands.</li>
- *     <li>GUILD_MESSAGE_REACTIONS This is used to track reactions on messages in guilds (servers). Can be useful to make a paginated embed or reaction role management.</li>
- *     <li>GUILD_MESSAGE_TYPING This is used to track when a user starts typing in guilds (servers). Almost no bot will have a use for this.</li>
- *     <li>DIRECT_MESSAGES This is used to receive incoming messages in private channels (DMs). You can still send private messages without this intent.</li>
- *     <li>DIRECT_MESSAGE_REACTIONS This is used to track reactions on messages in private channels (DMs).</li>
- *     <li>DIRECT_MESSAGE_TYPING This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
+ *     <li><b>GUILD_MEMBERS</b> - This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks). This is required to cache all members of a guild (including chunking)</li>
+ *     <li><b>GUILD_BANS</b> - This will only track guild bans and unbans</li>
+ *     <li><b>GUILD_EMOJIS</b> - This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
+ *     <li><b>GUILD_INVITES</b> - This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
+ *     <li><b>GUILD_VOICE_STATES</b> - Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
+ *     <li><b>GUILD_PRESENCES</b> - This is a <b>privileged</b> gateway intent this is only used to track activity and online-status of a user.</li>
+ *     <li><b>GUILD_MESSAGES</b> - This is used to receive incoming messages in guilds (servers), most bots will need this for commands.</li>
+ *     <li><b>GUILD_MESSAGE_REACTIONS</b> - This is used to track reactions on messages in guilds (servers). Can be useful to make a paginated embed or reaction role management.</li>
+ *     <li><b>GUILD_MESSAGE_TYPING</b> - This is used to track when a user starts typing in guilds (servers). Almost no bot will have a use for this.</li>
+ *     <li><b>DIRECT_MESSAGES</b> - This is used to receive incoming messages in private channels (DMs). You can still send private messages without this intent.</li>
+ *     <li><b>DIRECT_MESSAGE_REACTIONS</b> - This is used to track reactions on messages in private channels (DMs).</li>
+ *     <li><b>DIRECT_MESSAGE_TYPING</b> - This is used to track when a user starts typing in private channels (DMs). Almost no bot will have a use for this.</li>
  * </ol>
  *
- * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use this event.
+ * If an intent is not specifically mentioned to be <b>privileged</b>, it is not required to be on the whitelist to use if (and its related events).
  * To get whitelisted you either need to contact discord support (for bots in more than 100 guilds)
  * or enable it in the developer dashboard of your application.
  *

@@ -63,8 +63,9 @@ public class MemberImpl implements Member
         this.clientStatus = cacheOnline ? Collections.synchronizedMap(new EnumMap<>(ClientType.class)) : null;
     }
 
-    public void updateUser()
+    private void updateUser()
     {
+        // Load user from cache if one exists, ideally two members with the same id should wrap the same user object
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null)
             this.user = realUser;

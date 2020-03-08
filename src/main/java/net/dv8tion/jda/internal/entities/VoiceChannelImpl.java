@@ -139,6 +139,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     public TLongObjectMap<Member> getConnectedMembersMap()
     {
         connectedMembers.transformValues((member) -> {
+            // Load real member instance from cache to provided up-to-date cache information
             Member real = getGuild().getMemberById(member.getIdLong());
             return real != null ? real : member;
         });

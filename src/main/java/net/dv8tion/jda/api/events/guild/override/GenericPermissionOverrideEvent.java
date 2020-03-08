@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel's} {@link PermissionOverride} was created/deleted/updated.
+ * Indicates that a {@link PermissionOverride}  for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} was created, deleted, or updated.
  * <br>Every guild channel override event is a subclass of this event and can be casted
  *
  * <p>Can be used to detect that any guild channel override event was fired

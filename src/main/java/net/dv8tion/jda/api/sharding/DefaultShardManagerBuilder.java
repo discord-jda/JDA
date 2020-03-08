@@ -153,11 +153,7 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createDefault(@Nullable String token)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT)
-                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.CLIENT_STATUS))
-                .setLargeThreshold(50);
+        return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT).applyDefault();
     }
 
     /**
@@ -215,11 +211,15 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents))
-                .setMemberCachePolicy(MemberCachePolicy.DEFAULT)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
-                .setLargeThreshold(50);
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents)).applyDefault();
+    }
+
+    private DefaultShardManagerBuilder applyDefault()
+    {
+        return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
+                   .setChunkingFilter(ChunkingFilter.NONE)
+                   .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                   .setLargeThreshold(250);
     }
 
     /**
@@ -242,39 +242,7 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createLight(@Nullable String token)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT)
-                .setMemberCachePolicy(MemberCachePolicy.NONE)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
-                .setLargeThreshold(50);
-    }
-
-    /**
-     * Creates a DefaultShardManagerBuilder with low memory profile settings.
-     * <br>Note that these defaults can potentially change in the future.
-     *
-     * <ul>
-     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
-     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
-     * </ul>
-     *
-     * @param  token
-     *         The bot token to use
-     * @param  intents
-     *         The gateway intents to use
-     *
-     * @return The new DefaultShardManagerBuilder
-     */
-    @Nonnull
-    @CheckReturnValue
-    public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
-    {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents))
-                .setMemberCachePolicy(MemberCachePolicy.NONE)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
-                .setLargeThreshold(50);
+        return new DefaultShardManagerBuilder(token, GatewayIntent.DEFAULT).applyLight();
     }
 
     /**
@@ -300,11 +268,39 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents))
-                .setMemberCachePolicy(MemberCachePolicy.NONE)
-                .setChunkingFilter(ChunkingFilter.NONE)
-                .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
-                .setLargeThreshold(50);
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents)).applyLight();
+    }
+
+    /**
+     * Creates a DefaultShardManagerBuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intents
+     *         The gateway intents to use
+     *
+     * @return The new DefaultShardManagerBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
+    {
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents)).applyLight();
+    }
+
+    private DefaultShardManagerBuilder applyLight()
+    {
+        return this.setMemberCachePolicy(MemberCachePolicy.NONE)
+                   .setChunkingFilter(ChunkingFilter.NONE)
+                   .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                   .setLargeThreshold(50);
     }
 
     /**
@@ -485,12 +481,12 @@ public class  DefaultShardManagerBuilder
      * <br>All members are cached by default. If a guild is enabled for chunking, all members will be cached for it.
      *
      * <p>You can use this to define a custom caching policy that will greatly improve memory usage.
-     * It is recommended not to disable {@link GatewayIntent#GUILD_MEMBERS} if you cache all members of a guild.
-     * Additionally, the {@link MemberCachePolicy#ONLINE} requires {@link GatewayIntent#GUILD_PRESENCES} to be enabled.
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public void configureCache(JDABuilder builder) {
+     * public void configureCache(DefaultShardManagerBuilder builder) {
      *     // Cache members who are in a voice channel
      *     MemberCachePolicy policy = MemberCachePolicy.VOICE;
      *     // Cache members who are in a voice channel
@@ -500,6 +496,8 @@ public class  DefaultShardManagerBuilder
      *     // AND are also online
      *     // OR are the owner of the guild
      *     policy = policy.or(MemberCachePolicy.OWNER);
+     *     // Cache members who have a role with the name "Moderator"
+     *     policy = (member) -> member.getRoles().stream().map(Role::getName).anyMatch("Moderator"::equals);
      *
      *     builder.setMemberCachePolicy(policy);
      * }
@@ -1588,7 +1586,10 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @since  4.0.0
+     * @since  4.1.0
+     *
+     * @deprecated This is now superceded by {@link #setDisabledIntents(Collection)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     *             To get identical behavior you can do {@code setMemberCachePolicy(VOICE).setDisabledIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_MEMBERS)}
      */
     @Nonnull
     @Deprecated
@@ -1602,7 +1603,6 @@ public class  DefaultShardManagerBuilder
             intents &= ~JDABuilder.GUILD_SUBSCRIPTIONS;
         }
         return this;
-        //return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
     }
 
     /**
@@ -1631,8 +1631,7 @@ public class  DefaultShardManagerBuilder
     {
         Checks.notNull(intent, "Intent");
         Checks.noneNull(intents, "Intent");
-        EnumSet<GatewayIntent> set = EnumSet.of(intent);
-        Collections.addAll(set, intents);
+        EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
         return setDisabledIntents(set);
     }
 
@@ -1644,7 +1643,7 @@ public class  DefaultShardManagerBuilder
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * @param  intents
-     *         The intents to disable (default: none)
+     *         The intents to disable, or null to disable all intents (default: none)
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
@@ -1687,8 +1686,7 @@ public class  DefaultShardManagerBuilder
     {
         Checks.notNull(intent, "Intent");
         Checks.noneNull(intents, "Intent");
-        EnumSet<GatewayIntent> set = EnumSet.of(intent);
-        Collections.addAll(set, intents);
+        EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
         return setDisabledIntents(EnumSet.complementOf(set));
     }
 
@@ -1700,7 +1698,7 @@ public class  DefaultShardManagerBuilder
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
      * @param  intents
-     *         The intents to enable (default: all)
+     *         The intents to enable, or null to enable no intents (default: all)
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
@@ -1824,6 +1822,10 @@ public class  DefaultShardManagerBuilder
 
     private void checkIntents()
     {
+        boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
+        if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)
+            throw new IllegalStateException("Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
+
         if (cacheFlags.isEmpty())
             return;
 

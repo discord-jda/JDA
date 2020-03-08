@@ -478,7 +478,7 @@ public interface JDA
      *         The name of the resulting guild
      *
      * @throws java.lang.IllegalStateException
-     *         If the currently logged in account  is in 10 or more guilds
+     *         If the currently logged in account is in 10 or more guilds
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is empty, {@code null} or not between 2-100 characters
      *
@@ -515,7 +515,7 @@ public interface JDA
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.User Users} visible to this JDA session.
+     * all <b>cached</b> {@link net.dv8tion.jda.api.entities.User Users} visible to this JDA session.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -528,7 +528,7 @@ public interface JDA
      * <br>This list will never contain duplicates and represents all
      * {@link net.dv8tion.jda.api.entities.User Users} that JDA can currently see.
      *
-     * <p>This will only check cached users!
+     * <p><b>This will only check cached users!</b>
      *
      * <p>If the developer is sharding, then only users from guilds connected to the specifically logged in
      * shard will be returned in the List.
@@ -550,7 +550,7 @@ public interface JDA
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
      * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
-     * <p>This will only check cached users!
+     * <p><b>This will only check cached users!</b>
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
@@ -572,7 +572,7 @@ public interface JDA
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
      * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
-     * <p>This will only check cached users!
+     * <p><b>This will only check cached users!</b>
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
@@ -596,6 +596,8 @@ public interface JDA
      * <p>This only checks users that are known to the currently logged in account (shard). If a user exists
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
      * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * <p><b>This will only check cached users!</b>
      *
      * @param  tag
      *         The Discord Tag in the format {@code Username#Discriminator}
@@ -626,6 +628,8 @@ public interface JDA
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
      * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
      *
+     * <p><b>This will only check cached users!</b>
+     *
      * @param  username
      *         The name of the user
      * @param  discriminator
@@ -644,10 +648,10 @@ public interface JDA
         Checks.check(discriminator.length() == 4 && Helpers.isNumeric(discriminator), "Invalid format for discriminator!");
         Checks.check(username.length() >= 2 && username.length() <= 32, "Username must be between 2 and 32 characters in length!");
         return getUserCache().applyStream(stream ->
-                stream.filter(it -> it.getDiscriminator().equals(discriminator))
-                        .filter(it -> it.getName().equals(username))
-                        .findFirst()
-                        .orElse(null)
+            stream.filter(it -> it.getDiscriminator().equals(discriminator))
+                  .filter(it -> it.getName().equals(username))
+                  .findFirst()
+                  .orElse(null)
         );
     }
 
@@ -655,7 +659,7 @@ public interface JDA
      * This immutable returns all {@link net.dv8tion.jda.api.entities.User Users} that have the same username as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.User Users} with the provided name, then this returns an empty list.
      *
-     * <p>This will only check cached users!
+     * <p><b>This will only check cached users!</b>
      *
      * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.api.entities.User#getName()}
      *
@@ -698,11 +702,11 @@ public interface JDA
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
+     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
      * is made to the Discord servers.
      *
-     * <p>When the intents {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS}
-     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(long, boolean)} to disable this behavior.
+     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -737,11 +741,11 @@ public interface JDA
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
+     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
      * is made to the Discord servers.
      *
-     * <p>When the intents {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS}
-     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(long, boolean)} to disable this behavior.
+     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -768,8 +772,9 @@ public interface JDA
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
-     * is made to the Discord servers.
+     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
+     * this method will update the cached user unless the {@code update} parameter is {@code false}.
+     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -806,8 +811,9 @@ public interface JDA
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
-     * is made to the Discord servers.
+     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
+     * this method will update the cached user unless the {@code update} parameter is {@code false}.
+     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>

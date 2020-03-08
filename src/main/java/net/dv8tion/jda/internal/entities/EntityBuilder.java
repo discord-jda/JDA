@@ -327,8 +327,6 @@ public class EntityBuilder
             updateUser(userObj, user);
         }
 
-        if (newUser)
-            getJDA().getEventCache().playbackCache(EventCache.Type.USER, id);
         return userObj;
     }
 
@@ -404,7 +402,11 @@ public class EntityBuilder
 
             return false;
         }
-        else if (guild.getMemberById(member.getIdLong()) != null) return true;
+        else if (guild.getMemberById(member.getIdLong()) != null)
+        {
+            // Member should be added to cache but already is cached -> do nothing
+            return true;
+        }
 
 
         if (getJDA().getUserById(user.getIdLong()) == null)

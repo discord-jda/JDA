@@ -63,23 +63,21 @@ public class MemberChunkManager
     public boolean handleChunk(long guildId, DataObject response)
     {
         //TODO: We currently have no way to detect "no matches found" so the system can lock up here
-        boolean[] handled = {false};
-        MiscUtil.locked(lock, () -> {
+        return MiscUtil.locked(lock, () -> {
             Queue<ChunkRequest> queue = requests.get(guildId);
             if (!requestedChunk.remove(guildId))
             {
                 // This request was probably cancelled so try the next one
                 processQueue(guildId, queue);
-                return;
+                return false;
             }
 
-            handled[0] = true;
             ChunkRequest chunkRequest = queue.remove();
             chunkRequest.complete(response);
 
             processQueue(guildId, queue);
+            return true;
         });
-        return handled[0];
     }
 
     public void cancelRequest(ChunkRequest request)

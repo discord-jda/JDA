@@ -345,7 +345,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericStoreChannelUpdate(@Nonnull GenericStoreChannelUpdateEvent event) {}
     public void onGenericTextChannel(@Nonnull GenericTextChannelEvent event) {}
     public void onGenericTextChannelUpdate(@Nonnull GenericTextChannelUpdateEvent event) {}
-    public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
     public void onGenericVoiceChannel(@Nonnull GenericVoiceChannelEvent event) {}
     public void onGenericVoiceChannelUpdate(@Nonnull GenericVoiceChannelUpdateEvent event) {}
     public void onGenericCategory(@Nonnull GenericCategoryEvent event) {}
@@ -360,6 +359,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
+    public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
 
     @Override
     public final void onEvent(@Nonnull GenericEvent event)

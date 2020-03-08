@@ -336,20 +336,20 @@ public class ChannelUpdateHandler extends SocketHandler
             changed.add(holder);
     }
 
-    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long id, AbstractChannelImpl<?,?> channel)
+    private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, AbstractChannelImpl<?,?> channel)
     {
         final long allow = override.getLong("allow");
         final long deny = override.getLong("deny");
         final String type = override.getString("type");
-        final boolean role = type.equals("role");
-        if (!role)
+        final boolean isRole = type.equals("role");
+        if (!isRole)
         {
             if (!type.equals("member"))
             {
                 EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
                 return false;
             }
-            else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES) && id != api.getSelfUser().getIdLong())
+            else if (!api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES) && overrideId != api.getSelfUser().getIdLong())
             {
                 return false;
             }
@@ -371,8 +371,8 @@ public class ChannelUpdateHandler extends SocketHandler
         }
         else
         {
-            currentOverride = new PermissionOverrideImpl(channel, id, role);
-            channel.getOverrideMap().put(id, currentOverride);
+            currentOverride = new PermissionOverrideImpl(channel, overrideId, isRole);
+            channel.getOverrideMap().put(overrideId, currentOverride);
             api.handleEvent(
                 new PermissionOverrideCreateEvent(
                     api, responseNumber,

@@ -116,7 +116,7 @@ public interface PermissionOverride extends ISnowflake
 
     /**
      * If this PermissionOverride is an override dealing with a {@link net.dv8tion.jda.api.entities.Member Member}, then
-     * this method will return the related {@link net.dv8tion.jda.api.entities.Member Member} and the member is currently cached.
+     * this method will return the related {@link net.dv8tion.jda.api.entities.Member Member} if the member is currently cached.
      * <br>Otherwise, this method returns {@code null}.
      * <br>Basically: if {@link PermissionOverride#isMemberOverride()} returns {@code false} or the member is not cached, this returns {@code null}.
      *

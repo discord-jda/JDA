@@ -41,7 +41,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
     }
 
     /**
-     * The old allowed permissions
+     * The old allowed permissions as a raw bitmask.
      *
      * @return The old allowed permissions
      */
@@ -51,7 +51,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
     }
 
     /**
-     * The old denied permissions
+     * The old denied permissions as a raw bitmask.
      *
      * @return The old denied permissions
      */
@@ -61,7 +61,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
     }
 
     /**
-     * The old inherited permissions
+     * The old inherited permissions as a raw bitmask.
      *
      * @return The old inherited permissions
      */

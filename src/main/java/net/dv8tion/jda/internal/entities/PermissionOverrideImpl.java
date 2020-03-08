@@ -39,7 +39,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final long id;
     private final SnowflakeReference<GuildChannel> channel;
     private final ChannelType channelType;
-    private final boolean role;
+    private final boolean isRole;
     private final JDAImpl api;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
@@ -48,9 +48,9 @@ public class PermissionOverrideImpl implements PermissionOverride
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(GuildChannel channel, long id, boolean role)
+    public PermissionOverrideImpl(GuildChannel channel, long id, boolean isRole)
     {
-        this.role = role;
+        this.isRole = isRole;
         this.channelType = channel.getType();
         this.api = (JDAImpl) channel.getJDA();
         this.channel = new SnowflakeReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
@@ -106,7 +106,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public IPermissionHolder getPermissionHolder()
     {
-        return role ? getRole() : getMember();
+        return isRole ? getRole() : getMember();
     }
 
     @Override
@@ -138,13 +138,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public boolean isMemberOverride()
     {
-        return !role;
+        return !isRole;
     }
 
     @Override
     public boolean isRoleOverride()
     {
-        return role;
+        return isRole;
     }
 
     @Nonnull
