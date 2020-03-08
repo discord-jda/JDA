@@ -21,6 +21,7 @@ import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
@@ -68,7 +69,6 @@ import java.util.zip.DataFormatException;
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
     public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
-    public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
@@ -308,7 +308,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
+        String url = api.getGatewayUrl() + "?encoding=json&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
         if (compression != Compression.NONE)
         {
             url += "&compress=" + compression.getKey();
@@ -626,7 +626,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
-            .put("v", DISCORD_GATEWAY_VERSION)
+            .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
             .put("large_threshold", api.getLargeThreshold());
         //We only provide intents if they are not the default (all) for backwards compatibility
         // Discord has additional enforcements put in place even if you specify to subscribe to all intents
