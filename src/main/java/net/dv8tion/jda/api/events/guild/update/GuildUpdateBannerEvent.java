@@ -71,7 +71,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      */
     @Nullable
     @Deprecated
-    @DeprecatedSince("4.1.1")
+    @DeprecatedSince("4.2.0")
     @ReplaceWith("getNewBannerUrl()")
     public String getNewBannerIdUrl()
     {
