@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.utils;
-
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
-import javax.annotation.Nonnull;
 import java.util.LinkedList;
 
+/**
+ * Implements a Least-Recently-Used (LRU) cache (independent of guilds).
+ * <br>The cache policy will keep track of how many members are currently cached and will removed the least recently
+ * cached member once the maximum is reached.
+ */
 public class LRUCachePolicy implements MemberCachePolicy
 {
     private final int max;
-    private final LinkedList<Long> cached = new LinkedList<>(); // TLongLinkedList had a bug so we gotta use this
+    private final LinkedList<Long> cached = new LinkedList<>();
 
     public LRUCachePolicy(int max)
     {
@@ -33,7 +35,7 @@ public class LRUCachePolicy implements MemberCachePolicy
     }
 
     @Override
-    public synchronized boolean cacheMember(@Nonnull Member member)
+    public synchronized boolean cacheMember(Member member)
     {
         long id = member.getIdLong();
         int index = cached.indexOf(id);
