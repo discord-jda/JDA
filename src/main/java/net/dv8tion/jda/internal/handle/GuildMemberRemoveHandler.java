@@ -115,7 +115,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 {
                     PrivateChannelImpl priv = (PrivateChannelImpl) removedUser.getPrivateChannel();
                     removedUser.setFake(true);
-                    priv.setFake(true);
                     getJDA().getFakeUserMap().put(removedUser.getIdLong(), removedUser);
                     getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
                 }

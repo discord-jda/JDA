@@ -970,7 +970,6 @@ public class EntityBuilder
 
         if (user.isFake())
         {
-            priv.setFake(true);
             // Promote user and channel to cache of fakers
             getJDA().getFakePrivateChannelMap().put(channelId, priv);
             getJDA().getFakeUserMap().put(user.getIdLong(), user);
