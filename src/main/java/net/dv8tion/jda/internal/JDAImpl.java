@@ -352,53 +352,44 @@ public class JDAImpl implements JDA
 
     public void verifyToken() throws LoginException
     {
-        this.verifyToken(false);
-    }
-
-    // @param alreadyFailed If has already been a failed attempt with the current configuration
-    public void verifyToken(boolean alreadyFailed) throws LoginException
-    {
-        if (!alreadyFailed)
+        RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
         {
-            RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
+            @Override
+            public void handleResponse(Response response, Request<DataObject> request)
             {
-                @Override
-                public void handleResponse(Response response, Request<DataObject> request)
-                {
-                    if (response.isOk())
-                        request.onSuccess(response.getObject());
-                    else if (response.isRateLimit())
-                        request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
-                    else if (response.code == 401)
-                        request.onSuccess(null);
-                    else
-                        request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                                response.toString()));
-                }
-            };
-
-            try
-            {
-                DataObject userResponse = login.complete();
-                if (userResponse != null)
-                {
-                    getEntityBuilder().createSelfUser(userResponse);
-                    return;
-                }
-            }
-            catch (RuntimeException e)
-            {
-                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-                Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
-                if (ex instanceof LoginException)
-                    throw new LoginException(ex.getMessage());
+                if (response.isOk())
+                    request.onSuccess(response.getObject());
+                else if (response.isRateLimit())
+                    request.onFailure(new RateLimitedException(request.getRoute(), response.retryAfter));
+                else if (response.code == 401)
+                    request.onSuccess(null);
                 else
-                    throw e;
+                    request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
+                            response.toString()));
             }
-        }
+        };
 
-        shutdownNow();
-        throw new LoginException("The provided token is invalid!");
+        try
+        {
+            DataObject userResponse = login.complete();
+            if (userResponse != null)
+            {
+                getEntityBuilder().createSelfUser(userResponse);
+                return;
+            }
+            shutdownNow();
+            throw new LoginException("The provided token is invalid!");
+        }
+        catch (RuntimeException | Error e)
+        {
+            shutdownNow();
+            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
+            Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
+            if (ex instanceof LoginException)
+                throw new LoginException(ex.getMessage());
+            else
+                throw e;
+        }
     }
 
     public AuthorizationConfig getAuthorizationConfig()
