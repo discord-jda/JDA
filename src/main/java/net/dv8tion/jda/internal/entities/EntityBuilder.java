@@ -381,14 +381,21 @@ public class EntityBuilder
         MemberCacheViewImpl membersView = guild.getMembersView();
         if (forceRemove || !getJDA().cacheMember(member))
         {
-            membersView.remove(member.getIdLong());
+            if (membersView.remove(member.getIdLong()) == null)
+                return false;
+            LOG.trace("Unloading member {}", member);
             if (!user.isFake() && user.getMutualGuilds().isEmpty())
             {
                 // we no longer share any guilds with this user so remove it from cache
                 user.setFake(true);
                 getJDA().getUsersView().remove(user.getIdLong());
                 if (user.hasPrivateChannel())
-                    getJDA().getPrivateChannelsView().remove(user.getPrivateChannel().getIdLong());
+                {
+                    PrivateChannel channel = user.getPrivateChannel();
+                    getJDA().getFakeUserMap().put(user.getIdLong(), user);
+                    getJDA().getFakePrivateChannelMap().put(channel.getIdLong(), channel);
+                    getJDA().getPrivateChannelsView().remove(channel.getIdLong());
+                }
             }
 
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
@@ -408,6 +415,7 @@ public class EntityBuilder
             return true;
         }
 
+        LOG.trace("Loading member {}", member);
 
         if (getJDA().getUserById(user.getIdLong()) == null)
         {
