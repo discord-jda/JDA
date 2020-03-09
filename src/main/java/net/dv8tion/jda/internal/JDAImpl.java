@@ -149,12 +149,12 @@ public class JDAImpl implements JDA
         this.eventCache = new EventCache();
     }
 
-    public void requestedChunks(GuildImpl guild)
+    public void onChunksRequested(GuildImpl guild)
     {
         this.chunkingRequested.add(guild.getIdLong());
     }
 
-    public void finishedChunks(GuildImpl guild)
+    public void onChunksFinished(GuildImpl guild)
     {
         this.chunkingRequested.remove(guild.getIdLong());
     }

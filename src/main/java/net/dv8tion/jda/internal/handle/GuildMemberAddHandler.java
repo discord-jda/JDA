@@ -45,13 +45,6 @@ public class GuildMemberAddHandler extends SocketHandler
             return null;
         }
 
-//        long userId = content.getObject("user").getUnsignedLong("id");
-//        if (guild.getMemberById(userId) != null)
-//        {
-//            WebSocketClient.LOG.debug("Ignoring duplicate GUILD_MEMBER_ADD for user with id {} in guild {}", userId, id);
-//            return null;
-//        }
-
         // Update memberCount
         guild.onMemberAdd();
         MemberImpl member = getJDA().getEntityBuilder().createMember(guild, content);

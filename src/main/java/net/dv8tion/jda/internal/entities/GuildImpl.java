@@ -1544,7 +1544,7 @@ public class GuildImpl implements Guild
         if (chunkingCallback.isDone())
             chunkingCallback = new CompletableFuture<>();
 
-        getJDA().requestedChunks(this);
+        getJDA().onChunksRequested(this);
 
         DataObject request = DataObject.empty()
             .put("limit", 0)
@@ -1575,7 +1575,7 @@ public class GuildImpl implements Guild
         {
             JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
             chunkingCallback.complete(null);
-            getJDA().finishedChunks(this);
+            getJDA().onChunksFinished(this);
         }
     }
 

@@ -283,12 +283,12 @@ public class ChannelUpdateHandler extends SocketHandler
             DataObject overrideJson = permOverwrites.getObject(i);
             long id = overrideJson.getUnsignedLong("id", 0);
             if (handlePermissionOverride(currentOverrides.remove(id), overrideJson, id, channel))
-                addChanged(changed, guild, id);
+                addPermissionHolder(changed, guild, id);
         }
 
         currentOverrides.forEachValue(override -> {
             channel.getOverrideMap().remove(override.getIdLong());
-            addChanged(changed, guild, override.getIdLong());
+            addPermissionHolder(changed, guild, override.getIdLong());
             api.handleEvent(
                 new PermissionOverrideDeleteEvent(
                     api, responseNumber,
@@ -327,12 +327,12 @@ public class ChannelUpdateHandler extends SocketHandler
         }
     }
 
-    private void addChanged(List<IPermissionHolder> changed, Guild guild, long id)
+    private void addPermissionHolder(List<IPermissionHolder> changed, Guild guild, long id)
     {
         IPermissionHolder holder = guild.getRoleById(id);
         if (holder == null)
             holder = guild.getMemberById(id);
-        if (holder != null)
+        if (holder != null) // Members might not be cached
             changed.add(holder);
     }
 
