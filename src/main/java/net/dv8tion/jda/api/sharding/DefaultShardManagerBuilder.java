@@ -1825,6 +1825,8 @@ public class  DefaultShardManagerBuilder
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
         if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)
             throw new IllegalStateException("Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
+        else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE)
+            DefaultShardManager.LOG.warn("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
 
         if (cacheFlags.isEmpty())
             return;

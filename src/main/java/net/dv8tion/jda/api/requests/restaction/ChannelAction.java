@@ -156,7 +156,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Sets the slowmode value, which limits the amount of time that individual users must wait
      * between sending messages in the new TextChannel. This is measured in seconds.
      *
-     * <p>Note: Bots are unaffected to this.
+     * <p>Note: Bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.

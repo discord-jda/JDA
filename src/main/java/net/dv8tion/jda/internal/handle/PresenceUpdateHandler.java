@@ -122,12 +122,12 @@ public class PresenceUpdateHandler extends SocketHandler
         {
             OnlineStatus oldStatus = member.getOnlineStatus();
             member.setOnlineStatus(status);
+            getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(
                 new UserUpdateOnlineStatusEvent(
                     getJDA(), responseNumber,
                     member, oldStatus));
         }
-        getJDA().getEntityBuilder().updateMemberCache(member);
         return null;
     }
 
@@ -191,6 +191,7 @@ public class PresenceUpdateHandler extends SocketHandler
         else
         {
             member.setActivities(newActivities);
+            getJDA().getEntityBuilder().updateMemberCache(member);
             oldActivities = new ArrayList<>(oldActivities); // create modifiable copy
             List<Activity> startedActivities = new ArrayList<>();
             for (Activity activity : newActivities)

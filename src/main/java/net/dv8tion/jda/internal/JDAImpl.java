@@ -185,7 +185,7 @@ public class JDAImpl implements JDA
         return (client.getGatewayIntents() & raw) == raw;
     }
 
-    public boolean isIntents()
+    public boolean useIntents()
     {
         return client.getGatewayIntents() != -1;
     }
@@ -377,33 +377,28 @@ public class JDAImpl implements JDA
                 }
             };
 
-            DataObject userResponse = checkToken(login);
-            if (userResponse != null)
+            try
             {
-                getEntityBuilder().createSelfUser(userResponse);
-                return;
+                DataObject userResponse = login.complete();
+                if (userResponse != null)
+                {
+                    getEntityBuilder().createSelfUser(userResponse);
+                    return;
+                }
+            }
+            catch (RuntimeException e)
+            {
+                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
+                Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
+                if (ex instanceof LoginException)
+                    throw new LoginException(ex.getMessage());
+                else
+                    throw e;
             }
         }
 
         shutdownNow();
         throw new LoginException("The provided token is invalid!");
-    }
-
-    private DataObject checkToken(RestActionImpl<DataObject> login) throws LoginException
-    {
-        try
-        {
-            return login.complete();
-        }
-        catch (RuntimeException e)
-        {
-            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-            Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
-            if (ex instanceof LoginException)
-                throw new LoginException(ex.getMessage());
-            else
-                throw e;
-        }
     }
 
     public AuthorizationConfig getAuthorizationConfig()

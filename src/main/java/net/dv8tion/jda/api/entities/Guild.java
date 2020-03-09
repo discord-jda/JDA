@@ -221,7 +221,8 @@ public interface Guild extends ISnowflake
      * <br>If you attempt to remove the {@link JDA#getSelfUser() SelfUser} this will simply return {@code false}.
      *
      * <p>This should be used by an implementation of {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
-     * as an upstream request to remove a member.
+     * as an upstream request to remove a member. For example a Least-Recently-Used (LRU) cache might use this to drop
+     * old members if the cache capacity is reached. Or a timeout cache could use this to remove expired members.
      *
      * @param  userId
      *         The target user id

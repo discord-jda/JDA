@@ -69,6 +69,8 @@ public interface ChunkingFilter
     static ChunkingFilter include(@Nonnull long... ids)
     {
         Checks.notNull(ids, "ID array");
+        if (ids.length == 0)
+            return NONE;
         return (guild) -> {
             for (long id : ids)
             {
@@ -95,6 +97,8 @@ public interface ChunkingFilter
     static ChunkingFilter exclude(@Nonnull long... ids)
     {
         Checks.notNull(ids, "ID array");
+        if (ids.length == 0)
+            return ALL;
         return (guild) -> {
             for (long id : ids)
             {

@@ -363,7 +363,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.info("Connected to WebSocket");
             // Log which intents are used on debug level since most people won't know how to use the binary output anyway
-            if (api.isIntents())
+            if (api.useIntents())
                 LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
         }
         else
@@ -630,7 +630,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("large_threshold", api.getLargeThreshold());
         //We only provide intents if they are not the default (all) for backwards compatibility
         // Discord has additional enforcements put in place even if you specify to subscribe to all intents
-        if (api.isIntents())
+        if (api.useIntents())
             payload.put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()

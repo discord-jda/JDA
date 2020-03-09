@@ -373,7 +373,7 @@ public class GuildSetupController
 
     private void tryChunking()
     {
-        if (api.isIntents())
+        if (api.useIntents())
         {
             // can only send a single guild id for this
             chunkingGuilds.forEach((id) -> {
