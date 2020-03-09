@@ -102,38 +102,13 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {
-        return new CompletableFuture<T>() {
-            private CompletableFuture<? extends T> then = new CompletableFuture<>();
-            private final CompletableFuture<T> backing = action.submit(shouldQueue).whenComplete((result, error) -> {
-                if (error == null)
-                {
-                    complete(result);
-                    return;
-                }
-
-                if (check.test(error))
-                    then = map.apply(error).submit(shouldQueue);
-                else
-                    fail(error);
-
-                then = then.whenComplete((success, failure) -> {
-                    if (failure != null)
-                        completeExceptionally(failure);
+        return action.submit(shouldQueue)
+                .handle((result, error) -> {
+                    if (check.test(error))
+                        return map.apply(error).submit(shouldQueue).thenApply(x -> (T) x);
                     else
-                        complete(success);
-                });
-            });
-
-            @Override
-            public boolean cancel(boolean mayInterruptIfRunning)
-            {
-                if (!backing.isDone())
-                    backing.cancel(mayInterruptIfRunning);
-                if (!then.isDone())
-                    then.cancel(mayInterruptIfRunning);
-                return super.cancel(mayInterruptIfRunning);
-            }
-        };
+                        return CompletableFuture.completedFuture(result);
+                }).thenCompose(Function.identity());
     }
 
     @Contract("_ -> fail")
