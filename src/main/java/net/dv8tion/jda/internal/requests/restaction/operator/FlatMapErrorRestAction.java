@@ -24,7 +24,6 @@ import org.jetbrains.annotations.Contract;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -89,7 +88,10 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
             {
                 if (e instanceof IllegalStateException && e.getCause() == error)
                     throw (IllegalStateException) e;
-                fail(Helpers.appendCause(e, error));
+                else if (e instanceof RateLimitedException)
+                    throw (RateLimitedException) Helpers.appendCause(e, error);
+                else
+                    fail(Helpers.appendCause(e, error));
             }
             fail(error);
         }
@@ -100,41 +102,47 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {
-        //TODO: Figure out how to propagate cancel without making a custom class
-        CompletableFuture<T> future = new CompletableFuture<>();
-        action.submit(shouldQueue).whenComplete((value, error) -> {
-            if (error != null)
-            {
-                error = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
-                if (!check.test(error))
+        return new CompletableFuture<T>() {
+            private CompletableFuture<? extends T> then = new CompletableFuture<>();
+            private final CompletableFuture<T> backing = action.submit(shouldQueue).whenComplete((result, error) -> {
+                if (error == null)
                 {
-                    future.completeExceptionally(error);
+                    complete(result);
                     return;
                 }
 
-                RestAction<? extends T> then = map.apply(error.getCause());
-                if (then == null)
-                    future.completeExceptionally(new IllegalStateException("FlatMapError operand is null", error.getCause()));
-                else then.submit(shouldQueue).whenComplete((s, t) -> {
-                    if (t instanceof CompletionException && t.getCause() != null) future.completeExceptionally(t.getCause());
-                    else if (t != null) future.completeExceptionally(t);
-                    else future.complete(s);
+                if (check.test(error))
+                    then = map.apply(error).submit(shouldQueue);
+                else
+                    fail(error);
+
+                then = then.whenComplete((success, failure) -> {
+                    if (failure != null)
+                        completeExceptionally(failure);
+                    else
+                        complete(success);
                 });
+            });
+
+            @Override
+            public boolean cancel(boolean mayInterruptIfRunning)
+            {
+                if (!backing.isDone())
+                    backing.cancel(mayInterruptIfRunning);
+                if (!then.isDone())
+                    then.cancel(mayInterruptIfRunning);
+                return super.cancel(mayInterruptIfRunning);
             }
-            else future.complete(value);
-        });
-        return future;
+        };
     }
 
     @Contract("_ -> fail")
-    private void fail(Throwable error) throws RateLimitedException
+    private void fail(Throwable error)
     {
         if (error instanceof RuntimeException)
             throw (RuntimeException) error;
         else if (error instanceof Error)
             throw (Error) error;
-        else if (error instanceof RateLimitedException)
-            throw (RateLimitedException) error;
         else
             throw new RuntimeException(error);
     }

@@ -145,7 +145,7 @@ public final class Helpers
 
     // ## ExceptionUtils ##
 
-    public static Throwable appendCause(Throwable throwable, Throwable cause)
+    public static <T extends Throwable> T appendCause(T throwable, Throwable cause)
     {
         Throwable t = throwable;
         while (t.getCause() != null)
