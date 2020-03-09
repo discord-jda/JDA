@@ -499,7 +499,7 @@ public interface RestAction<T>
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
      *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
      *         .map(Message::getContentRaw) // RestAction<String>
-     *         .mapError(Throwable::getMessage); // RestAction<String> (must be the same as above)
+     *         .onErrorMap(Throwable::getMessage); // RestAction<String> (must be the same as above)
      * }
      * }</pre>
      *
@@ -515,9 +515,9 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> mapError(@Nonnull Function<? super Throwable, ? extends T> map)
+    default RestAction<T> onErrorMap(@Nonnull Function<? super Throwable, ? extends T> map)
     {
-        return mapError(null, map);
+        return onErrorMap(null, map);
     }
 
     /**
@@ -532,7 +532,7 @@ public interface RestAction<T>
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
      *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
      *         .map(Message::getContentRaw) // RestAction<String>
-     *         .mapError(CANNOT_SEND_TO_USER::test, Throwable::getMessage); // RestAction<String> (must be the same as above)
+     *         .onErrorMap(CANNOT_SEND_TO_USER::test, Throwable::getMessage); // RestAction<String> (must be the same as above)
      * }
      * }</pre>
      *
@@ -553,7 +553,7 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> mapError(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends T> map)
+    default RestAction<T> onErrorMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends T> map)
     {
         Checks.notNull(map, "Function");
         return new MapErrorRestAction<>(this, condition == null ? (x) -> true : condition, map);
@@ -567,10 +567,10 @@ public interface RestAction<T>
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public RestAction<String> sendMessage(User user, TextChannel context, String content) {
+     * public RestAction<Message> sendMessage(User user, TextChannel context, String content) {
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
      *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
-     *         .flatMapError(
+     *         .onErrorFlatMap(
      *             (error) -> context.sendMessage("Failed to send direct message to " + user.getAsMention() + " Reason: " + error)
      *         ); // RestAction<Message> (must be the same as above)
      * }
@@ -588,9 +588,9 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> flatMapError(@Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
+    default RestAction<T> onErrorFlatMap(@Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
     {
-        return flatMapError(null, map);
+        return onErrorFlatMap(null, map);
     }
 
     /**
@@ -601,10 +601,10 @@ public interface RestAction<T>
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public RestAction<String> sendMessage(User user, TextChannel context, String content) {
+     * public RestAction<Message> sendMessage(User user, TextChannel context, String content) {
      *     return user.openPrivateChannel() // RestAction<PrivateChannel>
      *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
-     *         .flatMapError(CANNOT_SEND_TO_USER::test,
+     *         .onErrorFlatMap(CANNOT_SEND_TO_USER::test,
      *             (error) -> context.sendMessage("Cannot send direct message to " + user.getAsMention())
      *         ); // RestAction<Message> (must be the same as above)
      * }
@@ -627,7 +627,7 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<T> flatMapError(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
+    default RestAction<T> onErrorFlatMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
     {
         Checks.notNull(map, "Function");
         return new FlatMapErrorRestAction<>(this, condition == null ? (x) -> true : condition, map);

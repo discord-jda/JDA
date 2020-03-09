@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
@@ -43,18 +44,26 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
     @Override
     public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
     {
-        Consumer<? super Throwable> onFailure = contextWrap(failure);
-        action.queue(success, (error) -> {
-            if (check.test(error))
+        Consumer<? super Throwable> contextFailure = contextWrap(failure);
+        action.queue(success, contextWrap((error) -> {
+            try
             {
-                RestAction<? extends T> then = map.apply(error);
-                if (then == null)
-                    doFailure(onFailure, new IllegalStateException("FlatMapError operand is null", error));
-                else
-                    then.queue(success, onFailure);
+                if (check.test(error))
+                {
+                    // If check passed we can apply the fallback function and flatten it
+                    RestAction<? extends T> then = map.apply(error);
+                    if (then == null)
+                        doFailure(failure, new IllegalStateException("FlatMapError operand is null", error)); // No contextFailure because error already has context
+                    else
+                        then.queue(success, contextFailure); // Use contextFailure here to apply new context to new errors
+                }
+                else doFailure(failure, error); // No contextFailure because error already has context
             }
-            else doFailure(onFailure, error);
-        });
+            catch (Throwable e)
+            {
+                doFailure(failure, Helpers.appendCause(e, error)); // No contextFailure because error already has context
+            }
+        }));
     }
 
     @Override
@@ -75,16 +84,14 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
                         throw new IllegalStateException("FlatMapError operand is null", error);
                     return then.complete(shouldQueue);
                 }
-                else fail(error);
             }
             catch (Throwable e)
             {
-                Throwable t = e;
-                while (t.getCause() != null)
-                    t = t.getCause();
-                t.initCause(error);
-                fail(e);
+                if (e instanceof IllegalStateException && e.getCause() == error)
+                    throw (IllegalStateException) e;
+                fail(Helpers.appendCause(e, error));
             }
+            fail(error);
         }
         throw new AssertionError("Unreachable");
     }
@@ -93,6 +100,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
     @Override
     public CompletableFuture<T> submit(boolean shouldQueue)
     {
+        //TODO: Figure out how to propagate cancel without making a custom class
         CompletableFuture<T> future = new CompletableFuture<>();
         action.submit(shouldQueue).whenComplete((value, error) -> {
             if (error != null)

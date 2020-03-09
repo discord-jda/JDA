@@ -129,7 +129,7 @@ public enum ErrorResponse
 
     /**
      * Tests whether the given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} equal to this.
-     * <br>This is very useful in combination with {@link RestAction#mapError(Predicate, Function)} and {@link RestAction#flatMapError(Predicate, Function)}!
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
      *
      * @param  throwable
      *         The throwable to test
@@ -143,7 +143,7 @@ public enum ErrorResponse
 
     /**
      * Provides a tests whether a given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} being one of the provided responses.
-     * <br>This is very useful in combination with {@link RestAction#mapError(Predicate, Function)} and {@link RestAction#flatMapError(Predicate, Function)}!
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
      *
      * @param  responses
      *         The responses to test for
@@ -161,7 +161,7 @@ public enum ErrorResponse
 
     /**
      * Provides a tests whether a given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} being one of the provided responses.
-     * <br>This is very useful in combination with {@link RestAction#mapError(Predicate, Function)} and {@link RestAction#flatMapError(Predicate, Function)}!
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
      *
      * @param  responses
      *         The responses to test for

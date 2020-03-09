@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
@@ -43,25 +44,20 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
     @Override
     public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
     {
-        Consumer<? super Throwable> onFailure = contextWrap(failure);
-        action.queue(success, (error) ->
+        action.queue(success, contextWrap((error) -> // Use contextWrap so error has a context cause
         {
             try
             {
-                if (check.test(error))
-                    doSuccess(success, map.apply(error));
-                else
-                    doFailure(onFailure, error);
+                if (check.test(error)) // Check condition
+                    doSuccess(success, map.apply(error)); // Then apply fallback function
+                else // Fallback downstream
+                    doFailure(failure, error); // error already has context so no contextWrap needed
             }
             catch (Throwable e)
             {
-                Throwable t = e;
-                while (t.getCause() != null)
-                    t = t.getCause();
-                t.initCause(error);
-                doFailure(onFailure, e);
+                doFailure(failure, Helpers.appendCause(e, error)); // error already has context so no contextWrap needed
             }
-        });
+        }));
     }
 
     @Override
@@ -77,19 +73,15 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
             {
                 if (check.test(error))
                     return map.apply(error);
-                else if (error instanceof RateLimitedException)
-                    throw (RateLimitedException) error;
-                else
-                    fail(error);
             }
             catch (Throwable e)
             {
-                Throwable t = e;
-                while (t.getCause() != null)
-                    t = t.getCause();
-                t.initCause(error);
-                fail(e);
+                fail(Helpers.appendCause(e, error));
             }
+            if (error instanceof RateLimitedException)
+                throw (RateLimitedException) error;
+            else
+                fail(error);
         }
         throw new AssertionError("Unreachable");
     }
