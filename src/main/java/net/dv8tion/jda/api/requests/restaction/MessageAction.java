@@ -29,6 +29,7 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -85,6 +86,10 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    MessageAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     /**
      * The target {@link MessageChannel} for this message

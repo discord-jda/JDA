@@ -210,6 +210,27 @@ public interface RestAction<T>
     }
 
     /**
+     * Default timeout to apply to every RestAction.
+     * <br>This will use no timeout unless specified otherwise.
+     * <br>If the request doesn't get executed within the timeout it will be cancelled.
+     *
+     * <p>This cancel happens when the request would be executed otherwise, similar to {@link #setCheck(BooleanSupplier)}.
+     * You can use this to avoid backpressure due to global rate limits.
+     *
+     * @param  timeout
+     *         The default timeout to use
+     * @param  unit
+     *         {@link TimeUnit Unit} for the timeout value
+     *
+     * @throws IllegalArgumentException
+     *         If the provided unit is null
+     */
+    static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        RestActionImpl.setDefaultTimeout(timeout, unit);
+    }
+
+    /**
      * The default failure callback used when none is provided in {@link #queue(Consumer, Consumer)}.
      *
      * @return The fallback consumer
@@ -251,6 +272,27 @@ public interface RestAction<T>
      */
     @Nonnull
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
+
+    /**
+     * Timeout for this RestAction instance.
+     * <br>If the request doesn't get executed within the timeout it will be cancelled.
+     *
+     * <p>This cancel happens when the request would be executed otherwise, similar to {@link #setCheck(BooleanSupplier)}.
+     * You can use this to avoid backpressure due to global rate limits.
+     *
+     * @param  timeout
+     *         The timeout to use
+     * @param  unit
+     *         {@link TimeUnit Unit} for the timeout value
+     *
+     * @throws IllegalArgumentException
+     *         If the provided unit is null
+     *
+     * @return The same RestAction instance with the applied timeout
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
 
     /**
      * Submits a Request for execution.

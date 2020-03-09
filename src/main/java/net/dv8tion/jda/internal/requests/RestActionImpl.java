@@ -34,8 +34,10 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -47,21 +49,18 @@ public class RestActionImpl<T> implements RestAction<T>
     private static Consumer<Object> DEFAULT_SUCCESS = o -> {};
     private static Consumer<? super Throwable> DEFAULT_FAILURE = t ->
     {
-        if (LOG.isDebugEnabled())
-        {
+        if (t instanceof CancellationException)
+            LOG.debug("RestAction has been cancelled");
+        else if (LOG.isDebugEnabled())
             LOG.error("RestAction queue returned failure", t);
-        }
         else if (t.getCause() != null)
-        {
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
-        }
         else
-        {
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
-        }
     };
 
     protected static boolean passContext = true;
+    protected static long defaultTimeout = -1;
 
     protected final JDAImpl api;
 
@@ -69,6 +68,7 @@ public class RestActionImpl<T> implements RestAction<T>
     private final RequestBody data;
     private final BiFunction<Response, Request<T>, T> handler;
 
+    private long timeout = defaultTimeout;
     private Object rawData;
     private BooleanSupplier checks;
 
@@ -90,6 +90,12 @@ public class RestActionImpl<T> implements RestAction<T>
     public static void setDefaultSuccess(final Consumer<Object> callback)
     {
         DEFAULT_SUCCESS = callback == null ? t -> {} : callback;
+    }
+
+    public static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        defaultTimeout = unit.toMillis(timeout);
     }
 
     public static Consumer<? super Throwable> getDefaultFailure()
@@ -152,6 +158,15 @@ public class RestActionImpl<T> implements RestAction<T>
         return this;
     }
 
+    @Nonnull
+    @Override
+    public RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        this.timeout = unit.toMillis(timeout);
+        return this;
+    }
+
     @Override
     public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
@@ -164,7 +179,7 @@ public class RestActionImpl<T> implements RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, timeout, route, headers));
     }
 
     @Nonnull
@@ -176,7 +191,7 @@ public class RestActionImpl<T> implements RestAction<T>
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, route, headers);
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, timeout, route, headers);
     }
 
     @Override

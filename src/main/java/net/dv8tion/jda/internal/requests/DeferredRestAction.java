@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -71,6 +72,13 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
         this.transitiveChecks = checks;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
         return this;
     }
 

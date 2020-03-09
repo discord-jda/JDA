@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -62,6 +63,13 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
     public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
     {
         action.setCheck(checks);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<O> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
         return this;
     }
 

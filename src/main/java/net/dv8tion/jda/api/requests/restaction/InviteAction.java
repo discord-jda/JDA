@@ -37,6 +37,10 @@ public interface InviteAction extends AuditableRestAction<Invite>
     @Override
     InviteAction setCheck(@Nullable BooleanSupplier checks);
 
+    @Nonnull
+    @Override
+    InviteAction timeout(long timeout, @Nonnull TimeUnit unit);
+
     /**
      * Sets the max age in seconds for the invite. Set this to {@code 0} if the invite should never expire. Default is {@code 86400} (24 hours).
      * {@code null} will reset this to the default value.

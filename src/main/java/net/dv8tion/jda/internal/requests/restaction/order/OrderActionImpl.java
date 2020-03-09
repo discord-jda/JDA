@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
@@ -77,6 +78,14 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (M) super.timeout(timeout, unit);
     }
 
     @Override
