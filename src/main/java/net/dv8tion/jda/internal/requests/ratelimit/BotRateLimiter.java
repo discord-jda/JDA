@@ -24,11 +24,9 @@ import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.Headers;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
@@ -103,6 +101,31 @@ public class BotRateLimiter extends RateLimiter
     private ScheduledExecutorService getScheduler()
     {
         return requester.getJDA().getRateLimitPool();
+    }
+
+    @Override
+    public void cancelRequests()
+    {
+        MiscUtil.locked(bucketLock, () -> {
+            for (Future<?> future : rateLimitQueue.values())
+                future.cancel(false);
+            rateLimitQueue.clear();
+
+            AtomicInteger count = new AtomicInteger(0);
+            bucket.values()
+                .stream()
+                .map(Bucket::getRequests)
+                .flatMap(Collection::stream)
+                .forEach(request -> {
+                    request.cancel();
+                    count.incrementAndGet();
+                });
+            bucket.clear();
+            if (count.get() == 1)
+                RateLimiter.log.warn("Cancelled 1 request!");
+            else if (count.get() > 1)
+                RateLimiter.log.warn("Cancelled {} requests!", count.get());
+        });
     }
 
     private void cleanup()

@@ -485,6 +485,12 @@ public class JDAImpl implements JDA
         return this;
     }
 
+    @Override
+    public void cancelRequests()
+    {
+        requester.getRateLimiter().cancelRequests();
+    }
+
     @Nonnull
     @Override
     public ScheduledExecutorService getRateLimitPool()
