@@ -24,10 +24,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.Headers;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -118,6 +115,10 @@ public class BotRateLimiter extends RateLimiter
                 Map.Entry<String, Bucket> entry = entries.next();
                 String key = entry.getKey();
                 Bucket bucket = entry.getValue();
+                // Remove cancelled requests
+                bucket.requests.removeIf(Request::isSkipped);
+
+                // Check if the bucket is empty
                 if (bucket.isUnlimited() && bucket.requests.isEmpty())
                     entries.remove(); // remove unlimited if requests are empty
                 // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
@@ -310,7 +311,7 @@ public class BotRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         private final String bucketId;
-        private final Queue<Request> requests = new ConcurrentLinkedQueue<>();
+        private final Deque<Request> requests = new ConcurrentLinkedDeque<>();
 
         private long reset = 0;
         private int remaining = 1;
@@ -323,7 +324,12 @@ public class BotRateLimiter extends RateLimiter
 
         public void enqueue(Request request)
         {
-            requests.add(request);
+            requests.addLast(request);
+        }
+
+        public void retry(Request request)
+        {
+            requests.addFirst(request);
         }
 
         public long getRateLimit()
@@ -379,8 +385,7 @@ public class BotRateLimiter extends RateLimiter
         public void run()
         {
             log.trace("Bucket {} is running {} requests", bucketId, requests.size());
-            Iterator<Request> iterator = requests.iterator();
-            while (iterator.hasNext())
+            while (!requests.isEmpty())
             {
                 Long rateLimit = getRateLimit();
                 if (rateLimit > 0L)
@@ -390,7 +395,9 @@ public class BotRateLimiter extends RateLimiter
                     break;
                 }
 
-                Request request = iterator.next();
+                Request request = requests.removeFirst();
+                if (request.isSkipped())
+                    continue;
                 if (isUnlimited())
                 {
                     boolean shouldSkip = MiscUtil.locked(bucketLock, () -> {
@@ -399,7 +406,6 @@ public class BotRateLimiter extends RateLimiter
                         if (bucket != this)
                         {
                             bucket.enqueue(request);
-                            iterator.remove();
                             runBucket(bucket);
                             return true;
                         }
@@ -408,17 +414,11 @@ public class BotRateLimiter extends RateLimiter
                     if (shouldSkip) continue;
                 }
 
-                if (isSkipped(iterator, request))
-                    continue;
-
                 try
                 {
                     rateLimit = requester.execute(request);
                     if (rateLimit != null)
-                        break; // this means we hit a hard rate limit (429) so the request needs to be retried
-
-                    // The request went through so we can remove it
-                    iterator.remove();
+                        retry(request); // this means we hit a hard rate limit (429) so the request needs to be retried
                 }
                 catch (Throwable ex)
                 {
