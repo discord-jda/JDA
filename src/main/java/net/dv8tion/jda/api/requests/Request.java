@@ -168,6 +168,14 @@ public class Request<T>
 
     public boolean isSkipped()
     {
+        boolean skip = isSkipped0();
+        if (skip)
+            onCancelled();
+        return skip;
+    }
+
+    private boolean isSkipped0()
+    {
         try
         {
             return isCancelled() || (checks != null && !checks.getAsBoolean());

@@ -199,10 +199,7 @@ public class Requester
             do
             {
                 if (apiRequest.isSkipped())
-                {
-                    apiRequest.onCancelled();
                     return null;
-                }
 
                 lastResponse = call.execute();
                 responses[attempt] = lastResponse;
