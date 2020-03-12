@@ -16,11 +16,13 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -29,6 +31,7 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -82,6 +85,22 @@ import java.util.function.Consumer;
  */
 public interface MessageAction extends RestAction<Message>, Appendable
 {
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed by default.
+     * This just sets the default for all MessageActions and can be overridden on a per-action basis using {@link #allowedMentions(EnumSet) #AllowedMentions(EnumSet)}.
+     * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
+     * while still showing up as mention tag.
+     * <p>
+     * If {@code null} is provided to this method (default value), then all Types will be pingable.
+     *
+     * @param  allowedMentions
+     *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
+     */
+    static void setDefaultMentions(@Nullable EnumSet<Message.MentionType> allowedMentions)
+    {
+        MessageActionImpl.setDefaultMentions(allowedMentions);
+    }
+
     @Nonnull
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
@@ -474,4 +493,133 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @CheckReturnValue
     MessageAction override(final boolean bool);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed.
+     * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
+     * while still showing up as mention tag.
+     * <p>
+     * If {@code null} is provided to this method, then all Types will be pingable.
+     * <p>
+     * Note: A default for this can be set using {@link #setDefaultMentions(EnumSet) MessageAction.setDefaultMentions(EnumSet)}.
+     *
+     * @param  allowedMentions
+     *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction allowedMentions(@Nullable EnumSet<Message.MentionType> allowedMentions);
+
+    /**
+     * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
+     * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
+     * <p>
+     * <b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
+     * <br>Also note that this has no effect, if the message parsing feature is not enabled (default).
+     *
+     * @param  mentionables
+     *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see #allowedMentions(EnumSet)
+     * @see #setDefaultMentions(EnumSet)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction mention(IMentionable... mentionables);
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     * <p>
+     * <b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br>Also note that this has no effect, if the message parsing feature is not enabled (default).
+     *
+     * @param  userIds
+     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see #allowedMentions(EnumSet)
+     * @see #setDefaultMentions(EnumSet)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction mentionUsers(String... userIds);
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     * <p>
+     * <b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     * <br>Also note that this has no effect, if the message parsing feature is not enabled (default).
+     *
+     * @param  userIds
+     *         Ids of Users that should be explicitly whitelisted to be pingable.
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see #allowedMentions(EnumSet)
+     * @see #setDefaultMentions(EnumSet)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction mentionUsers(long... userIds) {
+        String[] stringIds = new String[userIds.length];
+        for (int i = 0; i < userIds.length; i++)
+        {
+            stringIds[i] = Long.toUnsignedString(userIds[i]);
+        }
+        return mentionUsers(stringIds);
+    }
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     * <p>
+     * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br>Also note that this has no effect, if the message parsing feature is not enabled (default).
+     *
+     * @param  roleIds
+     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see #allowedMentions(EnumSet)
+     * @see #setDefaultMentions(EnumSet)
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction mentionRoles(String... roleIds);
+
+    /**
+     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
+     * even when they would not be pinged otherwise according to the Set of allowed mention types.
+     * <p>
+     * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     * <br>Also note that this has no effect, if the message parsing feature is not enabled (default).
+     *
+     * @param  roleIds
+     *         Ids of Roles that should be explicitly whitelisted to be pingable.
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @see #allowedMentions(EnumSet)
+     * @see #setDefaultMentions(EnumSet)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction mentionRoles(long... roleIds) {
+        String[] stringIds = new String[roleIds.length];
+        for (int i = 0; i < roleIds.length; i++)
+        {
+            stringIds[i] = Long.toUnsignedString(roleIds[i]);
+        }
+        return mentionRoles(stringIds);
+    }
 }

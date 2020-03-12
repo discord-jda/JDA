@@ -1743,7 +1743,7 @@ public interface Message extends ISnowflake, Formattable
     MessageType getType();
 
     /**
-     * Mention formatting constants, useful for use with {@link java.util.regex.Pattern Patterns}
+     * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
      */
     enum MentionType
     {
@@ -1751,42 +1751,50 @@ public interface Message extends ISnowflake, Formattable
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.User User}/{@link net.dv8tion.jda.api.entities.Member Member}
          * <br>The first and only group matches the id of the mention.
          */
-        USER("<@!?(\\d+)>"),
+        USER("<@!?(\\d+)>", "users"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Role Role}
          * <br>The first and only group matches the id of the mention.
          */
-        ROLE("<@&(\\d+)>"),
+        ROLE("<@&(\\d+)>", "roles"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
          * <br>The first and only group matches the id of the mention.
          */
-        CHANNEL("<#(\\d+)>"),
+        CHANNEL("<#(\\d+)>", null),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Emote Emote}
          * <br>The first group matches the name of the emote and the second the id of the mention.
          */
-        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>"),
+        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>", null),
         /**
          * Represents a mention for all active users, literal {@code @here}
          */
-        HERE("@here"),
+        HERE("@here", "everyone"),
         /**
          * Represents a mention for all users in a server, literal {@code @everyone}.
          */
-        EVERYONE("@everyone");
+        EVERYONE("@everyone", "everyone");
 
         private final Pattern pattern;
+        private final String parseKey;
 
-        MentionType(String regex)
+        MentionType(String regex, String parseKey)
         {
             this.pattern = Pattern.compile(regex);
+            this.parseKey = parseKey;
         }
 
         @Nonnull
         public Pattern getPattern()
         {
             return pattern;
+        }
+
+        @Nullable
+        public String getParseKey()
+        {
+            return parseKey;
         }
     }
 

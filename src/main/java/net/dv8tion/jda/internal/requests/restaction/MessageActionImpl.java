@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -38,6 +39,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -47,6 +49,7 @@ import java.util.function.Consumer;
 public class MessageActionImpl extends RestActionImpl<Message> implements MessageAction
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
+    protected static EnumSet<Message.MentionType> defaultMentions = null;
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
@@ -54,12 +57,21 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
+    protected EnumSet<Message.MentionType> allowedMentions;
+    protected Set<String> mentionableUsers = new HashSet<>();
+    protected Set<String> mentionableRoles = new HashSet<>();
+
+    public static void setDefaultMentions(@Nullable EnumSet<Message.MentionType> allowedMentions)
+    {
+        MessageActionImpl.defaultMentions = allowedMentions == null ? null : allowedMentions.clone();
+    }
 
     public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel)
     {
         super(api, route);
         this.content = new StringBuilder();
         this.channel = channel;
+        this.allowedMentions = defaultMentions;
     }
 
     public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder)
@@ -69,6 +81,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             "Cannot build a Message with more than %d characters. Please limit your input.", Message.MAX_CONTENT_LENGTH);
         this.content = contentBuilder;
         this.channel = channel;
+        this.allowedMentions = defaultMentions;
     }
 
     @Nonnull
@@ -280,6 +293,52 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
+    @Nonnull
+    @Override
+    public MessageAction allowedMentions(@Nullable EnumSet<Message.MentionType> allowedMentions)
+    {
+        this.allowedMentions = allowedMentions == null ? null : allowedMentions.clone();
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction mention(IMentionable... mentionables)
+    {
+        for (IMentionable mentionable : mentionables)
+        {
+            if(mentionable instanceof Member)
+            {
+                mentionableUsers.add(((Member) mentionable).getUser().getId());
+            }
+            else if (mentionable instanceof User)
+            {
+                mentionableUsers.add(mentionable.getId());
+            }
+            else if (mentionable instanceof Role)
+            {
+                mentionableRoles.add(mentionable.getId());
+            }
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction mentionUsers(String... userIds)
+    {
+        mentionableUsers.addAll(Arrays.asList(userIds));
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction mentionRoles(String... roleIds)
+    {
+        mentionableRoles.addAll(Arrays.asList(roleIds));
+        return this;
+    }
+
     private String applyOptions(String name, AttachmentOption[] options)
     {
         for (AttachmentOption opt : options)
@@ -349,7 +408,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.putNull("nonce");
             else
                 obj.put("nonce", nonce);
-            obj.put("tts", tts);
         }
         else
         {
@@ -359,9 +417,35 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("content", content.toString());
             if (nonce != null)
                 obj.put("nonce", nonce);
-            obj.put("tts", tts);
+        }
+        obj.put("tts", tts);
+        if (allowedMentions != null)
+        {
+            obj.put("allowed_mentions", getAllowedMentionsObj());
         }
         return obj;
+    }
+
+    protected DataObject getAllowedMentionsObj()
+    {
+        DataArray parsable = DataArray.empty();
+        allowedMentions.stream().map(Message.MentionType::getParseKey).filter(Objects::nonNull).distinct().forEach(parsable::add);
+        DataArray mentionedUsersArr = DataArray.empty();
+        if (!mentionableUsers.isEmpty())
+        {
+            parsable.remove(Message.MentionType.USER.getParseKey());
+            mentionableUsers.forEach(mentionedUsersArr::add);
+        }
+        DataArray mentionedRolesArr = DataArray.empty();
+        if (!mentionableRoles.isEmpty())
+        {
+            parsable.remove(Message.MentionType.ROLE.getParseKey());
+            mentionableRoles.forEach(mentionedRolesArr::add);
+        }
+        return DataObject.empty()
+                .put("parse", parsable)
+                .put("roles", mentionedRolesArr)
+                .put("users", mentionedUsersArr);
     }
 
     protected void checkFileAmount()
