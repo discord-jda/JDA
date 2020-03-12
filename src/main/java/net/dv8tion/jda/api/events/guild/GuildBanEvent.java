@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
  * <p>Can be used to retrieve the user who was banned (if available) and triggering guild.
  * <br><b>Note</b>: This does not directly indicate that a Member is removed from the Guild!
  *
- * @see net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent
+ * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent
  */
 public class GuildBanEvent extends GenericGuildEvent
 {

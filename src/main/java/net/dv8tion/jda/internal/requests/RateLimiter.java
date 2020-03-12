@@ -34,7 +34,7 @@ public abstract class RateLimiter
     //Implementations of this class exist in the net.dv8tion.jda.api.requests.ratelimit package.
     protected static final Logger log = JDALogger.getLog(RateLimiter.class);
     protected final Requester requester;
-    protected volatile boolean isShutdown = false;
+    protected volatile boolean isShutdown = false, isStopped = false;
     protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
     protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
@@ -98,11 +98,14 @@ public abstract class RateLimiter
 
     public void init() {}
 
+    protected void stop()
+    {
+        isStopped = true;
+    }
+
     protected void shutdown()
     {
+        stop();
         isShutdown = true;
-
-//        pool.setKeepAliveTime(time, unit);
-//        pool.allowCoreThreadTimeOut(true);
     }
 }

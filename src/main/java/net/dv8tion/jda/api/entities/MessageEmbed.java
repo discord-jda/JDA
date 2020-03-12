@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -25,7 +27,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -330,11 +332,7 @@ public class MessageEmbed implements SerializableData
     /**
      * The total amount of characters that is displayed when this embed is displayed by the Discord client.
      *
-     * <p>An Embed can only have, at max, {@value #EMBED_MAX_LENGTH_BOT} displayable text characters for {@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT}
-     * accounts or {@value #EMBED_MAX_LENGTH_CLIENT} displayable text characters for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} accounts.
-     *
-     * <p>Both of these values are defined by {@link #EMBED_MAX_LENGTH_BOT EMBED_MAX_LENGTH_BOT} and
-     * {@link #EMBED_MAX_LENGTH_CLIENT EMBED_MAX_LENGTH_CLIENT} respectively.
+     * <p>An Embed can only have, at max, {@value #EMBED_MAX_LENGTH_BOT} displayable text characters.
      *
      * @return A never-negative sum of all displayed text characters.
      */
@@ -368,7 +366,24 @@ public class MessageEmbed implements SerializableData
 
     /**
      * Whether this MessageEmbed can be used in a message.
-     * <br>This applies to {@link net.dv8tion.jda.api.AccountType#BOT Bot}- and {@link net.dv8tion.jda.api.AccountType#CLIENT Client Accounts}
+     *
+     * <p>The total character limit is defined by {@link #EMBED_MAX_LENGTH_BOT} as {@value #EMBED_MAX_LENGTH_BOT}.
+     *
+     * @return True, if this MessageEmbed can be used to send messages
+     *
+     * @see    #getLength()
+     */
+    public boolean isSendable()
+    {
+        if (isEmpty())
+            return false;
+
+        final int length = getLength();
+        return length <= EMBED_MAX_LENGTH_BOT;
+    }
+
+    /**
+     * Whether this MessageEmbed can be used in a message.
      *
      * <p>Total Character Limits
      * <ul>
@@ -385,7 +400,12 @@ public class MessageEmbed implements SerializableData
      * @return True, if this MessageEmbed can be used to send messages for this specified AccountType
      *
      * @see    #getLength()
+     *
+     * @deprecated Use {@link #isSendable()} instead
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     public boolean isSendable(@Nonnull AccountType type)
     {
         Checks.notNull(type, "AccountType");

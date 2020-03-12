@@ -29,7 +29,6 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
-import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -289,6 +288,11 @@ public class InviteImpl implements Invite
             this.type = type;
         }
 
+        public ChannelImpl(final GuildChannel channel)
+        {
+            this(channel.getIdLong(), channel.getName(), channel.getType());
+        }
+
         @Override
         public long getIdLong()
         {
@@ -330,6 +334,12 @@ public class InviteImpl implements Invite
             this.presenceCount = presenceCount;
             this.memberCount = memberCount;
             this.features = features;
+        }
+
+        public GuildImpl(final net.dv8tion.jda.api.entities.Guild guild)
+        {
+            this(guild.getIdLong(), guild.getIconId(), guild.getName(), guild.getSplashId(),
+                 guild.getVerificationLevel(), -1, -1, guild.getFeatures());
         }
 
         @Override

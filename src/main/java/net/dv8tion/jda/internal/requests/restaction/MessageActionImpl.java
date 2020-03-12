@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -160,10 +159,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         if (embed != null)
         {
-            final AccountType type = getJDA().getAccountType();
-            Checks.check(embed.isSendable(type),
-                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for %s accounts!",
-                type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
+            Checks.check(embed.isSendable(),
+               "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+               MessageEmbed.EMBED_MAX_LENGTH_BOT);
         }
         this.embed = embed;
         return this;

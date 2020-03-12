@@ -42,6 +42,7 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.RejectedExecutionException;
 
 public class Requester
 {
@@ -105,8 +106,8 @@ public class Requester
 
     public <T> void request(Request<T> apiRequest)
     {
-        if (rateLimiter.isShutdown) 
-            throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
+        if (rateLimiter.isStopped)
+            throw new RejectedExecutionException("The Requester has been stopped! No new requests can be requested!");
 
         if (apiRequest.shouldQueue())
             rateLimiter.queueRequest(apiRequest);
@@ -313,6 +314,11 @@ public class Requester
     public void setRetryOnTimeout(boolean retryOnTimeout)
     {
         this.retryOnTimeout = retryOnTimeout;
+    }
+
+    public void stop()
+    {
+        rateLimiter.stop();
     }
 
     public void shutdown()
