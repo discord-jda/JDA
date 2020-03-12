@@ -53,6 +53,7 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
@@ -342,8 +343,12 @@ public interface JDA
      *
      * <p><b>This is only recommended as an extreme last measure to avoid backpressure.</b>
      * If you want to stop requests on shutdown you should use {@link #shutdownNow()} instead of this method.
+     *
+     * @return how many requests were cancelled
+     *
+     * @see    RestAction#setCheck(BooleanSupplier)
      */
-    void cancelRequests();
+    int cancelRequests();
 
     /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}

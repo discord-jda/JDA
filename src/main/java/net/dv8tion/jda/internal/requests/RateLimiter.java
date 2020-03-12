@@ -96,7 +96,10 @@ public abstract class RateLimiter
         }
     }
 
-    public void cancelRequests() {}
+    public int cancelRequests()
+    {
+        return 0;
+    }
 
     public void init() {}
 

@@ -104,9 +104,9 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Override
-    public void cancelRequests()
+    public int cancelRequests()
     {
-        MiscUtil.locked(bucketLock, () -> {
+        return MiscUtil.locked(bucketLock, () -> {
             for (Future<?> future : rateLimitQueue.values())
                 future.cancel(false);
             rateLimitQueue.clear();
@@ -125,6 +125,7 @@ public class BotRateLimiter extends RateLimiter
                 RateLimiter.log.warn("Cancelled 1 request!");
             else if (count.get() > 1)
                 RateLimiter.log.warn("Cancelled {} requests!", count.get());
+            return count.get();
         });
     }
 
