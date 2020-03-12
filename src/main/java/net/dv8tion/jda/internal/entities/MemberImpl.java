@@ -40,12 +40,12 @@ public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     private final SnowflakeReference<Guild> guild;
-    private final User user;
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
     private final Map<ClientType, OnlineStatus> clientStatus;
 
+    private User user;
     private String nickname;
     private long joinDate, boostDate;
     private List<Activity> activities = null;
@@ -56,16 +56,26 @@ public class MemberImpl implements Member
         this.api = (JDAImpl) user.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.user = user;
+        this.joinDate = guild.getTimeCreated().toInstant().toEpochMilli();
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
         this.clientStatus = cacheOnline ? Collections.synchronizedMap(new EnumMap<>(ClientType.class)) : null;
     }
 
+    private void updateUser()
+    {
+        // Load user from cache if one exists, ideally two members with the same id should wrap the same user object
+        User realUser = getJDA().getUserById(user.getIdLong());
+        if (realUser != null)
+            this.user = realUser;
+    }
+
     @Nonnull
     @Override
     public User getUser()
     {
+        updateUser();
         return user;
     }
 

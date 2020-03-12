@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.exceptions;
+package net.dv8tion.jda.api.events.guild.override;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.PermissionOverride;
 
-@Deprecated
-@ForRemoval
-@DeprecatedSince("4.2.0")
-public class VerificationLevelException extends IllegalStateException
+import javax.annotation.Nonnull;
+
+/**
+ * Indicates that a {@link PermissionOverride} of a {@link GuildChannel} has been created.
+ *
+ * <p>Can be used to retrieve the new override.
+ */
+public class PermissionOverrideCreateEvent extends GenericPermissionOverrideEvent
 {
-    public VerificationLevelException(Guild.VerificationLevel level)
+    public PermissionOverrideCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
     {
-        super("Messages to this Guild can not be sent due to the Guilds verification level. (" + level.toString() + ')');
+        super(api, responseNumber, channel, override);
     }
 }

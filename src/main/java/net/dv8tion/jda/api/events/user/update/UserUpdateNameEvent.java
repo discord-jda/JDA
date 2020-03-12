@@ -23,8 +23,6 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that the username of a {@link net.dv8tion.jda.api.entities.User User} changed. (Not Nickname)
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
  *
  * <p>Can be used to retrieve the User who changed their username and their previous username.
  *

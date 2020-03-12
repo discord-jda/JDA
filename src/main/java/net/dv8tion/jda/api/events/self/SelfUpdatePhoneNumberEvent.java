@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.events.self;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 
 import javax.annotation.Nonnull;
@@ -27,7 +29,12 @@ import javax.annotation.Nullable;
  * <p>Can be used to retrieve the old phone number.
  *
  * <p>Identifier: {@code phone}
+ *
+ * @deprecated This is no longer supported
  */
+@Deprecated
+@ForRemoval
+@DeprecatedSince("4.2.0")
 public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "phone";

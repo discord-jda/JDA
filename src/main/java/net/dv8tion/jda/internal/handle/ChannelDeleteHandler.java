@@ -159,8 +159,6 @@ public class ChannelDeleteHandler extends SocketHandler
                 WebSocketClient.LOG.debug("CHANNEL_DELETE provided an unknown channel type. JSON: {}", content);
         }
         getJDA().getEventCache().clear(EventCache.Type.CHANNEL, channelId);
-        if (guild != null)
-            guild.pruneChannelOverrides(channelId);
         return null;
     }
 }

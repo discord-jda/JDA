@@ -16,17 +16,15 @@
 package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import net.dv8tion.jda.annotations.Incubating;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.ChunkingFilter;
-import net.dv8tion.jda.api.utils.Compression;
-import net.dv8tion.jda.api.utils.SessionController;
-import net.dv8tion.jda.api.utils.SessionControllerAdapter;
+import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
@@ -38,6 +36,7 @@ import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
@@ -56,8 +55,8 @@ import java.util.concurrent.*;
  */
 public class JDABuilder
 {
-    protected final List<Object> listeners;
-    protected final AccountType accountType;
+    public static final int GUILD_SUBSCRIPTIONS = GatewayIntent.getRaw(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING);
+    protected final List<Object> listeners = new LinkedList<>();
 
     protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
@@ -83,8 +82,10 @@ public class JDABuilder
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
     protected int maxBufferSize = 2048;
+    protected int intents = -1; // don't use intents by default
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
+    protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -93,12 +94,16 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
      *
+     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
+     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
+     * the gateway intents. Refer to {@link #create(String, Collection)}, {@link #createDefault(String, Collection)}, and {@link #createLight(String, Collection)} instead.
+     *
      * @see #JDABuilder(String)
      */
-    public JDABuilder()
-    {
-        this(AccountType.BOT);
-    }
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("JDABuilder.create(GatewayIntent...)")
+    public JDABuilder() {}
 
     /**
      * Creates a JDABuilder with the predefined token.
@@ -106,12 +111,18 @@ public class JDABuilder
      * @param token
      *        The bot token to use
      *
+     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
+     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
+     * the gateway intents. Refer to {@link #create(String, Collection)}, {@link #createDefault(String, Collection)}, and {@link #createLight(String, Collection)} instead.
+     *
      * @see   #setToken(String)
      */
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("JDABuilder.create(String, GatewayIntent...)")
     public JDABuilder(@Nullable String token)
     {
-        this();
-        setToken(token);
+        this.token = token;
     }
 
     /**
@@ -126,15 +137,289 @@ public class JDABuilder
      * @throws IllegalArgumentException
      *         If the given AccountType is {@code null}
      *
-     * @incubating Due to policy changes for the discord API this method may not be provided in a future version
+     * @deprecated This will be removed in a future version, replace with {@link #create(String, Collection)}.
+     *             We no longer support login with {@link AccountType#CLIENT}.
      */
-    @Incubating
+    @Deprecated
+    @ReplaceWith("JDABuilder.create(String)")
+    @DeprecatedSince("4.2.0")
     public JDABuilder(@Nonnull AccountType accountType)
     {
-        Checks.notNull(accountType, "accountType");
+        Checks.check(accountType == AccountType.BOT, "Client accounts are no longer supported!");
+    }
 
-        this.accountType = accountType;
-        this.listeners = new LinkedList<>();
+    private JDABuilder(@Nullable String token, int intents)
+    {
+        this.token = token;
+        this.intents = 1 | intents;
+    }
+
+    /**
+     * Creates a JDABuilder with recommended default settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
+     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createDefault(@Nullable String token)
+    {
+        return new JDABuilder(token, GatewayIntent.DEFAULT).applyDefault();
+    }
+
+    /**
+     * Creates a JDABuilder with recommended default settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intent
+     *         The intent to enable
+     * @param  intents
+     *         Any other intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null intents
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createDefault(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        return createDefault(token, EnumSet.of(intent, intents));
+    }
+
+    /**
+     * Creates a JDABuilder with recommended default settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intents
+     *         The intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null intents
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyDefault();
+    }
+
+    private JDABuilder applyDefault()
+    {
+        return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
+                   .setChunkingFilter(ChunkingFilter.NONE)
+                   .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                   .setLargeThreshold(250);
+    }
+
+    /**
+     * Creates a JDABuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createLight(@Nullable String token)
+    {
+        return new JDABuilder(token, GatewayIntent.DEFAULT).applyLight();
+    }
+
+    /**
+     * Creates a JDABuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intents
+     *         The gateway intents to use
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyLight();
+    }
+
+    /**
+     * Creates a JDABuilder with low memory profile settings.
+     * <br>Note that these defaults can potentially change in the future.
+     *
+     * <ul>
+     *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
+     *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     * </ul>
+     *
+     * @param  token
+     *         The bot token to use
+     * @param  intent
+     *         The first intent to use
+     * @param  intents
+     *         The other gateway intents to use
+     *
+     * @return The new JDABuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents)).applyLight();
+    }
+
+    private JDABuilder applyLight()
+    {
+        return this.setMemberCachePolicy(MemberCachePolicy.NONE)
+                   .setChunkingFilter(ChunkingFilter.NONE)
+                   .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                   .setLargeThreshold(50);
+    }
+
+    /**
+     * Creates a completely empty JDABuilder with the predefined intents.
+     * <br>You can use {@link #create(Collection) JDABuilder.create(EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * <br>If you use this, you need to set the token using
+     * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
+     * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
+     *
+     * @param intent
+     *        The first intent
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return create(null, intent, intents);
+    }
+
+    /**
+     * Creates a completely empty JDABuilder with the predefined intents.
+     *
+     * <br>If you use this, you need to set the token using
+     * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
+     * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
+     *
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nonnull Collection<GatewayIntent> intents)
+    {
+        return create(null, intents);
+    }
+
+    /**
+     * Creates a JDABuilder with the predefined token.
+     * <br>You can use {@link #create(String, Collection) JDABuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * @param token
+     *        The bot token to use
+     * @param intent
+     *        The first gateway intent to use
+     * @param intents
+     *        Additional gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents));
+    }
+
+    /**
+     * Creates a JDABuilder with the predefined token.
+     *
+     * @param token
+     *        The bot token to use
+     * @param intents
+     *        The gateway intents to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided intents are null
+     *
+     * @return The JDABuilder instance
+     *
+     * @see   #setToken(String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder create(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
+    {
+        return new JDABuilder(token, GatewayIntent.getRaw(intents));
     }
 
     /**
@@ -212,6 +497,52 @@ public class JDABuilder
     public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
+    }
+
+    /**
+     * Configure the member caching policy.
+     * This will decide whether to cache a member (and its respective user).
+     * <br>All members are cached by default. If a guild is enabled for chunking, all members will be cached for it.
+     *
+     * <p>You can use this to define a custom caching policy that will greatly improve memory usage.
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void configureCache(JDABuilder builder) {
+     *     // Cache members who are in a voice channel
+     *     MemberCachePolicy policy = MemberCachePolicy.VOICE;
+     *     // Cache members who are in a voice channel
+     *     // AND are also online
+     *     policy = policy.and(MemberCachePolicy.ONLINE);
+     *     // Cache members who are in a voice channel
+     *     // AND are also online
+     *     // OR are the owner of the guild
+     *     policy = policy.or(MemberCachePolicy.OWNER);
+     *
+     *     builder.setMemberCachePolicy(policy);
+     * }
+     * }</pre>
+     *
+     * @param  policy
+     *         The {@link MemberCachePolicy} or null to use default {@link MemberCachePolicy#ALL}
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    MemberCachePolicy
+     * @see    #setEnabledIntents(Collection)
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public JDABuilder setMemberCachePolicy(@Nullable MemberCachePolicy policy)
+    {
+        if (policy == null)
+            this.memberCachePolicy = MemberCachePolicy.ALL;
+        else
+            this.memberCachePolicy = policy;
+        return this;
     }
 
     /**
@@ -680,9 +1011,6 @@ public class JDABuilder
      * Sets the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} our connection will display.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.api.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Note:</b>This will not take affect for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
-     * if the status specified in the user_settings is not "online" as it is overriding our identify status.
-     *
      * @param  status
      *         Not-null OnlineStatus (default online)
      *
@@ -782,15 +1110,11 @@ public class JDABuilder
      *
      * <p>Please note, that a shard will not know about guilds which are not assigned to it.
      *
-     * <p><b>It is not possible to use sharding with an account for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}!</b>
-     *
      * @param  shardId
      *         The id of this shard (starting at 0).
      * @param  shardTotal
      *         The number of overall shards.
      *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If this is used on a JDABuilder for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
      * @throws java.lang.IllegalArgumentException
      *         If the provided shard configuration is invalid
      *         ({@code 0 <= shardId < shardTotal} with {@code shardTotal > 0})
@@ -803,7 +1127,6 @@ public class JDABuilder
     @Nonnull
     public JDABuilder useSharding(int shardId, int shardTotal)
     {
-        AccountTypeException.check(accountType, AccountType.BOT);
         Checks.notNegative(shardId, "Shard ID");
         Checks.positive(shardTotal, "Shard Total");
         Checks.check(shardId < shardTotal,
@@ -857,7 +1180,7 @@ public class JDABuilder
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
      * <br>By default this uses {@link ChunkingFilter#ALL}.
      *
-     * <p>This filter is useless when {@link #setGuildSubscriptionsEnabled(boolean)} is false.
+     * <p>If a guild is configured for chunking the {@link #setMemberCachePolicy(MemberCachePolicy)} will be ignored.
      *
      * @param  filter
      *         The filter to apply
@@ -894,11 +1217,134 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @since  4.1.0
+     *
+     * @deprecated This is now superceded by {@link #setDisabledIntents(Collection)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     *             To get identical behavior you can do {@code setMemberCachePolicy(VOICE).setDisabledIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_MEMBERS)}
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("setDisabledIntents(...).setMemberCachePolicy(...)")
+    @DeprecatedSince("4.2.0")
     public JDABuilder setGuildSubscriptionsEnabled(boolean enabled)
     {
-        return setFlag(ConfigFlag.GUILD_SUBSCRIPTIONS, enabled);
+        if (!enabled)
+        {
+            setMemberCachePolicy(MemberCachePolicy.VOICE);
+            intents &= ~GUILD_SUBSCRIPTIONS;
+        }
+        return this;
+    }
+
+    /**
+     * Configures which events will be disabled.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
+     *
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
+     *
+     * @param  intent
+     *         The first intent to disable
+     * @param  intents
+     *         Any other intents to disable
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public JDABuilder setDisabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "Intents");
+        Checks.noneNull(intents, "Intents");
+        return setDisabledIntents(EnumSet.of(intent, intents));
+    }
+
+    /**
+     * Configures which events will be disabled.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
+     *
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
+     *
+     * @param  intents
+     *         The intents to disable (default: none)
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public JDABuilder setDisabledIntents(@Nullable Collection<GatewayIntent> intents)
+    {
+        this.intents = GatewayIntent.ALL_INTENTS;
+        if (intents != null)
+            this.intents &= ~GatewayIntent.getRaw(intents);
+        return this;
+    }
+
+    /**
+     * Configures which events will be enabled.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
+     *
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
+     *
+     * @param  intent
+     *         The intent to enable
+     * @param  intents
+     *         Any other intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public JDABuilder setEnabledIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "Intents");
+        Checks.noneNull(intents, "Intents");
+        EnumSet<GatewayIntent> set = EnumSet.of(intent, intents);
+        return setDisabledIntents(EnumSet.complementOf(set));
+    }
+
+    /**
+     * Configures which events will be enabled.
+     * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
+     *
+     * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
+     * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
+     *
+     * @param  intents
+     *         The intents to enable (default: all)
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #setMemberCachePolicy(MemberCachePolicy)
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public JDABuilder setEnabledIntents(@Nullable Collection<GatewayIntent> intents)
+    {
+        if (intents == null || intents.isEmpty())
+            setDisabledIntents(EnumSet.allOf(GatewayIntent.class));
+        else if (intents instanceof EnumSet)
+            setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
+        else
+            setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+        return this;
     }
 
     /**
@@ -960,7 +1406,7 @@ public class JDABuilder
      * @throws LoginException
      *         If the provided token is invalid.
      * @throws IllegalArgumentException
-     *         If the provided token is empty or null.
+     *         If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
      *
      * @return A {@link net.dv8tion.jda.api.JDA} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
@@ -970,6 +1416,7 @@ public class JDABuilder
     @Nonnull
     public JDA build() throws LoginException
     {
+        checkIntents();
         OkHttpClient httpClient = this.httpClient;
         if (httpClient == null)
         {
@@ -983,7 +1430,7 @@ public class JDABuilder
         if (controller == null && shardInfo != null)
             controller = new SessionControllerAdapter();
 
-        AuthorizationConfig authConfig = new AuthorizationConfig(accountType, token);
+        AuthorizationConfig authConfig = new AuthorizationConfig(token);
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
@@ -992,7 +1439,12 @@ public class JDABuilder
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
         JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
-        jda.setChunkingFilter(chunkingFilter);
+        jda.setMemberCachePolicy(memberCachePolicy);
+        // We can only do member chunking with the GUILD_MEMBERS intent
+        if ((intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) == 0)
+            jda.setChunkingFilter(ChunkingFilter.NONE);
+        else
+            jda.setChunkingFilter(chunkingFilter);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
@@ -1008,7 +1460,7 @@ public class JDABuilder
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(shardInfo, compression, true);
+        jda.login(shardInfo, compression, true, intents);
         return jda;
     }
 
@@ -1019,5 +1471,25 @@ public class JDABuilder
         else
             this.flags.remove(flag);
         return this;
+    }
+
+    private void checkIntents()
+    {
+        boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
+        if (!membersIntent && memberCachePolicy == MemberCachePolicy.ALL)
+            throw new IllegalStateException("Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
+        else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE)
+            JDAImpl.LOG.warn("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+
+        if (cacheFlags.isEmpty())
+            return;
+
+        EnumSet<GatewayIntent> providedIntents = GatewayIntent.getIntents(intents);
+        for (CacheFlag flag : cacheFlags)
+        {
+            GatewayIntent intent = flag.getRequiredIntent();
+            if (intent != null && !providedIntents.contains(intent))
+                throw new IllegalArgumentException("Cannot use CacheFlag." + flag + " without GatewayIntent." + intent + "!");
+        }
     }
 }

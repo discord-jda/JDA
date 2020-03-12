@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -185,10 +186,59 @@ public interface Guild extends ISnowflake
     boolean isLoaded();
 
     /**
+     * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session to all {@link Member Members} of this Guild.
+     * <br>This can be useful if used in combination with {@link #retrieveMembers()}.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Check if the members of this guild have at least 50% bots (bot collection/farm)
+     * public void checkBots(Guild guild) {
+     *     // Keep in mind: This requires the GUILD_MEMBERS intent which is disabled in createDefault and createLight by default
+     *     guild.retrieveMembers() // Load members CompletableFuture<Void> (async and eager)
+     *          .thenApply((v) -> guild.getMemberCache()) // Turn into CompletableFuture<MemberCacheView>
+     *          .thenAccept((members) -> {
+     *              int total = members.size();
+     *              // Casting to double to get a double as result of division, don't need to worry about precision with small counts like this
+     *              double bots = (double) members.applyStream(stream ->
+     *                  stream.map(Member::getUser)
+     *                        .filter(User::isBot)
+     *                        .count()); // Count bots
+     *              if (bots / total > 0.5) // Check how many members are bots
+     *                  System.out.println("More than 50% of members in this guild are bots");
+     *          })
+     *          .thenRun(guild::pruneMemberCache); // Then prune the cache
+     * }
+     * }</pre>
+     *
+     * @see #unloadMember(long)
+     * @see JDA#unloadUser(long)
+     * @see #retrieveMembers()
+     */
+    void pruneMemberCache();
+
+    /**
+     * Attempts to remove the user with the provided id from the member cache.
+     * <br>If you attempt to remove the {@link JDA#getSelfUser() SelfUser} this will simply return {@code false}.
+     *
+     * <p>This should be used by an implementation of {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * as an upstream request to remove a member. For example a Least-Recently-Used (LRU) cache might use this to drop
+     * old members if the cache capacity is reached. Or a timeout cache could use this to remove expired members.
+     *
+     * @param  userId
+     *         The target user id
+     *
+     * @return True, if the cache was changed
+     *
+     * @see    #pruneMemberCache()
+     * @see    JDA#unloadUser(long)
+     */
+    boolean unloadMember(long userId);
+
+    /**
      * The expected member count for this guild.
      * <br>If this guild is not lazy loaded this should be identical to the size returned by {@link #getMemberCache()}.
      *
-     * <p>When guild subscriptions are disabled, this will not be updated.
+     * <p>When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is disabled, this will not be updated.
      *
      * @return The expected member count for this guild
      */
@@ -581,6 +631,8 @@ public interface Guild extends ISnowflake
     /**
      * Used to determine if the provided {@link net.dv8tion.jda.api.entities.User User} is a member of this Guild.
      *
+     * <p>This will only check cached members!
+     *
      * @param  user
      *         The user to determine whether or not they are a member of this guild.
      *
@@ -602,6 +654,8 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.User User}.
      * <br>If the user is not in this guild, {@code null} is returned.
      *
+     * <p>This will only check cached members!
+     *
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} which to retrieve a related Member object for.
      *
@@ -609,6 +663,8 @@ public interface Guild extends ISnowflake
      *         If the provided user is null
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} for the related {@link net.dv8tion.jda.api.entities.User User}.
+     *
+     * @see    #retrieveMember(User)
      */
     @Nullable
     Member getMember(@Nonnull User user);
@@ -619,6 +675,8 @@ public interface Guild extends ISnowflake
      * <br>This is more efficient that using {@link JDA#getUserById(String)} and {@link #getMember(User)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
+     * <p>This will only check cached members!
+     *
      * @param  userId
      *         The Discord id of the User for which a Member object is requested.
      *
@@ -626,6 +684,8 @@ public interface Guild extends ISnowflake
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
+     *
+     * @see    #retrieveMemberById(String)
      */
     @Nullable
     default Member getMemberById(@Nonnull String userId)
@@ -639,10 +699,14 @@ public interface Guild extends ISnowflake
      * <br>This is more efficient that using {@link JDA#getUserById(long)} and {@link #getMember(User)}.
      * <br>If no Member in this Guild has the {@code userId} provided, this returns {@code null}.
      *
+     * <p>This will only check cached members!
+     *
      * @param  userId
      *         The Discord id of the User for which a Member object is requested.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} with the related {@code userId}.
+     *
+     * @see    #retrieveBanById(long)
      */
     @Nullable
     default Member getMemberById(long userId)
@@ -657,6 +721,8 @@ public interface Guild extends ISnowflake
      * must be exactly 4 digits.
      * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
      * but the username.
+     *
+     * <p>This will only check cached members!
      *
      * <p>This only checks users that are in this guild. If a user exists
      * with the tag that is not available in the {@link #getMemberCache() Member-Cache} it will not be detected.
@@ -687,6 +753,8 @@ public interface Guild extends ISnowflake
      * <br>This does not check the {@link net.dv8tion.jda.api.entities.Member#getNickname() nickname} of the member
      * but the username.
      *
+     * <p>This will only check cached members!
+     *
      * <p>This only checks users that are in this guild. If a user exists
      * with the tag that is not available in the {@link #getMemberCache() Member-Cache} it will not be detected.
      * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
@@ -712,12 +780,16 @@ public interface Guild extends ISnowflake
      * A list of all {@link net.dv8tion.jda.api.entities.Member Members} in this Guild.
      * <br>The Members are not provided in any particular order.
      *
+     * <p>This will only check cached members!
+     *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
      * a local variable or use {@link #getMemberCache()} and use its more efficient
      * versions of handling these values.
      *
-     * @return Immutable list of all members in this Guild.
+     * @return Immutable list of all <b>cached</b> members in this Guild.
+     *
+     * @see    #retrieveMembers()
      */
     @Nonnull
     default List<Member> getMembers()
@@ -730,12 +802,19 @@ public interface Guild extends ISnowflake
      * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getUser()}{@link net.dv8tion.jda.api.entities.User#getName() .getName()}
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
      *
+     * <p>This will only check cached members!
+     *
      * @param  name
      *         The name used to filter the returned Members.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
+     * @throws IllegalArgumentException
+     *         If the provided name is null
+     *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
+     *
+     * @see    #retrieveMembersByName(String)
      */
     @Nonnull
     default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
@@ -747,6 +826,8 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same nickname as the one provided.
      * <br>This compares against {@link Member#getNickname()}. If a Member does not have a nickname, the comparison results as false.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
+     *
+     * <p>This will only check cached members!
      *
      * @param  nickname
      *         The nickname used to filter the returned Members.
@@ -766,11 +847,15 @@ public interface Guild extends ISnowflake
      * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
      *
+     * <p>This will only check cached members!
      *
      * @param  name
      *         The name used to filter the returned Members.
      * @param  ignoreCase
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name is null
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
      */
@@ -781,9 +866,10 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all
-     * {@link net.dv8tion.jda.api.entities.Role Roles} provided.
+     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all {@link net.dv8tion.jda.api.entities.Role Roles} provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
+     *
+     * <p>This will only check cached members!
      *
      * @param  roles
      *         The {@link net.dv8tion.jda.api.entities.Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
@@ -801,9 +887,10 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all provided
-     * {@link net.dv8tion.jda.api.entities.Role Roles}.
+     * Gets a list of {@link net.dv8tion.jda.api.entities.Member Members} that have all provided {@link net.dv8tion.jda.api.entities.Role Roles}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with all provided roles, then this returns an empty list.
+     *
+     * <p>This will only check cached members!
      *
      * @param  roles
      *         The {@link net.dv8tion.jda.api.entities.Role Roles} that a {@link net.dv8tion.jda.api.entities.Member Member}
@@ -825,6 +912,8 @@ public interface Guild extends ISnowflake
      * {@link net.dv8tion.jda.api.entities.Member Members} of this Guild.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.MemberCacheView MemberCacheView}
+     *
+     * @see    #retrieveMembers()
      */
     @Nonnull
     MemberCacheView getMemberCache();
@@ -1913,6 +2002,9 @@ public interface Guild extends ISnowflake
      * <br>This operation is synchronized on all audio managers for this JDA instance,
      * this means that calling getAudioManager() on any other guild while a thread is accessing this method may be locked.
      *
+     * @throws IllegalStateException
+     *         If {@link GatewayIntent#GUILD_VOICE_STATES} is disabled
+     *
      * @return The AudioManager for this Guild.
      *
      * @see    net.dv8tion.jda.api.JDA#getAudioManagerCache() JDA.getAudioManagerCache()
@@ -2030,7 +2122,12 @@ public interface Guild extends ISnowflake
      *
      * @see    net.dv8tion.jda.api.entities.Guild.VerificationLevel
      *         VerificationLevel Enum with a list of possible verification-levels and their requirements
+     *
+     * @deprecated Bots don't need to check this and client accounts are not supported
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     boolean checkVerification();
 
     /**
@@ -2052,12 +2149,14 @@ public interface Guild extends ISnowflake
     /**
      * Requests member chunks for this guild.
      * <br>This returns a completed future if the member demand is already matched.
-     * When {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions} are disabled
-     * this will do nothing since member caching is disabled.
+     * When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is disabled
+     * this will do nothing since {@link #getMemberCount()} cannot be tracked.
      *
      * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
      *
      * @return {@link CompletableFuture} representing the chunking task
+     *
+     * @see    #pruneMemberCache()
      */
     @Nonnull
     CompletableFuture<Void> retrieveMembers();
@@ -2065,7 +2164,13 @@ public interface Guild extends ISnowflake
     /**
      * Load the member for the specified user.
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
-     * and immediately provided.
+     * and immediately provided if the member information is consistent. The cache consistency directly
+     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
+     * return immediately if the member is cached regardless of cache consistency.
+     *
+     * <p>When the intent {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS}
+     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveMember(User, boolean)} to disable this behavior.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2083,6 +2188,9 @@ public interface Guild extends ISnowflake
      *         If provided with null
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     default RestAction<Member> retrieveMember(@Nonnull User user)
@@ -2094,7 +2202,13 @@ public interface Guild extends ISnowflake
     /**
      * Load the member for the specified user.
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
-     * and immediately provided.
+     * and immediately provided if the member information is consistent. The cache consistency directly
+     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
+     * return immediately if the member is cached regardless of cache consistency.
+     *
+     * <p>When the intent {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS}
+     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveMemberById(String, boolean)} to disable this behavior.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2114,6 +2228,9 @@ public interface Guild extends ISnowflake
      *         If the provided id is not a snowflake
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
     default RestAction<Member> retrieveMemberById(@Nonnull String id)
@@ -2124,7 +2241,13 @@ public interface Guild extends ISnowflake
     /**
      * Load the member for the specified user.
      * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
-     * and immediately provided.
+     * and immediately provided if the member information is consistent. The cache consistency directly
+     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
+     * return immediately if the member is cached regardless of cache consistency.
+     *
+     * <p>When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveMemberById(long, boolean)} to disable this behavior.
      *
      * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
      * <ul>
@@ -2139,9 +2262,152 @@ public interface Guild extends ISnowflake
      *         The user id to load the member from
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      */
     @Nonnull
-    RestAction<Member> retrieveMemberById(long id);
+    default RestAction<Member> retrieveMemberById(long id)
+    {
+        return retrieveMemberById(id, true);
+    }
+
+    /**
+     * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
+     * <br>This will retrieve the current owner of the guild.
+     * It is possible that the owner of a guild is no longer a registered discord user in which case this will fail.
+     *
+     * <p>When {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is disabled this will always make a request even if the member is cached. You can use {@link #retrieveOwner(boolean)} to disable this behavior.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
+     *
+     * @see    #getOwner()
+     * @see    #getOwnerIdLong()
+     * @see    #retrieveMemberById(long)
+     */
+    @Nonnull
+    default RestAction<Member> retrieveOwner()
+    {
+        return retrieveMemberById(getOwnerIdLong());
+    }
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided if the member information is consistent. The cache consistency directly
+     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
+     * return immediately if the member is cached regardless of cache consistency.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  user
+     *         The user to load the member from
+     * @param  update
+     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
+     */
+    @Nonnull
+    default RestAction<Member> retrieveMember(@Nonnull User user, boolean update)
+    {
+        Checks.notNull(user, "User");
+        return retrieveMemberById(user.getId(), update);
+    }
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided if the member information is consistent. The cache consistency directly
+     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
+     * return immediately if the member is cached regardless of cache consistency.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the member from
+     * @param  update
+     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is empty or null
+     * @throws NumberFormatException
+     *         If the provided id is not a snowflake
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
+     */
+    @Nonnull
+    default RestAction<Member> retrieveMemberById(@Nonnull String id, boolean update)
+    {
+        return retrieveMemberById(MiscUtil.parseSnowflake(id), update);
+    }
+
+    /**
+     * Load the member for the specified user.
+     * <br>If the member is already loaded it will be retrieved from {@link #getMemberById(long)}
+     * and immediately provided if the member information is consistent. The cache consistency directly
+     * relies on the enabled {@link GatewayIntent GatewayIntents} as {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS}
+     * is required to keep the cache updated with the latest information. You can pass {@code update = false} to always
+     * return immediately if the member is cached regardless of cache consistency.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseExceptions} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER}
+     *     <br>The specified user is not a member of this guild</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER}
+     *     <br>The specified user does not exist</li>
+     * </ul>
+     *
+     * @param  id
+     *         The user id to load the member from
+     * @param  update
+     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
+     */
+    @Nonnull
+    RestAction<Member> retrieveMemberById(long id, boolean update);
 
     /**
      * Shortcut for {@code guild.retrieveMemberById(guild.getOwnerIdLong())}.
@@ -2157,17 +2423,30 @@ public interface Guild extends ISnowflake
      *     <br>The specified user does not exist</li>
      * </ul>
      *
+     * @param  update
+     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
+     *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @see    #pruneMemberCache()
+     * @see    #unloadMember(long)
      *
      * @see    #getOwner()
      * @see    #getOwnerIdLong()
      * @see    #retrieveMemberById(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveOwner()
+    default RestAction<Member> retrieveOwner(boolean update)
     {
-        return retrieveMemberById(getOwnerIdLong());
+        return retrieveMemberById(getOwnerIdLong(), update);
     }
+
+//    TODO: Wait for a "done" payload to be added to the api
+//    TODO: Without that we cannot make a good UX since we would be required to use a timeout instead.
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    CompletableFuture<List<Member>> retrieveMembersByName(@Nonnull String prefix, int limit);
 
     /* From GuildController */
 
@@ -2342,7 +2621,7 @@ public interface Guild extends ISnowflake
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2379,7 +2658,7 @@ public interface Guild extends ISnowflake
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} specified by the userId from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2415,7 +2694,7 @@ public interface Guild extends ISnowflake
      * Kicks a {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2452,7 +2731,7 @@ public interface Guild extends ISnowflake
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} specified by the userId from the from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2493,7 +2772,7 @@ public interface Guild extends ISnowflake
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2539,7 +2818,7 @@ public interface Guild extends ISnowflake
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2585,7 +2864,7 @@ public interface Guild extends ISnowflake
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2638,7 +2917,7 @@ public interface Guild extends ISnowflake
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2685,7 +2964,7 @@ public interface Guild extends ISnowflake
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2732,7 +3011,7 @@ public interface Guild extends ISnowflake
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User's}
      * {@link net.dv8tion.jda.api.entities.Member Member} object (if the User was in the Guild)
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:

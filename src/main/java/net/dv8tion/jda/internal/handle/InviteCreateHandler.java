@@ -70,7 +70,7 @@ public class InviteCreateHandler extends SocketHandler
         Optional<DataObject> inviterJson = content.optObject("inviter");
         boolean expanded = maxUses != -1;
 
-        User inviter = inviterJson.map(json -> getJDA().getEntityBuilder().createFakeUser(json, false)).orElse(null);
+        User inviter = inviterJson.map(json -> getJDA().getEntityBuilder().createFakeUser(json)).orElse(null);
         InviteImpl.ChannelImpl channel = new InviteImpl.ChannelImpl(realChannel);
         InviteImpl.GuildImpl guild = new InviteImpl.GuildImpl(realGuild);
 
