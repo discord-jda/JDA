@@ -1678,9 +1678,19 @@ public interface JDA
     IEventManager getEventManager();
 
     /**
+     * Check whether the {@link net.dv8tion.jda.api.entities.SelfUser} of this JDA instance has been set.
+     *
+     * @return true if the {@link net.dv8tion.jda.api.entities.SelfUser} of this JDA instance has been set, false otherwise.
+     */
+    boolean hasSelfUser();
+
+    /**
      * Returns the currently logged in account represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
      * <br>Account settings <b>cannot</b> be modified using this object. If you wish to modify account settings please
      * use the AccountManager which is accessible by {@link net.dv8tion.jda.api.entities.SelfUser#getManager()}.
+     *
+     * @throws IllegalStateException if the session is not ready yet so there is no {@link net.dv8tion.jda.api.entities.SelfUser}.
+     *         Use {@link JDA#hasSelfUser()} to check if the {@link net.dv8tion.jda.api.entities.SelfUser} is present.
      *
      * @return The currently logged in account.
      */
