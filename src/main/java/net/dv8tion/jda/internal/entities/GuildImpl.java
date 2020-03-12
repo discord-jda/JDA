@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -1312,6 +1313,56 @@ public class GuildImpl implements Guild
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    public void invalidate()
+    {
+        api.getGuildsView().remove(id);
+
+        SnowflakeCacheViewImpl<? extends GuildChannel> textView = api.getTextChannelsView();
+        SnowflakeCacheViewImpl<? extends GuildChannel> voiceView = api.getVoiceChannelsView();
+        SnowflakeCacheViewImpl<? extends GuildChannel> storeView = api.getStoreChannelsView();
+        SnowflakeCacheViewImpl<? extends GuildChannel> categoryView = api.getCategoriesView();
+        try (UnlockHook h = textView.writeLock())
+        {
+            textChannelCache.acceptStream(stream ->
+                stream.mapToLong(ISnowflake::getIdLong)
+                    .forEach(textView::remove)
+            );
+        }
+        try (UnlockHook h = voiceView.writeLock())
+        {
+            categoryCache.acceptStream(stream ->
+                stream.mapToLong(ISnowflake::getIdLong)
+                    .forEach(voiceView::remove)
+            );
+        }
+        try (UnlockHook h = storeView.writeLock())
+        {
+            storeChannelCache.acceptStream(stream ->
+                stream.mapToLong(ISnowflake::getIdLong)
+                    .forEach(storeView::remove)
+            );
+        }
+        try (UnlockHook h = categoryView.writeLock())
+        {
+            categoryCache.acceptStream(stream ->
+                stream.mapToLong(ISnowflake::getIdLong)
+                    .forEach(categoryView::remove)
+            );
+        }
+
+        EntityBuilder entityBuilder = api.getEntityBuilder();
+        getMembers().stream()
+            .map(MemberImpl.class::cast)
+            .forEach(member -> entityBuilder.updateMemberCache(member, true));
+
+        api.getClient().removeAudioConnection(id);
+        final AbstractCacheView<AudioManager> audioManagerView = getJDA().getAudioManagersView();
+        final AudioManagerImpl manager = (AudioManagerImpl) audioManagerView.get(id); //read-lock access/release
+        if (manager != null)
+            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD); //connection-lock access/release
+        audioManagerView.remove(id); //write-lock access/release
     }
 
     // ---- Setters -----
