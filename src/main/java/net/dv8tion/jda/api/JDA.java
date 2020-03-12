@@ -308,17 +308,6 @@ public interface JDA
         return awaitStatus(status, new JDA.Status[0]);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    RestAction<PrivateChannel> openPrivateChannelById(long userId);
-
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<PrivateChannel> openPrivateChannelById(@Nonnull String userId)
-    {
-        return openPrivateChannelById(MiscUtil.parseSnowflake(userId));
-    }
-
     /**
      * This method will block until JDA has reached the specified connection status.
      *
@@ -1582,6 +1571,17 @@ public interface JDA
     default PrivateChannel getPrivateChannelById(long id)
     {
         return getPrivateChannelCache().getElementById(id);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<PrivateChannel> openPrivateChannelById(long userId);
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<PrivateChannel> openPrivateChannelById(@Nonnull String userId)
+    {
+        return openPrivateChannelById(MiscUtil.parseSnowflake(userId));
     }
 
     /**
