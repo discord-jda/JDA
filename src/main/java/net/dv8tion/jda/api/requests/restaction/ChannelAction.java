@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -247,7 +248,147 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      */
     @Nonnull
     @CheckReturnValue
-    ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny);
+    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny)
+    {
+        Checks.notNull(target, "Override Role/Member");
+        if (target instanceof Role)
+            return addRolePermissionOverride(target.getIdLong(), allow, deny);
+        else if (target instanceof Member)
+            return addMemberPermissionOverride(target.getIdLong(), allow, deny);
+        throw new IllegalArgumentException("Cannot add override for " + target.getClass().getSimpleName());
+    }
+
+    /**
+     * Adds a new Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
+     * for the new GuildChannel.
+     *
+     * <p>Example:
+     * <pre>{@code
+     * long userId = user.getIdLong();
+     * EnumSet<Permission> allow = EnumSet.of(Permission.MESSAGE_READ);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * channelAction.addMemberPermissionOverride(userId, allow, deny);
+     * }</pre>
+     *
+     * @param  memberId
+     *         The id for the member
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    java.util.EnumSet
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<T> addMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    {
+        final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
+        final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
+
+        return addMemberPermissionOverride(memberId, allowRaw, denyRaw);
+    }
+
+    /**
+     * Adds a new Role {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
+     * for the new GuildChannel.
+     *
+     * <p>Example:
+     * <pre>{@code
+     * long roleId = role.getIdLong();
+     * EnumSet<Permission> allow = EnumSet.of(Permission.MESSAGE_READ);
+     * EnumSet<Permission> deny = EnumSet.of(Permission.MESSAGE_WRITE);
+     * channelAction.addRolePermissionOverride(roleId, allow, deny);
+     * }</pre>
+     *
+     * @param  roleId
+     *         The id for the role
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    java.util.EnumSet
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<T> addRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    {
+        final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
+        final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
+
+        return addRolePermissionOverride(roleId, allowRaw, denyRaw);
+    }
+
+    /**
+     * Adds a new Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the new GuildChannel.
+     *
+     * <p>Example:
+     * <pre>{@code
+     * long userId = user.getIdLong();
+     * long allow = Permission.MESSAGE_READ.getRawValue();
+     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * channelAction.addMemberPermissionOverride(userId, allow, deny);
+     * }</pre>
+     *
+     * @param  memberId
+     *         The id for the member
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If one of the provided Permission values is invalid
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.Permission#getRawValue()
+     * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
+     * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> addMemberPermissionOverride(long memberId, long allow, long deny);
+
+    /**
+     * Adds a new Role {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the new GuildChannel.
+     *
+     * <p>Example:
+     * <pre>{@code
+     * long roleId = role.getIdLong();
+     * long allow = Permission.MESSAGE_READ.getRawValue();
+     * long deny = Permission.MESSAGE_WRITE.getRawValue() | Permission.MESSAGE_ADD_REACTION.getRawValue();
+     * channelAction.addMemberPermissionOverride(roleId, allow, deny);
+     * }</pre>
+     *
+     * @param  roleId
+     *         The id for the role
+     * @param  allow
+     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
+     * @param  deny
+     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If one of the provided Permission values is invalid
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.Permission#getRawValue()
+     * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
+     * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> addRolePermissionOverride(long roleId, long allow, long deny);
 
     /**
      * Sets the bitrate for the new VoiceChannel
