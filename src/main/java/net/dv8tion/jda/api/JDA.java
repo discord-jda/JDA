@@ -1575,6 +1575,8 @@ public interface JDA
 
     /**
      * Opens a {@link PrivateChannel} with the provided user by id.
+     * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     * if the user does not exist.
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -1602,6 +1604,8 @@ public interface JDA
 
     /**
      * Opens a {@link PrivateChannel} with the provided user by id.
+     * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     * if the user does not exist.
      *
      * <h2>Example</h2>
      * <pre>{@code
