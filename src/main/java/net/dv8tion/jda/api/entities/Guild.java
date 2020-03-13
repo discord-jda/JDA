@@ -65,9 +65,9 @@ public interface Guild extends ISnowflake
     /** Template for {@link #getIconUrl()}. */
     String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
     /** Template for {@link #getSplashUrl()}. */
-    String SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s.png";
+    String SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s.%s";
     /** Template for {@link #getBannerUrl()}. */
-    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.png";
+    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
 
     /**
      * Retrieves the available regions for this Guild
@@ -280,6 +280,13 @@ public interface Guild extends ISnowflake
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
+    @Nullable
+    default String getIconUrl(@Nonnull ImageFormat format)
+    {
+        String iconId = getIconId();
+        return iconId == null ? null : String.format(ICON_URL, getId(), iconId, format);
+    }
+
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
@@ -330,8 +337,14 @@ public interface Guild extends ISnowflake
     @Nullable
     default String getSplashUrl()
     {
+        return getSplashUrl(ImageFormat.PNG);
+    }
+
+    @Nullable
+    default String getSplashUrl(@Nonnull ImageFormat format)
+    {
         String splashId = getSplashId();
-        return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
+        return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId, format);
     }
 
     /**
@@ -439,8 +452,14 @@ public interface Guild extends ISnowflake
     @Nullable
     default String getBannerUrl()
     {
+        return getBannerUrl(ImageFormat.PNG);
+    }
+
+    @Nullable
+    default String getBannerUrl(@Nonnull ImageFormat format)
+    {
         String bannerId = getBannerId();
-        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId);
+        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, format);
     }
 
     /**
