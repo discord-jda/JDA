@@ -57,7 +57,7 @@ public class RestActionImpl<T> implements RestAction<T>
     };
 
     protected static boolean passContext = true;
-    protected static long defaultTimeout = -1;
+    protected static long defaultTimeout = 0;
 
     protected final JDAImpl api;
 
@@ -93,6 +93,11 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         Checks.notNull(unit, "TimeUnit");
         defaultTimeout = unit.toMillis(timeout);
+    }
+
+    public static long getDefaultTimeout()
+    {
+        return defaultTimeout;
     }
 
     public static Consumer<? super Throwable> getDefaultFailure()

@@ -212,10 +212,9 @@ public interface RestAction<T>
     /**
      * Default timeout to apply to every RestAction.
      * <br>This will use no timeout unless specified otherwise.
-     * <br>If the request doesn't get executed within the timeout it will be cancelled.
+     * <br>If the request doesn't get executed within the specified timeout it will fail.
      *
-     * <p>This cancel happens when the request would be executed otherwise, similar to {@link #setCheck(BooleanSupplier)}.
-     * You can use this to avoid backpressure due to global rate limits.
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
      *
      * @param  timeout
      *         The default timeout to use
@@ -228,6 +227,19 @@ public interface RestAction<T>
     static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
     {
         RestActionImpl.setDefaultTimeout(timeout, unit);
+    }
+
+    /**
+     * The default timeout to apply to every RestAction in milliseconds.
+     * <br>If no timeout has been configured, this will return 0.
+     *
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * @return The default timeout in milliseconds, or 0
+     */
+    static long getDefaultTimeout()
+    {
+        return RestActionImpl.getDefaultTimeout();
     }
 
     /**
@@ -275,10 +287,10 @@ public interface RestAction<T>
 
     /**
      * Timeout for this RestAction instance.
-     * <br>If the request doesn't get executed within the timeout it will be cancelled.
+     * <br>If the request doesn't get executed within the timeout it will fail.
      *
-     * <p>This cancel happens when the request would be executed otherwise, similar to {@link #setCheck(BooleanSupplier)}.
-     * You can use this to avoid backpressure due to global rate limits.
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
      *
      * @param  timeout
      *         The timeout to use
@@ -289,6 +301,8 @@ public interface RestAction<T>
      *         If the provided unit is null
      *
      * @return The same RestAction instance with the applied timeout
+     *
+     * @see    #setDefaultTimeout(long, TimeUnit)
      */
     @Nonnull
     @CheckReturnValue
