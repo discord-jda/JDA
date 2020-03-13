@@ -32,6 +32,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -142,6 +143,11 @@ public class Request<T>
         onFailure(new CancellationException("RestAction has been cancelled"));
     }
 
+    public void onTimeout()
+    {
+        onFailure(new TimeoutException("RestAction has timed out"));
+    }
+
     @Nonnull
     public JDAImpl getJDA()
     {
@@ -168,13 +174,23 @@ public class Request<T>
 
     public boolean isSkipped()
     {
-        boolean skip = isSkipped0();
+        if (isTimeout())
+        {
+            onTimeout();
+            return true;
+        }
+        boolean skip = runChecks();
         if (skip)
             onCancelled();
         return skip;
     }
 
-    private boolean isSkipped0()
+    private boolean isTimeout()
+    {
+        return timeout > 0 && (System.currentTimeMillis() - startedAt) > timeout;
+    }
+
+    private boolean runChecks()
     {
         try
         {
@@ -223,7 +239,7 @@ public class Request<T>
 
     public boolean isCancelled()
     {
-        return isCancelled || timeout > 0 && (System.currentTimeMillis() - startedAt) > timeout;
+        return isCancelled;
     }
 
     public void handleResponse(@Nonnull Response response)

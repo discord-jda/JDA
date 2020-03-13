@@ -34,10 +34,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -49,8 +46,8 @@ public class RestActionImpl<T> implements RestAction<T>
     private static Consumer<Object> DEFAULT_SUCCESS = o -> {};
     private static Consumer<? super Throwable> DEFAULT_FAILURE = t ->
     {
-        if (t instanceof CancellationException)
-            LOG.debug("RestAction has been cancelled");
+        if (t instanceof CancellationException || t instanceof TimeoutException)
+            LOG.debug(t.getMessage());
         else if (LOG.isDebugEnabled())
             LOG.error("RestAction queue returned failure", t);
         else if (t.getCause() != null)
