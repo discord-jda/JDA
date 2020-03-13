@@ -107,8 +107,16 @@ public interface User extends IMentionable, IFakeable
     /**
      * The URL for the user's avatar image.
      * If the user has not set an image, this will return null.
+     * <br> If the user has an animated avatar this will return the gif instead of the png,
+     * you can use {@link net.dv8tion.jda.api.entities.User#getAvatarUrl(ImageFormat) User.getAvatarUrl(ImageFormat)} to override this
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
+     *
+     * @see #getAvatarUrl(ImageFormat)
+     * @see #getDefaultAvatarUrl()
+     * @see #getDefaultAvatarUrl(ImageFormat)
+     * @see #getEffectiveAvatarUrl()
+     * @see #getEffectiveAvatarUrl(ImageFormat)
      */
     @Nullable
     default String getAvatarUrl()
@@ -117,6 +125,21 @@ public interface User extends IMentionable, IFakeable
         return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
+    /**
+     * The URL for the user's avatar image.
+     * If the user has not set an image, this will return null.
+     *
+     * @param  format
+     *         The extension to use for the image
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
+     *
+     * @see #getAvatarUrl()
+     * @see #getDefaultAvatarUrl()
+     * @see #getDefaultAvatarUrl(ImageFormat)
+     * @see #getEffectiveAvatarUrl()
+     * @see #getEffectiveAvatarUrl(ImageFormat)
+     */
     default String getAvatarUrl(@Nonnull ImageFormat format)
     {
         String avatarId = getAvatarId();
