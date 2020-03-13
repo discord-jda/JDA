@@ -133,7 +133,13 @@ public class MessageActivity
         @Nullable
         public String getIconUrl()
         {
-            return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + ".png";
+            return getIconUrl(ImageFormat.PNG);
+        }
+
+        @Nullable
+        public String getIconUrl(@Nonnull ImageFormat format)
+        {
+            return iconId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + iconId + format;
         }
 
         /**

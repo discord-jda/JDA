@@ -31,7 +31,7 @@ import java.util.List;
 public interface ApplicationTeam extends ISnowflake
 {
     /** Template for {@link #getIconUrl()} */
-    String ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s.png";
+    String ICON_URL = "https://cdn.discordapp.com/team-icons/%s/%s.%s";
 
     /**
      * Searches for the {@link net.dv8tion.jda.api.entities.TeamMember TeamMember}
@@ -82,8 +82,14 @@ public interface ApplicationTeam extends ISnowflake
     @Nullable
     default String getIconUrl()
     {
+        return getIconUrl(ImageFormat.PNG);
+    }
+
+    @Nullable
+    default String getIconUrl(@Nonnull ImageFormat format)
+    {
         String iconId = getIconId();
-        return iconId == null ? null : String.format(ICON_URL, getId(), iconId);
+        return iconId == null ? null : String.format(ICON_URL, getId(), iconId, format);
     }
 
     /**

@@ -205,6 +205,12 @@ public interface Emote extends IMentionable, IFakeable
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
+    @Nonnull
+    default String getImageUrl(@Nonnull ImageFormat format)
+    {
+        return String.format(ICON_URL, getId(), format);
+    }
+
     /**
      * Usable representation of this Emote (used to display in the client just like mentions with a specific format)
      * <br>Emotes are used with the format <code>&lt;:{@link #getName getName()}:{@link #getId getId()}&gt;</code>

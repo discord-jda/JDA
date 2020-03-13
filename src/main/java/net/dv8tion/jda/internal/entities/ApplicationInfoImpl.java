@@ -20,9 +20,11 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
+import net.dv8tion.jda.api.entities.ImageFormat;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 public class ApplicationInfoImpl implements ApplicationInfo
@@ -78,11 +80,12 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return this.iconId;
     }
 
+    @Nullable
     @Override
-    public String getIconUrl()
+    public String getIconUrl(@Nonnull ImageFormat format)
     {
         return this.iconId == null ? null
-                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+                : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + format;
     }
 
     @Nonnull

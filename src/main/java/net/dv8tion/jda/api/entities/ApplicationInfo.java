@@ -69,7 +69,13 @@ public interface ApplicationInfo extends ISnowflake
      * @return The icon-url of the bot's application or null if no icon is defined
      */
     @Nullable
-    String getIconUrl();
+    default String getIconUrl()
+    {
+        return getIconUrl(ImageFormat.PNG);
+    }
+
+    @Nullable
+    String getIconUrl(@Nonnull ImageFormat format);
 
     /**
      * The team information for this application.

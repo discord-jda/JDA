@@ -172,11 +172,17 @@ public interface RichPresence extends Activity
         @Nonnull
         public String getUrl()
         {
+            return getUrl(ImageFormat.PNG);
+        }
+
+        @Nonnull
+        public String getUrl(@Nonnull ImageFormat format)
+        {
             if (key.startsWith("spotify:"))
                 return "https://i.scdn.co/image/" + key.substring("spotify:".length());
             if (key.startsWith("twitch:"))
                 return String.format("https://static-cdn.jtvnw.net/previews-ttv/live_user_%s-1920x1080.png", key.substring("twitch:".length()));
-            return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + ".png";
+            return "https://cdn.discordapp.com/app-assets/" + applicationId + "/" + key + format;
         }
 
         @Override
