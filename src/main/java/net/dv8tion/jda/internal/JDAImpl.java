@@ -654,6 +654,8 @@ public class JDAImpl implements JDA
     @Override
     public RestAction<PrivateChannel> openPrivateChannelById(long userId)
     {
+        if (selfUser != null && userId == selfUser.getIdLong())
+            throw new UnsupportedOperationException("Cannot open private channel with yourself!");
         return new DeferredRestAction<>(this, PrivateChannel.class, () -> {
             User user = getUserById(userId);
             if (user != null && user.hasPrivateChannel())

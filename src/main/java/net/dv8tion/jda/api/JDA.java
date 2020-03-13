@@ -1573,10 +1573,58 @@ public interface JDA
         return getPrivateChannelCache().getElementById(id);
     }
 
+    /**
+     * Opens a {@link PrivateChannel} with the provided user by id.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendMessage(User user, String content) {
+     *     JDA jda = user.getJDA();
+     *     jda.openPrivateChannelById(user.getIdLong())
+     *        .flatMap(channel -> channel.sendMessage(content))
+     *        .queue();
+     * }
+     * }</pre>
+     *
+     * @param  userId
+     *         The id of the target user
+     *
+     * @throws UnsupportedOperationException
+     *         If the target user is the currently logged in account
+     *
+     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     *
+     * @see    User#openPrivateChannel()
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<PrivateChannel> openPrivateChannelById(long userId);
 
+    /**
+     * Opens a {@link PrivateChannel} with the provided user by id.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendMessage(User user, String content) {
+     *     JDA jda = user.getJDA();
+     *     jda.openPrivateChannelById(user.getId())
+     *        .flatMap(channel -> channel.sendMessage(content))
+     *        .queue();
+     * }
+     * }</pre>
+     *
+     * @param  userId
+     *         The id of the target user
+     *
+     * @throws UnsupportedOperationException
+     *         If the target user is the currently logged in account
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     *
+     * @see    User#openPrivateChannel()
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<PrivateChannel> openPrivateChannelById(@Nonnull String userId)
