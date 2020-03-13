@@ -156,27 +156,27 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny)
+    public ChannelActionImpl<T> addMemberPermissionOverride(long userId, long allow, long deny)
     {
-        Checks.notNull(target, "Override Role");
+        return addOverride(userId, PermOverrideData.MEMBER_TYPE, allow, deny);
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelActionImpl<T> addRolePermissionOverride(long roleId, long allow, long deny)
+    {
+        return addOverride(roleId, PermOverrideData.ROLE_TYPE, allow, deny);
+    }
+
+    private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny)
+    {
         Checks.notNegative(allow, "Granted permissions value");
         Checks.notNegative(deny, "Denied permissions value");
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
-        Checks.check(target.getGuild().equals(guild), "Specified Role is not in the same Guild!");
+        Checks.check(deny <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
 
-        if (target instanceof Role)
-        {
-            Role r = (Role) target;
-            long id = r.getIdLong();
-            overrides.add(new PermOverrideData(PermOverrideData.ROLE_TYPE, id, allow, deny));
-        }
-        else
-        {
-            Member m = (Member) target;
-            long id = m.getUser().getIdLong();
-            overrides.add(new PermOverrideData(PermOverrideData.MEMBER_TYPE, id, allow, deny));
-        }
+        overrides.add(new PermOverrideData(type, targetId, allow, deny));
         return this;
     }
 
