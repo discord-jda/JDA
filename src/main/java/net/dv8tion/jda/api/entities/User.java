@@ -75,7 +75,7 @@ public interface User extends IMentionable, IFakeable
     /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
     /** Template for {@link #getDefaultAvatarUrl()} */
-    String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
+    String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.%s";
 
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).
@@ -117,6 +117,12 @@ public interface User extends IMentionable, IFakeable
         return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? "gif" : "png");
     }
 
+    default String getAvatarUrl(@Nonnull ImageFormat format)
+    {
+        String avatarId = getAvatarId();
+        return avatarId == null ? null : String.format(AVATAR_URL, getId(), avatarId, format);
+    }
+
     /**
      * The Discord Id for this user's default avatar image.
      *
@@ -133,7 +139,13 @@ public interface User extends IMentionable, IFakeable
     @Nonnull
     default String getDefaultAvatarUrl()
     {
-        return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
+        return getDefaultAvatarUrl(ImageFormat.PNG);
+    }
+
+    @Nonnull
+    default String getDefaultAvatarUrl(@Nonnull ImageFormat format)
+    {
+        return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId(), format);
     }
 
     /**
@@ -148,6 +160,13 @@ public interface User extends IMentionable, IFakeable
     {
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
+    }
+
+    @Nonnull
+    default String getEffectiveAvatarUrl(@Nonnull ImageFormat format)
+    {
+        String avatarUrl = getAvatarUrl(format);
+        return avatarUrl == null ? getDefaultAvatarUrl(format) : avatarUrl;
     }
 
     /**
