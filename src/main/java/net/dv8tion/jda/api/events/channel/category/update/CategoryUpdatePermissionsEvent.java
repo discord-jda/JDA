@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.events.channel.category.update;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
@@ -32,6 +34,9 @@ import java.util.stream.Collectors;
  *
  * <p>Can be used to retrieve the changed permissions
  */
+@Deprecated
+@ForRemoval
+@DeprecatedSince("4.2.0")
 public class CategoryUpdatePermissionsEvent extends GenericCategoryEvent
 {
     protected final List<IPermissionHolder> changed;

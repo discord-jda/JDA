@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.events.channel.voice.update;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
@@ -31,6 +33,9 @@ import java.util.stream.Collectors;
  *
  * <p>Can be used to get affected VoiceChannel, affected Guild and affected {@link net.dv8tion.jda.api.entities.Role Roles}/{@link net.dv8tion.jda.api.entities.User Users}.
  */
+@Deprecated
+@ForRemoval
+@DeprecatedSince("4.2.0")
 public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent
 {
     private final List<IPermissionHolder> changedPermHolders;

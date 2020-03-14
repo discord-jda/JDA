@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.managers.AccountManager;
@@ -33,8 +32,6 @@ import javax.annotation.Nonnull;
 public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager
 {
     protected final SelfUser selfUser;
-
-    protected String currentPassword;
 
     protected String name;
     protected Icon avatar;
@@ -93,11 +90,10 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setName(@Nonnull String name, String currentPassword)
+    public AccountManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
-        this.currentPassword = currentPassword;
         this.name = name;
         set |= NAME;
         return this;
@@ -106,45 +102,16 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setAvatar(Icon avatar, String currentPassword)
+    public AccountManagerImpl setAvatar(Icon avatar)
     {
-        this.currentPassword = currentPassword;
         this.avatar = avatar;
         set |= AVATAR;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public AccountManagerImpl setEmail(@Nonnull String email, @Nonnull String currentPassword)
-    {
-        Checks.notNull(email, "email");
-        this.currentPassword = currentPassword;
-        this.email = email;
-        set |= EMAIL;
-        return this;
-    }
-
-    @Override
-    @CheckReturnValue
-    public AccountManagerImpl setPassword(@Nonnull String newPassword, @Nonnull String currentPassword)
-    {
-        Checks.notNull(newPassword, "password");
-        Checks.check(newPassword.length() >= 6 && newPassword.length() <= 128, "Password must be between 2-128 characters long");
-        this.currentPassword = currentPassword;
-        this.password = newPassword;
-        set |= PASSWORD;
         return this;
     }
 
     @Override
     protected RequestBody finalizeData()
     {
-        boolean isClient = getJDA().getAccountType() == AccountType.CLIENT;
-        Checks.check(!isClient || (currentPassword != null && !currentPassword.isEmpty()),
-            "Provided client account password to be used in auth is null or empty!");
-
         DataObject body = DataObject.empty();
 
         //Required fields. Populate with current values..
@@ -155,18 +122,6 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
             body.put("username", name);
         if (shouldUpdate(AVATAR))
             body.put("avatar", avatar == null ? null : avatar.getEncoding());
-
-        if (isClient)
-        {
-            //Required fields. Populate with current values.
-            body.put("password", currentPassword);
-            body.put("email", email);
-
-            if (shouldUpdate(EMAIL))
-                body.put("email", email);
-            if (shouldUpdate(PASSWORD))
-                body.put("new_password", password);
-        }
 
         reset();
         return getRequestBody(body);
