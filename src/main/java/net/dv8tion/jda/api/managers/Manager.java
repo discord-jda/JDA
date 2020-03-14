@@ -69,6 +69,10 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
     M timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
+    @Override
+    M deadline(long timestamp);
+
+    @Nonnull
     @CheckReturnValue
     M reset(long fields);
 

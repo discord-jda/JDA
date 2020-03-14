@@ -67,6 +67,14 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
+    public M deadline(long timestamp)
+    {
+        return (M) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
     public M reset(long fields)
     {
         //logic explanation:
