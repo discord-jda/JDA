@@ -138,4 +138,20 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         this.nitro = nitro;
         return this;
     }
+
+    public static SelfUserImpl copyOf(SelfUserImpl other, JDAImpl jda)
+    {
+        SelfUserImpl selfUser = new SelfUserImpl(other.id, jda);
+        selfUser.setName(other.name)
+                .setAvatarId(other.avatarId)
+                .setDiscriminator(other.getDiscriminator())
+                .setBot(other.bot);
+        return selfUser
+                .setVerified(other.verified)
+                .setMfaEnabled(other.mfaEnabled)
+                .setEmail(other.email)
+                .setPhoneNumber(other.phoneNumber)
+                .setMobile(other.mobile)
+                .setNitro(other.nitro);
+    }
 }
