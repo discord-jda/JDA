@@ -130,7 +130,7 @@ public interface User extends IMentionable, IFakeable
      * If the user has not set an image, this will return null.
      *
      * @param  format
-     *         The extension to use for the image
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
      *
@@ -158,6 +158,12 @@ public interface User extends IMentionable, IFakeable
      * The URL for the for the user's default avatar image.
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
+     *
+     * @see #getAvatarUrl()
+     * @see #getAvatarUrl(ImageFormat)
+     * @see #getDefaultAvatarUrl(ImageFormat)
+     * @see #getEffectiveAvatarUrl()
+     * @see #getEffectiveAvatarUrl(ImageFormat)
      */
     @Nonnull
     default String getDefaultAvatarUrl()
@@ -165,6 +171,20 @@ public interface User extends IMentionable, IFakeable
         return getDefaultAvatarUrl(ImageFormat.PNG);
     }
 
+    /**
+     * The URL for the for the user's default avatar image.
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
+     *
+     * @see #getAvatarUrl()
+     * @see #getAvatarUrl(ImageFormat)
+     * @see #getDefaultAvatarUrl()
+     * @see #getEffectiveAvatarUrl()
+     * @see #getEffectiveAvatarUrl(ImageFormat)
+     */
     @Nonnull
     default String getDefaultAvatarUrl(@Nonnull ImageFormat format)
     {
@@ -177,6 +197,12 @@ public interface User extends IMentionable, IFakeable
      * default avatar
      *
      * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
+     *
+     * @see #getAvatarUrl()
+     * @see #getAvatarUrl(ImageFormat)
+     * @see #getDefaultAvatarUrl()
+     * @see #getDefaultAvatarUrl(ImageFormat)
+     * @see #getEffectiveAvatarUrl(ImageFormat)
      */
     @Nonnull
     default String getEffectiveAvatarUrl()
@@ -185,6 +211,22 @@ public interface User extends IMentionable, IFakeable
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
     }
 
+    /**
+     * The URL for the user's avatar image
+     * If they do not have an avatar set, this will return the URL of their
+     * default avatar
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
+     *
+     * @see #getAvatarUrl()
+     * @see #getAvatarUrl(ImageFormat)
+     * @see #getDefaultAvatarUrl()
+     * @see #getDefaultAvatarUrl(ImageFormat)
+     * @see #getEffectiveAvatarUrl()
+     */
     @Nonnull
     default String getEffectiveAvatarUrl(@Nonnull ImageFormat format)
     {
