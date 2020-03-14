@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -28,6 +29,8 @@ import java.util.function.Consumer;
 
 public abstract class RestActionOperator<I, O> implements RestAction<O>
 {
+    protected BooleanSupplier check;
+    protected long timeout;
     protected final RestAction<I> action;
 
     public RestActionOperator(RestAction<I> action)
@@ -62,15 +65,31 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
     @Override
     public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
     {
+        this.check = checks;
         action.setCheck(checks);
         return this;
     }
 
     @Nonnull
     @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public RestAction<O> timeout(long timeout, @Nonnull TimeUnit unit)
     {
+        Checks.notNull(unit, "TimeUnit");
+        this.timeout = unit.toMillis(timeout);
+        action.timeout(timeout, unit);
         return this;
+    }
+
+    protected <T> RestAction<T> applyContext(RestAction<T> action)
+    {
+        if (action == null)
+            return null;
+        if (check != null)
+            action.setCheck(check);
+        if (timeout > 0)
+            action.timeout(timeout, TimeUnit.MILLISECONDS);
+        return action;
     }
 
     protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback)
