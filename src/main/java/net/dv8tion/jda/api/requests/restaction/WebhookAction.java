@@ -43,6 +43,10 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
     @Override
     WebhookAction timeout(long timeout, @Nonnull TimeUnit unit);
 
+    @Nonnull
+    @Override
+    WebhookAction deadline(long timestamp);
+
     /**
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} to create this webhook in
      *

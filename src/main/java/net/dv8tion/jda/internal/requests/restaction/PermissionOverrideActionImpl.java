@@ -92,6 +92,13 @@ public class PermissionOverrideActionImpl
 
     @Nonnull
     @Override
+    public PermissionOverrideActionImpl deadline(long timestamp)
+    {
+        return (PermissionOverrideActionImpl) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     public PermissionOverrideAction resetAllow()
     {
         allow = getCurrentAllow();

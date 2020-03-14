@@ -290,7 +290,7 @@ public interface RestAction<T>
      * <br>If the request doesn't get executed within the timeout it will fail.
      *
      * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
-     *
+     * This is the same as {@code deadline(System.currentTimeMillis() + unit.toMillis(timeout))}.
      *
      * @param  timeout
      *         The timeout to use
@@ -305,8 +305,36 @@ public interface RestAction<T>
      * @see    #setDefaultTimeout(long, TimeUnit)
      */
     @Nonnull
-    @CheckReturnValue
-    RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
+    default RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
+    }
+
+    /**
+     * Similar to {@link #timeout(long, TimeUnit)} but schedules a deadline at which the request has to be completed.
+     * <br>If the deadline is reached, the request will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * <p>This does not mean that the request will immediately timeout when the deadline is reached. JDA will check the deadline
+     * right before executing the request or within intervals in a worker thread. This only means the request will timeout
+     * if the deadline has passed.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * action.deadline(System.currentTimeMillis() + 100000) // 10 seconds from now
+     *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
+     * }</pre>
+     *
+     * @param  timestamp
+     *         Millisecond timestamp at which the request will timeout
+     *
+     * @return The same RestAction with the applied deadline
+     *
+     * @see    #timeout(long, TimeUnit)
+     * @see    #setDefaultTimeout(long, TimeUnit)
+     */
+    @Nonnull
+    RestAction<T> deadline(long timestamp);
 
     /**
      * Submits a Request for execution.

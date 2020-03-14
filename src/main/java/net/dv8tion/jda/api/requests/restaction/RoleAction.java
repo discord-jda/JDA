@@ -51,6 +51,10 @@ public interface RoleAction extends AuditableRestAction<Role>
     @Override
     RoleAction timeout(long timeout, @Nonnull TimeUnit unit);
 
+    @Nonnull
+    @Override
+    RoleAction deadline(long timestamp);
+
     /**
      * The guild to create the role in
      *

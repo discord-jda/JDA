@@ -74,4 +74,11 @@ public interface AuditableRestAction<T> extends RestAction<T>
     @Nonnull
     @Override
     AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nonnull
+    @Override
+    AuditableRestAction<T> deadline(long timestamp);
 }

@@ -53,6 +53,10 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
     @Override
     M timeout(long timeout, @Nonnull TimeUnit unit);
 
+    @Nonnull
+    @Override
+    M deadline(long timestamp);
+
     /**
      * Whether this instance uses ascending order, from the lowest
      * position to the highest.

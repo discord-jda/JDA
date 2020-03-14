@@ -48,7 +48,7 @@ public class Request<T>
     private final RequestBody body;
     private final Object rawBody;
     private final CaseInsensitiveMap<String, String> headers;
-    private final long startedAt, timeout;
+    private final long deadline;
 
     private final String localReason;
 
@@ -57,11 +57,10 @@ public class Request<T>
 
     public Request(
             RestActionImpl<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
-            BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody, long timeout,
+            BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody, long deadline,
             Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
-        this.startedAt = System.currentTimeMillis();
-        this.timeout = timeout;
+        this.deadline = deadline;
         this.restAction = restAction;
         this.onSuccess = onSuccess;
         if (onFailure instanceof ContextException.ContextConsumer)
@@ -187,7 +186,7 @@ public class Request<T>
 
     private boolean isTimeout()
     {
-        return timeout > 0 && (System.currentTimeMillis() - startedAt) > timeout;
+        return deadline > 0 && deadline < System.currentTimeMillis();
     }
 
     private boolean runChecks()

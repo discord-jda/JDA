@@ -65,7 +65,7 @@ public class RestActionImpl<T> implements RestAction<T>
     private final RequestBody data;
     private final BiFunction<Response, Request<T>, T> handler;
 
-    private long timeout = defaultTimeout;
+    private long deadline = defaultTimeout <= 0 ? 0 : System.currentTimeMillis() + defaultTimeout;
     private Object rawData;
     private BooleanSupplier checks;
 
@@ -162,10 +162,9 @@ public class RestActionImpl<T> implements RestAction<T>
 
     @Nonnull
     @Override
-    public RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    public RestAction<T> deadline(long timestamp)
     {
-        Checks.notNull(unit, "TimeUnit");
-        this.timeout = unit.toMillis(timeout);
+        this.deadline = timestamp;
         return this;
     }
 
@@ -181,7 +180,7 @@ public class RestActionImpl<T> implements RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, timeout, route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, deadline, route, headers));
     }
 
     @Nonnull
@@ -193,7 +192,7 @@ public class RestActionImpl<T> implements RestAction<T>
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, timeout, route, headers);
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, deadline, route, headers);
     }
 
     @Override

@@ -84,6 +84,13 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
     }
 
     @Nonnull
+    @Override
+    public AuditableRestAction<T> deadline(long timestamp)
+    {
+        return (AuditableRestAction<T>) super.deadline(timestamp);
+    }
+
+    @Nonnull
     @CheckReturnValue
     public AuditableRestActionImpl<T> reason(@Nullable String reason)
     {

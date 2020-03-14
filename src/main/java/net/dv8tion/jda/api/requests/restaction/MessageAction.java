@@ -91,6 +91,10 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Override
     MessageAction timeout(long timeout, @Nonnull TimeUnit unit);
 
+    @Nonnull
+    @Override
+    MessageAction deadline(long timestamp);
+
     /**
      * The target {@link MessageChannel} for this message
      *

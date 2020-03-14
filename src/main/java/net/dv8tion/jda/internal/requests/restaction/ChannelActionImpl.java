@@ -80,6 +80,13 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     @Nonnull
     @Override
+    public ChannelActionImpl<T> deadline(long timestamp)
+    {
+        return (ChannelActionImpl<T>) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     public Guild getGuild()
     {
         return guild;

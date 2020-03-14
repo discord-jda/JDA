@@ -87,6 +87,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    public MessageAction deadline(long timestamp)
+    {
+        return (MessageAction) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     public MessageChannel getChannel()
     {
         return channel;

@@ -50,6 +50,10 @@ public interface MemberAction extends RestAction<Void>
     @Override
     MemberAction timeout(long timeout, @Nonnull TimeUnit unit);
 
+    @Nonnull
+    @Override
+    MemberAction deadline(long timestamp);
+
     /**
      * The access token
      *

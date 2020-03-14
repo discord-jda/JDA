@@ -75,6 +75,13 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
 
     @Nonnull
     @Override
+    public GuildActionImpl deadline(long timestamp)
+    {
+        return (GuildActionImpl) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public GuildActionImpl setRegion(Region region)
     {

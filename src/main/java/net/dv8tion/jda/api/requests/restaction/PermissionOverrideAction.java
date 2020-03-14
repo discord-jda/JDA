@@ -51,6 +51,10 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Override
     PermissionOverrideAction timeout(long timeout, @Nonnull TimeUnit unit);
 
+    @Nonnull
+    @Override
+    PermissionOverrideAction deadline(long timestamp);
+
     /**
      * Shortcut for {@code resetAllow().resetDeny()}.
      * <br>The permission override will be empty after this operation

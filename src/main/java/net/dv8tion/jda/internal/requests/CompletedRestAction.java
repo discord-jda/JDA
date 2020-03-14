@@ -80,6 +80,13 @@ public class CompletedRestAction<T> implements AuditableRestAction<T>
         return this;
     }
 
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> deadline(long timestamp)
+    {
+        return this;
+    }
+
     @Override
     public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
     {

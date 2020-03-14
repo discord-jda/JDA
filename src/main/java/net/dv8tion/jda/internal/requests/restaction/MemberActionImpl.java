@@ -73,6 +73,13 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
 
     @Nonnull
     @Override
+    public MemberAction deadline(long timestamp)
+    {
+        return (MemberAction) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     public String getAccessToken()
     {
         return accessToken;

@@ -19,18 +19,16 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public abstract class RestActionOperator<I, O> implements RestAction<O>
 {
     protected BooleanSupplier check;
-    protected long timeout;
+    protected long deadline;
     protected final RestAction<I> action;
 
     public RestActionOperator(RestAction<I> action)
@@ -72,12 +70,10 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
 
     @Nonnull
     @Override
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    public RestAction<O> timeout(long timeout, @Nonnull TimeUnit unit)
+    public RestAction<O> deadline(long timestamp)
     {
-        Checks.notNull(unit, "TimeUnit");
-        this.timeout = unit.toMillis(timeout);
-        action.timeout(timeout, unit);
+        this.deadline = timestamp;
+        action.deadline(timestamp);
         return this;
     }
 
@@ -87,8 +83,8 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
             return null;
         if (check != null)
             action.setCheck(check);
-        if (timeout > 0)
-            action.timeout(timeout, TimeUnit.MILLISECONDS);
+        if (deadline > 0)
+            action.deadline(deadline);
         return action;
     }
 

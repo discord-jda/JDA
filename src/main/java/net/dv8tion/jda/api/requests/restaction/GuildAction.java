@@ -57,6 +57,10 @@ public interface GuildAction extends RestAction<Void>
     @Override
     GuildAction timeout(long timeout, @Nonnull TimeUnit unit);
 
+    @Nonnull
+    @Override
+    GuildAction deadline(long timestamp);
+
     /**
      * Sets the voice {@link net.dv8tion.jda.api.Region Region} of
      * the resulting {@link net.dv8tion.jda.api.entities.Guild Guild}.

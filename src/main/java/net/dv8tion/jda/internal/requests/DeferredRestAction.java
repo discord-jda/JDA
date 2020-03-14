@@ -35,6 +35,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     private final Supplier<T> valueSupplier;
     private final Supplier<R> actionSupplier;
 
+    private long deadline;
     private BooleanSupplier isAction;
     private BooleanSupplier transitiveChecks;
 
@@ -82,6 +83,14 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         return this;
     }
 
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> deadline(long timestamp)
+    {
+        this.deadline = timestamp;
+        return this;
+    }
+
     public AuditableRestAction<T> setCacheCheck(BooleanSupplier checks)
     {
         this.isAction = checks;
@@ -101,7 +110,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         {
             BooleanSupplier checks = this.isAction;
             if (checks != null && checks.getAsBoolean())
-                actionSupplier.get().queue(success, failure);
+                getAction().queue(success, failure);
             else
                 finalSuccess.accept(null);
             return;
@@ -126,7 +135,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         {
             BooleanSupplier checks = this.isAction;
             if (checks != null && checks.getAsBoolean())
-                return actionSupplier.get().submit(shouldQueue);
+                return getAction().submit(shouldQueue);
             return CompletableFuture.completedFuture(null);
         }
         T value = valueSupplier.get();
@@ -142,7 +151,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         {
             BooleanSupplier checks = this.isAction;
             if (checks != null && checks.getAsBoolean())
-                return actionSupplier.get().complete(shouldQueue);
+                return getAction().complete(shouldQueue);
             return null;
         }
         T value = valueSupplier.get();
@@ -151,9 +160,11 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         return getAction().complete(shouldQueue);
     }
 
-    @SuppressWarnings("unchecked")
     private R getAction()
     {
-        return (R) actionSupplier.get().setCheck(transitiveChecks);
+        R action = actionSupplier.get();
+        action.setCheck(transitiveChecks);
+        action.deadline(deadline);
+        return action;
     }
 }

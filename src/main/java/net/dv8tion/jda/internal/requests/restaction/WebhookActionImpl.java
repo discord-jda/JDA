@@ -66,6 +66,13 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
 
     @Nonnull
     @Override
+    public WebhookActionImpl deadline(long timestamp)
+    {
+        return (WebhookActionImpl) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     public TextChannel getChannel()
     {
         return channel;

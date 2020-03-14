@@ -71,6 +71,13 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
 
     @Nonnull
     @Override
+    public RoleActionImpl deadline(long timestamp)
+    {
+        return (RoleActionImpl) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     public Guild getGuild()
     {
         return guild;

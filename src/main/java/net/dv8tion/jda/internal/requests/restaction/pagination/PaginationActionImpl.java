@@ -125,6 +125,14 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         return (M) super.timeout(timeout, unit);
     }
 
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M deadline(long timestamp)
+    {
+        return (M) super.deadline(timestamp);
+    }
+
     @Override
     public int cacheSize()
     {
