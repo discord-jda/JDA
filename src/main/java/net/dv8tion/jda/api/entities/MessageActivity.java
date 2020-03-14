@@ -161,7 +161,13 @@ public class MessageActivity
         @Nullable
         public String getCoverUrl()
         {
-            return coverId == null ? null : "https://cdn.discordapp.com/application/" + getId() + "/" + coverId + ".png";
+            return getCoverUrl(ImageFormat.PNG);
+        }
+
+        @Nullable
+        public String getCoverUrl(@Nonnull ImageFormat format)
+        {
+            return coverId == null ? null : "https://cdn.discordapp.com/application/" + getId() + '/' + coverId + format;
         }
 
         @Override
