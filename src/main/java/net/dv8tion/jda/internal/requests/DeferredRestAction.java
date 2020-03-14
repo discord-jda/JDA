@@ -35,7 +35,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     private final Supplier<T> valueSupplier;
     private final Supplier<R> actionSupplier;
 
-    private long deadline;
+    private long deadline = -1;
     private BooleanSupplier isAction;
     private BooleanSupplier transitiveChecks;
 
@@ -164,7 +164,8 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     {
         R action = actionSupplier.get();
         action.setCheck(transitiveChecks);
-        action.deadline(deadline);
+        if (deadline >= 0)
+            action.deadline(deadline);
         return action;
     }
 }

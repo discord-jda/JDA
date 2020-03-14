@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 public abstract class RestActionOperator<I, O> implements RestAction<O>
 {
     protected BooleanSupplier check;
-    protected long deadline;
+    protected long deadline = -1;
     protected final RestAction<I> action;
 
     public RestActionOperator(RestAction<I> action)
@@ -83,7 +83,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
             return null;
         if (check != null)
             action.setCheck(check);
-        if (deadline > 0)
+        if (deadline >= 0)
             action.deadline(deadline);
         return action;
     }
