@@ -50,6 +50,7 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
@@ -647,6 +648,25 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<PrivateChannel> openPrivateChannelById(long userId)
+    {
+        if (selfUser != null && userId == selfUser.getIdLong())
+            throw new UnsupportedOperationException("Cannot open private channel with yourself!");
+        return new DeferredRestAction<>(this, PrivateChannel.class, () -> {
+            User user = getUserById(userId);
+            if (user instanceof UserImpl)
+                return ((UserImpl) user).getPrivateChannel();
+            return null;
+        }, () -> {
+            Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
+            DataObject body = DataObject.empty().put("recipient_id", userId);
+            return new RestActionImpl<>(this, route, body,
+                (response, request) -> getEntityBuilder().createPrivateChannel(response.getObject()));
+        });
     }
 
     @Nonnull
