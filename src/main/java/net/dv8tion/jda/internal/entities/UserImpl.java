@@ -94,18 +94,26 @@ public class UserImpl implements User
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
-        return new DeferredRestAction<>(getJDA(), PrivateChannel.class,
-            () -> hasPrivateChannel() ? getPrivateChannel() : null,
-            () -> {
-                Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
-                DataObject body = DataObject.empty().put("recipient_id", getId());
-                return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
-                {
-                    PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
-                    UserImpl.this.privateChannel = priv.getIdLong();
-                    return priv;
-                });
+        return new DeferredRestAction<>(getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
+            Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
+            DataObject body = DataObject.empty().put("recipient_id", getId());
+            return new RestActionImpl<>(getJDA(), route, body, (response, request) ->
+            {
+                PrivateChannel priv = api.getEntityBuilder().createPrivateChannel(response.getObject(), this);
+                UserImpl.this.privateChannel = priv.getIdLong();
+                return priv;
+            });
         });
+    }
+
+    public PrivateChannel getPrivateChannel()
+    {
+        if (!hasPrivateChannel())
+            return null;
+        PrivateChannel channel = getJDA().getPrivateChannelById(privateChannel);
+        if (channel == null)
+            channel = getJDA().getFakePrivateChannelMap().get(privateChannel);
+        return channel != null ? channel : new PrivateChannelImpl(privateChannel, this);
     }
 
     @Nonnull
@@ -113,17 +121,6 @@ public class UserImpl implements User
     public List<Guild> getMutualGuilds()
     {
         return getJDA().getMutualGuilds(this);
-    }
-
-    public PrivateChannel getPrivateChannel()
-    {
-        if (!hasPrivateChannel())
-            throw new IllegalStateException("There is no PrivateChannel for this user yet! Use User#openPrivateChannel() first!");
-
-        PrivateChannel channel = getJDA().getPrivateChannelById(privateChannel);
-        if (channel == null)
-            channel = getJDA().getFakePrivateChannelMap().get(privateChannel);
-        return channel != null ? channel : new PrivateChannelImpl(privateChannel, this);
     }
 
     @Override

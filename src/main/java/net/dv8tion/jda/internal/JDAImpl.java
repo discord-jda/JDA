@@ -658,7 +658,7 @@ public class JDAImpl implements JDA
             throw new UnsupportedOperationException("Cannot open private channel with yourself!");
         return new DeferredRestAction<>(this, PrivateChannel.class, () -> {
             User user = getUserById(userId);
-            if (user != null && user.hasPrivateChannel())
+            if (user instanceof UserImpl)
                 return ((UserImpl) user).getPrivateChannel();
             return null;
         }, () -> {

@@ -1580,9 +1580,8 @@ public interface JDA
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public void sendMessage(User user, String content) {
-     *     JDA jda = user.getJDA();
-     *     jda.openPrivateChannelById(user.getIdLong())
+     * public void sendMessage(JDA jda, long userId, String content) {
+     *     jda.openPrivateChannelById(userId)
      *        .flatMap(channel -> channel.sendMessage(content))
      *        .queue();
      * }
@@ -1609,9 +1608,8 @@ public interface JDA
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * public void sendMessage(User user, String content) {
-     *     JDA jda = user.getJDA();
-     *     jda.openPrivateChannelById(user.getId())
+     * public void sendMessage(JDA jda, String userId, String content) {
+     *     jda.openPrivateChannelById(userId)
      *        .flatMap(channel -> channel.sendMessage(content))
      *        .queue();
      * }
