@@ -268,10 +268,14 @@ public interface Guild extends ISnowflake
     /**
      * The URL of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
      * If no icon has been set, this returns {@code null}.
+     * <br> If this icon is animated this will return the gif instead of a png,
+     * you can use {@link #getIconUrl(ImageFormat) Guild.#getIconUrl(ImageFormat)} to override this
      * <p>
      * The Guild icon can be modified using {@link GuildManager#setIcon(Icon)}.
      *
      * @return Possibly-null String containing the Guild's icon URL.
+     *
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     default String getIconUrl()
