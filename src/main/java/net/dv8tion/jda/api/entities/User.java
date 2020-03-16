@@ -195,6 +195,8 @@ public interface User extends IMentionable, IFakeable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.
+     *
+     * @see    JDA#openPrivateChannelById(long)
      */
     @Nonnull
     @CheckReturnValue

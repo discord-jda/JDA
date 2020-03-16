@@ -17,17 +17,11 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.internal.requests.ratelimit.IBucket;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 public abstract class RateLimiter
 {
@@ -35,8 +29,6 @@ public abstract class RateLimiter
     protected static final Logger log = JDALogger.getLog(RateLimiter.class);
     protected final Requester requester;
     protected volatile boolean isShutdown = false, isStopped = false;
-    protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
-    protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
     protected RateLimiter(Requester requester)
     {
@@ -80,32 +72,18 @@ public abstract class RateLimiter
         return getRateLimit(route) != null;
     }
 
-    public List<IBucket> getRouteBuckets()
-    {
-        synchronized (buckets)
-        {
-            return Collections.unmodifiableList(new ArrayList<>(buckets.values()));
-        }
-    }
-
-    public List<IBucket> getQueuedRouteBuckets()
-    {
-        synchronized (submittedBuckets)
-        {
-            return Collections.unmodifiableList(new ArrayList<>(submittedBuckets));
-        }
-    }
-
     public void init() {}
 
-    protected void stop()
+    // Return true if no more requests will be processed
+    protected boolean stop()
     {
         isStopped = true;
+        return true;
     }
 
     protected void shutdown()
     {
-        stop();
         isShutdown = true;
+        stop();
     }
 }
