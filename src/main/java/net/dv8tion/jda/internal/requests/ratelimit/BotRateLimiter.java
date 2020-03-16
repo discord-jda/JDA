@@ -24,10 +24,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.Headers;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -82,9 +79,9 @@ public class BotRateLimiter extends RateLimiter
     // Route -> Should we print warning for 429? AKA did we already hit it once before
     private final Set<Route> hitRatelimit = ConcurrentHashMap.newKeySet(5);
     // Route -> Hash
-    private final Map<Route, String> hash = new ConcurrentHashMap<>();
+    private final Map<Route, String> hashes = new ConcurrentHashMap<>();
     // Hash + Major Parameter -> Bucket
-    private final Map<String, Bucket> bucket = new ConcurrentHashMap<>();
+    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
     // Bucket -> Rate-Limit Worker
     private final Map<Bucket, Future<?>> rateLimitQueue = new ConcurrentHashMap<>();
     private Future<?> cleanupWorker;
@@ -110,8 +107,8 @@ public class BotRateLimiter extends RateLimiter
         // This will remove buckets that are no longer needed every 30 seconds to avoid memory leakage
         // We will keep the hashes in memory since they are very limited (by the amount of possible routes)
         MiscUtil.locked(bucketLock, () -> {
-            int size = bucket.size();
-            Iterator<Map.Entry<String, Bucket>> entries = bucket.entrySet().iterator();
+            int size = buckets.size();
+            Iterator<Map.Entry<String, Bucket>> entries = buckets.entrySet().iterator();
 
             while (entries.hasNext())
             {
@@ -125,7 +122,7 @@ public class BotRateLimiter extends RateLimiter
                     entries.remove();
             }
             // Log how many buckets were removed
-            size -= bucket.size();
+            size -= buckets.size();
             if (size > 0)
                 log.debug("Removed {} expired buckets", size);
         });
@@ -133,16 +130,34 @@ public class BotRateLimiter extends RateLimiter
 
     private String getRouteHash(Route route)
     {
-        return hash.getOrDefault(route, UNLIMITED_BUCKET + "+" + route);
+        return hashes.getOrDefault(route, UNLIMITED_BUCKET + "+" + route);
     }
 
     @Override
-    protected void stop()
+    protected boolean stop()
     {
-        super.stop();
-        if (cleanupWorker != null)
-            cleanupWorker.cancel(false);
-        cleanup();
+        return MiscUtil.locked(bucketLock, () -> {
+            if (isStopped)
+                return false;
+            super.stop();
+            if (cleanupWorker != null)
+                cleanupWorker.cancel(false);
+            cleanup();
+            int size = buckets.size();
+            if (!isShutdown && size > 0) // Tell user about active buckets so they don't get confused by the longer shutdown
+            {
+                int average = (int) Math.ceil(
+                        buckets.values().stream()
+                            .map(Bucket::getRequests)
+                            .mapToInt(Collection::size)
+                            .average().orElse(0)
+                );
+
+                log.info("Waiting for {} bucket(s) to finish. Average queue size of {} requests", size, average);
+            }
+            // No more requests to process?
+            return size < 1;
+        });
     }
 
     @Override
@@ -167,19 +182,13 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
-        bucketLock.lock();
-        try
-        {
+        return MiscUtil.locked(bucketLock, () -> {
             long rateLimit = updateBucket(route, response).getRateLimit();
             if (response.code() == 429)
                 return rateLimit;
             else
                 return null;
-        }
-        finally
-        {
-            bucketLock.unlock();
-        }
+        });
     }
 
     private Bucket updateBucket(Route.CompiledRoute route, okhttp3.Response response)
@@ -199,9 +208,9 @@ public class BotRateLimiter extends RateLimiter
                 Route baseRoute = route.getBaseRoute();
                 if (hash != null)
                 {
-                    if (!this.hash.containsKey(baseRoute))
+                    if (!this.hashes.containsKey(baseRoute))
                     {
-                        this.hash.put(baseRoute, hash);
+                        this.hashes.put(baseRoute, hash);
                         log.debug("Caching bucket hash {} -> {}", baseRoute, hash);
                     }
 
@@ -271,9 +280,9 @@ public class BotRateLimiter extends RateLimiter
             String hash = getRouteHash(route.getBaseRoute());
             // Get or create a bucket for the hash + major parameters
             String bucketId = hash + ":" + route.getMajorParameters();
-            Bucket bucket = this.bucket.get(bucketId);
+            Bucket bucket = this.buckets.get(bucketId);
             if (bucket == null && create)
-                this.bucket.put(bucketId, bucket = new Bucket(bucketId));
+                this.buckets.put(bucketId, bucket = new Bucket(bucketId));
 
             return bucket;
         });
@@ -372,6 +381,10 @@ public class BotRateLimiter extends RateLimiter
                 rateLimitQueue.remove(this);
                 if (!requests.isEmpty())
                     runBucket(this);
+                else if (isStopped)
+                    buckets.remove(bucketId);
+                if (isStopped && buckets.isEmpty())
+                    requester.getJDA().shutdownRequester();
             });
         }
 

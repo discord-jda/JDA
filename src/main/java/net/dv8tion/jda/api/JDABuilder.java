@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
@@ -1421,7 +1422,7 @@ public class JDABuilder
         if (httpClient == null)
         {
             if (this.httpClientBuilder == null)
-                this.httpClientBuilder = new OkHttpClient.Builder();
+                this.httpClientBuilder = IOUtil.newHttpClientBuilder();
             httpClient = this.httpClientBuilder.build();
         }
 
