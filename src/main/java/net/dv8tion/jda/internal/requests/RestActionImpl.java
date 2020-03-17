@@ -65,7 +65,7 @@ public class RestActionImpl<T> implements RestAction<T>
     private final RequestBody data;
     private final BiFunction<Response, Request<T>, T> handler;
 
-    private long deadline = defaultTimeout <= 0 ? 0 : System.currentTimeMillis() + defaultTimeout;
+    private long deadline = 0;
     private Object rawData;
     private BooleanSupplier checks;
 
@@ -180,7 +180,7 @@ public class RestActionImpl<T> implements RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, deadline, route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, getDeadline(), route, headers));
     }
 
     @Nonnull
@@ -192,7 +192,7 @@ public class RestActionImpl<T> implements RestAction<T>
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, deadline, route, headers);
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, getDeadline(), route, headers);
     }
 
     @Override
@@ -260,6 +260,15 @@ public class RestActionImpl<T> implements RestAction<T>
             request.onSuccess(null);
         else
             request.onSuccess(handler.apply(response, request));
+    }
+
+    private long getDeadline()
+    {
+        return deadline > 0
+            ? deadline
+            : defaultTimeout > 0
+                ? System.currentTimeMillis() + defaultTimeout
+                : 0;
     }
 
     /*
