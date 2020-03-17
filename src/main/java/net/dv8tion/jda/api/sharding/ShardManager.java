@@ -796,6 +796,133 @@ public interface ShardManager
     }
 
     /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull String id)
+    {
+        return getGuildChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(long id)
+    {
+        GuildChannel channel = getTextChannelById(id);
+        if (channel == null)
+            channel = getVoiceChannelById(id);
+        if (channel == null)
+            channel = getStoreChannelById(id);
+        if (channel == null)
+            channel = getCategoryById(id);
+        return channel;
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    {
+        return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    {
+        Checks.notNull(type, "ChannelType");
+        switch (type)
+        {
+            case TEXT:
+                return getTextChannelById(id);
+            case VOICE:
+                return getVoiceChannelById(id);
+            case STORE:
+                return getStoreChannelById(id);
+            case CATEGORY:
+                return getCategoryById(id);
+        }
+        return null;
+    }
+
+    /**
      * This returns the {@link net.dv8tion.jda.api.JDA JDA} instance which has the same id as the one provided.
      * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
      *
