@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +38,8 @@ import java.util.concurrent.TimeUnit;
 public class ClientRateLimiter extends RateLimiter
 {
     volatile Long globalCooldown = null;
+    protected final ConcurrentHashMap<String, IBucket> buckets = new ConcurrentHashMap<>();
+    protected final ConcurrentLinkedQueue<IBucket> submittedBuckets = new ConcurrentLinkedQueue<>();
 
     public ClientRateLimiter(Requester requester)
     {

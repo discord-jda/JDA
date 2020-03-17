@@ -1574,6 +1574,67 @@ public interface JDA
     }
 
     /**
+     * Opens a {@link PrivateChannel} with the provided user by id.
+     * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     * if the user does not exist.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendMessage(JDA jda, long userId, String content) {
+     *     jda.openPrivateChannelById(userId)
+     *        .flatMap(channel -> channel.sendMessage(content))
+     *        .queue();
+     * }
+     * }</pre>
+     *
+     * @param  userId
+     *         The id of the target user
+     *
+     * @throws UnsupportedOperationException
+     *         If the target user is the currently logged in account
+     *
+     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     *
+     * @see    User#openPrivateChannel()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<PrivateChannel> openPrivateChannelById(long userId);
+
+    /**
+     * Opens a {@link PrivateChannel} with the provided user by id.
+     * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     * if the user does not exist.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendMessage(JDA jda, String userId, String content) {
+     *     jda.openPrivateChannelById(userId)
+     *        .flatMap(channel -> channel.sendMessage(content))
+     *        .queue();
+     * }
+     * }</pre>
+     *
+     * @param  userId
+     *         The id of the target user
+     *
+     * @throws UnsupportedOperationException
+     *         If the target user is the currently logged in account
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     *
+     * @see    User#openPrivateChannel()
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<PrivateChannel> openPrivateChannelById(@Nonnull String userId)
+    {
+        return openPrivateChannelById(MiscUtil.parseSnowflake(userId));
+    }
+
+    /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} visible to this JDA session.
      *
