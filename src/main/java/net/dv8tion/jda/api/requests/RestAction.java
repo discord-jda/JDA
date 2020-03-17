@@ -334,7 +334,10 @@ public interface RestAction<T>
      * @see    #setDefaultTimeout(long, TimeUnit)
      */
     @Nonnull
-    RestAction<T> deadline(long timestamp);
+    default RestAction<T> deadline(long timestamp)
+    {
+        return this;
+    }
 
     /**
      * Submits a Request for execution.
