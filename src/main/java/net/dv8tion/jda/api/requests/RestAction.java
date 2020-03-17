@@ -336,7 +336,7 @@ public interface RestAction<T>
     @Nonnull
     default RestAction<T> deadline(long timestamp)
     {
-        return this;
+        throw new UnsupportedOperationException();
     }
 
     /**
