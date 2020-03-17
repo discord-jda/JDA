@@ -307,11 +307,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         for (IMentionable mentionable : mentionables)
         {
-            if(mentionable instanceof Member)
-            {
-                mentionableUsers.add(((Member) mentionable).getUser().getId());
-            }
-            else if (mentionable instanceof User)
+            if(mentionable instanceof User || mentionable instanceof Member)
             {
                 mentionableUsers.add(mentionable.getId());
             }
@@ -419,7 +415,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("nonce", nonce);
         }
         obj.put("tts", tts);
-        if (allowedMentions != null)
+        if (allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
         {
             obj.put("allowed_mentions", getAllowedMentionsObj());
         }
@@ -428,24 +424,27 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected DataObject getAllowedMentionsObj()
     {
+        DataObject allowedMentionsObj = DataObject.empty();
         DataArray parsable = DataArray.empty();
-        allowedMentions.stream().map(Message.MentionType::getParseKey).filter(Objects::nonNull).distinct().forEach(parsable::add);
-        DataArray mentionedUsersArr = DataArray.empty();
+        if (allowedMentions != null)
+        {
+            allowedMentions.stream().map(Message.MentionType::getParseKey).filter(Objects::nonNull).distinct().forEach(parsable::add);
+        }
         if (!mentionableUsers.isEmpty())
         {
             parsable.remove(Message.MentionType.USER.getParseKey());
+            DataArray mentionedUsersArr = DataArray.empty();
             mentionableUsers.forEach(mentionedUsersArr::add);
+            allowedMentionsObj.put("users", mentionedUsersArr);
         }
-        DataArray mentionedRolesArr = DataArray.empty();
         if (!mentionableRoles.isEmpty())
         {
             parsable.remove(Message.MentionType.ROLE.getParseKey());
+            DataArray mentionedRolesArr = DataArray.empty();
             mentionableRoles.forEach(mentionedRolesArr::add);
+            allowedMentionsObj.put("roles", mentionedRolesArr);
         }
-        return DataObject.empty()
-                .put("parse", parsable)
-                .put("roles", mentionedRolesArr)
-                .put("users", mentionedUsersArr);
+        return allowedMentionsObj.put("parse", parsable);
     }
 
     protected void checkFileAmount()

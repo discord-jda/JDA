@@ -1791,6 +1791,14 @@ public interface Message extends ISnowflake, Formattable
             return pattern;
         }
 
+        /**
+         * The Key returned by this method is used to determine the group or parsable mention group they are part of.
+         * <br>It is used internally in methods like {@link net.dv8tion.jda.api.requests.restaction.MessageAction#allowedMentions(EnumSet) MessageAction#allowedMentions(EnumSet)}.
+         * <p>
+         * Returns {@code null}, when they don't belong to any mention group.
+         *
+         * @return Nullable group key for mention parsing
+         */
         @Nullable
         public String getParseKey()
         {
