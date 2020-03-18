@@ -33,6 +33,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -119,6 +120,14 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
 
+    @Nonnull
+    @Override
+    MessageAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    MessageAction deadline(long timestamp);
+
     /**
      * The target {@link MessageChannel} for this message
      *
@@ -157,7 +166,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @throws java.lang.IllegalArgumentException
      *         If the message contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
      *         that exceeds the sendable character limit,
-     *         see {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) MessageEmbed.isSendable(AccountType)}
+     *         see {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -238,7 +247,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided MessageEmbed is not sendable according to
-     *         {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) MessageEmbed.isSendable(AccountType)}!
+     *         {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
      *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
      *
      * @return Updated MessageAction for chaining convenience

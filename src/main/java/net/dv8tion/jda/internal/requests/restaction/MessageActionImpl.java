@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
@@ -42,6 +41,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -95,6 +95,20 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageAction setCheck(BooleanSupplier checks)
     {
         return (MessageAction) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (MessageAction) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction deadline(long timestamp)
+    {
+        return (MessageAction) super.deadline(timestamp);
     }
 
     @Nonnull
@@ -179,10 +193,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         if (embed != null)
         {
-            final AccountType type = getJDA().getAccountType();
-            Checks.check(embed.isSendable(type),
-                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for %s accounts!",
-                type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
+            Checks.check(embed.isSendable(),
+               "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+               MessageEmbed.EMBED_MAX_LENGTH_BOT);
         }
         this.embed = embed;
         return this;

@@ -31,6 +31,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 
@@ -70,10 +71,23 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
-        return (AuditableRestActionImpl) super.setCheck(checks);
+        return (AuditableRestAction<T>) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (AuditableRestAction<T>) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> deadline(long timestamp)
+    {
+        return (AuditableRestAction<T>) super.deadline(timestamp);
     }
 
     @Nonnull

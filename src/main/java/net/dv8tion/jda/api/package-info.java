@@ -20,11 +20,8 @@
  * <p>This package contains information about the JDA version used by this library.
  * See {@link net.dv8tion.jda.api.JDAInfo JDAInfo}!
  *
- * <p>To build a JDA instance you
- * would use the {@link net.dv8tion.jda.api.JDABuilder JDABuilder} with a specified {@link net.dv8tion.jda.api.AccountType AccountType}
- * to differ between a bot and a client account. Client accounts are commonly referenced as User accounts due to them being used by
- * the official Discord Client.
- * <br>It is recommended to <b>not automate</b> accounts from AccountType {@link net.dv8tion.jda.api.AccountType#CLIENT CLIENT}!
+ * <p>You can use {@link net.dv8tion.jda.api.JDABuilder JDABuilder} to create a {@link net.dv8tion.jda.api.JDA JDA} instance.
+ * <br>Each JDA instance represents a connection to discord to receive events.
  *
  * <p>In addition this package included helpful builders for message sending
  * such as:
