@@ -843,14 +843,15 @@ public interface ShardManager
     @Nullable
     default GuildChannel getGuildChannelById(long id)
     {
-        GuildChannel channel = getTextChannelById(id);
-        if (channel == null)
-            channel = getVoiceChannelById(id);
-        if (channel == null)
-            channel = getStoreChannelById(id);
-        if (channel == null)
-            channel = getCategoryById(id);
-        return channel;
+        GuildChannel channel;
+        for (JDA shard : getShards())
+        {
+            channel = shard.getGuildChannelById(id);
+            if (channel != null)
+                return channel;
+        }
+
+        return null;
     }
 
     /**
@@ -908,17 +909,14 @@ public interface ShardManager
     default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
     {
         Checks.notNull(type, "ChannelType");
-        switch (type)
+        GuildChannel channel;
+        for (JDA shard : getShards())
         {
-            case TEXT:
-                return getTextChannelById(id);
-            case VOICE:
-                return getVoiceChannelById(id);
-            case STORE:
-                return getStoreChannelById(id);
-            case CATEGORY:
-                return getCategoryById(id);
+            channel = shard.getGuildChannelById(type, id);
+            if (channel != null)
+                return channel;
         }
+
         return null;
     }
 
