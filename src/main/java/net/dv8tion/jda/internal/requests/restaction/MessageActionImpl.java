@@ -61,9 +61,15 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected Set<String> mentionableUsers = new HashSet<>();
     protected Set<String> mentionableRoles = new HashSet<>();
 
-    public static void setDefaultMentions(@Nullable EnumSet<Message.MentionType> allowedMentions)
+    public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        MessageActionImpl.defaultMentions = allowedMentions == null ? null : allowedMentions.clone();
+        MessageActionImpl.defaultMentions = allowedMentions == null ? null :
+                allowedMentions.isEmpty() ? EnumSet.noneOf(Message.MentionType.class) : EnumSet.copyOf(allowedMentions);
+    }
+
+    public static EnumSet<Message.MentionType> getDefaultMentions()
+    {
+        return defaultMentions.clone();
     }
 
     public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel)
@@ -295,9 +301,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction allowedMentions(@Nullable EnumSet<Message.MentionType> allowedMentions)
+    public MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        this.allowedMentions = allowedMentions == null ? null : allowedMentions.clone();
+        this.allowedMentions = allowedMentions == null ? null :
+                allowedMentions.isEmpty() ? EnumSet.noneOf(Message.MentionType.class) : EnumSet.copyOf(allowedMentions);
         return this;
     }
 
@@ -305,6 +312,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public MessageAction mention(IMentionable... mentionables)
     {
+        Checks.noneNull(mentionables, "Mentionables");
         for (IMentionable mentionable : mentionables)
         {
             if(mentionable instanceof User || mentionable instanceof Member)
@@ -323,6 +331,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public MessageAction mentionUsers(String... userIds)
     {
+        Checks.noneNull(userIds, "User Id");
         mentionableUsers.addAll(Arrays.asList(userIds));
         return this;
     }
@@ -331,6 +340,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public MessageAction mentionRoles(String... roleIds)
     {
+        Checks.noneNull(roleIds, "Role Id");
         mentionableRoles.addAll(Arrays.asList(roleIds));
         return this;
     }
@@ -433,16 +443,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (!mentionableUsers.isEmpty())
         {
             parsable.remove(Message.MentionType.USER.getParseKey());
-            DataArray mentionedUsersArr = DataArray.empty();
-            mentionableUsers.forEach(mentionedUsersArr::add);
-            allowedMentionsObj.put("users", mentionedUsersArr);
+            allowedMentionsObj.put("users", DataArray.fromCollection(mentionableUsers));
         }
         if (!mentionableRoles.isEmpty())
         {
             parsable.remove(Message.MentionType.ROLE.getParseKey());
-            DataArray mentionedRolesArr = DataArray.empty();
-            mentionableRoles.forEach(mentionedRolesArr::add);
-            allowedMentionsObj.put("roles", mentionedRolesArr);
+            allowedMentionsObj.put("roles", DataArray.fromCollection(mentionableRoles));
         }
         return allowedMentionsObj.put("parse", parsable);
     }

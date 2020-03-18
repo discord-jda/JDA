@@ -31,6 +31,7 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
@@ -87,7 +88,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
 {
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed by default.
-     * This just sets the default for all MessageActions and can be overridden on a per-action basis using {@link #allowedMentions(EnumSet)}.
+     * This just sets the default for all MessageActions and can be overridden on a per-action basis using {@link #allowedMentions(Collection)}.
      * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
      * while still showing up as mention tag.
      * <p>
@@ -97,9 +98,21 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @param  allowedMentions
      *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
      */
-    static void setDefaultMentions(@Nullable EnumSet<Message.MentionType> allowedMentions)
+    static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
         MessageActionImpl.setDefaultMentions(allowedMentions);
+    }
+
+    /**
+     * Returns the default {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} previously set by
+     * {@link #setDefaultMentions(Collection) MessageAction.setDefaultMentions(Collection)} or {@code null} by default
+     *
+     * @return Nullable default mentions set by MessageAction.setDefaultMentions(Collection)
+     */
+    @Nullable
+    static EnumSet<Message.MentionType> getDefaultMentions()
+    {
+        return MessageActionImpl.getDefaultMentions();
     }
 
     @Nonnull
@@ -503,7 +516,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * If {@code null} is provided to this method, then all Types will be pingable
      * (unless whitelisting via one of the {@code mention*} methods is used).
      * <p>
-     * Note: A default for this can be set using {@link #setDefaultMentions(EnumSet) MessageAction.setDefaultMentions(EnumSet)}.
+     * Note: A default for this can be set using {@link #setDefaultMentions(Collection) MessageAction.setDefaultMentions(Collection)}.
      *
      * @param  allowedMentions
      *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
@@ -512,7 +525,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction allowedMentions(@Nullable EnumSet<Message.MentionType> allowedMentions);
+    MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions);
 
     /**
      * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
@@ -522,15 +535,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <p>
      * <b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(EnumSet)} or {@link #allowedMentions(EnumSet)}.
+     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
      * @param  mentionables
      *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @see #allowedMentions(EnumSet)
-     * @see #setDefaultMentions(EnumSet)
+     * @see #allowedMentions(Collection)
+     * @see #setDefaultMentions(Collection)
      */
     @Nonnull
     @CheckReturnValue
@@ -542,15 +555,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <p>
      * <b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(EnumSet)} or {@link #allowedMentions(EnumSet)}.
+     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
      * @param  userIds
      *         Ids of Users that should be explicitly whitelisted to be pingable.
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @see #allowedMentions(EnumSet)
-     * @see #setDefaultMentions(EnumSet)
+     * @see #allowedMentions(Collection)
+     * @see #setDefaultMentions(Collection)
      */
     @Nonnull
     @CheckReturnValue
@@ -562,20 +575,21 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <p>
      * <b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(EnumSet)} or {@link #allowedMentions(EnumSet)}.
+     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
      * @param  userIds
      *         Ids of Users that should be explicitly whitelisted to be pingable.
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @see #allowedMentions(EnumSet)
-     * @see #setDefaultMentions(EnumSet)
+     * @see #allowedMentions(Collection)
+     * @see #setDefaultMentions(Collection)
      */
     @Nonnull
     @CheckReturnValue
     default MessageAction mentionUsers(long... userIds)
     {
+        Checks.notNull(userIds, "UserId array");
         String[] stringIds = new String[userIds.length];
         for (int i = 0; i < userIds.length; i++)
         {
@@ -590,15 +604,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <p>
      * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(EnumSet)} or {@link #allowedMentions(EnumSet)}.
+     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
      * @param  roleIds
      *         Ids of Roles that should be explicitly whitelisted to be pingable.
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @see #allowedMentions(EnumSet)
-     * @see #setDefaultMentions(EnumSet)
+     * @see #allowedMentions(Collection)
+     * @see #setDefaultMentions(Collection)
      */
     @Nonnull
     @CheckReturnValue
@@ -610,20 +624,21 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <p>
      * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(EnumSet)} or {@link #allowedMentions(EnumSet)}.
+     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
      * @param  roleIds
      *         Ids of Roles that should be explicitly whitelisted to be pingable.
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @see #allowedMentions(EnumSet)
-     * @see #setDefaultMentions(EnumSet)
+     * @see #allowedMentions(Collection)
+     * @see #setDefaultMentions(Collection)
      */
     @Nonnull
     @CheckReturnValue
     default MessageAction mentionRoles(long... roleIds)
     {
+        Checks.notNull(roleIds, "RoleId array");
         String[] stringIds = new String[roleIds.length];
         for (int i = 0; i < roleIds.length; i++)
         {
