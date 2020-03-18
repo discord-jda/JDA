@@ -34,6 +34,7 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
@@ -61,6 +62,20 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
     public MemberAction setCheck(BooleanSupplier checks)
     {
         return (MemberAction) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public MemberAction timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (MemberAction) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public MemberAction deadline(long timestamp)
+    {
+        return (MemberAction) super.deadline(timestamp);
     }
 
     @Nonnull

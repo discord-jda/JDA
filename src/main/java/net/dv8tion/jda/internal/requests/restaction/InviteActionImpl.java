@@ -52,6 +52,20 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
 
     @Nonnull
     @Override
+    public InviteActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (InviteActionImpl) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl deadline(long timestamp)
+    {
+        return (InviteActionImpl) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public InviteActionImpl setMaxAge(final Integer maxAge)
     {

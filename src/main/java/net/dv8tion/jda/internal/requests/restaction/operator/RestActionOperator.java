@@ -27,6 +27,8 @@ import java.util.function.Consumer;
 
 public abstract class RestActionOperator<I, O> implements RestAction<O>
 {
+    protected BooleanSupplier check;
+    protected long deadline = -1;
     protected final RestAction<I> action;
 
     public RestActionOperator(RestAction<I> action)
@@ -61,8 +63,29 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
     @Override
     public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
     {
+        this.check = checks;
         action.setCheck(checks);
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<O> deadline(long timestamp)
+    {
+        this.deadline = timestamp;
+        action.deadline(timestamp);
+        return this;
+    }
+
+    protected <T> RestAction<T> applyContext(RestAction<T> action)
+    {
+        if (action == null)
+            return null;
+        if (check != null)
+            action.setCheck(check);
+        if (deadline >= 0)
+            action.deadline(deadline);
+        return action;
     }
 
     protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback)
