@@ -39,6 +39,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -75,6 +76,20 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageAction setCheck(BooleanSupplier checks)
     {
         return (MessageAction) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (MessageAction) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction deadline(long timestamp)
+    {
+        return (MessageAction) super.deadline(timestamp);
     }
 
     @Nonnull

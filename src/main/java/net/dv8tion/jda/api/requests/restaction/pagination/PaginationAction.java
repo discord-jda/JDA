@@ -25,6 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -136,6 +137,14 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Nonnull
     @Override
     M setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    M timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    M deadline(long timestamp);
 
     /**
      * The current amount of cached entities for this PaginationAction

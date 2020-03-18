@@ -194,14 +194,14 @@ public class Requester
         okhttp3.Response lastResponse = null;
         try
         {
+            Call call = httpClient.newCall(request);
             LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
             int attempt = 0;
             do
             {
-                //If the request has been canceled via the Future, don't execute.
-                //if (apiRequest.isCanceled())
-                //    return null;
-                Call call = httpClient.newCall(request);
+                if (apiRequest.isSkipped())
+                    return null;
+
                 lastResponse = call.execute();
                 responses[attempt] = lastResponse;
                 String cfRay = lastResponse.header("CF-RAY");
