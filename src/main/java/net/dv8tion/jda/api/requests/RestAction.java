@@ -292,6 +292,12 @@ public interface RestAction<T>
      * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
      * This is the same as {@code deadline(System.currentTimeMillis() + unit.toMillis(timeout))}.
      *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * action.timeout(10, TimeUnit.SECONDS) // 10 seconds from now
+     *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
+     * }</pre>
+     *
      * @param  timeout
      *         The timeout to use
      * @param  unit
@@ -321,7 +327,7 @@ public interface RestAction<T>
      *
      * <h2>Example</h2>
      * <pre>{@code
-     * action.deadline(System.currentTimeMillis() + 100000) // 10 seconds from now
+     * action.deadline(System.currentTimeMillis() + 10000) // 10 seconds from now
      *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
      * }</pre>
      *
