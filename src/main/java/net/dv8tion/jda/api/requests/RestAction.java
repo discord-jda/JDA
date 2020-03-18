@@ -210,6 +210,39 @@ public interface RestAction<T>
     }
 
     /**
+     * Default timeout to apply to every RestAction.
+     * <br>This will use no timeout unless specified otherwise.
+     * <br>If the request doesn't get executed within the specified timeout it will fail.
+     *
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * @param  timeout
+     *         The default timeout to use
+     * @param  unit
+     *         {@link TimeUnit Unit} for the timeout value
+     *
+     * @throws IllegalArgumentException
+     *         If the provided unit is null
+     */
+    static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        RestActionImpl.setDefaultTimeout(timeout, unit);
+    }
+
+    /**
+     * The default timeout to apply to every RestAction in milliseconds.
+     * <br>If no timeout has been configured, this will return 0.
+     *
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * @return The default timeout in milliseconds, or 0
+     */
+    static long getDefaultTimeout()
+    {
+        return RestActionImpl.getDefaultTimeout();
+    }
+
+    /**
      * The default failure callback used when none is provided in {@link #queue(Consumer, Consumer)}.
      *
      * @return The fallback consumer
@@ -251,6 +284,60 @@ public interface RestAction<T>
      */
     @Nonnull
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
+
+    /**
+     * Timeout for this RestAction instance.
+     * <br>If the request doesn't get executed within the timeout it will fail.
+     *
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     * This is the same as {@code deadline(System.currentTimeMillis() + unit.toMillis(timeout))}.
+     *
+     * @param  timeout
+     *         The timeout to use
+     * @param  unit
+     *         {@link TimeUnit Unit} for the timeout value
+     *
+     * @throws IllegalArgumentException
+     *         If the provided unit is null
+     *
+     * @return The same RestAction instance with the applied timeout
+     *
+     * @see    #setDefaultTimeout(long, TimeUnit)
+     */
+    @Nonnull
+    default RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
+    }
+
+    /**
+     * Similar to {@link #timeout(long, TimeUnit)} but schedules a deadline at which the request has to be completed.
+     * <br>If the deadline is reached, the request will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * <p>This does not mean that the request will immediately timeout when the deadline is reached. JDA will check the deadline
+     * right before executing the request or within intervals in a worker thread. This only means the request will timeout
+     * if the deadline has passed.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * action.deadline(System.currentTimeMillis() + 100000) // 10 seconds from now
+     *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
+     * }</pre>
+     *
+     * @param  timestamp
+     *         Millisecond timestamp at which the request will timeout
+     *
+     * @return The same RestAction with the applied deadline
+     *
+     * @see    #timeout(long, TimeUnit)
+     * @see    #setDefaultTimeout(long, TimeUnit)
+     */
+    @Nonnull
+    default RestAction<T> deadline(long timestamp)
+    {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Submits a Request for execution.

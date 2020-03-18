@@ -31,6 +31,8 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -46,16 +48,19 @@ public class Request<T>
     private final RequestBody body;
     private final Object rawBody;
     private final CaseInsensitiveMap<String, String> headers;
+    private final long deadline;
 
     private final String localReason;
 
-    private boolean isCanceled = false;
+    private boolean done = false;
+    private boolean isCancelled = false;
 
     public Request(
             RestActionImpl<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
-            BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody,
+            BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody, long deadline,
             Route.CompiledRoute route, CaseInsensitiveMap<String, String> headers)
     {
+        this.deadline = deadline;
         this.restAction = restAction;
         this.onSuccess = onSuccess;
         if (onFailure instanceof ContextException.ContextConsumer)
@@ -77,6 +82,9 @@ public class Request<T>
 
     public void onSuccess(T successObj)
     {
+        if (done)
+            return;
+        done = true;
         api.getCallbackPool().execute(() ->
         {
             try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
@@ -108,6 +116,9 @@ public class Request<T>
 
     public void onFailure(Throwable failException)
     {
+        if (done)
+            return;
+        done = true;
         api.getCallbackPool().execute(() ->
         {
             try (ThreadLocalReason.Closable __ = ThreadLocalReason.closable(localReason);
@@ -124,6 +135,16 @@ public class Request<T>
                     api.handleEvent(new ExceptionEvent(api, t, true));
             }
         });
+    }
+
+    public void onCancelled()
+    {
+        onFailure(new CancellationException("RestAction has been cancelled"));
+    }
+
+    public void onTimeout()
+    {
+        onFailure(new TimeoutException("RestAction has timed out"));
     }
 
     @Nonnull
@@ -150,9 +171,35 @@ public class Request<T>
         return onFailure;
     }
 
-    public boolean runChecks()
+    public boolean isSkipped()
     {
-        return checks == null || checks.getAsBoolean();
+        if (isTimeout())
+        {
+            onTimeout();
+            return true;
+        }
+        boolean skip = runChecks();
+        if (skip)
+            onCancelled();
+        return skip;
+    }
+
+    private boolean isTimeout()
+    {
+        return deadline > 0 && deadline < System.currentTimeMillis();
+    }
+
+    private boolean runChecks()
+    {
+        try
+        {
+            return isCancelled() || (checks != null && !checks.getAsBoolean());
+        }
+        catch (Exception e)
+        {
+            onFailure(e);
+            return true;
+        }
     }
 
     @Nullable
@@ -186,12 +233,12 @@ public class Request<T>
 
     public void cancel()
     {
-        this.isCanceled = true;
+        this.isCancelled = true;
     }
 
-    public boolean isCanceled()
+    public boolean isCancelled()
     {
-        return isCanceled;
+        return isCancelled;
     }
 
     public void handleResponse(@Nonnull Response response)

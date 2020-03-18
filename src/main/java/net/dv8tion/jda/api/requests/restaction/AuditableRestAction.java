@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationActi
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -66,4 +67,18 @@ public interface AuditableRestAction<T> extends RestAction<T>
     @Nonnull
     @Override
     AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nonnull
+    @Override
+    AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nonnull
+    @Override
+    AuditableRestAction<T> deadline(long timestamp);
 }

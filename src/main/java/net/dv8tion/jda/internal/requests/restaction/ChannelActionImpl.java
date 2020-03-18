@@ -33,6 +33,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
@@ -68,6 +69,20 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     public ChannelActionImpl<T> setCheck(BooleanSupplier checks)
     {
         return (ChannelActionImpl<T>) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public ChannelActionImpl<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (ChannelActionImpl<T>) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public ChannelActionImpl<T> deadline(long timestamp)
+    {
+        return (ChannelActionImpl<T>) super.deadline(timestamp);
     }
 
     @Nonnull
