@@ -1533,9 +1533,6 @@ public interface Message extends ISnowflake, Formattable
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
-     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.
      *
