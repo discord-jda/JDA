@@ -876,6 +876,8 @@ public interface ShardManager
      *         If the provided ID is null
      * @throws java.lang.NumberFormatException
      *         If the provided ID is not a snowflake
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
      *
      * @return The GuildChannel or null
      */
@@ -902,6 +904,9 @@ public interface ShardManager
      *         The {@link net.dv8tion.jda.api.entities.ChannelType}
      * @param  id
      *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
      *
      * @return The GuildChannel or null
      */
