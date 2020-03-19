@@ -230,6 +230,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
     {
+        Checks.notEmpty(unicode, "Emoji");
         Checks.noWhitespace(unicode, "Emoji");
 
         MessageReaction reaction = this.reactions.stream()
@@ -244,6 +245,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
     {
+        Checks.notEmpty(unicode, "Emoji");
         Checks.noWhitespace(unicode, "Emoji");
 
         return this.reactions.stream()
@@ -261,8 +263,6 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageReaction.ReactionEmote getReactionById(long id)
     {
-        Checks.notNull(id, "Reaction ID");
-
         return this.reactions.stream()
             .map(MessageReaction::getReactionEmote)
             .filter(r -> r.isEmote() && r.getIdLong() == id)
