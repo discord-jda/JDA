@@ -112,7 +112,7 @@ public class BotRateLimiter extends RateLimiter
             rateLimitQueue.clear();
 
             AtomicInteger count = new AtomicInteger(0);
-            bucket.values()
+            buckets.values()
                 .stream()
                 .map(Bucket::getRequests)
                 .flatMap(Collection::stream)
@@ -120,7 +120,7 @@ public class BotRateLimiter extends RateLimiter
                     request.cancel();
                     count.incrementAndGet();
                 });
-            bucket.clear();
+            buckets.clear();
             if (count.get() == 1)
                 RateLimiter.log.warn("Cancelled 1 request!");
             else if (count.get() > 1)
