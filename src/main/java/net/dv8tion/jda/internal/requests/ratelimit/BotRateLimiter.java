@@ -116,6 +116,7 @@ public class BotRateLimiter extends RateLimiter
                 .stream()
                 .map(Bucket::getRequests)
                 .flatMap(Collection::stream)
+                .filter(request -> !request.isPriority())
                 .forEach(request -> {
                     request.cancel();
                     count.incrementAndGet();
