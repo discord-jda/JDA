@@ -20,6 +20,7 @@ package net.dv8tion.jda.api;
  */
 public class JDAInfo
 {
+    public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int DISCORD_REST_VERSION = 6;
     public static final int AUDIO_GATEWAY_VERSION = 4;
     public static final String GITHUB = "https://github.com/DV8FromTheWorld/JDA";

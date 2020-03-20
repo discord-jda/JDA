@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.events.self;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 
 import javax.annotation.Nonnull;
@@ -26,7 +28,12 @@ import javax.annotation.Nonnull;
  * <p>Can be used to detect that your account was used with a mobile device.
  *
  * <p>Identifier: {@code mobile}
+ *
+ * @deprecated This is no longer supported
  */
+@Deprecated
+@ForRemoval
+@DeprecatedSince("4.2.0")
 public class SelfUpdateMobileEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mobile";

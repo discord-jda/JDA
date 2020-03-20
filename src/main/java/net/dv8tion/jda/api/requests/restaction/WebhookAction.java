@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Webhook;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -37,6 +38,14 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
     @Nonnull
     @Override
     WebhookAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    WebhookAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    WebhookAction deadline(long timestamp);
 
     /**
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} to create this webhook in

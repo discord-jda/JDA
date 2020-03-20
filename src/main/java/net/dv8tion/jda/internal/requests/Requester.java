@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
+import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
@@ -193,14 +194,14 @@ public class Requester
         okhttp3.Response lastResponse = null;
         try
         {
+            Call call = httpClient.newCall(request);
             LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
             int attempt = 0;
             do
             {
-                //If the request has been canceled via the Future, don't execute.
-                //if (apiRequest.isCanceled())
-                //    return null;
-                Call call = httpClient.newCall(request);
+                if (apiRequest.isSkipped())
+                    return null;
+
                 lastResponse = call.execute();
                 responses[attempt] = lastResponse;
                 String cfRay = lastResponse.header("CF-RAY");
@@ -249,6 +250,11 @@ public class Requester
                 return execute(apiRequest, true, handleOnRatelimit);
             LOG.error("Requester timed out while executing a request", e);
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            return null;
+        }
+        catch (InterruptedIOException e)
+        {
+            LOG.warn("Got interrupted while executing request", e);
             return null;
         }
         catch (Exception e)
@@ -316,9 +322,9 @@ public class Requester
         this.retryOnTimeout = retryOnTimeout;
     }
 
-    public void stop()
+    public boolean stop()
     {
-        rateLimiter.stop();
+        return rateLimiter.stop();
     }
 
     public void shutdown()

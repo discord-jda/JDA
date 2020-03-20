@@ -21,6 +21,7 @@ import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
@@ -68,7 +69,6 @@ import java.util.zip.DataFormatException;
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
     public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
-    public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
@@ -79,6 +79,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final JDA.ShardInfo shardInfo;
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Compression compression;
+    protected final int gatewayIntents;
+    protected final MemberChunkManager chunkManager;
 
     public WebSocket socket;
     protected String sessionId = null;
@@ -115,12 +117,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, Compression compression)
+    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents)
     {
         this.api = api;
         this.executor = api.getGatewayPool();
         this.shardInfo = api.getShardInfo();
         this.compression = compression;
+        this.gatewayIntents = gatewayIntents;
+        this.chunkManager = new MemberChunkManager(this);
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
         setupHandlers();
@@ -154,6 +158,16 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public boolean isConnected()
     {
         return connected;
+    }
+
+    public int getGatewayIntents()
+    {
+        return gatewayIntents;
+    }
+
+    public MemberChunkManager getChunkManager()
+    {
+        return chunkManager;
     }
 
     public void ready()
@@ -294,7 +308,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl() + "?encoding=json&v=" + DISCORD_GATEWAY_VERSION;
+        String url = api.getGatewayUrl() + "?encoding=json&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
         if (compression != Compression.NONE)
         {
             url += "&compress=" + compression.getKey();
@@ -345,10 +359,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
-        if (sessionId == null) //no need to log for resume here
+        if (sessionId == null)
+        {
             LOG.info("Connected to WebSocket");
+            // Log which intents are used on debug level since most people won't know how to use the binary output anyway
+            if (api.useIntents())
+                LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
+        }
         else
+        {
+            // no need to log for resume here
             LOG.debug("Connected to WebSocket");
+        }
         connected = true;
         //reconnectTimeoutS = 2; We will reset this when the session was started successfully (ready/resume)
         messagesSent.set(0);
@@ -604,12 +626,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
-            .put("v", DISCORD_GATEWAY_VERSION)
-            .put("guild_subscriptions", api.isGuildSubscriptions())
+            .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
             .put("large_threshold", api.getLargeThreshold());
-            //Used to make the READY event be given
-            // as compressed binary data when over a certain size. TY @ShadowLordAlpha
-            //.put("compress", true);
+        //We only provide intents if they are not the default (all) for backwards compatibility
+        // Discord has additional enforcements put in place even if you specify to subscribe to all intents
+        if (api.useIntents())
+            payload.put("intents", gatewayIntents);
+
         DataObject identify = DataObject.empty()
                 .put("op", WebSocketCode.IDENTIFY)
                 .put("d", payload);
@@ -659,6 +682,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getFakePrivateChannelMap().clear();
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
+        chunkManager.clear();
     }
 
     protected void updateAudioManagerReferences()
@@ -1231,18 +1255,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("USER_UPDATE",                   new UserUpdateHandler(api));
         handlers.put("VOICE_SERVER_UPDATE",           new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",            new VoiceStateUpdateHandler(api));
-
-        if (api.isGuildSubscriptions())
-        {
-            // These events are not expected if guild subscriptions are disabled
-            handlers.put("PRESENCE_UPDATE", new PresenceUpdateHandler(api));
-            handlers.put("TYPING_START",    new TypingStartHandler(api));
-        }
-        else
-        {
-            handlers.put("PRESENCE_UPDATE", nopHandler);
-            handlers.put("TYPING_START",    nopHandler);
-        }
+        handlers.put("PRESENCE_UPDATE",               new PresenceUpdateHandler(api));
+        handlers.put("TYPING_START",                  new TypingStartHandler(api));
 
         // Unused events
         handlers.put("CHANNEL_PINS_ACK",          nopHandler);
@@ -1250,20 +1264,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
         handlers.put("PRESENCES_REPLACE",         nopHandler);
         handlers.put("WEBHOOKS_UPDATE",           nopHandler);
-
-        if (api.getAccountType() == AccountType.CLIENT)
-        {
-            handlers.put("CALL_CREATE",              nopHandler);
-            handlers.put("CALL_DELETE",              nopHandler);
-            handlers.put("CALL_UPDATE",              nopHandler);
-            handlers.put("CHANNEL_RECIPIENT_ADD",    nopHandler);
-            handlers.put("CHANNEL_RECIPIENT_REMOVE", nopHandler);
-            handlers.put("RELATIONSHIP_ADD",         nopHandler);
-            handlers.put("RELATIONSHIP_REMOVE",      nopHandler);
-
-            // Unused client events
-            handlers.put("MESSAGE_ACK", nopHandler);
-        }
     }
 
     protected abstract class ConnectNode implements SessionController.SessionConnectNode

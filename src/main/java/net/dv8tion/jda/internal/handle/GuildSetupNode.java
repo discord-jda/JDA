@@ -56,7 +56,6 @@ public class GuildSetupNode
     boolean requestedChunk;
 
     final Type type;
-    final boolean sync;
     boolean firedUnavailableJoin = false;
     boolean markedUnavailable = false;
     GuildSetupController.Status status = GuildSetupController.Status.INIT;
@@ -66,7 +65,6 @@ public class GuildSetupNode
         this.id = id;
         this.controller = controller;
         this.type = type;
-        this.sync = controller.isClient();
     }
 
     public long getIdLong()
@@ -143,7 +141,6 @@ public class GuildSetupNode
                 "requestedSync="       + requestedSync + ", " +
                 "requestedChunk="      + requestedChunk + ", " +
                 "type="                + type + ", " +
-                "sync="                + sync + ", " +
                 "markedUnavailable="   + markedUnavailable +
             '}';
     }
@@ -197,22 +194,7 @@ public class GuildSetupNode
         cachedEvents.clear();
     }
 
-    void handleReady(DataObject obj)
-    {
-        if (!sync)
-            return;
-        partialGuild = obj;
-        markedUnavailable = partialGuild.getBoolean("unavailable");
-        if (markedUnavailable)
-        {
-            updateStatus(GuildSetupController.Status.UNAVAILABLE);
-        }
-        else
-        {
-            getController().addGuildForSyncing(id, isJoin());
-            requestedSync = true;
-        }
-    }
+    void handleReady(DataObject obj) {}
 
     void handleCreate(DataObject obj)
     {
@@ -238,15 +220,6 @@ public class GuildSetupNode
                 JDAImpl api = getController().getJDA();
                 api.handleEvent(new UnavailableGuildJoinedEvent(api, api.getResponseTotal(), id));
             }
-            return;
-        }
-        if (wasMarkedUnavailable && sync && !requestedSync)
-        {
-            // We are using a client-account and joined a guild
-            //  in that case we need to sync before doing anything
-            updateStatus(GuildSetupController.Status.SYNCING);
-            getController().addGuildForSyncing(id, isJoin());
-            requestedSync = true;
             return;
         }
 

@@ -15,12 +15,11 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.entities.MemberImpl;
 
 public class GuildMemberAddHandler extends SocketHandler
 {
@@ -46,16 +45,10 @@ public class GuildMemberAddHandler extends SocketHandler
             return null;
         }
 
-        long userId = content.getObject("user").getUnsignedLong("id");
-        if (guild.getMemberById(userId) != null)
-        {
-            WebSocketClient.LOG.debug("Ignoring duplicate GUILD_MEMBER_ADD for user with id {} in guild {}", userId, id);
-            return null;
-        }
-
         // Update memberCount
         guild.onMemberAdd();
-        Member member = getJDA().getEntityBuilder().createMember(guild, content);
+        MemberImpl member = getJDA().getEntityBuilder().createMember(guild, content);
+        getJDA().getEntityBuilder().updateMemberCache(member);
         getJDA().handleEvent(
             new GuildMemberJoinEvent(
                 getJDA(), responseNumber,

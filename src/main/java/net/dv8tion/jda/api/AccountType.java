@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.Incubating;
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 
 /**
  * Represents the type of account that is logged in.
@@ -29,7 +30,10 @@ public enum AccountType
     /**
      * A User-Account which can be used via the official Discord Client
      *
-     * @incubating This might not be usable in the future because these types are not to be used in automation
+     * @deprecated This will be removed in a future version
      */
-    @Incubating CLIENT
+    @ForRemoval
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    CLIENT
 }

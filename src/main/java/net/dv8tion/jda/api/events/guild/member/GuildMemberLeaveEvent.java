@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.events.guild.member;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -22,11 +24,17 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates a {@link net.dv8tion.jda.api.entities.Member Member} left a {@link net.dv8tion.jda.api.entities.Guild Guild}.
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
+ *
+ * <p>This event is only fired if the member was cached.
+ * You can use {@link GuildMemberRemoveEvent} to detect any member removes, regardless of cache state.
  *
  * <p>Can be used to retrieve members who leave a guild.
+ *
+ * @deprecated This was deprecated in favour of {@link GuildMemberRemoveEvent}
  */
+@Deprecated
+@DeprecatedSince("4.2.0")
+@ReplaceWith("GuildMemberRemoveEvent")
 public class GuildMemberLeaveEvent extends GenericGuildMemberEvent
 {
     public GuildMemberLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)

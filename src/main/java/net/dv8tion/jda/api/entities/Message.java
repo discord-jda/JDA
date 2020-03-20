@@ -407,13 +407,15 @@ public interface Message extends ISnowflake, Formattable
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
      * <br>This is just a shortcut to {@link #getGuild()}{@link net.dv8tion.jda.api.entities.Guild#getMember(User) .getMember(getAuthor())}.
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
-     * @return Message author, or {@code null} if the message was not sent from a TextChannel.
+     * @return Message author, or {@code null} if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
+     *
+     * @see    #isWebhookMessage()
      */
     @Nullable
     Member getMember();
@@ -796,7 +798,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalStateException
      *         If the message attempting to be edited was not created by the currently logged in account, or
      *         if the passed-in embed is {@code null}
-     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}
+     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      *
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
@@ -883,7 +885,7 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *             <li>If the message attempting to be edited was not created by the currently logged in account</li>
      *             <li>If the message contains a MessageEmbed that is not
-     *                 {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      *
      * @return {@link MessageAction MessageAction}

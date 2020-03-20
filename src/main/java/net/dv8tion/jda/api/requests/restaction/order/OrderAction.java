@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -47,6 +48,14 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
     @Nonnull
     @Override
     M setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    M timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    M deadline(long timestamp);
 
     /**
      * Whether this instance uses ascending order, from the lowest
