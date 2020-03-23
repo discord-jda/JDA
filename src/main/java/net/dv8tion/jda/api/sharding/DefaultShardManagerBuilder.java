@@ -141,13 +141,16 @@ public class  DefaultShardManagerBuilder
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
-     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
      * @param  token
      *         The bot token to use
      *
      * @return The new DefaultShardManagerBuilder
+     *
+     * @see    #disableIntents(GatewayIntent, GatewayIntent...)
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
     @CheckReturnValue
@@ -163,8 +166,12 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  token
      *         The bot token to use
@@ -194,8 +201,12 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  token
      *         The bot token to use
@@ -218,7 +229,7 @@ public class  DefaultShardManagerBuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                   .disableCache(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY)
                    .setLargeThreshold(250);
     }
 
@@ -230,13 +241,16 @@ public class  DefaultShardManagerBuilder
      *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
      * @param  token
      *         The bot token to use
      *
      * @return The new DefaultShardManagerBuilder
+     *
+     * @see    #disableIntents(GatewayIntent, GatewayIntent...)
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
     @CheckReturnValue
@@ -252,8 +266,12 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  token
      *         The bot token to use
@@ -278,8 +296,12 @@ public class  DefaultShardManagerBuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  token
      *         The bot token to use
@@ -299,7 +321,7 @@ public class  DefaultShardManagerBuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.NONE)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                   .disableCache(EnumSet.allOf(CacheFlag.class))
                    .setLargeThreshold(50);
     }
 
@@ -310,6 +332,10 @@ public class  DefaultShardManagerBuilder
      * <br>If you use this, you need to set the token using
      * {@link #setToken(String) setToken(String)}
      * before calling {@link #build() build()}
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param intent
      *        The first intent
@@ -336,6 +362,10 @@ public class  DefaultShardManagerBuilder
      * <br>If you use this, you need to set the token using
      * {@link #setToken(String) setToken(String)} before calling {@link #build() build()}
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param intents
      *        The gateway intents to use
      *
@@ -356,6 +386,10 @@ public class  DefaultShardManagerBuilder
     /**
      * Creates a DefaultShardManagerBuilder with the predefined token.
      * <br>You can use {@link #create(String, Collection) DefaultShardManagerBuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param token
      *        The bot token to use
@@ -380,6 +414,10 @@ public class  DefaultShardManagerBuilder
 
     /**
      * Creates a DefaultShardManagerBuilder with the predefined token.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param token
      *        The bot token to use
@@ -452,11 +490,68 @@ public class  DefaultShardManagerBuilder
      *         EnumSet containing the flags for cache services that should be <b>enabled</b>
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
+     *             This introduces breaking changes due to the way the setter works.
+     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
+     *             to disable and enable cache flags without side-effects that may break in future versions.
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("enableCache(flags) and disableCache(flags)")
+    @DeprecatedSince("4.2.0")
     public DefaultShardManagerBuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
+        return this;
+    }
+
+    /**
+     * Enable specific cache flags.
+     * <br>This will not disable any currently set cache flags.
+     *
+     * @param  flags
+     *         The {@link CacheFlag CacheFlags} to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #enableCache(CacheFlag, CacheFlag...)
+     * @see    #disableCache(Collection)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder enableCache(@Nonnull Collection<CacheFlag> flags)
+    {
+        Checks.noneNull(flags, "CacheFlags");
+        cacheFlags.addAll(flags);
+        return this;
+    }
+
+    /**
+     * Enable specific cache flags.
+     * <br>This will not disable any currently set cache flags.
+     *
+     * @param  flag
+     *         {@link CacheFlag} to enable
+     * @param  flags
+     *         Other flags to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #enableCache(Collection)
+     * @see    #disableCache(CacheFlag, CacheFlag...)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder enableCache(@Nonnull CacheFlag flag, @Nonnull CacheFlag... flags)
+    {
+        Checks.notNull(flag, "CacheFlag");
+        Checks.noneNull(flags, "CacheFlag");
+        cacheFlags.addAll(EnumSet.of(flag, flags));
         return this;
     }
 
@@ -468,11 +563,68 @@ public class  DefaultShardManagerBuilder
      *         EnumSet containing the flags for cache services that should be <b>disabled</b>
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
+     *             This introduces breaking changes due to the way the setter works.
+     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
+     *             to disable and enable cache flags without side-effects that may break in future versions.
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("enableCache(flags) and disableCache(flags)")
+    @DeprecatedSince("4.2.0")
     public DefaultShardManagerBuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
+    }
+
+    /**
+     * Disable specific cache flags.
+     * <br>This will not enable any currently unset cache flags.
+     *
+     * @param  flags
+     *         The {@link CacheFlag CacheFlags} to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #disableCache(CacheFlag, CacheFlag...)
+     * @see    #enableCache(Collection)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder disableCache(@Nonnull Collection<CacheFlag> flags)
+    {
+        Checks.noneNull(flags, "CacheFlags");
+        cacheFlags.removeAll(flags);
+        return this;
+    }
+
+    /**
+     * Disable specific cache flags.
+     * <br>This will not enable any currently unset cache flags.
+     *
+     * @param  flag
+     *         {@link CacheFlag} to disable
+     * @param  flags
+     *         Other flags to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #disableCache(Collection)
+     * @see    #enableCache(CacheFlag, CacheFlag...)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder disableCache(@Nonnull CacheFlag flag, @Nonnull CacheFlag... flags)
+    {
+        Checks.notNull(flag, "CacheFlag");
+        Checks.noneNull(flags, "CacheFlag");
+        cacheFlags.removeAll(EnumSet.of(flag, flags));
+        return this;
     }
 
     /**
@@ -1612,6 +1764,10 @@ public class  DefaultShardManagerBuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  intent
      *         The first intent to disable
      * @param  intents
@@ -1642,6 +1798,10 @@ public class  DefaultShardManagerBuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  intents
      *         The intents to disable, or null to disable all intents (default: none)
      *
@@ -1661,11 +1821,72 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * Disable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not enable any currently unset intents.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
+     * @param  intents
+     *         The intents to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #enableIntents(Collection)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder disableIntents(@Nonnull Collection<GatewayIntent> intents)
+    {
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intents);
+        this.intents &= ~raw;
+        return this;
+    }
+
+    /**
+     * Disable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not enable any currently unset intents.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
+     * @param  intent
+     *         The intent to disable
+     * @param  intents
+     *         Other intents to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder disableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intent, intents);
+        this.intents &= ~raw;
+        return this;
+    }
+
+    /**
      * Configures which events will be enabled.
      * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
      *
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  intent
      *         The intent to enable
@@ -1697,6 +1918,10 @@ public class  DefaultShardManagerBuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  intents
      *         The intents to enable, or null to enable no intents (default: all)
      *
@@ -1715,6 +1940,55 @@ public class  DefaultShardManagerBuilder
             setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
         else
             setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+        return this;
+    }
+
+    /**
+     * Enable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not disable any currently set intents.
+     *
+     * @param  intents
+     *         The intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #disableIntents(Collection)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder enableIntents(@Nonnull Collection<GatewayIntent> intents)
+    {
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intents);
+        this.intents |= raw;
+        return this;
+    }
+
+    /**
+     * Enable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not disable any currently set intents.
+     *
+     * @param  intent
+     *         The intent to enable
+     * @param  intents
+     *         Other intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder enableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intent, intents);
+        this.intents |= raw;
         return this;
     }
 
