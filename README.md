@@ -80,7 +80,7 @@ public static void main(String[] args) {
     JDABuilder builder = JDABuilder.createDefault(args[0]);
     
     // Disable parts of the cache
-    builder.disableCache(CacheFlag.MEMBER_OVERRDIES, CacheFlag.VOICE_STATE);
+    builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
     // Enable the bulk delete event
     builder.setBulkDeleteSplittingEnabled(false);
     // Disable compression (not recommended)
