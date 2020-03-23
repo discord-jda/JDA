@@ -34,6 +34,10 @@ import javax.annotation.Nonnull;
  * <p>The activities of the {@link Member} are updated before all the start/end events are fired.
  * This means you can check {@link Member#getActivities()} when handling this event and it will already
  * contain all new activities, even ones that have not yet fired the start event.
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
 public class UserActivityStartEvent extends GenericUserEvent implements GenericUserPresenceEvent
 {
