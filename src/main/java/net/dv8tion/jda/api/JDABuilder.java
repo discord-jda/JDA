@@ -188,6 +188,10 @@ public class JDABuilder
      *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  token
      *         The bot token to use
      * @param  intent
@@ -218,6 +222,10 @@ public class JDABuilder
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  token
      *         The bot token to use
@@ -277,6 +285,10 @@ public class JDABuilder
      *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
      * </ul>
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  token
      *         The bot token to use
      * @param  intents
@@ -300,6 +312,10 @@ public class JDABuilder
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
      * </ul>
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  token
      *         The bot token to use
@@ -333,6 +349,10 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param intent
      *        The first intent
      * @param intents
@@ -359,6 +379,10 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param intents
      *        The gateway intents to use
      *
@@ -379,6 +403,10 @@ public class JDABuilder
     /**
      * Creates a JDABuilder with the predefined token.
      * <br>You can use {@link #create(String, Collection) JDABuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param token
      *        The bot token to use
@@ -403,6 +431,10 @@ public class JDABuilder
 
     /**
      * Creates a JDABuilder with the predefined token.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param token
      *        The bot token to use
@@ -486,6 +518,53 @@ public class JDABuilder
     }
 
     /**
+     * Enable specific cache flags.
+     * <br>This will not disable any currently set cache flags.
+     *
+     * @param  flags
+     *         The {@link CacheFlag CacheFlags} to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #disableCache(Collection)
+     */
+    @Nonnull
+    public JDABuilder enableCache(@Nonnull Collection<CacheFlag> flags)
+    {
+        Checks.noneNull(flags, "CacheFlags");
+        cacheFlags.removeAll(flags);
+        return this;
+    }
+
+    /**
+     * Enable specific cache flags.
+     * <br>This will not disable any currently set cache flags.
+     *
+     * @param  flag
+     *         {@link CacheFlag} to enable
+     * @param  flags
+     *         Other flags to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #disableCache(CacheFlag, CacheFlag...)
+     */
+    @Nonnull
+    public JDABuilder enableCache(@Nonnull CacheFlag flag, @Nonnull CacheFlag... flags)
+    {
+        Checks.notNull(flag, "CacheFlag");
+        Checks.noneNull(flags, "CacheFlag");
+        cacheFlags.addAll(EnumSet.of(flag, flags));
+        return this;
+    }
+
+    /**
      * Flags used to disable parts of the JDA cache to reduce the runtime memory footprint.
      * <br>Shortcut for {@code setEnabledCacheFlags(EnumSet.complementOf(flags))}
      *
@@ -498,6 +577,53 @@ public class JDABuilder
     public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
+    }
+
+    /**
+     * Disable specific cache flags.
+     * <br>This will not enable any currently unset cache flags.
+     *
+     * @param  flags
+     *         The {@link CacheFlag CacheFlags} to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #enableCache(Collection)
+     */
+    @Nonnull
+    public JDABuilder disableCache(@Nonnull Collection<CacheFlag> flags)
+    {
+        Checks.noneNull(flags, "CacheFlags");
+        cacheFlags.removeAll(flags);
+        return this;
+    }
+
+    /**
+     * Disable specific cache flags.
+     * <br>This will not enable any currently unset cache flags.
+     *
+     * @param  flag
+     *         {@link CacheFlag} to disable
+     * @param  flags
+     *         Other flags to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #enableCache(CacheFlag, CacheFlag...)
+     */
+    @Nonnull
+    public JDABuilder disableCache(@Nonnull CacheFlag flag, @Nonnull CacheFlag... flags)
+    {
+        Checks.notNull(flag, "CacheFlag");
+        Checks.noneNull(flags, "CacheFlag");
+        cacheFlags.removeAll(EnumSet.of(flag, flags));
+        return this;
     }
 
     /**
