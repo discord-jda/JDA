@@ -518,13 +518,14 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @see    #enableCache(CacheFlag, CacheFlag...)
      * @see    #disableCache(Collection)
      */
     @Nonnull
     public DefaultShardManagerBuilder enableCache(@Nonnull Collection<CacheFlag> flags)
     {
         Checks.noneNull(flags, "CacheFlags");
-        cacheFlags.removeAll(flags);
+        cacheFlags.addAll(flags);
         return this;
     }
 
@@ -542,6 +543,7 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @see    #enableCache(Collection)
      * @see    #disableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
@@ -588,6 +590,7 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @see    #disableCache(CacheFlag, CacheFlag...)
      * @see    #enableCache(Collection)
      */
     @Nonnull
@@ -612,6 +615,7 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @see    #disableCache(Collection)
      * @see    #enableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull

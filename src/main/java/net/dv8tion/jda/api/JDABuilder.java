@@ -543,13 +543,14 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
+     * @see    #enableCache(CacheFlag, CacheFlag...) 
      * @see    #disableCache(Collection)
      */
     @Nonnull
     public JDABuilder enableCache(@Nonnull Collection<CacheFlag> flags)
     {
         Checks.noneNull(flags, "CacheFlags");
-        cacheFlags.removeAll(flags);
+        cacheFlags.addAll(flags);
         return this;
     }
 
@@ -567,6 +568,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
+     * @see    #enableCache(Collection) 
      * @see    #disableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
@@ -613,6 +615,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
+     * @see    #disableCache(CacheFlag, CacheFlag...) 
      * @see    #enableCache(Collection)
      */
     @Nonnull
@@ -637,6 +640,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
+     * @see    #disableCache(Collection) 
      * @see    #enableCache(CacheFlag, CacheFlag...)
      */
     @Nonnull
