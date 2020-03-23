@@ -170,6 +170,9 @@ public class JDABuilder
      *         The bot token to use
      *
      * @return The new JDABuilder
+     *
+     * @see    #disableIntents(GatewayIntent, GatewayIntent...)
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
     @CheckReturnValue
@@ -267,6 +270,9 @@ public class JDABuilder
      *         The bot token to use
      *
      * @return The new JDABuilder
+     *
+     * @see    #disableIntents(GatewayIntent, GatewayIntent...)
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
     @Nonnull
     @CheckReturnValue
@@ -1369,6 +1375,10 @@ public class JDABuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  intent
      *         The first intent to disable
      * @param  intents
@@ -1398,6 +1408,10 @@ public class JDABuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  intents
      *         The intents to disable (default: none)
      *
@@ -1417,11 +1431,72 @@ public class JDABuilder
     }
 
     /**
+     * Disable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not enable any currently unset intents.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
+     * @param  intents
+     *         The intents to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #enableIntents(Collection)
+     */
+    @Nonnull
+    public JDABuilder disableIntents(@Nonnull Collection<GatewayIntent> intents)
+    {
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intents);
+        this.intents &= ~raw;
+        return this;
+    }
+
+    /**
+     * Disable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not enable any currently unset intents.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
+     * @param  intent
+     *         The intent to disable
+     * @param  intents
+     *         Other intents to disable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
+     */
+    @Nonnull
+    public JDABuilder disableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intent, intents);
+        this.intents &= ~raw;
+        return this;
+    }
+
+    /**
      * Configures which events will be enabled.
      * Bots which did not enable presence/member updates in the developer dashboard are required to disable {@link GatewayIntent#GUILD_PRESENCES} and {@link GatewayIntent#GUILD_MEMBERS}!
      *
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
+     *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
      *
      * @param  intent
      *         The intent to enable
@@ -1453,6 +1528,10 @@ public class JDABuilder
      * <p>It is not recommended to disable {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} when
      * using {@link MemberCachePolicy#ALL MemberCachePolicy.ALL} as the members cannot be removed from cache by a leave event without this intent.
      *
+     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
+     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
+     * flag are documented in the {@link CacheFlag} enum.
+     *
      * @param  intents
      *         The intents to enable (default: all)
      *
@@ -1471,6 +1550,55 @@ public class JDABuilder
             setDisabledIntents(EnumSet.complementOf((EnumSet<GatewayIntent>) intents));
         else
             setDisabledIntents(EnumSet.complementOf(EnumSet.copyOf(intents)));
+        return this;
+    }
+
+    /**
+     * Enable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not disable any currently set intents.
+     *
+     * @param  intents
+     *         The intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #disableIntents(Collection)
+     */
+    @Nonnull
+    public JDABuilder enableIntents(@Nonnull Collection<GatewayIntent> intents)
+    {
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intents);
+        this.intents |= raw;
+        return this;
+    }
+
+    /**
+     * Enable the specified {@link GatewayIntent GatewayIntents}.
+     * <br>This will not disable any currently set intents.
+     *
+     * @param  intent
+     *         The intent to enable
+     * @param  intents
+     *         Other intents to enable
+     *
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @see    #enableIntents(GatewayIntent, GatewayIntent...)
+     */
+    @Nonnull
+    public JDABuilder enableIntents(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    {
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        int raw = GatewayIntent.getRaw(intent, intents);
+        this.intents |= raw;
         return this;
     }
 
