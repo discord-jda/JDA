@@ -163,7 +163,7 @@ public class JDABuilder
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
-     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
      * @param  token
@@ -188,7 +188,7 @@ public class JDABuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
      * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
@@ -223,7 +223,7 @@ public class JDABuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#DEFAULT}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setDisabledCacheFlags(EnumSet)} is set to {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
+     *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
      * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
@@ -251,7 +251,7 @@ public class JDABuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .setDisabledCacheFlags(EnumSet.of(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY))
+                   .disableCache(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY)
                    .setLargeThreshold(250);
     }
 
@@ -263,7 +263,7 @@ public class JDABuilder
      *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
      * @param  token
@@ -288,7 +288,7 @@ public class JDABuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
      * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
@@ -316,7 +316,7 @@ public class JDABuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
      * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
@@ -343,7 +343,7 @@ public class JDABuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.NONE)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                   .disableCache(EnumSet.allOf(CacheFlag.class))
                    .setLargeThreshold(50);
     }
 
@@ -515,8 +515,16 @@ public class JDABuilder
      * @return The JDABuilder instance. Useful for chaining.
      *
      * @see    #setDisabledCacheFlags(EnumSet)
+     *
+     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
+     *             This introduces breaking changes due to the way the setter works.
+     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
+     *             to disable and enable cache flags without side-effects that may break in future versions.
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("enableCache(flags) and disableCache(flags)")
+    @DeprecatedSince("4.2.0")
     public JDABuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
@@ -578,8 +586,16 @@ public class JDABuilder
      *         EnumSet containing the flags for cache services that should be <b>disabled</b>
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @deprecated We add CacheFlags to the enum over time which will be disabled when using this method.
+     *             This introduces breaking changes due to the way the setter works.
+     *             You should use {@link #enableCache(Collection)} and {@link #disableCache(Collection)} instead,
+     *             to disable and enable cache flags without side-effects that may break in future versions.
      */
     @Nonnull
+    @Deprecated
+    @ReplaceWith("enableCache(flags) and disableCache(flags)")
+    @DeprecatedSince("4.2.0")
     public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
