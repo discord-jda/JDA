@@ -81,6 +81,8 @@ public enum GatewayIntent
     /**
      * <b>PRIVILEGED INTENT</b> Events which inform us about member update/leave/join of a guild.
      * <br>This is required to chunk all members of a guild. Without this enabled you have to use {@link net.dv8tion.jda.api.utils.ChunkingFilter#NONE ChunkingFilter.NONE}!
+     *
+     * <p>This will also update user information such as name/avatar.
      */
     GUILD_MEMBERS(1),
     /**
@@ -109,6 +111,7 @@ public enum GatewayIntent
     GUILD_VOICE_STATES(7),
     /**
      * <b>PRIVILEGED INTENT</b> Presence updates. This is used to lazy load members and update user properties such as name/avatar.
+     * <br>This is a very heavy intent! Presence updates are 99% of traffic the bot will receive. To get user update events you should consider using {@link #GUILD_MEMBERS} instead.
      */
     GUILD_PRESENCES(8),
     /**
