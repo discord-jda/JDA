@@ -107,26 +107,24 @@ public class BotRateLimiter extends RateLimiter
     public int cancelRequests()
     {
         return MiscUtil.locked(bucketLock, () -> {
-            for (Future<?> future : rateLimitQueue.values())
-                future.cancel(false);
-            rateLimitQueue.clear();
-
+            // Empty buckets will be removed by the cleanup worker, which also checks for rate limit parameters
             AtomicInteger count = new AtomicInteger(0);
             buckets.values()
                 .stream()
                 .map(Bucket::getRequests)
                 .flatMap(Collection::stream)
-                .filter(request -> !request.isPriority())
+                .filter(request -> !request.isPriority() && !request.isCancelled())
                 .forEach(request -> {
                     request.cancel();
                     count.incrementAndGet();
                 });
-            buckets.clear();
-            if (count.get() == 1)
+
+            int cancelled = count.get();
+            if (cancelled == 1)
                 RateLimiter.log.warn("Cancelled 1 request!");
-            else if (count.get() > 1)
-                RateLimiter.log.warn("Cancelled {} requests!", count.get());
-            return count.get();
+            else if (cancelled > 1)
+                RateLimiter.log.warn("Cancelled {} requests!", cancelled);
+            return cancelled;
         });
     }
 
