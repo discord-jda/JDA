@@ -61,13 +61,11 @@ public abstract class RateLimiter
 
     public boolean isRateLimited(Route.CompiledRoute route)
     {
-        return getRateLimit(route) != null;
+        Long rateLimit = getRateLimit(route);
+        return rateLimit != null && rateLimit > 0L;
     }
 
-    public int cancelRequests()
-    {
-        return 0;
-    }
+    public abstract int cancelRequests();
 
     public void init() {}
 
