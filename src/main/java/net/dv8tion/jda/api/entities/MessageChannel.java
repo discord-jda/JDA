@@ -1706,7 +1706,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1791,7 +1791,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1849,9 +1849,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1913,8 +1911,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The request was attempted after the provided {@link net.dv8tion.jda.api.entities.Emote Emote}
-     *         was deleted.</li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1978,7 +1975,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2046,7 +2043,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2095,9 +2092,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2150,9 +2145,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or

@@ -1068,7 +1068,7 @@ public interface Message extends ISnowflake, Formattable
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted or doesn't exist.</li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1103,7 +1103,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Adds a reaction to this Message using a unicode emoji.
      * <br>A reference of unicode emojis can be found here:
-     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
      *
@@ -1142,7 +1142,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1229,7 +1229,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message was deleted.</li>
@@ -1263,7 +1263,7 @@ public interface Message extends ISnowflake, Formattable
      *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted or doesn't exist.</li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message was deleted.</li>
@@ -1307,7 +1307,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted or doesn't exist.</li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1360,7 +1360,7 @@ public interface Message extends ISnowflake, Formattable
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when removing the reaction.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted or doesn't exist.</li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1395,7 +1395,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes a reaction from this Message using a unicode emoji.
      * <br>A reference of unicode emojis can be found here:
-     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
      *
@@ -1424,7 +1424,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1452,7 +1452,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes a reaction from this Message using a unicode emoji.
      * <br>A reference of unicode emojis can be found here:
-     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
      *
@@ -1471,7 +1471,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
@@ -1522,7 +1522,7 @@ public interface Message extends ISnowflake, Formattable
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
-     *     <br>The provided emote was deleted or doesn't exist.</li>
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently locked in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1565,7 +1565,7 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
      *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
