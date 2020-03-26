@@ -39,6 +39,10 @@ import javax.annotation.Nonnull;
  * of one of its properties such as name you can check {@link Member#getActivities()}.
  * Iterate the list of activities and check if an activity of the same {@link Activity#getType() type}
  * exists, if that is the case it was replaced and not finished.
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
 public class UserActivityEndEvent extends GenericUserEvent implements GenericUserPresenceEvent
 {
