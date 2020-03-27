@@ -35,10 +35,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 
+// This only exists for backwards-compatibility
 public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements AuditableRestAction<T>
 {
-    protected String reason = null;
-
     public AuditableRestActionImpl(JDA api, Route.CompiledRoute route)
     {
         super(api, route);
@@ -94,40 +93,6 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
     @CheckReturnValue
     public AuditableRestActionImpl<T> reason(@Nullable String reason)
     {
-        this.reason = reason;
-        return this;
-    }
-
-    @Override
-    protected CaseInsensitiveMap<String, String> finalizeHeaders()
-    {
-        CaseInsensitiveMap<String, String> headers = super.finalizeHeaders();
-
-        if (reason == null || reason.isEmpty())
-        {
-            String localReason = ThreadLocalReason.getCurrent();
-            if (localReason == null || localReason.isEmpty())
-                return headers;
-            else
-                return generateHeaders(headers, localReason);
-        }
-
-        return generateHeaders(headers, reason);
-    }
-
-    @Nonnull
-    private CaseInsensitiveMap<String, String> generateHeaders(CaseInsensitiveMap<String, String> headers, String reason)
-    {
-        if (headers == null)
-            headers = new CaseInsensitiveMap<>();
-
-        headers.put("X-Audit-Log-Reason", uriEncode(reason));
-        return headers;
-    }
-
-    private String uriEncode(String input)
-    {
-        String formEncode = EncodingUtil.encodeUTF8(input);
-        return formEncode.replace('+', ' ');
+        return (AuditableRestActionImpl<T>) super.reason(reason);
     }
 }

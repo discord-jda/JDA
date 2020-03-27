@@ -1846,10 +1846,7 @@ public interface JDA
      *
      * @see #shutdownNow()
      */
-    default void shutdown()
-    {
-        this.shutdown(false);
-    }
+    void shutdown();
 
     /**
      * Shuts down this JDA instance instantly, closing all its connections.
@@ -1860,48 +1857,7 @@ public interface JDA
      *
      * @see #shutdown()
      */
-    default void shutdownNow()
-    {
-        this.shutdownNow(false);
-    }
-
-    /**
-     * Shuts down this JDA instance, closing all its connections.
-     * After this command is issued the JDA Instance can not be used anymore.
-     * Already enqueued {@link net.dv8tion.jda.api.requests.RestAction RestActions} are still going to be executed.
-     *
-     * <p>If you want this instance to shutdown without executing, use {@link #shutdownNow() shutdownNow()}
-     *
-     * @param shutdownHttp
-     *        Whether to shutdown the {@link #getHttpClient() HTTP Client}
-     *
-     * @see #shutdownNow()
-     */
-    void shutdown(boolean shutdownHttp);
-
-    /**
-     * Shuts down this JDA instance instantly, closing all its connections.
-     * After this command is issued the JDA Instance can not be used anymore.
-     * This will also cancel all queued {@link net.dv8tion.jda.api.requests.RestAction RestActions}.
-     *
-     * <p>If you want this instance to shutdown without cancelling enqueued RestActions use {@link #shutdown() shutdown()}
-     *
-     * @param shutdownHttp
-     *        Whether to shutdown the {@link #getHttpClient() HTTP Client}
-     *
-     * @see #shutdown()
-     */
-    void shutdownNow(boolean shutdownHttp);
-
-    ///**
-    // * Installs an auxiliary cable into the given port of your system.
-    // *
-    // * @param  port
-    // *         The port in which the cable should be installed.
-    // *
-    // * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}{@literal <}{@link Void}{@literal >}
-    // */
-    //AuditableRestAction<Void> installAuxiliaryCable(int port);
+    void shutdownNow();
 
     /**
      * The {@link net.dv8tion.jda.api.AccountType} of the currently logged in account.

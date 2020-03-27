@@ -31,11 +31,18 @@ import java.util.Arrays;
 //TODO: Documentation
 public class RestPayload implements SerializableData
 {
+    private final int code;
     private final byte[] data;
 
-    public RestPayload(byte[] data)
+    public RestPayload(int code, byte[] data)
     {
+        this.code = code;
         this.data = data;
+    }
+
+    public int getCode()
+    {
+        return code;
     }
 
     public boolean isType(@Nonnull DataType type)

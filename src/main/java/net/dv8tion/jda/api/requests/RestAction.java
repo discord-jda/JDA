@@ -17,9 +17,11 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -174,7 +176,7 @@ public interface RestAction<T>
         return new RestActionImpl<>(api, route, (response, __) -> {
             try
             {
-                return new RestPayload(IOUtil.readFully(response.getBody()));
+                return new RestPayload(response.code, IOUtil.readFully(response.getBody()));
             }
             catch (IOException e)
             {
@@ -193,7 +195,7 @@ public interface RestAction<T>
         return new RestActionImpl<>(api, route, body, (response, __) -> {
             try
             {
-                return new RestPayload(IOUtil.readFully(response.getBody()));
+                return new RestPayload(response.code, IOUtil.readFully(response.getBody()));
             }
             catch (IOException e)
             {
@@ -212,63 +214,7 @@ public interface RestAction<T>
         return new RestActionImpl<>(api, route, body, (response, __) -> {
             try
             {
-                return new RestPayload(IOUtil.readFully(response.getBody()));
-            }
-            catch (IOException e)
-            {
-                throw new UncheckedIOException(e);
-            }
-        });
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    static AuditableRestAction<RestPayload> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
-    {
-        Checks.notNull(api, "JDA");
-        Checks.notNull(route, "Route");
-        return new AuditableRestActionImpl<>(api, route, (response, __) -> {
-            try
-            {
-                return new RestPayload(IOUtil.readFully(response.getBody()));
-            }
-            catch (IOException e)
-            {
-                throw new UncheckedIOException(e);
-            }
-        });
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    static AuditableRestAction<RestPayload> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
-    {
-        Checks.notNull(api, "JDA");
-        Checks.notNull(route, "Route");
-        Checks.notNull(body, "Body");
-        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> {
-            try
-            {
-                return new RestPayload(IOUtil.readFully(response.getBody()));
-            }
-            catch (IOException e)
-            {
-                throw new UncheckedIOException(e);
-            }
-        });
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    static AuditableRestAction<RestPayload> makeAuditable(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)
-    {
-        Checks.notNull(api, "JDA");
-        Checks.notNull(route, "Route");
-        Checks.notNull(body, "Body");
-        return new AuditableRestActionImpl<>(api, route, body, (response, __) -> {
-            try
-            {
-                return new RestPayload(IOUtil.readFully(response.getBody()));
+                return new RestPayload(response.code, IOUtil.readFully(response.getBody()));
             }
             catch (IOException e)
             {
@@ -462,6 +408,32 @@ public interface RestAction<T>
     default RestAction<T> deadline(long timestamp)
     {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Applies the specified reason as audit-log reason field.
+     * <br>When the provided reason is empty or {@code null} it will be treated as not set.
+     *
+     * <p>Reasons for any RestAction may be retrieved
+     * via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getReason() AuditLogEntry.getReason()}
+     * in iterable {@link AuditLogPaginationAction AuditLogPaginationActions}
+     * from {@link net.dv8tion.jda.api.entities.Guild#retrieveAuditLogs() Guild.retrieveAuditLogs()}!
+     *
+     * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
+     * <br>Using methods with a reason parameter will always work and <u>override</u> this header.
+     * (ct. {@link net.dv8tion.jda.api.entities.Guild#ban(net.dv8tion.jda.api.entities.User, int, String) Guild.ban(User, int, String)})
+     *
+     * @param  reason
+     *         The reason for this action which should be logged in the Guild's AuditLogs
+     *
+     * @return The current RestAction instance for chaining convenience
+     *
+     * @see    ThreadLocalReason
+     */
+    @Nonnull
+    default RestAction<T> reason(@Nullable String reason)
+    {
+        return this;
     }
 
     /**

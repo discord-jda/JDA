@@ -58,10 +58,7 @@ import net.dv8tion.jda.internal.hooks.EventManagerProxy;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
-import net.dv8tion.jda.internal.requests.DeferredRestAction;
-import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
+import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -695,15 +692,15 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public synchronized void shutdownNow(boolean shutdownHttp)
+    public synchronized void shutdownNow()
     {
         requester.shutdown(); // stop all requests
-        shutdown(shutdownHttp);
+        shutdown();
         threadConfig.shutdownNow();
     }
 
     @Override
-    public synchronized void shutdown(boolean shutdownHttp)
+    public synchronized void shutdown()
     {
         if (status == Status.SHUTDOWN || status == Status.SHUTTING_DOWN)
             return;
@@ -714,10 +711,10 @@ public class JDAImpl implements JDA
         if (client != null)
             client.shutdown();
 
-        shutdownInternals(shutdownHttp);
+        shutdownInternals();
     }
 
-    public synchronized void shutdownInternals(boolean shutdownHttp)
+    public synchronized void shutdownInternals()
     {
         if (status == Status.SHUTDOWN)
             return;
@@ -731,12 +728,6 @@ public class JDAImpl implements JDA
         if (audioLifeCyclePool != null)
             audioLifeCyclePool.shutdownNow();
         threadConfig.shutdown();
-
-        if (shutdownHttp)
-        {
-            getHttpClient().connectionPool().evictAll();
-            getHttpClient().dispatcher().executorService().shutdown();
-        }
 
         if (shutdownHook != null)
         {
