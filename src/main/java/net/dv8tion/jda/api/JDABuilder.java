@@ -156,6 +156,14 @@ public class JDABuilder
         this.intents = 1 | intents;
     }
 
+    @Nonnull
+    @CheckReturnValue
+    public static JDABuilder createRest(@Nonnull String token)
+    {
+        return new JDABuilder(token, 0)
+                .setGatewayEnabled(false);
+    }
+
     /**
      * Creates a JDABuilder with recommended default settings.
      * <br>Note that these defaults can potentially change in the future.
