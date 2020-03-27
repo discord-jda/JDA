@@ -438,6 +438,19 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * Returns the maximum size for files that can be uploaded to this Guild.
+     * This returns 50 MiB for Guilds with Boost Tier 2 and 100 MiB for Guilds with Boost Tier 3.
+     *
+     * @return The maximum size for files that can be uploaded to this Guild
+     *
+     * @since 4.2.0
+     */
+    default int getMaxFileSize()
+    {
+        return getBoostTier().getMaxFileSize();
+    }
+
+    /**
      * The maximum amount of emotes a guild can have based on the guilds boost tier.
      *
      * @return The maximum amount of emotes
@@ -4183,6 +4196,22 @@ public interface Guild extends ISnowflake
         public int getMaxEmotes() 
         {
             return maxEmotes;
+        }
+
+        /**
+         * The maximum size for files that can be uploaded to this Guild.
+         *
+         * @return The maximum file size of this Guild
+         *
+         * @see    net.dv8tion.jda.api.entities.Guild#getMaxFileSize()
+         */
+        public int getMaxFileSize()
+        {
+            if (key == 2)
+                return 50 << 20;
+            else if (key == 3)
+                return 100 << 20;
+            return Message.MAX_FILE_SIZE;
         }
 
         /**
