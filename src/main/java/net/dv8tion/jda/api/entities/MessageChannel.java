@@ -672,7 +672,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.check(length <= getJDA().getSelfUser().getAllowedFileSize(),
             "File is too big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
         Checks.check(length <= channel.getGuild().getMaxFileSize(),
-            "File is too big! Max file-size is 50 MiB for Boost Tier 2 and 100 MiB for Boost Tier 3");
+            "File is too big! Max file-size is 8 MiB for no Boost Tier or Boost Tier 1, 50 MiB for Boost Tier 2 and 100 MiB for Boost Tier 3");
         Checks.notNull(fileName, "fileName");
 
         try
