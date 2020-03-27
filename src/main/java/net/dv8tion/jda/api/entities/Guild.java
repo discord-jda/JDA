@@ -439,7 +439,7 @@ public interface Guild extends ISnowflake
 
     /**
      * Returns the maximum size for files that can be uploaded to this Guild.
-     * This returns 50 MiB for Guilds with Boost Tier 2 and 100 MiB for Guilds with Boost Tier 3.
+     * This returns 8 MiB for Guilds without a Boost Tier or Guilds with Boost Tier 1, 50 MiB for Guilds with Boost Tier 2 and 100 MiB for Guilds with Boost Tier 3.
      *
      * @return The maximum size for files that can be uploaded to this Guild
      *
