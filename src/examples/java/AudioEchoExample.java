@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,12 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.security.auth.login.LoginException;
 import java.nio.ByteBuffer;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -41,12 +44,21 @@ public class AudioEchoExample extends ListenerAdapter
         }
         String token = args[0];
 
-        new JDABuilder(token)                            // Use provided token from command line arguments
+        // We only need 2 gateway intents enabled for this example:
+        EnumSet<GatewayIntent> intents = EnumSet.of(
+            // We need messages in guilds to accept commands from users
+            GatewayIntent.GUILD_MESSAGES,
+            // We need voice states to connect to the voice channel
+            GatewayIntent.GUILD_VOICE_STATES
+        );
+
+        // Start the JDA session with light mode (minimal cache)
+        JDABuilder.createLight(token, intents)           // Use provided token from command line arguments
              .addEventListeners(new AudioEchoExample())  // Start listening with this listener
              .setActivity(Activity.listening("to jams")) // Inform users that we are jammin' it out
              .setStatus(OnlineStatus.DO_NOT_DISTURB)     // Please don't disturb us while we're jammin'
+             .enableCache(CacheFlag.VOICE_STATE)         // Enable the VOICE_STATE cache to find a user's connected voice channel
              .build();                                   // Login with these options
-        // Note that its not needed to explicitly enable audio here
     }
 
     @Override
@@ -80,6 +92,7 @@ public class AudioEchoExample extends ListenerAdapter
      */
     private void onEchoCommand(GuildMessageReceivedEvent event)
     {
+        // Note: None of these can be null due to our configuration with the JDABuilder!
         Member member = event.getMember();                              // Member is the context of the user for the specific guild, containing voice state and roles
         GuildVoiceState voiceState = member.getVoiceState();            // Check the current voice state of the user
         VoiceChannel channel = voiceState.getChannel();                 // Use the channel the user is currently connected to

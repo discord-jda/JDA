@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -54,6 +55,20 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
     public WebhookActionImpl setCheck(BooleanSupplier checks)
     {
         return (WebhookActionImpl) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (WebhookActionImpl) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookActionImpl deadline(long timestamp)
+    {
+        return (WebhookActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull

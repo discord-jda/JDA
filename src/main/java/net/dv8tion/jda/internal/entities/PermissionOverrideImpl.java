@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final long id;
     private final SnowflakeReference<GuildChannel> channel;
     private final ChannelType channelType;
-    private final boolean role;
+    private final boolean isRole;
     private final JDAImpl api;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
@@ -48,13 +48,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(GuildChannel channel, IPermissionHolder permissionHolder)
+    public PermissionOverrideImpl(GuildChannel channel, long id, boolean isRole)
     {
-        this.role = permissionHolder instanceof Role;
+        this.isRole = isRole;
         this.channelType = channel.getType();
         this.api = (JDAImpl) channel.getJDA();
         this.channel = new SnowflakeReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
-        this.id = permissionHolder.getIdLong();
+        this.id = id;
     }
 
     @Override
@@ -104,6 +104,12 @@ public class PermissionOverrideImpl implements PermissionOverride
     }
 
     @Override
+    public IPermissionHolder getPermissionHolder()
+    {
+        return isRole ? getRole() : getMember();
+    }
+
+    @Override
     public Member getMember()
     {
         return getGuild().getMemberById(id);
@@ -132,13 +138,13 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public boolean isMemberOverride()
     {
-        return !role;
+        return !isRole;
     }
 
     @Override
     public boolean isRoleOverride()
     {
-        return role;
+        return isRole;
     }
 
     @Nonnull

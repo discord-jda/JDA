@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -31,6 +32,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class PermissionOverrideActionImpl
@@ -43,19 +45,27 @@ public class PermissionOverrideActionImpl
 
     private long allow = 0;
     private long deny = 0;
-    private final GuildChannel channel;
+    private final AbstractChannelImpl<?, ?> channel;
     private final IPermissionHolder permissionHolder;
+    private final boolean isRole;
+    private final long id;
 
     public PermissionOverrideActionImpl(PermissionOverride override)
     {
-        this(override.getJDA(), override.getChannel(), override.isRoleOverride() ? override.getRole() : override.getMember());
+        super(override.getJDA(), Route.Channels.MODIFY_PERM_OVERRIDE.compile(override.getChannel().getId(), override.getId()));
+        this.channel = (AbstractChannelImpl<?, ?>) override.getChannel();
+        this.permissionHolder = override.getPermissionHolder();
+        this.isRole = override.isRoleOverride();
+        this.id = override.getIdLong();
     }
 
     public PermissionOverrideActionImpl(JDA api, GuildChannel channel, IPermissionHolder permissionHolder)
     {
         super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), permissionHolder.getId()));
-        this.channel = channel;
+        this.channel = (AbstractChannelImpl<?, ?>) channel;
         this.permissionHolder = permissionHolder;
+        this.isRole = permissionHolder instanceof Role;
+        this.id = permissionHolder.getIdLong();
     }
 
     // Whether to keep original value of the current override or not - by default we override the value
@@ -80,6 +90,20 @@ public class PermissionOverrideActionImpl
     public PermissionOverrideActionImpl setCheck(BooleanSupplier checks)
     {
         return (PermissionOverrideActionImpl) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public PermissionOverrideActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (PermissionOverrideActionImpl) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public PermissionOverrideActionImpl deadline(long timestamp)
+    {
+        return (PermissionOverrideActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
@@ -140,13 +164,13 @@ public class PermissionOverrideActionImpl
     @Override
     public boolean isMember()
     {
-        return permissionHolder instanceof Member;
+        return !isRole;
     }
 
     @Override
     public boolean isRole()
     {
-        return permissionHolder instanceof Role;
+        return isRole;
     }
 
     @Nonnull
@@ -187,7 +211,7 @@ public class PermissionOverrideActionImpl
     {
         if (isOverride)
             return 0;
-        PermissionOverride override = channel.getPermissionOverride(permissionHolder);
+        PermissionOverride override = channel.getOverrideMap().get(id);
         return override == null ? 0 : override.getAllowedRaw();
     }
 
@@ -195,7 +219,7 @@ public class PermissionOverrideActionImpl
     {
         if (isOverride)
             return 0;
-        PermissionOverride override = channel.getPermissionOverride(permissionHolder);
+        PermissionOverride override = channel.getOverrideMap().get(id);
         return override == null ? 0 : override.getDeniedRaw();
     }
 
@@ -213,9 +237,8 @@ public class PermissionOverrideActionImpl
     @Override
     protected void handleSuccess(Response response, Request<PermissionOverride> request)
     {
-        long id = permissionHolder.getIdLong();
         DataObject object = (DataObject) request.getRawBody();
-        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, permissionHolder);
+        PermissionOverrideImpl override = new PermissionOverrideImpl(channel, id, isRole());
         override.setAllow(object.getLong("allow"));
         override.setDeny(object.getLong("deny"));
         //((AbstractChannelImpl<?,?>) channel).getOverrideMap().put(id, override); This is added by the event later

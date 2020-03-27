@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ public class PrivateChannelImpl implements PrivateChannel
     private final long id;
     private final User user;
     private long lastMessageId;
-    private boolean fake = false;
 
     public PrivateChannelImpl(long id, User user)
     {
@@ -119,7 +118,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public boolean isFake()
     {
-        return fake;
+        return user.isFake();
     }
 
     @Nonnull
@@ -152,12 +151,6 @@ public class PrivateChannelImpl implements PrivateChannel
     {
         checkBot();
         return PrivateChannel.super.sendFile(data, fileName, options);
-    }
-
-    public PrivateChannelImpl setFake(boolean fake)
-    {
-        this.fake = fake;
-        return this;
     }
 
     public PrivateChannelImpl setLastMessageId(long id)

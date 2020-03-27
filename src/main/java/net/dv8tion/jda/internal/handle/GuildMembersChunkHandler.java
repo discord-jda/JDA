@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,12 +38,14 @@ public class GuildMembersChunkHandler extends SocketHandler
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
         if (guild != null)
         {
+            if (api.getClient().getChunkManager().handleChunk(guildId, content))
+                return null;
             WebSocketClient.LOG.debug("Received member chunk for guild that is already in cache. GuildId: {} Count: {}", guildId, members.length());
             EntityBuilder builder = getJDA().getEntityBuilder();
             for (int i = 0; i < members.length(); i++)
             {
                 DataObject object = members.getObject(i);
-                builder.createMember(guild, object);
+                builder.updateMemberCache(builder.createMember(guild, object));
             }
             guild.acknowledgeMembers();
         }

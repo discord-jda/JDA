@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.managers.ManagerBase;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
@@ -62,6 +63,14 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
     @Nonnull
     @Override
     M setCheck(BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    M timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    M deadline(long timestamp);
 
     @Nonnull
     @CheckReturnValue

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -323,10 +323,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does
      *         not have {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         if the provided text is null, empty or longer than 2000 characters
      * @throws java.lang.UnsupportedOperationException
@@ -375,10 +371,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         If the provided format text is {@code null}, empty or longer than 2000 characters
      * @throws java.lang.UnsupportedOperationException
@@ -425,13 +417,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         If the provided embed is {@code null} or if the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}
+     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
@@ -471,9 +459,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The send request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNAUTHORIZED UNAUTHORIZED}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the recipient User blocked you</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
@@ -493,14 +478,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} (if this message is only an embed)</li>
      *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         If the provided message is {@code null} or the provided {@link net.dv8tion.jda.api.entities.Message Message}
      *         contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}
+     *         that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
@@ -620,9 +601,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The send request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} or
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNAUTHORIZED UNAUTHORIZED}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the recipient User blocked you</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
@@ -2577,7 +2555,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code newContent} is {@code null}.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.Message Message}
      *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
@@ -2630,7 +2608,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code newContent} is {@code null}.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.Message Message}
      *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
@@ -2795,7 +2773,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}
@@ -2849,7 +2827,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is not positive.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.Headers;
 import org.jetbrains.annotations.Contract;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -78,10 +76,12 @@ public class BotRateLimiter extends RateLimiter
     private static final String UNLIMITED_BUCKET = "unlimited"; // we generate an unlimited bucket for every major parameter configuration
 
     private final ReentrantLock bucketLock = new ReentrantLock();
+    // Route -> Should we print warning for 429? AKA did we already hit it once before
+    private final Set<Route> hitRatelimit = ConcurrentHashMap.newKeySet(5);
     // Route -> Hash
-    private final Map<Route, String> hash = new ConcurrentHashMap<>();
+    private final Map<Route, String> hashes = new ConcurrentHashMap<>();
     // Hash + Major Parameter -> Bucket
-    private final Map<String, Bucket> bucket = new ConcurrentHashMap<>();
+    private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
     // Bucket -> Rate-Limit Worker
     private final Map<Bucket, Future<?>> rateLimitQueue = new ConcurrentHashMap<>();
     private Future<?> cleanupWorker;
@@ -107,14 +107,18 @@ public class BotRateLimiter extends RateLimiter
         // This will remove buckets that are no longer needed every 30 seconds to avoid memory leakage
         // We will keep the hashes in memory since they are very limited (by the amount of possible routes)
         MiscUtil.locked(bucketLock, () -> {
-            int size = bucket.size();
-            Iterator<Map.Entry<String, Bucket>> entries = bucket.entrySet().iterator();
+            int size = buckets.size();
+            Iterator<Map.Entry<String, Bucket>> entries = buckets.entrySet().iterator();
 
             while (entries.hasNext())
             {
                 Map.Entry<String, Bucket> entry = entries.next();
                 String key = entry.getKey();
                 Bucket bucket = entry.getValue();
+                // Remove cancelled requests
+                bucket.requests.removeIf(Request::isSkipped);
+
+                // Check if the bucket is empty
                 if (bucket.isUnlimited() && bucket.requests.isEmpty())
                     entries.remove(); // remove unlimited if requests are empty
                 // If the requests of the bucket are drained and the reset is expired the bucket has no valuable information
@@ -122,7 +126,7 @@ public class BotRateLimiter extends RateLimiter
                     entries.remove();
             }
             // Log how many buckets were removed
-            size -= bucket.size();
+            size -= buckets.size();
             if (size > 0)
                 log.debug("Removed {} expired buckets", size);
         });
@@ -130,15 +134,34 @@ public class BotRateLimiter extends RateLimiter
 
     private String getRouteHash(Route route)
     {
-        return hash.getOrDefault(route, UNLIMITED_BUCKET + "+" + route);
+        return hashes.getOrDefault(route, UNLIMITED_BUCKET + "+" + route);
     }
 
     @Override
-    protected void shutdown()
+    protected boolean stop()
     {
-        super.shutdown();
-        if (cleanupWorker != null)
-            cleanupWorker.cancel(false);
+        return MiscUtil.locked(bucketLock, () -> {
+            if (isStopped)
+                return false;
+            super.stop();
+            if (cleanupWorker != null)
+                cleanupWorker.cancel(false);
+            cleanup();
+            int size = buckets.size();
+            if (!isShutdown && size > 0) // Tell user about active buckets so they don't get confused by the longer shutdown
+            {
+                int average = (int) Math.ceil(
+                        buckets.values().stream()
+                            .map(Bucket::getRequests)
+                            .mapToInt(Collection::size)
+                            .average().orElse(0)
+                );
+
+                log.info("Waiting for {} bucket(s) to finish. Average queue size of {} requests", size, average);
+            }
+            // No more requests to process?
+            return size < 1;
+        });
     }
 
     @Override
@@ -163,19 +186,13 @@ public class BotRateLimiter extends RateLimiter
     @Override
     protected Long handleResponse(Route.CompiledRoute route, okhttp3.Response response)
     {
-        bucketLock.lock();
-        try
-        {
+        return MiscUtil.locked(bucketLock, () -> {
             long rateLimit = updateBucket(route, response).getRateLimit();
             if (response.code() == 429)
                 return rateLimit;
             else
                 return null;
-        }
-        finally
-        {
-            bucketLock.unlock();
-        }
+        });
     }
 
     private Bucket updateBucket(Route.CompiledRoute route, okhttp3.Response response)
@@ -195,9 +212,9 @@ public class BotRateLimiter extends RateLimiter
                 Route baseRoute = route.getBaseRoute();
                 if (hash != null)
                 {
-                    if (!this.hash.containsKey(baseRoute))
+                    if (!this.hashes.containsKey(baseRoute))
                     {
-                        this.hash.put(baseRoute, hash);
+                        this.hashes.put(baseRoute, hash);
                         log.debug("Caching bucket hash {} -> {}", baseRoute, hash);
                     }
 
@@ -215,16 +232,17 @@ public class BotRateLimiter extends RateLimiter
                 // Handle hard rate limit, pretty much just log that it happened
                 else if (response.code() == 429)
                 {
+                    boolean firstHit = hitRatelimit.add(baseRoute);
                     // Update the bucket to the new information
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
                     long retryAfter = parseLong(retryAfterHeader);
                     bucket.remaining = 0;
                     bucket.reset = getNow() + retryAfter;
-                    // don't log warning if we are switching bucket, this means it was an issue with an un-hashed route that is now resolved
-                    if (hash == null || !wasUnlimited)
-                        log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
-                    else
+                    // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
+                    if (firstHit)
                         log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                    else
+                        log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
                     return bucket;
                 }
 
@@ -266,9 +284,9 @@ public class BotRateLimiter extends RateLimiter
             String hash = getRouteHash(route.getBaseRoute());
             // Get or create a bucket for the hash + major parameters
             String bucketId = hash + ":" + route.getMajorParameters();
-            Bucket bucket = this.bucket.get(bucketId);
+            Bucket bucket = this.buckets.get(bucketId);
             if (bucket == null && create)
-                this.bucket.put(bucketId, bucket = new Bucket(bucketId));
+                this.buckets.put(bucketId, bucket = new Bucket(bucketId));
 
             return bucket;
         });
@@ -305,7 +323,7 @@ public class BotRateLimiter extends RateLimiter
     private class Bucket implements IBucket, Runnable
     {
         private final String bucketId;
-        private final Queue<Request> requests = new ConcurrentLinkedQueue<>();
+        private final Deque<Request> requests = new ConcurrentLinkedDeque<>();
 
         private long reset = 0;
         private int remaining = 1;
@@ -318,7 +336,12 @@ public class BotRateLimiter extends RateLimiter
 
         public void enqueue(Request request)
         {
-            requests.add(request);
+            requests.addLast(request);
+        }
+
+        public void retry(Request request)
+        {
+            requests.addFirst(request);
         }
 
         public long getRateLimit()
@@ -367,6 +390,10 @@ public class BotRateLimiter extends RateLimiter
                 rateLimitQueue.remove(this);
                 if (!requests.isEmpty())
                     runBucket(this);
+                else if (isStopped)
+                    buckets.remove(bucketId);
+                if (isStopped && buckets.isEmpty())
+                    requester.getJDA().shutdownRequester();
             });
         }
 
@@ -374,8 +401,7 @@ public class BotRateLimiter extends RateLimiter
         public void run()
         {
             log.trace("Bucket {} is running {} requests", bucketId, requests.size());
-            Iterator<Request> iterator = requests.iterator();
-            while (iterator.hasNext())
+            while (!requests.isEmpty())
             {
                 Long rateLimit = getRateLimit();
                 if (rateLimit > 0L)
@@ -385,7 +411,9 @@ public class BotRateLimiter extends RateLimiter
                     break;
                 }
 
-                Request request = iterator.next();
+                Request request = requests.removeFirst();
+                if (request.isSkipped())
+                    continue;
                 if (isUnlimited())
                 {
                     boolean shouldSkip = MiscUtil.locked(bucketLock, () -> {
@@ -394,7 +422,6 @@ public class BotRateLimiter extends RateLimiter
                         if (bucket != this)
                         {
                             bucket.enqueue(request);
-                            iterator.remove();
                             runBucket(bucket);
                             return true;
                         }
@@ -403,21 +430,17 @@ public class BotRateLimiter extends RateLimiter
                     if (shouldSkip) continue;
                 }
 
-                if (isSkipped(iterator, request))
-                    continue;
-
                 try
                 {
                     rateLimit = requester.execute(request);
                     if (rateLimit != null)
-                        break; // this means we hit a hard rate limit (429) so the request needs to be retried
-
-                    // The request went through so we can remove it
-                    iterator.remove();
+                        retry(request); // this means we hit a hard rate limit (429) so the request needs to be retried
                 }
-                catch (Exception ex)
+                catch (Throwable ex)
                 {
                     log.error("Encountered exception trying to execute request", ex);
+                    if (ex instanceof Error)
+                        throw (Error) ex;
                     break;
                 }
             }

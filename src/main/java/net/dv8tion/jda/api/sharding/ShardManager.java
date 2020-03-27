@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDA.Status;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -28,7 +29,6 @@ import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
-import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -172,6 +172,21 @@ public interface ShardManager
     default int getShardsTotal()
     {
         return this.getShardsQueued() + this.getShardsRunning();
+    }
+
+    /**
+     * The {@link GatewayIntent GatewayIntents} for the JDA sessions of this shard manager.
+     *
+     * @return {@link EnumSet} of active gateway intents
+     */
+    @Nonnull
+    default EnumSet<GatewayIntent> getGatewayIntents()
+    {
+        //noinspection ConstantConditions
+        return getShardCache().applyStream((stream) ->
+                stream.map(JDA::getGatewayIntents)
+                      .findAny()
+                      .orElse(EnumSet.noneOf(GatewayIntent.class)));
     }
 
     /**
@@ -555,8 +570,10 @@ public interface ShardManager
         for (JDA shard : getShardCache())
         {
             api = shard;
+            EnumSet<GatewayIntent> intents = shard.getGatewayIntents();
             User user = shard.getUserById(id);
-            if (user != null)
+            boolean isUpdated = intents.contains(GatewayIntent.GUILD_PRESENCES) || intents.contains(GatewayIntent.GUILD_MEMBERS);
+            if (user != null && isUpdated)
                 return new CompletedRestAction<>(shard, user);
         }
 
@@ -565,7 +582,7 @@ public interface ShardManager
 
         JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject(), false));
+        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject()));
     }
 
     /**
@@ -573,6 +590,8 @@ public interface ShardManager
      * <br>Format has to be in the form {@code Username#Discriminator} where the
      * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
      * must be exactly 4 digits.
+     *
+     * <p>This will only check cached users!
      *
      * <p>This only checks users that are known to the currently logged in account (shards). If a user exists
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
@@ -602,6 +621,8 @@ public interface ShardManager
      * <br>Format has to be in the form {@code Username#Discriminator} where the
      * username must be between 2 and 32 characters (inclusive) matching the exact casing and the discriminator
      * must be exactly 4 digits.
+     *
+     * <p>This will only check cached users!
      *
      * <p>This only checks users that are known to the currently logged in account (shards). If a user exists
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
@@ -772,6 +793,136 @@ public interface ShardManager
     default List<Role> getRolesByName(@Nonnull final String name, final boolean ignoreCase)
     {
         return this.getRoleCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull String id)
+    {
+        return getGuildChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
+     *
+     * <br>To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  id
+     *         The ID of the channel
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(long id)
+    {
+        GuildChannel channel;
+        for (JDA shard : getShards())
+        {
+            channel = shard.getGuildChannelById(id);
+            if (channel != null)
+                return channel;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(String)}</li>
+     *     <li>{@link #getVoiceChannelById(String)}</li>
+     *     <li>{@link #getStoreChannelById(String)}</li>
+     *     <li>{@link #getCategoryById(String)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    {
+        return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     *
+     * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
+     * profit from a simple function to get the channel instance.
+     * To get more specific channel types you can use one of the following:
+     * <ul>
+     *     <li>{@link #getTextChannelById(long)}</li>
+     *     <li>{@link #getVoiceChannelById(long)}</li>
+     *     <li>{@link #getStoreChannelById(long)}</li>
+     *     <li>{@link #getCategoryById(long)}</li>
+     * </ul>
+     *
+     * @param  type
+     *         The {@link net.dv8tion.jda.api.entities.ChannelType}
+     * @param  id
+     *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
+     *
+     * @return The GuildChannel or null
+     */
+    @Nullable
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    {
+        Checks.notNull(type, "ChannelType");
+        GuildChannel channel;
+        for (JDA shard : getShards())
+        {
+            channel = shard.getGuildChannelById(type, id);
+            if (channel != null)
+                return channel;
+        }
+
+        return null;
     }
 
     /**
