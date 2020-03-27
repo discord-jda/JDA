@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.TextChannelImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -642,15 +641,11 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
-        long length = file.length();
-        TextChannel channel = (TextChannelImpl) this;
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
             "Provided file is either null, doesn't exist or is not readable!");
-        Checks.check(length <= getJDA().getSelfUser().getAllowedFileSize(),
+        Checks.check(file.length() <= getJDA().getSelfUser().getAllowedFileSize(),
             "File is too big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
-        Checks.check(length <= channel.getGuild().getMaxFileSize(),
-            "File is too big! Max file-size is 8 MiB for no Boost Tier or Boost Tier 1, 50 MiB for Boost Tier 2 and 100 MiB for Boost Tier 3");
         Checks.notNull(fileName, "fileName");
 
         try
