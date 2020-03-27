@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
@@ -114,6 +115,22 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (M) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M deadline(long timestamp)
+    {
+        return (M) super.deadline(timestamp);
     }
 
     @Override

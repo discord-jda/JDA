@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -363,7 +363,9 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
         if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(this, Permission.MANAGE_PERMISSIONS);
         PermissionOverride override = getPermissionOverride(permissionHolder);
-        return override != null ? override.getManager() : putPermissionOverride(permissionHolder);
+        if (override != null)
+            return override.getManager();
+        return putPermissionOverride(permissionHolder);
     }
 
     /**

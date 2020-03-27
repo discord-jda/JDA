@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.events.channel.text.update;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IPermissionHolder;
 import net.dv8tion.jda.api.entities.Member;
@@ -31,6 +33,9 @@ import java.util.stream.Collectors;
  *
  * <p>Can be use to detect when a TextChannel's permission overrides change and get affected {@link net.dv8tion.jda.api.entities.Role Roles}/{@link net.dv8tion.jda.api.entities.User Users}.
  */
+@Deprecated
+@ForRemoval
+@DeprecatedSince("4.2.0")
 public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
 {
     private final List<IPermissionHolder> changed;

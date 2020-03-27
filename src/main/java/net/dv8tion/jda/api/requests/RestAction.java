@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,6 +159,9 @@ import java.util.function.Predicate;
  *        The generic response type for this RestAction
  *
  * @since 3.0
+ *
+ * @see   net.dv8tion.jda.api.exceptions.ErrorHandler
+ * @see   net.dv8tion.jda.api.exceptions.ErrorResponseException
  */
 public interface RestAction<T>
 {
@@ -326,6 +329,39 @@ public interface RestAction<T>
     }
 
     /**
+     * Default timeout to apply to every RestAction.
+     * <br>This will use no timeout unless specified otherwise.
+     * <br>If the request doesn't get executed within the specified timeout it will fail.
+     *
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * @param  timeout
+     *         The default timeout to use
+     * @param  unit
+     *         {@link TimeUnit Unit} for the timeout value
+     *
+     * @throws IllegalArgumentException
+     *         If the provided unit is null
+     */
+    static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        RestActionImpl.setDefaultTimeout(timeout, unit);
+    }
+
+    /**
+     * The default timeout to apply to every RestAction in milliseconds.
+     * <br>If no timeout has been configured, this will return 0.
+     *
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * @return The default timeout in milliseconds, or 0
+     */
+    static long getDefaultTimeout()
+    {
+        return RestActionImpl.getDefaultTimeout();
+    }
+
+    /**
      * The default failure callback used when none is provided in {@link #queue(Consumer, Consumer)}.
      *
      * @return The fallback consumer
@@ -369,6 +405,66 @@ public interface RestAction<T>
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     /**
+     * Timeout for this RestAction instance.
+     * <br>If the request doesn't get executed within the timeout it will fail.
+     *
+     * <p>When a RestAction times out, it will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     * This is the same as {@code deadline(System.currentTimeMillis() + unit.toMillis(timeout))}.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * action.timeout(10, TimeUnit.SECONDS) // 10 seconds from now
+     *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
+     * }</pre>
+     *
+     * @param  timeout
+     *         The timeout to use
+     * @param  unit
+     *         {@link TimeUnit Unit} for the timeout value
+     *
+     * @throws IllegalArgumentException
+     *         If the provided unit is null
+     *
+     * @return The same RestAction instance with the applied timeout
+     *
+     * @see    #setDefaultTimeout(long, TimeUnit)
+     */
+    @Nonnull
+    default RestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
+    }
+
+    /**
+     * Similar to {@link #timeout(long, TimeUnit)} but schedules a deadline at which the request has to be completed.
+     * <br>If the deadline is reached, the request will fail with a {@link java.util.concurrent.TimeoutException TimeoutException}.
+     *
+     * <p>This does not mean that the request will immediately timeout when the deadline is reached. JDA will check the deadline
+     * right before executing the request or within intervals in a worker thread. This only means the request will timeout
+     * if the deadline has passed.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * action.deadline(System.currentTimeMillis() + 10000) // 10 seconds from now
+     *       .queueAfter(20, SECONDS); // request will not be executed within deadline and timeout immediately after 20 seconds
+     * }</pre>
+     *
+     * @param  timestamp
+     *         Millisecond timestamp at which the request will timeout
+     *
+     * @return The same RestAction with the applied deadline
+     *
+     * @see    #timeout(long, TimeUnit)
+     * @see    #setDefaultTimeout(long, TimeUnit)
+     */
+    @Nonnull
+    default RestAction<T> deadline(long timestamp)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Submits a Request for execution.
      * <br>Using the default callback functions:
      * {@link #setDefaultSuccess(Consumer)} and {@link #setDefaultFailure(Consumer)}
@@ -388,6 +484,9 @@ public interface RestAction<T>
      *     action.queue();
      * }
      * }</pre>
+     *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      *
      * @see net.dv8tion.jda.api.entities.MessageChannel#sendMessage(java.lang.CharSequence) MessageChannel.sendMessage(CharSequence)
      * @see net.dv8tion.jda.api.requests.restaction.MessageAction MessageAction
@@ -418,6 +517,9 @@ public interface RestAction<T>
      *     action.queue((channel) -> channel.sendMessage(content).queue());
      * }
      * }</pre>
+     *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      *
      * @param  success
      *         The success callback that will be called at a convenient time
@@ -454,6 +556,9 @@ public interface RestAction<T>
      * }
      * }</pre>
      *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
+     *
      * @param  success
      *         The success callback that will be called at a convenient time
      *         for the API. (can be null to use default)
@@ -462,6 +567,7 @@ public interface RestAction<T>
      *         encounters an exception at its execution point. (can be null to use default)
      *
      * @see    #submit()
+     * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure);
 
@@ -472,6 +578,8 @@ public interface RestAction<T>
      *
      * <p><b>This might throw {@link java.lang.RuntimeException RuntimeExceptions}</b>
      *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      * @throws IllegalStateException
      *         If used within a {@link #queue(Consumer, Consumer) queue(...)} callback
      *
@@ -500,6 +608,8 @@ public interface RestAction<T>
      * @param  shouldQueue
      *         Whether this should automatically handle rate limitations (default true)
      *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      * @throws IllegalStateException
      *         If used within a {@link #queue(Consumer, Consumer) queue(...)} callback
      * @throws RateLimitedException
@@ -532,6 +642,9 @@ public interface RestAction<T>
      * }
      * }</pre>
      *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
+     *
      * @return Never-null {@link java.util.concurrent.CompletableFuture CompletableFuture} representing the completion promise
      */
     @Nonnull
@@ -544,6 +657,9 @@ public interface RestAction<T>
      * Submits a Request for execution and provides a {@link java.util.concurrent.CompletableFuture CompletableFuture}
      * representing its completion task.
      * <br>Cancelling the returned Future will result in the cancellation of the Request!
+     *
+     * @throws java.util.concurrent.RejectedExecutionException
+     *         If the requester has been shutdown by {@link JDA#shutdown()} or {@link JDA#shutdownNow()}
      *
      * @param  shouldQueue
      *         Whether the Request should automatically handle rate limitations. (default true)
@@ -590,7 +706,8 @@ public interface RestAction<T>
      *
      * <p>This does not modify this instance but returns a new RestAction which will apply
      * the map function on successful execution. This will compute the result of both RestActions.
-     * <br>If the provided RestAction is {@code null} the queue callbacks will not be executed and the chain of execution ends.
+     * <br>The returned RestAction must not be null!
+     * To terminate the execution chain on a specific condition you can use {@link #flatMap(Predicate, Function)}.
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -993,6 +1110,8 @@ public interface RestAction<T>
      *
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
+     *
+     * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     @Nonnull
     default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
@@ -1092,6 +1211,8 @@ public interface RestAction<T>
      *
      * @return {@link java.util.concurrent.ScheduledFuture ScheduledFuture}
      *         representing the delayed operation
+     *
+     * @see    net.dv8tion.jda.api.exceptions.ErrorHandler
      */
     @Nonnull
     default ScheduledFuture<?> queueAfter(long delay, @Nonnull TimeUnit unit, @Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure, @Nullable ScheduledExecutorService executor)

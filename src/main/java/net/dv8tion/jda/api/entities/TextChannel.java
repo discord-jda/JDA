@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -67,13 +69,12 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      */
     @Nullable
     String getTopic();
-    
+
     /**
-    * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
-    * <br>This will check whether the name of this TextChannel begins with {@code nsfw-} or is equal to {@code nsfw}!
-    * 
-    * @return True, If this TextChannel is considered NSFW by the official Discord Client
-    */
+     * Whether or not this channel is considered as "NSFW" (Not-Safe-For-Work)
+     *
+     * @return True, If this TextChannel is considered NSFW by the official Discord Client
+     */
     boolean isNSFW();
 
     /**
@@ -81,9 +82,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
      * <br>If not set this returns {@code 0}.
      *
-     * <p>Note that only {@link net.dv8tion.jda.api.AccountType#CLIENT CLIENT} type accounts are
-     * affected by slowmode, and that {@link net.dv8tion.jda.api.AccountType#BOT BOT} accounts
-     * are immune to the restrictions.
+     * <p>Note bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
@@ -350,6 +349,168 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
     default RestAction<Void> clearReactionsById(long messageId)
     {
         return clearReactionsById(Long.toUnsignedString(messageId));
+    }
+
+    /**
+     * Removes all reactions for the specified emoji.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * // custom
+     * channel.clearReactions(messageId, "minn:245267426227388416").queue();
+     * // unicode escape
+     * channel.clearReactions(messageId, "&#92;uD83D&#92;uDE02").queue();
+     * // codepoint notation
+     * channel.clearReactions(messageId, "U+1F602").queue();
+     * </code></pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode emoji doesn't exist. Try using one of the example formats.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id for the target message
+     * @param  unicode
+     *         The unicode emoji to remove reactions for
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode);
+
+    /**
+     * Removes all reactions for the specified emoji.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided {@link Emote} was deleted or doesn't exist.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id for the target message
+     * @param  emote
+     *         The {@link Emote} to remove reactions for
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote);
+
+    /**
+     * Removes all reactions for the specified emoji.
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * // custom
+     * channel.clearReactions(messageId, "minn:245267426227388416").queue();
+     * // unicode escape
+     * channel.clearReactions(messageId, "&#92;uD83D&#92;uDE02").queue();
+     * // codepoint notation
+     * channel.clearReactions(messageId, "U+1F602").queue();
+     * </code></pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode emoji doesn't exist. Try using one of the example formats.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id for the target message
+     * @param  unicode
+     *         The unicode emoji to remove reactions for
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> clearReactionsById(long messageId, @Nonnull String unicode)
+    {
+        return clearReactionsById(Long.toUnsignedString(messageId), unicode);
+    }
+
+    /**
+     * Removes all reactions for the specified emoji.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided {@link Emote} was deleted or doesn't exist.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The id for the target message
+     * @param  emote
+     *         The {@link Emote} to remove reactions for
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> clearReactionsById(long messageId, @Nonnull Emote emote)
+    {
+        return clearReactionsById(Long.toUnsignedString(messageId), emote);
     }
 
     /**
@@ -634,7 +795,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
         String out;
 
         if (alt)
-            out = "#" + (upper ?  getName().toUpperCase(formatter.locale()) : getName());
+            out = "#" + (upper ? getName().toUpperCase(formatter.locale()) : getName());
         else
             out = getAsMention();
 

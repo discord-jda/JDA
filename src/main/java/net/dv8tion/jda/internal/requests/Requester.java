@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
+import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import java.util.LinkedHashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.RejectedExecutionException;
 
 public class Requester
 {
@@ -106,8 +108,8 @@ public class Requester
 
     public <T> void request(Request<T> apiRequest)
     {
-        if (rateLimiter.isShutdown) 
-            throw new IllegalStateException("The Requester has been shutdown! No new requests can be requested!");
+        if (rateLimiter.isStopped)
+            throw new RejectedExecutionException("The Requester has been stopped! No new requests can be requested!");
 
         if (apiRequest.shouldQueue())
             rateLimiter.queueRequest(apiRequest);
@@ -193,14 +195,14 @@ public class Requester
         okhttp3.Response lastResponse = null;
         try
         {
+            Call call = httpClient.newCall(request);
             LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
             int attempt = 0;
             do
             {
-                //If the request has been canceled via the Future, don't execute.
-                //if (apiRequest.isCanceled())
-                //    return null;
-                Call call = httpClient.newCall(request);
+                if (apiRequest.isSkipped())
+                    return null;
+
                 lastResponse = call.execute();
                 responses[attempt] = lastResponse;
                 String cfRay = lastResponse.header("CF-RAY");
@@ -249,6 +251,11 @@ public class Requester
                 return execute(apiRequest, true, handleOnRatelimit);
             LOG.error("Requester timed out while executing a request", e);
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            return null;
+        }
+        catch (InterruptedIOException e)
+        {
+            LOG.warn("Got interrupted while executing request", e);
             return null;
         }
         catch (Exception e)
@@ -314,6 +321,11 @@ public class Requester
     public void setRetryOnTimeout(boolean retryOnTimeout)
     {
         this.retryOnTimeout = retryOnTimeout;
+    }
+
+    public boolean stop()
+    {
+        return rateLimiter.stop();
     }
 
     public void shutdown()

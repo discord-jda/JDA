@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,8 @@ public class EventCache
     /** Sequence difference after which events will be removed from cache */
     public static final long TIMEOUT_AMOUNT = 100;
     private final EnumMap<Type, TLongObjectMap<List<CacheNode>>> eventCache = new EnumMap<>(Type.class);
-    private final boolean cacheUsers;
 
-    public EventCache(boolean cacheUsers)
-    {
-        this.cacheUsers = cacheUsers;
-    }
+    public EventCache() {}
 
     public synchronized void timeout(final long responseTotal)
     {
@@ -78,8 +74,6 @@ public class EventCache
 
     public synchronized void cache(Type type, long triggerId, long responseTotal, DataObject event, CacheConsumer handler)
     {
-        if (type == Type.USER && !cacheUsers)
-            return;
         TLongObjectMap<List<CacheNode>> triggerCache =
                 eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
 

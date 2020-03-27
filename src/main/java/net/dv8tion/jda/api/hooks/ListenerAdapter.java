@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api.hooks;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
@@ -47,27 +50,28 @@ import net.dv8tion.jda.api.events.emote.update.EmoteUpdateNameEvent;
 import net.dv8tion.jda.api.events.emote.update.EmoteUpdateRolesEvent;
 import net.dv8tion.jda.api.events.emote.update.GenericEmoteUpdateEvent;
 import net.dv8tion.jda.api.events.guild.*;
+import net.dv8tion.jda.api.events.guild.invite.GenericGuildInviteEvent;
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
+import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.events.guild.member.*;
 import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
+import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.guild.*;
-import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveAllEvent;
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.guild.react.*;
 import net.dv8tion.jda.api.events.message.priv.*;
 import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
-import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.message.react.*;
 import net.dv8tion.jda.api.events.role.GenericRoleEvent;
 import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
@@ -106,8 +110,44 @@ import javax.annotation.Nonnull;
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
  */
+@SuppressWarnings("deprecation")
 public abstract class ListenerAdapter implements EventListener
 {
+    //Deprecated/Unused events
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
+    public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
+
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
+    public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
+
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
+    public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
+
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
+    public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
+
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("onGuildMemberRemoveEvent(GuildMemberRemoveEvent)")
+    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
+
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
+    public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
+
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
@@ -134,7 +174,6 @@ public abstract class ListenerAdapter implements EventListener
 
     //Self Events. Fires only in relation to the currently logged in account.
     public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}
-    public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
     public void onSelfUpdateMFA(@Nonnull SelfUpdateMFAEvent event) {}
     public void onSelfUpdateName(@Nonnull SelfUpdateNameEvent event) {}
     public void onSelfUpdateVerified(@Nonnull SelfUpdateVerifiedEvent event) {}
@@ -148,6 +187,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMessageReactionAdd(@Nonnull GuildMessageReactionAddEvent event) {}
     public void onGuildMessageReactionRemove(@Nonnull GuildMessageReactionRemoveEvent event) {}
     public void onGuildMessageReactionRemoveAll(@Nonnull GuildMessageReactionRemoveAllEvent event) {}
+    public void onGuildMessageReactionRemoveEmote(@Nonnull GuildMessageReactionRemoveEmoteEvent event) {}
 
     //Private Message Events
     public void onPrivateMessageReceived(@Nonnull PrivateMessageReceivedEvent event) {}
@@ -166,12 +206,17 @@ public abstract class ListenerAdapter implements EventListener
     public void onMessageReactionAdd(@Nonnull MessageReactionAddEvent event) {}
     public void onMessageReactionRemove(@Nonnull MessageReactionRemoveEvent event) {}
     public void onMessageReactionRemoveAll(@Nonnull MessageReactionRemoveAllEvent event) {}
+    public void onMessageReactionRemoveEmote(@Nonnull MessageReactionRemoveEmoteEvent event) {}
+
+    //PermissionOverride Events
+    public void onPermissionOverrideDelete(@Nonnull PermissionOverrideDeleteEvent event) {}
+    public void onPermissionOverrideUpdate(@Nonnull PermissionOverrideUpdateEvent event) {}
+    public void onPermissionOverrideCreate(@Nonnull PermissionOverrideCreateEvent event) {}
 
     //StoreChannel Events
     public void onStoreChannelDelete(@Nonnull StoreChannelDeleteEvent event) {}
     public void onStoreChannelUpdateName(@Nonnull StoreChannelUpdateNameEvent event) {}
     public void onStoreChannelUpdatePosition(@Nonnull StoreChannelUpdatePositionEvent event) {}
-    public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
     public void onStoreChannelCreate(@Nonnull StoreChannelCreateEvent event) {}
 
     //TextChannel Events
@@ -179,7 +224,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onTextChannelUpdateName(@Nonnull TextChannelUpdateNameEvent event) {}
     public void onTextChannelUpdateTopic(@Nonnull TextChannelUpdateTopicEvent event) {}
     public void onTextChannelUpdatePosition(@Nonnull TextChannelUpdatePositionEvent event) {}
-    public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
     public void onTextChannelUpdateNSFW(@Nonnull TextChannelUpdateNSFWEvent event) {}
     public void onTextChannelUpdateParent(@Nonnull TextChannelUpdateParentEvent event) {}
     public void onTextChannelUpdateSlowmode(@Nonnull TextChannelUpdateSlowmodeEvent event) {}
@@ -191,7 +235,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelUpdatePosition(@Nonnull VoiceChannelUpdatePositionEvent event) {}
     public void onVoiceChannelUpdateUserLimit(@Nonnull VoiceChannelUpdateUserLimitEvent event) {}
     public void onVoiceChannelUpdateBitrate(@Nonnull VoiceChannelUpdateBitrateEvent event) {}
-    public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
     public void onVoiceChannelUpdateParent(@Nonnull VoiceChannelUpdateParentEvent event) {}
     public void onVoiceChannelCreate(@Nonnull VoiceChannelCreateEvent event) {}
 
@@ -199,7 +242,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onCategoryDelete(@Nonnull CategoryDeleteEvent event) {}
     public void onCategoryUpdateName(@Nonnull CategoryUpdateNameEvent event) {}
     public void onCategoryUpdatePosition(@Nonnull CategoryUpdatePositionEvent event) {}
-    public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
     public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {}
 
     //PrivateChannel Events
@@ -216,6 +258,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUnavailableGuildLeave(@Nonnull UnavailableGuildLeaveEvent event) {}
     public void onGuildBan(@Nonnull GuildBanEvent event) {}
     public void onGuildUnban(@Nonnull GuildUnbanEvent event) {}
+    public void onGuildMemberRemove(@Nonnull GuildMemberRemoveEvent event) {}
 
     //Guild Update Events
     public void onGuildUpdateAfkChannel(@Nonnull GuildUpdateAfkChannelEvent event) {}
@@ -239,9 +282,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateMaxMembers(@Nonnull GuildUpdateMaxMembersEvent event) {}
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
 
+    //Guild Invite Events
+    public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
+    public void onGuildInviteDelete(@Nonnull GuildInviteDeleteEvent event) {}
+
     //Guild Member Events
     public void onGuildMemberJoin(@Nonnull GuildMemberJoinEvent event) {}
-    public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
     public void onGuildMemberRoleAdd(@Nonnull GuildMemberRoleAddEvent event) {}
     public void onGuildMemberRoleRemove(@Nonnull GuildMemberRoleRemoveEvent event) {}
 
@@ -305,6 +351,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericCategoryUpdate(@Nonnull GenericCategoryUpdateEvent event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
+    public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}
     public void onGenericGuildMember(@Nonnull GenericGuildMemberEvent event) {}
     public void onGenericGuildMemberUpdate(@Nonnull GenericGuildMemberUpdateEvent event) {}
     public void onGenericGuildVoice(@Nonnull GenericGuildVoiceEvent event) {}
@@ -312,6 +359,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericRoleUpdate(@Nonnull GenericRoleUpdateEvent event) {}
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
+    public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
 
     @Override
     public final void onEvent(@Nonnull GenericEvent event)
@@ -356,6 +404,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildMessageReactionRemove((GuildMessageReactionRemoveEvent) event);
         else if (event instanceof GuildMessageReactionRemoveAllEvent)
             onGuildMessageReactionRemoveAll((GuildMessageReactionRemoveAllEvent) event);
+        else if (event instanceof GuildMessageReactionRemoveEmoteEvent)
+            onGuildMessageReactionRemoveEmote((GuildMessageReactionRemoveEmoteEvent) event);
 
         //Private Message Events
         else if (event instanceof PrivateMessageReceivedEvent)
@@ -388,6 +438,8 @@ public abstract class ListenerAdapter implements EventListener
             onMessageReactionRemove((MessageReactionRemoveEvent) event);
         else if (event instanceof MessageReactionRemoveAllEvent)
             onMessageReactionRemoveAll((MessageReactionRemoveAllEvent) event);
+        else if (event instanceof MessageReactionRemoveEmoteEvent)
+            onMessageReactionRemoveEmote((MessageReactionRemoveEmoteEvent) event);
 
         //User Events
         else if (event instanceof UserUpdateNameEvent)
@@ -410,14 +462,20 @@ public abstract class ListenerAdapter implements EventListener
         //Self Events
         else if (event instanceof SelfUpdateAvatarEvent)
             onSelfUpdateAvatar((SelfUpdateAvatarEvent) event);
-        else if (event instanceof SelfUpdateEmailEvent)
-            onSelfUpdateEmail((SelfUpdateEmailEvent) event);
         else if (event instanceof SelfUpdateMFAEvent)
             onSelfUpdateMFA((SelfUpdateMFAEvent) event);
         else if (event instanceof SelfUpdateNameEvent)
             onSelfUpdateName((SelfUpdateNameEvent) event);
         else if (event instanceof SelfUpdateVerifiedEvent)
             onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
+
+        //PermissionOverride Events
+        else if (event instanceof PermissionOverrideDeleteEvent)
+            onPermissionOverrideDelete((PermissionOverrideDeleteEvent) event);
+        else if (event instanceof PermissionOverrideUpdateEvent)
+            onPermissionOverrideUpdate((PermissionOverrideUpdateEvent) event);
+        else if (event instanceof PermissionOverrideCreateEvent)
+            onPermissionOverrideCreate((PermissionOverrideCreateEvent) event);
 
         //StoreChannel Events
         else if (event instanceof StoreChannelCreateEvent)
@@ -440,8 +498,6 @@ public abstract class ListenerAdapter implements EventListener
             onTextChannelUpdateTopic((TextChannelUpdateTopicEvent) event);
         else if (event instanceof TextChannelUpdatePositionEvent)
             onTextChannelUpdatePosition((TextChannelUpdatePositionEvent) event);
-        else if (event instanceof TextChannelUpdatePermissionsEvent)
-            onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
         else if (event instanceof TextChannelUpdateNSFWEvent)
             onTextChannelUpdateNSFW((TextChannelUpdateNSFWEvent) event);
         else if (event instanceof TextChannelUpdateParentEvent)
@@ -449,7 +505,9 @@ public abstract class ListenerAdapter implements EventListener
         else if (event instanceof TextChannelUpdateSlowmodeEvent)
             onTextChannelUpdateSlowmode((TextChannelUpdateSlowmodeEvent) event);
         else if (event instanceof TextChannelDeleteEvent)
-        onTextChannelDelete((TextChannelDeleteEvent) event);
+            onTextChannelDelete((TextChannelDeleteEvent) event);
+        else if (event instanceof TextChannelUpdatePermissionsEvent)
+            onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
 
         //VoiceChannel Events
         else if (event instanceof VoiceChannelCreateEvent)
@@ -462,12 +520,12 @@ public abstract class ListenerAdapter implements EventListener
             onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
         else if (event instanceof VoiceChannelUpdateBitrateEvent)
             onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
-        else if (event instanceof VoiceChannelUpdatePermissionsEvent)
-            onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
         else if (event instanceof VoiceChannelUpdateParentEvent)
             onVoiceChannelUpdateParent((VoiceChannelUpdateParentEvent) event);
         else if (event instanceof VoiceChannelDeleteEvent)
             onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
+        else if (event instanceof VoiceChannelUpdatePermissionsEvent)
+            onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
 
         //Category Events
         else if (event instanceof CategoryCreateEvent)
@@ -476,10 +534,10 @@ public abstract class ListenerAdapter implements EventListener
             onCategoryUpdateName((CategoryUpdateNameEvent) event);
         else if (event instanceof CategoryUpdatePositionEvent)
             onCategoryUpdatePosition((CategoryUpdatePositionEvent) event);
-        else if (event instanceof CategoryUpdatePermissionsEvent)
-            onCategoryUpdatePermissions((CategoryUpdatePermissionsEvent) event);
         else if (event instanceof CategoryDeleteEvent)
             onCategoryDelete((CategoryDeleteEvent) event);
+        else if (event instanceof CategoryUpdatePermissionsEvent)
+            onCategoryUpdatePermissions((CategoryUpdatePermissionsEvent) event);
 
         //PrivateChannel Events
         else if (event instanceof PrivateChannelCreateEvent)
@@ -506,6 +564,8 @@ public abstract class ListenerAdapter implements EventListener
             onGuildBan((GuildBanEvent) event);
         else if (event instanceof GuildUnbanEvent)
             onGuildUnban((GuildUnbanEvent) event);
+        else if (event instanceof GuildMemberRemoveEvent)
+            onGuildMemberRemove((GuildMemberRemoveEvent) event);
 
         //Guild Update Events
         else if (event instanceof GuildUpdateAfkChannelEvent)
@@ -548,6 +608,12 @@ public abstract class ListenerAdapter implements EventListener
             onGuildUpdateMaxMembers((GuildUpdateMaxMembersEvent) event);
         else if (event instanceof GuildUpdateMaxPresencesEvent)
             onGuildUpdateMaxPresences((GuildUpdateMaxPresencesEvent) event);
+
+        //Guild Invite Events
+        else if (event instanceof GuildInviteCreateEvent)
+            onGuildInviteCreate((GuildInviteCreateEvent) event);
+        else if (event instanceof GuildInviteDeleteEvent)
+            onGuildInviteDelete((GuildInviteDeleteEvent) event);
 
         //Guild Member Events
         else if (event instanceof GuildMemberJoinEvent)
@@ -655,6 +721,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericEmoteUpdate((GenericEmoteUpdateEvent) event);
         else if (event instanceof GenericUserPresenceEvent)
             onGenericUserPresence((GenericUserPresenceEvent) event);
+        else if (event instanceof GenericPermissionOverrideEvent)
+            onGenericPermissionOverride((GenericPermissionOverrideEvent) event);
 
         //Generic events that have generic subclasses (the subclasses as above).
         if (event instanceof GenericMessageEvent)
@@ -663,6 +731,8 @@ public abstract class ListenerAdapter implements EventListener
             onGenericPrivateMessage((GenericPrivateMessageEvent) event);
         else if (event instanceof GenericGuildMessageEvent)
             onGenericGuildMessage((GenericGuildMessageEvent) event);
+        else if (event instanceof GenericGuildInviteEvent)
+            onGenericGuildInvite((GenericGuildInviteEvent) event);
         else if (event instanceof GenericGuildMemberEvent)
             onGenericGuildMember((GenericGuildMemberEvent) event);
         else if (event instanceof GenericUserEvent)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ public enum Permission
     MESSAGE_ADD_REACTION( 6, true, true, "Add Reactions"),
     VIEW_AUDIT_LOGS(      7, true, false, "View Audit Logs"),
     PRIORITY_SPEAKER(     8, true, true, "Priority Speaker"),
+    VIEW_GUILD_INSIGHTS(19, true, false, "View Server Insights"),
 
     // Applicable to all channel types
     VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
