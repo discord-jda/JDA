@@ -20,12 +20,11 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.MapRestAction;
@@ -167,6 +166,33 @@ import java.util.function.Predicate;
  */
 public interface RestAction<T>
 {
+    /**
+     * Creates a RestAction instance for the defined compiled {@link Route}.
+     * <br>If the response is not successful, you will receive a {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseException}
+     * in the failure callbacks.
+     *
+     * <p>This particular overload is mostly useful for GET or DELETE requests which do not require a body.
+     * If you want to use a POST/PUT you should be using {@link #makeAction(JDA, Route.CompiledRoute, RequestBody)} and {@link #makeAction(JDA, Route.CompiledRoute, DataObject)}
+     * respectively.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * Route.CompiledRoute route = Route.User.GET_USER.compile(userId);
+     * RestAction<RestPayload> action = RestAction.makeAction(jda, route);
+     * action.map(RestPayload::getObject)
+     *       .map(json -> json.getString("username"))
+     *       .queue(name -> System.out.println("User with id " + userId + " has the name " + name));
+     * }</pre>
+     *
+     * @param  api
+     *         The JDA instance used for ratelimit handling
+     * @param  route
+     *         The target route
+     *
+     * @return A new RestAction for the compiled request
+     *
+     * @see    Route#custom(Method, String)
+     */
     @Nonnull
     @CheckReturnValue
     static RestAction<RestPayload> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route)
@@ -185,6 +211,37 @@ public interface RestAction<T>
         });
     }
 
+    /**
+     * Creates a RestAction instance for the defined compiled {@link Route}.
+     * <br>If the response is not successful, you will receive a {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseException}
+     * in the failure callbacks.
+     *
+     * <p>This particular overload is mostly useful for PUT or POST requests which require a body.
+     * If you want to use a GET/DELETE you should be using {@link #makeAction(JDA, Route.CompiledRoute)}.
+     * To send a message with an attachment (file) you must use {@link #makeAction(JDA, Route.CompiledRoute, RequestBody)} instead.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * DataObject body = DataObject.empty().put("content", "Hello Friend");
+     * Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channelId);
+     * RestAction<RestPayload> action = RestAction.makeAction(jda, route, body);
+     * action.map(RestPayload::getObject)
+     *       .map(json -> json.getUnsignedLong("id"))
+     *       .queue(id -> System.out.println("Sent a message with id " + id + " to channel with id " + channelId));
+     * }</pre>
+     *
+     * @param  api
+     *         The JDA instance used for ratelimit handling
+     * @param  route
+     *         The target route
+     * @param  body
+     *         The JSON object body
+     *
+     * @return A new RestAction for the compiled request
+     *
+     * @see    DataObject#empty()
+     * @see    Route#custom(Method, String)
+     */
     @Nonnull
     @CheckReturnValue
     static RestAction<RestPayload> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull DataObject body)
@@ -204,6 +261,42 @@ public interface RestAction<T>
         });
     }
 
+    /**
+     * Creates a RestAction instance for the defined compiled {@link Route}.
+     * <br>If the response is not successful, you will receive a {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseException}
+     * in the failure callbacks.
+     *
+     * <p>This particular overload is mostly useful for PUT or POST requests which require a body, specifically useful for multipart/form-data requests (sending a file).
+     * If you want to use a GET/DELETE you should be using {@link #makeAction(JDA, Route.CompiledRoute)}.
+     * Most requests for PUT/POST should be done using {@link #makeAction(JDA, Route.CompiledRoute, DataObject)} which accepts a JSON object.
+     *
+     * <p>Note: It is your own responsibility to make a buffered request body to ensure that retries will properly
+     * be able to read the body again.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * MultipartBody body = new MultipartBody.Builder().setType(MultipartBody.FORM);
+     * RequestBody fileBody = RequestBody.create(MediaType.parse("image/png"), new File("cat.png"));
+     * body.addFormDataPart("file", "cat.png", fileBody);
+     * Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channelId);
+     * RestAction<RestPayload> action = RestAction.makeAction(jda, route, body);
+     * action.map(RestPayload::getObject)
+     *       .map(json -> json.getUnsignedLong("id"))
+     *       .queue(id -> System.out.println("Sent a message with id " + id + " to channel with id " + channelId));
+     * }</pre>
+     *
+     * @param  api
+     *         The JDA instance used for ratelimit handling
+     * @param  route
+     *         The target route
+     * @param  body
+     *         The {@link RequestBody}
+     *
+     * @return A new RestAction for the compiled request
+     *
+     * @see    DataObject#empty()
+     * @see    Route#custom(Method, String)
+     */
     @Nonnull
     @CheckReturnValue
     static RestAction<RestPayload> makeAction(@Nonnull JDA api, @Nonnull Route.CompiledRoute route, @Nonnull RequestBody body)

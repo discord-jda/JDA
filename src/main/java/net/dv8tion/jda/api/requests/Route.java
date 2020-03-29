@@ -25,6 +25,24 @@ import javax.annotation.Nonnull;
 
 import static net.dv8tion.jda.internal.requests.Method.*;
 
+/**
+ * Assortment of documented routes for use with {@link RestAction}
+ * <br>You must use {@link #compile(String...)} to get a compiled route for REST requests.
+ *
+ * <p>If you decide to make a custom route with {@link #custom(Method, String)} you should use this convention:
+ * {@code "channel/{channel_id}/messages/{message_id}"}
+ *
+ * <br>This is important because the rate limits highly depend on the configuration used to define the major parameters.
+ * If one of the major parameters is used such as {@code channel_id/guild_id/webhook_id} it must be exactly this name
+ * that is used to represent them in your route template. The parameter values must then be placed in the {@link #compile(String...)}
+ * call. If the route already exists, it is desirable to re-use it for more efficient rate limit handling.
+ *
+ * <h2>Example</h2>
+ * <pre>{@code
+ * Route template = Route.post("channels/{channel_id}/messages"); // better to use Route.Message.SEND_MESSAGE
+ * Route.CompiledRoute route = template.compile(channelId);
+ * }</pre>
+ */
 @SuppressWarnings("unused")
 public class Route
 {
@@ -66,28 +84,11 @@ public class Route
         public static final Route LEAVE_GUILD =            new Route(DELETE, "users/@me/guilds/{guild_id}");
         public static final Route GET_PRIVATE_CHANNELS =   new Route(GET,    "users/@me/channels");
         public static final Route CREATE_PRIVATE_CHANNEL = new Route(POST,   "users/@me/channels");
-
-        // Client only
-        public static final Route USER_SETTINGS =       new Route(GET, "users/@me/settings");
-        public static final Route GET_CONNECTIONS =     new Route(GET, "users/@me/connections");
-        public static final Route FRIEND_SUGGESTIONS =  new Route(GET, "friend-suggestions");
-        public static final Route GET_RECENT_MENTIONS = new Route(GET, "users/@me/mentions");
     }
 
     public static class Users
     {
         public static final Route GET_USER    = new Route(GET, "users/{user_id}");
-        public static final Route GET_PROFILE = new Route(GET, "users/{user_id}/profile");
-        public static final Route GET_NOTE    = new Route(GET, "users/@me/notes/{user_id}");
-        public static final Route SET_NOTE    = new Route(PUT, "users/@me/notes/{user_id}");
-    }
-
-    public static class Relationships
-    {
-        public static final Route GET_RELATIONSHIPS =   new Route(GET,    "users/@me/relationships"); // Get Friends/Blocks/Incoming/Outgoing
-        public static final Route GET_RELATIONSHIP =    new Route(GET,    "users/@me/relationships/{user_id}");
-        public static final Route ADD_RELATIONSHIP =    new Route(PUT,    "users/@me/relationships/{user_id}"); // Add Friend/ Block
-        public static final Route DELETE_RELATIONSHIP = new Route(DELETE, "users/@me/relationships/{user_id}"); // Delete Block/Unfriend/Ignore Request/Cancel Outgoing
     }
 
     public static class Guilds
@@ -125,14 +126,7 @@ public class Route
 
         public static final Route ADD_MEMBER_ROLE =    new Route(PUT,    "guilds/{guild_id}/members/{user_id}/roles/{role_id}");
         public static final Route REMOVE_MEMBER_ROLE = new Route(DELETE, "guilds/{guild_id}/members/{user_id}/roles/{role_id}");
-
-
-        //Client Only
         public static final Route CREATE_GUILD = new Route(POST, "guilds");
-        public static final Route DELETE_GUILD = new Route(POST, "guilds/{guild_id}/delete");
-        public static final Route ACK_GUILD =    new Route(POST, "guilds/{guild_id}/ack");
-
-        public static final Route MODIFY_NOTIFICATION_SETTINGS = new Route(PATCH, "users/@me/guilds/{guild_id}/settings");
     }
 
     public static class Emotes
@@ -183,14 +177,6 @@ public class Route
         public static final Route SEND_TYPING =          new Route(POST,   "channels/{channel_id}/typing");
         public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions");
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}");
-
-        // Client Only
-        public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");
-        public static final Route GET_RECIPIENT =    new Route(GET,    "channels/{channel_id}/recipients/{user_id}");
-        public static final Route ADD_RECIPIENT =    new Route(PUT,    "channels/{channel_id}/recipients/{user_id}");
-        public static final Route REMOVE_RECIPIENT = new Route(DELETE, "channels/{channel_id}/recipients/{user_id}");
-        public static final Route START_CALL =       new Route(POST,   "channels/{channel_id}/call/ring");
-        public static final Route STOP_CALL =        new Route(POST,   "channels/{channel_id}/call/stop_ringing"); // aka deny or end call
     }
 
     public static class Messages
@@ -213,9 +199,6 @@ public class Route
         //Bot only
         public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}");
         public static final Route DELETE_MESSAGES = new Route(POST, "channels/{channel_id}/messages/bulk-delete");
-
-        //Client only
-        public static final Route ACK_MESSAGE = new Route(POST, "channels/{channel_id}/messages/{message_id}/ack");
     }
 
     public static class Invites
@@ -281,21 +264,51 @@ public class Route
             throw new IllegalArgumentException("An argument does not have both {}'s for route: " + method + "  " + route);
     }
 
+    /**
+     * The HTTP method used for this endpoint.
+     *
+     * @return The HTTP method
+     */
     public Method getMethod()
     {
         return method;
     }
 
+    /**
+     * The route template
+     *
+     * @return The template
+     */
     public String getRoute()
     {
         return route;
     }
 
+    /**
+     * The number of parameters used in {@link #compile(String...)}.
+     *
+     * @return The number of parameters
+     */
     public int getParamCount()
     {
         return paramCount;
     }
 
+    /**
+     * Compiles a usable route with the provided parameters.
+     * <br>Each parameter should have a {@code "{token}"} in the route template.
+     *
+     * <p>Major parameters such as {@code channel_id/guild_id/webhook_id} will be used to determine buckets for rate limit handling.
+     * All other parameters are only used to properly identify the endpoint for the request and have no impact on the rate limit.
+     *
+     * @param  params
+     *         The parameters to use
+     *
+     * @throws IllegalArgumentException
+     *         If the parameter count does not match the number of required parameters (tokens) in the route template
+     *
+     * @return The CompiledRoute to use for the request
+     */
     public CompiledRoute compile(String... params)
     {
         if (params.length != paramCount)
@@ -345,6 +358,11 @@ public class Route
         return method + "/" + route;
     }
 
+    /**
+     * Compiled Route used for handling rate limits.
+     *
+     * @see #withQueryParams(String...)
+     */
     public class CompiledRoute
     {
         private final Route baseRoute;
@@ -365,6 +383,22 @@ public class Route
             this(baseRoute, compiledRoute, major, false);
         }
 
+        /**
+         * Add query parameters such as {@code before} or {@code reason}.
+         *
+         * <h2>Example</h2>
+         * <pre>{@code
+         * Route template = Route.Messages.GET_MESSAGE_HISTORY;
+         * Route.CompiledRoute route = template.compile(channelId);
+         * // Don't forget to re-assign the route, this returns a new route
+         * route = route.withQueryParams("before", messageId, "limit", 10);
+         * }</pre>
+         *
+         * @param  params
+         *         The query parameters
+         *
+         * @return The <b>new</b> CompiledRoute instance with the applied parameters
+         */
         @Nonnull
         @CheckReturnValue
         public CompiledRoute withQueryParams(String... params)
@@ -380,21 +414,41 @@ public class Route
             return new CompiledRoute(baseRoute, newRoute.toString(), major, true);
         }
 
+        /**
+         * The major parameters string used to determine the rate limit bucket
+         *
+         * @return The major parameters
+         */
         public String getMajorParameters()
         {
             return major;
         }
 
+        /**
+         * The compiled HTTP route with the applied parameters.
+         *
+         * @return The compiled route
+         */
         public String getCompiledRoute()
         {
             return compiledRoute;
         }
 
+        /**
+         * The base route template without the applied parameters.
+         *
+         * @return The base route template
+         */
         public Route getBaseRoute()
         {
             return baseRoute;
         }
 
+        /**
+         * The HTTP method of this endpoint
+         *
+         * @return The HTTP method
+         */
         public Method getMethod()
         {
             return baseRoute.method;

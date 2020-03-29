@@ -149,6 +149,8 @@ public class  DefaultShardManagerBuilder
      *
      * @return The new DefaultShardManagerBuilder
      *
+     * @since  4.2.0
+     *
      * @see    #disableIntents(GatewayIntent, GatewayIntent...)
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
@@ -184,6 +186,8 @@ public class  DefaultShardManagerBuilder
      *         If provided with null intents
      *
      * @return The new DefaultShardManagerBuilder
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -217,6 +221,8 @@ public class  DefaultShardManagerBuilder
      *         If provided with null intents
      *
      * @return The new DefaultShardManagerBuilder
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -248,6 +254,8 @@ public class  DefaultShardManagerBuilder
      *         The bot token to use
      *
      * @return The new DefaultShardManagerBuilder
+     *
+     * @since  4.2.0
      *
      * @see    #disableIntents(GatewayIntent, GatewayIntent...)
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
@@ -281,6 +289,8 @@ public class  DefaultShardManagerBuilder
      *         The other gateway intents to use
      *
      * @return The new DefaultShardManagerBuilder
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -309,6 +319,8 @@ public class  DefaultShardManagerBuilder
      *         The gateway intents to use
      *
      * @return The new DefaultShardManagerBuilder
+     *
+     * @since  4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -347,6 +359,8 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance
      *
+     * @since  4.2.0
+     *
      * @see   #setToken(String)
      */
     @Nonnull
@@ -373,6 +387,8 @@ public class  DefaultShardManagerBuilder
      *         If the provided intents are null
      *
      * @return The DefaultShardManagerBuilder instance
+     *
+     * @since  4.2.0
      *
      * @see   #setToken(String)
      */
@@ -403,6 +419,8 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance
      *
+     * @since  4.2.0
+     *
      * @see   #setToken(String)
      */
     @Nonnull
@@ -428,6 +446,8 @@ public class  DefaultShardManagerBuilder
      *         If the provided intents are null
      *
      * @return The DefaultShardManagerBuilder instance
+     *
+     * @since  4.2.0
      *
      * @see   #setToken(String)
      */
@@ -518,6 +538,8 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @since  4.2.0
+     *
      * @see    #enableCache(CacheFlag, CacheFlag...)
      * @see    #disableCache(Collection)
      */
@@ -542,6 +564,8 @@ public class  DefaultShardManagerBuilder
      *         If provided with null
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
      *
      * @see    #enableCache(Collection)
      * @see    #disableCache(CacheFlag, CacheFlag...)
@@ -590,6 +614,8 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @since  4.2.0
+     *
      * @see    #disableCache(CacheFlag, CacheFlag...)
      * @see    #enableCache(Collection)
      */
@@ -614,6 +640,8 @@ public class  DefaultShardManagerBuilder
      *         If provided with null
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
      *
      * @see    #disableCache(Collection)
      * @see    #enableCache(CacheFlag, CacheFlag...)
@@ -1836,6 +1864,8 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @since  4.2.0
+     *
      * @see    #enableIntents(Collection)
      */
     @Nonnull
@@ -1864,6 +1894,8 @@ public class  DefaultShardManagerBuilder
      *         If provided with null
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
      *
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
@@ -1955,6 +1987,8 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
+     * @since  4.2.0
+     *
      * @see    #disableIntents(Collection)
      */
     @Nonnull
@@ -1979,6 +2013,8 @@ public class  DefaultShardManagerBuilder
      *         If provided with null
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
      *
      * @see    #enableIntents(GatewayIntent, GatewayIntent...)
      */
