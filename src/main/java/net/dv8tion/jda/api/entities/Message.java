@@ -1141,8 +1141,8 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1228,8 +1228,8 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The message was deleted.</li>
@@ -1425,8 +1425,8 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1472,8 +1472,8 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
@@ -1568,8 +1568,8 @@ public interface Message extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">https://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
