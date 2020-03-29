@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -33,6 +34,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
@@ -1150,7 +1152,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default MessageHistory.MessageRetrieveAction getHistoryAround(long messageId, int limit)
     {
-        return getHistoryAround(Long.toUnsignedString(messageId), limit );
+        return getHistoryAround(Long.toUnsignedString(messageId), limit);
     }
 
     /**
@@ -2170,6 +2172,42 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote)
     {
         return removeReactionById(Long.toUnsignedString(messageId), emote);
+    }
+
+    // TODO: Docs
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull String unicode)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notEmpty(unicode, "Emoji");
+        Checks.noWhitespace(unicode, "Emoji");
+
+        return new ReactionPaginationActionImpl(this, messageId, EncodingUtil.encodeUTF8(unicode));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull String unicode)
+    {
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), unicode);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(emote, "Emote");
+
+        return new ReactionPaginationActionImpl(this, messageId, String.format("%s:%s", emote, emote.getId()));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emote emote)
+    {
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), emote);
     }
 
     /**

@@ -1383,6 +1383,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
+     * @throws java.lang.IllegalStateException
+     *         If the message was not sent in a TextChannel.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1497,6 +1499,8 @@ public interface Message extends ISnowflake, Formattable
      *         </ul>
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
+     * @throws java.lang.IllegalStateException
+     *         If the message was not sent in a TextChannel.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
