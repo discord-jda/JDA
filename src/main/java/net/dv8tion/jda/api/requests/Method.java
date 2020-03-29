@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests;
+package net.dv8tion.jda.api.requests;
 
+/**
+ * HTTP Methods for {@link Route#custom(Method, String)}
+ */
 public enum Method
 {
     DELETE,
     GET,
-    HEAD,
-    OPTIONS,
     POST,
     PUT,
     PATCH

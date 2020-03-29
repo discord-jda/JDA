@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
 import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;

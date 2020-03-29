@@ -16,14 +16,13 @@
 
 package net.dv8tion.jda.api.requests;
 
-import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-import static net.dv8tion.jda.internal.requests.Method.*;
+import static net.dv8tion.jda.api.requests.Method.*;
 
 /**
  * Assortment of documented routes for use with {@link RestAction}
@@ -126,7 +125,8 @@ public class Route
 
         public static final Route ADD_MEMBER_ROLE =    new Route(PUT,    "guilds/{guild_id}/members/{user_id}/roles/{role_id}");
         public static final Route REMOVE_MEMBER_ROLE = new Route(DELETE, "guilds/{guild_id}/members/{user_id}/roles/{role_id}");
-        public static final Route CREATE_GUILD = new Route(POST, "guilds");
+        public static final Route CREATE_GUILD = new Route(POST,   "guilds");
+        public static final Route DELETE_GUILD = new Route(DELETE, "guilds/{guild_id}/delete");
     }
 
     public static class Emotes
@@ -210,43 +210,171 @@ public class Route
         public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
     }
 
+    /**
+     * Constructs a custom template route with the defined method and path.
+     *
+     * <p>You should use this convention: {@code "channel/{channel_id}/messages/{message_id}"} for the path.
+     * <br>This is important because the rate limits highly depend on the configuration used to define the major parameters.
+     * If one of the major parameters is used such as {@code channel_id/guild_id/webhook_id} it must be exactly this name
+     * that is used to represent them in your route template. The parameter values must then be placed in the {@link #compile(String...)}
+     * call. If the route already exists, it is desirable to re-use it for more efficient rate limit handling.
+     *
+     * @param  method
+     *         The HTTP method
+     * @param  path
+     *         The target path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the method is null</li>
+     *             <li>If the route is null, empty, or includes whitespace</li>
+     *             <li>If the path format has an non-symmetric placement of {@code '{'/'}'}</li>
+     *         </ul>
+     *
+     * @return The new Route template
+     */
     @Nonnull
-    public static Route custom(@Nonnull Method method, @Nonnull String route)
+    public static Route custom(@Nonnull Method method, @Nonnull String path)
     {
         Checks.notNull(method, "Method");
-        Checks.notEmpty(route, "Route");
-        Checks.noWhitespace(route, "Route");
-        return new Route(method, route);
+        Checks.notEmpty(path, "Route");
+        Checks.noWhitespace(path, "Route");
+        return new Route(method, path);
     }
 
+    /**
+     * Constructs a custom template route with the defined path using the method {@link Method#DELETE}.
+     *
+     * <p>You should use this convention: {@code "channel/{channel_id}/messages/{message_id}"} for the path.
+     * <br>This is important because the rate limits highly depend on the configuration used to define the major parameters.
+     * If one of the major parameters is used such as {@code channel_id/guild_id/webhook_id} it must be exactly this name
+     * that is used to represent them in your route template. The parameter values must then be placed in the {@link #compile(String...)}
+     * call. If the route already exists, it is desirable to re-use it for more efficient rate limit handling.
+     *
+     * @param  path
+     *         The target path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the method is null</li>
+     *             <li>If the route is null, empty, or includes whitespace</li>
+     *             <li>If the path format has an non-symmetric placement of {@code '{'/'}'}</li>
+     *         </ul>
+     *
+     * @return The new Route template
+     */
     @Nonnull
-    public static Route delete(@Nonnull String route)
+    public static Route delete(@Nonnull String path)
     {
-        return custom(DELETE, route);
+        return custom(DELETE, path);
     }
 
+    /**
+     * Constructs a custom template route with the defined path using the method {@link Method#POST}.
+     *
+     * <p>You should use this convention: {@code "channel/{channel_id}/messages/{message_id}"} for the path.
+     * <br>This is important because the rate limits highly depend on the configuration used to define the major parameters.
+     * If one of the major parameters is used such as {@code channel_id/guild_id/webhook_id} it must be exactly this name
+     * that is used to represent them in your route template. The parameter values must then be placed in the {@link #compile(String...)}
+     * call. If the route already exists, it is desirable to re-use it for more efficient rate limit handling.
+     *
+     * @param  path
+     *         The target path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the method is null</li>
+     *             <li>If the route is null, empty, or includes whitespace</li>
+     *             <li>If the path format has an non-symmetric placement of {@code '{'/'}'}</li>
+     *         </ul>
+     *
+     * @return The new Route template
+     */
     @Nonnull
-    public static Route post(@Nonnull String route)
+    public static Route post(@Nonnull String path)
     {
-        return custom(POST, route);
+        return custom(POST, path);
     }
 
+    /**
+     * Constructs a custom template route with the defined path using the method {@link Method#PUT}.
+     *
+     * <p>You should use this convention: {@code "channel/{channel_id}/messages/{message_id}"} for the path.
+     * <br>This is important because the rate limits highly depend on the configuration used to define the major parameters.
+     * If one of the major parameters is used such as {@code channel_id/guild_id/webhook_id} it must be exactly this name
+     * that is used to represent them in your route template. The parameter values must then be placed in the {@link #compile(String...)}
+     * call. If the route already exists, it is desirable to re-use it for more efficient rate limit handling.
+     *
+     * @param  path
+     *         The target path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the method is null</li>
+     *             <li>If the route is null, empty, or includes whitespace</li>
+     *             <li>If the path format has an non-symmetric placement of {@code '{'/'}'}</li>
+     *         </ul>
+     *
+     * @return The new Route template
+     */
     @Nonnull
-    public static Route put(@Nonnull String route)
+    public static Route put(@Nonnull String path)
     {
-        return custom(PUT, route);
+        return custom(PUT, path);
     }
 
+    /**
+     * Constructs a custom template route with the defined path using the method {@link Method#PATCH}.
+     *
+     * <p>You should use this convention: {@code "channel/{channel_id}/messages/{message_id}"} for the path.
+     * <br>This is important because the rate limits highly depend on the configuration used to define the major parameters.
+     * If one of the major parameters is used such as {@code channel_id/guild_id/webhook_id} it must be exactly this name
+     * that is used to represent them in your route template. The parameter values must then be placed in the {@link #compile(String...)}
+     * call. If the route already exists, it is desirable to re-use it for more efficient rate limit handling.
+     *
+     * @param  path
+     *         The target path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the method is null</li>
+     *             <li>If the route is null, empty, or includes whitespace</li>
+     *             <li>If the path format has an non-symmetric placement of {@code '{'/'}'}</li>
+     *         </ul>
+     *
+     * @return The new Route template
+     */
     @Nonnull
-    public static Route patch(@Nonnull String route)
+    public static Route patch(@Nonnull String path)
     {
-        return custom(PATCH, route);
+        return custom(PATCH, path);
     }
 
+    /**
+     * Constructs a custom template route with the defined path using the method {@link Method#GET}.
+     *
+     * <p>You should use this convention: {@code "channel/{channel_id}/messages/{message_id}"} for the path.
+     * <br>This is important because the rate limits highly depend on the configuration used to define the major parameters.
+     * If one of the major parameters is used such as {@code channel_id/guild_id/webhook_id} it must be exactly this name
+     * that is used to represent them in your route template. The parameter values must then be placed in the {@link #compile(String...)}
+     * call. If the route already exists, it is desirable to re-use it for more efficient rate limit handling.
+     *
+     * @param  path
+     *         The target path
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the method is null</li>
+     *             <li>If the route is null, empty, or includes whitespace</li>
+     *             <li>If the path format has an non-symmetric placement of {@code '{'/'}'}</li>
+     *         </ul>
+     *
+     * @return The new Route template
+     */
     @Nonnull
-    public static Route get(@Nonnull String route)
+    public static Route get(@Nonnull String path)
     {
-        return custom(GET, route);
+        return custom(GET, path);
     }
 
     private static final String majorParameters = "guild_id:channel_id:webhook_id";
