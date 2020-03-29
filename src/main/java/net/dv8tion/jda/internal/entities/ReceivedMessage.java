@@ -214,9 +214,6 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
     {
-        // return getChannel().retrieveReactionUsersById(getId(), emote);
-        // TODO: Do we care enough about *possibly* having getReaction not throw despite the documentation saying it would? If not, we could just use the line above.
-
         Checks.notNull(emote, "Emote");
 
         if (getChannelType() == ChannelType.TEXT) {
@@ -236,9 +233,6 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
     {
-        // return getChannel().retrieveReactionUsersById(getId(), unicode);
-        // TODO: See above
-
         Checks.notEmpty(unicode, "Emoji");
         Checks.noWhitespace(unicode, "Emoji");
 
