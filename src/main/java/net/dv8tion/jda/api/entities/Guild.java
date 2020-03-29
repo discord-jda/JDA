@@ -4430,12 +4430,12 @@ public interface Guild extends ISnowflake
         TIER_1(1, 128000, 100),
         /**
          * The second tier.
-         * <br>Unlocked at 10 boosters.
+         * <br>Unlocked at 15 boosters.
          */
         TIER_2(2, 256000, 150),
         /**
          * The third tier.
-         * <br>Unlocked at 50 boosters.
+         * <br>Unlocked at 30 boosters.
          */
         TIER_3(3, 384000, 250),
         /**
