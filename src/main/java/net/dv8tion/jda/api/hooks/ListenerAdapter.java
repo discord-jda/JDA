@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.category.update.GenericCategoryUpdateEvent;
 import net.dv8tion.jda.api.events.channel.priv.PrivateChannelCreateEvent;
@@ -33,7 +32,6 @@ import net.dv8tion.jda.api.events.channel.store.StoreChannelCreateEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.store.update.GenericStoreChannelUpdateEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelCreateEvent;
@@ -124,7 +122,7 @@ public abstract class ListenerAdapter implements EventListener
     @ForRemoval
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
+    public void onStoreChannelUpdatePermissions(@Nonnull net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
     @ForRemoval
@@ -136,7 +134,7 @@ public abstract class ListenerAdapter implements EventListener
     @ForRemoval
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
-    public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
+    public void onCategoryUpdatePermissions(@Nonnull net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent event) {}
 
     @Deprecated
     @DeprecatedSince("4.2.0")
@@ -486,8 +484,8 @@ public abstract class ListenerAdapter implements EventListener
             onStoreChannelUpdateName((StoreChannelUpdateNameEvent) event);
         else if (event instanceof StoreChannelUpdatePositionEvent)
             onStoreChannelUpdatePosition((StoreChannelUpdatePositionEvent) event);
-        else if (event instanceof StoreChannelUpdatePermissionsEvent)
-            onStoreChannelUpdatePermissions((StoreChannelUpdatePermissionsEvent) event);
+        else if (event instanceof net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent)
+            onStoreChannelUpdatePermissions((net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent) event);
 
         //TextChannel Events
         else if (event instanceof TextChannelCreateEvent)
@@ -536,8 +534,8 @@ public abstract class ListenerAdapter implements EventListener
             onCategoryUpdatePosition((CategoryUpdatePositionEvent) event);
         else if (event instanceof CategoryDeleteEvent)
             onCategoryDelete((CategoryDeleteEvent) event);
-        else if (event instanceof CategoryUpdatePermissionsEvent)
-            onCategoryUpdatePermissions((CategoryUpdatePermissionsEvent) event);
+        else if (event instanceof net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent)
+            onCategoryUpdatePermissions((net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent) event);
 
         //PrivateChannel Events
         else if (event instanceof PrivateChannelCreateEvent)

@@ -20,10 +20,8 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdateNameEvent;
-import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent;
 import net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePositionEvent;
 import net.dv8tion.jda.api.events.channel.text.update.*;
 import net.dv8tion.jda.api.events.channel.voice.update.*;
@@ -302,13 +300,13 @@ public class ChannelUpdateHandler extends SocketHandler
         {
         case CATEGORY:
             api.handleEvent(
-                new CategoryUpdatePermissionsEvent(
+                new net.dv8tion.jda.api.events.channel.category.update.CategoryUpdatePermissionsEvent(
                     api, responseNumber,
                     (Category) channel, changed));
             break;
         case STORE:
             api.handleEvent(
-                new StoreChannelUpdatePermissionsEvent(
+                new net.dv8tion.jda.api.events.channel.store.update.StoreChannelUpdatePermissionsEvent(
                     api, responseNumber,
                     (StoreChannel) channel, changed));
             break;

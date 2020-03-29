@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -123,7 +122,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         }
         // Cache dependent event
         getJDA().handleEvent(
-            new GuildMemberLeaveEvent(
+            new net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent(
                 getJDA(), responseNumber,
                 member));
         // Cache independent event
