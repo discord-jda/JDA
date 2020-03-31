@@ -1,5 +1,9 @@
 package net.dv8tion.jda.api.entities;
 
+/**
+ * Represents an extension that the discord cdn accepts.
+ * <br>The default used is {@link #PNG} unless specified by the method's documentation.
+ */
 public enum ImageFormat
 {
     /**

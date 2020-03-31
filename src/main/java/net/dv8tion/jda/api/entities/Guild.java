@@ -359,7 +359,6 @@ public interface Guild extends ISnowflake
         return getSplashUrl(ImageFormat.PNG);
     }
 
-
     /**
      * The URL of the splash image for this Guild. A Splash image is an image displayed when viewing a
      * Discord Guild Invite on the web or in client just before accepting or declining the invite.

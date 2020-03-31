@@ -129,6 +129,8 @@ public class MessageActivity
          * The url of the icon image for this application.
          *
          * @return the url of the icon
+         *
+         * @see    #getIconUrl(ImageFormat)
          */
         @Nullable
         public String getIconUrl()
@@ -136,6 +138,16 @@ public class MessageActivity
             return getIconUrl(ImageFormat.PNG);
         }
 
+        /**
+         * The url of the icon image for this application.
+         *
+         * @param  format
+         *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+         *
+         * @return the url of the icon
+         *
+         * @see    #getIconUrl()
+         */
         @Nullable
         public String getIconUrl(@Nonnull ImageFormat format)
         {
@@ -157,6 +169,8 @@ public class MessageActivity
          * The url of the cover image for this application.
          *
          * @return the url of the cover/splash
+         *
+         * @see    #getCoverUrl(ImageFormat)
          */
         @Nullable
         public String getCoverUrl()
@@ -164,6 +178,16 @@ public class MessageActivity
             return getCoverUrl(ImageFormat.PNG);
         }
 
+        /**
+         * The url of the cover image for this application.
+         *
+         * @param  format
+         *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+         *
+         * @return the url of the cover/splash
+         *
+         * @see    #getCoverUrl()
+         */
         @Nullable
         public String getCoverUrl(@Nonnull ImageFormat format)
         {
