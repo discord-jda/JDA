@@ -198,6 +198,8 @@ public interface Emote extends IMentionable, IFakeable
      * when this Emote is used
      *
      * @return Discord CDN link to the Emote's image
+     *
+     * @see    #getImageUrl(ImageFormat)
      */
     @Nonnull
     default String getImageUrl()
@@ -205,6 +207,17 @@ public interface Emote extends IMentionable, IFakeable
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
+    /**
+     * A String representation of the URL which leads to image displayed within the official Discord&trade; client
+     * when this Emote is used
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return Discord CDN link to the Emote's image
+     *
+     * @see    #getImageUrl()
+     */
     @Nonnull
     default String getImageUrl(@Nonnull ImageFormat format)
     {

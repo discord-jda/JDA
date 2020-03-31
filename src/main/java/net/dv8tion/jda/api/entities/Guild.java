@@ -284,6 +284,19 @@ public interface Guild extends ISnowflake
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
 
+    /**
+     * The URL of the {@link net.dv8tion.jda.api.entities.Guild Guild} icon image.
+     * If no icon has been set, this returns {@code null}.
+     * <p>
+     * The Guild icon can be modified using {@link GuildManager#setIcon(Icon)}.
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return Possibly-null String containing the Guild's icon URL.
+     *
+     * @see    #getIconUrl()
+     */
     @Nullable
     default String getIconUrl(@Nonnull ImageFormat format)
     {
@@ -337,6 +350,8 @@ public interface Guild extends ISnowflake
      * The Guild splash can be modified using {@link GuildManager#setSplash(Icon)}.
      *
      * @return Possibly-null String containing the Guild's splash URL.
+     *
+     * @see    #getSplashUrl(ImageFormat)
      */
     @Nullable
     default String getSplashUrl()
@@ -344,6 +359,22 @@ public interface Guild extends ISnowflake
         return getSplashUrl(ImageFormat.PNG);
     }
 
+
+    /**
+     * The URL of the splash image for this Guild. A Splash image is an image displayed when viewing a
+     * Discord Guild Invite on the web or in client just before accepting or declining the invite.
+     * If no splash has been set, this returns {@code null}.
+     * <br>Splash images are VIP/Partner Guild only.
+     * <p>
+     * The Guild splash can be modified using {@link GuildManager#setSplash(Icon)}.
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return Possibly-null String containing the Guild's splash URL.
+     *
+     * @see    #getSplashUrl()
+     */
     @Nullable
     default String getSplashUrl(@Nonnull ImageFormat format)
     {
@@ -451,6 +482,8 @@ public interface Guild extends ISnowflake
      *
      * @return The guild banner url or null
      *
+     * @see    #getBannerUrl(ImageFormat)
+     *
      * @since  4.0.0
      */
     @Nullable
@@ -459,6 +492,19 @@ public interface Guild extends ISnowflake
         return getBannerUrl(ImageFormat.PNG);
     }
 
+    /**
+     * The guild banner url.
+     * <br>This is shown in guilds below the guild name.
+     *
+     * <p>The banner can be modified using {@link GuildManager#setBanner(Icon)}.
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return The guild banner url or null
+     *
+     * @see    #getBannerUrl(ImageFormat)
+     */
     @Nullable
     default String getBannerUrl(@Nonnull ImageFormat format)
     {

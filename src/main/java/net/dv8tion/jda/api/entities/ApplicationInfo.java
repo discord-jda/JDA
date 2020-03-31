@@ -67,6 +67,8 @@ public interface ApplicationInfo extends ISnowflake
      * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
      * 
      * @return The icon-url of the bot's application or null if no icon is defined
+     *
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     default String getIconUrl()
@@ -74,6 +76,17 @@ public interface ApplicationInfo extends ISnowflake
         return getIconUrl(ImageFormat.PNG);
     }
 
+    /**
+     * The icon-url of the bot's application.
+     * <br>The application icon is <b>not</b> necessarily the same as the bot's avatar!
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return The icon-url of the bot's application or null if no icon is defined
+     *
+     * @see    #getIconUrl()
+     */
     @Nullable
     String getIconUrl(@Nonnull ImageFormat format);
 

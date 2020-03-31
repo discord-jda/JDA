@@ -168,6 +168,8 @@ public interface RichPresence extends Activity
          * URL for this image, combination of {@link #getApplicationId()} and {@link #getKey()}
          *
          * @return URL for this image
+         *
+         * @see    #getUrl(ImageFormat)
          */
         @Nonnull
         public String getUrl()
@@ -175,6 +177,18 @@ public interface RichPresence extends Activity
             return getUrl(ImageFormat.PNG);
         }
 
+        /**
+         * URL for this image, combination of {@link #getApplicationId()} and {@link #getKey()}
+         * <p>Note: the override for the image format will only work when {@link #getKey()} returns a key
+         * that does not start with {@code spotify:} or {@code twitch:}
+         *
+         * @param  format
+         *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+         *
+         * @return URL for this image
+         *
+         * @see    #getUrl()
+         */
         @Nonnull
         public String getUrl(@Nonnull ImageFormat format)
         {

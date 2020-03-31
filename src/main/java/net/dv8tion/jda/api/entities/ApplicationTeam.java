@@ -78,6 +78,8 @@ public interface ApplicationTeam extends ISnowflake
      * The url for the icon of this team.
      *
      * @return The icon url, or null if no icon is applied
+     *
+     * @see    #getIconUrl(ImageFormat)
      */
     @Nullable
     default String getIconUrl()
@@ -85,6 +87,16 @@ public interface ApplicationTeam extends ISnowflake
         return getIconUrl(ImageFormat.PNG);
     }
 
+    /**
+     * The url for the icon of this team.
+     *
+     * @param  format
+     *         The extension to use for the image, this defaults to {@link net.dv8tion.jda.api.entities.ImageFormat#PNG ImageFormat.PNG}
+     *
+     * @return The icon url, or null if no icon is applied
+     *
+     * @see    #getIconUrl()
+     */
     @Nullable
     default String getIconUrl(@Nonnull ImageFormat format)
     {
