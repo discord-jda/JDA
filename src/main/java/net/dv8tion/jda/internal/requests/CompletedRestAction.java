@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -68,6 +69,20 @@ public class CompletedRestAction<T> implements AuditableRestAction<T>
     @Nonnull
     @Override
     public AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks)
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<T> deadline(long timestamp)
     {
         return this;
     }

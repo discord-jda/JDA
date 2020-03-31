@@ -20,13 +20,17 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.SelfUserImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -514,7 +518,6 @@ public class DefaultShardManager implements ShardManager
 
         this.eventConfig.getListeners().forEach(jda::addEventListener);
         this.eventConfig.getListenerProviders().forEach(provider -> jda.addEventListener(provider.apply(shardId)));
-        jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
         // Set the presence information before connecting to have the correct information ready when sending IDENTIFY
         PresenceImpl presence = ((PresenceImpl) jda.getPresence());
@@ -563,11 +566,34 @@ public class DefaultShardManager implements ShardManager
 
         final JDA.ShardInfo shardInfo = new JDA.ShardInfo(shardId, getShardsTotal());
 
+        // Initialize SelfUser instance before logging in
+        SelfUser selfUser = getShardCache().applyStream(
+            s -> s.map(JDA::getSelfUser) // this should never throw!
+                  .findFirst().orElse(null)
+        );
+
+        // Copy from other JDA instance or do initial fetch
+        if (selfUser == null)
+            selfUser = retrieveSelfUser(jda);
+        else
+            selfUser = SelfUserImpl.copyOf((SelfUserImpl) selfUser, jda);
+
+        jda.setSelfUser(selfUser);
+        jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
+
         final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents());
         if (getShardsTotal() == -1)
             shardingConfig.setShardsTotal(shardTotal);
 
         return jda;
+    }
+
+    private SelfUser retrieveSelfUser(JDAImpl jda)
+    {
+        Route.CompiledRoute route = Route.Self.GET_SELF.compile();
+        return new RestActionImpl<SelfUser>(jda, route,
+            (response, request) -> jda.getEntityBuilder().createSelfUser(response.getObject())
+        ).complete();
     }
 
     @Override

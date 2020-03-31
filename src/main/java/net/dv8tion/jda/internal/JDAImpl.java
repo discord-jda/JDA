@@ -50,6 +50,7 @@ import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
 import net.dv8tion.jda.internal.hooks.EventManagerProxy;
@@ -651,6 +652,25 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public RestAction<PrivateChannel> openPrivateChannelById(long userId)
+    {
+        if (selfUser != null && userId == selfUser.getIdLong())
+            throw new UnsupportedOperationException("Cannot open private channel with yourself!");
+        return new DeferredRestAction<>(this, PrivateChannel.class, () -> {
+            User user = getUserById(userId);
+            if (user instanceof UserImpl)
+                return ((UserImpl) user).getPrivateChannel();
+            return null;
+        }, () -> {
+            Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
+            DataObject body = DataObject.empty().put("recipient_id", userId);
+            return new RestActionImpl<>(this, route, body,
+                (response, request) -> getEntityBuilder().createPrivateChannel(response.getObject()));
+        });
+    }
+
+    @Nonnull
+    @Override
     public SnowflakeCacheView<User> getUserCache()
     {
         return userCache;
@@ -673,9 +693,9 @@ public class JDAImpl implements JDA
     @Override
     public synchronized void shutdownNow()
     {
+        requester.shutdown(); // stop all requests
         shutdown();
         threadConfig.shutdownNow();
-        requester.shutdown(); // stop all requests
     }
 
     @Override
@@ -701,7 +721,9 @@ public class JDAImpl implements JDA
         closeAudioConnections();
         guildSetupController.close();
 
-        requester.stop(); // stop accepting new requests
+        // stop accepting new requests
+        if (requester.stop()) // returns true if no more requests will be executed
+            shutdownRequester(); // in that case shutdown entirely
         if (audioLifeCyclePool != null)
             audioLifeCyclePool.shutdownNow();
         threadConfig.shutdown();
@@ -716,6 +738,13 @@ public class JDAImpl implements JDA
         }
 
         setStatus(Status.SHUTDOWN);
+    }
+
+    public synchronized void shutdownRequester()
+    {
+        // Stop all request processing
+        requester.shutdown();
+        threadConfig.shutdownRequester();
     }
 
     private void closeAudioConnections()
@@ -971,6 +1000,10 @@ public class JDAImpl implements JDA
 
     public void setSelfUser(SelfUser selfUser)
     {
+        try (UnlockHook hook = userCache.writeLock())
+        {
+            userCache.getMap().put(selfUser.getIdLong(), selfUser);
+        }
         this.selfUser = selfUser;
     }
 
