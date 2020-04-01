@@ -1000,6 +1000,10 @@ public class JDAImpl implements JDA
 
     public void setSelfUser(SelfUser selfUser)
     {
+        try (UnlockHook hook = userCache.writeLock())
+        {
+            userCache.getMap().put(selfUser.getIdLong(), selfUser);
+        }
         this.selfUser = selfUser;
     }
 

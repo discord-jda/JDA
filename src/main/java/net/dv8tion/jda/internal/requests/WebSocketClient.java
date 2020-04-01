@@ -458,7 +458,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             api.handleEvent(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
             try
             {
-                handleReconnect();
+                handleReconnect(rawCloseCode);
             }
             catch (InterruptedException e)
             {
@@ -469,7 +469,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    private void handleReconnect() throws InterruptedException
+    private void handleReconnect(int code) throws InterruptedException
     {
         if (sessionId == null)
         {
@@ -487,12 +487,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     LOG.error("Encountered IDENTIFY Rate Limit!");
                 }
             }
-            LOG.warn("Got disconnected from WebSocket. Appending to reconnect queue");
+            LOG.warn("Got disconnected from WebSocket (Code {}). Appending to reconnect queue", code);
             queueReconnect();
         }
         else // if resume is possible
         {
-            LOG.warn("Got disconnected from WebSocket. Attempting to resume session");
+            LOG.warn("Got disconnected from WebSocket (Code: {}). Attempting to resume session", code);
             reconnect();
         }
     }
