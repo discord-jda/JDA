@@ -110,7 +110,7 @@ public void configureMemoryUsage(JDABuilder builder) {
     builder.setChunkingFilter(ChunkingFilter.NONE);
 
     // Disable presence updates and typing events
-    builder.disabledIntents(GatewayIntent.GUILD_PRESENCE, GatewayIntent.GUILD_MESSAGE_TYPING);
+    builder.disableIntents(GatewayIntent.GUILD_PRESENCE, GatewayIntent.GUILD_MESSAGE_TYPING);
 
     // Consider guilds with more than 50 members as "large". 
     // Large guilds will only provide online members in their setup and thus reduce bandwidth if chunking is disabled.
