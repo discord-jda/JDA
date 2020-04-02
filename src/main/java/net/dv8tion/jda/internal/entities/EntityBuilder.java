@@ -526,6 +526,7 @@ public class EntityBuilder
                   .setGuildDeafened(voiceStateJson.getBoolean("deaf"))
                   .setSuppressed(voiceStateJson.getBoolean("suppress"))
                   .setSessionId(voiceStateJson.getString("session_id"))
+                  .setStream(voiceStateJson.getBoolean("self_stream"))
                   .setConnectedChannel(voiceChannel);
     }
 
