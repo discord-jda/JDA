@@ -198,9 +198,9 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
     {
         Checks.notNull(user, "User");  // to prevent NPEs
-        // check if the passed user is the SelfUser, then the ChannelType doesn't matter
+        // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
+        // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
-            // we can safely remove that
             return channel.removeReactionById(getIdLong(), emote);
 
         if (!isFromGuild())
