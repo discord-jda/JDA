@@ -368,7 +368,7 @@ public class JDAImpl implements JDA
                     request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
                             response.toString()));
             }
-        };
+        }.priority();
 
         try
         {
@@ -487,6 +487,12 @@ public class JDAImpl implements JDA
             Thread.sleep(50);
         }
         return this;
+    }
+
+    @Override
+    public int cancelRequests()
+    {
+        return requester.getRateLimiter().cancelRequests();
     }
 
     @Nonnull
