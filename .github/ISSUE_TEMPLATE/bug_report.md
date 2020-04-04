@@ -49,6 +49,15 @@ If you have a reproducible behavior, please provide some details for us.
 Otherwise just put N/A
 -->
 
+### Code for JDABuilder or DefaultShardManagerBuilder Used
+
+<!--
+Please provide the code you used to start your bot.
+This greatly impacts behavior due to the way cache and events are configured.
+
+Otherwise just put N/A
+-->
+
 ### Exception or Error
 
 <!--
