@@ -406,6 +406,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             closeCode = CloseCode.from(rawCloseCode);
             if (closeCode == CloseCode.RATE_LIMITED)
                 LOG.error("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+            else if (closeCode == CloseCode.UNKNOWN_ERROR)
+                LOG.error("WebSocket connection closed due to server error! {}: {}", rawCloseCode, rawCloseReason);
             else if (closeCode != null)
                 LOG.debug("WebSocket connection closed with code {}", closeCode);
             else if (rawCloseReason != null)
