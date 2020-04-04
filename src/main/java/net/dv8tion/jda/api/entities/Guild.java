@@ -495,7 +495,7 @@ public interface Guild extends ISnowflake
      *
      * @since 4.2.0
      */
-    default int getMaxFileSize()
+    default long getMaxFileSize()
     {
         return getBoostTier().getMaxFileSize();
     }
@@ -4495,7 +4495,7 @@ public interface Guild extends ISnowflake
          *
          * @see    net.dv8tion.jda.api.entities.Guild#getMaxFileSize()
          */
-        public int getMaxFileSize()
+        public long getMaxFileSize()
         {
             if (key == 2)
                 return 50 << 20;
