@@ -214,39 +214,14 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
     {
-        Checks.notNull(emote, "Emote");
-
-        if (getChannelType() == ChannelType.TEXT) {
-            ((TextChannelImpl) channel).checkPermission(Permission.MESSAGE_HISTORY);
-        }
-
-        MessageReaction reaction = this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isEmote() && r.getReactionEmote().getEmote().equals(emote))
-            .findFirst().orElse(null);
-
-        if (reaction == null)
-            return new ReactionPaginationActionImpl(this, String.format("%s:%s", emote, emote.getId()));
-        return new ReactionPaginationActionImpl(reaction);
+        return channel.retrieveReactionUsersById(id, emote);
     }
 
     @Nonnull
     @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
     {
-        Checks.notEmpty(unicode, "Emoji");
-        Checks.noWhitespace(unicode, "Emoji");
-
-        if (getChannelType() == ChannelType.TEXT) {
-            ((TextChannelImpl) channel).checkPermission(Permission.MESSAGE_HISTORY);
-        }
-
-        MessageReaction reaction = this.reactions.stream()
-            .filter(r -> r.getReactionEmote().isEmoji() && r.getReactionEmote().getEmoji().equals(unicode))
-            .findFirst().orElse(null);
-
-        if (reaction == null)
-            return new ReactionPaginationActionImpl(this, EncodingUtil.encodeUTF8(unicode));
-        return new ReactionPaginationActionImpl(reaction);
+        return channel.retrieveReactionUsersById(id, unicode);
     }
 
     @Override
@@ -264,6 +239,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
     {
+        Checks.isSnowflake(id);
         return getReactionById(MiscUtil.parseSnowflake(id));
     }
 

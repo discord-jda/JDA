@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
  * }
  * }</pre>
  *
- * @since 3.1
+ * @since  3.1
  *
  * @see    MessageReaction#retrieveUsers()
  * @see    Message#retrieveReactionUsers(String)
