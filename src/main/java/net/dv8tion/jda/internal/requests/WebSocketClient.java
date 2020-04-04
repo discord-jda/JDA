@@ -203,7 +203,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
-            JDAImpl.LOG.info("Successfully resumed Session!");
+            JDAImpl.LOG.debug("Successfully resumed Session!");
             api.handleEvent(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
@@ -494,7 +494,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else // if resume is possible
         {
-            LOG.warn("Got disconnected from WebSocket. Attempting to resume session");
+            LOG.debug("Got disconnected from WebSocket. Attempting to resume session");
             reconnect();
         }
     }
