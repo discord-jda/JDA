@@ -239,7 +239,6 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
     {
-        Checks.isSnowflake(id);
         return getReactionById(MiscUtil.parseSnowflake(id));
     }
 
