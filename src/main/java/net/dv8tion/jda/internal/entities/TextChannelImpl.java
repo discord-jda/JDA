@@ -39,6 +39,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.*;
@@ -355,6 +356,22 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         //Call MessageChannel's default
         return TextChannel.super.sendMessage(msg);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    {
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_ATTACH_FILES);
+
+        final long allowedFileSize = Math.max(getJDA().getSelfUser().getAllowedFileSize(), getGuild().getMaxFileSize());
+        Checks.check(file.length() <= allowedFileSize,
+                String.format("File size surpasses the %d byte file size limit!", allowedFileSize));
+
+        //Call MessageChannel's default method
+        return TextChannel.super.sendFile(file, fileName, options);
     }
 
     @Nonnull

@@ -644,12 +644,6 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
             "Provided file doesn't exist or cannot be read!");
-        long allowedSelfUserFileSize = getJDA().getSelfUser().getAllowedFileSize();
-        long allowedFileSize = this instanceof GuildChannel
-                ? Math.max(allowedSelfUserFileSize, ((GuildChannel) this).getGuild().getMaxFileSize())
-                : allowedSelfUserFileSize;
-        Checks.check(file.length() <= allowedFileSize,
-                    String.format("File size surpasses the %d byte file size limit!", allowedFileSize));
         Checks.notNull(fileName, "fileName");
 
         try
