@@ -368,7 +368,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         final long allowedFileSize = Math.max(getJDA().getSelfUser().getAllowedFileSize(), getGuild().getMaxFileSize());
         Checks.check(file.length() <= allowedFileSize,
-                String.format("File size surpasses the %d byte file size limit!", allowedFileSize));
+            "File may not exceed the maximum file length of %d bytes!", allowedFileSize);
 
         //Call MessageChannel's default method
         return TextChannel.super.sendFile(file, fileName, options);
