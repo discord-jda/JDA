@@ -366,9 +366,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
 
-        final long allowedFileSize = Math.max(getJDA().getSelfUser().getAllowedFileSize(), getGuild().getMaxFileSize());
-        Checks.check(file.length() <= allowedFileSize,
-            "File may not exceed the maximum file length of %d bytes!", allowedFileSize);
+        final long maxSize = getGuild().getMaxFileSize();
+        Checks.check(file == null || file.length() <= maxSize,
+                    "File may not exceed the maximum file length of %d bytes!", maxSize);
 
         //Call MessageChannel's default method
         return TextChannel.super.sendFile(file, fileName, options);

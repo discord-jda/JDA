@@ -643,7 +643,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
-            "Provided file doesn't exist or cannot be read!");
+                    "Provided file doesn't exist or cannot be read!");
         Checks.notNull(fileName, "fileName");
 
         try
