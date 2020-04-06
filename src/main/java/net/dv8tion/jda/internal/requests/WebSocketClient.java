@@ -203,7 +203,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
-            JDAImpl.LOG.info("Successfully resumed Session!");
+            JDAImpl.LOG.debug("Successfully resumed Session!");
             api.handleEvent(new ResumedEvent(api, api.getResponseTotal()));
         }
         api.setStatus(JDA.Status.CONNECTED);
@@ -389,7 +389,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.setStatus(JDA.Status.DISCONNECTED);
 
         CloseCode closeCode = null;
-        int rawCloseCode = 1000;
+        int rawCloseCode = 1005;
         //When we get 1000 from remote close we will try to resume
         // as apparently discord doesn't understand what "graceful disconnect" means
         boolean isInvalidate = false;
@@ -399,13 +399,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             keepAliveThread.cancel(false);
             keepAliveThread = null;
         }
-        if (serverCloseFrame != null)
+        if (closedByServer && serverCloseFrame != null)
         {
             rawCloseCode = serverCloseFrame.getCloseCode();
             String rawCloseReason = serverCloseFrame.getCloseReason();
             closeCode = CloseCode.from(rawCloseCode);
             if (closeCode == CloseCode.RATE_LIMITED)
                 LOG.error("WebSocket connection closed due to ratelimit! Sent more than 120 websocket messages in under 60 seconds!");
+            else if (closeCode == CloseCode.UNKNOWN_ERROR)
+                LOG.error("WebSocket connection closed due to server error! {}: {}", rawCloseCode, rawCloseReason);
             else if (closeCode != null)
                 LOG.debug("WebSocket connection closed with code {}", closeCode);
             else if (rawCloseReason != null)
@@ -413,13 +415,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             else
                 LOG.warn("WebSocket connection closed with unknown meaning for close-code {}", rawCloseCode);
         }
-        if (clientCloseFrame != null
-            && clientCloseFrame.getCloseCode() == 1000
-            && Objects.equals(clientCloseFrame.getCloseReason(), INVALIDATE_REASON))
+        else if (clientCloseFrame != null)
         {
-            //When we close with 1000 we properly dropped our session due to invalidation
-            // in that case we can be sure that resume will not work and instead we invalidate and reconnect here
-            isInvalidate = true;
+            rawCloseCode = clientCloseFrame.getCloseCode();
+            if (rawCloseCode == 1000 && INVALIDATE_REASON.equals(clientCloseFrame.getCloseReason()))
+            {
+                //When we close with 1000 we properly dropped our session due to invalidation
+                // in that case we can be sure that resume will not work and instead we invalidate and reconnect here
+                isInvalidate = true;
+            }
         }
 
         // null is considered -reconnectable- as we do not know the close-code meaning
@@ -492,7 +496,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else // if resume is possible
         {
-            LOG.warn("Got disconnected from WebSocket (Code: {}). Attempting to resume session", code);
+            LOG.debug("Got disconnected from WebSocket (Code: {}). Attempting to resume session", code);
             reconnect();
         }
     }
@@ -770,7 +774,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.RECONNECT:
                 LOG.debug("Got Reconnect request (OP 7). Closing connection now...");
-                close(4000, "OP 7: RECONNECT");
+                close(4900, "OP 7: RECONNECT");
                 break;
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
@@ -780,7 +784,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 final boolean isResume = content.getBoolean("d");
                 // When d: true we can wait a bit and then try to resume again
                 //sending 4000 to not drop session
-                int closeCode = isResume ? 4000 : 1000;
+                int closeCode = isResume ? 4900 : 1000;
                 if (isResume)
                     LOG.debug("Session can be recovered... Closing and sending new RESUME request");
                 else
@@ -929,7 +933,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (DataFormatException e)
         {
-            close(4000, "MALFORMED_PACKAGE");
+            close(4900, "MALFORMED_PACKAGE");
             throw e;
         }
 
