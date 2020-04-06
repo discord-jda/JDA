@@ -132,6 +132,15 @@ class WebSocketSendingThread implements Runnable
         {
             LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
         }
+        catch (Throwable ex)
+        {
+            // Log error
+            LOG.error("Encountered error in gateway worker", ex);
+            if (ex instanceof RuntimeException)
+                throw (RuntimeException) ex;
+            else
+                throw (Error) ex;
+        }
         finally
         {
             // on any exception that might cause this lock to not release
