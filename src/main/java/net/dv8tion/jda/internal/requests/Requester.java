@@ -188,7 +188,6 @@ public class Requester
         okhttp3.Response lastResponse = null;
         try
         {
-            Call call = httpClient.newCall(request);
             LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
             int attempt = 0;
             do
@@ -196,6 +195,7 @@ public class Requester
                 if (apiRequest.isSkipped())
                     return null;
 
+                Call call = httpClient.newCall(request);
                 lastResponse = call.execute();
                 responses[attempt] = lastResponse;
                 String cfRay = lastResponse.header("CF-RAY");
