@@ -48,7 +48,7 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         if (t instanceof CancellationException || t instanceof TimeoutException)
             LOG.debug(t.getMessage());
-        else if (LOG.isDebugEnabled())
+        else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
             LOG.error("RestAction queue returned failure", t);
         else if (t.getCause() != null)
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
