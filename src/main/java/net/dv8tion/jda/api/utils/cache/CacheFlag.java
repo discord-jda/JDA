@@ -22,9 +22,11 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.EnumSet;
 
 /**
@@ -136,9 +138,21 @@ public enum CacheFlag
         return EnumSet.copyOf(privileged);
     }
 
+    /**
+     * Converts the provided {@link ChannelType ChannelTypes} to the respective ConfigFlags.
+     *
+     * @param  types
+     *         The channel types
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link EnumSet} of the cache flags
+     */
     @Nonnull
     public static EnumSet<CacheFlag> fromChannels(@Nonnull ChannelType... types)
     {
+        Checks.noneNull(types, "ChannelType");
         if (types.length == 0)
             return EnumSet.noneOf(CacheFlag.class);
 
@@ -156,9 +170,32 @@ public enum CacheFlag
         return enabled;
     }
 
+    /**
+     * Converts the provided {@link ChannelType ChannelTypes} to the respective ConfigFlags.
+     *
+     * @param  types
+     *         The channel types
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link EnumSet} of the cache flags
+     */
+    @Nonnull
+    public static EnumSet<CacheFlag> fromChannels(@Nonnull Collection<ChannelType> types)
+    {
+        Checks.noneNull(types, "ChannelType");
+        return fromChannels(types.toArray(new ChannelType[0]));
+    }
+
+    /**
+     * Shortcut for {@code fromChannels(ChannelType.values())}.
+     *
+     * @return All channel related cache flags as {@link EnumSet}
+     */
     @Nonnull
     public static EnumSet<CacheFlag> channels()
     {
-        return EnumSet.of(CHANNELS_TEXT, CHANNELS_VOICE, CHANNELS_CATEGORY, CHANNELS_STORE);
+        return fromChannels(ChannelType.values());
     }
 }
