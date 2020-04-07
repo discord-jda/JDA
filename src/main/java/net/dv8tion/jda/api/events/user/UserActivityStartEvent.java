@@ -27,8 +27,6 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has started an {@link Activity}
  * in a {@link Guild}.
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
  *
  * <p>This is fired for every {@link Guild} the user is part of. If the title of a stream
  * changes a start event is fired before an end event which will replace the activity.
@@ -36,6 +34,10 @@ import javax.annotation.Nonnull;
  * <p>The activities of the {@link Member} are updated before all the start/end events are fired.
  * This means you can check {@link Member#getActivities()} when handling this event and it will already
  * contain all new activities, even ones that have not yet fired the start event.
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
 public class UserActivityStartEvent extends GenericUserEvent implements GenericUserPresenceEvent
 {

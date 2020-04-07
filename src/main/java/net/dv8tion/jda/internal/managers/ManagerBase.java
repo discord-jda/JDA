@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
@@ -53,6 +54,22 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (M) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("unchecked")
+    public M deadline(long timestamp)
+    {
+        return (M) super.deadline(timestamp);
     }
 
     @Nonnull

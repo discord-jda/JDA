@@ -27,8 +27,6 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} has stopped an {@link Activity}
  * in a {@link Guild}.
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
  *
  * <p>This is fired for every {@link Guild} the user is part of. If the title of a stream
  * changes a start event is fired before an end event which will replace the activity.
@@ -41,6 +39,10 @@ import javax.annotation.Nonnull;
  * of one of its properties such as name you can check {@link Member#getActivities()}.
  * Iterate the list of activities and check if an activity of the same {@link Activity#getType() type}
  * exists, if that is the case it was replaced and not finished.
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
 public class UserActivityEndEvent extends GenericUserEvent implements GenericUserPresenceEvent
 {

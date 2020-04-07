@@ -83,7 +83,7 @@ public class SessionControllerAdapter implements SessionController
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
-            (response, request) -> response.getObject().getString("url")).complete();
+            (response, request) -> response.getObject().getString("url")).priority().complete();
     }
 
     @Nonnull
@@ -109,7 +109,8 @@ public class SessionControllerAdapter implements SessionController
                     }
                     else if (response.code == 401)
                     {
-                        api.verifyToken(true);
+                        api.shutdownNow();
+                        throw new LoginException("The provided token is invalid!");
                     }
                     else
                     {
@@ -122,7 +123,7 @@ public class SessionControllerAdapter implements SessionController
                     request.onFailure(e);
                 }
             }
-        }.complete();
+        }.priority().complete();
     }
 
     @Nonnull

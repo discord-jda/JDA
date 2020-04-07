@@ -16,14 +16,14 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
+import okhttp3.*;
 import okio.Okio;
 import org.slf4j.Logger;
 
 import java.io.*;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -54,6 +54,18 @@ public class IOUtil
     public static String getHost(String uri)
     {
         return URI.create(uri).getHost();
+    }
+
+    public static OkHttpClient.Builder newHttpClientBuilder()
+    {
+        Dispatcher dispatcher = new Dispatcher();
+        // Allow 25 parallel requests to the same host (usually discordapp.com)
+        dispatcher.setMaxRequestsPerHost(25);
+        // Allow 5 idle threads with 10 seconds timeout for each
+        ConnectionPool connectionPool = new ConnectionPool(5, 10, TimeUnit.SECONDS);
+        return new OkHttpClient.Builder()
+                .connectionPool(connectionPool)
+                .dispatcher(dispatcher);
     }
 
     /**

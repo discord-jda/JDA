@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.events.self.*;
+import net.dv8tion.jda.api.events.self.SelfUpdateAvatarEvent;
+import net.dv8tion.jda.api.events.self.SelfUpdateMFAEvent;
+import net.dv8tion.jda.api.events.self.SelfUpdateNameEvent;
+import net.dv8tion.jda.api.events.self.SelfUpdateVerifiedEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.SelfUserImpl;
@@ -86,49 +88,6 @@ public class UserUpdateHandler extends SocketHandler
                 new SelfUpdateMFAEvent(
                     getJDA(), responseNumber,
                     wasMfaEnabled));
-        }
-
-        if (getJDA().getAccountType() == AccountType.CLIENT)
-        {
-            if (!Objects.equals(email, self.getEmail()))
-            {
-                String oldEmail = self.getEmail();
-                self.setEmail(email);
-                getJDA().handleEvent(
-                    new SelfUpdateEmailEvent(
-                        getJDA(), responseNumber,
-                        oldEmail));
-            }
-
-            if (mobile != null && mobile != self.isMobile())
-            {
-                boolean oldMobile = self.isMobile();
-                self.setMobile(mobile);
-                getJDA().handleEvent(
-                    new SelfUpdateMobileEvent(
-                        getJDA(), responseNumber,
-                        oldMobile));
-            }
-
-            if (nitro != null && nitro != self.isNitro())
-            {
-                boolean oldNitro = self.isNitro();
-                self.setNitro(nitro);
-                getJDA().handleEvent(
-                    new SelfUpdateNitroEvent(
-                        getJDA(), responseNumber,
-                        oldNitro));
-            }
-
-            if (!Objects.equals(phoneNumber, self.getPhoneNumber()))
-            {
-                String oldPhoneNumber = self.getPhoneNumber();
-                self.setPhoneNumber(phoneNumber);
-                getJDA().handleEvent(
-                    new SelfUpdatePhoneNumberEvent(
-                        getJDA(), responseNumber,
-                        oldPhoneNumber));
-            }
         }
         return null;
     }

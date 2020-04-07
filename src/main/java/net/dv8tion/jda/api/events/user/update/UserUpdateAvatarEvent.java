@@ -24,8 +24,10 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that the Avatar of a {@link net.dv8tion.jda.api.entities.User User} changed.
- * <br>This event requires {@link net.dv8tion.jda.api.JDABuilder#setGuildSubscriptionsEnabled(boolean) guild subscriptions}
- * to be enabled.
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
  * <p>Can be used to retrieve the User who changed their avatar and their previous Avatar ID/URL.
  *

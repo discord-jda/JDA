@@ -32,7 +32,6 @@ public class MetaConfig
     private final EnumSet<CacheFlag> cacheFlags;
     private final boolean enableMDC;
     private final boolean useShutdownHook;
-    private final boolean guildSubscriptions;
     private final int maxBufferSize;
 
     public MetaConfig(
@@ -48,7 +47,6 @@ public class MetaConfig
         else
             this.mdcContextMap = null;
         this.useShutdownHook = flags.contains(ConfigFlag.SHUTDOWN_HOOK);
-        this.guildSubscriptions = flags.contains(ConfigFlag.GUILD_SUBSCRIPTIONS);
     }
 
     @Nullable
@@ -71,11 +69,6 @@ public class MetaConfig
     public boolean isUseShutdownHook()
     {
         return useShutdownHook;
-    }
-
-    public boolean isGuildSubscriptions()
-    {
-        return guildSubscriptions;
     }
 
     public int getMaxBufferSize()

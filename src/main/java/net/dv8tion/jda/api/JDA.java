@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -53,6 +55,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
 /**
@@ -203,6 +207,28 @@ public interface JDA
     Status getStatus();
 
     /**
+     * The {@link GatewayIntent GatewayIntents} for this JDA session.
+     * 
+     * @return {@link EnumSet} of active gateway intents
+     */
+    @Nonnull
+    EnumSet<GatewayIntent> getGatewayIntents();
+
+    /**
+     * Attempts to remove the user with the provided id from the cache.
+     * <br>If you attempt to remove the {@link #getSelfUser() SelfUser} this will simply return {@code false}.
+     *
+     * <p>This should be used by an implementation of {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * as an upstream request to remove a member.
+     *
+     * @param  userId
+     *         The target user id
+     *
+     * @return True, if the cache was changed
+     */
+    boolean unloadUser(long userId);
+
+    /**
      * The time in milliseconds that discord took to respond to our last heartbeat
      * <br>This roughly represents the WebSocket ping of this session
      *
@@ -230,7 +256,7 @@ public interface JDA
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: long
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #getGatewayPing()
      */
@@ -240,7 +266,8 @@ public interface JDA
         AtomicLong time = new AtomicLong();
         Route.CompiledRoute route = Route.Self.GET_SELF.compile();
         RestActionImpl<Long> action = new RestActionImpl<>(this, route, (response, request) -> System.currentTimeMillis() - time.get());
-        action.setCheck(() -> {
+        action.setCheck(() ->
+        {
             time.set(System.currentTimeMillis());
             return true;
         });
@@ -334,12 +361,27 @@ public interface JDA
     }
 
     /**
+     * Cancels all currently scheduled {@link RestAction} requests.
+     * <br>When a {@link RestAction} is cancelled, a {@link java.util.concurrent.CancellationException} will be provided
+     * to the failure callback. This means {@link RestAction#queue(Consumer, Consumer)} will invoke the second callback
+     * and {@link RestAction#complete()} will throw an exception.
+     *
+     * <p><b>This is only recommended as an extreme last measure to avoid backpressure.</b>
+     * If you want to stop requests on shutdown you should use {@link #shutdownNow()} instead of this method.
+     *
+     * @return how many requests were cancelled
+     *
+     * @see    RestAction#setCheck(BooleanSupplier)
+     */
+    int cancelRequests();
+
+    /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
      * executions. This is also used in other parts of JDA related to http requests.
      *
      * @return The {@link ScheduledExecutorService} used for http request handling
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     ScheduledExecutorService getRateLimitPool();
@@ -350,7 +392,7 @@ public interface JDA
      *
      * @return The {@link ScheduledExecutorService} used for WebSocket transmissions
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     ScheduledExecutorService getGatewayPool();
@@ -363,7 +405,7 @@ public interface JDA
      *
      * @return The {@link ExecutorService} used for callbacks
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     ExecutorService getCallbackPool();
@@ -373,7 +415,7 @@ public interface JDA
      *
      * @return The http client
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     OkHttpClient getHttpClient();
@@ -385,9 +427,12 @@ public interface JDA
      * <p>The correct way to open and close an audio connection is through the {@link Guild Guild's}
      * {@link AudioManager}.
      *
+     * @throws IllegalStateException
+     *         If {@link GatewayIntent#GUILD_VOICE_STATES} is disabled
+     *
      * @return The {@link DirectAudioController} for this JDA instance
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     DirectAudioController getDirectAudioController();
@@ -450,11 +495,7 @@ public interface JDA
      *         The name of the resulting guild
      *
      * @throws java.lang.IllegalStateException
-     *         If the currently logged in account is from
-     *         <ul>
-     *             <li>{@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} and the account is in 100 or more guilds</li>
-     *             <li>{@link net.dv8tion.jda.api.AccountType#BOT AccountType.BOT} and the account is in 10 or more guilds</li>
-     *         </ul>
+     *         If the currently logged in account is in 10 or more guilds
      * @throws java.lang.IllegalArgumentException
      *         If the provided name is empty, {@code null} or not between 2-100 characters
      *
@@ -489,10 +530,9 @@ public interface JDA
         return getAudioManagerCache().asList();
     }
 
-
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
-     * all cached {@link net.dv8tion.jda.api.entities.User Users} visible to this JDA session.
+     * all <b>cached</b> {@link net.dv8tion.jda.api.entities.User Users} visible to this JDA session.
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
      */
@@ -504,6 +544,8 @@ public interface JDA
      * {@link net.dv8tion.jda.api.entities.Guild Guild} with the currently logged in account.
      * <br>This list will never contain duplicates and represents all
      * {@link net.dv8tion.jda.api.entities.User Users} that JDA can currently see.
+     *
+     * <p><b>This will only check cached users!</b>
      *
      * <p>If the developer is sharding, then only users from guilds connected to the specifically logged in
      * shard will be returned in the List.
@@ -525,6 +567,8 @@ public interface JDA
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
      * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
+     * <p><b>This will only check cached users!</b>
+     *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
      *
@@ -532,6 +576,8 @@ public interface JDA
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User} with matching id.
+     *
+     * @see    #retrieveUserById(String)
      */
     @Nullable
     default User getUserById(@Nonnull String id)
@@ -543,10 +589,14 @@ public interface JDA
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
      * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
      *
+     * <p><b>This will only check cached users!</b>
+     *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User} with matching id.
+     *
+     * @see    #retrieveUserById(long)
      */
     @Nullable
     default User getUserById(long id)
@@ -563,6 +613,8 @@ public interface JDA
      * <p>This only checks users that are known to the currently logged in account (shard). If a user exists
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
      * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
+     *
+     * <p><b>This will only check cached users!</b>
      *
      * @param  tag
      *         The Discord Tag in the format {@code Username#Discriminator}
@@ -593,6 +645,8 @@ public interface JDA
      * with the tag that is not available in the {@link #getUserCache() User-Cache} it will not be detected.
      * <br>Currently Discord does not offer a way to retrieve a user by their discord tag.
      *
+     * <p><b>This will only check cached users!</b>
+     *
      * @param  username
      *         The name of the user
      * @param  discriminator
@@ -621,6 +675,8 @@ public interface JDA
     /**
      * This immutable returns all {@link net.dv8tion.jda.api.entities.User Users} that have the same username as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.User Users} with the provided name, then this returns an empty list.
+     *
+     * <p><b>This will only check cached users!</b>
      *
      * <p><b>Note: </b> This does **not** consider nicknames, it only considers {@link net.dv8tion.jda.api.entities.User#getName()}
      *
@@ -663,8 +719,11 @@ public interface JDA
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
+     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
      * is made to the Discord servers.
+     *
+     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -692,12 +751,18 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<User> retrieveUserById(@Nonnull String id);
+    default RestAction<User> retrieveUserById(@Nonnull String id)
+    {
+        return retrieveUserById(id, true);
+    }
 
     /**
      * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
-     * <br>This first calls {@link #getUserById(long)}, and if the return is {@code null} then a request
+     * <br>This first calls {@link #getUserById(long)}, and if that returns {@code null} or the cache is inconsistent due to disabled intents then a request
      * is made to the Discord servers.
+     *
+     * <p>When the both {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} and {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intents
+     * are disabled this will always make a request even if the user is cached. You can use {@link #retrieveUserById(String, boolean)} to disable this behavior.
      *
      * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
      * <ul>
@@ -717,7 +782,77 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<User> retrieveUserById(long id);
+    default RestAction<User> retrieveUserById(long id)
+    {
+        return retrieveUserById(id, true);
+    }
+
+    /**
+     * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
+     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
+     * this method will update the cached user unless the {@code update} parameter is {@code false}.
+     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
+     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.api.entities.User User}
+     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
+     * @param  update
+     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
+     *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         This endpoint is {@link AccountType#BOT} only.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided id String is null.</li>
+     *             <li>If the provided id String is empty.</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
+     *         <br>On request, gets the User with id matching provided id from Discord.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<User> retrieveUserById(@Nonnull String id, boolean update)
+    {
+        return retrieveUserById(MiscUtil.parseSnowflake(id), update);
+    }
+
+    /**
+     * Attempts to retrieve a {@link net.dv8tion.jda.api.entities.User User} object based on the provided id.
+     * <br>If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intents are disabled
+     * this method will update the cached user unless the {@code update} parameter is {@code false}.
+     * <br>If either of those intents is enabled, this will immediately provide the cached user if possible.
+     *
+     * <p>The returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} can encounter the following Discord errors:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER ErrorResponse.UNKNOWN_USER}
+     *     <br>Occurs when the provided id does not refer to a {@link net.dv8tion.jda.api.entities.User User}
+     *     known by Discord. Typically occurs when developers provide an incomplete id (cut short).</li>
+     * </ul>
+     *
+     * @param  id
+     *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
+     * @param  update
+     *         Whether JDA should perform a request even if the member is already cached to update properties such as the name
+     *
+     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
+     *         This endpoint is {@link AccountType#BOT} only.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.User User}
+     *         <br>On request, gets the User with id matching provided id from Discord.
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<User> retrieveUserById(long id, boolean update);
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
@@ -985,6 +1120,8 @@ public interface JDA
      *         If the provided ID is null
      * @throws java.lang.NumberFormatException
      *         If the provided ID is not a snowflake
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
      *
      * @return The GuildChannel or null
      */
@@ -1012,6 +1149,9 @@ public interface JDA
      * @param  id
      *         The ID of the channel
      *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
+     *
      * @return The GuildChannel or null
      */
     @Nullable
@@ -1020,14 +1160,14 @@ public interface JDA
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
-            case TEXT:
-                return getTextChannelById(id);
-            case VOICE:
-                return getVoiceChannelById(id);
-            case STORE:
-                return getStoreChannelById(id);
-            case CATEGORY:
-                return getCategoryById(id);
+        case TEXT:
+            return getTextChannelById(id);
+        case VOICE:
+            return getVoiceChannelById(id);
+        case STORE:
+            return getStoreChannelById(id);
+        case CATEGORY:
+            return getCategoryById(id);
         }
         return null;
     }
@@ -1456,6 +1596,67 @@ public interface JDA
     }
 
     /**
+     * Opens a {@link PrivateChannel} with the provided user by id.
+     * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     * if the user does not exist.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendMessage(JDA jda, long userId, String content) {
+     *     jda.openPrivateChannelById(userId)
+     *        .flatMap(channel -> channel.sendMessage(content))
+     *        .queue();
+     * }
+     * }</pre>
+     *
+     * @param  userId
+     *         The id of the target user
+     *
+     * @throws UnsupportedOperationException
+     *         If the target user is the currently logged in account
+     *
+     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     *
+     * @see    User#openPrivateChannel()
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<PrivateChannel> openPrivateChannelById(long userId);
+
+    /**
+     * Opens a {@link PrivateChannel} with the provided user by id.
+     * <br>This will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_USER UNKNOWN_USER}
+     * if the user does not exist.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendMessage(JDA jda, String userId, String content) {
+     *     jda.openPrivateChannelById(userId)
+     *        .flatMap(channel -> channel.sendMessage(content))
+     *        .queue();
+     * }
+     * }</pre>
+     *
+     * @param  userId
+     *         The id of the target user
+     *
+     * @throws UnsupportedOperationException
+     *         If the target user is the currently logged in account
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link PrivateChannel}
+     *
+     * @see    User#openPrivateChannel()
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<PrivateChannel> openPrivateChannelById(@Nonnull String userId)
+    {
+        return openPrivateChannelById(MiscUtil.parseSnowflake(userId));
+    }
+
+    /**
      * Unified {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} visible to this JDA session.
      *
@@ -1834,7 +2035,7 @@ public interface JDA
             }
             catch (IOException | URISyntaxException e)
             {
-                throw  new IllegalStateException("No port available");
+                throw new IllegalStateException("No port available");
             }
         }
         else throw new IllegalStateException("No port available");

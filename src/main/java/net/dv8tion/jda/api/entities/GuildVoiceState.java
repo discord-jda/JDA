@@ -93,6 +93,13 @@ public interface GuildVoiceState
     boolean isSuppressed();
 
     /**
+     * Returns true if this {@link net.dv8tion.jda.api.entities.Member Member} is currently streaming with Go Live.
+     *
+     * @return True, if this member is streaming
+     */
+    boolean isStream();
+
+    /**
      * Returns the current {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.api.entities.Member Member}
      * is in. If the {@link net.dv8tion.jda.api.entities.Member Member} is currently not in a
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}, this returns null.

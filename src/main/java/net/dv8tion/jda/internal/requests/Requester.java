@@ -16,14 +16,12 @@
 
 package net.dv8tion.jda.internal.requests;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter;
-import net.dv8tion.jda.internal.requests.ratelimit.ClientRateLimiter;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
@@ -35,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
+import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.Collections;
@@ -77,11 +76,7 @@ public class Requester
 
         this.authConfig = authConfig;
         this.api = (JDAImpl) api;
-        if (authConfig.getAccountType() == AccountType.BOT)
-            rateLimiter = new BotRateLimiter(this);
-        else
-            rateLimiter = new ClientRateLimiter(this);
-        
+        this.rateLimiter = new BotRateLimiter(this);
         this.httpClient = this.api.getHttpClient();
     }
 
@@ -197,9 +192,9 @@ public class Requester
             int attempt = 0;
             do
             {
-                //If the request has been canceled via the Future, don't execute.
-                //if (apiRequest.isCanceled())
-                //    return null;
+                if (apiRequest.isSkipped())
+                    return null;
+
                 Call call = httpClient.newCall(request);
                 lastResponse = call.execute();
                 responses[attempt] = lastResponse;
@@ -249,6 +244,11 @@ public class Requester
                 return execute(apiRequest, true, handleOnRatelimit);
             LOG.error("Requester timed out while executing a request", e);
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            return null;
+        }
+        catch (InterruptedIOException e)
+        {
+            LOG.warn("Got interrupted while executing request", e);
             return null;
         }
         catch (Exception e)
@@ -316,9 +316,9 @@ public class Requester
         this.retryOnTimeout = retryOnTimeout;
     }
 
-    public void stop()
+    public boolean stop()
     {
-        rateLimiter.stop();
+        return rateLimiter.stop();
     }
 
     public void shutdown()

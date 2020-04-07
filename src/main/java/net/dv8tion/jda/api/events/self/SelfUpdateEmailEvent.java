@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.events.self;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 
 import javax.annotation.Nonnull;
@@ -26,7 +28,12 @@ import javax.annotation.Nonnull;
  * <p>Can be used to retrieve the old email.
  *
  * <p>Identifier: {@code email}
+ *
+ * @deprecated This is no longer supported
  */
+@Deprecated
+@ForRemoval
+@DeprecatedSince("4.2.0")
 public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "email";

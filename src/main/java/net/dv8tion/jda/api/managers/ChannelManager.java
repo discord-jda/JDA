@@ -405,9 +405,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
      * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}</b>
      *
-     * <p>Note that only {@link net.dv8tion.jda.api.AccountType#CLIENT CLIENT} type accounts are
-     * affected by slowmode, and that {@link net.dv8tion.jda.api.AccountType#BOT BOT} accounts
-     * are immune to the restrictions.
+     * <p>Note: Bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
