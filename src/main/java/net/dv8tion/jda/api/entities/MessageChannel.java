@@ -2238,7 +2238,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.notEmpty(unicode, "Emoji");
         Checks.noWhitespace(unicode, "Emoji");
 
-        return new ReactionPaginationActionImpl(this, messageId, EncodingUtil.encodeUTF8(unicode));
+        return new ReactionPaginationActionImpl(this, messageId, EncodingUtil.encodeReaction(unicode));
     }
 
     /**
