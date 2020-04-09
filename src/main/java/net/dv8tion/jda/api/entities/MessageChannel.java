@@ -643,9 +643,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
-            "Provided file is either null, doesn't exist or is not readable!");
-        Checks.check(file.length() <= getJDA().getSelfUser().getAllowedFileSize(),
-            "File is too big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
+                    "Provided file doesn't exist or cannot be read!");
         Checks.notNull(fileName, "fileName");
 
         try
