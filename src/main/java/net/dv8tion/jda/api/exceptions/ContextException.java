@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.exceptions;
 
+import net.dv8tion.jda.internal.utils.Helpers;
+
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
@@ -66,12 +68,8 @@ public class ContextException extends Exception
         @Override
         public void accept(Throwable throwable)
         {
-            Throwable cause = throwable;
-            while (cause.getCause() != null)
-                cause = cause.getCause();
-            cause.initCause(context);
             if (callback != null)
-                callback.accept(throwable);
+                callback.accept(Helpers.appendCause(throwable, context));
         }
     }
 }

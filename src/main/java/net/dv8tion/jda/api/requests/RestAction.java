@@ -21,9 +21,7 @@ import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.operator.DelayRestAction;
-import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
-import net.dv8tion.jda.internal.requests.restaction.operator.MapRestAction;
+import net.dv8tion.jda.internal.requests.restaction.operator.*;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.ContextRunnable;
 
@@ -580,6 +578,152 @@ public interface RestAction<T>
     {
         Checks.notNull(map, "Function");
         return new MapRestAction<>(this, map);
+    }
+
+    /**
+     * Supply a fallback value when the RestAction fails for any reason.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on failed execution.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<String> sendMessage(User user, String content) {
+     *     return user.openPrivateChannel() // RestAction<PrivateChannel>
+     *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
+     *         .map(Message::getContentRaw) // RestAction<String>
+     *         .onErrorMap(Throwable::getMessage); // RestAction<String> (must be the same as above)
+     * }
+     * }</pre>
+     *
+     * @param  map
+     *         The mapping function which provides the fallback value to use
+     *
+     * @throws IllegalArgumentException
+     *         If the mapping function is null
+     *
+     * @return RestAction with fallback handling
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> onErrorMap(@Nonnull Function<? super Throwable, ? extends T> map)
+    {
+        return onErrorMap(null, map);
+    }
+
+    /**
+     * Supply a fallback value when the RestAction fails for a specific reason.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on failed execution.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<String> sendMessage(User user, String content) {
+     *     return user.openPrivateChannel() // RestAction<PrivateChannel>
+     *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
+     *         .map(Message::getContentRaw) // RestAction<String>
+     *         .onErrorMap(CANNOT_SEND_TO_USER::test, Throwable::getMessage); // RestAction<String> (must be the same as above)
+     * }
+     * }</pre>
+     *
+     * @param  condition
+     *         A condition that must return true to apply this fallback
+     * @param  map
+     *         The mapping function which provides the fallback value to use
+     *
+     * @throws IllegalArgumentException
+     *         If the mapping function is null
+     *
+     * @return RestAction with fallback handling
+     *
+     * @see    ErrorResponse#test(Throwable)
+     * @see    ErrorResponse#test(ErrorResponse...)
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> onErrorMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends T> map)
+    {
+        Checks.notNull(map, "Function");
+        return new MapErrorRestAction<>(this, condition == null ? (x) -> true : condition, map);
+    }
+
+    /**
+     * Supply a fallback value when the RestAction fails for a any reason.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on failed execution.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Message> sendMessage(User user, TextChannel context, String content) {
+     *     return user.openPrivateChannel() // RestAction<PrivateChannel>
+     *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
+     *         .onErrorFlatMap(
+     *             (error) -> context.sendMessage("Failed to send direct message to " + user.getAsMention() + " Reason: " + error)
+     *         ); // RestAction<Message> (must be the same as above)
+     * }
+     * }</pre>
+     *
+     * @param  map
+     *         The mapping function which provides the fallback action to use
+     *
+     * @throws IllegalArgumentException
+     *         If the mapping function is null
+     *
+     * @return RestAction with fallback handling
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> onErrorFlatMap(@Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
+    {
+        return onErrorFlatMap(null, map);
+    }
+
+    /**
+     * Supply a fallback value when the RestAction fails for a specific reason.
+     *
+     * <p>This does not modify this instance but returns a new RestAction which will apply
+     * the map function on failed execution.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public RestAction<Message> sendMessage(User user, TextChannel context, String content) {
+     *     return user.openPrivateChannel() // RestAction<PrivateChannel>
+     *         .flatMap((channel) -> channel.sendMessage(content)) // RestAction<Message>
+     *         .onErrorFlatMap(CANNOT_SEND_TO_USER::test,
+     *             (error) -> context.sendMessage("Cannot send direct message to " + user.getAsMention())
+     *         ); // RestAction<Message> (must be the same as above)
+     * }
+     * }</pre>
+     *
+     * @param  condition
+     *         A condition that must return true to apply this fallback
+     * @param  map
+     *         The mapping function which provides the fallback action to use
+     *
+     * @throws IllegalArgumentException
+     *         If the mapping function is null
+     *
+     * @return RestAction with fallback handling
+     *
+     * @see    ErrorResponse#test(Throwable)
+     * @see    ErrorResponse#test(ErrorResponse...)
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> onErrorFlatMap(@Nullable Predicate<? super Throwable> condition, @Nonnull Function<? super Throwable, ? extends RestAction<? extends T>> map)
+    {
+        Checks.notNull(map, "Function");
+        return new FlatMapErrorRestAction<>(this, condition == null ? (x) -> true : condition, map);
     }
 
     /**
