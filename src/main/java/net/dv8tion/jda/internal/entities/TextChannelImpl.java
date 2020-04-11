@@ -388,6 +388,21 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    {
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_ATTACH_FILES);
+
+        final long maxSize = getGuild().getMaxFileSize();
+        Checks.check(data == null || data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
+
+        //Call MessageChannel's default method
+        return TextChannel.super.sendFile(data, fileName, options);
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Message> retrieveMessageById(@Nonnull String messageId)
     {
         checkPermission(Permission.MESSAGE_READ);

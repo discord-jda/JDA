@@ -770,8 +770,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
-        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
-        Checks.check(data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
+
         return sendFile(new ByteArrayInputStream(data), fileName, options);
     }
 

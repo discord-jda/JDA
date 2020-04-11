@@ -166,6 +166,16 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendFile(file, fileName, options);
     }
 
+    @Nonnull
+    @Override
+    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    {
+        checkBot();
+        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
+        Checks.check(data == null || data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
+        return PrivateChannel.super.sendFile(data, fileName, options);
+    }
+
     public PrivateChannelImpl setLastMessageId(long id)
     {
         this.lastMessageId = id;
