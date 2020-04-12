@@ -467,6 +467,13 @@ public class EntityBuilder
             // Create a brand new member
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
+            long epoch = 0;
+            if (!memberJson.isNull("premium_since"))
+            {
+                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("premium_since"));
+                epoch = Instant.from(date).toEpochMilli();
+            }
+            member.setBoostDate(epoch);
             Set<Role> roles = member.getRoleSet();
             for (int i = 0; i < roleArray.length(); i++)
             {
@@ -526,6 +533,7 @@ public class EntityBuilder
                   .setGuildDeafened(voiceStateJson.getBoolean("deaf"))
                   .setSuppressed(voiceStateJson.getBoolean("suppress"))
                   .setSessionId(voiceStateJson.getString("session_id"))
+                  .setStream(voiceStateJson.getBoolean("self_stream"))
                   .setConnectedChannel(voiceChannel);
     }
 

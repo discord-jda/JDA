@@ -16,10 +16,17 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Constants for easy use in {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseException} and {@link net.dv8tion.jda.api.exceptions.ErrorHandler ErrorHandler}.
@@ -118,6 +125,56 @@ public enum ErrorResponse
     public String getMeaning()
     {
         return meaning;
+    }
+
+    /**
+     * Tests whether the given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} equal to this.
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
+     *
+     * @param  throwable
+     *         The throwable to test
+     *
+     * @return True, if the error response is equal to this
+     */
+    public boolean test(Throwable throwable)
+    {
+        return throwable instanceof ErrorResponseException && ((ErrorResponseException) throwable).getErrorResponse() == this;
+    }
+
+    /**
+     * Provides a tests whether a given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} being one of the provided responses.
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
+     *
+     * @param  responses
+     *         The responses to test for
+     *
+     * @return {@link Predicate} which returns true, if the error response is equal to this
+     */
+    @Nonnull
+    public static Predicate<Throwable> test(@Nonnull ErrorResponse... responses)
+    {
+        Checks.noneNull(responses, "ErrorResponse");
+        EnumSet<ErrorResponse> set = EnumSet.noneOf(ErrorResponse.class);
+        Collections.addAll(set, responses);
+        return test(set);
+    }
+
+    /**
+     * Provides a tests whether a given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} being one of the provided responses.
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
+     *
+     * @param  responses
+     *         The responses to test for
+     *
+     * @return {@link Predicate} which returns true, if the error response is equal to this
+     */
+    @Nonnull
+    public static Predicate<Throwable> test(@Nonnull Collection<ErrorResponse> responses)
+    {
+        Checks.noneNull(responses, "ErrorResponse");
+        EnumSet<ErrorResponse> set = EnumSet.copyOf(responses);
+        return (error) -> error instanceof ErrorResponseException && set.contains(((ErrorResponseException) error).getErrorResponse());
+
     }
 
     @Nonnull
