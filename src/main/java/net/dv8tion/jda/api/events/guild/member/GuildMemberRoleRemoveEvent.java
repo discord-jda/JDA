@@ -26,11 +26,18 @@ import java.util.List;
 /**
  * Indicates that one or more {@link net.dv8tion.jda.api.entities.Role Roles} were removed from a {@link net.dv8tion.jda.api.entities.Member Member}.
  *
+ * <p>Can be used to retrieve affected member and guild. Provides a list of removed roles.
+ *
+ * <h2>Requirements</h2>
+ *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
- * <p>Can be used to retrieve affected member and guild. Provides a list of removed roles.
+ * <p>Additionally, this event also requires the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+ * to cache the updated members. Discord does not specifically tell us about the role updates, but merely tells us the
+ * member was updated and gives us the updated member object. In order to fire a specific event like this we
+ * need to have the old member cached to compare against.
  */
 public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
 {
