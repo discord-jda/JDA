@@ -1,6 +1,6 @@
 ---
 name: Question
-about: Use this Template to ask a question regarding JDA (Joining the Discord is recommendet)
+about: Use this template to ask a question regarding JDA (Joining the Discord first is highly recommended)
 ---
 
 <!--
