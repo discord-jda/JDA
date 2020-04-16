@@ -540,7 +540,7 @@ public class MessageReaction
         {
             return isEmote()
                     ? name + ":" + id
-                    : EncodingUtil.encodeUTF8(name);
+                    : name;
         }
 
         /**
