@@ -536,6 +536,7 @@ public class MessageReaction
          *
          * @return The unicode if it is an emoji, or the name and id in the format {@code <name>:<id>}
          */
+        @Nonnull
         public String getAsReactionCode()
         {
             return isEmote()
