@@ -528,6 +528,20 @@ public class MessageReaction
                 throw new IllegalStateException("Cannot get id for emoji reaction");
             return id;
         }
+        
+        /**
+         * The code for this Reaction.
+         * <br>For unicode emojis this will be the unicode of said emoji rather than an alias like {@code :smiley:}.
+         * <br>For custom emotes this will be the name and id of said emote in the format {@code <name>:<id>}.
+         *
+         * @return The unicode if it is an emoji, or the name and id in the format {@code <name>:<id>}
+         */
+        public String getAsReactionCode()
+        {
+            return isEmote()
+                    ? name + ":" + id
+                    : EncodingUtil.encodeUTF8(name);
+        }
 
         /**
          * The unicode representing the emoji used for reacting.
