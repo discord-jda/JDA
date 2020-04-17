@@ -539,7 +539,7 @@ public class MessageReaction
         @Nonnull
         public String getAsReactionCode()
         {
-            return isEmote()
+            return emote != null
                     ? name + ":" + id
                     : name;
         }
