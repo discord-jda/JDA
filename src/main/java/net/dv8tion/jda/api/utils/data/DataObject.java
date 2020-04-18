@@ -82,6 +82,31 @@ public class DataObject implements SerializableData
     /**
      * Parses a JSON payload into a DataObject instance.
      *
+     * @param  data
+     *         The correctly formatted JSON payload to parse
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided json is incorrectly formatted
+     *
+     * @return A DataObject instance for the provided payload
+     */
+    @Nonnull
+    public static DataObject fromJson(@Nonnull byte[] data)
+    {
+        try
+        {
+            Map<String, Object> map = mapper.readValue(data, mapType);
+            return new DataObject(map);
+        }
+        catch (IOException ex)
+        {
+            throw new ParsingException(ex);
+        }
+    }
+
+    /**
+     * Parses a JSON payload into a DataObject instance.
+     *
      * @param  json
      *         The correctly formatted JSON payload to parse
      *

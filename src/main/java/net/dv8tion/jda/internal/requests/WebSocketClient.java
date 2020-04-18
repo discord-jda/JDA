@@ -336,6 +336,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 else // practically should never happen
                     socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(url);
+                socket.setDirectTextMessage(true);
             }
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
@@ -901,9 +902,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message)
+    public void onTextMessage(WebSocket websocket, byte[] data)
     {
-        handleEvent(DataObject.fromJson(message));
+        handleEvent(DataObject.fromJson(data));
     }
 
     @Override
