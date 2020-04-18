@@ -35,9 +35,16 @@ import javax.annotation.Nonnull;
  * This means you can check {@link Member#getActivities()} when handling this event and it will already
  * contain all new activities, even ones that have not yet fired the start event.
  *
+ * <h2>Requirements</h2>
+ *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
+ * <p>Additionally, this event also requires the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+ * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
+ * member was updated and gives us the updated member object. In order to fire a specific event like this we
+ * need to have the old member cached to compare against.
  */
 public class UserActivityStartEvent extends GenericUserEvent implements GenericUserPresenceEvent
 {
@@ -61,12 +68,14 @@ public class UserActivityStartEvent extends GenericUserEvent implements GenericU
         return newActivity;
     }
 
+    @Nonnull
     @Override
     public Guild getGuild()
     {
         return member.getGuild();
     }
 
+    @Nonnull
     @Override
     public Member getMember()
     {

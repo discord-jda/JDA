@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
@@ -35,6 +36,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
@@ -530,6 +532,31 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, targetUser);
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull String unicode)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notEmpty(unicode, "Emoji");
+        Checks.noWhitespace(unicode, "Emoji");
+
+        checkPermission(Permission.MESSAGE_HISTORY);
+
+        return new ReactionPaginationActionImpl(this, messageId, EncodingUtil.encodeUTF8(unicode));
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(emote, "Emote");
+
+        checkPermission(Permission.MESSAGE_HISTORY);
+
+        return new ReactionPaginationActionImpl(this, messageId, String.format("%s:%s", emote, emote.getId()));
     }
 
     @Nonnull

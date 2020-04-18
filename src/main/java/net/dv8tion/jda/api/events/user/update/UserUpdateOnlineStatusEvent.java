@@ -28,11 +28,18 @@ import javax.annotation.Nonnull;
  * <br>As with any presence updates this happened for a {@link net.dv8tion.jda.api.entities.Member Member} in a Guild!
  * <p>Can be used to retrieve the User who changed their status and their previous status.
  *
+ * <p>Identifier: {@code status}
+ *
+ * <h2>Requirements</h2>
+ *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  *
- * <p>Identifier: {@code status}
+ * <p>Additionally, this event also requires the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+ * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
+ * member was updated and gives us the updated member object. In order to fire a specific event like this we
+ * need to have the old member cached to compare against.
  */
 public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineStatus> implements GenericUserPresenceEvent
 {
