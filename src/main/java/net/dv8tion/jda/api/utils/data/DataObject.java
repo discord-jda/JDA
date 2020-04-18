@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -643,6 +644,25 @@ public class DataObject implements SerializableData
     public Set<String> keys()
     {
         return data.keySet();
+    }
+
+    /**
+     * Serialize this object as JSON.
+     *
+     * @return a byte array containing the JSON representation of this object.
+     */
+    public byte[] toJson()
+    {
+        try
+        {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            mapper.writeValue(outputStream, data);
+            return outputStream.toByteArray();
+        }
+        catch (IOException e)
+        {
+            throw new ParsingException(e);
+        }
     }
 
     @Override
