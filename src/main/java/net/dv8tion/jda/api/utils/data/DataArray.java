@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -618,7 +619,7 @@ public class DataArray implements Iterable<Object>
         }
         catch (IOException e)
         {
-            throw new IllegalStateException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -631,7 +632,7 @@ public class DataArray implements Iterable<Object>
         }
         catch (JsonProcessingException e)
         {
-            throw new IllegalStateException(e);
+            throw new ParsingException(e);
         }
     }
 
