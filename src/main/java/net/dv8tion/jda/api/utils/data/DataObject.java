@@ -31,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -661,7 +662,7 @@ public class DataObject implements SerializableData
         }
         catch (IOException e)
         {
-            throw new ParsingException(e);
+            throw new UncheckedIOException(e);
         }
     }
 
