@@ -337,8 +337,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 else // practically should never happen
                     socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(url);
-                socket.setDirectTextMessage(true);
             }
+            socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
                   .connect();

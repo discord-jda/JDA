@@ -134,8 +134,8 @@ class AudioWebSocket extends WebSocketAdapter
                 else // practically should never happen
                     socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(wssEndpoint);
-                socket.setDirectTextMessage(true);
             }
+            socket.setDirectTextMessage(true);
             socket.addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
             socket.connectAsynchronously();
