@@ -399,7 +399,7 @@ public class MessageReaction
 
     private String getReactionCode()
     {
-        return emote.isEmote()
+        return emote != null
                 ? emote.getName() + ":" + emote.getId()
                 : EncodingUtil.encodeUTF8(emote.getName());
     }
@@ -539,7 +539,7 @@ public class MessageReaction
         @Nonnull
         public String getAsReactionCode()
         {
-            return emote != null
+            return isEmote()
                     ? name + ":" + id
                     : name;
         }
