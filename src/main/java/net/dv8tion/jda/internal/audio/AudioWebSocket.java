@@ -40,6 +40,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.NoRouteToHostException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +134,7 @@ class AudioWebSocket extends WebSocketAdapter
                 else // practically should never happen
                     socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(wssEndpoint);
+                socket.setDirectTextMessage(true);
             }
             socket.addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
@@ -279,14 +281,20 @@ class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message)
+    public void onTextMessage(WebSocket websocket, byte[] data)
     {
         try
         {
-            handleEvent(DataObject.fromJson(message));
+            handleEvent(DataObject.fromJson(data));
         }
         catch (Exception ex)
         {
+            String message = "malformed";
+            try
+            {
+                message = new String(data, StandardCharsets.UTF_8);
+            }
+            catch (Exception ignored) {}
             LOG.error("Encountered exception trying to handle an event message: {}", message, ex);
         }
     }
