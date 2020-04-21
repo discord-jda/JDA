@@ -225,4 +225,24 @@ public interface User extends IMentionable, IFakeable
      */
     @Nonnull
     JDA getJDA();
+    
+    public enum Flags{
+        NONE(0, "None"),
+        EMPLOYEE(1, "Discord Employee"),
+        PARTNER(2, "Discord Partner"),
+        HYPESQUAD(4, "HypeSquad Events"),
+        BUG_HUNTER_1(8, "Bug Hunter Level 1"),
+        BRAVERY(64, "HypeSquad House Bravery"),
+        BRILLIANCE(128, "HypeSquad House Brilliance"),
+        BALANCE(256, "HypeSquad House Balance"),
+        SYSTEM(4096, "System"),
+        BUG_HUNTER_2(16384, "Bug Hunter Level 2");
+        
+        private final int key;
+        private final String name;
+        
+        Flags(int key, String name){
+            this.key = key;
+            this.name = name;
+    }
 }
