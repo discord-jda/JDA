@@ -225,24 +225,63 @@ public interface User extends IMentionable, IFakeable
      */
     @Nonnull
     JDA getJDA();
-    
-    public enum Flags{
-        NONE(0, "None"),
-        EMPLOYEE(1, "Discord Employee"),
-        PARTNER(2, "Discord Partner"),
-        HYPESQUAD(4, "HypeSquad Events"),
-        BUG_HUNTER_1(8, "Bug Hunter Level 1"),
-        BRAVERY(64, "HypeSquad House Bravery"),
-        BRILLIANCE(128, "HypeSquad House Brilliance"),
-        BALANCE(256, "HypeSquad House Balance"),
-        SYSTEM(4096, "System"),
+
+    /**
+     * Represents the bit offsets used by Discord for public flags
+     */
+    enum Flags{
+        NONE(            0, "None"),
+        EMPLOYEE(        1, "Discord Employee"),
+        PARTNER(         2, "Discord Partner"),
+        HYPESQUAD(       4, "HypeSquad Events"),
+        BUG_HUNTER_1(    8, "Bug Hunter Level 1"),
+        BRAVERY(        64, "HypeSquad House Bravery"),
+        BRILLIANCE(    128, "HypeSquad House Brilliance"),
+        BALANCE(       256, "HypeSquad House Balance"),
+        SYSTEM(       4096, "System"),
         BUG_HUNTER_2(16384, "Bug Hunter Level 2");
         
-        private final int key;
+        private final int offset;
+        private final long raw;
         private final String name;
         
-        Flags(int key, String name){
-            this.key = key;
+        Flags(int offset, @Nonnull String name)
+        {
+            this.offset = offset;
+            this.raw = 1 << offset;
             this.name = name;
+        }
+
+        /**
+         * The readable name as used in the Discord Client.
+         * 
+         * @return The readable name of this {@link net.dv8tion.jda.api.entities.User.Flags Flag}.
+         */
+        @Nonnull
+        public String getName()
+        {
+            return this.name;
+        }
+
+        /**
+         * The binary offset of the flag.
+         * 
+         * @return The offset that represents this {@link net.dv8tion.jda.api.entities.User.Flags Flag}.
+         */
+        public int getOffset()
+        {
+            return offset;
+        }
+
+        /**
+         * The value of this flag when viewed as raw value.
+         * <br>This is equivalent to: <code>1 {@literal <<} {@link #getOffset()}</code>
+         * 
+         * @return The raw value of this specific flag.
+         */
+        public long getRawValue()
+        {
+            return raw;
+        }
     }
 }
