@@ -230,7 +230,7 @@ public interface User extends IMentionable, IFakeable
      * Represents the bit offsets used by Discord for public flags
      */
     enum Flags {
-        NONE(                     -1, "None"),
+        UNKOWN(                   -1, "Unknown"),
         STAFF(                     0, "Discord Employee"),
         PARTNER(                   1, "Discord Partner"),
         HYPESQUAD(                 2, "HypeSquad Events"),
