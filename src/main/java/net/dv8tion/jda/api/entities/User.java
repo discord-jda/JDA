@@ -230,7 +230,7 @@ public interface User extends IMentionable, IFakeable
      * Represents the bit offsets used by Discord for public flags
      */
     enum Flags {
-        NONE(                         "None"),
+        NONE(                     -1, "None"),
         STAFF(                     0, "Discord Employee"),
         PARTNER(                   1, "Discord Partner"),
         HYPESQUAD(                 2, "HypeSquad Events"),
@@ -251,13 +251,6 @@ public interface User extends IMentionable, IFakeable
         private final int offset;
         private final long raw;
         private final String name;
-
-        Flags(@Nonnull String name)
-        {
-            this.offset = 0;
-            this.raw = 0;
-            this.name = name;
-        }
 
         Flags(int offset, @Nonnull String name)
         {
