@@ -229,29 +229,36 @@ public interface User extends IMentionable, IFakeable
     /**
      * Represents the bit offsets used by Discord for public flags
      */
-    enum Flags{
-        NONE(                      0, "None"),
-        STAFF(                     1, "Discord Employee"),
-        PARTNER(                   2, "Discord Partner"),
-        HYPESQUAD(                 4, "HypeSquad Events"),
-        BUG_HUNTER_LEVEL_1(        8, "Bug Hunter Level 1"),
-        // Bravery
-        HYPESQUAD_ONLINE_HOUSE_1( 64, "HypeSquad Online House Bravery"),
-        // Brilliance
-        HYPESQUAD_ONLINE_HOUSE_2(128, "HypeSquad Online House Brilliance"),
-        // Balance
-        HYPESQUAD_ONLINE_HOUSE_3(256, "HypeSquad Online House Balance"),
-        PREMIUM_EARLY_SUPPORTER( 512, "Early Supporter"),
-        TEAM_USER(              1024, "Team User"),
-        SYSTEM(                 4096, "System User"),
-        BUG_HUNTER_LEVEL_2(    16384, "Bug Hunter Level 2"),
-        VERIFIED_BOT(          65536, "Verified Bot"),
-        VERIFIED_DEVELOPER(   131072, "Verified Developer");
-        
+    enum Flags {
+        NONE(                         "None"),
+        STAFF(                     0, "Discord Employee"),
+        PARTNER(                   1, "Discord Partner"),
+        HYPESQUAD(                 2, "HypeSquad Events"),
+        BUG_HUNTER_LEVEL_1(        3, "Bug Hunter Level 1"),
+
+        // HypeSquad
+        HYPESQUAD_BRAVERY(         6, "HypeSquad Bravery"),
+        HYPESQUAD_BRILLIANCE(      7, "HypeSquad Brilliance"),
+        HYPESQUAD_BALANCE(         8, "HypeSquad Balance"),
+
+        EARLY_SUPPORTER(           9, "Early Supporter"),
+        TEAM_USER(                10, "Team User"),
+        SYSTEM(                   12, "System User"),
+        BUG_HUNTER_LEVEL_2(       14, "Bug Hunter Level 2"),
+        VERIFIED_BOT(             16, "Verified Bot"),
+        VERIFIED_DEVELOPER(       17, "Verified Bot Developer");
+
         private final int offset;
         private final long raw;
         private final String name;
-        
+
+        Flags(@Nonnull String name)
+        {
+            this.offset = 0;
+            this.raw = 0;
+            this.name = name;
+        }
+
         Flags(int offset, @Nonnull String name)
         {
             this.offset = offset;
