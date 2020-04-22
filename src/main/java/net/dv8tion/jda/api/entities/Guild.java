@@ -663,6 +663,14 @@ public interface Guild extends ISnowflake
     Member getSelfMember();
 
     /**
+     * Gets the {@link net.dv8tion.jda.api.entities.Role Role} object of the currently logged in account in this guild.
+     *
+     * @return The Role object of the currently logged in account.
+     */
+    @Nonnull
+    Role getSelfRole();
+
+    /**
      * Gets the Guild specific {@link net.dv8tion.jda.api.entities.Member Member} object for the provided
      * {@link net.dv8tion.jda.api.entities.User User}.
      * <br>If the user is not in this guild, {@code null} is returned.

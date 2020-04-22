@@ -374,6 +374,16 @@ public class GuildImpl implements Guild
         return member;
     }
 
+    @Nonnull
+    @Override
+    public Role getSelfRole()
+    {
+        Role role = getSelfMember().getRoles().stream().filter(Role::isManaged).findFirst().orElse(null);
+        if (role == null)
+            throw new IllegalStateException("Guild does not have a self role");
+        return role;
+    }
+
     @Override
     public Member getMember(@Nonnull User user)
     {
