@@ -154,7 +154,7 @@ public class MemberChunkManager
 
         public long getNonce()
         {
-            return this.nonce = System.currentTimeMillis() & ~1;
+            return this.nonce = System.nanoTime() & ~1;
         }
 
         public DataObject getRequest()
