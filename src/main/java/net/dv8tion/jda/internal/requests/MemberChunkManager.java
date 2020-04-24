@@ -18,12 +18,11 @@ package net.dv8tion.jda.internal.requests;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import java.util.LinkedList;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
@@ -33,7 +32,6 @@ public class MemberChunkManager
     private final WebSocketClient client;
     private final ReentrantLock lock = new ReentrantLock();
     private final TLongObjectMap<Queue<ChunkRequest>> requests = new TLongObjectHashMap<>();
-    private final TLongSet requestedChunk = new TLongHashSet();
 
     public MemberChunkManager(WebSocketClient client)
     {
@@ -42,10 +40,7 @@ public class MemberChunkManager
 
     public void clear()
     {
-        MiscUtil.locked(lock, () -> {
-            requests.clear();
-            requestedChunk.clear();
-        });
+        MiscUtil.locked(lock, requests::clear);
     }
 
     public CompletableFuture<DataObject> chunkGuild(long guildId, String query, int limit)
@@ -56,27 +51,34 @@ public class MemberChunkManager
                 .put("query", query);
 
         ChunkRequest chunkRequest = new ChunkRequest(guildId, request);
-        makeRequest(guildId, request, chunkRequest);
+        makeRequest(guildId, chunkRequest);
         return chunkRequest;
     }
 
     public boolean handleChunk(long guildId, DataObject response)
     {
-        //TODO: We currently have no way to detect "no matches found" so the system can lock up here
         return MiscUtil.locked(lock, () -> {
+            long nonce = response.getLong("nonce", 0L);
+            if (nonce == 0L)
+                return false;
             Queue<ChunkRequest> queue = requests.get(guildId);
-            if (!requestedChunk.remove(guildId))
+            if (queue == null || queue.isEmpty())
+                return false;
+
+            Optional<ChunkRequest> request = queue.stream().filter(r -> r.isNonce(nonce)).findFirst();
+            if (request.isPresent())
             {
-                // This request was probably cancelled so try the next one
+                ChunkRequest node = request.get();
+                queue.remove(node);
+                node.complete(response);
+                processQueue(guildId, queue);
+                return true;
+            }
+            else
+            {
                 processQueue(guildId, queue);
                 return false;
             }
-
-            ChunkRequest chunkRequest = queue.remove();
-            chunkRequest.complete(response);
-
-            processQueue(guildId, queue);
-            return true;
         });
     }
 
@@ -88,8 +90,6 @@ public class MemberChunkManager
                 return;
 
             boolean removed = queue.removeIf(request::equals);
-            if (removed && request.requestStarted)
-                requestedChunk.remove(request.guildId);
         });
     }
 
@@ -104,25 +104,22 @@ public class MemberChunkManager
                 continue;
             }
 
-            element.start();
-            sendChunkRequest(element.request);
-            requestedChunk.add(guildId);
+            sendChunkRequest(element.getRequest());
             return;
         }
 
         requests.remove(guildId);
     }
 
-    private void makeRequest(long guildId, DataObject request, ChunkRequest chunkRequest)
+    private void makeRequest(long guildId, ChunkRequest request)
     {
         MiscUtil.locked(lock, () -> {
             Queue<ChunkRequest> queue = requests.get(guildId);
             if (queue == null)
                 requests.put(guildId, queue = new LinkedList<>());
 
-            queue.add(chunkRequest);
-            if (requestedChunk.add(guildId))
-                sendChunkRequest(request);
+            queue.add(request);
+            sendChunkRequest(request.getRequest());
         });
     }
 
@@ -137,7 +134,7 @@ public class MemberChunkManager
     {
         private final long guildId;
         private final DataObject request;
-        private volatile boolean requestStarted = false;
+        private long nonce;
 
         public ChunkRequest(long guildId, DataObject request)
         {
@@ -145,9 +142,19 @@ public class MemberChunkManager
             this.request = request;
         }
 
-        public void start()
+        public boolean isNonce(long nonce)
         {
-            requestStarted = true;
+            return this.nonce == nonce;
+        }
+
+        public long getNonce()
+        {
+            return this.nonce = System.currentTimeMillis() & ~1;
+        }
+
+        public DataObject getRequest()
+        {
+            return request.put("nonce", getNonce());
         }
 
         @Override

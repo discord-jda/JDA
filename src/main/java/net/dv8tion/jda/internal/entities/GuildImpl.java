@@ -1504,7 +1504,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @CheckReturnValue
-    public CompletableFuture<List<Member>> retrieveMembersByName(@Nonnull String prefix, int limit)
+    public CompletableFuture<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
     {
         Checks.notEmpty(prefix, "Prefix");
         Checks.positive(limit, "Limit");
