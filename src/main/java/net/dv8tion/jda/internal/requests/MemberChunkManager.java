@@ -38,6 +38,11 @@ public class MemberChunkManager
         this.client = client;
     }
 
+    public static boolean isLastChunk(DataObject chunk)
+    {
+        return chunk.getInt("chunk_index") + 1 == chunk.getInt("chunk_count");
+    }
+
     public void clear()
     {
         MiscUtil.locked(lock, requests::clear);

@@ -1533,7 +1533,10 @@ public class GuildImpl implements Guild
     public void startChunking()
     {
         if (isLoaded())
+        {
+            chunkingCallback = CompletableFuture.completedFuture(null);
             return;
+        }
 
         if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
         {
@@ -1549,6 +1552,7 @@ public class GuildImpl implements Guild
         DataObject request = DataObject.empty()
             .put("limit", 0)
             .put("query", "")
+            .put("nonce", System.currentTimeMillis() | 1)
             .put("guild_id", getId());
 
         DataObject packet = DataObject.empty()
@@ -1566,17 +1570,13 @@ public class GuildImpl implements Guild
     public void onMemberRemove()
     {
         memberCount--;
-        acknowledgeMembers();
     }
 
-    public void acknowledgeMembers()
+    public void completeChunking()
     {
-        if (memberCache.size() == memberCount && !chunkingCallback.isDone())
-        {
-            JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
+        if (chunkingCallback != null && !chunkingCallback.isDone())
             chunkingCallback.complete(null);
-            getJDA().onChunksFinished(this);
-        }
+        getJDA().onChunksFinished(this);
     }
 
     // -- Object overrides --
