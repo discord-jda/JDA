@@ -63,8 +63,8 @@ public class MemberChunkManager
     public boolean handleChunk(long guildId, DataObject response)
     {
         return MiscUtil.locked(lock, () -> {
-            long nonce = response.getLong("nonce", 0L);
-            if (nonce == 0L)
+            String nonce = response.getString("nonce", null);
+            if (nonce == null || nonce.isEmpty())
                 return false;
             Queue<ChunkRequest> queue = requests.get(guildId);
             if (queue == null || queue.isEmpty())
@@ -139,7 +139,7 @@ public class MemberChunkManager
     {
         private final long guildId;
         private final DataObject request;
-        private long nonce;
+        private String nonce;
 
         public ChunkRequest(long guildId, DataObject request)
         {
@@ -147,14 +147,14 @@ public class MemberChunkManager
             this.request = request;
         }
 
-        public boolean isNonce(long nonce)
+        public boolean isNonce(String nonce)
         {
-            return this.nonce == nonce;
+            return this.nonce.equals(nonce);
         }
 
-        public long getNonce()
+        public String getNonce()
         {
-            return this.nonce = System.nanoTime() & ~1;
+            return this.nonce = String.valueOf(System.nanoTime() & ~1);
         }
 
         public DataObject getRequest()
