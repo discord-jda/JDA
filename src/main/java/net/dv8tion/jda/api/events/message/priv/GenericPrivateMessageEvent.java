@@ -26,6 +26,10 @@ import javax.annotation.Nonnull;
  * <br>Every PrivateMessageEvent is an instance of this event and can be casted.
  * 
  * <p>Can be used to detect any PrivateMessageEvent.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled
  */
 public abstract class GenericPrivateMessageEvent extends Event
 {

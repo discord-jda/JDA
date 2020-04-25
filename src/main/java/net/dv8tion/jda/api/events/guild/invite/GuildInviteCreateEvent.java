@@ -26,6 +26,10 @@ import javax.annotation.Nonnull;
  * Indicates that an {@link Invite Invite} was created in a {@link net.dv8tion.jda.api.entities.Invite.Guild Guild}.
  *
  * <p>Can be used to track invites for moderation purposes.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled
  */
 public class GuildInviteCreateEvent extends GenericGuildInviteEvent
 {

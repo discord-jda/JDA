@@ -28,6 +28,12 @@ import javax.annotation.Nullable;
  * <br>This includes {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
  * 
  * <p>Can be used to detect that a Message is received in either a guild- or private channel. Providing a MessageChannel and Message.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES}
+ * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES}
+ * to work in private channels
  */
 public class MessageReceivedEvent extends GenericMessageEvent
 {

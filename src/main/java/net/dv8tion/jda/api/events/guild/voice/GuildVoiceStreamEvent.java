@@ -25,6 +25,10 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} started or ended a stream.
  *
  * <p>Can be used to detect when a user goes live or stops streaming.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
  */
 public class GuildVoiceStreamEvent extends GenericGuildVoiceEvent
 {

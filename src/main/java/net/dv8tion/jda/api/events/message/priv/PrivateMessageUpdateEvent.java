@@ -25,6 +25,10 @@ import javax.annotation.Nonnull;
  * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
  * 
  * <p>Can be used retrieve affected PrivateChannel and edited Message.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled
  */
 public class PrivateMessageUpdateEvent extends GenericPrivateMessageEvent
 {

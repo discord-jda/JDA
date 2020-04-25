@@ -27,6 +27,10 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added to a Message in a Guild
  *
  * <p>Can be used to detect when a reaction is added in a guild
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled
  */
 public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEvent
 {

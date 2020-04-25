@@ -20,6 +20,10 @@
  * cannot provide a Message instance due to missing cache but instead provide the Message ID as
  * long representation.
  *
+ * <h2>Requirements</h2>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled
+ *
  * @since 3.1
  */
 package net.dv8tion.jda.api.events.message.priv.react;

@@ -18,5 +18,7 @@
  * Events for {@link net.dv8tion.jda.api.entities.Message Messages}
  * in {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}
  * of a {@link net.dv8tion.jda.api.entities.Guild Guild}!
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled
  */
 package net.dv8tion.jda.api.events.message.guild;

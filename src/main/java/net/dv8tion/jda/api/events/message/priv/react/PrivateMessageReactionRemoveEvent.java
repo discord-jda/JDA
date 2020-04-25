@@ -26,6 +26,10 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was removed from a Message in a PrivateChannel.
  *
  * <p>Can be used to detect when a reaction is removed in a private channel.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled
  */
 public class PrivateMessageReactionRemoveEvent extends GenericPrivateMessageReactionEvent
 {

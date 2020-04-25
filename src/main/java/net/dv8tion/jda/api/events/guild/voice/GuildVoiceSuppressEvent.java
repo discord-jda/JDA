@@ -26,6 +26,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect when a member is suppressed or un-suppressed.
  *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
+ *
  * @see net.dv8tion.jda.api.entities.GuildVoiceState#isSuppressed() GuildVoiceState.isSuppressed()
  */
 public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent

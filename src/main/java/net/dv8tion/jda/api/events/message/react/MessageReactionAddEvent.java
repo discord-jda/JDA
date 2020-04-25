@@ -29,6 +29,12 @@ import javax.annotation.Nullable;
  * <br>This includes unicode and custom emoji
  *
  * <p>Can be used to track when a user adds a reaction to a message
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS}
+ * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS}
+ * to work in private channels
  */
 public class MessageReactionAddEvent extends GenericMessageReactionEvent
 {

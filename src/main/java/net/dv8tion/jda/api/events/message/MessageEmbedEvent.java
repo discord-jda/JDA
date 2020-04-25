@@ -28,6 +28,12 @@ import java.util.List;
  * <br>Discord may need to do additional calculations and resizing tasks on messages that embed websites, thus they send the message only with content and link and use this update to add the missing embed later when the server finishes those calculations.
  * 
  * <p>Can be used to retrieve MessageEmbeds from any message. No matter if private or guild.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES}
+ * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES}
+ * to work in private channels
  */
 public class MessageEmbedEvent extends GenericMessageEvent
 {

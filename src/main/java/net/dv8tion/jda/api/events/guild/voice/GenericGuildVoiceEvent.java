@@ -28,6 +28,10 @@ import javax.annotation.Nonnull;
  * <br>Every GuildVoiceEvent is an instance of this event and can be casted.
  *
  * <p>Can be used to detect any GuildVoiceEvent.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
  */
 public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
 {

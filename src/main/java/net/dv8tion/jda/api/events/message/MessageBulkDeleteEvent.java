@@ -29,6 +29,12 @@ import java.util.List;
  * <br>Set {@link net.dv8tion.jda.api.JDABuilder#setBulkDeleteSplittingEnabled(boolean)} to false in order to enable this event.
  * 
  * <p>Can be used to detect that a large chunk of Messages is deleted in a TextChannel. Providing a list of Message IDs and the specific TextChannel.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES}
+ * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES}
+ * to work in private channels
  */
 public class MessageBulkDeleteEvent extends Event
 {

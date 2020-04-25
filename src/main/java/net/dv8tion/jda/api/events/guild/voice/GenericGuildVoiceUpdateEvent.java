@@ -23,6 +23,11 @@ import net.dv8tion.jda.api.entities.VoiceChannel;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
+ */
 class GenericGuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements GuildVoiceUpdateEvent
 {
     protected final VoiceChannel joined, left;

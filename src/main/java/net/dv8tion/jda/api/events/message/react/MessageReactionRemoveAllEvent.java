@@ -26,6 +26,12 @@ import javax.annotation.Nonnull;
  * Indicates the the reactions of a message have been cleared by a moderator
  *
  * <p>Can be used to detect when the reactions of a message are removed by a moderator
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS}
+ * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS}
+ * to work in private channels
  */
 public class MessageReactionRemoveAllEvent extends GenericMessageEvent
 {

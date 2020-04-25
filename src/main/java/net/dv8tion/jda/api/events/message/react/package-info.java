@@ -19,5 +19,12 @@
  * <br>These events
  * cannot provide a Message instance due to missing cache but instead provide the Message ID as
  * long representation.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>Due to them being combinations, their requirements are a bit narrowed down.
+ * These will only work in guild text channels if the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS}
+ * intent is enabled, and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} for
+ * private channels. They will not fire at all if neither are enabled
  */
 package net.dv8tion.jda.api.events.message.react;

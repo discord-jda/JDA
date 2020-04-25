@@ -31,6 +31,12 @@ import javax.annotation.Nullable;
  *
  * <p><b>JDA does not have a cache for messages and is not able to provide previous information due to limitations by the
  * Discord API!</b>
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES}
+ * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES}
+ * to work in private channels
  */
 public class MessageUpdateEvent extends GenericMessageEvent
 {

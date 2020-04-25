@@ -28,6 +28,10 @@ import javax.annotation.Nonnull;
  * <p><b>When the {@link net.dv8tion.jda.api.entities.Member Member} is moved a {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent GuildVoiceMoveEvent} is fired instead</b>
  *
  * <p>Can be used to detect when a member joins a voice channel for the first time.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
  */
 public class GuildVoiceJoinEvent extends GenericGuildVoiceUpdateEvent
 {

@@ -21,5 +21,12 @@
  *
  * <p>These events combine all {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
  * messages but specifications can be found in subpackages.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>Due to them being combinations, their requirements are a bit narrowed down.
+ * These will only work in guild text channels if the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES}
+ * intent is enabled, and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} for
+ * private channels. They will not fire at all if neither are enabled
  */
 package net.dv8tion.jda.api.events.message;

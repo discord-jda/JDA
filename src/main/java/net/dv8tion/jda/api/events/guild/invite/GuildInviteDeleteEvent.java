@@ -27,6 +27,10 @@ import javax.annotation.Nonnull;
  * Indicates than an {@link Invite} was deleted from a {@link Guild}.
  *
  * <p>Can be used to track invite deletion for moderation purposes.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled
  */
 public class GuildInviteDeleteEvent extends GenericGuildInviteEvent
 {

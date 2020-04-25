@@ -31,6 +31,10 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect when a Member leaves/joins a channel
  *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
+ *
  * <p>Identifier: {@code voice-channel}
  */
 public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>

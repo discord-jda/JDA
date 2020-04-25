@@ -27,6 +27,10 @@ import javax.annotation.Nullable;
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was removed from a Message in a Guild
  *
  * <p>Can be used to detect when a reaction is removed in a guild
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled
  */
 public class GuildMessageReactionRemoveEvent extends GenericGuildMessageReactionEvent
 {

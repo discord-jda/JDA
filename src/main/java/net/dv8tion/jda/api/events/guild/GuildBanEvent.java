@@ -28,6 +28,10 @@ import javax.annotation.Nonnull;
  * <br><b>Note</b>: This does not directly indicate that a Member is removed from the Guild!
  *
  * @see net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_BANS GUILD_BANS} intent to be enabled
  */
 public class GuildBanEvent extends GenericGuildEvent
 {

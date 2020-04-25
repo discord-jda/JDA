@@ -26,6 +26,10 @@ import java.util.List;
  * Indicates that a Guild Message contains one or more {@link net.dv8tion.jda.api.entities.MessageEmbed Embeds}.
  * 
  * <p>Can be used to retrieve the affected TextChannel, the id of the affected Message and a list of MessageEmbeds.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled
  */
 public class GuildMessageEmbedEvent extends GenericGuildMessageEvent
 {

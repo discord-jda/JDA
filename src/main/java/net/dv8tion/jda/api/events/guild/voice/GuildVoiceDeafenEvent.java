@@ -27,6 +27,10 @@ import javax.annotation.Nonnull;
  * and {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceSelfDeafenEvent GuildVoiceSelfDeafenEvent}!
  *
  * <p>Can be used to detect when a member is deafened or un-deafened.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
  */
 public class GuildVoiceDeafenEvent extends GenericGuildVoiceEvent
 {

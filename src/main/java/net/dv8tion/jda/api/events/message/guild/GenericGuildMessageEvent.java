@@ -26,6 +26,10 @@ import javax.annotation.Nonnull;
  * <br>Every GuildMessageEvent is derived from this event and can be casted.
  * 
  * <p>Can be used to detect any GuildMessageEvent.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled
  */
 public abstract class GenericGuildMessageEvent extends GenericGuildEvent
 {

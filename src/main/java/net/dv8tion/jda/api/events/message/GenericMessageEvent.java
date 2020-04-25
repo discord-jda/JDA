@@ -26,6 +26,12 @@ import javax.annotation.Nonnull;
  * <br>Every MessageEvent is an instance of this event and can be casted.
  * 
  * <p>Can be used to detect any MessageEvent.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES}
+ * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES}
+ * to work in private channels
  */
 public abstract class GenericMessageEvent extends Event
 {

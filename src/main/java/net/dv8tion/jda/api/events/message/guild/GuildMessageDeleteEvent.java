@@ -24,6 +24,10 @@ import javax.annotation.Nonnull;
  * Indicates that a Guild Message was deleted.
  * 
  * <p>Can be used retrieve affected TextChannel and the id of the deleted Message.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled
  */
 public class GuildMessageDeleteEvent extends GenericGuildMessageEvent
 {

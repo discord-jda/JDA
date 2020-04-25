@@ -27,6 +27,10 @@ import javax.annotation.Nullable;
  * Indicates that a Message is received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
  * 
  * <p>Can be used to retrieve the affected TextChannel and Message.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled
  */
 public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
 {

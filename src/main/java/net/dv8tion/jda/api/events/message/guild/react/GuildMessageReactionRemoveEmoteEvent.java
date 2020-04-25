@@ -29,6 +29,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect which emoji/emote was removed.
  *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled
+ *
  * @since  4.2.0
  */
 public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildEvent
