@@ -31,9 +31,13 @@ import javax.annotation.Nullable;
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES}
- * intent to be enabled to work in guild text channels and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES}
- * to work in private channels
+ * <p>This event requires at least one of the following intents:
+ * <ul>
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} to work in guild text channels
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels
+ * </ul>
+ *
+ * <p>This event will not fire at all with if neither is enabled
  */
 public class MessageReceivedEvent extends GenericMessageEvent
 {
