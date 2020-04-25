@@ -27,9 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -77,6 +79,31 @@ public class DataObject implements SerializableData
     public static DataObject empty()
     {
         return new DataObject(new HashMap<>());
+    }
+
+    /**
+     * Parses a JSON payload into a DataObject instance.
+     *
+     * @param  data
+     *         The correctly formatted JSON payload to parse
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided json is incorrectly formatted
+     *
+     * @return A DataObject instance for the provided payload
+     */
+    @Nonnull
+    public static DataObject fromJson(@Nonnull byte[] data)
+    {
+        try
+        {
+            Map<String, Object> map = mapper.readValue(data, mapType);
+            return new DataObject(map);
+        }
+        catch (IOException ex)
+        {
+            throw new ParsingException(ex);
+        }
     }
 
     /**
@@ -618,6 +645,25 @@ public class DataObject implements SerializableData
     public Set<String> keys()
     {
         return data.keySet();
+    }
+
+    /**
+     * Serialize this object as JSON.
+     *
+     * @return a byte array containing the JSON representation of this object.
+     */
+    public byte[] toJson()
+    {
+        try
+        {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            mapper.writeValue(outputStream, data);
+            return outputStream.toByteArray();
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
     }
 
     @Override
