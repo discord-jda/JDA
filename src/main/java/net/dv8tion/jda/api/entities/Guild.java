@@ -50,6 +50,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -2171,6 +2172,9 @@ public interface Guild extends ISnowflake
      *
      * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
      *
+     * <p><b>You MUST NOT use blocking operations such as {@link CompletableFuture#join()} or {@link Future#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
      * @return {@link CompletableFuture} representing the chunking task
      *
      * @see    #pruneMemberCache()
@@ -2465,6 +2469,9 @@ public interface Guild extends ISnowflake
      *
      * <p>The requests automatically timeout after {@code 10} seconds.
      * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link CompletableFuture#join()} or {@link Future#get()}!</b>
+     * The response handling happens on the event thread by default.
      *
      * @param  prefix
      *         The case-insensitive name prefix
