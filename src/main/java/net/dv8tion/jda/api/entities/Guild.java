@@ -2463,6 +2463,9 @@ public interface Guild extends ISnowflake
      * <br>This will check both the username and the nickname of the members.
      * Additional filtering may be required.
      *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
      * @param  prefix
      *         The case-insensitive name prefix
      * @param  limit
@@ -2473,6 +2476,7 @@ public interface Guild extends ISnowflake
      *             <li>If the provided prefix is null or empty.</li>
      *             <li>If the provided limit is not in the range of [1, 100]</li>
      *         </ul>
+     *
      * @return {@link CompletableFuture} - Type: {@link List}&lt;{@link Member}>
      *
      * @see    #getMembersByName(String, boolean)
