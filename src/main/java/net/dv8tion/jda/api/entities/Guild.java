@@ -2454,9 +2454,27 @@ public interface Guild extends ISnowflake
         return retrieveMemberById(getOwnerIdLong(), update);
     }
 
-//    TODO: Wait for a "done" payload to be added to the api
-//    TODO: Without that we cannot make a good UX since we would be required to use a timeout instead.
-//
+    /**
+     * Queries a list of members using a radix tree based on the provided name prefix.
+     * <br>This will check both the username and the nickname of the members.
+     * Additional filtering may be required.
+     *
+     * @param  prefix
+     *         The case-insensitive name prefix
+     * @param  limit
+     *         The max amount of members to retrieve (1-100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided prefix is null or empty.</li>
+     *             <li>If the provided limit is not in the range of [1, 100]</li>
+     *         </ul>
+     * @return {@link CompletableFuture} - Type: {@link List}&lt;{@link Member}>
+     *
+     * @see    #getMembersByName(String, boolean)
+     * @see    #getMembersByNickname(String, boolean)
+     * @see    #getMembersByEffectiveName(String, boolean)
+     */
     @Nonnull
     @CheckReturnValue
     CompletableFuture<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);

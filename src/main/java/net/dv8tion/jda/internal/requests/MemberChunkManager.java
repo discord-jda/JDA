@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MemberChunkManager
 {
+    //TODO: Timeout checks
     private final WebSocketClient client;
     private final ReentrantLock lock = new ReentrantLock();
     private final TLongObjectMap<Queue<ChunkRequest>> requests = new TLongObjectHashMap<>();

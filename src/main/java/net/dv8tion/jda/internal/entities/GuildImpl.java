@@ -1552,7 +1552,7 @@ public class GuildImpl implements Guild
         DataObject request = DataObject.empty()
             .put("limit", 0)
             .put("query", "")
-            .put("nonce", System.currentTimeMillis() | 1)
+//            .put("nonce", String.valueOf(System.currentTimeMillis() | 1))
             .put("guild_id", getId());
 
         DataObject packet = DataObject.empty()
