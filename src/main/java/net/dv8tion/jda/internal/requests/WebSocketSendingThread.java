@@ -40,7 +40,7 @@ class WebSocketSendingThread implements Runnable
     private final WebSocketClient client;
     private final JDAImpl api;
     private final ReentrantLock queueLock;
-    private final Queue<String> chunkSyncQueue;
+    private final Queue<DataObject> chunkSyncQueue;
     private final Queue<String> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
     private final ScheduledExecutorService executor;
@@ -113,7 +113,7 @@ class WebSocketSendingThread implements Runnable
             queueLock.lockInterruptibly();
 
             ConnectionRequest audioRequest = client.getNextAudioConnectRequest();
-            String chunkOrSyncRequest = chunkSyncQueue.peek();
+            DataObject chunkOrSyncRequest = chunkSyncQueue.peek();
             if (chunkOrSyncRequest != null)
                 handleChunkSync(chunkOrSyncRequest);
             else if (audioRequest != null)
@@ -148,10 +148,17 @@ class WebSocketSendingThread implements Runnable
         }
     }
 
-    private void handleChunkSync(String chunkOrSyncRequest)
+    private void handleChunkSync(DataObject chunkOrSyncRequest)
     {
         LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
-        if (send(chunkOrSyncRequest))
+        boolean success = send(
+            DataObject.empty()
+                .put("d", chunkOrSyncRequest)
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+                .toString()
+        );
+
+        if (success)
             chunkSyncQueue.remove();
     }
 

@@ -109,9 +109,7 @@ public class MemberChunkManager
 
     private void sendChunkRequest(DataObject request)
     {
-        client.chunkOrSyncRequest(DataObject.empty()
-            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-            .put("d", request));
+        client.sendChunkRequest(request);
     }
 
     private class ChunkRequest extends CompletableFuture<DataObject>
@@ -122,8 +120,8 @@ public class MemberChunkManager
 
         public ChunkRequest(DataObject request)
         {
-            this.request = request;
             this.nonce = System.nanoTime() & ~1;
+            this.request = request.put("nonce", getNonce());
         }
 
         public boolean isNonce(String nonce)
@@ -144,12 +142,13 @@ public class MemberChunkManager
         public DataObject getRequest()
         {
             startTime = System.currentTimeMillis();
-            return request.put("nonce", getNonce());
+            return request;
         }
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning)
         {
+            client.cancelChunkRequest(getNonce());
             cancelRequest(this);
             return super.cancel(mayInterruptIfRunning);
         }

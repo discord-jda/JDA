@@ -32,7 +32,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.MemberChunkManager;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
-import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
@@ -366,13 +365,12 @@ public class GuildSetupController
             }
         }
 
-        getJDA().getClient().chunkOrSyncRequest(
+        getJDA().getClient().sendChunkRequest(
             DataObject.empty()
-                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-                .put("d", DataObject.empty()
-                    .put("guild_id", obj)
-                    .put("query", "")
-                    .put("limit", 0)));
+                .put("guild_id", obj)
+                .put("query", "")
+                .put("limit", 0)
+        );
     }
 
     private void tryChunking()
@@ -415,18 +413,6 @@ public class GuildSetupController
     private void startTimeout()
     {
         timeoutHandle = getJDA().getGatewayPool().scheduleAtFixedRate(new ChunkTimeout(), CHUNK_TIMEOUT, CHUNK_TIMEOUT, TimeUnit.MILLISECONDS);
-    }
-
-    // Syncing
-
-    private void sendSyncRequest(DataArray arr)
-    {
-        log.debug("Sending syncing requests for {} guilds", arr.length());
-
-        getJDA().getClient().chunkOrSyncRequest(
-            DataObject.empty()
-                .put("op", WebSocketCode.GUILD_SYNC)
-                .put("d", arr));
     }
 
     public void onUnavailable(long id)

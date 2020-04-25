@@ -99,7 +99,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected long identifyTime = 0;
 
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
-    protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
+    protected final Queue<DataObject> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
 
     protected volatile long ratelimitResetTime;
@@ -224,9 +224,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         locked("Interrupted while trying to add request to queue", () -> ratelimitQueue.add(message));
     }
 
-    public void chunkOrSyncRequest(DataObject request)
+    public void cancelChunkRequest(String nonce)
     {
-        locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request.toString()));
+        locked("Interrupted while trying to cancel chunk request",
+            () -> chunkSyncQueue.removeIf(it -> it.getString("nonce", "").equals(nonce)));
+    }
+
+    public void sendChunkRequest(DataObject request)
+    {
+        locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request));
     }
 
     protected boolean send(String message, boolean skipQueue)

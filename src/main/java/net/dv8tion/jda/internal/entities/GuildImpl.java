@@ -66,6 +66,7 @@ import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
@@ -1510,24 +1511,33 @@ public class GuildImpl implements Guild
         Checks.positive(limit, "Limit");
         Checks.check(limit <= 100, "Limit must not be greater than 100");
         MemberChunkManager chunkManager = api.getClient().getChunkManager();
-        return chunkManager.chunkGuild(id, prefix, limit)
-                .thenApplyAsync((response) -> {
-                    DataArray memberArray = response.getArray("members");
-                    List<Member> memberList = new ArrayList<>(memberArray.length());
-                    if (memberArray.isEmpty())
-                        return memberList;
 
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
-                    for (int i = 0; i< memberArray.length(); i++)
-                    {
-                        DataObject json = memberArray.getObject(i);
-                        MemberImpl member = entityBuilder.createMember(this, json);
-                        entityBuilder.updateMemberCache(member);
-                        memberList.add(member);
-                    }
+        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, prefix, limit);
+        CompletableFuture<List<Member>> result = handle.thenApply((response) -> {
+            DataArray memberArray = response.getArray("members");
+            List<Member> memberList = new ArrayList<>(memberArray.length());
+            if (memberArray.isEmpty())
+                return memberList;
 
-                    return memberList;
-                });
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            for (int i = 0; i< memberArray.length(); i++)
+            {
+                DataObject json = memberArray.getObject(i);
+                MemberImpl member = entityBuilder.createMember(this, json);
+                entityBuilder.updateMemberCache(member);
+                memberList.add(member);
+            }
+
+            return memberList;
+        });
+
+        // Let us know when the user cancels the request so we can actually cancel the request
+        result.whenComplete((v, error) -> {
+            // Thanks CompletableFuture, good API i must admit :)
+            if (error instanceof CancellationException)
+                handle.cancel(true);
+        });
+        return result;
     }
 
     public void startChunking()
@@ -1555,11 +1565,7 @@ public class GuildImpl implements Guild
 //            .put("nonce", String.valueOf(System.currentTimeMillis() | 1))
             .put("guild_id", getId());
 
-        DataObject packet = DataObject.empty()
-            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-            .put("d", request);
-
-        getJDA().getClient().chunkOrSyncRequest(packet);
+        getJDA().getClient().sendChunkRequest(request);
     }
 
     public void onMemberAdd()
