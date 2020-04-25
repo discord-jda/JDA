@@ -21,18 +21,19 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MemberChunkManager
 {
-    //TODO: Timeout checks
+    private static final long maxAge = 10 * 1000; // 10 seconds
     private final WebSocketClient client;
     private final ReentrantLock lock = new ReentrantLock();
-    private final TLongObjectMap<Queue<ChunkRequest>> requests = new TLongObjectHashMap<>();
+    private final TLongObjectMap<ChunkRequest> requests = new TLongObjectHashMap<>();
+    private Future<?> timeoutHandle;
 
     public MemberChunkManager(WebSocketClient client)
     {
@@ -49,15 +50,30 @@ public class MemberChunkManager
         MiscUtil.locked(lock, requests::clear);
     }
 
+    private void init()
+    {
+        MiscUtil.locked(lock, () -> {
+            if (timeoutHandle == null)
+                timeoutHandle = client.getJDA().getGatewayPool().scheduleAtFixedRate(new TimeoutHandler(), 5, 5, TimeUnit.SECONDS);
+        });
+    }
+
+    public void shutdown()
+    {
+        if (timeoutHandle != null)
+            timeoutHandle.cancel(false);
+    }
+
     public CompletableFuture<DataObject> chunkGuild(long guildId, String query, int limit)
     {
+        init();
         DataObject request = DataObject.empty()
                 .put("guild_id", guildId)
                 .put("limit", Math.min(100, Math.max(1, limit)))
                 .put("query", query);
 
-        ChunkRequest chunkRequest = new ChunkRequest(guildId, request);
-        makeRequest(guildId, chunkRequest);
+        ChunkRequest chunkRequest = new ChunkRequest(request);
+        makeRequest(chunkRequest);
         return chunkRequest;
     }
 
@@ -67,64 +83,26 @@ public class MemberChunkManager
             String nonce = response.getString("nonce", null);
             if (nonce == null || nonce.isEmpty())
                 return false;
-            Queue<ChunkRequest> queue = requests.get(guildId);
-            if (queue == null || queue.isEmpty())
+            ChunkRequest request = requests.get(Long.parseLong(nonce));
+            if (request == null)
                 return false;
 
-            Optional<ChunkRequest> request = queue.stream().filter(r -> r.isNonce(nonce)).findFirst();
-            if (request.isPresent())
-            {
-                ChunkRequest node = request.get();
-                queue.remove(node);
-                node.complete(response);
-                processQueue(guildId, queue);
-                return true;
-            }
-            else
-            {
-                processQueue(guildId, queue);
-                return false;
-            }
+            request.complete(response);
+            return true;
         });
     }
 
     public void cancelRequest(ChunkRequest request)
     {
         MiscUtil.locked(lock, () -> {
-            Queue<ChunkRequest> queue = requests.get(request.guildId);
-            if (queue == null || queue.isEmpty())
-                return;
-
-            boolean removed = queue.removeIf(request::equals);
+            requests.remove(request.nonce);
         });
     }
 
-    private void processQueue(long guildId, Queue<ChunkRequest> queue)
-    {
-        while (queue != null && !queue.isEmpty())
-        {
-            ChunkRequest element = queue.peek();
-            if (element.isCancelled())
-            {
-                queue.remove();
-                continue;
-            }
-
-            sendChunkRequest(element.getRequest());
-            return;
-        }
-
-        requests.remove(guildId);
-    }
-
-    private void makeRequest(long guildId, ChunkRequest request)
+    private void makeRequest(ChunkRequest request)
     {
         MiscUtil.locked(lock, () -> {
-            Queue<ChunkRequest> queue = requests.get(guildId);
-            if (queue == null)
-                requests.put(guildId, queue = new LinkedList<>());
-
-            queue.add(request);
+            requests.put(request.nonce, request);
             sendChunkRequest(request.getRequest());
         });
     }
@@ -138,28 +116,34 @@ public class MemberChunkManager
 
     private class ChunkRequest extends CompletableFuture<DataObject>
     {
-        private final long guildId;
         private final DataObject request;
-        private String nonce;
+        private final long nonce;
+        private long startTime;
 
-        public ChunkRequest(long guildId, DataObject request)
+        public ChunkRequest(DataObject request)
         {
-            this.guildId = guildId;
             this.request = request;
+            this.nonce = System.nanoTime() & ~1;
         }
 
         public boolean isNonce(String nonce)
         {
-            return this.nonce.equals(nonce);
+            return this.nonce == Long.parseLong(nonce);
         }
 
         public String getNonce()
         {
-            return this.nonce = String.valueOf(System.nanoTime() & ~1);
+            return String.valueOf(nonce);
+        }
+
+        public long getAge()
+        {
+            return startTime > 0 ? 0 : System.currentTimeMillis() - startTime;
         }
 
         public DataObject getRequest()
         {
+            startTime = System.currentTimeMillis();
             return request.put("nonce", getNonce());
         }
 
@@ -168,6 +152,23 @@ public class MemberChunkManager
         {
             cancelRequest(this);
             return super.cancel(mayInterruptIfRunning);
+        }
+    }
+
+    private class TimeoutHandler implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            MiscUtil.locked(lock, () ->
+            {
+                requests.forEachValue(request -> {
+                    if (request.getAge() > maxAge)
+                        request.completeExceptionally(new TimeoutException());
+                    return true;
+                });
+                requests.valueCollection().removeIf(ChunkRequest::isDone);
+            });
         }
     }
 }

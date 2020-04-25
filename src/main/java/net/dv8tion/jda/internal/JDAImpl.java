@@ -714,7 +714,10 @@ public class JDAImpl implements JDA
 
         WebSocketClient client = getClient();
         if (client != null)
+        {
             client.shutdown();
+            client.getChunkManager().shutdown();
+        }
 
         shutdownInternals();
     }
