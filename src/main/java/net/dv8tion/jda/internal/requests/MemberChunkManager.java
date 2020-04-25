@@ -83,7 +83,7 @@ public class MemberChunkManager
             String nonce = response.getString("nonce", null);
             if (nonce == null || nonce.isEmpty())
                 return false;
-            ChunkRequest request = requests.get(Long.parseLong(nonce));
+            ChunkRequest request = requests.remove(Long.parseLong(nonce));
             if (request == null)
                 return false;
 
