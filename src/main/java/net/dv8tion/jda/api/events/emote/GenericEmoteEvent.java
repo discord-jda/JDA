@@ -25,6 +25,8 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.Emote Emote} was created/removed/updated.
+ *
+ *
  */
 public abstract class GenericEmoteEvent extends Event
 {

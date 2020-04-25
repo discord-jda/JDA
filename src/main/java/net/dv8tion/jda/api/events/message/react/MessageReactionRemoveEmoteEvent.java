@@ -36,7 +36,7 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels
  * </ul>
  *
- * <p>This event will not fire at all with if neither is enabled
+ * <p>This event will not fire at all if neither is enabled
  *
  * @since  4.2.0
  */
