@@ -26,7 +26,9 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that an {@link net.dv8tion.jda.api.entities.Emote Emote} was created/removed/updated.
  *
+ * <h2>Requirements</h2>
  *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent to be enabled
  */
 public abstract class GenericEmoteEvent extends Event
 {
