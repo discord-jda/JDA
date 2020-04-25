@@ -827,7 +827,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
      *
-     * @see    #retrieveMembersByName(String)
+     * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
     default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
@@ -848,6 +848,8 @@ public interface Guild extends ISnowflake
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @return Possibly-empty immutable list of all Members with the same nickname as the nickname provided.
+     *
+     * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
     default List<Member> getMembersByNickname(@Nullable String nickname, boolean ignoreCase)
@@ -871,6 +873,8 @@ public interface Guild extends ISnowflake
      *         If the provided name is null
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
+     *
+     * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
     default List<Member> getMembersByEffectiveName(@Nonnull String name, boolean ignoreCase)
