@@ -109,7 +109,7 @@ public class ZlibDecompressor implements Decompressor
     }
 
     @Override
-    public String decompress(byte[] data) throws DataFormatException
+    public byte[] decompress(byte[] data) throws DataFormatException
     {
         //Handle split messages
         if (!isFlush(data))
@@ -139,7 +139,7 @@ public class ZlibDecompressor implements Decompressor
             // This decompressor writes the received data and inflates it
             decompressor.write(data);
             // Once decompressed we re-interpret the data as a String which can be used for JSON parsing
-            return buffer.toString("UTF-8");
+            return buffer.toByteArray();
         }
         catch (IOException e)
         {

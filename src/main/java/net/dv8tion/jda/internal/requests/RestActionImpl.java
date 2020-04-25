@@ -133,7 +133,7 @@ public class RestActionImpl<T> implements RestAction<T>
 
     public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
     {
-        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), handler);
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()), handler);
         this.rawData = data;
     }
 
@@ -236,14 +236,14 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         this.rawData = object;
 
-        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
+        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
     }
 
     protected RequestBody getRequestBody(DataArray array)
     {
         this.rawData = array;
 
-        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
+        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson());
     }
 
     private CheckWrapper getFinisher()

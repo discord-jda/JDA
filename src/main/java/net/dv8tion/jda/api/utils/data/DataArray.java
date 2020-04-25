@@ -27,9 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -602,6 +604,25 @@ public class DataArray implements Iterable<Object>
         return this;
     }
 
+    /**
+     * Serialize this object as JSON.
+     *
+     * @return a byte array containing the JSON representation of this object.
+     */
+    public byte[] toJson()
+    {
+        try
+        {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            mapper.writeValue(outputStream, data);
+            return outputStream.toByteArray();
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
     @Override
     public String toString()
     {
@@ -611,7 +632,7 @@ public class DataArray implements Iterable<Object>
         }
         catch (JsonProcessingException e)
         {
-            throw new IllegalStateException(e);
+            throw new ParsingException(e);
         }
     }
 

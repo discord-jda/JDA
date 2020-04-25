@@ -57,6 +57,7 @@ import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
@@ -337,6 +338,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(url);
             }
+            socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
                   .connect();
@@ -901,9 +903,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message)
+    public void onTextMessage(WebSocket websocket, byte[] data)
     {
-        handleEvent(DataObject.fromJson(message));
+        handleEvent(DataObject.fromJson(data));
     }
 
     @Override
@@ -924,11 +926,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (decompressor == null)
             throw new IllegalStateException("Cannot decompress binary message due to unknown compression algorithm: " + compression);
         // Scoping allows us to print the json that possibly failed parsing
-        String jsonString;
+        byte[] jsonData;
         try
         {
-            jsonString = decompressor.decompress(binary);
-            if (jsonString == null)
+            jsonData = decompressor.decompress(binary);
+            if (jsonData == null)
                 return null;
         }
         catch (DataFormatException e)
@@ -939,12 +941,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            return DataObject.fromJson(jsonString);
+            return DataObject.fromJson(jsonData);
         }
         catch (ParsingException e)
         {
+            String jsonString = "malformed";
+            try
+            {
+                jsonString = new String(jsonData, StandardCharsets.UTF_8);
+            }
+            catch (Exception ignored) {}
             // Print the string that could not be parsed and re-throw the exception
-            LOG.error("Failed to parse json {}", jsonString);
+            LOG.error("Failed to parse json: {}", jsonString);
             throw e;
         }
     }
