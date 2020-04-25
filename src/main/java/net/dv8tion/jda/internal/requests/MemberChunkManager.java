@@ -138,7 +138,7 @@ public class MemberChunkManager
 
         public long getAge()
         {
-            return startTime > 0 ? 0 : System.currentTimeMillis() - startTime;
+            return startTime <= 0 ? 0 : System.currentTimeMillis() - startTime;
         }
 
         public DataObject getRequest()
