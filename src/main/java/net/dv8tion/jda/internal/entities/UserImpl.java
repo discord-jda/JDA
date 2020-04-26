@@ -232,7 +232,8 @@ public class UserImpl implements User
         return this;
     }
     
-    public UserImpl setFlags(int flags){
+    public UserImpl setFlags(int flags)
+    {
         this.flags = flags;
         this.flagsSet = Flag.getFlags(flags);
         return this;
