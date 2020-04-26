@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -305,8 +306,39 @@ public interface User extends IMentionable, IFakeable
         {
             return raw;
         }
+
+        /**
+         * Gets the first {@link net.dv8tion.jda.api.entities.User.Flag Flag} relating to the provided offset.
+         * <br>If there is no {@link net.dv8tion.jda.api.entities.User.Flag Flag} that matches the provided offset,
+         * {@link net.dv8tion.jda.api.entities.User.Flag#UNKNOWN Flag.UNKNOWN} is returned.
+         * 
+         * @param  offset
+         *         The offset to match a {@link net.dv8tion.jda.api.entities.User.Flag Flag} to.
+         *         
+         * @return {@link net.dv8tion.jda.api.entities.User.Flag Flag} relating to the provided offset.
+         */
+        @Nonnull
+        public static Flag getFromOffset(int offset)
+        {
+            for (Flag flag : values())
+            {
+                if(flag.offset == offset)
+                    return flag;
+            }
+            return UNKNOWN;
+        }
         
-        public static EnumSet<Flag> getFlags(int flags)
+        /**
+         * A set of all {@link net.dv8tion.jda.api.entities.User.Flag Flags} that are specified by this raw long representation of
+         * flags.
+         * 
+         * @param  flags
+         *         The raw {@code long} representation if flags.
+         *         
+         * @return Possibly-empty EnumSet of {@link net.dv8tion.jda.api.entities.User.Flag Flags}.
+         */
+        @Nonnull
+        public static EnumSet<Flag> getFlags(long flags)
         {
             if(flags == 0)
                 return EnumSet.noneOf(Flag.class);
@@ -317,6 +349,45 @@ public interface User extends IMentionable, IFakeable
                     flagsSet.add(flag);
             }
             return flagsSet;
+        }
+
+        /**
+         * This is effectively the oposite of {@link #getFlags(long)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.Flag Flags}
+         * and returns the raw offset {@code long} representation of the flags.
+         * 
+         * @param  flags
+         *         The array of flags of which to form into the raw long representation.
+         *         
+         * @return Unsigned long representing the provided flags.
+         */
+        public static long getRaw(@Nonnull Flag... flags){
+            long raw = 0;
+            for (Flag flag : flags)
+            {
+                if (flag != null && flag != UNKNOWN)
+                    raw |= flag.raw;
+            }
+            
+            return raw;
+        }
+
+        /**
+         * This is effectively the oposite of {@link #getFlags(long)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.Flag Flags}
+         * and returns the raw offset {@code long} representation of the flags.
+         * <br>Example: {@code getRaw(EnumSet.of(Flag.STAFF, Flag.HYPESQUAD))}
+         *
+         * @param  flags
+         *         The Collection of flags of which to form into the raw long representation.
+         *
+         * @return Unsigned long representing the provided flags.
+         * 
+         * @see java.util.EnumSet EnumSet
+         */
+        public static long getRaw(@Nonnull Collection<Flag> flags)
+        {
+            Checks.notNull(flags, "Flag Collection");
+            
+            return getRaw(flags.toArray(EMPTY_FLAGS));
         }
     }
 }
