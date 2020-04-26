@@ -22,6 +22,8 @@ import net.dv8tion.jda.api.requests.RestAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -227,9 +229,17 @@ public interface User extends IMentionable, IFakeable
     JDA getJDA();
 
     /**
+     * Returns the {@link net.dv8tion.jda.api.entities.User.Flag Flags} of this user.
+     * 
+     * @return EnumSet containing the flags of the user.
+     */
+    EnumSet<Flag> getFlags();
+
+    /**
      * Represents the bit offsets used by Discord for public flags
      */
-    enum Flags {
+    enum Flag
+    {
         UNKNOWN(                   -1, "Unknown"),
         STAFF(                     0, "Discord Employee"),
         PARTNER(                   1, "Discord Partner"),
@@ -248,11 +258,16 @@ public interface User extends IMentionable, IFakeable
         VERIFIED_BOT(             16, "Verified Bot"),
         VERIFIED_DEVELOPER(       17, "Verified Bot Developer");
 
+        /**
+         * Empty array of Flag enum, useful for optimized use in {@link Collection#toArray(Object[])}.
+         */
+        public static final Flag[] EMPTY_FLAGS = new Flag[0];
+        
         private final int offset;
         private final long raw;
         private final String name;
 
-        Flags(int offset, @Nonnull String name)
+        Flag(int offset, @Nonnull String name)
         {
             this.offset = offset;
             this.raw = 1 << offset;
@@ -262,7 +277,7 @@ public interface User extends IMentionable, IFakeable
         /**
          * The readable name as used in the Discord Client.
          * 
-         * @return The readable name of this {@link net.dv8tion.jda.api.entities.User.Flags Flag}.
+         * @return The readable name of this {@link Flag Flag}.
          */
         @Nonnull
         public String getName()
@@ -273,7 +288,7 @@ public interface User extends IMentionable, IFakeable
         /**
          * The binary offset of the flag.
          * 
-         * @return The offset that represents this {@link net.dv8tion.jda.api.entities.User.Flags Flag}.
+         * @return The offset that represents this {@link Flag Flag}.
          */
         public int getOffset()
         {
@@ -289,6 +304,19 @@ public interface User extends IMentionable, IFakeable
         public long getRawValue()
         {
             return raw;
+        }
+        
+        public static EnumSet<Flag> getFlags(int flags)
+        {
+            if(flags == 0)
+                return EnumSet.noneOf(Flag.class);
+            EnumSet<Flag> flagsSet = EnumSet.noneOf(Flag.class);
+            for (Flag flag : Flag.values())
+            {
+                if (flag != UNKNOWN && (flags & flag.raw) == flag.raw)
+                    flagsSet.add(flag);
+            }
+            return flagsSet;
         }
     }
 }

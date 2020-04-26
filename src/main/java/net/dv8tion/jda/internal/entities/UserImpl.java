@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -43,6 +44,8 @@ public class UserImpl implements User
     protected long privateChannel = 0L;
     protected boolean bot;
     protected boolean fake = false;
+    protected EnumSet<Flag> flagsEnum;
+    protected int flags;
 
     public UserImpl(long id, JDAImpl api)
     {
@@ -156,6 +159,17 @@ public class UserImpl implements User
     }
 
     @Override
+    public EnumSet<Flag> getFlags()
+    {
+        return flagsEnum;
+    }
+    
+    public int getFlagsValue()
+    {
+        return flags;
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         if (o == this)
@@ -214,6 +228,11 @@ public class UserImpl implements User
     public UserImpl setFake(boolean fake)
     {
         this.fake = fake;
+        return this;
+    }
+    
+    public UserImpl setFlags(int flags){
+        this.flags = flags;
         return this;
     }
 

@@ -319,7 +319,8 @@ public class EntityBuilder
             userObj.setName(user.getString("username"))
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
-                   .setBot(user.getBoolean("bot"));
+                   .setBot(user.getBoolean("bot"))
+                   .setFlags(user.getInt("public_flags", 0));
         }
         else if (!userObj.isFake())
         {
