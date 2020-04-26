@@ -561,13 +561,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         String message = "";
         if (callFromQueue)
             message = String.format("Queue is attempting to reconnect a shard...%s ", shardInfo != null ? " Shard: " + shardInfo.getShardString() : "");
+        if (sessionId != null)
+            reconnectTimeoutS = 0;
         LOG.debug("{}Attempting to reconnect in {}s", message, reconnectTimeoutS);
         while (shouldReconnect)
         {
             api.setStatus(JDA.Status.WAITING_TO_RECONNECT);
             int delay = reconnectTimeoutS;
             // Exponential backoff, reset on session creation (ready/resume)
-            reconnectTimeoutS = Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
+            reconnectTimeoutS = reconnectTimeoutS == 0 ? 2 : Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
             Thread.sleep(delay * 1000);
             handleIdentifyRateLimit = false;
             api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
