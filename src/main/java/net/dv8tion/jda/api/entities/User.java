@@ -230,7 +230,7 @@ public interface User extends IMentionable, IFakeable
     JDA getJDA();
 
     /**
-     * Returns the {@link net.dv8tion.jda.api.entities.User.UserFlag Flags} of this user.
+     * Returns the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of this user.
      * 
      * @return EnumSet containing the flags of the user.
      */
