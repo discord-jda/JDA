@@ -44,7 +44,7 @@ public class UserImpl implements User
     protected long privateChannel = 0L;
     protected boolean bot;
     protected boolean fake = false;
-    protected EnumSet<Flag> flagsSet;
+    protected EnumSet<UserFlag> flagsSet;
     protected int flagsRaw;
 
     public UserImpl(long id, JDAImpl api)
@@ -160,7 +160,7 @@ public class UserImpl implements User
 
     @Nonnull
     @Override
-    public EnumSet<Flag> getFlags()
+    public EnumSet<UserFlag> getFlags()
     {
         return flagsSet;
     }
@@ -235,7 +235,7 @@ public class UserImpl implements User
     public UserImpl setFlags(int flags)
     {
         this.flagsRaw = flags;
-        this.flagsSet = Flag.getFlags(flags);
+        this.flagsSet = UserFlag.getFlags(flags);
         return this;
     }
 
