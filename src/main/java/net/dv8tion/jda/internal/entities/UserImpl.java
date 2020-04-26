@@ -45,7 +45,7 @@ public class UserImpl implements User
     protected boolean bot;
     protected boolean fake = false;
     protected EnumSet<Flag> flagsSet;
-    protected int flags;
+    protected int flagsRaw;
 
     public UserImpl(long id, JDAImpl api)
     {
@@ -165,9 +165,9 @@ public class UserImpl implements User
         return flagsSet;
     }
     
-    public int getFlagsOffset()
+    public int getFlagsRaw()
     {
-        return flags;
+        return flagsRaw;
     }
 
     @Override
@@ -234,7 +234,7 @@ public class UserImpl implements User
     
     public UserImpl setFlags(int flags)
     {
-        this.flags = flags;
+        this.flagsRaw = flags;
         this.flagsSet = Flag.getFlags(flags);
         return this;
     }

@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTime
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -339,6 +340,8 @@ public class EntityBuilder
         String newDiscriminator = user.get("discriminator").toString();
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
+        int oldFlags = userObj.getFlagsRaw();
+        int newFlags = user.getInt("public_flags", 0);
 
         JDAImpl jda = getJDA();
         long responseNumber = jda.getResponseTotal();
@@ -367,6 +370,15 @@ public class EntityBuilder
                 new UserUpdateAvatarEvent(
                     jda, responseNumber,
                     userObj, oldAvatar));
+        }
+        
+        if (!Objects.equals(oldFlags, newFlags))
+        {
+            userObj.setFlags(newFlags);
+            jda.handleEvent(
+                    new UserUpdateFlagsEvent(
+                        jda, responseNumber,
+                        userObj, oldFlags));
         }
     }
 

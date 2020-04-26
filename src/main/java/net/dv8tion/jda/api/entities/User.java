@@ -362,8 +362,8 @@ public interface User extends IMentionable, IFakeable
          *         
          * @return Unsigned long representing the provided flags.
          */
-        public static long getRaw(@Nonnull Flag... flags){
-            long raw = 0;
+        public static int getRaw(@Nonnull Flag... flags){
+            int raw = 0;
             for (Flag flag : flags)
             {
                 if (flag != null && flag != UNKNOWN)
@@ -385,7 +385,7 @@ public interface User extends IMentionable, IFakeable
          * 
          * @see java.util.EnumSet EnumSet
          */
-        public static long getRaw(@Nonnull Collection<Flag> flags)
+        public static int getRaw(@Nonnull Collection<Flag> flags)
         {
             Checks.notNull(flags, "Flag Collection");
             

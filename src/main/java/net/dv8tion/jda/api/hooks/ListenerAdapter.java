@@ -171,6 +171,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserTyping(@Nonnull UserTypingEvent event) {}
     public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {}
     public void onUserActivityEnd(@Nonnull UserActivityEndEvent event) {}
+    public void onUserUpdateFlagsEvent(@Nonnull UserUpdateFlagsEvent event) {}
 
     //Self Events. Fires only in relation to the currently logged in account.
     public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}
@@ -459,6 +460,8 @@ public abstract class ListenerAdapter implements EventListener
             onUserActivityStart((UserActivityStartEvent) event);
         else if (event instanceof UserActivityEndEvent)
             onUserActivityEnd((UserActivityEndEvent) event);
+        else if (event instanceof UserUpdateFlagsEvent)
+            onUserUpdateFlagsEvent((UserUpdateFlagsEvent) event);
 
         //Self Events
         else if (event instanceof SelfUpdateAvatarEvent)
