@@ -39,6 +39,8 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.concurrent.AsyncHandle;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -66,7 +68,6 @@ import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
@@ -1504,8 +1505,9 @@ public class GuildImpl implements Guild
     // -- Member Tracking --
 
     @Nonnull
+    @Override
     @CheckReturnValue
-    public CompletableFuture<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
+    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
     {
         Checks.notEmpty(prefix, "Prefix");
         Checks.positive(limit, "Limit");
@@ -1531,13 +1533,7 @@ public class GuildImpl implements Guild
             return memberList;
         });
 
-        // Let us know when the user cancels the request so we can actually cancel the request
-        result.whenComplete((v, error) -> {
-            // Thanks CompletableFuture, good API i must admit :)
-            if (error instanceof CancellationException)
-                handle.cancel(true);
-        });
-        return result;
+        return new AsyncHandle<>(result, () -> handle.cancel(false));
     }
 
     public void startChunking()

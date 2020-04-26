@@ -69,6 +69,7 @@ import java.util.zip.DataFormatException;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
+    public static final ThreadLocal<Boolean> WS_THREAD = ThreadLocal.withInitial(() -> false);
     public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
     public static final int IDENTIFY_DELAY = 5;
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
@@ -764,6 +765,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void onEvent(DataObject content)
     {
+        WS_THREAD.set(true);
         int opCode = content.getInt("op");
 
         if (!content.isNull("s"))

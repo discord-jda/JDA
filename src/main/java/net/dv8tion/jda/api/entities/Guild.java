@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -2470,7 +2471,7 @@ public interface Guild extends ISnowflake
      * <p>The requests automatically timeout after {@code 10} seconds.
      * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
      *
-     * <p><b>You MUST NOT use blocking operations such as {@link CompletableFuture#join()} or {@link Future#get()}!</b>
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
      * The response handling happens on the event thread by default.
      *
      * @param  prefix
@@ -2481,10 +2482,11 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the provided prefix is null or empty.</li>
+     *             <li>If the provided callback is null</li>
      *             <li>If the provided limit is not in the range of [1, 100]</li>
      *         </ul>
      *
-     * @return {@link CompletableFuture} - Type: {@link List}&lt;{@link Member}>
+     * @return {@link Task} handle for the request
      *
      * @see    #getMembersByName(String, boolean)
      * @see    #getMembersByNickname(String, boolean)
@@ -2492,7 +2494,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CompletableFuture<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
+    Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
 
     /* From GuildController */
 
