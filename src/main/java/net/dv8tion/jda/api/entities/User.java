@@ -234,6 +234,7 @@ public interface User extends IMentionable, IFakeable
      * 
      * @return EnumSet containing the flags of the user.
      */
+    @Nonnull
     EnumSet<Flag> getFlags();
 
     /**
@@ -241,7 +242,6 @@ public interface User extends IMentionable, IFakeable
      */
     enum Flag
     {
-        UNKNOWN(                   -1, "Unknown"),
         STAFF(                     0, "Discord Employee"),
         PARTNER(                   1, "Discord Partner"),
         HYPESQUAD(                 2, "HypeSquad Events"),
@@ -257,7 +257,9 @@ public interface User extends IMentionable, IFakeable
         SYSTEM(                   12, "System User"),
         BUG_HUNTER_LEVEL_2(       14, "Bug Hunter Level 2"),
         VERIFIED_BOT(             16, "Verified Bot"),
-        VERIFIED_DEVELOPER(       17, "Verified Bot Developer");
+        VERIFIED_DEVELOPER(       17, "Verified Bot Developer"),
+        
+        UNKNOWN(                   -1, "Unknown");
 
         /**
          * Empty array of Flag enum, useful for optimized use in {@link Collection#toArray(Object[])}.
@@ -338,7 +340,7 @@ public interface User extends IMentionable, IFakeable
          * @return Possibly-empty EnumSet of {@link net.dv8tion.jda.api.entities.User.Flag Flags}.
          */
         @Nonnull
-        public static EnumSet<Flag> getFlags(long flags)
+        public static EnumSet<Flag> getFlags(int flags)
         {
             if(flags == 0)
                 return EnumSet.noneOf(Flag.class);
@@ -352,7 +354,7 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * This is effectively the oposite of {@link #getFlags(long)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.Flag Flags}
+         * This is effectively the oposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.Flag Flags}
          * and returns the raw offset {@code long} representation of the flags.
          * 
          * @param  flags
@@ -372,7 +374,7 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * This is effectively the oposite of {@link #getFlags(long)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.Flag Flags}
+         * This is effectively the oposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.Flag Flags}
          * and returns the raw offset {@code long} representation of the flags.
          * <br>Example: {@code getRaw(EnumSet.of(Flag.STAFF, Flag.HYPESQUAD))}
          *
