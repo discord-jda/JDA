@@ -324,7 +324,7 @@ public interface User extends IMentionable, IFakeable
         {
             for (UserFlag flag : values())
             {
-                if(flag.offset == offset)
+                if (flag.offset == offset)
                     return flag;
             }
             return UNKNOWN;
@@ -348,8 +348,10 @@ public interface User extends IMentionable, IFakeable
                 return foundFlags; //empty
             
             for (UserFlag flag : values())
+            {
                 if (flag != UNKNOWN && (flags & flag.raw) == flag.raw)
                     foundFlags.add(flag);
+            }
                     
             return foundFlags;
         }
