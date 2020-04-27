@@ -342,15 +342,16 @@ public interface User extends IMentionable, IFakeable
         @Nonnull
         public static EnumSet<UserFlag> getFlags(int flags)
         {
-            if(flags == 0)
-                return EnumSet.noneOf(UserFlag.class);
-            EnumSet<UserFlag> userFlags = EnumSet.noneOf(UserFlag.class);
-            for (UserFlag flag : UserFlag.values())
-            {
+            final EnumSet<UserFlag> foundFlags = EnumSet.noneOf(UserFlag.class);
+            
+            if (flags == 0)
+                return foundFlags; //empty
+            
+            for (UserFlag flag : values())
                 if (flag != UNKNOWN && (flags & flag.raw) == flag.raw)
-                    userFlags.add(flag);
-            }
-            return userFlags;
+                    foundFlags.add(flag);
+                    
+            return foundFlags;
         }
 
         /**
