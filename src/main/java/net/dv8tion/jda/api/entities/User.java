@@ -331,7 +331,7 @@ public interface User extends IMentionable, IFakeable
         }
         
         /**
-         * A set of all {@link net.dv8tion.jda.api.entities.User.UserFlag Flags} that are specified by this raw long representation of
+         * A set of all {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} that are specified by this raw long representation of
          * flags.
          * 
          * @param  flags
