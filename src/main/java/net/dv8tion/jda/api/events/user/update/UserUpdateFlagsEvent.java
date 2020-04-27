@@ -47,7 +47,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<Integer>
      * @return Possibly-null EnumSet of previous {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     @Nullable
-    public EnumSet<User.UserFlag> getOlfFlagSet(){
+    public EnumSet<User.UserFlag> getOldFlagSet(){
         return previous == null ? null : User.UserFlag.getFlags(previous);
     }
 
