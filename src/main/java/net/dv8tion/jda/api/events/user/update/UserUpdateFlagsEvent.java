@@ -35,9 +35,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<Integer>
     }
 
     /**
-     * The previous raw {@code Integer} representation of the set {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
-     * 
-     * @return The previous {@code Integer} representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
+     * @return The old {@code Integer} representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     @Nullable
     public Integer getOldFlags()
@@ -46,9 +44,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<Integer>
     }
 
     /**
-     * The previous Set of {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
-     * 
-     * @return The previous EnumSet of {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
+     * @return Possibly-null EnumSet of previous {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     @Nullable
     public EnumSet<User.UserFlag> getOlfFlagSet(){
@@ -56,9 +52,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<Integer>
     }
 
     /**
-     * The new raw {@code Integer} representation of the set {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
-     * 
-     * @return The new {@code Integer} representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
+     * @return The new {@code Integer} representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     @Nullable
     public Integer getNewFlags(){
@@ -66,9 +60,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<Integer>
     }
 
     /**
-     * The new Set of {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
-     *
-     * @return The previous EnumSet of {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}.
+     * @return Possibly-null EnumSet of the new {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     @Nullable
     public EnumSet<User.UserFlag> getNewFlagSet(){

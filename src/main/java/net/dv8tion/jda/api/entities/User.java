@@ -262,12 +262,12 @@ public interface User extends IMentionable, IFakeable
         UNKNOWN(                   -1, "Unknown");
 
         /**
-         * Empty array of Flag enum, useful for optimized use in {@link java.util.Collection#toArray(Object[])}.
+         * Empty array of UserFlag enum, useful for optimized use in {@link java.util.Collection#toArray(Object[])}.
          */
         public static final UserFlag[] EMPTY_FLAGS = new UserFlag[0];
         
         private final int offset;
-        private final long raw;
+        private final int raw;
         private final String name;
 
         UserFlag(int offset, @Nonnull String name)
@@ -304,7 +304,7 @@ public interface User extends IMentionable, IFakeable
          * 
          * @return The raw value of this specific flag.
          */
-        public long getRawValue()
+        public int getRawValue()
         {
             return raw;
         }
@@ -331,7 +331,7 @@ public interface User extends IMentionable, IFakeable
         }
         
         /**
-         * A set of all {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} that are specified by this raw long representation of
+         * A set of all {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} that are specified by this raw int representation of
          * flags.
          * 
          * @param  flags
@@ -356,7 +356,7 @@ public interface User extends IMentionable, IFakeable
 
         /**
          * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
-         * and returns the raw offset {@code long} representation of the flags.
+         * and returns the raw offset {@code int} representation of the flags.
          * 
          * @param  flags
          *         The array of flags of which to form into the raw long representation.
@@ -376,7 +376,7 @@ public interface User extends IMentionable, IFakeable
 
         /**
          * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
-         * and returns the raw offset {@code long} representation of the flags.
+         * and returns the raw offset {@code int} representation of the flags.
          * <br>Example: {@code getRaw(EnumSet.of(UserFlag.STAFF, UserFlag.HYPESQUAD))}
          *
          * @param  flags
