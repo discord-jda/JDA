@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
- * Indicates that the {@link net.dv8tion.jda.api.entities.User.UserFlag Flags} of a {@link net.dv8tion.jda.api.entities.User User} changed.
+ * Indicates that the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of a {@link net.dv8tion.jda.api.entities.User User} changed.
  * 
  * <p>Can be used to retrieve the User who got their flags changed and their previous flags.
  * 

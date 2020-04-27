@@ -355,7 +355,7 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * This is effectively the oposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}
+         * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
          * and returns the raw offset {@code long} representation of the flags.
          * 
          * @param  flags
@@ -375,9 +375,9 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * This is effectively the oposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag Flags}
+         * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
          * and returns the raw offset {@code long} representation of the flags.
-         * <br>Example: {@code getRaw(EnumSet.of(Flag.STAFF, Flag.HYPESQUAD))}
+         * <br>Example: {@code getRaw(EnumSet.of(UserFlag.STAFF, UserFlag.HYPESQUAD))}
          *
          * @param  flags
          *         The Collection of flags of which to form into the raw long representation.
