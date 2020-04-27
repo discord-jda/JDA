@@ -291,7 +291,7 @@ public interface User extends IMentionable, IFakeable
         /**
          * The binary offset of the flag.
          * 
-         * @return The offset that represents this {@link net.dv8tion.jda.api.entities.User.UserFlag Flag}.
+         * @return The offset that represents this {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}.
          */
         public int getOffset()
         {
