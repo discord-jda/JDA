@@ -310,14 +310,14 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * Gets the first {@link net.dv8tion.jda.api.entities.User.UserFlag Flag} relating to the provided offset.
-         * <br>If there is no {@link net.dv8tion.jda.api.entities.User.UserFlag Flag} that matches the provided offset,
-         * {@link net.dv8tion.jda.api.entities.User.UserFlag#UNKNOWN Flag.UNKNOWN} is returned.
+         * Gets the first {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} relating to the provided offset.
+         * <br>If there is no {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} that matches the provided offset,
+         * {@link net.dv8tion.jda.api.entities.User.UserFlag#UNKNOWN UserFlag.UNKNOWN} is returned.
          * 
          * @param  offset
-         *         The offset to match a {@link net.dv8tion.jda.api.entities.User.UserFlag Flag} to.
+         *         The offset to match a {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} to.
          *         
-         * @return {@link net.dv8tion.jda.api.entities.User.UserFlag Flag} relating to the provided offset.
+         * @return {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} relating to the provided offset.
          */
         @Nonnull
         public static UserFlag getFromOffset(int offset)
@@ -335,9 +335,9 @@ public interface User extends IMentionable, IFakeable
          * flags.
          * 
          * @param  flags
-         *         The raw {@code long} representation if flags.
+         *         The raw {@code int} representation if flags.
          *         
-         * @return Possibly-empty EnumSet of {@link UserFlag Flags}.
+         * @return Possibly-empty EnumSet of {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
          */
         @Nonnull
         public static EnumSet<UserFlag> getFlags(int flags)
@@ -359,9 +359,9 @@ public interface User extends IMentionable, IFakeable
          * and returns the raw offset {@code int} representation of the flags.
          * 
          * @param  flags
-         *         The array of flags of which to form into the raw long representation.
+         *         The array of flags of which to form into the raw int representation.
          *         
-         * @return Unsigned long representing the provided flags.
+         * @return Unsigned int representing the provided flags.
          */
         public static int getRaw(@Nonnull UserFlag... flags){
             int raw = 0;
@@ -380,9 +380,9 @@ public interface User extends IMentionable, IFakeable
          * <br>Example: {@code getRaw(EnumSet.of(UserFlag.STAFF, UserFlag.HYPESQUAD))}
          *
          * @param  flags
-         *         The Collection of flags of which to form into the raw long representation.
+         *         The Collection of flags of which to form into the raw int representation.
          *
-         * @return Unsigned long representing the provided flags.
+         * @return Unsigned int representing the provided flags.
          * 
          * @see java.util.EnumSet EnumSet
          */
