@@ -280,7 +280,7 @@ public interface User extends IMentionable, IFakeable
         /**
          * The readable name as used in the Discord Client.
          * 
-         * @return The readable name of this {@link net.dv8tion.jda.api.entities.User.UserFlag Flag}.
+         * @return The readable name of this {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}.
          */
         @Nonnull
         public String getName()
