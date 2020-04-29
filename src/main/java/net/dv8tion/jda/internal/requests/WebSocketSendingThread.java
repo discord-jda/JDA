@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,6 +131,15 @@ class WebSocketSendingThread implements Runnable
         catch (InterruptedException ignored)
         {
             LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
+        }
+        catch (Throwable ex)
+        {
+            // Log error
+            LOG.error("Encountered error in gateway worker", ex);
+            if (ex instanceof RuntimeException)
+                throw (RuntimeException) ex;
+            else
+                throw (Error) ex;
         }
         finally
         {

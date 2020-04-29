@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
-val versionObj = Version(major = "4", minor = "1", revision = "0")
+val versionObj = Version(major = "4", minor = "1", revision = "1")
 
 project.group = "net.dv8tion"
 project.version = "$versionObj"

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.VerificationLevelException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.TimeUtil;
@@ -36,10 +36,12 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.util.*;
@@ -315,9 +317,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
             for (PermissionOverride o : overrides.valueCollection())
             {
                 if (o.isMemberOverride())
-                    action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 else
-                    action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
             }
         }
         return action;
@@ -327,7 +329,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendMessage(@Nonnull CharSequence text)
     {
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         return TextChannel.super.sendMessage(text);
@@ -337,7 +338,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Override
     public MessageAction sendMessage(@Nonnull MessageEmbed embed)
     {
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         // this is checked because you cannot send an empty message
@@ -351,7 +351,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         Checks.notNull(msg, "Message");
 
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         if (msg.getContentRaw().isEmpty() && !msg.getEmbeds().isEmpty())
@@ -363,12 +362,42 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
-        checkVerification();
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_ATTACH_FILES);
+
+        final long maxSize = getGuild().getMaxFileSize();
+        Checks.check(file == null || file.length() <= maxSize,
+                    "File may not exceed the maximum file length of %d bytes!", maxSize);
+
+        //Call MessageChannel's default method
+        return TextChannel.super.sendFile(file, fileName, options);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    {
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_ATTACH_FILES);
+
+        //Call MessageChannel's default method
+        return TextChannel.super.sendFile(data, fileName, options);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    {
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_ATTACH_FILES);
+
+        final long maxSize = getGuild().getMaxFileSize();
+        Checks.check(data == null || data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
 
         //Call MessageChannel's default method
         return TextChannel.super.sendFile(data, fileName, options);
@@ -461,6 +490,27 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull String unicode)
+    {
+        Checks.notNull(messageId, "Message ID");
+        Checks.notNull(unicode, "Emote Name");
+        checkPermission(Permission.MESSAGE_MANAGE);
+
+        String code = EncodingUtil.encodeReaction(unicode);
+        Route.CompiledRoute route = Route.Messages.CLEAR_EMOTE_REACTIONS.compile(getId(), messageId, code);
+        return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactionsById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.notNull(emote, "Emote");
+        return clearReactionsById(messageId, emote.getName() + ":" + emote.getId());
+    }
+
+    @Nonnull
+    @Override
     public RestActionImpl<Void> removeReactionById(@Nonnull String messageId, @Nonnull String unicode, @Nonnull User user)
     {
         Checks.isSnowflake(messageId, "Message ID");
@@ -482,6 +532,31 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
         final Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(getId(), messageId, encoded, targetUser);
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull String unicode)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notEmpty(unicode, "Emoji");
+        Checks.noWhitespace(unicode, "Emoji");
+
+        checkPermission(Permission.MESSAGE_HISTORY);
+
+        return new ReactionPaginationActionImpl(this, messageId, EncodingUtil.encodeUTF8(unicode));
+    }
+
+    @Nonnull
+    @Override
+    public ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(emote, "Emote");
+
+        checkPermission(Permission.MESSAGE_HISTORY);
+
+        return new ReactionPaginationActionImpl(this, messageId, String.format("%s:%s", emote, emote.getId()));
     }
 
     @Nonnull
@@ -557,11 +632,5 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         DataObject body = DataObject.empty().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
         return new RestActionImpl<>(getJDA(), route, body);
-    }
-
-    private void checkVerification()
-    {
-        if (!getGuild().checkVerification())
-            throw new VerificationLevelException(getGuild().getVerificationLevel());
     }
 }

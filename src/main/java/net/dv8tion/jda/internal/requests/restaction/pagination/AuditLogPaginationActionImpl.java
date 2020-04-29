@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ public class AuditLogPaginationActionImpl
         DataArray entries = obj.getArray("audit_log_entries");
 
         List<AuditLogEntry> list = new ArrayList<>(entries.length());
-        EntityBuilder builder = api.get().getEntityBuilder();
+        EntityBuilder builder = api.getEntityBuilder();
 
         TLongObjectMap<DataObject> userMap = new TLongObjectHashMap<>();
         for (int i = 0; i < users.length(); i++)

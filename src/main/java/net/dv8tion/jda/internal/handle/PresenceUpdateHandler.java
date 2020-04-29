@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,6 +122,7 @@ public class PresenceUpdateHandler extends SocketHandler
         {
             OnlineStatus oldStatus = member.getOnlineStatus();
             member.setOnlineStatus(status);
+            getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(
                 new UserUpdateOnlineStatusEvent(
                     getJDA(), responseNumber,
@@ -190,6 +191,7 @@ public class PresenceUpdateHandler extends SocketHandler
         else
         {
             member.setActivities(newActivities);
+            getJDA().getEntityBuilder().updateMemberCache(member);
             oldActivities = new ArrayList<>(oldActivities); // create modifiable copy
             List<Activity> startedActivities = new ArrayList<>();
             for (Activity activity : newActivities)

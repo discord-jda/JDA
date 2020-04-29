@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ public class SessionControllerAdapter implements SessionController
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
-            (response, request) -> response.getObject().getString("url")).complete();
+            (response, request) -> response.getObject().getString("url")).priority().complete();
     }
 
     @Nonnull
@@ -109,7 +109,8 @@ public class SessionControllerAdapter implements SessionController
                     }
                     else if (response.code == 401)
                     {
-                        api.get().verifyToken(true);
+                        api.shutdownNow();
+                        throw new LoginException("The provided token is invalid!");
                     }
                     else
                     {
@@ -122,7 +123,7 @@ public class SessionControllerAdapter implements SessionController
                     request.onFailure(e);
                 }
             }
-        }.complete();
+        }.priority().complete();
     }
 
     @Nonnull

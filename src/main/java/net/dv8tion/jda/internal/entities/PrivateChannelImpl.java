@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,10 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -35,22 +36,20 @@ import java.util.concurrent.CompletableFuture;
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
-    private final UpstreamReference<User> user;
-
+    private final User user;
     private long lastMessageId;
-    private boolean fake = false;
 
     public PrivateChannelImpl(long id, User user)
     {
         this.id = id;
-        this.user = new UpstreamReference<>(user);
+        this.user = user;
     }
 
     @Nonnull
     @Override
     public User getUser()
     {
-        return user.get();
+        return user;
     }
 
     @Override
@@ -86,7 +85,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public JDA getJDA()
     {
-        return getUser().getJDA();
+        return user.getJDA();
     }
 
     @Nonnull
@@ -121,7 +120,7 @@ public class PrivateChannelImpl implements PrivateChannel
     @Override
     public boolean isFake()
     {
-        return fake;
+        return user.isFake();
     }
 
     @Nonnull
@@ -156,10 +155,25 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendFile(data, fileName, options);
     }
 
-    public PrivateChannelImpl setFake(boolean fake)
+    @Nonnull
+    @Override
+    public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
-        this.fake = fake;
-        return this;
+        checkBot();
+        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
+        Checks.check(file == null || file.length() <= maxSize,
+                    "File may not exceed the maximum file length of %d bytes!", maxSize);
+        return PrivateChannel.super.sendFile(file, fileName, options);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    {
+        checkBot();
+        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
+        Checks.check(data == null || data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
+        return PrivateChannel.super.sendFile(data, fileName, options);
     }
 
     public PrivateChannelImpl setLastMessageId(long id)

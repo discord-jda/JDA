@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package net.dv8tion.jda.internal.entities;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.SelfUser;
-import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -77,39 +75,6 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public boolean isMfaEnabled()
     {
         return mfaEnabled;
-    }
-
-    @Nonnull
-    @Override
-    public String getEmail() throws AccountTypeException
-    {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT, "Email retrieval can only be done on CLIENT accounts!");
-        return email;
-    }
-
-    @Override
-    public String getPhoneNumber() throws AccountTypeException
-    {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT, "Phone number retrieval can only be done on CLIENT accounts!");
-        return this.phoneNumber;
-    }
-
-    @Override
-    public boolean isMobile() throws AccountTypeException
-    {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT, "Mobile app retrieval can only be done on CLIENT accounts!");
-        return this.mobile;
-    }
-
-    @Override
-    public boolean isNitro() throws AccountTypeException
-    {
-        if (getJDA().getAccountType() != AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.CLIENT, "Nitro status retrieval can only be done on CLIENT accounts!");
-        return this.nitro;
     }
 
     @Override
@@ -172,5 +137,21 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     {
         this.nitro = nitro;
         return this;
+    }
+
+    public static SelfUserImpl copyOf(SelfUserImpl other, JDAImpl jda)
+    {
+        SelfUserImpl selfUser = new SelfUserImpl(other.id, jda);
+        selfUser.setName(other.name)
+                .setAvatarId(other.avatarId)
+                .setDiscriminator(other.getDiscriminator())
+                .setBot(other.bot);
+        return selfUser
+                .setVerified(other.verified)
+                .setMfaEnabled(other.mfaEnabled)
+                .setEmail(other.email)
+                .setPhoneNumber(other.phoneNumber)
+                .setMobile(other.mobile)
+                .setNitro(other.nitro);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,24 +22,23 @@ import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 
 import javax.annotation.Nonnull;
 
 public class DirectAudioControllerImpl implements DirectAudioController
 {
-    private final UpstreamReference<JDAImpl> api;
+    private final JDAImpl api;
 
     public DirectAudioControllerImpl(JDAImpl api)
     {
-        this.api = new UpstreamReference<>(api);
+        this.api = api;
     }
 
     @Nonnull
     @Override
     public JDAImpl getJDA()
     {
-        return api.get();
+        return api;
     }
 
     @Override

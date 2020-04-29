@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.managers;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,7 +28,7 @@ import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -36,7 +37,7 @@ import javax.annotation.Nullable;
 
 public class GuildManagerImpl extends ManagerBase<GuildManager> implements GuildManager
 {
-    protected final UpstreamReference<Guild> guild;
+    protected final SnowflakeReference<Guild> guild;
 
     protected String name;
     protected String region;
@@ -52,7 +53,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     public GuildManagerImpl(Guild guild)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
-        this.guild = new UpstreamReference<>(guild);
+        JDA api = guild.getJDA();
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -61,7 +63,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     public Guild getGuild()
     {
-        return guild.get();
+        return guild.resolve();
     }
 
     @Nonnull

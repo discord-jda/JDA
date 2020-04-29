@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -566,7 +566,7 @@ public class MessageHistory
         {
             final MessageHistory result = new MessageHistory(channel);
             final DataArray array = response.getArray();
-            final EntityBuilder builder = api.get().getEntityBuilder();
+            final EntityBuilder builder = api.getEntityBuilder();
             for (int i = 0; i < array.length(); i++)
             {
                 try

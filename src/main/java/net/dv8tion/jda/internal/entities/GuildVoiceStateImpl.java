@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,15 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final UpstreamReference<Member> member;
+    private final SnowflakeReference<Guild> guild;
+    private final SnowflakeReference<Member> member;
+    private final JDA api;
 
     private VoiceChannel connectedChannel;
     private String sessionId;
@@ -36,10 +38,13 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean guildMuted = false;
     private boolean guildDeafened = false;
     private boolean suppressed = false;
+    private boolean stream = false;
 
     public GuildVoiceStateImpl(Member member)
     {
-        this.member = new UpstreamReference<>(member);
+        this.api = member.getJDA();
+        this.guild = new SnowflakeReference<>(member.getGuild(), api::getGuildById);
+        this.member = new SnowflakeReference<>(member, (id) -> guild.resolve().getMemberById(id));
     }
 
     @Override
@@ -58,7 +63,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public JDA getJDA()
     {
-        return getGuild().getJDA();
+        return api;
     }
 
     @Override
@@ -98,6 +103,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
+    public boolean isStream()
+    {
+        return stream;
+    }
+
+    @Override
     public VoiceChannel getChannel()
     {
         return connectedChannel;
@@ -107,14 +118,14 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public Guild getGuild()
     {
-        return getMember().getGuild();
+        return this.guild.resolve();
     }
 
     @Nonnull
     @Override
     public Member getMember()
     {
-        return member.get();
+        return this.member.resolve();
     }
 
     @Override
@@ -187,6 +198,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl setSuppressed(boolean suppressed)
     {
         this.suppressed = suppressed;
+        return this;
+    }
+
+    public GuildVoiceStateImpl setStream(boolean stream)
+    {
+        this.stream = stream;
         return this;
     }
 }

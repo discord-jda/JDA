@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.events.guild.update;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 
@@ -55,9 +57,25 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The new banner url, or null if the banner was removed
      */
     @Nullable
-    public String getNewBannerIdUrl()
+    public String getNewBannerUrl()
     {
         return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next);
+    }
+
+    /**
+     * The new banner url
+     *
+     * @return The new banner url, or null if the banner was removed
+     *
+     * @deprecated This will be replaced by {@link #getNewBannerUrl()}
+     */
+    @Nullable
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("getNewBannerUrl()")
+    public String getNewBannerIdUrl()
+    {
+        return getNewBannerUrl();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,19 @@ public class ZlibDecompressor implements Decompressor
 {
     private static final int Z_SYNC_FLUSH = 0x0000FFFF;
 
+    private final int maxBufferSize;
     private final Inflater inflater = new Inflater();
     private ByteBuffer flushBuffer = null;
     private SoftReference<ByteArrayOutputStream> decompressBuffer = null;
 
+    public ZlibDecompressor(int maxBufferSize)
+    {
+        this.maxBufferSize = maxBufferSize;
+    }
+
     private SoftReference<ByteArrayOutputStream> newDecompressBuffer()
     {
-        return new SoftReference<>(new ByteArrayOutputStream(1024));
+        return new SoftReference<>(new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
     }
 
     private ByteArrayOutputStream getDecompressBuffer()
@@ -50,7 +56,7 @@ public class ZlibDecompressor implements Decompressor
         // Check if the buffer has been collected by the GC or not
         ByteArrayOutputStream buffer = decompressBuffer.get();
         if (buffer == null) // create a ne buffer because the GC got it
-            decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(1024));
+            decompressBuffer = new SoftReference<>(buffer = new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
         return buffer;
     }
 
@@ -103,8 +109,7 @@ public class ZlibDecompressor implements Decompressor
     }
 
     @Override
-    @SuppressWarnings("CharsetObjectCanBeUsed")
-    public String decompress(byte[] data) throws DataFormatException
+    public byte[] decompress(byte[] data) throws DataFormatException
     {
         //Handle split messages
         if (!isFlush(data))
@@ -134,7 +139,7 @@ public class ZlibDecompressor implements Decompressor
             // This decompressor writes the received data and inflates it
             decompressor.write(data);
             // Once decompressed we re-interpret the data as a String which can be used for JSON parsing
-            return buffer.toString("UTF-8");
+            return buffer.toByteArray();
         }
         catch (IOException e)
         {
@@ -144,7 +149,10 @@ public class ZlibDecompressor implements Decompressor
         finally
         {
             // When done with decompression we want to reset the buffer so it can be used again later
-            buffer.reset();
+            if (buffer.size() > maxBufferSize)
+                decompressBuffer = newDecompressBuffer();
+            else
+                buffer.reset();
         }
     }
 }

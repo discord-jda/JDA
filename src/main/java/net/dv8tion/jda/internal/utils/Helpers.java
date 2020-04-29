@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,5 +141,16 @@ public final class Helpers
         if (first == second) return true;
         if (first == null || second == null) return false;
         return first.size() == second.size() && second.containsAll(first);
+    }
+
+    // ## ExceptionUtils ##
+
+    public static <T extends Throwable> T appendCause(T throwable, Throwable cause)
+    {
+        Throwable t = throwable;
+        while (t.getCause() != null)
+            t = t.getCause();
+        t.initCause(cause);
+        return throwable;
     }
 }

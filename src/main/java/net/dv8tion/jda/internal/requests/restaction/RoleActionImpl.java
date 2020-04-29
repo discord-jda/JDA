@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class RoleActionImpl extends AuditableRestActionImpl<Role> implements RoleAction
@@ -59,6 +60,20 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     public RoleActionImpl setCheck(BooleanSupplier checks)
     {
         return (RoleActionImpl) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public RoleActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (RoleActionImpl) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public RoleActionImpl deadline(long timestamp)
+    {
+        return (RoleActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
@@ -142,7 +157,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Override
     protected void handleSuccess(Response response, Request<Role> request)
     {
-        request.onSuccess(api.get().getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
+        request.onSuccess(api.getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
     }
 
     private void checkPermission(Permission permission)

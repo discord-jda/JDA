@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -50,7 +50,8 @@ import java.util.stream.Collectors;
 public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
 {
     protected final long id;
-    protected final UpstreamReference<GuildImpl> guild;
+    protected final SnowflakeReference<Guild> guild;
+    protected final JDAImpl api;
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
@@ -64,7 +65,8 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     public AbstractChannelImpl(long id, GuildImpl guild)
     {
         this.id = id;
-        this.guild = new UpstreamReference<>(guild);
+        this.api = guild.getJDA();
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
     }
 
     @Override
@@ -100,7 +102,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public GuildImpl getGuild()
     {
-        return guild.get();
+        return (GuildImpl) guild.resolve();
     }
 
     @Override
@@ -119,7 +121,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public JDA getJDA()
     {
-        return getGuild().getJDA();
+        return api;
     }
 
     @Override

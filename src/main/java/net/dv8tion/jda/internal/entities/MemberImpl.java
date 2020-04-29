@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
+import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,12 +39,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
-    private final UpstreamReference<GuildImpl> guild;
-    private final User user;
+    private final SnowflakeReference<Guild> guild;
+    private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
     private final Map<ClientType, OnlineStatus> clientStatus;
 
+    private User user;
     private String nickname;
     private long joinDate, boostDate;
     private List<Activity> activities = null;
@@ -52,19 +53,29 @@ public class MemberImpl implements Member
 
     public MemberImpl(GuildImpl guild, User user)
     {
-        this.guild = new UpstreamReference<>(guild);
+        this.api = (JDAImpl) user.getJDA();
+        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.user = user;
-        JDAImpl jda = (JDAImpl) getJDA();
-        boolean cacheState = jda.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(jda.getSelfUser());
-        boolean cacheOnline = jda.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
+        this.joinDate = guild.getTimeCreated().toInstant().toEpochMilli();
+        boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
+        boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
         this.clientStatus = cacheOnline ? Collections.synchronizedMap(new EnumMap<>(ClientType.class)) : null;
+    }
+
+    private void updateUser()
+    {
+        // Load user from cache if one exists, ideally two members with the same id should wrap the same user object
+        User realUser = getJDA().getUserById(user.getIdLong());
+        if (realUser != null)
+            this.user = realUser;
     }
 
     @Nonnull
     @Override
     public User getUser()
     {
+        updateUser();
         return user;
     }
 
@@ -72,14 +83,14 @@ public class MemberImpl implements Member
     @Override
     public GuildImpl getGuild()
     {
-        return guild.get();
+        return (GuildImpl) guild.resolve();
     }
 
     @Nonnull
     @Override
     public JDA getJDA()
     {
-        return user.getJDA();
+        return api;
     }
 
     @Nonnull
@@ -146,7 +157,7 @@ public class MemberImpl implements Member
     @Override
     public String getEffectiveName()
     {
-        return nickname != null ? nickname : user.getName();
+        return nickname != null ? nickname : getUser().getName();
     }
 
     @Nonnull
@@ -336,30 +347,31 @@ public class MemberImpl implements Member
     {
         if (o == this)
             return true;
-        if (!(o instanceof Member))
+        if (!(o instanceof MemberImpl))
             return false;
 
-        Member oMember = (Member) o;
-        return oMember.getUser().equals(user) && oMember.getGuild().equals(getGuild());
+        MemberImpl oMember = (MemberImpl) o;
+        return oMember.user.getIdLong() == user.getIdLong()
+            && oMember.guild.getIdLong() == guild.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return (getGuild().getId() + user.getId()).hashCode();
+        return (guild.getIdLong() + user.getId()).hashCode();
     }
 
     @Override
     public String toString()
     {
-        return "MB:" + getEffectiveName() + '(' + user.toString() + " / " + getGuild().toString() +')';
+        return "MB:" + getEffectiveName() + '(' + getUser().toString() + " / " + getGuild().toString() +')';
     }
 
     @Nonnull
     @Override
     public String getAsMention()
     {
-        return nickname == null ? user.getAsMention() : "<@!" + user.getIdLong() + '>';
+        return (nickname == null ? "<@" : "<@!") + user.getId() + '>';
     }
 
     @Nullable

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.managers.AccountManager;
@@ -25,7 +24,6 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.UpstreamReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -33,9 +31,7 @@ import javax.annotation.Nonnull;
 
 public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager
 {
-    protected final UpstreamReference<SelfUser> selfUser;
-
-    protected String currentPassword;
+    protected final SelfUser selfUser;
 
     protected String name;
     protected Icon avatar;
@@ -51,14 +47,14 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     public AccountManagerImpl(SelfUser selfUser)
     {
         super(selfUser.getJDA(), Route.Self.MODIFY_SELF.compile());
-        this.selfUser = new UpstreamReference<>(selfUser);
+        this.selfUser = selfUser;
     }
 
     @Nonnull
     @Override
     public SelfUser getSelfUser()
     {
-        return selfUser.get();
+        return selfUser;
     }
 
     @Nonnull
@@ -94,11 +90,10 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setName(@Nonnull String name, String currentPassword)
+    public AccountManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         Checks.check(name.length() >= 2 && name.length() <= 32, "Name must be between 2-32 characters long");
-        this.currentPassword = currentPassword;
         this.name = name;
         set |= NAME;
         return this;
@@ -107,45 +102,16 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setAvatar(Icon avatar, String currentPassword)
+    public AccountManagerImpl setAvatar(Icon avatar)
     {
-        this.currentPassword = currentPassword;
         this.avatar = avatar;
         set |= AVATAR;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public AccountManagerImpl setEmail(@Nonnull String email, @Nonnull String currentPassword)
-    {
-        Checks.notNull(email, "email");
-        this.currentPassword = currentPassword;
-        this.email = email;
-        set |= EMAIL;
-        return this;
-    }
-
-    @Override
-    @CheckReturnValue
-    public AccountManagerImpl setPassword(@Nonnull String newPassword, @Nonnull String currentPassword)
-    {
-        Checks.notNull(newPassword, "password");
-        Checks.check(newPassword.length() >= 6 && newPassword.length() <= 128, "Password must be between 2-128 characters long");
-        this.currentPassword = currentPassword;
-        this.password = newPassword;
-        set |= PASSWORD;
         return this;
     }
 
     @Override
     protected RequestBody finalizeData()
     {
-        boolean isClient = getJDA().getAccountType() == AccountType.CLIENT;
-        Checks.check(!isClient || (currentPassword != null && !currentPassword.isEmpty()),
-            "Provided client account password to be used in auth is null or empty!");
-
         DataObject body = DataObject.empty();
 
         //Required fields. Populate with current values..
@@ -157,18 +123,6 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
         if (shouldUpdate(AVATAR))
             body.put("avatar", avatar == null ? null : avatar.getEncoding());
 
-        if (isClient)
-        {
-            //Required fields. Populate with current values.
-            body.put("password", currentPassword);
-            body.put("email", email);
-
-            if (shouldUpdate(EMAIL))
-                body.put("email", email);
-            if (shouldUpdate(PASSWORD))
-                body.put("new_password", password);
-        }
-
         reset();
         return getRequestBody(body);
     }
@@ -177,7 +131,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     protected void handleSuccess(Response response, Request<Void> request)
     {
         String newToken = response.getObject().getString("token").replace("Bot ", "");
-        api.get().setToken(newToken);
+        api.setToken(newToken);
         request.onSuccess(null);
     }
 }
