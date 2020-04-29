@@ -58,7 +58,7 @@ public class GuildUpdateHandler extends SocketHandler
         //When member limits aren't initialized we don't fire an update event for them
         int maxMembers = content.getInt("max_members", 0);
         int maxPresences = content.getInt("max_presences", 5000);
-        if (!guild.isMemberLimitsLoaded())
+        if (guild.getMaxMembers() == 0)
         {
             // Initialize member limits to avoid unwanted update events
             guild.setMaxPresences(maxPresences);
