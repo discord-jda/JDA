@@ -215,6 +215,15 @@ public class GuildSetupNode
             return;
         }
 
+        if (partialGuild.getArray("members").isEmpty())
+        {
+            GuildSetupController.log.error("Discarding guild without self member. ID: {}", id);
+            if (isJoin())
+                controller.remove(id);
+            else
+                controller.ready(id);
+            return;
+        }
         ensureMembers();
     }
 
