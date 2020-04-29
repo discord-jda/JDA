@@ -102,7 +102,7 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache;
-    protected final EventManagerProxy eventManager = new EventManagerProxy(new InterfacedEventManager());
+    protected final EventManagerProxy eventManager;
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
@@ -148,6 +148,7 @@ public class JDAImpl implements JDA
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
+        this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
     }
 
     public void onChunksRequested(GuildImpl guild)

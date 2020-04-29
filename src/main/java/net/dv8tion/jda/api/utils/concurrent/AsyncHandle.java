@@ -65,7 +65,7 @@ public class AsyncHandle<T> implements Task<T>
     public T get()
     {
         if (WebSocketClient.WS_THREAD.get())
-            throw new UnsupportedOperationException("Blocking operations are not permitted on the event thread");
+            throw new UnsupportedOperationException("Blocking operations are not permitted on the gateway thread");
         return future.join();
     }
 
