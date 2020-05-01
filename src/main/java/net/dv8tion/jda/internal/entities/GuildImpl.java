@@ -797,6 +797,20 @@ public class GuildImpl implements Guild
         return chunkingCallback;
     }
 
+    // Helper function for deferred cache access
+    private Member getMember(long id, boolean update, JDAImpl jda)
+    {
+        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        {
+            // return member from cache if member tracking is enabled through intents
+            Member member = getMemberById(id);
+            // if the join time is inaccurate we also have to load it through REST to update this information
+            if (!update || (member != null && member.hasTimeJoined()))
+                return member;
+        }
+        return null;
+    }
+
     @Nonnull
     @Override
     public RestAction<Member> retrieveMemberById(long id, boolean update)
@@ -806,7 +820,7 @@ public class GuildImpl implements Guild
             return new CompletedRestAction<>(jda, getSelfMember());
 
         return new DeferredRestAction<>(jda, Member.class,
-                () -> !update || jda.isIntent(GatewayIntent.GUILD_MEMBERS) ? getMemberById(id) : null, // return member from cache if member tracking is enabled through intents
+                () -> getMember(id, update, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
                     return new RestActionImpl<>(jda, route, (resp, req) ->

@@ -81,7 +81,7 @@ public class MessageReactionHandler extends SocketHandler
             Optional<DataObject> memberJson = content.optObject("member");
             if (memberJson.isPresent()) // Check if we can load a member here
             {
-                if (member == null || member.isIncomplete()) // do we need to load a member?
+                if (member == null || !member.hasTimeJoined()) // do we need to load a member?
                     member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
             }
             if (member == null && add && guild.isLoaded())
