@@ -497,7 +497,7 @@ public class EntityBuilder
         }
 
         // Load joined_at if necessary
-        if (!memberJson.isNull("joined_at") && member.isIncomplete())
+        if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
         {
             String joinedAtRaw = memberJson.getString("joined_at");
             TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
@@ -575,6 +575,14 @@ public class EntityBuilder
                         getJDA(), responseNumber,
                         member, oldTime));
             }
+        }
+
+        if (!content.isNull("joined_at") && !member.hasTimeJoined())
+        {
+            String joinedAtRaw = content.getString("joined_at");
+            TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
+            long joinEpoch = Instant.from(joinedAt).toEpochMilli();
+            member.setJoinDate(joinEpoch);
         }
 
         if (!member.getUser().isFake())
