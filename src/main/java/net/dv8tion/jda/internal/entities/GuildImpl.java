@@ -289,6 +289,24 @@ public class GuildImpl implements Guild
         return maxPresences;
     }
 
+    @Nonnull
+    @Override
+    public RestAction<MetaData> retrieveMetaData()
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD.compile(getId());
+        route = route.withQueryParams("with_counts", "true");
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject json = response.getObject();
+            int memberLimit = json.getInt("max_members", 0);
+            int presenceLimit = json.getInt("max_presences", 5000);
+            this.maxMembers = memberLimit;
+            this.maxPresences = presenceLimit;
+            int approxMembers = json.getInt("approximate_member_count", this.memberCount);
+            int approxPresence = json.getInt("approximate_presence_count", 0);
+            return new MetaData(memberLimit, presenceLimit, approxPresence, approxMembers);
+        });
+    }
+
     @Override
     public VoiceChannel getAfkChannel()
     {

@@ -519,6 +519,8 @@ public interface Guild extends ISnowflake
      * @return The maximum amount of members
      *
      * @since  4.0.0
+     *
+     * @see    #retrieveMetaData()
      */
     int getMaxMembers();
 
@@ -530,8 +532,21 @@ public interface Guild extends ISnowflake
      * @return The maximum amount of connected members this guild can have
      *
      * @since  4.0.0
+     *
+     * @see    #retrieveMetaData()
      */
     int getMaxPresences();
+
+    /**
+     * Loads {@link MetaData} for this guild instance.
+     *
+     * @return {@link RestAction} - Type: {@link MetaData}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<MetaData> retrieveMetaData();
 
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
@@ -4605,6 +4620,69 @@ public interface Guild extends ISnowflake
         public String toString()
         {
             return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
+        }
+    }
+
+    /**
+     * Meta-Data for a Guild
+     *
+     * @since 4.2.0
+     */
+    class MetaData
+    {
+        private final int memberLimit;
+        private final int presenceLimit;
+        private final int approximatePresences;
+        private final int approximateMembers;
+
+        public MetaData(int memberLimit, int presenceLimit, int approximatePresences, int approximateMembers)
+        {
+            this.memberLimit = memberLimit;
+            this.presenceLimit = presenceLimit;
+            this.approximatePresences = approximatePresences;
+            this.approximateMembers = approximateMembers;
+        }
+
+        /**
+         * The active member limit for this guild.
+         * <br>This limit restricts how many users can be member for this guild at once.
+         *
+         * @return The member limit
+         */
+        public int getMemberLimit()
+        {
+            return memberLimit;
+        }
+
+        /**
+         * The active presence limit for this guild.
+         * <br>This limit restricts how many users can be connected/online for this guild at once.
+         *
+         * @return The presence limit
+         */
+        public int getPresenceLimit()
+        {
+            return presenceLimit;
+        }
+
+        /**
+         * The approximate number of online members in this guild.
+         *
+         * @return The approximate presence count
+         */
+        public int getApproximatePresences()
+        {
+            return approximatePresences;
+        }
+
+        /**
+         * The approximate number of members in this guild.
+         *
+         * @return The approximate member count
+         */
+        public int getApproximateMembers()
+        {
+            return approximateMembers;
         }
     }
 }
