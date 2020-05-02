@@ -319,7 +319,7 @@ public interface User extends IMentionable, IFakeable
         /**
          * Gets the first UserFlag relating to the provided offset.
          * <br>If there is no UserFlag that matches the provided offset,
-         * {@link net.dv8tion.jda.api.entities.User.UserFlag#UNKNOWN UserFlag.UNKNOWN} is returned.
+         * {@link #UNKNOWN} is returned.
          * 
          * @param  offset
          *         The offset to match a UserFlag to.
