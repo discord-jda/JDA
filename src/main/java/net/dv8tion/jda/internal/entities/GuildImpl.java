@@ -39,7 +39,6 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
-import net.dv8tion.jda.api.utils.concurrent.AsyncHandle;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -60,6 +59,7 @@ import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -1533,7 +1533,7 @@ public class GuildImpl implements Guild
             return memberList;
         });
 
-        return new AsyncHandle<>(result, () -> handle.cancel(false));
+        return new GatewayTask<>(result, () -> handle.cancel(false));
     }
 
     public void startChunking()

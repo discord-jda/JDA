@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.utils.concurrent;
+package net.dv8tion.jda.internal.utils.concurrent.task;
 
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -23,14 +24,14 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class AsyncHandle<T> implements Task<T>
+public class GatewayTask<T> implements Task<T>
 {
     private final Runnable onCancel;
     private final CompletableFuture<T> future;
     private Consumer<? super T> success;
     private Consumer<? super Throwable> failure;
 
-    public AsyncHandle(CompletableFuture<T> future, Runnable onCancel)
+    public GatewayTask(CompletableFuture<T> future, Runnable onCancel)
     {
         this.future = future;
         this.onCancel = onCancel;
