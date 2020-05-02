@@ -44,7 +44,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
 {
     public static final String IDENTIFIER = "public_flags";
     
-    public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, EnumSet<User.UserFlag> oldFlags)
+    public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull EnumSet<User.UserFlag> oldFlags)
     {
         super(api, responseNumber, user, oldFlags, user.getFlags(), IDENTIFIER);
     }
