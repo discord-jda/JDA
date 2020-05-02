@@ -96,6 +96,9 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * <br>Higher values mean they are displayed lower in the Client. Position 0 is the top most GuildChannel
      * Channels of a {@link net.dv8tion.jda.api.entities.Guild Guild} do not have to have continuous positions
      *
+     * @throws IllegalStateException
+     *         If this channel is not in the guild cache
+     *
      * @return Zero-based int of position of the GuildChannel.
      */
     int getPosition();
