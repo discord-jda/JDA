@@ -61,8 +61,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     /**
      * @return The old raw {@code Integer} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
-    @Nullable
-    public Integer getOldFlagsRaw(){
+    public int getOldFlagsRaw(){
         return User.UserFlag.getRaw(previous);
     }
 
@@ -77,8 +76,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     /**
      * @return The old raw {@code Integer} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
-    @Nullable
-    public Integer getNewFlagsRaw(){
+    public int getNewFlagsRaw(){
         return User.UserFlag.getRaw(next);
     }
 }
