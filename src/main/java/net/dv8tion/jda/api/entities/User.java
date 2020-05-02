@@ -370,7 +370,7 @@ public interface User extends IMentionable, IFakeable
          * @param  flags
          *         The array of flags of which to form into the raw int representation.
          *         
-         * @return Unsigned bitmask representing the provided flags.
+         * @return bitmask representing the provided flags.
          * 
          * @throws java.lang.IllegalArgumentException
          *         When the provided UsefLags are null.
@@ -396,7 +396,7 @@ public interface User extends IMentionable, IFakeable
          * @param  flags
          *         The Collection of flags of which to form into the raw int representation.
          *
-         * @return Unsigned bitmask representing the provided flags.
+         * @return bitmask representing the provided flags.
          * 
          * @see java.util.EnumSet EnumSet
          */
