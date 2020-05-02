@@ -369,11 +369,11 @@ public interface User extends IMentionable, IFakeable
          * 
          * @param  flags
          *         The array of flags of which to form into the raw int representation.
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         When the provided UserFLags are null.
          *         
          * @return bitmask representing the provided flags.
-         * 
-         * @throws java.lang.IllegalArgumentException
-         *         When the provided UsefLags are null.
          */
         public static int getRaw(@Nonnull UserFlag... flags){
             Checks.noneNull(flags, "UserFlags");
@@ -395,6 +395,9 @@ public interface User extends IMentionable, IFakeable
          *
          * @param  flags
          *         The Collection of flags of which to form into the raw int representation.
+         *
+         * @throws java.lang.IllegalArgumentException
+         *         When the provided UserFLags are null.
          *
          * @return bitmask representing the provided flags.
          * 
