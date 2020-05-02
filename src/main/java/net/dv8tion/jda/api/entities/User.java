@@ -238,6 +238,13 @@ public interface User extends IMentionable, IFakeable
     EnumSet<UserFlag> getFlags();
 
     /**
+     * Returns the raw {@code int} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of this user.
+     * 
+     * @return Integer representing the raw value of the user's flags.
+     */
+    int getFlagsRaw();
+
+    /**
      * Represents the bit offsets used by Discord for public flags
      */
     enum UserFlag
@@ -280,7 +287,7 @@ public interface User extends IMentionable, IFakeable
         /**
          * The readable name as used in the Discord Client.
          * 
-         * @return The readable name of this {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}.
+         * @return The readable name of this UserFlag.
          */
         @Nonnull
         public String getName()
@@ -291,7 +298,7 @@ public interface User extends IMentionable, IFakeable
         /**
          * The binary offset of the flag.
          * 
-         * @return The offset that represents this {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}.
+         * @return The offset that represents this UserFlag.
          */
         public int getOffset()
         {
@@ -310,14 +317,14 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * Gets the first {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} relating to the provided offset.
-         * <br>If there is no {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} that matches the provided offset,
+         * Gets the first UserFlag relating to the provided offset.
+         * <br>If there is no UserFlag that matches the provided offset,
          * {@link net.dv8tion.jda.api.entities.User.UserFlag#UNKNOWN UserFlag.UNKNOWN} is returned.
          * 
          * @param  offset
-         *         The offset to match a {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} to.
+         *         The offset to match a UserFlag to.
          *         
-         * @return {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag} relating to the provided offset.
+         * @return UserFlag relating to the provided offset.
          */
         @Nonnull
         public static UserFlag getFromOffset(int offset)
@@ -331,13 +338,13 @@ public interface User extends IMentionable, IFakeable
         }
         
         /**
-         * A set of all {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} that are specified by this raw int representation of
+         * A set of all UserFlags that are specified by this raw int representation of
          * flags.
          * 
          * @param  flags
          *         The raw {@code int} representation if flags.
          *         
-         * @return Possibly-empty EnumSet of {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
+         * @return Possibly-empty EnumSet of UserFlags.
          */
         @Nonnull
         public static EnumSet<UserFlag> getFlags(int flags)
@@ -357,15 +364,20 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
+         * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more UserFlags
          * and returns the raw offset {@code int} representation of the flags.
          * 
          * @param  flags
          *         The array of flags of which to form into the raw int representation.
          *         
-         * @return Unsigned int representing the provided flags.
+         * @return Unsigned bitmask representing the provided flags.
+         * 
+         * @throws java.lang.IllegalArgumentException
+         *         When the provided UsefLags are null.
          */
         public static int getRaw(@Nonnull UserFlag... flags){
+            Checks.noneNull(flags, "UserFlags");
+            
             int raw = 0;
             for (UserFlag flag : flags)
             {
@@ -384,7 +396,7 @@ public interface User extends IMentionable, IFakeable
          * @param  flags
          *         The Collection of flags of which to form into the raw int representation.
          *
-         * @return Unsigned int representing the provided flags.
+         * @return Unsigned bitmask representing the provided flags.
          * 
          * @see java.util.EnumSet EnumSet
          */

@@ -372,7 +372,7 @@ public class EntityBuilder
                     userObj, oldAvatar));
         }
         
-        if (!Objects.equals(oldFlags, newFlags))
+        if (oldFlags != newFlags)
         {
             userObj.setFlags(newFlags);
             jda.handleEvent(

@@ -1,3 +1,18 @@
+/*
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -25,45 +40,45 @@ import java.util.EnumSet;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<Integer>
+public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.UserFlag>>
 {
     public static final String IDENTIFIER = "public_flags";
     
-    public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, int oldFlags)
+    public UserUpdateFlagsEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, EnumSet<User.UserFlag> oldFlags)
     {
-        super(api, responseNumber, user, oldFlags, User.UserFlag.getRaw(user.getFlags()), IDENTIFIER);
+        super(api, responseNumber, user, oldFlags, user.getFlags(), IDENTIFIER);
     }
 
     /**
-     * @return The old {@code Integer} representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
+     * @return The old {@code EnumSet<{@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}>} representation of the User's flags.
      */
     @Nullable
-    public Integer getOldFlags()
+    public EnumSet<User.UserFlag> getOldFlags()
     {
         return getOldValue();
     }
 
     /**
-     * @return Possibly-null EnumSet of previous {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
+     * @return The old raw {@code Integer} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     @Nullable
-    public EnumSet<User.UserFlag> getOldFlagSet(){
-        return previous == null ? null : User.UserFlag.getFlags(previous);
+    public Integer getOldFlagsRaw(){
+        return User.UserFlag.getRaw(previous);
     }
 
     /**
-     * @return The new {@code Integer} representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
+     * @return The new {@code EnumSet<{@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}>} representation of the User's flags.
      */
     @Nullable
-    public Integer getNewFlags(){
+    public EnumSet<User.UserFlag> getNewFlags(){
         return getNewValue();
     }
 
     /**
-     * @return Possibly-null EnumSet of the new {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
+     * @return The old raw {@code Integer} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     @Nullable
-    public EnumSet<User.UserFlag> getNewFlagSet(){
-        return next == null ? null : User.UserFlag.getFlags(next);
+    public Integer getNewFlagsRaw(){
+        return User.UserFlag.getRaw(next);
     }
 }
