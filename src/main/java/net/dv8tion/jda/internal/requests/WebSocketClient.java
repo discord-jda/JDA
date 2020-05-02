@@ -95,6 +95,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected boolean initiating;
 
+    protected int missedHeartbeats = 0;
     protected int reconnectTimeoutS = 2;
     protected long heartbeatStartTime;
     protected long identifyTime = 0;
@@ -616,8 +617,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     .put("d", api.getResponseTotal()
                 ).toString();
 
-        send(keepAlivePacket, true);
-        heartbeatStartTime = System.currentTimeMillis();
+        if (missedHeartbeats >= 2)
+        {
+            missedHeartbeats = 0;
+            LOG.warn("Missed 2 heartbeats! Trying to reconnect...");
+            close(4900, "ZOMBIE CONNECTION");
+        }
+        else
+        {
+            missedHeartbeats += 1;
+            send(keepAlivePacket, true);
+            heartbeatStartTime = System.currentTimeMillis();
+        }
     }
 
     protected void sendIdentify()
@@ -803,6 +814,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
+                missedHeartbeats = 0;
                 api.setGatewayPing(System.currentTimeMillis() - heartbeatStartTime);
                 break;
             default:
