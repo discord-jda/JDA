@@ -50,6 +50,8 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
             RestAction.getDefaultFailure().accept(throwable);
         else
             callback.accept(throwable);
+        if (throwable instanceof Error)
+            throw (Error) throwable;
     }
 
     @Nonnull

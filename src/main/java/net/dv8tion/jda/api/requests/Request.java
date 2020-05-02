@@ -98,7 +98,10 @@ public class Request<T>
             {
                 RestActionImpl.LOG.error("Encountered error while processing success consumer", t);
                 if (t instanceof Error)
+                {
                     api.handleEvent(new ExceptionEvent(api, t, true));
+                    throw (Error) t;
+                }
             }
         });
     }
@@ -134,7 +137,10 @@ public class Request<T>
             {
                 RestActionImpl.LOG.error("Encountered error while processing failure consumer", t);
                 if (t instanceof Error)
+                {
                     api.handleEvent(new ExceptionEvent(api, t, true));
+                    throw (Error) t;
+                }
             }
         });
     }
