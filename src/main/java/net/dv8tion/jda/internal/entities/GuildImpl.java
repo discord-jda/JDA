@@ -816,6 +816,38 @@ public class GuildImpl implements Guild
                 });
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
+    {
+        Checks.notEmpty(prefix, "Prefix");
+        Checks.positive(limit, "Limit");
+        Checks.check(limit <= 100, "Limit must not be greater than 100");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+
+        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, prefix, limit);
+        CompletableFuture<List<Member>> result = handle.thenApply((response) -> {
+            DataArray memberArray = response.getArray("members");
+            List<Member> memberList = new ArrayList<>(memberArray.length());
+            if (memberArray.isEmpty())
+                return memberList;
+
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            for (int i = 0; i < memberArray.length(); i++)
+            {
+                DataObject json = memberArray.getObject(i);
+                MemberImpl member = entityBuilder.createMember(this, json);
+                entityBuilder.updateMemberCache(member);
+                memberList.add(member);
+            }
+
+            return memberList;
+        });
+
+        return new GatewayTask<>(result, () -> handle.cancel(false));
+    }
+
     @Override
     public long getIdLong()
     {
@@ -1503,38 +1535,6 @@ public class GuildImpl implements Guild
     }
 
     // -- Member Tracking --
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
-    {
-        Checks.notEmpty(prefix, "Prefix");
-        Checks.positive(limit, "Limit");
-        Checks.check(limit <= 100, "Limit must not be greater than 100");
-        MemberChunkManager chunkManager = api.getClient().getChunkManager();
-
-        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, prefix, limit);
-        CompletableFuture<List<Member>> result = handle.thenApply((response) -> {
-            DataArray memberArray = response.getArray("members");
-            List<Member> memberList = new ArrayList<>(memberArray.length());
-            if (memberArray.isEmpty())
-                return memberList;
-
-            EntityBuilder entityBuilder = api.getEntityBuilder();
-            for (int i = 0; i< memberArray.length(); i++)
-            {
-                DataObject json = memberArray.getObject(i);
-                MemberImpl member = entityBuilder.createMember(this, json);
-                entityBuilder.updateMemberCache(member);
-                memberList.add(member);
-            }
-
-            return memberList;
-        });
-
-        return new GatewayTask<>(result, () -> handle.cancel(false));
-    }
 
     public void startChunking()
     {
