@@ -377,7 +377,7 @@ public interface User extends IMentionable, IFakeable
         }
 
         /**
-         * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
+         * This is effectively the opposite of {@link #getFlags(int)}. This takes a collection of UserFlags
          * and returns the raw offset {@code int} representation of the flags.
          * <br>Example: {@code getRaw(EnumSet.of(UserFlag.STAFF, UserFlag.HYPESQUAD))}
          *
