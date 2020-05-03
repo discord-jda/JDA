@@ -2121,11 +2121,23 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
-            Checks.check(!file.exists() || file.canWrite(), "Cannot write to file %s", file.getName());
+            try
+            {
+                if (!file.exists())
+                    file.createNewFile();
+                else
+                    Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
+            }
+            catch (IOException e)
+            {
+                throw new IllegalArgumentException("Cannot create file", e);
+            }
+
             return retrieveInputStream().thenApplyAsync((stream) -> {
                 try (FileOutputStream out = new FileOutputStream(file))
                 {
