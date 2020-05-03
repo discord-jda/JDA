@@ -107,7 +107,7 @@ class WebSocketSendingThread implements Runnable
         }
 
         ConnectionRequest audioRequest = null;
-        DataObject chunkOrSyncRequest = null;
+        DataObject chunkRequest = null;
         try
         {
             api.setContext();
@@ -116,9 +116,9 @@ class WebSocketSendingThread implements Runnable
             queueLock.lockInterruptibly();
 
             audioRequest = client.getNextAudioConnectRequest();
-            chunkOrSyncRequest = chunkSyncQueue.peek();
-            if (chunkOrSyncRequest != null)
-                handleChunkSync(chunkOrSyncRequest);
+            chunkRequest = chunkSyncQueue.peek();
+            if (chunkRequest != null)
+                handleChunkSync(chunkRequest);
             else if (audioRequest != null)
                 handleAudioRequest(audioRequest);
             else
@@ -136,8 +136,8 @@ class WebSocketSendingThread implements Runnable
             if (!attemptedToSend)
             {
                 // Try to remove the failed request
-                if (chunkOrSyncRequest != null)
-                    client.chunkSyncQueue.remove(chunkOrSyncRequest);
+                if (chunkRequest != null)
+                    client.chunkSyncQueue.remove(chunkRequest);
                 else if (audioRequest != null)
                     client.removeAudioConnection(audioRequest.getGuildIdLong());
             }
