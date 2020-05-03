@@ -127,6 +127,7 @@ class WebSocketSendingThread implements Runnable
         catch (InterruptedException ignored)
         {
             LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
+            return;
         }
         catch (Throwable ex)
         {
