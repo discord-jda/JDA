@@ -291,6 +291,24 @@ public class GuildImpl implements Guild
         return maxPresences;
     }
 
+    @Nonnull
+    @Override
+    public RestAction<MetaData> retrieveMetaData()
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD.compile(getId());
+        route = route.withQueryParams("with_counts", "true");
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject json = response.getObject();
+            int memberLimit = json.getInt("max_members", 0);
+            int presenceLimit = json.getInt("max_presences", 5000);
+            this.maxMembers = memberLimit;
+            this.maxPresences = presenceLimit;
+            int approxMembers = json.getInt("approximate_member_count", this.memberCount);
+            int approxPresence = json.getInt("approximate_presence_count", 0);
+            return new MetaData(memberLimit, presenceLimit, approxPresence, approxMembers);
+        });
+    }
+
     @Override
     public VoiceChannel getAfkChannel()
     {
@@ -944,14 +962,16 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Integer> prune(int days)
+    public AuditableRestAction<Integer> prune(int days, boolean wait)
     {
         checkPermission(Permission.KICK_MEMBERS);
 
         Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId()).withQueryParams("days", Integer.toString(days));
-        return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
+        if (!wait)
+            route = route.withQueryParams("compute_prune_count", "false");
+        return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned", 0));
     }
 
     @Nonnull
