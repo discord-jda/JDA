@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class MemberChunkManager
 {
-    private static final long maxAge = 10 * 1000; // 10 seconds
+    private static final long MAX_CHUNK_AGE = 10 * 1000; // 10 seconds
     private final WebSocketClient client;
     private final ReentrantLock lock = new ReentrantLock();
     private final TLongObjectMap<ChunkRequest> requests = new TLongObjectHashMap<>();
@@ -162,7 +162,7 @@ public class MemberChunkManager
             MiscUtil.locked(lock, () ->
             {
                 requests.forEachValue(request -> {
-                    if (request.getAge() > maxAge)
+                    if (request.getAge() > MAX_CHUNK_AGE)
                         request.completeExceptionally(new TimeoutException());
                     return true;
                 });

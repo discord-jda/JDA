@@ -845,6 +845,11 @@ public class GuildImpl implements Guild
             return memberList;
         });
 
+        result.exceptionally(ex -> {
+            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            return null;
+        });
+
         return new GatewayTask<>(result, () -> handle.cancel(false));
     }
 

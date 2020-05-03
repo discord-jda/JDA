@@ -39,6 +39,9 @@ public interface Task<T>
      * Provide a callback for exception handling.
      * <br>This is an asynchronous operation.
      *
+     * <p>The error will be logged regardless of your callback, this only exists to handle
+     * failures for other purposes.
+     *
      * @param  callback
      *         The error callback
      *
