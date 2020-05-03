@@ -2482,7 +2482,6 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If the provided prefix is null or empty.</li>
-     *             <li>If the provided callback is null</li>
      *             <li>If the provided limit is not in the range of [1, 100]</li>
      *         </ul>
      *
