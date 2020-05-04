@@ -41,7 +41,7 @@ class WebSocketSendingThread implements Runnable
     private final WebSocketClient client;
     private final JDAImpl api;
     private final ReentrantLock queueLock;
-    private final Queue<DataObject> chunkSyncQueue;
+    private final Queue<DataObject> chunkQueue;
     private final Queue<String> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
     private final ScheduledExecutorService executor;
@@ -56,7 +56,7 @@ class WebSocketSendingThread implements Runnable
         this.client = client;
         this.api = client.api;
         this.queueLock = client.queueLock;
-        this.chunkSyncQueue = client.chunkSyncQueue;
+        this.chunkQueue = client.chunkSyncQueue;
         this.ratelimitQueue = client.ratelimitQueue;
         this.queuedAudioConnections = client.queuedAudioConnections;
         this.executor = client.executor;
@@ -116,7 +116,7 @@ class WebSocketSendingThread implements Runnable
             queueLock.lockInterruptibly();
 
             audioRequest = client.getNextAudioConnectRequest();
-            chunkRequest = chunkSyncQueue.peek();
+            chunkRequest = chunkQueue.peek();
             if (chunkRequest != null)
                 handleChunkSync(chunkRequest);
             else if (audioRequest != null)
@@ -184,7 +184,7 @@ class WebSocketSendingThread implements Runnable
         );
 
         if (success)
-            chunkSyncQueue.remove();
+            chunkQueue.remove();
     }
 
     private void handleAudioRequest(ConnectionRequest audioRequest)
