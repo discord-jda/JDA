@@ -18,9 +18,11 @@ package net.dv8tion.jda.internal.managers;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Icon;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.Webhook;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
@@ -144,8 +146,12 @@ public class WebhookManagerImpl extends ManagerBase<WebhookManager> implements W
     @Override
     protected boolean checkPermissions()
     {
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_WEBHOOKS);
+        Member selfMember = getGuild().getSelfMember();
+        TextChannel channel = getChannel();
+        if (!selfMember.hasAccess(channel))
+            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_WEBHOOKS))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_WEBHOOKS);
         return super.checkPermissions();
     }
 }

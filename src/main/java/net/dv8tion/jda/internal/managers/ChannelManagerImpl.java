@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
@@ -376,8 +377,13 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     protected boolean checkPermissions()
     {
         final Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_CHANNEL);
+        GuildChannel channel = getChannel();
+        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasAccess(channel))
+            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
         return super.checkPermissions();
     }
 
