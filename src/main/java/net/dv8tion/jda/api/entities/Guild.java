@@ -2481,7 +2481,7 @@ public interface Guild extends ISnowflake
     /**
      * Queries a list of members using a radix tree based on the provided name prefix.
      * <br>This will check both the username and the nickname of the members.
-     * Additional filtering may be required.
+     * Additional filtering may be required. If no members with the specified prefix exist, the list will be empty.
      *
      * <p>The requests automatically timeout after {@code 10} seconds.
      * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
