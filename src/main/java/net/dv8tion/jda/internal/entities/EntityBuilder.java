@@ -447,7 +447,6 @@ public class EntityBuilder
         long hashId = guild.getIdLong() ^ user.getIdLong();
         getJDA().getEventCache().playbackCache(EventCache.Type.USER, member.getIdLong());
         getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
-        guild.acknowledgeMembers();
         return true;
     }
 

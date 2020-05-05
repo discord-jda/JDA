@@ -80,6 +80,7 @@ public class  DefaultShardManagerBuilder
     protected ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider = null;
     protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
+    protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
@@ -1486,6 +1487,70 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used by the
+     * event proxy to schedule events. This will be done on the calling thread by default.
+     *
+     * <p>The executor will not be shutdown automatically when the shard is shutdown.
+     * To shut it down automatically use {@link #setEventPool(ExecutorService, boolean)}.
+     *
+     * @param  executor
+     *         The executor for the event proxy, or null to use calling thread
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setEventPool(@Nullable ExecutorService executor)
+    {
+        return setEventPool(executor, executor == null);
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used by the
+     * event proxy to schedule events. This will be done on the calling thread by default.
+     *
+     * @param  executor
+     *         The executor for the event proxy, or null to use calling thread
+     * @param  automaticShutdown
+     *         True, if the executor should be shutdown when JDA shuts down
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setEventPool(@Nullable ExecutorService executor, boolean automaticShutdown)
+    {
+        return setEventPoolProvider(executor == null ? null : new ThreadPoolProviderImpl<>(executor, automaticShutdown));
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used in
+     * the JDA callback handler which mostly consists of {@link net.dv8tion.jda.api.requests.RestAction RestAction} callbacks.
+     * By default JDA will use {@link ForkJoinPool#commonPool()}
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>This is used to handle callbacks of {@link RestAction#queue()}, similarly it is used to
+     * finish {@link RestAction#submit()} and {@link RestAction#complete()} tasks which build on queue.
+     *
+     * <p>Default: {@link ForkJoinPool#commonPool()}
+     *
+     * @param  provider
+     *         The thread-pool provider to use for callback handling
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setEventPoolProvider(@Nullable ThreadPoolProvider<? extends ExecutorService> provider)
+    {
+        this.eventPoolProvider = provider;
+        return this;
+    }
+
+    /**
      * Sets the maximum amount of time that JDA will back off to wait when attempting to reconnect the MainWebsocket.
      * <br>Provided value must be 32 or greater.
      *
@@ -2066,7 +2131,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setActivityProvider(activityProvider);
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
-        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, threadFactory);
+        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);

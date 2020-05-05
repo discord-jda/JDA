@@ -2310,6 +2310,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
      *         the message it referred to has already been deleted.</li>
+     * </ul>
      *
      * @param  messageId
      *         The messageId to retrieve the users from.
@@ -2360,6 +2361,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
      *         the message it referred to has already been deleted.</li>
+     * </ul>
      *
      * @param  messageId
      *         The messageId to retrieve the users from.

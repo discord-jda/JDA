@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -58,6 +59,7 @@ import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -832,6 +834,43 @@ public class GuildImpl implements Guild
                 });
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
+    {
+        Checks.notEmpty(prefix, "Prefix");
+        Checks.positive(limit, "Limit");
+        Checks.check(limit <= 100, "Limit must not be greater than 100");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+
+        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, prefix, limit);
+        CompletableFuture<List<Member>> result = handle.thenApply((response) -> {
+            DataArray memberArray = response.getArray("members");
+            List<Member> memberList = new ArrayList<>(memberArray.length());
+            if (memberArray.isEmpty())
+                return memberList;
+
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            for (int i = 0; i < memberArray.length(); i++)
+            {
+                DataObject json = memberArray.getObject(i);
+                MemberImpl member = entityBuilder.createMember(this, json);
+                entityBuilder.updateMemberCache(member);
+                memberList.add(member);
+            }
+
+            return memberList;
+        });
+
+        result.exceptionally(ex -> {
+            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            return null;
+        });
+
+        return new GatewayTask<>(result, () -> handle.cancel(false));
+    }
+
     @Override
     public long getIdLong()
     {
@@ -1522,38 +1561,13 @@ public class GuildImpl implements Guild
 
     // -- Member Tracking --
 
-    @Nonnull
-    @CheckReturnValue
-    public CompletableFuture<List<Member>> retrieveMembersByName(@Nonnull String prefix, int limit)
-    {
-        Checks.notEmpty(prefix, "Prefix");
-        Checks.positive(limit, "Limit");
-        Checks.check(limit <= 100, "Limit must not be greater than 100");
-        MemberChunkManager chunkManager = api.getClient().getChunkManager();
-        return chunkManager.chunkGuild(id, prefix, limit)
-                .thenApplyAsync((response) -> {
-                    DataArray memberArray = response.getArray("members");
-                    List<Member> memberList = new ArrayList<>(memberArray.length());
-                    if (memberArray.isEmpty())
-                        return memberList;
-
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
-                    for (int i = 0; i< memberArray.length(); i++)
-                    {
-                        DataObject json = memberArray.getObject(i);
-                        MemberImpl member = entityBuilder.createMember(this, json);
-                        entityBuilder.updateMemberCache(member);
-                        memberList.add(member);
-                    }
-
-                    return memberList;
-                });
-    }
-
     public void startChunking()
     {
         if (isLoaded())
+        {
+            chunkingCallback = CompletableFuture.completedFuture(null);
             return;
+        }
 
         if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
         {
@@ -1569,13 +1583,10 @@ public class GuildImpl implements Guild
         DataObject request = DataObject.empty()
             .put("limit", 0)
             .put("query", "")
+//            .put("nonce", String.valueOf(System.currentTimeMillis() | 1))
             .put("guild_id", getId());
 
-        DataObject packet = DataObject.empty()
-            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-            .put("d", request);
-
-        getJDA().getClient().chunkOrSyncRequest(packet);
+        getJDA().getClient().sendChunkRequest(request);
     }
 
     public void onMemberAdd()
@@ -1586,17 +1597,13 @@ public class GuildImpl implements Guild
     public void onMemberRemove()
     {
         memberCount--;
-        acknowledgeMembers();
     }
 
-    public void acknowledgeMembers()
+    public void completeChunking()
     {
-        if (memberCache.size() == memberCount && !chunkingCallback.isDone())
-        {
-            JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
+        if (chunkingCallback != null && !chunkingCallback.isDone())
             chunkingCallback.complete(null);
-            getJDA().onChunksFinished(this);
-        }
+        getJDA().onChunksFinished(this);
     }
 
     // -- Object overrides --

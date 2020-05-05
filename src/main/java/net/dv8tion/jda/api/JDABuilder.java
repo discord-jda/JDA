@@ -65,6 +65,8 @@ public class JDABuilder
     protected boolean shutdownMainWsPool = true;
     protected ExecutorService callbackPool = null;
     protected boolean shutdownCallbackPool = true;
+    protected ExecutorService eventPool = null;
+    protected boolean shutdownEventPool = true;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
@@ -1026,6 +1028,47 @@ public class JDABuilder
     }
 
     /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used by the
+     * event proxy to schedule events. This will be done on the calling thread by default.
+     *
+     * <p>The executor will not be shutdown automatically when JDA is shutdown.
+     * To shut it down automatically use {@link #setEventPool(ExecutorService, boolean)}.
+     *
+     * @param  executor
+     *         The executor for the event proxy, or null to use calling thread
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public JDABuilder setEventPool(@Nullable ExecutorService executor)
+    {
+        return setEventPool(executor, executor == null);
+    }
+
+    /**
+     * Sets the {@link ExecutorService ExecutorService} that should be used by the
+     * event proxy to schedule events. This will be done on the calling thread by default.
+     *
+     * @param  executor
+     *         The executor for the event proxy, or null to use calling thread
+     * @param  automaticShutdown
+     *         True, if the executor should be shutdown when JDA shuts down
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    public JDABuilder setEventPool(@Nullable ExecutorService executor, boolean automaticShutdown)
+    {
+        this.eventPool = executor;
+        this.shutdownEventPool = automaticShutdown;
+        return this;
+    }
+
+    /**
      * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
      * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
      * should instead handle the {@link net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
@@ -1710,6 +1753,7 @@ public class JDABuilder
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
+        threadingConfig.setEventPool(eventPool, shutdownEventPool);
         SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 

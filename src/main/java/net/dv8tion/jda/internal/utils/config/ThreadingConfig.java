@@ -28,10 +28,12 @@ public class ThreadingConfig
     private ScheduledExecutorService rateLimitPool;
     private ScheduledExecutorService gatewayPool;
     private ExecutorService callbackPool;
+    private ExecutorService eventPool;
 
     private boolean shutdownRateLimitPool;
     private boolean shutdownGatewayPool;
     private boolean shutdownCallbackPool;
+    private boolean shutdownEventPool;
 
     public ThreadingConfig()
     {
@@ -60,6 +62,12 @@ public class ThreadingConfig
         this.shutdownCallbackPool = shutdown;
     }
 
+    public void setEventPool(@Nullable ExecutorService executor, boolean shutdown)
+    {
+        this.eventPool = executor;
+        this.shutdownEventPool = shutdown;
+    }
+
     public void init(@Nonnull Supplier<String> identifier)
     {
         if (this.rateLimitPool == null)
@@ -74,6 +82,8 @@ public class ThreadingConfig
             callbackPool.shutdown();
         if (shutdownGatewayPool)
             gatewayPool.shutdown();
+        if (shutdownEventPool && eventPool != null)
+            eventPool.shutdown();
         if (shutdownRateLimitPool)
         {
             if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
@@ -103,6 +113,8 @@ public class ThreadingConfig
             gatewayPool.shutdownNow();
         if (shutdownRateLimitPool)
             rateLimitPool.shutdownNow();
+        if (shutdownEventPool && eventPool != null)
+            eventPool.shutdownNow();
     }
 
     @Nonnull
@@ -123,6 +135,12 @@ public class ThreadingConfig
         return callbackPool;
     }
 
+    @Nullable
+    public ExecutorService getEventPool()
+    {
+        return eventPool;
+    }
+
     public boolean isShutdownRateLimitPool()
     {
         return shutdownRateLimitPool;
@@ -136,6 +154,11 @@ public class ThreadingConfig
     public boolean isShutdownCallbackPool()
     {
         return shutdownCallbackPool;
+    }
+
+    public boolean isShutdownEventPool()
+    {
+        return shutdownEventPool;
     }
 
     @Nonnull

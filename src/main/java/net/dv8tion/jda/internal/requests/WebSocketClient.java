@@ -69,6 +69,7 @@ import java.util.zip.DataFormatException;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
+    public static final ThreadLocal<Boolean> WS_THREAD = ThreadLocal.withInitial(() -> false);
     public static final Logger LOG = JDALogger.getLog(WebSocketClient.class);
     public static final int IDENTIFY_DELAY = 5;
     public static final int ZLIB_SUFFIX = 0x0000FFFF;
@@ -101,7 +102,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected long identifyTime = 0;
 
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
-    protected final Queue<String> chunkSyncQueue = new ConcurrentLinkedQueue<>();
+    protected final Queue<DataObject> chunkSyncQueue = new ConcurrentLinkedQueue<>();
     protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
 
     protected volatile long ratelimitResetTime;
@@ -226,9 +227,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         locked("Interrupted while trying to add request to queue", () -> ratelimitQueue.add(message));
     }
 
-    public void chunkOrSyncRequest(DataObject request)
+    public void cancelChunkRequest(String nonce)
     {
-        locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request.toString()));
+        locked("Interrupted while trying to cancel chunk request",
+            () -> chunkSyncQueue.removeIf(it -> it.getString("nonce", "").equals(nonce)));
+    }
+
+    public void sendChunkRequest(DataObject request)
+    {
+        locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request));
     }
 
     protected boolean send(String message, boolean skipQueue)
@@ -771,6 +778,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void onEvent(DataObject content)
     {
+        WS_THREAD.set(true);
         int opCode = content.getInt("op");
 
         if (!content.isNull("s"))
