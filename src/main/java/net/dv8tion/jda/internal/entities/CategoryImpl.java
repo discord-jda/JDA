@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
-import net.dv8tion.jda.internal.requests.EmptyRestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -93,9 +93,9 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
             for (PermissionOverride o : overrides.valueCollection())
             {
                 if (o.isMemberOverride())
-                    action.addPermissionOverride(o.getMember(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 else
-                    action.addPermissionOverride(o.getRole(), o.getAllowedRaw(), o.getDeniedRaw());
+                    action.addRolePermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
             }
         }
         return action;
@@ -112,7 +112,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
-        return new EmptyRestAction<>(getJDA(), Collections.emptyList());
+        return new CompletedRestAction<>(getJDA(), Collections.emptyList());
     }
 
     @Nonnull

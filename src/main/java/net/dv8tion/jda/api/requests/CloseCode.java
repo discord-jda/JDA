@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
  */
 public enum CloseCode
 {
+    RECONNECT(            4900, "The connection has been closed to reconnect."),
     GRACEFUL_CLOSE(       1000, "The connection was closed gracefully or your heartbeats timed out."),
     CLOUD_FLARE_LOAD(     1001, "The connection was closed due to CloudFlare load balancing."),
     INTERNAL_SERVER_ERROR(1006, "Something broke on the remote's end, sorry 'bout that... Try reconnecting!"),
@@ -38,7 +39,9 @@ public enum CloseCode
     RATE_LIMITED(         4008, "Woah nelly! You're sending payloads to us too quickly. Slow it down!"),
     SESSION_TIMEOUT(      4009, "Your session timed out. Reconnect and start a new one."),
     INVALID_SHARD(        4010, "You sent an invalid shard when identifying.", false),
-    SHARDING_REQUIRED(    4011, "The session would have handled too many guilds - you are required to shard your connection in order to connect.", false);
+    SHARDING_REQUIRED(    4011, "The session would have handled too many guilds - you are required to shard your connection in order to connect.", false),
+    INVALID_INTENTS(      4013, "Invalid intents.", false),
+    DISALLOWED_INTENTS(   4014, "Disallowed intents. Your bot might not be eligible to request a privileged intent such as GUILD_PRESENCES or GUILD_MEMBERS.", false);
 
     private final int code;
     private final boolean isReconnect;

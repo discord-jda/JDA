@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
@@ -450,6 +451,22 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public RestAction<Void> clearReactions(@Nonnull String unicode)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
         unsupported();
@@ -512,6 +529,29 @@ public abstract class AbstractMessage implements Message
 
     @Override
     public MessageReaction.ReactionEmote getReactionById(long id)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public boolean isSuppressedEmbeds()
+    {
+        unsupported();
+        return false;
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<MessageFlag> getFlags()
     {
         unsupported();
         return null;

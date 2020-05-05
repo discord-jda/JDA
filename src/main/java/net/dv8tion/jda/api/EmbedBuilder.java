@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -24,7 +26,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.time.*;
 import java.time.temporal.TemporalAccessor;
 import java.util.LinkedList;
@@ -56,7 +58,8 @@ public class EmbedBuilder
     private MessageEmbed.ImageInfo image;
 
     /**
-     * Creates an EmbedBuilder to be used to creates an embed to send.
+     * Constructs a new EmbedBuilder instance, which can be used to create {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+     * These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)}.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
      */
     public EmbedBuilder() { }
@@ -190,6 +193,20 @@ public class EmbedBuilder
 
     /**
      * Checks whether the constructed {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
+     * is within the limits for a bot account.
+     *
+     * @return True, if the {@link #length() length} is less or equal to the specific limit
+     *
+     * @see    MessageEmbed#EMBED_MAX_LENGTH_BOT
+     */
+    public boolean isValidLength()
+    {
+        final int length = length();
+        return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
+    }
+
+    /**
+     * Checks whether the constructed {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
      * is within the limits for the specified {@link net.dv8tion.jda.api.AccountType AccountType}
      * <ul>
      *     <li>Bot: {@value MessageEmbed#EMBED_MAX_LENGTH_BOT}</li>
@@ -203,7 +220,12 @@ public class EmbedBuilder
      *         If provided with {@code null}
      *
      * @return True, if the {@link #length() length} is less or equal to the specific limit
+     *
+     * @deprecated Replace with {@link #isValidLength()}
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     public boolean isValidLength(@Nonnull AccountType type)
     {
         Checks.notNull(type, "AccountType");

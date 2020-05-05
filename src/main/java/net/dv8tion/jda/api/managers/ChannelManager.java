@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -405,9 +405,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * <p>A channel slowmode <b>must not</b> be negative nor greater than {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}!
      * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}</b>
      *
-     * <p>Note that only {@link net.dv8tion.jda.api.AccountType#CLIENT CLIENT} type accounts are
-     * affected by slowmode, and that {@link net.dv8tion.jda.api.AccountType#BOT BOT} accounts
-     * are immune to the restrictions.
+     * <p>Note: Bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.ParsingException;
@@ -53,6 +54,12 @@ public class ReactionPaginationActionImpl
     public ReactionPaginationActionImpl(Message message, String code)
     {
         super(message.getJDA(), Route.Messages.GET_REACTION_USERS.compile(message.getChannel().getId(), message.getId(), code), 1, 100, 100);
+        this.reaction = null;
+    }
+
+    public ReactionPaginationActionImpl(MessageChannel channel, String messageId, String code)
+    {
+        super(channel.getJDA(), Route.Messages.GET_REACTION_USERS.compile(channel.getId(), messageId, code), 1, 100, 100);
         this.reaction = null;
     }
 
@@ -103,7 +110,7 @@ public class ReactionPaginationActionImpl
         {
             try
             {
-                final User user = builder.createFakeUser(array.getObject(i), false);
+                final User user = builder.createFakeUser(array.getObject(i));
                 users.add(user);
                 if (useCache)
                     cached.add(user);

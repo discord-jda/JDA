@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 
 import java.util.Queue;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,7 +41,7 @@ class WebSocketSendingThread implements Runnable
     private final WebSocketClient client;
     private final JDAImpl api;
     private final ReentrantLock queueLock;
-    private final Queue<String> chunkSyncQueue;
+    private final Queue<DataObject> chunkQueue;
     private final Queue<String> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
     private final ScheduledExecutorService executor;
@@ -55,7 +56,7 @@ class WebSocketSendingThread implements Runnable
         this.client = client;
         this.api = client.api;
         this.queueLock = client.queueLock;
-        this.chunkSyncQueue = client.chunkSyncQueue;
+        this.chunkQueue = client.chunkSyncQueue;
         this.ratelimitQueue = client.ratelimitQueue;
         this.queuedAudioConnections = client.queuedAudioConnections;
         this.executor = client.executor;
@@ -105,6 +106,8 @@ class WebSocketSendingThread implements Runnable
             return;
         }
 
+        ConnectionRequest audioRequest = null;
+        DataObject chunkRequest = null;
         try
         {
             api.setContext();
@@ -112,15 +115,51 @@ class WebSocketSendingThread implements Runnable
             needRateLimit = false;
             queueLock.lockInterruptibly();
 
-            ConnectionRequest audioRequest = client.getNextAudioConnectRequest();
-            String chunkOrSyncRequest = chunkSyncQueue.peek();
-            if (chunkOrSyncRequest != null)
-                handleChunkSync(chunkOrSyncRequest);
+            audioRequest = client.getNextAudioConnectRequest();
+            chunkRequest = chunkQueue.peek();
+            if (chunkRequest != null)
+                handleChunkSync(chunkRequest);
             else if (audioRequest != null)
                 handleAudioRequest(audioRequest);
             else
                 handleNormalRequest();
+        }
+        catch (InterruptedException ignored)
+        {
+            LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
+            return;
+        }
+        catch (Throwable ex)
+        {
+            // Log error
+            LOG.error("Encountered error in gateway worker", ex);
 
+            if (!attemptedToSend)
+            {
+                // Try to remove the failed request
+                if (chunkRequest != null)
+                    client.chunkSyncQueue.remove(chunkRequest);
+                else if (audioRequest != null)
+                    client.removeAudioConnection(audioRequest.getGuildIdLong());
+            }
+
+            // Rethrow if error to kill thread
+            if (ex instanceof Error)
+                throw (Error) ex;
+        }
+        finally
+        {
+            // on any exception that might cause this lock to not release
+            client.maybeUnlock();
+        }
+
+        scheduleNext();
+    }
+
+    private void scheduleNext()
+    {
+        try
+        {
             if (needRateLimit)
                 scheduleRateLimit();
             else if (!attemptedToSend)
@@ -128,22 +167,24 @@ class WebSocketSendingThread implements Runnable
             else
                 scheduleSentMessage();
         }
-        catch (InterruptedException ignored)
+        catch (RejectedExecutionException ex)
         {
-            LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
-        }
-        finally
-        {
-            // on any exception that might cause this lock to not release
-            client.maybeUnlock();
+            LOG.error("Was unable to schedule next packet due to rejected execution by threadpool", ex);
         }
     }
 
-    private void handleChunkSync(String chunkOrSyncRequest)
+    private void handleChunkSync(DataObject chunkOrSyncRequest)
     {
         LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
-        if (send(chunkOrSyncRequest))
-            chunkSyncQueue.remove();
+        boolean success = send(
+            DataObject.empty()
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+                .put("d", chunkOrSyncRequest)
+                .toString()
+        );
+
+        if (success)
+            chunkQueue.remove();
     }
 
     private void handleAudioRequest(ConnectionRequest audioRequest)

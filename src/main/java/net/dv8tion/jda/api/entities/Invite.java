@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -296,10 +296,10 @@ public interface Invite
 
     /**
      * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
-     * obtained be {@link net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild#retrieveInvites()} (requires
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}) or
-     * {@link GuildChannel#retrieveInvites() Channel#retrieveInvites()} (requires
-     * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}).
+     * obtained by {@link net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild#retrieveInvites()} (requires
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}) or
+     * {@link net.dv8tion.jda.api.entities.GuildChannel#retrieveInvites() GuildChannel#retrieveInvites()} (requires
+     * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}).
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
      *

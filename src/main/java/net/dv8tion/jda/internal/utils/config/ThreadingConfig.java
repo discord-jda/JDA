@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,12 @@ public class ThreadingConfig
     private ScheduledExecutorService rateLimitPool;
     private ScheduledExecutorService gatewayPool;
     private ExecutorService callbackPool;
+    private ExecutorService eventPool;
 
     private boolean shutdownRateLimitPool;
     private boolean shutdownGatewayPool;
     private boolean shutdownCallbackPool;
+    private boolean shutdownEventPool;
 
     public ThreadingConfig()
     {
@@ -60,10 +62,16 @@ public class ThreadingConfig
         this.shutdownCallbackPool = shutdown;
     }
 
+    public void setEventPool(@Nullable ExecutorService executor, boolean shutdown)
+    {
+        this.eventPool = executor;
+        this.shutdownEventPool = shutdown;
+    }
+
     public void init(@Nonnull Supplier<String> identifier)
     {
         if (this.rateLimitPool == null)
-            this.rateLimitPool = newScheduler(5, identifier, "RateLimit");
+            this.rateLimitPool = newScheduler(5, identifier, "RateLimit", false);
         if (this.gatewayPool == null)
             this.gatewayPool = newScheduler(1, identifier, "Gateway");
     }
@@ -74,6 +82,8 @@ public class ThreadingConfig
             callbackPool.shutdown();
         if (shutdownGatewayPool)
             gatewayPool.shutdown();
+        if (shutdownEventPool && eventPool != null)
+            eventPool.shutdown();
         if (shutdownRateLimitPool)
         {
             if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
@@ -89,6 +99,12 @@ public class ThreadingConfig
         }
     }
 
+    public void shutdownRequester()
+    {
+        if (shutdownRateLimitPool)
+            rateLimitPool.shutdown();
+    }
+
     public void shutdownNow()
     {
         if (shutdownCallbackPool)
@@ -97,6 +113,8 @@ public class ThreadingConfig
             gatewayPool.shutdownNow();
         if (shutdownRateLimitPool)
             rateLimitPool.shutdownNow();
+        if (shutdownEventPool && eventPool != null)
+            eventPool.shutdownNow();
     }
 
     @Nonnull
@@ -117,6 +135,12 @@ public class ThreadingConfig
         return callbackPool;
     }
 
+    @Nullable
+    public ExecutorService getEventPool()
+    {
+        return eventPool;
+    }
+
     public boolean isShutdownRateLimitPool()
     {
         return shutdownRateLimitPool;
@@ -132,10 +156,21 @@ public class ThreadingConfig
         return shutdownCallbackPool;
     }
 
+    public boolean isShutdownEventPool()
+    {
+        return shutdownEventPool;
+    }
+
     @Nonnull
     public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName)
     {
-        return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(identifier, baseName));
+        return newScheduler(coreSize, identifier, baseName, true);
+    }
+
+    @Nonnull
+    public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName, boolean daemon)
+    {
+        return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(identifier, baseName, daemon));
     }
 
     @Nonnull

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 
@@ -55,12 +54,15 @@ public class GuildMemberUpdateHandler extends SocketHandler
         MemberImpl member = (MemberImpl) guild.getMembersView().get(userId);
         if (member == null)
         {
-            EntityBuilder.LOG.debug("Creating member from GUILD_MEMBER_UPDATE {}", content);
             member = getJDA().getEntityBuilder().createMember(guild, content);
         }
+        else
+        {
+            List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
+            getJDA().getEntityBuilder().updateMember(guild, member, content, newRoles);
+        }
 
-        List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
-        getJDA().getEntityBuilder().updateMember(guild, member, content, newRoles);
+        getJDA().getEntityBuilder().updateMemberCache(member);
         return null;
     }
 

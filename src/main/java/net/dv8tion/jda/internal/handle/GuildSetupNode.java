@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,6 @@ public class GuildSetupNode
     boolean requestedChunk;
 
     final Type type;
-    final boolean sync;
     boolean firedUnavailableJoin = false;
     boolean markedUnavailable = false;
     GuildSetupController.Status status = GuildSetupController.Status.INIT;
@@ -66,7 +65,6 @@ public class GuildSetupNode
         this.id = id;
         this.controller = controller;
         this.type = type;
-        this.sync = controller.isClient();
     }
 
     public long getIdLong()
@@ -143,7 +141,6 @@ public class GuildSetupNode
                 "requestedSync="       + requestedSync + ", " +
                 "requestedChunk="      + requestedChunk + ", " +
                 "type="                + type + ", " +
-                "sync="                + sync + ", " +
                 "markedUnavailable="   + markedUnavailable +
             '}';
     }
@@ -197,22 +194,7 @@ public class GuildSetupNode
         cachedEvents.clear();
     }
 
-    void handleReady(DataObject obj)
-    {
-        if (!sync)
-            return;
-        partialGuild = obj;
-        markedUnavailable = partialGuild.getBoolean("unavailable");
-        if (markedUnavailable)
-        {
-            updateStatus(GuildSetupController.Status.UNAVAILABLE);
-        }
-        else
-        {
-            getController().addGuildForSyncing(id, isJoin());
-            requestedSync = true;
-        }
-    }
+    void handleReady(DataObject obj) {}
 
     void handleCreate(DataObject obj)
     {
@@ -240,15 +222,6 @@ public class GuildSetupNode
             }
             return;
         }
-        if (wasMarkedUnavailable && sync && !requestedSync)
-        {
-            // We are using a client-account and joined a guild
-            //  in that case we need to sync before doing anything
-            updateStatus(GuildSetupController.Status.SYNCING);
-            getController().addGuildForSyncing(id, isJoin());
-            requestedSync = true;
-            return;
-        }
 
         ensureMembers();
     }
@@ -271,7 +244,7 @@ public class GuildSetupNode
         ensureMembers();
     }
 
-    boolean handleMemberChunk(DataArray arr)
+    boolean handleMemberChunk(boolean last, DataArray arr)
     {
         if (partialGuild == null)
         {
@@ -288,7 +261,7 @@ public class GuildSetupNode
             members.put(id, obj);
         }
 
-        if (members.size() >= expectedMemberCount || !getController().getJDA().chunkGuild(id))
+        if (last || members.size() >= expectedMemberCount || !getController().getJDA().chunkGuild(id))
         {
             completeSetup();
             return false;
@@ -414,7 +387,8 @@ public class GuildSetupNode
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
-        guild.acknowledgeMembers();
+        if (requestedChunk || expectedMemberCount == members.size())
+            guild.completeChunking();
     }
 
     private void ensureMembers()
@@ -425,7 +399,7 @@ public class GuildSetupNode
         DataArray memberArray = partialGuild.getArray("members");
         if (!getController().getJDA().chunkGuild(id))
         {
-            handleMemberChunk(memberArray);
+            handleMemberChunk(true, memberArray);
         }
         else if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
@@ -433,7 +407,7 @@ public class GuildSetupNode
             getController().addGuildForChunking(id, isJoin());
             requestedChunk = true;
         }
-        else if (handleMemberChunk(memberArray) && !requestedChunk)
+        else if (handleMemberChunk(false, memberArray) && !requestedChunk)
         {
             // Discord sent us enough members to satisfy the member_count
             //  but we found duplicates and still didn't reach enough to satisfy the count

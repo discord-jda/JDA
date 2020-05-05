@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package net.dv8tion.jda.api.exceptions;
+
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.function.Consumer;
@@ -66,12 +68,8 @@ public class ContextException extends Exception
         @Override
         public void accept(Throwable throwable)
         {
-            Throwable cause = throwable;
-            while (cause.getCause() != null)
-                cause = cause.getCause();
-            cause.initCause(context);
             if (callback != null)
-                callback.accept(throwable);
+                callback.accept(Helpers.appendCause(throwable, context));
         }
     }
 }

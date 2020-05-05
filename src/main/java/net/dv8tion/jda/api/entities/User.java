@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,6 +195,8 @@ public interface User extends IMentionable, IFakeable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.
+     *
+     * @see    JDA#openPrivateChannelById(long)
      */
     @Nonnull
     @CheckReturnValue

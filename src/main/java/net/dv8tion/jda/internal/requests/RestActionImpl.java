@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,8 +34,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -47,21 +46,18 @@ public class RestActionImpl<T> implements RestAction<T>
     private static Consumer<Object> DEFAULT_SUCCESS = o -> {};
     private static Consumer<? super Throwable> DEFAULT_FAILURE = t ->
     {
-        if (LOG.isDebugEnabled())
-        {
+        if (t instanceof CancellationException || t instanceof TimeoutException)
+            LOG.debug(t.getMessage());
+        else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
             LOG.error("RestAction queue returned failure", t);
-        }
         else if (t.getCause() != null)
-        {
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
-        }
         else
-        {
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage());
-        }
     };
 
     protected static boolean passContext = true;
+    protected static long defaultTimeout = 0;
 
     protected final JDAImpl api;
 
@@ -69,6 +65,8 @@ public class RestActionImpl<T> implements RestAction<T>
     private final RequestBody data;
     private final BiFunction<Response, Request<T>, T> handler;
 
+    private boolean priority = false;
+    private long deadline = 0;
     private Object rawData;
     private BooleanSupplier checks;
 
@@ -90,6 +88,17 @@ public class RestActionImpl<T> implements RestAction<T>
     public static void setDefaultSuccess(final Consumer<Object> callback)
     {
         DEFAULT_SUCCESS = callback == null ? t -> {} : callback;
+    }
+
+    public static void setDefaultTimeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        Checks.notNull(unit, "TimeUnit");
+        defaultTimeout = unit.toMillis(timeout);
+    }
+
+    public static long getDefaultTimeout()
+    {
+        return defaultTimeout;
     }
 
     public static Consumer<? super Throwable> getDefaultFailure()
@@ -124,7 +133,7 @@ public class RestActionImpl<T> implements RestAction<T>
 
     public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
     {
-        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), handler);
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()), handler);
         this.rawData = data;
     }
 
@@ -135,6 +144,12 @@ public class RestActionImpl<T> implements RestAction<T>
         this.route = route;
         this.data = data;
         this.handler = handler;
+    }
+
+    public RestActionImpl<T> priority()
+    {
+        priority = true;
+        return this;
     }
 
     @Nonnull
@@ -152,6 +167,14 @@ public class RestActionImpl<T> implements RestAction<T>
         return this;
     }
 
+    @Nonnull
+    @Override
+    public RestAction<T> deadline(long timestamp)
+    {
+        this.deadline = timestamp;
+        return this;
+    }
+
     @Override
     public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
@@ -164,7 +187,7 @@ public class RestActionImpl<T> implements RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, getDeadline(), priority, route, headers));
     }
 
     @Nonnull
@@ -176,7 +199,7 @@ public class RestActionImpl<T> implements RestAction<T>
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, route, headers);
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, getDeadline(), priority, route, headers);
     }
 
     @Override
@@ -213,14 +236,14 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         this.rawData = object;
 
-        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
+        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
     }
 
     protected RequestBody getRequestBody(DataArray array)
     {
         this.rawData = array;
 
-        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
+        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson());
     }
 
     private CheckWrapper getFinisher()
@@ -244,6 +267,15 @@ public class RestActionImpl<T> implements RestAction<T>
             request.onSuccess(null);
         else
             request.onSuccess(handler.apply(response, request));
+    }
+
+    private long getDeadline()
+    {
+        return deadline > 0
+            ? deadline
+            : defaultTimeout > 0
+                ? System.currentTimeMillis() + defaultTimeout
+                : 0;
     }
 
     /*

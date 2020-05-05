@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,24 @@ import net.dv8tion.jda.api.events.user.GenericUserEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that a user has updated their presence on discord.
+ * <br>This includes name, avatar, and similar visible features of the user.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
+ * <p>Additionally, this event also requires the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+ * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
+ * member was updated and gives us the updated member object. In order to fire a specific event like this we
+ * need to have the old member cached to compare against.
+ *
+ * @param <T>
+ *        The type of the updated value
+ */
 public abstract class GenericUserUpdateEvent<T> extends GenericUserEvent implements UpdateEvent<User, T>
 {
     protected final T previous;

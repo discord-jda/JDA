@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -93,23 +91,14 @@ public class GuildDeleteHandler extends SocketHandler
             guild.getCategoryCache()
                  .forEachUnordered(chan -> categoryView.getMap().remove(chan.getIdLong()));
         }
+
+        // Clear audio connection
         getJDA().getClient().removeAudioConnection(id);
         final AbstractCacheView<AudioManager> audioManagerView = getJDA().getAudioManagersView();
-        try (UnlockHook hook = audioManagerView.writeLock())
-        {
-            final TLongObjectMap<AudioManager> audioManagerMap = audioManagerView.getMap();
-            final AudioManagerImpl manager = (AudioManagerImpl) audioManagerMap.get(id);
-            if (manager != null) // close existing audio connection if needed
-            {
-                MiscUtil.locked(manager.CONNECTION_LOCK, () ->
-                {
-                    if (manager.isConnected() || manager.isAttemptingToConnect())
-                        manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD);
-                    else
-                        audioManagerMap.remove(id);
-                });
-            }
-        }
+        final AudioManagerImpl manager = (AudioManagerImpl) audioManagerView.get(id); //read-lock access/release
+        if (manager != null)
+            manager.closeAudioConnection(ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD); //connection-lock access/release
+        audioManagerView.remove(id); //write-lock access/release
 
         //cleaning up all users that we do not share a guild with anymore
         // Anything left in memberIds will be removed from the main userMap
@@ -131,7 +120,6 @@ public class GuildDeleteHandler extends SocketHandler
                 {
                     PrivateChannelImpl priv = (PrivateChannelImpl) user.getPrivateChannel();
                     user.setFake(true);
-                    priv.setFake(true);
                     getJDA().getFakeUserMap().put(user.getIdLong(), user);
                     getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
                 }

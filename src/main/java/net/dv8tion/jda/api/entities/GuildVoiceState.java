@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,13 @@ public interface GuildVoiceState
      * @return True, if this {@link net.dv8tion.jda.api.entities.Member Member's} audio is being suppressed.
      */
     boolean isSuppressed();
+
+    /**
+     * Returns true if this {@link net.dv8tion.jda.api.entities.Member Member} is currently streaming with Go Live.
+     *
+     * @return True, if this member is streaming
+     */
+    boolean isStream();
 
     /**
      * Returns the current {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.api.entities.Member Member}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,11 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that you joined a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * <br>This requires that the guild is available when the guild leave happens. Otherwise a {@link UnavailableGuildJoinedEvent} is fired instead.
  *
  * <p><b>Warning: Discord already triggered a mass amount of these events due to a downtime. Be careful!</b>
+ *
+ * @see UnavailableGuildJoinedEvent
  */
 public class GuildJoinEvent extends GenericGuildEvent
 {
