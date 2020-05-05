@@ -93,7 +93,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * @return A fake {@link net.dv8tion.jda.api.entities.User User} instance
      *         representing the default webhook user.
      *
-     * @see    <a href="https://discordapp.com/developers/docs/resources/webhook#execute-webhook">Execute Webhook Docs</a>
+     * @see    <a href="https://v.com/developers/docs/resources/webhook#execute-webhook">Execute Webhook Docs</a>
      */
     @Nonnull
     User getDefaultUser();
@@ -135,7 +135,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * <p>Webhook executions are limited with 5 requests per second.
      * The response contains rate limit headers that should be handled
-     * by execution frameworks. (<a href="https://discordapp.com/developers/docs/topics/rate-limits">Learn More</a>)
+     * by execution frameworks. (<a href="https://discord.com/developers/docs/topics/rate-limits">Learn More</a>)
      *
      * @return The execution route for this Webhook.
      */

@@ -61,7 +61,7 @@ public enum OnlineStatus
      *
      * @return String representation of the valid API key for this OnlineStatus
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#presence-update">PRESENCE_UPDATE</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/gateway#presence-update">PRESENCE_UPDATE</a>
      */
     public String getKey()
     {

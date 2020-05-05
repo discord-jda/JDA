@@ -33,7 +33,7 @@ import java.util.function.Predicate;
  *
  * @see RestAction
  * @see net.dv8tion.jda.api.exceptions.ErrorHandler ErrorHandler
- * @see <a href="https://discordapp.com/developers/docs/topics/opcodes-and-status-codes#json">Discord Error Codes</a>
+ * @see <a href="https://discord.com/developers/docs/topics/opcodes-and-status-codes#json">Discord Error Codes</a>
  */
 public enum ErrorResponse
 {
