@@ -874,53 +874,27 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CompletableFuture<MemberPresence> retrieveMemberPresence(long memberId)
+    public Task<MemberPresence> retrieveMemberPresence(long memberId)
     {
+        if (!api.isIntent(GatewayIntent.GUILD_PRESENCES))
+            throw new IllegalStateException("Cannot retrieve presence without GUILD_PRESENCES intent enabled");
         Member member = getMemberById(memberId);
         if (member != null
             && api.isCacheFlagSet(CacheFlag.ACTIVITY)
             && api.isCacheFlagSet(CacheFlag.CLIENT_STATUS))
-            return CompletableFuture.completedFuture(new MemberPresenceImpl(member));
+            return new GatewayTask<>(CompletableFuture.completedFuture(new MemberPresenceImpl(member)), () -> {});
 
-        CompletableFuture<MemberPresence> future = new CompletableFuture<>();
-        if (memberId == 0)
-        {
-            future.completeExceptionally(new IllegalArgumentException("Member with the specified userId does not exist"));
-            return future;
-        }
-
-        api.getClient().requestMembers((response) -> {
-            boolean notFound = response.optArray("not_found").map((i) -> i.length() > 1).orElse(false);
-            if (notFound)
-            {
-                future.completeExceptionally(new IllegalArgumentException("Member with the specified userId does not exist"));
-                return;
-            }
-
-            DataArray presences = response.getArray("presences");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+        CompletableFuture<DataObject> handle = chunkManager.fetchMember(id, true, memberId);
+        CompletableFuture<MemberPresence> result = handle.thenApply((json) -> {
+            DataArray presences = json.getArray("presences");
+            if (json.optArray("not_found").map(it -> !it.isEmpty()).orElse(false))
+                throw new IllegalArgumentException("Member with the specified userId does not exist");
             if (presences.isEmpty())
-            {
-                future.complete(MemberPresenceImpl.EMPTY);
-                return;
-            }
-
-            DataObject presence = null;
-            for (int i = 0; i < presences.length(); i++)
-            {
-                DataObject tmp = presences.getObject(i);
-                long userId = tmp.optObject("user").map((user) -> user.getUnsignedLong("id")).orElse(0L);
-                if (userId == memberId)
-                {
-                    presence = tmp;
-                    break;
-                }
-            }
-            if (presence == null)
-                future.complete(MemberPresenceImpl.EMPTY);
-            else
-                future.complete(EntityBuilder.createMemberPresence(presence));
-        }, id, memberId);
-        return future;
+                return MemberPresenceImpl.EMPTY;
+            return EntityBuilder.createMemberPresence(presences.getObject(0));
+        });
+        return new GatewayTask<>(result, () -> handle.cancel(false));
     }
 
     @Override

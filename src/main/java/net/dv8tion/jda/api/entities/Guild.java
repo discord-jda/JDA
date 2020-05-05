@@ -2514,34 +2514,45 @@ public interface Guild extends ISnowflake
      * Retrieves the presence of a member through the gateway connection.
      * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
      *
-     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     * <p>If the specified user is not a member of this guild, the task will fail with an {@link IllegalArgumentException}.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
      *
      * @param  memberId
      *         The member id
      *
-     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES intent} is disabled
+     *
+     * @return {@link Task} for the {@link MemberPresence}
      */
     @Nonnull
     @CheckReturnValue
-    CompletableFuture<MemberPresence> retrieveMemberPresence(long memberId);
+    Task<MemberPresence> retrieveMemberPresence(long memberId);
 
     /**
      * Retrieves the presence of a member through the gateway connection.
      * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
      *
-     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     * <p>If the specified user is not a member of this guild, the task will fail with an {@link IllegalArgumentException}.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
      *
      * @param  memberId
      *         The member id
      *
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES intent} is disabled
      *
-     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     * @return {@link Task} for the {@link MemberPresence}
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull String memberId)
+    default Task<MemberPresence> retrieveMemberPresence(@Nonnull String memberId)
     {
         return retrieveMemberPresence(MiscUtil.parseSnowflake(memberId));
     }
@@ -2550,19 +2561,24 @@ public interface Guild extends ISnowflake
      * Retrieves the presence of a member through the gateway connection.
      * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
      *
-     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     * <p>If the specified user is not a member of this guild, the task will fail with an {@link IllegalArgumentException}.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
      *
      * @param  member
      *         The member
      *
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES intent} is disabled
      *
-     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     * @return {@link Task} for the {@link MemberPresence}
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull Member member)
+    default Task<MemberPresence> retrieveMemberPresence(@Nonnull Member member)
     {
         Checks.notNull(member, "Member");
         return retrieveMemberPresence(member.getIdLong());
@@ -2572,19 +2588,24 @@ public interface Guild extends ISnowflake
      * Retrieves the presence of a member through the gateway connection.
      * <br>This will provide all the presence relevant information despite any disabled {@link net.dv8tion.jda.api.utils.cache.CacheFlag CacheFlags}.
      *
-     * <p>If the specified user is not a member of this guild, the future will fail with an {@link IllegalArgumentException}.
+     * <p>If the specified user is not a member of this guild, the task will fail with an {@link IllegalArgumentException}.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
      *
      * @param  user
      *         The user
      *
      * @throws IllegalArgumentException
      *         If provided with null
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES intent} is disabled
      *
-     * @return {@link CompletableFuture} for the {@link MemberPresence}
+     * @return {@link Task} for the {@link MemberPresence}
      */
     @Nonnull
     @CheckReturnValue
-    default CompletableFuture<MemberPresence> retrieveMemberPresence(@Nonnull User user)
+    default Task<MemberPresence> retrieveMemberPresence(@Nonnull User user)
     {
         Checks.notNull(user, "User");
         return retrieveMemberPresence(user.getIdLong());
