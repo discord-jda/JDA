@@ -46,10 +46,6 @@ public class MessageDeleteHandler extends SocketHandler
         }
         if (channel == null)
         {
-            channel = getJDA().getFakePrivateChannelMap().get(channelId);
-        }
-        if (channel == null)
-        {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
             return null;

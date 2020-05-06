@@ -95,8 +95,6 @@ public class MessageReactionHandler extends SocketHandler
         if (user == null && member != null)
             user = member.getUser(); // this happens when we have guild subscriptions disabled
         if (user == null)
-            user = getJDA().getFakeUserMap().get(userId);
-        if (user == null)
         {
             if (add && guild != null)
             {
@@ -109,13 +107,7 @@ public class MessageReactionHandler extends SocketHandler
 
         MessageChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
-        {
             channel = getJDA().getPrivateChannelById(channelId);
-        }
-        if (channel == null)
-        {
-            channel = getJDA().getFakePrivateChannelMap().get(channelId);
-        }
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);

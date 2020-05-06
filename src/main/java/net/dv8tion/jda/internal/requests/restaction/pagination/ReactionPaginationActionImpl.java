@@ -110,7 +110,7 @@ public class ReactionPaginationActionImpl
         {
             try
             {
-                final User user = builder.createFakeUser(array.getObject(i));
+                final User user = builder.createUser(array.getObject(i));
                 users.add(user);
                 if (useCache)
                     cached.add(user);

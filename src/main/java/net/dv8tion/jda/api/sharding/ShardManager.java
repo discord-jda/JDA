@@ -582,7 +582,7 @@ public interface ShardManager
 
         JDAImpl jda = (JDAImpl) api;
         Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
-        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createFakeUser(response.getObject()));
+        return new RestActionImpl<>(jda, route, (response, request) -> jda.getEntityBuilder().createUser(response.getObject()));
     }
 
     /**
