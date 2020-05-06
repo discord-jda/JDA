@@ -155,8 +155,6 @@ public interface Emote extends IMentionable, IFakeable
      *     <br>If we were removed from the Guild</li>
      * </ul>
      *
-     * @throws IllegalStateException
-     *         if this Emote is fake ({@link #isFake()})
      * @throws java.lang.UnsupportedOperationException
      *         If this emote is managed by discord ({@link #isManaged()})
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException

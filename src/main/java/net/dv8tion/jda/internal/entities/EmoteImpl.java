@@ -50,7 +50,6 @@ public class EmoteImpl implements ListedEmote
     private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
     private final Set<Role> roles;
-    private final boolean fake;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
@@ -71,7 +70,6 @@ public class EmoteImpl implements ListedEmote
         this.api = guild.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.roles = ConcurrentHashMap.newKeySet();
-        this.fake = fake;
     }
 
     public EmoteImpl(long id, JDAImpl api)
@@ -80,7 +78,6 @@ public class EmoteImpl implements ListedEmote
         this.api = api;
         this.guild = null;
         this.roles = null;
-        this.fake = true;
     }
 
     @Override
@@ -118,9 +115,10 @@ public class EmoteImpl implements ListedEmote
     }
 
     @Override
+    @Deprecated
     public boolean isFake()
     {
-        return fake;
+        return false;
     }
 
     @Override
@@ -252,7 +250,6 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteImpl clone()
     {
-        if (isFake()) return null;
         EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;

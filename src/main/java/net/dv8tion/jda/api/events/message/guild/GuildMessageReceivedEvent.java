@@ -56,7 +56,6 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      * @return The Author of the Message.
      *
      * @see    #isWebhookMessage()
-     * @see    net.dv8tion.jda.api.entities.User#isFake()
      */
     @Nonnull
     public User getAuthor()

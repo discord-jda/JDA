@@ -118,6 +118,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
+    @Deprecated
     public boolean isFake()
     {
         return user.isFake();

@@ -111,8 +111,6 @@ public class UserImpl implements User
         if (!hasPrivateChannel())
             return null;
         PrivateChannel channel = getJDA().getPrivateChannelById(privateChannel);
-        if (channel == null)
-            channel = getJDA().getFakePrivateChannelMap().get(privateChannel);
         return channel != null ? channel : new PrivateChannelImpl(privateChannel, this);
     }
 

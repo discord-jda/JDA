@@ -62,7 +62,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         // Update the memberCount
         guild.onMemberRemove();
 
-        User user = api.getEntityBuilder().createFakeUser(content.getObject("user"));
+        User user = api.getEntityBuilder().createUser(content.getObject("user"));
         MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
 
         if (member == null)
@@ -110,15 +110,12 @@ public class GuildMemberRemoveHandler extends SocketHandler
                                .map(GuildImpl.class::cast)
                                .noneMatch(g -> g.getMembersView().get(userId) != null))
             {
-                UserImpl removedUser = (UserImpl) userView.getMap().remove(userId);
-                if (removedUser.hasPrivateChannel())
+                UserImpl removedUser = (UserImpl) userView.getMap().get(userId);
+                if (!removedUser.hasPrivateChannel() || getJDA().getPrivateChannelById(removedUser.getPrivateChannel().getIdLong()) == null)
                 {
-                    PrivateChannelImpl priv = (PrivateChannelImpl) removedUser.getPrivateChannel();
-                    removedUser.setFake(true);
-                    getJDA().getFakeUserMap().put(removedUser.getIdLong(), removedUser);
-                    getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
+                    userView.remove(userId);
+                    getJDA().getEventCache().clear(EventCache.Type.USER, userId);
                 }
-                getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
         // Cache dependent event
