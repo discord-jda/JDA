@@ -28,6 +28,11 @@ import java.util.List;
  *
  * <p>Can be used to retrieve the old role whitelist
  *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
+ * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent
+ *
  * <p>Identifier: {@code roles}
  */
 public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>

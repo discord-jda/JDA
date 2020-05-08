@@ -28,7 +28,8 @@ import javax.annotation.Nonnull;
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent to be enabled
+ * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE EMOTE} CacheFlag to be enabled, which requires
+ * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_EMOJIS GUILD_EMOJIS} intent
  */
 public abstract class GenericEmoteEvent extends Event
 {
