@@ -50,6 +50,7 @@ public interface Task<T>
      *
      * @return The current Task instance for chaining
      */
+    @Nonnull
     Task<T> onError(@Nonnull Consumer<? super Throwable> callback);
 
     /**
@@ -64,6 +65,7 @@ public interface Task<T>
      *
      * @return The current Task instance for chaining
      */
+    @Nonnull
     Task<T> onSuccess(@Nonnull Consumer<? super T> callback);
 
     /**
@@ -80,6 +82,7 @@ public interface Task<T>
      *
      * @return The result value
      */
+    @Nonnull
     T get();
 
     /**

@@ -23,6 +23,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class GatewayTask<T> implements Task<T>
 {
@@ -43,6 +44,7 @@ public class GatewayTask<T> implements Task<T>
         return true;
     }
 
+    @Nonnull
     @Override
     public Task<T> onError(@Nonnull Consumer<? super Throwable> callback)
     {
@@ -54,6 +56,7 @@ public class GatewayTask<T> implements Task<T>
         return this;
     }
 
+    @Nonnull
     @Override
     public Task<T> onSuccess(@Nonnull Consumer<? super T> callback)
     {
@@ -62,6 +65,7 @@ public class GatewayTask<T> implements Task<T>
         return this;
     }
 
+    @Nonnull
     @Override
     public T get()
     {
