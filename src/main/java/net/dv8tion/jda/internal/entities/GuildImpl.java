@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
@@ -839,23 +840,34 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids)
+    public Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids)
     {
         Checks.notNull(ids, "ID Array");
+        Checks.check(!includePresence || api.isIntent(GatewayIntent.GUILD_PRESENCES),
+                "Cannot retrieve persences of members without GUILD_PRESENCES intent!");
+
         if (ids.length == 0)
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
         Checks.check(ids.length <= 100, "You can only request 100 members at once");
         MemberChunkManager chunkManager = api.getClient().getChunkManager();
 
-        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, ids);
+        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, includePresence, ids);
         CompletableFuture<List<Member>> result = handle.thenApply((json) -> {
             DataArray memberArray = json.getArray("members");
             List<Member> members = new ArrayList<>(memberArray.length());
             EntityBuilder entityBuilder = getJDA().getEntityBuilder();
+            // Check if we retrieved presences
+            TLongObjectMap<DataObject> presences = json.optArray("presences").map(it ->
+                entityBuilder.convertToUserMap(o -> o.getObject("user").getUnsignedLong("id"), it)
+            ).orElse(null);
+
+            // Load members from array and presences
             for (int i = 0; i < memberArray.length(); i++)
             {
                 DataObject memberJson = memberArray.getObject(i);
-                MemberImpl member = entityBuilder.createMember(this, memberJson);
+                long memberId = memberJson.getObject("user").getUnsignedLong("id");
+                DataObject presence = presences == null ? null : presences.get(memberId);
+                MemberImpl member = entityBuilder.createMember(this, memberJson, null, presence);
                 entityBuilder.updateMemberCache(member);
                 members.add(member);
             }

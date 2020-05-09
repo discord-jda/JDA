@@ -77,11 +77,12 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
-    public CompletableFuture<DataObject> chunkGuild(long guildId, long[] userIds)
+    public CompletableFuture<DataObject> chunkGuild(long guildId, boolean presence, long[] userIds)
     {
         init();
         DataObject request = DataObject.empty()
                 .put("guild_id", guildId)
+                .put("presences", presence)
                 .put("user_ids", userIds);
 
         ChunkRequest chunkRequest = new ChunkRequest(request);
