@@ -2479,9 +2479,31 @@ public interface Guild extends ISnowflake
         return retrieveMemberById(getOwnerIdLong(), update);
     }
 
+    /**
+     * Retrieves a list of members.
+     * <br>If the user does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the users resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  users
+     *         The users of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(Collection<User> users)
+    default Task<List<Member>> retrieveMembers(@Nonnull Collection<User> users)
     {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
@@ -2491,9 +2513,31 @@ public interface Guild extends ISnowflake
         return retrieveMembersByIds(ids);
     }
 
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(Collection<Long> ids)
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids)
     {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty())
@@ -2503,9 +2547,31 @@ public interface Guild extends ISnowflake
         return retrieveMembersByIds(arr);
     }
 
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(String... ids)
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids)
     {
         Checks.notNull(ids, "Array");
         if (ids.length == 0)
@@ -2517,9 +2583,31 @@ public interface Guild extends ISnowflake
         return retrieveMembersByIds(arr);
     }
 
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
     @Nonnull
     @CheckReturnValue
-    Task<List<Member>> retrieveMembersByIds(long... ids);
+    Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids);
 
     /**
      * Queries a list of members using a radix tree based on the provided name prefix.

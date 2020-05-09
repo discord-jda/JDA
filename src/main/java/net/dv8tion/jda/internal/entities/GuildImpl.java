@@ -839,7 +839,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public Task<List<Member>> retrieveMembersByIds(long... ids)
+    public Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids)
     {
         Checks.notNull(ids, "ID Array");
         if (ids.length == 0)
