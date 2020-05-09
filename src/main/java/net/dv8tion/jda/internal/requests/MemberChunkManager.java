@@ -77,6 +77,18 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
+    public CompletableFuture<DataObject> chunkGuild(long guildId, long[] userIds)
+    {
+        init();
+        DataObject request = DataObject.empty()
+                .put("guild_id", guildId)
+                .put("user_ids", userIds);
+
+        ChunkRequest chunkRequest = new ChunkRequest(request);
+        makeRequest(chunkRequest);
+        return chunkRequest;
+    }
+
     public boolean handleChunk(long guildId, DataObject response)
     {
         return MiscUtil.locked(lock, () -> {

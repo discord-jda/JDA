@@ -839,6 +839,39 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public Task<List<Member>> retrieveMembersByIds(long... ids)
+    {
+        Checks.notNull(ids, "ID Array");
+        if (ids.length == 0)
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        Checks.check(ids.length <= 100, "You can only request 100 members at once");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+
+        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, ids);
+        CompletableFuture<List<Member>> result = handle.thenApply((json) -> {
+            DataArray memberArray = json.getArray("members");
+            List<Member> members = new ArrayList<>(memberArray.length());
+            EntityBuilder entityBuilder = getJDA().getEntityBuilder();
+            for (int i = 0; i < memberArray.length(); i++)
+            {
+                DataObject memberJson = memberArray.getObject(i);
+                MemberImpl member = entityBuilder.createMember(this, memberJson);
+                entityBuilder.updateMemberCache(member);
+                members.add(member);
+            }
+            return members;
+        });
+
+        result.exceptionally(ex -> {
+            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            return null;
+        });
+
+        return new GatewayTask<>(result, () -> handle.cancel(false));
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
     {

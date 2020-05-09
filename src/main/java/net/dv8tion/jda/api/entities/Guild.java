@@ -45,6 +45,7 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -2477,6 +2478,48 @@ public interface Guild extends ISnowflake
     {
         return retrieveMemberById(getOwnerIdLong(), update);
     }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembers(Collection<User> users)
+    {
+        Checks.noneNull(users, "Users");
+        if (users.isEmpty())
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
+        return retrieveMembersByIds(ids);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembersByIds(Collection<Long> ids)
+    {
+        Checks.noneNull(ids, "IDs");
+        if (ids.isEmpty())
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
+        return retrieveMembersByIds(arr);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembersByIds(String... ids)
+    {
+        Checks.notNull(ids, "Array");
+        if (ids.length == 0)
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] arr = new long[ids.length];
+        for (int i = 0; i < ids.length; i++)
+            arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        return retrieveMembersByIds(arr);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    Task<List<Member>> retrieveMembersByIds(long... ids);
 
     /**
      * Queries a list of members using a radix tree based on the provided name prefix.
