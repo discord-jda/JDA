@@ -844,7 +844,7 @@ public class GuildImpl implements Guild
     {
         Checks.notNull(ids, "ID Array");
         Checks.check(!includePresence || api.isIntent(GatewayIntent.GUILD_PRESENCES),
-                "Cannot retrieve persences of members without GUILD_PRESENCES intent!");
+                "Cannot retrieve presences of members without GUILD_PRESENCES intent!");
 
         if (ids.length == 0)
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
