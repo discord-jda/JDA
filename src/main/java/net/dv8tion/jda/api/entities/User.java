@@ -249,24 +249,24 @@ public interface User extends IMentionable, IFakeable
      */
     enum UserFlag
     {
-        STAFF(                     0, "Discord Employee"),
-        PARTNER(                   1, "Discord Partner"),
-        HYPESQUAD(                 2, "HypeSquad Events"),
-        BUG_HUNTER_LEVEL_1(        3, "Bug Hunter Level 1"),
+        STAFF(             0, "Discord Employee"),
+        PARTNER(           1, "Discord Partner"),
+        HYPESQUAD(         2, "HypeSquad Events"),
+        BUG_HUNTER_LEVEL_1(3, "Bug Hunter Level 1"),
 
         // HypeSquad
-        HYPESQUAD_BRAVERY(         6, "HypeSquad Bravery"),
-        HYPESQUAD_BRILLIANCE(      7, "HypeSquad Brilliance"),
-        HYPESQUAD_BALANCE(         8, "HypeSquad Balance"),
+        HYPESQUAD_BRAVERY(   6, "HypeSquad Bravery"),
+        HYPESQUAD_BRILLIANCE(7, "HypeSquad Brilliance"),
+        HYPESQUAD_BALANCE(   8, "HypeSquad Balance"),
 
-        EARLY_SUPPORTER(           9, "Early Supporter"),
-        TEAM_USER(                10, "Team User"),
-        SYSTEM(                   12, "System User"),
-        BUG_HUNTER_LEVEL_2(       14, "Bug Hunter Level 2"),
-        VERIFIED_BOT(             16, "Verified Bot"),
-        VERIFIED_DEVELOPER(       17, "Verified Bot Developer"),
+        EARLY_SUPPORTER(    9, "Early Supporter"),
+        TEAM_USER(         10, "Team User"),
+        SYSTEM(            12, "System User"),
+        BUG_HUNTER_LEVEL_2(14, "Bug Hunter Level 2"),
+        VERIFIED_BOT(      16, "Verified Bot"),
+        VERIFIED_DEVELOPER(17, "Verified Bot Developer"),
         
-        UNKNOWN(                   -1, "Unknown");
+        UNKNOWN(-1, "Unknown");
 
         /**
          * Empty array of UserFlag enum, useful for optimized use in {@link java.util.Collection#toArray(Object[])}.

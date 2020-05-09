@@ -223,7 +223,7 @@ public enum Permission
 
     /**
      * A set of all {@link net.dv8tion.jda.api.Permission Permissions} that are specified by this raw long representation of
-     * permissions. This is best used with the getRaw methods in {@link net.dv8tion.jda.api.entities.Role Role} or
+     * permissions. The is best used with the getRaw methods in {@link net.dv8tion.jda.api.entities.Role Role} or
      * {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}.
      *
      * <p>Example: {@link net.dv8tion.jda.api.entities.Role#getPermissionsRaw() Role.getPermissionsRaw()}
