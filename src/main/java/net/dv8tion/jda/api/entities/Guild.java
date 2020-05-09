@@ -2660,7 +2660,7 @@ public interface Guild extends ISnowflake
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
 
         long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
-        return retrieveMembersByIds(ids);
+        return retrieveMembersByIds(includePresence, ids);
     }
 
     /**
@@ -2699,7 +2699,7 @@ public interface Guild extends ISnowflake
             return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
-        return retrieveMembersByIds(arr);
+        return retrieveMembersByIds(includePresence, arr);
     }
 
     /**
@@ -2740,7 +2740,7 @@ public interface Guild extends ISnowflake
         long[] arr = new long[ids.length];
         for (int i = 0; i < ids.length; i++)
             arr[i] = MiscUtil.parseSnowflake(ids[i]);
-        return retrieveMembersByIds(arr);
+        return retrieveMembersByIds(includePresence, arr);
     }
 
     /**
