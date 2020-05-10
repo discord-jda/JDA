@@ -86,6 +86,8 @@ public interface SessionController
      */
     int IDENTIFY_DELAY = 5;
 
+    default void setConcurrency(int level) {}
+
     /**
      * Called by a JDA session when a WebSocket should be started. (Connecting and Reconnecting)
      * <br>This should only add the node to a queue and execute the queue with respect to the {@link #IDENTIFY_DELAY}.
@@ -183,6 +185,7 @@ public interface SessionController
     {
         private final String url;
         private final int shardTotal;
+        private final int concurrency;
 
         /**
          * Creates a new GatewayBot instance with the provided properties
@@ -194,8 +197,14 @@ public interface SessionController
          */
         public ShardedGateway(String url, int shardTotal)
         {
+            this(url, shardTotal, 1);
+        }
+
+        public ShardedGateway(String url, int shardTotal, int concurrency)
+        {
             this.url = url;
             this.shardTotal = shardTotal;
+            this.concurrency = concurrency;
         }
 
         /**
@@ -216,6 +225,11 @@ public interface SessionController
         public int getShardTotal()
         {
             return shardTotal;
+        }
+
+        public int getConcurrency()
+        {
+            return concurrency;
         }
     }
 
