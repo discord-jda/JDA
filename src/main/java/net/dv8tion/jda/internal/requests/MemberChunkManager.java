@@ -21,10 +21,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class MemberChunkManager
@@ -133,7 +130,7 @@ public class MemberChunkManager
 
         public ChunkRequest(DataObject request)
         {
-            this.nonce = System.nanoTime() & ~1;
+            this.nonce = ThreadLocalRandom.current().nextLong() & ~1;
             this.request = request.put("nonce", getNonce());
         }
 
