@@ -238,9 +238,9 @@ public interface User extends IMentionable, IFakeable
     EnumSet<UserFlag> getFlags();
 
     /**
-     * Returns the raw {@code int} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of this user.
+     * Returns the bitmask representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of this user.
      * 
-     * @return Integer representing the raw value of the user's flags.
+     * @return bitmask representation of the user's flags.
      */
     int getFlagsRaw();
 

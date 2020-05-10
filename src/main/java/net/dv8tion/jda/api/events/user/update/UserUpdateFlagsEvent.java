@@ -50,6 +50,8 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     }
 
     /**
+     * Gets the old {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the User as {@link EnumSet}.
+     * 
      * @return {@link EnumSet} of the old {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}
      */
     @Nonnull
@@ -59,7 +61,9 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     }
 
     /**
-     * @return The old raw {@code Integer} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
+     * Gets the old {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the user and returns it as bitmask representation.
+     * 
+     * @return The old bitmask representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     public int getOldFlagsRaw()
     {
@@ -67,6 +71,8 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     }
 
     /**
+     * Gets the new {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the User as {@link EnumSet}.
+     *
      * @return The new {@code EnumSet<{@link net.dv8tion.jda.api.entities.User.UserFlag UserFlag}>} representation of the User's flags.
      */
     @Nonnull
@@ -76,6 +82,8 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     }
 
     /**
+     * Gets the new {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the user and returns it as bitmask representation.
+     *
      * @return The old raw {@code Integer} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     public int getNewFlagsRaw()
