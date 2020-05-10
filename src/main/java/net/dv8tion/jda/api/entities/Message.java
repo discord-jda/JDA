@@ -140,11 +140,63 @@ public interface Message extends ISnowflake, Formattable
     int MAX_CONTENT_LENGTH = 2000;
 
     /**
-     * Pattern used to find instant invites in messages.
+     * Pattern used to find instant invites in strings.
+     *
+     * <p>The only named group is at index 1 with the name {@code "code"}.
      *
      * @see #getInvites()
      */
-    Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
+    Pattern INVITE_PATTERN = Pattern.compile(
+            "(?:https?://)?" +                     // Scheme
+            "(?:\\w+\\.)?" +                       // Subdomain
+            "discord(?:(?:app)?\\.com" +           // Discord domain
+            "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
+            "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
+     *
+     * <p>Groups:
+     * <table>
+     *   <tr>
+     *     <th>Index</th>
+     *     <th>Name</th>
+     *     <th>Description</th>
+     *   </tr>
+     *   <tr>
+     *     <td>0</td>
+     *     <td>N/A</td>
+     *     <td>The entire link</td>
+     *   </tr>
+     *   <tr>
+     *     <td>1</td>
+     *     <td>guild</td>
+     *     <td>The ID of the target guild</td>
+     *   </tr>
+     *   <tr>
+     *     <td>2</td>
+     *     <td>channel</td>
+     *     <td>The ID of the target channel</td>
+     *   </tr>
+     *   <tr>
+     *     <td>3</td>
+     *     <td>message</td>
+     *     <td>The ID of the target message</td>
+     *   </tr>
+     * </table>
+     * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+     * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
+     *
+     * @see #getJumpUrl()
+     */
+    Pattern JUMP_URL_PATTERN = Pattern.compile(
+            "(?:https?://)?" +                                             // Scheme
+            "(?:\\w+\\.)?" +                                               // Subdomain
+            "discord(?:app)?\\.com" +                                      // Discord domain
+            "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
+            "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
