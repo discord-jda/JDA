@@ -365,13 +365,13 @@ public interface User extends IMentionable, IFakeable
 
         /**
          * This is effectively the opposite of {@link #getFlags(int)}, this takes 1 or more UserFlags
-         * and returns the raw offset {@code int} representation of the flags.
+         * and returns the bitmask representation of the flags.
          * 
          * @param  flags
          *         The array of flags of which to form into the raw int representation.
          *
          * @throws java.lang.IllegalArgumentException
-         *         When the provided UserFLags are null.
+         *         When the provided UserFlags are null.
          *         
          * @return bitmask representing the provided flags.
          */
@@ -390,11 +390,11 @@ public interface User extends IMentionable, IFakeable
 
         /**
          * This is effectively the opposite of {@link #getFlags(int)}. This takes a collection of UserFlags
-         * and returns the raw offset {@code int} representation of the flags.
+         * and returns the bitmask representation of the flags.
          * <br>Example: {@code getRaw(EnumSet.of(UserFlag.STAFF, UserFlag.HYPESQUAD))}
          *
          * @param  flags
-         *         The Collection of flags of which to form into the raw int representation.
+         *         The flags to convert
          *
          * @throws java.lang.IllegalArgumentException
          *         When the provided UserFLags are null.
