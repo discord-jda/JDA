@@ -84,7 +84,7 @@ public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.Us
     /**
      * Gets the new {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of the user and returns it as bitmask representation.
      *
-     * @return The old raw {@code Integer} value of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
+     * @return The old bitmask representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags}.
      */
     public int getNewFlagsRaw()
     {
