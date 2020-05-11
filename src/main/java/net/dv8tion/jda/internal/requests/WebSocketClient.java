@@ -281,19 +281,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void close()
     {
         if (socket != null)
-            socket.sendClose(1000);
+            socket.disconnect(1000);
     }
 
     public void close(int code)
     {
         if (socket != null)
-            socket.sendClose(code);
+            socket.disconnect(code);
     }
 
     public void close(int code, String reason)
     {
         if (socket != null)
-            socket.sendClose(code, reason);
+            socket.disconnect(code, reason);
     }
 
     public synchronized void shutdown()
