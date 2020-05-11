@@ -281,19 +281,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void close()
     {
         if (socket != null)
-            socket.sendClose(1000);
+            socket.disconnect(1000);
     }
 
     public void close(int code)
     {
         if (socket != null)
-            socket.sendClose(code);
+            socket.disconnect(code);
     }
 
     public void close(int code, String reason)
     {
         if (socket != null)
-            socket.sendClose(code, reason);
+            socket.disconnect(code, reason);
     }
 
     public synchronized void shutdown()
@@ -393,6 +393,22 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
+    {
+        // Use a new thread to avoid issues with sleep interruption
+        if (Thread.currentThread().isInterrupted())
+        {
+            Thread thread = new Thread(() ->
+                    handleDisconnect(websocket, serverCloseFrame, clientCloseFrame, closedByServer));
+            thread.setName(api.getIdentifierString() + " MainWS-ReconnectThread");
+            thread.start();
+        }
+        else
+        {
+            handleDisconnect(websocket, serverCloseFrame, clientCloseFrame, closedByServer);
+        }
+    }
+
+    private void handleDisconnect(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
         sentAuthInfo = false;
         connected = false;
