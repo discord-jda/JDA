@@ -394,6 +394,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
+        // Use a new thread to avoid issues with sleep interruption
+        Thread thread = new Thread(() ->
+                handleDisconnect(websocket, serverCloseFrame, clientCloseFrame, closedByServer));
+        thread.setName(api.getIdentifierString() + " MainWS-ReconnectThread");
+        thread.start();
+    }
+
+    private void handleDisconnect(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
+    {
         sentAuthInfo = false;
         connected = false;
         api.setStatus(JDA.Status.DISCONNECTED);
