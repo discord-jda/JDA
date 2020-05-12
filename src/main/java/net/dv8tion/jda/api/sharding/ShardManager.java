@@ -1478,7 +1478,6 @@ public interface ShardManager
      * {@link java.util.concurrent.RejectedExecutionException}.
      *
      * <p>This will interrupt the default JDA event thread, due to the gateway connection being interrupted.
-     * It is recommended to call this from a different thread.
      */
     void shutdown();
 

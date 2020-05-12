@@ -348,17 +348,22 @@ public class DefaultShardManager implements ShardManager
             catch (final Exception ignored) {}
         }
 
-        this.executor.shutdown();
-
         if (this.shards != null)
         {
-            this.shards.forEach(jda ->
-            {
-                if (shardingConfig.isUseShutdownNow())
-                    jda.shutdownNow();
-                else
-                    jda.shutdown();
+            executor.execute(() -> {
+                this.shards.forEach(jda ->
+                {
+                    if (shardingConfig.isUseShutdownNow())
+                        jda.shutdownNow();
+                    else
+                        jda.shutdown();
+                });
+                this.executor.shutdown();
             });
+        }
+        else
+        {
+            this.executor.shutdown();
         }
     }
 
