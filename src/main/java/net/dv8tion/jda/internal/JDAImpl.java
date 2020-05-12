@@ -712,15 +712,14 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
+        shutdownInternals();
 
         WebSocketClient client = getClient();
         if (client != null)
         {
-            client.shutdown();
             client.getChunkManager().shutdown();
+            client.shutdown();
         }
-
-        shutdownInternals();
     }
 
     public synchronized void shutdownInternals()
