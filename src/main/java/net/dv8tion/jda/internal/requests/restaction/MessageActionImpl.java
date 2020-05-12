@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -65,7 +66,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         MessageActionImpl.defaultMentions = allowedMentions == null
                 ? EnumSet.allOf(Message.MentionType.class) // Default to all mentions enabled
-                : toEnumSet(Message.MentionType.class, allowedMentions);
+                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
     }
 
     public static EnumSet<Message.MentionType> getDefaultMentions()
@@ -135,6 +136,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @CheckReturnValue
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public MessageActionImpl apply(final Message message)
     {
         if (message == null || message.getType() != MessageType.DEFAULT)
@@ -145,19 +147,35 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         files.clear();
 
         String content = message.getContentRaw();
-        if (message.mentionsEveryone())
-        {
-            EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
-            if (content.contains("@everyone"))
-                parse.add(Message.MentionType.EVERYONE);
-            if (content.contains("@here"))
-                parse.add(Message.MentionType.HERE);
-            allowedMentions = parse;
-        }
 
-        return (MessageActionImpl) content(content).tts(message.isTTS())
-                .mentionUsers(message.getMentionedUsers())
-                .mentionRoles(message.getMentionedRoles());
+        if (message instanceof DataMessage)
+        {
+            DataMessage data = (DataMessage) message;
+            String[] mentionedRoles = data.getMentionedRolesWhitelist();
+            String[] mentionedUsers = data.getMentionedUsersWhitelist();
+            EnumSet<Message.MentionType> allowedMentions = ((DataMessage) message).getAllowedMentions();
+            allowedMentions(allowedMentions);
+            if (mentionedRoles.length > 0)
+                mentionRoles(mentionedRoles);
+            if (mentionedUsers.length > 0)
+                mentionUsers(mentionedUsers);
+        }
+        else
+        {
+            if (message.mentionsEveryone())
+            {
+                EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
+                if (content.contains("@everyone"))
+                    parse.add(Message.MentionType.EVERYONE);
+                if (content.contains("@here"))
+                    parse.add(Message.MentionType.HERE);
+                allowedMentions = parse;
+            }
+
+            this.mention(message.getMentionedUsers())
+                .mention(message.getMentionedRoles());
+        }
+        return content(content).tts(message.isTTS());
     }
 
     @Nonnull
@@ -332,7 +350,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         this.allowedMentions = allowedMentions == null
                 ? EnumSet.allOf(Message.MentionType.class)
-                : toEnumSet(Message.MentionType.class, allowedMentions);
+                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
         return this;
     }
 
@@ -519,11 +537,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         TextChannel text = (TextChannel) channel;
         Member self = text.getGuild().getSelfMember();
         return self.hasPermission(text, perm);
-    }
-
-    private static <E extends Enum<E>> EnumSet<E> toEnumSet(Class<E> clazz, Collection<E> col)
-    {
-        return col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);
     }
 
     @Override

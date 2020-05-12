@@ -16,7 +16,10 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.IMentionable;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
@@ -28,7 +31,6 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
@@ -615,69 +617,6 @@ public interface MessageAction extends RestAction<Message>, Appendable
     MessageAction mentionUsers(String... userIds);
 
     /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} and/or {@link Member Members}
-     * that should be pinged, even when they would not be pinged otherwise according to the Set of allowed mention types.
-     *
-     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  users
-     *         Users that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or the collection contains instances of {@link IMentionable} which are neither
-     *         {@link User} nor {@link Member}.
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageAction mentionUsers(@Nonnull Collection<? extends IMentionable> users)
-    {
-        Checks.noneNull(users, "Users");
-        Checks.check(users.stream().allMatch(m -> m instanceof User || m instanceof Member), "Provided invalid user");
-
-        return mentionUsers(users.stream()
-                .mapToLong(IMentionable::getIdLong)
-                .toArray());
-    }
-
-    /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     *
-     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  users
-     *         Users that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageAction mentionUsers(@Nonnull IMentionable... users)
-    {
-        Checks.noneNull(users, "Users");
-        Checks.check(Arrays.stream(users).allMatch(m -> m instanceof User || m instanceof Member), "Provided invalid user");
-
-        return mentionUsers(Arrays.stream(users)
-                .mapToLong(IMentionable::getIdLong)
-                .toArray());
-    }
-
-    /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      * <p>
@@ -731,64 +670,6 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @CheckReturnValue
     MessageAction mentionRoles(String... roleIds);
-
-    /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <p>
-     * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  roles
-     *         Roles that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageAction mentionRoles(@Nonnull Collection<? extends Role> roles)
-    {
-        Checks.noneNull(roles, "Roles");
-        return mentionRoles(roles.stream()
-                .mapToLong(Role::getIdLong)
-                .toArray());
-    }
-
-    /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <p>
-     * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  roles
-     *         Roles that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageAction mentionRoles(@Nonnull Role... roles)
-    {
-        Checks.noneNull(roles, "Roles");
-        return mentionRoles(Arrays.stream(roles)
-                .mapToLong(Role::getIdLong)
-                .toArray());
-    }
 
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,

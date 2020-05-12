@@ -23,17 +23,45 @@ import net.dv8tion.jda.api.entities.MessageType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
 public class DataMessage extends AbstractMessage
 {
     private MessageEmbed embed;
+    private EnumSet<MentionType> allowedMentions;
+    private String[] mentionedRoles;
+    private String[] mentionedUsers;
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
+    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed,
+                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles)
     {
         super(content, nonce, tts);
         this.embed = embed;
+        this.allowedMentions = allowedMentions;
+        this.mentionedUsers = mentionedUsers;
+        this.mentionedRoles = mentionedRoles;
+    }
+
+    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
+    {
+        this(tts, content, nonce, embed, EnumSet.allOf(MentionType.class), new String[0], new String[0]);
+    }
+
+    public EnumSet<MentionType> getAllowedMentions()
+    {
+        return allowedMentions;
+    }
+
+    public String[] getMentionedRolesWhitelist()
+    {
+        return mentionedRoles;
+    }
+
+    public String[] getMentionedUsersWhitelist()
+    {
+        return mentionedUsers;
     }
 
     @Nonnull

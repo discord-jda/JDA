@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -22,13 +25,12 @@ import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.regex.Matcher;
 
 /**
@@ -48,6 +50,9 @@ public class MessageBuilder implements Appendable
     protected boolean isTTS = false;
     protected String nonce;
     protected MessageEmbed embed;
+    protected EnumSet<Message.MentionType> allowedMentions = EnumSet.allOf(Message.MentionType.class);
+    protected Set<String> mentionedUsers = new HashSet<>();
+    protected Set<String> mentionedRoles = new HashSet<>();
 
     public MessageBuilder() {}
 
@@ -456,6 +461,104 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    @Nonnull
+    public MessageBuilder clearMentionedUsers()
+    {
+        mentionedUsers.clear();
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder clearMentionedRoles()
+    {
+        mentionedRoles.clear();
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder clearMentions()
+    {
+        return clearMentionedUsers().clearMentionedRoles();
+    }
+
+    @Nonnull
+    public MessageBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> mentionTypes)
+    {
+        this.allowedMentions = mentionTypes == null
+                ? MessageAction.getDefaultMentions()
+                : Helpers.copyEnumSet(Message.MentionType.class, mentionTypes);
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder allowMentions(@Nonnull Message.MentionType... types)
+    {
+        Checks.noneNull(types, "MentionTypes");
+        Collections.addAll(allowedMentions, types);
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder denyMentions(@Nonnull Message.MentionType... types)
+    {
+        Checks.noneNull(types, "MentionTypes");
+        for (Message.MentionType type : types)
+            allowedMentions.remove(type);
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder mention(@Nonnull IMentionable... mentions)
+    {
+        Checks.noneNull(mentions, "Mentions");
+
+        for (IMentionable mention : mentions)
+        {
+            if (mention instanceof User || mention instanceof Member)
+                mentionedUsers.add(mention.getId());
+            else if (mention instanceof Role)
+                mentionedRoles.add(mention.getId());
+        }
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder mention(@Nonnull Collection<? extends IMentionable> mentions)
+    {
+        Checks.noneNull(mentions, "Mentions");
+        return mention(mentions.toArray(new IMentionable[0]));
+    }
+
+    @Nonnull
+    public MessageBuilder mentionUsers(@Nonnull String... users)
+    {
+        Checks.noneNull(users, "Users");
+        Collections.addAll(mentionedUsers, users);
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder mentionRoles(@Nonnull String... roles)
+    {
+        Checks.noneNull(roles, "Roles");
+        Collections.addAll(mentionedRoles, roles);
+        return this;
+    }
+
+    @Nonnull
+    public MessageBuilder mentionUsers(@Nonnull long... users)
+    {
+        Checks.notNull(users, "Users");
+        return mentionUsers(toStringArray(users));
+    }
+
+    @Nonnull
+    public MessageBuilder mentionRoles(@Nonnull long... roles)
+    {
+        Checks.notNull(roles, "Roles");
+        return mentionRoles(toStringArray(roles));
+    }
+
     /**
      * Removes all mentions and replaces them with the closest looking textual representation.
      *
@@ -468,6 +571,10 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("setAllowedMentions(Collections.emptyList())")
+    @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull JDA jda)
     {
         // Note: Users can rename to "everyone" or "here", so those
@@ -488,6 +595,10 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("setAllowedMentions(Collections.emptyList())")
+    @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull Guild guild)
     {
         // Note: Users can rename to "everyone" or "here", so those
@@ -510,6 +621,10 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("denyMentions(types)")
+    @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull Guild guild, @Nonnull Message.MentionType... types)
     {
         return this.stripMentions(guild.getJDA(), guild, types);
@@ -529,6 +644,10 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("denyMentions(types)")
+    @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull JDA jda, @Nonnull Message.MentionType... types)
     {
         return this.stripMentions(jda, null, types);
@@ -859,7 +978,9 @@ public class MessageBuilder implements Appendable
         if (message.length() > Message.MAX_CONTENT_LENGTH)
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
-        return new DataMessage(isTTS, message, nonce, embed);
+        String[] ids = new String[0];
+        return new DataMessage(isTTS, message, nonce, embed,
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids));
     }
 
     /**
@@ -901,9 +1022,9 @@ public class MessageBuilder implements Appendable
         messageLoop:
         while (currentBeginIndex < builder.length() - 2001)
         {
-            for (int i = 0; i < policy.length; i++)
+            for (SplitPolicy splitPolicy : policy)
             {
-                int currentEndIndex = policy[i].nextMessage(currentBeginIndex, this);
+                int currentEndIndex = splitPolicy.nextMessage(currentBeginIndex, this);
                 if (currentEndIndex != -1)
                 {
                     messages.add(build(currentBeginIndex, currentEndIndex));
@@ -930,7 +1051,20 @@ public class MessageBuilder implements Appendable
     @Nonnull
     protected DataMessage build(int beginIndex, int endIndex)
     {
-        return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null);
+        String[] ids = new String[0];
+        return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null,
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids));
+    }
+
+    /**
+     * Default {@link SplitPolicy} implementation. Splits on a specified {@link CharSequence}.
+     */
+    private String[] toStringArray(long[] users)
+    {
+        String[] ids = new String[users.length];
+        for (int i = 0; i < ids.length; i++)
+            ids[i] = Long.toUnsignedString(users[i]);
+        return ids;
     }
 
     /**
@@ -1001,16 +1135,16 @@ public class MessageBuilder implements Appendable
 
         /**
          * Calculates the endIndex for the next {@link net.dv8tion.jda.api.entities.Message Message}.
-         * 
+         *
          * @param  currentBeginIndex
          *         the index the next {@link net.dv8tion.jda.api.entities.Message Message} should start from
          * @param  builder
          *         the {@link net.dv8tion.jda.api.MessageBuilder MessageBuilder}
          *
          * @return the end Index of the next {@link net.dv8tion.jda.api.entities.Message Message}
-         * 
+         *
          * @throws java.lang.IllegalStateException when splitting fails
-         * 
+         *
          */
         int nextMessage(int currentBeginIndex, MessageBuilder builder);
     }
