@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.pagination;
 
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.Nonnull;
 
@@ -53,6 +50,10 @@ import javax.annotation.Nonnull;
  * @see    MessageReaction#retrieveUsers()
  * @see    Message#retrieveReactionUsers(String)
  * @see    Message#retrieveReactionUsers(Emote)
+ * @see    MessageChannel#retrieveReactionUsersById(long, Emote)
+ * @see    MessageChannel#retrieveReactionUsersById(String, Emote)
+ * @see    MessageChannel#retrieveReactionUsersById(long, String)
+ * @see    MessageChannel#retrieveReactionUsersById(String, String)
  */
 public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
 {
@@ -60,7 +61,7 @@ public interface ReactionPaginationAction extends PaginationAction<User, Reactio
      * The current target {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction}
      *
      * @throws IllegalStateException
-     *         If this was created by {@link Message#retrieveReactionUsers(Emote) Message.retrieveReactionUsers(...)}
+     *         If this was created by {@link Message#retrieveReactionUsers(Emote) Message.retrieveReactionUsers(...)} or {@link MessageChannel#retrieveReactionUsersById(long, Emote) MessageChannel.retrieveReactionUsersById(...)}
      *
      * @return The current MessageReaction
      */

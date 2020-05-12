@@ -447,7 +447,6 @@ public class EntityBuilder
         long hashId = guild.getIdLong() ^ user.getIdLong();
         getJDA().getEventCache().playbackCache(EventCache.Type.USER, member.getIdLong());
         getJDA().getEventCache().playbackCache(EventCache.Type.MEMBER, hashId);
-        guild.acknowledgeMembers();
         return true;
     }
 
@@ -467,6 +466,13 @@ public class EntityBuilder
             // Create a brand new member
             member = new MemberImpl(guild, user);
             member.setNickname(memberJson.getString("nick", null));
+            long epoch = 0;
+            if (!memberJson.isNull("premium_since"))
+            {
+                TemporalAccessor date = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(memberJson.getString("premium_since"));
+                epoch = Instant.from(date).toEpochMilli();
+            }
+            member.setBoostDate(epoch);
             Set<Role> roles = member.getRoleSet();
             for (int i = 0; i < roleArray.length(); i++)
             {
@@ -491,7 +497,7 @@ public class EntityBuilder
         }
 
         // Load joined_at if necessary
-        if (!memberJson.isNull("joined_at") && member.isIncomplete())
+        if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
         {
             String joinedAtRaw = memberJson.getString("joined_at");
             TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
@@ -526,6 +532,7 @@ public class EntityBuilder
                   .setGuildDeafened(voiceStateJson.getBoolean("deaf"))
                   .setSuppressed(voiceStateJson.getBoolean("suppress"))
                   .setSessionId(voiceStateJson.getString("session_id"))
+                  .setStream(voiceStateJson.getBoolean("self_stream"))
                   .setConnectedChannel(voiceChannel);
     }
 
@@ -568,6 +575,14 @@ public class EntityBuilder
                         getJDA(), responseNumber,
                         member, oldTime));
             }
+        }
+
+        if (!content.isNull("joined_at") && !member.hasTimeJoined())
+        {
+            String joinedAtRaw = content.getString("joined_at");
+            TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
+            long joinEpoch = Instant.from(joinedAt).toEpochMilli();
+            member.setJoinDate(joinEpoch);
         }
 
         if (!member.getUser().isFake())

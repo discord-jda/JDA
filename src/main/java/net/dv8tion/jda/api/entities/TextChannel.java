@@ -543,8 +543,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -606,8 +606,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -666,8 +666,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -727,8 +727,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or

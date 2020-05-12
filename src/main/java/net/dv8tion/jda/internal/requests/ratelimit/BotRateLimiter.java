@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
@@ -100,6 +101,31 @@ public class BotRateLimiter extends RateLimiter
     private ScheduledExecutorService getScheduler()
     {
         return requester.getJDA().getRateLimitPool();
+    }
+
+    @Override
+    public int cancelRequests()
+    {
+        return MiscUtil.locked(bucketLock, () -> {
+            // Empty buckets will be removed by the cleanup worker, which also checks for rate limit parameters
+            AtomicInteger count = new AtomicInteger(0);
+            buckets.values()
+                .stream()
+                .map(Bucket::getRequests)
+                .flatMap(Collection::stream)
+                .filter(request -> !request.isPriority() && !request.isCancelled())
+                .forEach(request -> {
+                    request.cancel();
+                    count.incrementAndGet();
+                });
+
+            int cancelled = count.get();
+            if (cancelled == 1)
+                RateLimiter.log.warn("Cancelled 1 request!");
+            else if (cancelled > 1)
+                RateLimiter.log.warn("Cancelled {} requests!", cancelled);
+            return cancelled;
+        });
     }
 
     private void cleanup()

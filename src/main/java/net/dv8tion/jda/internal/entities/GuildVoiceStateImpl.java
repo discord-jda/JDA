@@ -38,6 +38,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean guildMuted = false;
     private boolean guildDeafened = false;
     private boolean suppressed = false;
+    private boolean stream = false;
 
     public GuildVoiceStateImpl(Member member)
     {
@@ -99,6 +100,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public boolean isSuppressed()
     {
         return suppressed;
+    }
+
+    @Override
+    public boolean isStream()
+    {
+        return stream;
     }
 
     @Override
@@ -191,6 +198,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl setSuppressed(boolean suppressed)
     {
         this.suppressed = suppressed;
+        return this;
+    }
+
+    public GuildVoiceStateImpl setStream(boolean stream)
+    {
+        this.stream = stream;
         return this;
     }
 }

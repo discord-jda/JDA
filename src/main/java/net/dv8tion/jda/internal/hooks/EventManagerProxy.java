@@ -23,14 +23,17 @@ import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class EventManagerProxy implements IEventManager
 {
+    private final ExecutorService executor;
     private IEventManager subject;
 
-    public EventManagerProxy(IEventManager subject)
+    public EventManagerProxy(IEventManager subject, ExecutorService executor)
     {
         this.subject = subject;
+        this.executor = executor;
     }
 
     public void setSubject(IEventManager subject)
@@ -57,6 +60,21 @@ public class EventManagerProxy implements IEventManager
 
     @Override
     public void handle(@Nonnull GenericEvent event)
+    {
+        try
+        {
+            if (executor != null && !executor.isShutdown())
+                executor.execute(() -> handleInternally(event));
+            else
+                handleInternally(event);
+        }
+        catch (Exception ex)
+        {
+            JDAImpl.LOG.error("Encountered exception trying to schedule event", ex);
+        }
+    }
+
+    private void handleInternally(@Nonnull GenericEvent event)
     {
         // don't allow mere exceptions to obstruct the socket handler
         try

@@ -28,6 +28,17 @@ import javax.annotation.Nullable;
  * <p>Can be used to retrieve members who change their nickname, triggering guild, the old nick and the new nick.
  *
  * <p>Identifier: {@code nick}
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
+ * <p>Additionally, this event also requires the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+ * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
+ * member was updated and gives us the updated member object. In order to fire a specific event like this we
+ * need to have the old member cached to compare against.
  */
 public class GuildMemberUpdateNicknameEvent extends GenericGuildMemberUpdateEvent<String>
 {

@@ -55,6 +55,8 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
 /**
@@ -357,6 +359,21 @@ public interface JDA
     {
         return awaitStatus(Status.CONNECTED);
     }
+
+    /**
+     * Cancels all currently scheduled {@link RestAction} requests.
+     * <br>When a {@link RestAction} is cancelled, a {@link java.util.concurrent.CancellationException} will be provided
+     * to the failure callback. This means {@link RestAction#queue(Consumer, Consumer)} will invoke the second callback
+     * and {@link RestAction#complete()} will throw an exception.
+     *
+     * <p><b>This is only recommended as an extreme last measure to avoid backpressure.</b>
+     * If you want to stop requests on shutdown you should use {@link #shutdownNow()} instead of this method.
+     *
+     * @return how many requests were cancelled
+     *
+     * @see    RestAction#setCheck(BooleanSupplier)
+     */
+    int cancelRequests();
 
     /**
      * {@link ScheduledExecutorService} used to handle rate-limits for {@link RestAction}
@@ -1103,6 +1120,8 @@ public interface JDA
      *         If the provided ID is null
      * @throws java.lang.NumberFormatException
      *         If the provided ID is not a snowflake
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
      *
      * @return The GuildChannel or null
      */
@@ -1129,6 +1148,9 @@ public interface JDA
      *         The {@link net.dv8tion.jda.api.entities.ChannelType}
      * @param  id
      *         The ID of the channel
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@link net.dv8tion.jda.api.entities.ChannelType} is null
      *
      * @return The GuildChannel or null
      */

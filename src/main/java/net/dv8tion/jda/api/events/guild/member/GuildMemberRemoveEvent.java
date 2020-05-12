@@ -32,6 +32,12 @@ import javax.annotation.Nullable;
  * or disabled member chunking, then {@link #getMember()} will return {@code null}.
  *
  * <p>Can be used to detect when a member is removed from a guild, either by leaving or being kicked/banned.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
 public class GuildMemberRemoveEvent extends GenericGuildEvent
 {

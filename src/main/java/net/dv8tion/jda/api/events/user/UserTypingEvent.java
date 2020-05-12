@@ -25,6 +25,10 @@ import java.time.OffsetDateTime;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} started typing. (Similar to the typing indicator in the Discord client)
  *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_TYPING GUILD_MESSAGE_TYPING} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
  * <p>Can be used to retrieve the User who started typing and when and in which MessageChannel they started typing.
  */
 public class UserTypingEvent extends GenericUserEvent

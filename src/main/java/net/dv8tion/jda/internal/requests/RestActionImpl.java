@@ -48,7 +48,7 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         if (t instanceof CancellationException || t instanceof TimeoutException)
             LOG.debug(t.getMessage());
-        else if (LOG.isDebugEnabled())
+        else if (LOG.isDebugEnabled() || !(t instanceof ErrorResponseException))
             LOG.error("RestAction queue returned failure", t);
         else if (t.getCause() != null)
             LOG.error("RestAction queue returned failure: [{}] {}", t.getClass().getSimpleName(), t.getMessage(), t.getCause());
@@ -65,6 +65,7 @@ public class RestActionImpl<T> implements RestAction<T>
     private final RequestBody data;
     private final BiFunction<Response, Request<T>, T> handler;
 
+    private boolean priority = false;
     private long deadline = 0;
     private Object rawData;
     private BooleanSupplier checks;
@@ -132,7 +133,7 @@ public class RestActionImpl<T> implements RestAction<T>
 
     public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
     {
-        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), handler);
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()), handler);
         this.rawData = data;
     }
 
@@ -143,6 +144,12 @@ public class RestActionImpl<T> implements RestAction<T>
         this.route = route;
         this.data = data;
         this.handler = handler;
+    }
+
+    public RestActionImpl<T> priority()
+    {
+        priority = true;
+        return this;
     }
 
     @Nonnull
@@ -180,7 +187,7 @@ public class RestActionImpl<T> implements RestAction<T>
             success = DEFAULT_SUCCESS;
         if (failure == null)
             failure = DEFAULT_FAILURE;
-        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, getDeadline(), route, headers));
+        api.getRequester().request(new Request<>(this, success, failure, finisher, true, data, rawData, getDeadline(), priority, route, headers));
     }
 
     @Nonnull
@@ -192,7 +199,7 @@ public class RestActionImpl<T> implements RestAction<T>
         RequestBody data = finalizeData();
         CaseInsensitiveMap<String, String> headers = finalizeHeaders();
         BooleanSupplier finisher = getFinisher();
-        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, getDeadline(), route, headers);
+        return new RestFuture<>(this, shouldQueue, finisher, data, rawData, getDeadline(), priority, route, headers);
     }
 
     @Override
@@ -229,14 +236,14 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         this.rawData = object;
 
-        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
+        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
     }
 
     protected RequestBody getRequestBody(DataArray array)
     {
         this.rawData = array;
 
-        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
+        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson());
     }
 
     private CheckWrapper getFinisher()

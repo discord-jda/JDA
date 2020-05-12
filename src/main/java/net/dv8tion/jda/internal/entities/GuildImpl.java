@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -58,6 +59,7 @@ import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -287,6 +289,24 @@ public class GuildImpl implements Guild
     public int getMaxPresences()
     {
         return maxPresences;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<MetaData> retrieveMetaData()
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD.compile(getId());
+        route = route.withQueryParams("with_counts", "true");
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject json = response.getObject();
+            int memberLimit = json.getInt("max_members", 0);
+            int presenceLimit = json.getInt("max_presences", 5000);
+            this.maxMembers = memberLimit;
+            this.maxPresences = presenceLimit;
+            int approxMembers = json.getInt("approximate_member_count", this.memberCount);
+            int approxPresence = json.getInt("approximate_presence_count", 0);
+            return new MetaData(memberLimit, presenceLimit, approxPresence, approxMembers);
+        });
     }
 
     @Override
@@ -797,6 +817,20 @@ public class GuildImpl implements Guild
         return chunkingCallback;
     }
 
+    // Helper function for deferred cache access
+    private Member getMember(long id, boolean update, JDAImpl jda)
+    {
+        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        {
+            // return member from cache if member tracking is enabled through intents
+            Member member = getMemberById(id);
+            // if the join time is inaccurate we also have to load it through REST to update this information
+            if (!update || (member != null && member.hasTimeJoined()))
+                return member;
+        }
+        return null;
+    }
+
     @Nonnull
     @Override
     public RestAction<Member> retrieveMemberById(long id, boolean update)
@@ -806,12 +840,52 @@ public class GuildImpl implements Guild
             return new CompletedRestAction<>(jda, getSelfMember());
 
         return new DeferredRestAction<>(jda, Member.class,
-                () -> !update || jda.isIntent(GatewayIntent.GUILD_MEMBERS) ? getMemberById(id) : null, // return member from cache if member tracking is enabled through intents
+                () -> getMember(id, update, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
-                    return new RestActionImpl<>(jda, route, (resp, req) ->
-                            jda.getEntityBuilder().createMember(this, resp.getObject()));
+                    return new RestActionImpl<>(jda, route, (resp, req) -> {
+                        MemberImpl member = jda.getEntityBuilder().createMember(this, resp.getObject());
+                        jda.getEntityBuilder().updateMemberCache(member);
+                        return member;
+                    });
                 });
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
+    {
+        Checks.notEmpty(prefix, "Prefix");
+        Checks.positive(limit, "Limit");
+        Checks.check(limit <= 100, "Limit must not be greater than 100");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+
+        CompletableFuture<DataObject> handle = chunkManager.chunkGuild(id, prefix, limit);
+        CompletableFuture<List<Member>> result = handle.thenApply((response) -> {
+            DataArray memberArray = response.getArray("members");
+            List<Member> memberList = new ArrayList<>(memberArray.length());
+            if (memberArray.isEmpty())
+                return memberList;
+
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            for (int i = 0; i < memberArray.length(); i++)
+            {
+                DataObject json = memberArray.getObject(i);
+                MemberImpl member = entityBuilder.createMember(this, json);
+                entityBuilder.updateMemberCache(member);
+                memberList.add(member);
+            }
+
+            return memberList;
+        });
+
+        result.exceptionally(ex -> {
+            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            return null;
+        });
+
+        return new GatewayTask<>(result, () -> handle.cancel(false));
     }
 
     @Override
@@ -905,14 +979,16 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Integer> prune(int days)
+    public AuditableRestAction<Integer> prune(int days, boolean wait)
     {
         checkPermission(Permission.KICK_MEMBERS);
 
         Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId()).withQueryParams("days", Integer.toString(days));
-        return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
+        if (!wait)
+            route = route.withQueryParams("compute_prune_count", "false");
+        return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned", 0));
     }
 
     @Nonnull
@@ -1502,38 +1578,13 @@ public class GuildImpl implements Guild
 
     // -- Member Tracking --
 
-    @Nonnull
-    @CheckReturnValue
-    public CompletableFuture<List<Member>> retrieveMembersByName(@Nonnull String prefix, int limit)
-    {
-        Checks.notEmpty(prefix, "Prefix");
-        Checks.positive(limit, "Limit");
-        Checks.check(limit <= 100, "Limit must not be greater than 100");
-        MemberChunkManager chunkManager = api.getClient().getChunkManager();
-        return chunkManager.chunkGuild(id, prefix, limit)
-                .thenApplyAsync((response) -> {
-                    DataArray memberArray = response.getArray("members");
-                    List<Member> memberList = new ArrayList<>(memberArray.length());
-                    if (memberArray.isEmpty())
-                        return memberList;
-
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
-                    for (int i = 0; i< memberArray.length(); i++)
-                    {
-                        DataObject json = memberArray.getObject(i);
-                        MemberImpl member = entityBuilder.createMember(this, json);
-                        entityBuilder.updateMemberCache(member);
-                        memberList.add(member);
-                    }
-
-                    return memberList;
-                });
-    }
-
     public void startChunking()
     {
         if (isLoaded())
+        {
+            chunkingCallback = CompletableFuture.completedFuture(null);
             return;
+        }
 
         if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
         {
@@ -1549,13 +1600,10 @@ public class GuildImpl implements Guild
         DataObject request = DataObject.empty()
             .put("limit", 0)
             .put("query", "")
+//            .put("nonce", String.valueOf(System.currentTimeMillis() | 1))
             .put("guild_id", getId());
 
-        DataObject packet = DataObject.empty()
-            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-            .put("d", request);
-
-        getJDA().getClient().chunkOrSyncRequest(packet);
+        getJDA().getClient().sendChunkRequest(request);
     }
 
     public void onMemberAdd()
@@ -1566,17 +1614,13 @@ public class GuildImpl implements Guild
     public void onMemberRemove()
     {
         memberCount--;
-        acknowledgeMembers();
     }
 
-    public void acknowledgeMembers()
+    public void completeChunking()
     {
-        if (memberCache.size() == memberCount && !chunkingCallback.isDone())
-        {
-            JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
+        if (chunkingCallback != null && !chunkingCallback.isDone())
             chunkingCallback.complete(null);
-            getJDA().onChunksFinished(this);
-        }
+        getJDA().onChunksFinished(this);
     }
 
     // -- Object overrides --

@@ -247,7 +247,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         Checks.notNull(file, "File");
         Checks.noneNull(options, "Options");
         Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
-        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
+        final long maxSize = getMaxFileSize();
         Checks.check(file.length() <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
         try
         {
@@ -388,6 +388,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         ownedResources.clear();
     }
 
+    private long getMaxFileSize()
+    {
+        if (channel.getType().isGuild())
+            return ((GuildChannel) channel).getGuild().getMaxFileSize();
+        return getJDA().getSelfUser().getAllowedFileSize();
+    }
+
     protected RequestBody asMultipart()
     {
         final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
@@ -407,7 +414,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected RequestBody asJSON()
     {
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toString());
+        return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toJson());
     }
 
     protected DataObject getJSON()

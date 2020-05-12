@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.events.guild.member;
+
+package net.dv8tion.jda.api.events.guild.voice;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
@@ -21,20 +22,27 @@ import net.dv8tion.jda.api.entities.Member;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} joined a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} started or ended a stream.
  *
- * <p>Can be used to retrieve members who join a guild.
- *
- * <h2>Requirements</h2>
- *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
- * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
- * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ * <p>Can be used to detect when a user goes live or stops streaming.
  */
-public class GuildMemberJoinEvent extends GenericGuildMemberEvent
+public class GuildVoiceStreamEvent extends GenericGuildVoiceEvent
 {
-    public GuildMemberJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    private final boolean stream;
+
+    public GuildVoiceStreamEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean stream)
     {
         super(api, responseNumber, member);
+        this.stream = stream;
+    }
+
+    /**
+     * True if this user started streaming. False if the user stopped streaming.
+     *
+     * @return True, if the stream started
+     */
+    public boolean isStream()
+    {
+        return stream;
     }
 }

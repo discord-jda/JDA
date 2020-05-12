@@ -28,6 +28,10 @@ import javax.annotation.Nonnull;
  * <p>This event is only fired if the member was cached.
  * You can use {@link GuildMemberRemoveEvent} to detect any member removes, regardless of cache state.
  *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent to be enabled.
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
+ * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
+ *
  * <p>Can be used to retrieve members who leave a guild.
  *
  * @deprecated This was deprecated in favour of {@link GuildMemberRemoveEvent}

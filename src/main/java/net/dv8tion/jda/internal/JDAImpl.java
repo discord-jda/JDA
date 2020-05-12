@@ -102,7 +102,7 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache;
-    protected final EventManagerProxy eventManager = new EventManagerProxy(new InterfacedEventManager());
+    protected final EventManagerProxy eventManager;
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
@@ -148,6 +148,7 @@ public class JDAImpl implements JDA
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
+        this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
     }
 
     public void onChunksRequested(GuildImpl guild)
@@ -368,7 +369,7 @@ public class JDAImpl implements JDA
                     request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
                             response.toString()));
             }
-        };
+        }.priority();
 
         try
         {
@@ -487,6 +488,12 @@ public class JDAImpl implements JDA
             Thread.sleep(50);
         }
         return this;
+    }
+
+    @Override
+    public int cancelRequests()
+    {
+        return requester.getRateLimiter().cancelRequests();
     }
 
     @Nonnull
@@ -708,7 +715,10 @@ public class JDAImpl implements JDA
 
         WebSocketClient client = getClient();
         if (client != null)
+        {
             client.shutdown();
+            client.getChunkManager().shutdown();
+        }
 
         shutdownInternals();
     }
@@ -1000,6 +1010,10 @@ public class JDAImpl implements JDA
 
     public void setSelfUser(SelfUser selfUser)
     {
+        try (UnlockHook hook = userCache.writeLock())
+        {
+            userCache.getMap().put(selfUser.getIdLong(), selfUser);
+        }
         this.selfUser = selfUser;
     }
 

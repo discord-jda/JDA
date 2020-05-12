@@ -56,7 +56,7 @@ public class MemberImpl implements Member
         this.api = (JDAImpl) user.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.user = user;
-        this.joinDate = guild.getTimeCreated().toInstant().toEpochMilli();
+        this.joinDate = 0;
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
         boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
@@ -97,7 +97,15 @@ public class MemberImpl implements Member
     @Override
     public OffsetDateTime getTimeJoined()
     {
-        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
+        if (hasTimeJoined())
+            return OffsetDateTime.ofInstant(Instant.ofEpochMilli(joinDate), OFFSET);
+        return getGuild().getTimeCreated();
+    }
+
+    @Override
+    public boolean hasTimeJoined()
+    {
+        return joinDate != 0;
     }
 
     @Nullable
@@ -334,12 +342,6 @@ public class MemberImpl implements Member
     public long getBoostDateRaw()
     {
         return boostDate;
-    }
-
-    public boolean isIncomplete()
-    {
-        // the joined_at is only present on complete members, this implies the member is completely loaded
-        return !isOwner() && Objects.equals(getGuild().getTimeCreated(), getTimeJoined());
     }
 
     @Override
