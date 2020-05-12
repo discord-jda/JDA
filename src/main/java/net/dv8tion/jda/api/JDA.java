@@ -1859,6 +1859,8 @@ public interface JDA
      *
      * <p>If you want this instance to shutdown without executing, use {@link #shutdownNow() shutdownNow()}
      *
+     * <p>This will interrupt the default JDA event thread, due to the gateway connection being interrupted.
+     *
      * @see #shutdownNow()
      */
     void shutdown();
@@ -1869,6 +1871,8 @@ public interface JDA
      * This will also cancel all queued {@link net.dv8tion.jda.api.requests.RestAction RestActions}.
      *
      * <p>If you want this instance to shutdown without cancelling enqueued RestActions use {@link #shutdown() shutdown()}
+     *
+     * <p>This will interrupt the default JDA event thread, due to the gateway connection being interrupted.
      *
      * @see #shutdown()
      */
