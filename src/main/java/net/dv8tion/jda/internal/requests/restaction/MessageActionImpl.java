@@ -149,6 +149,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
         String content = message.getContentRaw();
 
+        // Insert allowed mentions
         if (message instanceof DataMessage)
         {
             DataMessage data = (DataMessage) message;
@@ -157,13 +158,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             EnumSet<Message.MentionType> allowedMentions = data.getAllowedMentions();
             if (allowedMentions != null)
                 allowedMentions(allowedMentions);
-            if (mentionedRoles.length > 0)
-                mentionRoles(mentionedRoles);
-            if (mentionedUsers.length > 0)
-                mentionUsers(mentionedUsers);
+            mentionRoles(mentionedRoles);
+            mentionUsers(mentionedUsers);
         }
         else
         {
+            // Only ping everyone if the message also did
             if (message.mentionsEveryone())
             {
                 EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
@@ -172,6 +172,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 if (content.contains("@here"))
                     parse.add(Message.MentionType.HERE);
                 allowedMentions = parse;
+            }
+            else
+            {
+                allowedMentions = EnumSet.noneOf(Message.MentionType.class);
             }
 
             this.mention(message.getMentionedUsers())

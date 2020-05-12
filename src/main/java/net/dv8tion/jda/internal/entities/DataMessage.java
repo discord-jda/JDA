@@ -29,10 +29,10 @@ import java.util.Objects;
 
 public class DataMessage extends AbstractMessage
 {
+    private final EnumSet<MentionType> allowedMentions;
+    private final String[] mentionedRoles;
+    private final String[] mentionedUsers;
     private MessageEmbed embed;
-    private EnumSet<MentionType> allowedMentions;
-    private String[] mentionedRoles;
-    private String[] mentionedUsers;
 
     public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed,
                        EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles)
