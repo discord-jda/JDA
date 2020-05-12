@@ -49,7 +49,7 @@ import java.util.function.Consumer;
 public class MessageActionImpl extends RestActionImpl<Message> implements MessageAction
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
-    protected static EnumSet<Message.MentionType> defaultMentions = null;
+    protected static EnumSet<Message.MentionType> defaultMentions = EnumSet.allOf(Message.MentionType.class);
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
@@ -63,8 +63,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        MessageActionImpl.defaultMentions = allowedMentions == null ? null :
-                allowedMentions.isEmpty() ? EnumSet.noneOf(Message.MentionType.class) : EnumSet.copyOf(allowedMentions);
+        MessageActionImpl.defaultMentions = allowedMentions == null
+                ? EnumSet.allOf(Message.MentionType.class) // Default to all mentions enabled
+                : toEnumSet(Message.MentionType.class, allowedMentions);
     }
 
     public static EnumSet<Message.MentionType> getDefaultMentions()
@@ -143,7 +144,20 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             embed(embeds.get(0));
         files.clear();
 
-        return content(message.getContentRaw()).tts(message.isTTS());
+        String content = message.getContentRaw();
+        if (message.mentionsEveryone())
+        {
+            EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
+            if (content.contains("@everyone"))
+                parse.add(Message.MentionType.EVERYONE);
+            if (content.contains("@here"))
+                parse.add(Message.MentionType.HERE);
+            allowedMentions = parse;
+        }
+
+        return (MessageActionImpl) content(content).tts(message.isTTS())
+                .mentionUsers(message.getMentionedUsers())
+                .mentionRoles(message.getMentionedRoles());
     }
 
     @Nonnull
@@ -316,26 +330,23 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        this.allowedMentions = allowedMentions == null ? null :
-                allowedMentions.isEmpty() ? EnumSet.noneOf(Message.MentionType.class) : EnumSet.copyOf(allowedMentions);
+        this.allowedMentions = allowedMentions == null
+                ? EnumSet.allOf(Message.MentionType.class)
+                : toEnumSet(Message.MentionType.class, allowedMentions);
         return this;
     }
 
     @Nonnull
     @Override
-    public MessageAction mention(IMentionable... mentionables)
+    public MessageAction mention(IMentionable... mentions)
     {
-        Checks.noneNull(mentionables, "Mentionables");
-        for (IMentionable mentionable : mentionables)
+        Checks.noneNull(mentions, "Mentionables");
+        for (IMentionable mentionable : mentions)
         {
-            if(mentionable instanceof User || mentionable instanceof Member)
-            {
+            if (mentionable instanceof User || mentionable instanceof Member)
                 mentionableUsers.add(mentionable.getId());
-            }
             else if (mentionable instanceof Role)
-            {
                 mentionableRoles.add(mentionable.getId());
-            }
         }
         return this;
     }
@@ -345,7 +356,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageAction mentionUsers(String... userIds)
     {
         Checks.noneNull(userIds, "User Id");
-        mentionableUsers.addAll(Arrays.asList(userIds));
+        Collections.addAll(mentionableUsers, userIds);
         return this;
     }
 
@@ -354,7 +365,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageAction mentionRoles(String... roleIds)
     {
         Checks.noneNull(roleIds, "Role Id");
-        mentionableRoles.addAll(Arrays.asList(roleIds));
+        Collections.addAll(mentionableRoles, roleIds);
         return this;
     }
 
@@ -458,15 +469,22 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         DataArray parsable = DataArray.empty();
         if (allowedMentions != null)
         {
-            allowedMentions.stream().map(Message.MentionType::getParseKey).filter(Objects::nonNull).distinct().forEach(parsable::add);
+            // Add parsing options
+            allowedMentions.stream()
+                    .map(Message.MentionType::getParseKey)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .forEach(parsable::add);
         }
         if (!mentionableUsers.isEmpty())
         {
+            // Whitelist certain users
             parsable.remove(Message.MentionType.USER.getParseKey());
             allowedMentionsObj.put("users", DataArray.fromCollection(mentionableUsers));
         }
         if (!mentionableRoles.isEmpty())
         {
+            // Whitelist certain roles
             parsable.remove(Message.MentionType.ROLE.getParseKey());
             allowedMentionsObj.put("roles", DataArray.fromCollection(mentionableRoles));
         }
@@ -501,6 +519,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         TextChannel text = (TextChannel) channel;
         Member self = text.getGuild().getSelfMember();
         return self.hasPermission(text, perm);
+    }
+
+    private static <E extends Enum<E>> EnumSet<E> toEnumSet(Class<E> clazz, Collection<E> col)
+    {
+        return col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);
     }
 
     @Override
