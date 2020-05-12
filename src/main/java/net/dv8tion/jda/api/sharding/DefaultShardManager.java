@@ -348,17 +348,22 @@ public class DefaultShardManager implements ShardManager
             catch (final Exception ignored) {}
         }
 
-        this.executor.shutdown();
-
         if (this.shards != null)
         {
-            this.shards.forEach(jda ->
-            {
-                if (shardingConfig.isUseShutdownNow())
-                    jda.shutdownNow();
-                else
-                    jda.shutdown();
+            executor.execute(() -> {
+                this.shards.forEach(jda ->
+                {
+                    if (shardingConfig.isUseShutdownNow())
+                        jda.shutdownNow();
+                    else
+                        jda.shutdown();
+                });
+                this.executor.shutdown();
             });
+        }
+        else
+        {
+            this.executor.shutdown();
         }
     }
 
@@ -492,12 +497,17 @@ public class DefaultShardManager implements ShardManager
         ExecutorService callbackPool = callbackPair.executor;
         boolean shutdownCallbackPool = callbackPair.automaticShutdown;
 
+        ExecutorPair<ExecutorService> eventPair = resolveExecutor(threadingConfig.getEventPoolProvider(), shardId);
+        ExecutorService eventPool = eventPair.executor;
+        boolean shutdownEventPool = eventPair.automaticShutdown;
+
         AuthorizationConfig authConfig = new AuthorizationConfig(token);
         SessionConfig sessionConfig = this.sessionConfig.toSessionConfig(httpClient);
         ThreadingConfig threadingConfig = new ThreadingConfig();
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
+        threadingConfig.setEventPool(eventPool, shutdownEventPool);
         MetaConfig metaConfig = new MetaConfig(this.metaConfig.getMaxBufferSize(), this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
         jda.setMemberCachePolicy(shardingConfig.getMemberCachePolicy());

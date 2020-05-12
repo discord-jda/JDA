@@ -349,7 +349,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected RequestBody asJSON()
     {
-        return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toString());
+        return RequestBody.create(Requester.MEDIA_TYPE_JSON, getJSON().toJson());
     }
 
     protected DataObject getJSON()

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.requests.MemberChunkManager;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class GuildMembersChunkHandler extends SocketHandler
@@ -40,16 +41,19 @@ public class GuildMembersChunkHandler extends SocketHandler
         {
             if (api.getClient().getChunkManager().handleChunk(guildId, content))
                 return null;
-            WebSocketClient.LOG.debug("Received member chunk for guild that is already in cache. GuildId: {} Count: {}", guildId, members.length());
+            WebSocketClient.LOG.debug("Received member chunk for guild that is already in cache. GuildId: {} Count: {} Index: {}/{}",
+                    guildId, members.length(), content.getInt("chunk_index"), content.getInt("chunk_count"));
             EntityBuilder builder = getJDA().getEntityBuilder();
             for (int i = 0; i < members.length(); i++)
             {
                 DataObject object = members.getObject(i);
                 builder.updateMemberCache(builder.createMember(guild, object));
             }
-            guild.acknowledgeMembers();
+            if (MemberChunkManager.isLastChunk(content))
+                guild.completeChunking();
+            return null;
         }
-        getJDA().getGuildSetupController().onMemberChunk(guildId, members);
+        getJDA().getGuildSetupController().onMemberChunk(guildId, content);
         return null;
     }
 

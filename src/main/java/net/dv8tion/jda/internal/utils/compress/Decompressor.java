@@ -34,5 +34,5 @@ public interface Decompressor
     void shutdown();
 
     @Nullable // returns null when the decompression isn't done, for example when no Z_SYNC_FLUSH was present
-    String decompress(byte[] data) throws DataFormatException;
+    byte[] decompress(byte[] data) throws DataFormatException;
 }

@@ -40,6 +40,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -50,6 +51,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -519,6 +521,8 @@ public interface Guild extends ISnowflake
      * @return The maximum amount of members
      *
      * @since  4.0.0
+     *
+     * @see    #retrieveMetaData()
      */
     int getMaxMembers();
 
@@ -530,8 +534,21 @@ public interface Guild extends ISnowflake
      * @return The maximum amount of connected members this guild can have
      *
      * @since  4.0.0
+     *
+     * @see    #retrieveMetaData()
      */
     int getMaxPresences();
+
+    /**
+     * Loads {@link MetaData} for this guild instance.
+     *
+     * @return {@link RestAction} - Type: {@link MetaData}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<MetaData> retrieveMetaData();
 
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that has been set as the channel
@@ -827,7 +844,7 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all Members with the same name as the name provided.
      *
-     * @see    #retrieveMembersByName(String)
+     * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
     default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
@@ -848,6 +865,8 @@ public interface Guild extends ISnowflake
      *         Determines if the comparison ignores case when comparing. True - case insensitive.
      *
      * @return Possibly-empty immutable list of all Members with the same nickname as the nickname provided.
+     *
+     * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
     default List<Member> getMembersByNickname(@Nullable String nickname, boolean ignoreCase)
@@ -871,6 +890,8 @@ public interface Guild extends ISnowflake
      *         If the provided name is null
      *
      * @return Possibly-empty immutable list of all Members with the same effective name as the name provided.
+     *
+     * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
     default List<Member> getMembersByEffectiveName(@Nonnull String name, boolean ignoreCase)
@@ -2167,6 +2188,9 @@ public interface Guild extends ISnowflake
      *
      * <p>Calling {@link CompletableFuture#cancel(boolean)} will not cancel the chunking process.
      *
+     * <p><b>You MUST NOT use blocking operations such as {@link CompletableFuture#join()} or {@link Future#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
      * @return {@link CompletableFuture} representing the chunking task
      *
      * @see    #pruneMemberCache()
@@ -2454,12 +2478,37 @@ public interface Guild extends ISnowflake
         return retrieveMemberById(getOwnerIdLong(), update);
     }
 
-//    TODO: Wait for a "done" payload to be added to the api
-//    TODO: Without that we cannot make a good UX since we would be required to use a timeout instead.
-//
-//    @Nonnull
-//    @CheckReturnValue
-//    CompletableFuture<List<Member>> retrieveMembersByName(@Nonnull String prefix, int limit);
+    /**
+     * Queries a list of members using a radix tree based on the provided name prefix.
+     * <br>This will check both the username and the nickname of the members.
+     * Additional filtering may be required. If no members with the specified prefix exist, the list will be empty.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  prefix
+     *         The case-insensitive name prefix
+     * @param  limit
+     *         The max amount of members to retrieve (1-100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided prefix is null or empty.</li>
+     *             <li>If the provided limit is not in the range of [1, 100]</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     *
+     * @see    #getMembersByName(String, boolean)
+     * @see    #getMembersByNickname(String, boolean)
+     * @see    #getMembersByEffectiveName(String, boolean)
+     */
+    @Nonnull
+    @CheckReturnValue
+    Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit);
 
     /* From GuildController */
 
@@ -2608,6 +2657,9 @@ public interface Guild extends ISnowflake
      * <br>You can use {@link Guild#retrievePrunableMemberCount(int)} to determine how many Members would be pruned if you were to
      * call this method.
      *
+     * <p>This might timeout when pruning many members.
+     * You can use {@code prune(days, false)} to ignore the prune count and avoid a timeout.
+     *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
@@ -2628,7 +2680,42 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Integer> prune(int days);
+    default AuditableRestAction<Integer> prune(int days)
+    {
+        return prune(days, true);
+    }
+
+    /**
+     * This method will prune (kick) all members who were offline for at least <i>days</i> days.
+     * <br>The RestAction returned from this method will return the amount of Members that were pruned.
+     * <br>You can use {@link Guild#retrievePrunableMemberCount(int)} to determine how many Members would be pruned if you were to
+     * call this method.
+     *
+     * <p>This might timeout when pruning many members with {@code wait=true}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The prune cannot finished due to a permission discrepancy</li>
+     * </ul>
+     *
+     * @param  days
+     *         Minimum number of days since a member has been offline to get affected.
+     * @param  wait
+     *         Whether to calculate the number of pruned members and wait for the response (timeout for too many pruned)
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
+     * @throws IllegalArgumentException
+     *         If the provided days are less than {@code 1} or more than {@code 30}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
+     *         <br>Provides the amount of Members that were pruned from the Guild, if wait is true.
+     */
+    @Nonnull
+    @CheckReturnValue
+    AuditableRestAction<Integer> prune(int days, boolean wait);
 
     /**
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -4567,6 +4654,69 @@ public interface Guild extends ISnowflake
         public String toString()
         {
             return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
+        }
+    }
+
+    /**
+     * Meta-Data for a Guild
+     *
+     * @since 4.2.0
+     */
+    class MetaData
+    {
+        private final int memberLimit;
+        private final int presenceLimit;
+        private final int approximatePresences;
+        private final int approximateMembers;
+
+        public MetaData(int memberLimit, int presenceLimit, int approximatePresences, int approximateMembers)
+        {
+            this.memberLimit = memberLimit;
+            this.presenceLimit = presenceLimit;
+            this.approximatePresences = approximatePresences;
+            this.approximateMembers = approximateMembers;
+        }
+
+        /**
+         * The active member limit for this guild.
+         * <br>This limit restricts how many users can be member for this guild at once.
+         *
+         * @return The member limit
+         */
+        public int getMemberLimit()
+        {
+            return memberLimit;
+        }
+
+        /**
+         * The active presence limit for this guild.
+         * <br>This limit restricts how many users can be connected/online for this guild at once.
+         *
+         * @return The presence limit
+         */
+        public int getPresenceLimit()
+        {
+            return presenceLimit;
+        }
+
+        /**
+         * The approximate number of online members in this guild.
+         *
+         * @return The approximate presence count
+         */
+        public int getApproximatePresences()
+        {
+            return approximatePresences;
+        }
+
+        /**
+         * The approximate number of members in this guild.
+         *
+         * @return The approximate member count
+         */
+        public int getApproximateMembers()
+        {
+            return approximateMembers;
         }
     }
 }

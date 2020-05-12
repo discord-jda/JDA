@@ -76,12 +76,28 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
      * <br>If the member was loaded through a presence update (lazy loading) this will be identical
-     * to the creation time of the guild.
+     * to the creation time of the guild. You can use {@link #hasTimeJoined()} to test whether this time
+     * can be relied on.
      *
-     * @return The Join Date.
+     * <p>You can use {@link Guild#retrieveMemberById(String) guild.retrieveMemberById(member.getId())}
+     * to load the join time.
+     *
+     * @return The time at which this user has joined the guild.
      */
     @Nonnull
     OffsetDateTime getTimeJoined();
+
+    /**
+     * Whether this member has accurate {@link #getTimeJoined()} information.
+     * <br>Discord doesn't always provide this information when we load members so we have to fallback
+     * to the {@link Guild} creation time.
+     *
+     * <p>You can use {@link Guild#retrieveMemberById(String) guild.retrieveMemberById(member.getId())}
+     * to load the join time.
+     *
+     * @return True, if {@link #getTimeJoined()} is accurate
+     */
+    boolean hasTimeJoined();
 
     /**
      * The time when this member boosted the guild.
