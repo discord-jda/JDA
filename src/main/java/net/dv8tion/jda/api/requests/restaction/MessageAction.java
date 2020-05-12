@@ -92,9 +92,16 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * This just sets the default for all MessageActions and can be overridden on a per-action basis using {@link #allowedMentions(Collection)}.
      * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
      * while still showing up as mention tag.
-     * <p>
-     * If {@code null} is provided to this method, then all Types will be pingable
+     *
+     * <p>If {@code null} is provided to this method, then all Types will be pingable
      * (unless whitelisting via one of the {@code mention*} methods is used).
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * // Disable EVERYONE and HERE mentions by default (to avoid mass ping)
+     * EnumSet<Message.MentionType> deny = EnumSet.of(Message.MentionType.EVERYONE, Message.MentionType.HERE);
+     * MessageAction.setDefaultMentions(EnumSet.complementOf(deny));
+     * }</pre>
      *
      * @param  allowedMentions
      *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
@@ -106,11 +113,11 @@ public interface MessageAction extends RestAction<Message>, Appendable
 
     /**
      * Returns the default {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} previously set by
-     * {@link #setDefaultMentions(Collection) MessageAction.setDefaultMentions(Collection)} or {@code null} by default
+     * {@link #setDefaultMentions(Collection) MessageAction.setDefaultMentions(Collection)}.
      *
-     * @return Nullable default mentions set by MessageAction.setDefaultMentions(Collection)
+     * @return Default mentions set by MessageAction.setDefaultMentions(Collection)
      */
-    @Nullable
+    @Nonnull
     static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return MessageActionImpl.getDefaultMentions();

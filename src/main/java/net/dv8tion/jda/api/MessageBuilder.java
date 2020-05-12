@@ -50,7 +50,7 @@ public class MessageBuilder implements Appendable
     protected boolean isTTS = false;
     protected String nonce;
     protected MessageEmbed embed;
-    protected EnumSet<Message.MentionType> allowedMentions = EnumSet.allOf(Message.MentionType.class);
+    protected EnumSet<Message.MentionType> allowedMentions = null;
     protected Set<String> mentionedUsers = new HashSet<>();
     protected Set<String> mentionedRoles = new HashSet<>();
 
@@ -461,6 +461,13 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Removes the whitelist of mentioned users.
+     * <br>If {@link #setAllowedMentions(Collection)} does not contain {@link net.dv8tion.jda.api.entities.Message.MentionType#USER MentionType.USER}
+     * then no user will be mentioned.
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public MessageBuilder clearMentionedUsers()
     {
@@ -468,6 +475,13 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Removes the whitelist of mentioned roles.
+     * <br>If {@link #setAllowedMentions(Collection)} does not contain {@link net.dv8tion.jda.api.entities.Message.MentionType#ROLE MentionType.ROLE}
+     * then no role will be mentioned.
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public MessageBuilder clearMentionedRoles()
     {
@@ -475,12 +489,29 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Combination of {@link #clearMentionedRoles()} and {@link #clearMentionedUsers()}.
+     *
+     * <p>This will not affect {@link #setAllowedMentions(Collection)}. You can reset those to default
+     * by using {@code setAllowedMentions(null)}.
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public MessageBuilder clearMentions()
     {
         return clearMentionedUsers().clearMentionedRoles();
     }
 
+    /**
+     * Sets which {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} should be parsed from
+     * the input. This will use {@link MessageAction#getDefaultMentions()} by default, or if {@code null} is provided.
+     *
+     * @param  mentionTypes
+     *         Collection of allowed mention types, or null to use {@link MessageAction#getDefaultMentions()}.
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public MessageBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> mentionTypes)
     {
@@ -490,23 +521,69 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Adds the provided {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} to the whitelist.
+     *
+     * @param  types
+     *         The mention types to allow
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public MessageBuilder allowMentions(@Nonnull Message.MentionType... types)
     {
         Checks.noneNull(types, "MentionTypes");
-        Collections.addAll(allowedMentions, types);
+        if (types.length > 0)
+        {
+            if (allowedMentions == null)
+                allowedMentions = MessageAction.getDefaultMentions();
+            Collections.addAll(allowedMentions, types);
+        }
         return this;
     }
 
+    /**
+     * Removes the provided {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} to the whitelist.
+     *
+     * @param  types
+     *         The mention types to allow
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
     @Nonnull
     public MessageBuilder denyMentions(@Nonnull Message.MentionType... types)
     {
         Checks.noneNull(types, "MentionTypes");
-        for (Message.MentionType type : types)
-            allowedMentions.remove(type);
+        if (types.length > 0)
+        {
+            if (allowedMentions == null)
+                allowedMentions = MessageAction.getDefaultMentions();
+            for (Message.MentionType type : types)
+                allowedMentions.remove(type);
+        }
         return this;
     }
 
+    /**
+     * Adds the provided {@link IMentionable IMentionable} instance to the whitelist of mentions.
+     * <br>This will only affect instances of {@link User}, {@link Member}, and {@link Role}.
+     *
+     * <p>See {@link MessageAction#mention(IMentionable...)} for more details.
+     *
+     * @param  mentions
+     *         Whitelist of mentions to apply
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    #clearMentions()
+     * @see    MessageAction#mention(IMentionable...)
+     */
     @Nonnull
     public MessageBuilder mention(@Nonnull IMentionable... mentions)
     {
@@ -522,6 +599,20 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Adds the provided {@link IMentionable IMentionable} instance to the whitelist of mentions.
+     * <br>This will only affect instances of {@link User}, {@link Member}, and {@link Role}.
+     *
+     * <p>See {@link MessageAction#mention(IMentionable...)} for more details.
+     *
+     * @param  mentions
+     *         Whitelist of mentions to apply
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    #clearMentions()
+     * @see    MessageAction#mention(IMentionable...)
+     */
     @Nonnull
     public MessageBuilder mention(@Nonnull Collection<? extends IMentionable> mentions)
     {
@@ -529,6 +620,20 @@ public class MessageBuilder implements Appendable
         return mention(mentions.toArray(new IMentionable[0]));
     }
 
+    /**
+     * Adds the provided {@link User Users} to the whitelist of mentions.
+     * <br>The provided list must only contain IDs of users.
+     *
+     * <p>See {@link MessageAction#mentionUsers(String...)} for more details.
+     *
+     * @param  users
+     *         Whitelist of user IDs to apply
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    #clearMentionedUsers()
+     * @see    MessageAction#mentionUsers(String...)
+     */
     @Nonnull
     public MessageBuilder mentionUsers(@Nonnull String... users)
     {
@@ -537,6 +642,20 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Adds the provided {@link Role Roles} to the whitelist of mentions.
+     * <br>The provided list must only contain IDs of roles.
+     *
+     * <p>See {@link MessageAction#mentionRoles(String...)} for more details.
+     *
+     * @param  roles
+     *         Whitelist of role IDs to apply
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    #clearMentionedRoles()
+     * @see    MessageAction#mentionRoles(String...)
+     */
     @Nonnull
     public MessageBuilder mentionRoles(@Nonnull String... roles)
     {
@@ -545,6 +664,20 @@ public class MessageBuilder implements Appendable
         return this;
     }
 
+    /**
+     * Adds the provided {@link User Users} to the whitelist of mentions.
+     * <br>The provided list must only contain IDs of users.
+     *
+     * <p>See {@link MessageAction#mentionUsers(long...)} for more details.
+     *
+     * @param  users
+     *         Whitelist of user IDs to apply
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    #clearMentionedUsers()
+     * @see    MessageAction#mentionUsers(long...)
+     */
     @Nonnull
     public MessageBuilder mentionUsers(@Nonnull long... users)
     {
@@ -552,6 +685,20 @@ public class MessageBuilder implements Appendable
         return mentionUsers(toStringArray(users));
     }
 
+    /**
+     * Adds the provided {@link Role Roles} to the whitelist of mentions.
+     * <br>The provided list must only contain IDs of roles.
+     *
+     * <p>See {@link MessageAction#mentionRoles(long...)} for more details.
+     *
+     * @param  roles
+     *         Whitelist of role IDs to apply
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @see    #clearMentionedRoles()
+     * @see    MessageAction#mentionRoles(long...)
+     */
     @Nonnull
     public MessageBuilder mentionRoles(@Nonnull long... roles)
     {
@@ -760,6 +907,8 @@ public class MessageBuilder implements Appendable
 
     /**
      * Clears the current builder. Useful for mass message creation.
+     *
+     * <p>This will not clear the allowed mentions.
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
@@ -1056,9 +1205,6 @@ public class MessageBuilder implements Appendable
                 allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids));
     }
 
-    /**
-     * Default {@link SplitPolicy} implementation. Splits on a specified {@link CharSequence}.
-     */
     private String[] toStringArray(long[] users)
     {
         String[] ids = new String[users.length];

@@ -46,7 +46,7 @@ public class DataMessage extends AbstractMessage
 
     public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
     {
-        this(tts, content, nonce, embed, EnumSet.allOf(MentionType.class), new String[0], new String[0]);
+        this(tts, content, nonce, embed, null, new String[0], new String[0]);
     }
 
     public EnumSet<MentionType> getAllowedMentions()

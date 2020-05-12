@@ -69,6 +69,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
     }
 
+    @Nonnull
     public static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return defaultMentions.clone();
@@ -153,8 +154,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             DataMessage data = (DataMessage) message;
             String[] mentionedRoles = data.getMentionedRolesWhitelist();
             String[] mentionedUsers = data.getMentionedUsersWhitelist();
-            EnumSet<Message.MentionType> allowedMentions = ((DataMessage) message).getAllowedMentions();
-            allowedMentions(allowedMentions);
+            EnumSet<Message.MentionType> allowedMentions = data.getAllowedMentions();
+            if (allowedMentions != null)
+                allowedMentions(allowedMentions);
             if (mentionedRoles.length > 0)
                 mentionRoles(mentionedRoles);
             if (mentionedUsers.length > 0)
