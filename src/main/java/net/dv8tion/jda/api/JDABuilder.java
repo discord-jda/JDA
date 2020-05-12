@@ -412,9 +412,13 @@ public class JDABuilder
      * Creates a JDABuilder with the predefined token.
      * <br>You can use {@link #create(String, Collection) JDABuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available. If the {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} is disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param token
      *        The bot token to use
@@ -434,15 +438,19 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder create(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents));
+        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents)).applyIntents();
     }
 
     /**
      * Creates a JDABuilder with the predefined token.
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available. If the {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} is disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param token
      *        The bot token to use
@@ -460,7 +468,23 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder create(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intents));
+        return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyIntents();
+    }
+
+    private JDABuilder applyIntents()
+    {
+        EnumSet<CacheFlag> disabledCache = EnumSet.allOf(CacheFlag.class);
+        for (CacheFlag flag : CacheFlag.values())
+        {
+            GatewayIntent requiredIntent = flag.getRequiredIntent();
+            if (requiredIntent == null || (requiredIntent.getRawValue() & intents) != 0)
+                disabledCache.remove(flag);
+        }
+
+        boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
+        return setChunkingFilter(enableMembers ? ChunkingFilter.ALL : ChunkingFilter.NONE)
+                .setMemberCachePolicy(enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
+                .disableCache(disabledCache);
     }
 
     /**
