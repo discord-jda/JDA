@@ -2484,8 +2484,9 @@ public interface Guild extends ISnowflake
      * <br>If the user does not resolve to a member of this guild, then it will not appear in the resulting list.
      * It is possible that none of the users resolve to a member, in which case an empty list will be the result.
      *
-     * <p>This will not load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
-     * of the members. You can use {@link #retrieveMembers(boolean, Collection)} to load presences.
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembers(boolean, Collection)} to disable presences.
      *
      * <p>The requests automatically timeout after {@code 10} seconds.
      * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
@@ -2521,8 +2522,9 @@ public interface Guild extends ISnowflake
      * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
      * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
      *
-     * <p>This will not load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
-     * of the members. You can use {@link #retrieveMembersByIds(boolean, Collection)} to load presences.
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembersByIds(boolean, Collection)} to disable presences.
      *
      * <p>The requests automatically timeout after {@code 10} seconds.
      * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
@@ -2558,8 +2560,9 @@ public interface Guild extends ISnowflake
      * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
      * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
      *
-     * <p>This will not load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
-     * of the members. You can use {@link #retrieveMembersByIds(boolean, String...)} to load presences.
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembersByIds(boolean, String...)} to disable presences.
      *
      * <p>The requests automatically timeout after {@code 10} seconds.
      * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
@@ -2597,8 +2600,9 @@ public interface Guild extends ISnowflake
      * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
      * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
      *
-     * <p>This will not load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
-     * of the members. You can use {@link #retrieveMembersByIds(boolean, long...)} to load presences.
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembersByIds(boolean, long...)} to disable presences.
      *
      * <p>The requests automatically timeout after {@code 10} seconds.
      * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
@@ -2621,7 +2625,8 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     default Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids)
     {
-        return retrieveMembersByIds(false, ids);
+        boolean presence = getJDA().getGatewayIntents().contains(GatewayIntent.GUILD_PRESENCES);
+        return retrieveMembersByIds(presence, ids);
     }
 
     /**
