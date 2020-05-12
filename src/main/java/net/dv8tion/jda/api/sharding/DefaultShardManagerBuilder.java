@@ -223,7 +223,7 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents)).applyDefault();
+        return create(token, intents).applyDefault();
     }
 
     private DefaultShardManagerBuilder applyDefault()
@@ -287,7 +287,9 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents)).applyLight();
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        return createLight(token, EnumSet.of(intent, intents));
     }
 
     /**
@@ -315,7 +317,7 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents)).applyLight();
+        return create(token, intents).applyLight();
     }
 
     private DefaultShardManagerBuilder applyLight()

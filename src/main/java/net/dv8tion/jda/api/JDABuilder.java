@@ -246,7 +246,7 @@ public class JDABuilder
     @CheckReturnValue
     public static JDABuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyDefault();
+        return create(token, intents).applyDefault();
     }
 
     private JDABuilder applyDefault()
@@ -299,16 +299,20 @@ public class JDABuilder
      *
      * @param  token
      *         The bot token to use
+     * @param  intent
+     *         The first intent to use
      * @param  intents
-     *         The gateway intents to use
+     *         The other gateway intents to use
      *
      * @return The new JDABuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
+    public static JDABuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intents)).applyLight();
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        return createLight(token, EnumSet.of(intent, intents));
     }
 
     /**
@@ -327,18 +331,16 @@ public class JDABuilder
      *
      * @param  token
      *         The bot token to use
-     * @param  intent
-     *         The first intent to use
      * @param  intents
-     *         The other gateway intents to use
+     *         The gateway intents to use
      *
      * @return The new JDABuilder
      */
     @Nonnull
     @CheckReturnValue
-    public static JDABuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
+    public static JDABuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new JDABuilder(token, GatewayIntent.getRaw(intent, intents)).applyLight();
+        return create(token, intents).applyLight();
     }
 
     private JDABuilder applyLight()
