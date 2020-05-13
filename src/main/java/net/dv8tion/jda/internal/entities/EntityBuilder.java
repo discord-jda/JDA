@@ -147,7 +147,7 @@ public class EntityBuilder
         }
     }
 
-    private TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
+    public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
     {
         TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
         for (int i = 0; i < array.length(); i++)
