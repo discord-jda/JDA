@@ -158,7 +158,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isLoaded()
     {
-        // Only works with guild subscriptions
+        // Only works with GUILD_MEMBERS intent
         return getJDA().isIntent(GatewayIntent.GUILD_MEMBERS)
                 && (long) getMemberCount() <= getMemberCache().size();
     }

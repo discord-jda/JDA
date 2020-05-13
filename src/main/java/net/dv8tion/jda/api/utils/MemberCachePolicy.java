@@ -35,6 +35,8 @@ import javax.annotation.Nonnull;
  * <p>If {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled you should not use {@link #ALL} or {@link #ONLINE}.
  * This intent enables guild member leave events which are required to remove members from cache properly.
  *
+ * <p>This can be configured with {@link net.dv8tion.jda.api.JDABuilder#setMemberCachePolicy(MemberCachePolicy) JDABuilder.setMemberCachePolicy(MemberCachePolicy)}.
+ *
  * @see #DEFAULT
  * @see #NONE
  * @see #ALL
