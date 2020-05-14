@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.emote.GenericEmoteEvent;
 import net.dv8tion.jda.api.events.guild.GuildBanEvent;
@@ -112,6 +113,8 @@ public enum GatewayIntent
     /**
      * <b>PRIVILEGED INTENT</b> Presence updates. This is used to lazy load members and update user properties such as name/avatar.
      * <br>This is a very heavy intent! Presence updates are 99% of traffic the bot will receive. To get user update events you should consider using {@link #GUILD_MEMBERS} instead.
+     *
+     * <p>This intent is primarily used to track {@link Member#getOnlineStatus()} and {@link Member#getActivities()}.
      */
     GUILD_PRESENCES(8),
     /**
