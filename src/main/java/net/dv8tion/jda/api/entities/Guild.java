@@ -1567,9 +1567,10 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.api.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
      *
      * @param  id
      *         the emote id
@@ -1578,6 +1579,8 @@ public interface Guild extends ISnowflake
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return An Emote matching the specified Id.
+     *
+     * @see    #retrieveEmoteById(String)
      */
     @Nullable
     default Emote getEmoteById(@Nonnull String id)
@@ -1590,14 +1593,17 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.api.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
      *
      * @param  id
      *         the emote id
      *
      * @return An Emote matching the specified Id.
+     *
+     * @see    #retrieveEmoteById(long)
      */
     @Nullable
     default Emote getEmoteById(long id)
@@ -1616,7 +1622,11 @@ public interface Guild extends ISnowflake
      * a local variable or use {@link #getEmoteCache()} and use its more efficient
      * versions of handling these values.
      *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     *
+     * @see    #retrieveEmotes()
      */
     @Nonnull
     default List<Emote> getEmotes()
@@ -1628,9 +1638,10 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Emote Emotes} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Emote Emotes} with the provided name, then this returns an empty list.
-     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
      *
      * @param  name
      *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
@@ -1650,7 +1661,11 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} of this Guild.
      * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     *
+     * @see    #retrieveEmotes()
      */
     @Nonnull
     SnowflakeCacheView<Emote> getEmoteCache();

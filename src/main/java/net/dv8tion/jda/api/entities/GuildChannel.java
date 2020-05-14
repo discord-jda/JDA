@@ -145,6 +145,9 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * If you would like only {@link net.dv8tion.jda.api.entities.Member Member} overrides or only {@link net.dv8tion.jda.api.entities.Role Role}
      * overrides, use {@link #getMemberPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
      *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
+     * Without that CacheFlag, this list will only contain overrides for the currently logged in account and roles.
+     *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for this {@link GuildChannel GuildChannel}.
      */
@@ -154,6 +157,8 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.Member Member} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
      *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Member Member}

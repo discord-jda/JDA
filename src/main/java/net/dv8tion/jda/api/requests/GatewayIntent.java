@@ -70,10 +70,10 @@ import java.util.EnumSet;
  * <p>You must use {@link net.dv8tion.jda.api.utils.ChunkingFilter#NONE ChunkingFilter.NONE} if {@link #GUILD_MEMBERS} is disabled.
  * To enable chunking the discord api requires the privileged {@link #GUILD_MEMBERS} intent.
  *
- * @see net.dv8tion.jda.api.JDABuilder#setDisabledIntents(GatewayIntent, GatewayIntent...)
- * @see net.dv8tion.jda.api.JDABuilder#setEnabledIntents(GatewayIntent, GatewayIntent...)
- * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setDisabledIntents(GatewayIntent, GatewayIntent...)
- * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setEnabledIntents(GatewayIntent, GatewayIntent...)
+ * @see net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...)
+ * @see net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...)
+ * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#disableIntents(GatewayIntent, GatewayIntent...)
+ * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#enableIntents(GatewayIntent, GatewayIntent...)
  */
 public enum GatewayIntent
 {
@@ -140,7 +140,11 @@ public enum GatewayIntent
     DIRECT_MESSAGE_TYPING(14);
 
     /**
-     * Bitmask with intents enabled.
+     * Bitmask with all intents enabled.
+     *
+     * <p>To use all intents in your own code you should use {@code EnumSet.allOf(GatewayIntent.class)} instead.
+     * This value only represents the raw bitmask used in JDA.
+     * <br>You can use {@code EnumSet.noneOf(GatewayIntent.class)} to achieve the opposite.
      */
     public static final int ALL_INTENTS = 1 | getRaw(EnumSet.allOf(GatewayIntent.class));
 
@@ -153,6 +157,11 @@ public enum GatewayIntent
      *     <li>GUILD_MESSAGE_TYPING because its not useful for most bots</li>
      *     <li>DIRECT_MESSAGE_TYPING because its not useful for most bots</li>
      * </ul>
+     *
+     * To use these intents you have to pass no other intents to {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(token)}
+     * or {@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(token)}.
+     * You can further configure intents by using {@link net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...) enableIntents(intents)}
+     * and {@link net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...) disableIntents(intents)}.
      */
     public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
 
