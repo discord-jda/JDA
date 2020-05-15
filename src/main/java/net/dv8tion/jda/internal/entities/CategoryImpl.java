@@ -79,7 +79,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
             if (equals(channels.get(i)))
                 return i;
         }
-        throw new AssertionError("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
+        throw new IllegalStateException("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
     }
 
     @Nonnull
