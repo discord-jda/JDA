@@ -871,7 +871,7 @@ public interface JDA
      * will only contain the {@link net.dv8tion.jda.api.entities.Guild Guilds} that the shard is actually connected to.
      * Discord determines which guilds a shard is connect to using the following format:
      * <br>Guild connected if shardId == (guildId {@literal >>} 22) % totalShards;
-     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * <p>This copies the backing store into a list. This means every call
      * creates a new list with O(n) complexity. It is recommended to store this into
@@ -1915,7 +1915,7 @@ public interface JDA
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
      * <br>Example Format:
-     * {@code https://discordapp.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
+     * {@code https://discord.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
      *
      * <p><b>Hint:</b> To enable a pre-selected Guild of choice append the parameter {@code &guild_id=YOUR_GUILD_ID}
      *
@@ -1934,7 +1934,7 @@ public interface JDA
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.
      * <br>Example Format:
-     * {@code https://discordapp.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
+     * {@code https://discord.com/oauth2/authorize?scope=bot&client_id=288202953599221761&permissions=8}
      *
      * <p><b>Hint:</b> To enable a pre-selected Guild of choice append the parameter {@code &guild_id=YOUR_GUILD_ID}
      *

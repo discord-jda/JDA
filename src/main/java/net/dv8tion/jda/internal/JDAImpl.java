@@ -903,7 +903,7 @@ public class JDAImpl implements JDA
     {
         if (clientId == null)
             retrieveApplicationInfo().complete();
-        StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?scope=bot&client_id=");
         builder.append(clientId);
         return builder;
     }

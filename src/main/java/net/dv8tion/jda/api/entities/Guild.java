@@ -115,7 +115,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link MemberAction MemberAction}
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
      * @since  3.7.0
      */
@@ -140,7 +140,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link MemberAction MemberAction}
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
      * @since  3.7.0
      */
@@ -169,7 +169,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link MemberAction MemberAction}
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
      * @since  3.7.0
      */
@@ -4916,7 +4916,7 @@ public interface Guild extends ISnowflake
      * Represents a Ban object.
      *
      * @see #retrieveBanList()
-     * @see <a href="https://discordapp.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
+     * @see <a href="https://discord.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
      */
     class Ban
     {

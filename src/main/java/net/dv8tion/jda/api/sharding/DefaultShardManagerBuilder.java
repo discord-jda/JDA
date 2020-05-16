@@ -775,7 +775,7 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
     public DefaultShardManagerBuilder setCompression(@Nonnull Compression compression)
@@ -1704,7 +1704,7 @@ public class  DefaultShardManagerBuilder
      *
      * <p>To get a bot token:
      * <ol>
-     *     <li>Go to your <a href="https://discordapp.com/developers/applications/me">Discord Applications</a></li>
+     *     <li>Go to your <a href="https://discord.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
      *     <li>Verify that it has already been turned into a Bot. If you see the "Create a Bot User" button, click it.</li>
      *     <li>Click the <i>click to reveal</i> link beside the <b>Token</b> label to show your Bot's {@code token}</li>

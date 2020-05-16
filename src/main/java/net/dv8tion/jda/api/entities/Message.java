@@ -510,7 +510,7 @@ public interface Message extends ISnowflake, Formattable
      * The raw textual content of this message. Does not resolve {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
      * entities like {@link #getContentDisplay()} does. This means that this is the completely raw textual content of the message
      * received from Discord and can contain mentions specified by
-     * <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
+     * <a href="https://discord.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */

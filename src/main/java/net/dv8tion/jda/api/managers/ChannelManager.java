@@ -264,7 +264,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return  ChannelManager for chaining convenience
      *
-     * @see     <a href="https://discordapp.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
+     * @see     <a href="https://discord.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
     @Nonnull
     @CheckReturnValue
@@ -296,7 +296,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return  ChannelManager for chaining convenience
      *
-     * @see     <a href="https://discordapp.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
+     * @see     <a href="https://discord.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
     @Nonnull
     @CheckReturnValue
