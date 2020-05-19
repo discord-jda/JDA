@@ -170,9 +170,6 @@ class AudioWebSocket extends WebSocketAdapter
             audioConnection.shutdown();
 
             VoiceChannel disconnectedChannel = manager.getConnectedChannel();
-            if (disconnectedChannel == null)
-                disconnectedChannel = manager.getQueuedAudioConnection();
-
             manager.setAudioConnection(null);
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
@@ -201,7 +198,6 @@ class AudioWebSocket extends WebSocketAdapter
                     LOG.debug("Cannot reconnect due to null voice channel");
                     return;
                 }
-                manager.setQueuedAudioConnection(disconnectedChannel);
                 api.getDirectAudioController().reconnect(disconnectedChannel);
             }
             else if (status == ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)

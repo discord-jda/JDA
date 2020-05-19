@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -35,6 +36,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        System.out.println("Handling " + content);
         final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
@@ -66,22 +68,27 @@ public class VoiceServerUpdateHandler extends SocketHandler
             return null;
         }
 
-        AudioManagerImpl audioManager = (AudioManagerImpl) guild.getAudioManager();
+        AudioManagerImpl audioManager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
+        if (audioManager == null)
+        {
+            WebSocketClient.LOG.debug(
+                "Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
+                "to a VoiceChannel. Assuming that this is caused by another client running on this account. " +
+                "Ignoring the event.");
+            return null;
+        }
+
         MiscUtil.locked(audioManager.CONNECTION_LOCK, () ->
         {
             //Synchronized to prevent attempts to close while setting up initial objects.
-            if (audioManager.isConnected())
-                audioManager.prepareForRegionChange();
-            if (!audioManager.isAttemptingToConnect())
+            VoiceChannel target = guild.getSelfMember().getVoiceState().getChannel();
+            if (target == null)
             {
-                WebSocketClient.LOG.debug(
-                    "Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
-                    "to a VoiceChannel. Assuming that this is caused by another client running on this account. " +
-                    "Ignoring the event.");
+                WebSocketClient.LOG.warn("Ignoring VOICE_SERVER_UPDATE for unknown channel");
                 return;
             }
 
-            AudioConnection connection = new AudioConnection(audioManager, endpoint, sessionId, token);
+            AudioConnection connection = new AudioConnection(audioManager, endpoint, sessionId, token, target);
             audioManager.setAudioConnection(connection);
             connection.startConnection();
         });
