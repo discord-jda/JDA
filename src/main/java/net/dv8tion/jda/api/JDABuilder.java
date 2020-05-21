@@ -43,6 +43,7 @@ import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * Used to create new {@link net.dv8tion.jda.api.JDA} instances. This is also useful for making sure all of
@@ -58,6 +59,7 @@ public class JDABuilder
 {
     public static final int GUILD_SUBSCRIPTIONS = GatewayIntent.getRaw(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING);
     protected final List<Object> listeners = new LinkedList<>();
+    protected final EnumSet<CacheFlag> automaticallyDisabled = EnumSet.noneOf(CacheFlag.class);
 
     protected ScheduledExecutorService rateLimitPool = null;
     protected boolean shutdownRateLimitPool = true;
@@ -518,7 +520,14 @@ public class JDABuilder
         boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
         return setChunkingFilter(enableMembers ? ChunkingFilter.ALL : ChunkingFilter.NONE)
                 .setMemberCachePolicy(enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
-                .disableCache(disabledCache);
+                .setDisabledCache(disabledCache);
+    }
+
+    private JDABuilder setDisabledCache(EnumSet<CacheFlag> flags)
+    {
+        disableCache(flags);
+        this.automaticallyDisabled.addAll(flags);
+        return this;
     }
 
     /**
@@ -682,6 +691,7 @@ public class JDABuilder
     public JDABuilder disableCache(@Nonnull Collection<CacheFlag> flags)
     {
         Checks.noneNull(flags, "CacheFlags");
+        automaticallyDisabled.removeAll(flags);
         cacheFlags.removeAll(flags);
         return this;
     }
@@ -708,8 +718,7 @@ public class JDABuilder
     {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(flags, "CacheFlag");
-        cacheFlags.removeAll(EnumSet.of(flag, flags));
-        return this;
+        return disableCache(EnumSet.of(flag, flags));
     }
 
     /**
@@ -1857,6 +1866,21 @@ public class JDABuilder
             throw new IllegalStateException("Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
         else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE)
             JDAImpl.LOG.warn("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+
+        if (!automaticallyDisabled.isEmpty())
+        {
+            String csv = automaticallyDisabled.stream()
+                    .map(CacheFlag::toString)
+                    .map(it -> "CacheFlag." + it)
+                    .collect(Collectors.joining(", "));
+            JDAImpl.LOG.warn(
+                "Automatically disabled CacheFlags due to missing intents: {} - " +
+                "You can manually disable these flags to remove this warning by using disableCache({}) on your JDABuilder",
+                automaticallyDisabled, csv
+            );
+            // Only print this warning once
+            automaticallyDisabled.clear();
+        }
 
         if (cacheFlags.isEmpty())
             return;

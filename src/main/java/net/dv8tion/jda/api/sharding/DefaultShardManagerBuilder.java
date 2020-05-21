@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
@@ -60,6 +61,7 @@ public class  DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
+    protected final EnumSet<CacheFlag> automaticallyDisabled = EnumSet.noneOf(CacheFlag.class);
     protected SessionController sessionController = null;
     protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
@@ -494,7 +496,14 @@ public class  DefaultShardManagerBuilder
         boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
         return setChunkingFilter(enableMembers ? ChunkingFilter.ALL : ChunkingFilter.NONE)
                 .setMemberCachePolicy(enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
-                .disableCache(disabledCache);
+                .setDisabledCache(disabledCache);
+    }
+
+    private DefaultShardManagerBuilder setDisabledCache(EnumSet<CacheFlag> flags)
+    {
+        this.disableCache(flags);
+        this.automaticallyDisabled.addAll(flags);
+        return this;
     }
 
     /**
@@ -656,6 +665,7 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder disableCache(@Nonnull Collection<CacheFlag> flags)
     {
         Checks.noneNull(flags, "CacheFlags");
+        automaticallyDisabled.removeAll(flags);
         cacheFlags.removeAll(flags);
         return this;
     }
@@ -682,8 +692,7 @@ public class  DefaultShardManagerBuilder
     {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(flags, "CacheFlag");
-        cacheFlags.removeAll(EnumSet.of(flag, flags));
-        return this;
+        return disableCache(EnumSet.of(flag, flags));
     }
 
     /**
@@ -2224,6 +2233,21 @@ public class  DefaultShardManagerBuilder
             throw new IllegalStateException("Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
         else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE)
             DefaultShardManager.LOG.warn("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+
+        if (!automaticallyDisabled.isEmpty())
+        {
+            String csv = automaticallyDisabled.stream()
+                    .map(CacheFlag::toString)
+                    .map(it -> "CacheFlag." + it)
+                    .collect(Collectors.joining(", "));
+            JDAImpl.LOG.warn(
+                    "Automatically disabled CacheFlags due to missing intents: {} - " +
+                    "You can manually disable these flags to remove this warning by using disableCache({}) on your DefaultShardManagerBuilder",
+                    automaticallyDisabled, csv
+            );
+            // Only print this warning once
+            automaticallyDisabled.clear();
+        }
 
         if (cacheFlags.isEmpty())
             return;
