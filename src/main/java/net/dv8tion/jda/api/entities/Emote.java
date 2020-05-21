@@ -133,6 +133,14 @@ public interface Emote extends IMentionable, IFakeable
     boolean isManaged();
 
     /**
+     * Whether this emote is available. A Emote is unavailable when the {@link net.dv8tion.jda.api.entities.Guild.BoostTier BoostTier}
+     * of the Guild is lower than required for this Emote.
+     * 
+     * @return True, if this emote is available
+     */
+    boolean isAvailable();
+
+    /**
      * The {@link net.dv8tion.jda.api.JDA JDA} instance of this Emote
      *
      * @return The JDA instance of this Emote
