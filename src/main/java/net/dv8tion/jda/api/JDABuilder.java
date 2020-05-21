@@ -1869,15 +1869,17 @@ public class JDABuilder
 
         if (!automaticallyDisabled.isEmpty())
         {
-            String csv = automaticallyDisabled.stream()
-                    .map(CacheFlag::toString)
+            JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
+            // List each missing intent
+            automaticallyDisabled.stream()
+                .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent." + it.getRequiredIntent() + ")")
+                .forEach(JDAImpl.LOG::warn);
+
+            // Tell user how to disable this warning
+            JDAImpl.LOG.warn("You can manually disable these flags to remove this warning by using disableCache({}) on your JDABuilder",
+                automaticallyDisabled.stream()
                     .map(it -> "CacheFlag." + it)
-                    .collect(Collectors.joining(", "));
-            JDAImpl.LOG.warn(
-                "Automatically disabled CacheFlags due to missing intents: {} - " +
-                "You can manually disable these flags to remove this warning by using disableCache({}) on your JDABuilder",
-                automaticallyDisabled, csv
-            );
+                    .collect(Collectors.joining(", ")));
             // Only print this warning once
             automaticallyDisabled.clear();
         }
