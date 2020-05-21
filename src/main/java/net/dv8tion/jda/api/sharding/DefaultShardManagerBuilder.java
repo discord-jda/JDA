@@ -2243,7 +2243,7 @@ public class  DefaultShardManagerBuilder
                 .forEach(JDAImpl.LOG::warn);
 
             // Tell user how to disable this warning
-            JDAImpl.LOG.warn("You can manually disable these flags to remove this warning by using disableCache({}) on your JDABuilder",
+            JDAImpl.LOG.warn("You can manually disable these flags to remove this warning by using disableCache({}) on your DefaultShardManagerBuilder",
                 automaticallyDisabled.stream()
                         .map(it -> "CacheFlag." + it)
                         .collect(Collectors.joining(", ")));
