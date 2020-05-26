@@ -121,15 +121,22 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
                 node.run(false); // we don't use isLast anymore because it can be a problem with many reconnecting shards
             }
             catch (NoSuchElementException ignored) {/* This means the node was removed before we started it */}
+            catch (InterruptedException e)
+            {
+                queue.add(node);
+                throw e;
+            }
             catch (IllegalStateException e)
             {
                 Throwable t = e.getCause();
                 if (t instanceof OpeningHandshakeException)
                     log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                else if (!JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
+                else if (t != null && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
                     log.error("Failed to establish connection for a node, appending to queue", e);
+                else
+                    log.error("Unexpected exception when running connect node", e);
                 if (node != null)
-                    appendSession(node);
+                    queue.add(node);
             }
         }
     }

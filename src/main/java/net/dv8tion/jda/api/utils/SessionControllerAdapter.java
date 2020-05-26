@@ -232,8 +232,10 @@ public class SessionControllerAdapter implements SessionController
                     Throwable t = e.getCause();
                     if (t instanceof OpeningHandshakeException)
                         log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                    else if (!JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
+                    else if (t != null && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
                         log.error("Failed to establish connection for a node, appending to queue", e);
+                    else
+                        log.error("Unexpected exception when running connect node", e);
                     appendSession(node);
                 }
                 catch (InterruptedException e)
