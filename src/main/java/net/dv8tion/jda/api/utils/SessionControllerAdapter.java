@@ -17,8 +17,6 @@
 package net.dv8tion.jda.api.utils;
 
 import com.neovisionaries.ws.client.OpeningHandshakeException;
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
@@ -40,25 +38,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class SessionControllerAdapter implements SessionController
 {
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    protected Queue<SessionConnectNode> connectQueue;
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    protected Thread workerHandle;
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    protected long lastConnect = 0;
-
     protected static final Logger log = JDALogger.getLog(SessionControllerAdapter.class);
     protected final Object lock = new Object();
-
+    protected Queue<SessionConnectNode> connectQueue;
     protected AtomicLong globalRatelimit;
-
-    protected QueueWorker[] workers = new QueueWorker[1];
+    protected Thread workerHandle;
+    protected long lastConnect = 0;
 
     public SessionControllerAdapter()
     {
@@ -67,39 +52,17 @@ public class SessionControllerAdapter implements SessionController
     }
 
     @Override
-    public void setConcurrency(int level)
-    {
-        workers = new QueueWorker[Math.max(1, level)];
-    }
-
-    @Override
     public void appendSession(@Nonnull SessionConnectNode node)
     {
-        synchronized (lock)
-        {
-            int shardId = node.getShardInfo().getShardId();
-            int bucket = shardId % workers.length;
-            QueueWorker worker = workers[bucket];
-            if (worker == null)
-                workers[bucket] = worker = new QueueWorker();
-            worker.connectQueue.add(node);
-
-            if (!worker.isAlive())
-                worker.start();
-        }
+        removeSession(node);
+        connectQueue.add(node);
+        runWorker();
     }
 
     @Override
     public void removeSession(@Nonnull SessionConnectNode node)
     {
-        synchronized (lock)
-        {
-            int shardId = node.getShardInfo().getShardId();
-            int bucket = shardId % workers.length;
-            if (workers[bucket] == null)
-                return;
-            workers[bucket].connectQueue.remove(node);
-        }
+        connectQueue.remove(node);
     }
 
     @Override
@@ -120,7 +83,7 @@ public class SessionControllerAdapter implements SessionController
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
-            (response, request) -> response.getObject().getString("url")).priority().complete();
+                (response, request) -> response.getObject().getString("url")).priority().complete();
     }
 
     @Nonnull
@@ -141,10 +104,8 @@ public class SessionControllerAdapter implements SessionController
 
                         String url = object.getString("url");
                         int shards = object.getInt("shards");
-                        int concurrency = object.getObject("session_start_limit")
-                                                .getInt("max_concurrency", 1);
 
-                        request.onSuccess(new ShardedGateway(url, shards, concurrency));
+                        request.onSuccess(new ShardedGateway(url, shards));
                     }
                     else if (response.code == 401)
                     {
@@ -154,7 +115,7 @@ public class SessionControllerAdapter implements SessionController
                     else
                     {
                         request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                            response.toString()));
+                                response.toString()));
                     }
                 }
                 catch (Exception e)
@@ -174,9 +135,6 @@ public class SessionControllerAdapter implements SessionController
         return Pair.of(bot.getUrl(), bot.getShardTotal());
     }
 
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
     protected void runWorker()
     {
         synchronized (lock)
@@ -193,8 +151,6 @@ public class SessionControllerAdapter implements SessionController
     {
         /** Delay (in milliseconds) to sleep between connecting sessions */
         protected final long delay;
-        protected final Queue<SessionConnectNode> connectQueue = new ConcurrentLinkedQueue<>();
-        protected long lastConnect = 0;
 
         public QueueWorker()
         {
@@ -245,13 +201,13 @@ public class SessionControllerAdapter implements SessionController
             catch (InterruptedException ex)
             {
                 log.error("Unable to backoff", ex);
-                return;
             }
             processQueue();
             synchronized (lock)
             {
+                workerHandle = null;
                 if (!connectQueue.isEmpty())
-                    run();
+                    runWorker();
             }
         }
 
@@ -261,8 +217,6 @@ public class SessionControllerAdapter implements SessionController
             while (!connectQueue.isEmpty())
             {
                 SessionConnectNode node = connectQueue.poll();
-                if (node == null)
-                    break;
                 try
                 {
                     node.run(isMultiple && connectQueue.isEmpty());
@@ -278,16 +232,14 @@ public class SessionControllerAdapter implements SessionController
                     Throwable t = e.getCause();
                     if (t instanceof OpeningHandshakeException)
                         log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                    else if (t != null && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
+                    else if (!JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
                         log.error("Failed to establish connection for a node, appending to queue", e);
-                    else
-                        log.error("Unexpected exception in queue worker", e);
-                    connectQueue.add(node);
+                    appendSession(node);
                 }
                 catch (InterruptedException e)
                 {
                     log.error("Failed to run node", e);
-                    connectQueue.add(node);
+                    appendSession(node);
                     return; // caller should start a new thread
                 }
             }

@@ -1746,7 +1746,7 @@ public class JDABuilder
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
 
         if (controller == null && shardInfo != null)
-            controller = new SessionControllerAdapter();
+            controller = new ConcurrentSessionController();
 
         AuthorizationConfig authConfig = new AuthorizationConfig(token);
         ThreadingConfig threadingConfig = new ThreadingConfig();

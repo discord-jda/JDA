@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.utils.config;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.utils.ConcurrentSessionController;
 import net.dv8tion.jda.api.utils.SessionController;
-import net.dv8tion.jda.api.utils.SessionControllerAdapter;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import okhttp3.OkHttpClient;
 
@@ -42,7 +42,7 @@ public class SessionConfig
         @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
         EnumSet<ConfigFlag> flags, int maxReconnectDelay, int largeThreshold)
     {
-        this.sessionController = sessionController == null ? new SessionControllerAdapter() : sessionController;
+        this.sessionController = sessionController == null ? new ConcurrentSessionController() : sessionController;
         this.httpClient = httpClient;
         this.webSocketFactory = webSocketFactory == null ? new WebSocketFactory() : webSocketFactory;
         this.interceptor = interceptor;
