@@ -62,7 +62,7 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
         return worker;
     }
 
-    private final class Worker extends Thread
+    private static class Worker extends Thread
     {
         private final Queue<SessionConnectNode> queue = new ConcurrentLinkedQueue<>();
 
