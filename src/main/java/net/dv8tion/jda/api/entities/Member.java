@@ -116,6 +116,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p>This can be used to get the Member's VoiceChannel using {@link GuildVoiceState#getChannel()}.
      *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled!
+     *
      * @return {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState}
      */
     @Nullable
@@ -124,6 +126,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     /**
      * The activities of the user.
      * <br>If the user does not currently have any activity, this returns an empty list.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled!
      *
      * @return Immutable list of {@link Activity Activities} for the user
      */
@@ -146,6 +150,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p>If a user is not online on the specified type,
      * {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} is returned.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} to be enabled!
      *
      * @param  type
      *         The type of client

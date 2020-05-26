@@ -33,8 +33,8 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
+import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
 import java.awt.*;
@@ -82,7 +82,7 @@ public class RoleImpl implements Role
                 return i;
             i--;
         }
-        throw new AssertionError("Somehow when determining position we never found the role in the Guild's roles? wtf?");
+        throw new IllegalStateException("Somehow when determining position we never found the role in the Guild's roles? wtf?");
     }
 
     @Override
