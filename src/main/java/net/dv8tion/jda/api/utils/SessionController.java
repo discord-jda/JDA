@@ -86,6 +86,26 @@ public interface SessionController
      */
     int IDENTIFY_DELAY = 5;
 
+    /**
+     * Apply the {@code max_concurrency} for this bot. This property is only useful for very large bots
+     * which get access to higher concurrency when starting their shards.
+     *
+     * <p>Currently, there are 3 different levels of concurrency 1, 16, and 64.
+     * The concurrency means the bot can connect multiple shards at once without hitting the IDENTIFY rate-limit.
+     * This works by applying the concurrency level as a modulo operand to the shard id: {@code shard_id % concurrency}.
+     * We use one thread per bucket in this implementation.
+     *
+     * <p>An implementation of this interface is not required to use this concurrency level.
+     * {@link SessionControllerAdapter} does not support this due to backwards compatibility.
+     *
+     * @param  level
+     *         The concurrency level
+     *
+     * @throws AssertionError
+     *         If the provided level is not a valid array length size
+     *
+     * @since  4.2.0
+     */
     default void setConcurrency(int level) {}
 
     /**
@@ -227,6 +247,13 @@ public interface SessionController
             return shardTotal;
         }
 
+        /**
+         * The concurrency level for this bot
+         *
+         * @return The concurrency level
+         *
+         * @see    #setConcurrency(int)
+         */
         public int getConcurrency()
         {
             return concurrency;
