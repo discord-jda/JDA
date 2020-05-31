@@ -37,7 +37,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import org.slf4j.Logger;
 import tomp2p.opuswrapper.Opus;
 
@@ -70,7 +69,7 @@ public class AudioConnection
     private final AudioWebSocket webSocket;
     private final JDAImpl api;
 
-    private SnowflakeReference<VoiceChannel> channel;
+    private VoiceChannel channel;
     private PointerByReference opusEncoder;
     private ScheduledExecutorService combinedAudioExecutor;
     private IAudioSendSystem sendSystem;
@@ -87,12 +86,10 @@ public class AudioConnection
     private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
     private volatile int silenceCounter = 0;
 
-    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token)
+    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token, VoiceChannel channel)
     {
-        VoiceChannel channel = Objects.requireNonNull(manager.getQueuedAudioConnection(), "Failed to create AudioConnection without queued channel!");
-
         this.api = (JDAImpl) channel.getJDA();
-        this.channel = new SnowflakeReference<>(channel, api::getVoiceChannelById);
+        this.channel = channel;
         final JDAImpl api = (JDAImpl) channel.getJDA();
         this.threadIdentifier = api.getIdentifierString() + " AudioConnection Guild: " + channel.getGuild().getId();
         this.webSocket = new AudioWebSocket(this, manager.getListenerProxy(), endpoint, channel.getGuild(), sessionId, token, manager.isAutoReconnect());
@@ -149,12 +146,12 @@ public class AudioConnection
 
     public VoiceChannel getChannel()
     {
-        return channel.resolve();
+        return channel;
     }
 
     public void setChannel(VoiceChannel channel)
     {
-        this.channel = channel == null ? null : new SnowflakeReference<>(channel, api::getVoiceChannelById);
+        this.channel = channel;
     }
 
     public JDAImpl getJDA()
@@ -279,7 +276,7 @@ public class AudioConnection
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
                 LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
-                      channel.resolve().getId(), ssrc, previousId, userId);
+                      channel.getId(), ssrc, previousId, userId);
             }
         }
         else

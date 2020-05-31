@@ -113,9 +113,10 @@ class WebSocketSendingThread implements Runnable
             api.setContext();
             attemptedToSend = false;
             needRateLimit = false;
+            // We do this outside of the lock because otherwise we could potentially deadlock here
+            audioRequest = client.getNextAudioConnectRequest();
             queueLock.lockInterruptibly();
 
-            audioRequest = client.getNextAudioConnectRequest();
             chunkRequest = chunkQueue.peek();
             if (chunkRequest != null)
                 handleChunkSync(chunkRequest);

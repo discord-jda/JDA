@@ -444,19 +444,15 @@ public class GuildSetupNode
             newMng.setConnectionListener(listener);
             newMng.setAutoReconnect(mng.isAutoReconnect());
 
-            if (mng.isConnected() || mng.isAttemptingToConnect())
+            if (mng.isConnected())
             {
-                final long channelId = mng.isConnected()
-                                       ? mng.getConnectedChannel().getIdLong()
-                                       : mng.getQueuedAudioConnection().getIdLong();
+                final long channelId = mng.getConnectedChannel().getIdLong();
 
                 final VoiceChannel channel = api.getVoiceChannelById(channelId);
                 if (channel != null)
                 {
                     if (mng.isConnected())
                         mng.closeAudioConnection(ConnectionStatus.ERROR_CANNOT_RESUME);
-                    //closing old connection in order to reconnect later
-                    newMng.setQueuedAudioConnection(channel);
                 }
                 else
                 {
