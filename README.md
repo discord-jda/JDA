@@ -6,7 +6,7 @@
 [license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
 [faq]: https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ
 [troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
-[discord-shield]: https://discordapp.com/api/guilds/125227483518861312/widget.png
+[discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
 [jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
@@ -32,7 +32,7 @@ This library is a helpful tool that provides the functionality to create a disco
 Due to official statements made by the Discord developers we will no longer support unofficial features. These features
 are undocumented API endpoints or protocols that are not available to bot-accounts.
 
-_Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
+_Please see the [Discord docs](https://discord.com/developers/docs/reference) for more information about bot accounts._
 
 1. [Introduction](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
@@ -51,9 +51,9 @@ Discord is currently prohibiting creation and usage of automated client accounts
 We have officially dropped support for client login as of version **4.2.0**!
 Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
 a client which does this via lazy loading instead.
-If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
+If you need a bot, use a bot account from the [Application Dashboard](https://discord.com/developers/applications).
 
-[Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
+[Read More](https://support.discord.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
 
 ## Creating the JDA Object
 
@@ -678,4 +678,4 @@ All dependencies are managed automatically by Gradle.
 - [discord.py](https://github.com/Rapptz/discord.py)
 - [serenity](https://github.com/serenity-rs/serenity)
 
-**See also:** https://discordapp.com/developers/docs/topics/community-resources#libraries
+**See also:** https://discord.com/developers/docs/topics/community-resources#libraries
