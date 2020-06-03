@@ -91,6 +91,7 @@ public class JDABuilder
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected ChunkingFilter chunkingFilter = ChunkingFilter.ALL;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
+    protected GatewayEncoding encoding = GatewayEncoding.JSON;
 
     /**
      * Creates a completely empty JDABuilder.
@@ -527,6 +528,13 @@ public class JDABuilder
     {
         disableCache(flags);
         this.automaticallyDisabled.addAll(flags);
+        return this;
+    }
+
+    @Nonnull
+    public JDABuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
+    {
+        this.encoding = encoding;
         return this;
     }
 
@@ -1846,7 +1854,7 @@ public class JDABuilder
                 .setCacheActivity(activity)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(shardInfo, compression, true, intents);
+        jda.login(shardInfo, compression, true, intents, encoding);
         return jda;
     }
 

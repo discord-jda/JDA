@@ -42,7 +42,7 @@ class WebSocketSendingThread implements Runnable
     private final JDAImpl api;
     private final ReentrantLock queueLock;
     private final Queue<DataObject> chunkQueue;
-    private final Queue<String> ratelimitQueue;
+    private final Queue<DataObject> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
     private final ScheduledExecutorService executor;
     private Future<?> handle;
@@ -181,7 +181,6 @@ class WebSocketSendingThread implements Runnable
             DataObject.empty()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", chunkOrSyncRequest)
-                .toString()
         );
 
         if (success)
@@ -214,7 +213,7 @@ class WebSocketSendingThread implements Runnable
                 packet = newVoiceOpen(audioManager, channelId, guild.getIdLong());
         }
         LOG.debug("Sending voice request {}", packet);
-        if (send(packet.toString()))
+        if (send(packet))
         {
             //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
             // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
@@ -230,7 +229,7 @@ class WebSocketSendingThread implements Runnable
 
     private void handleNormalRequest()
     {
-        String message = ratelimitQueue.peek();
+        DataObject message = ratelimitQueue.peek();
         if (message != null)
         {
             LOG.debug("Sending normal message {}", message);
@@ -240,7 +239,7 @@ class WebSocketSendingThread implements Runnable
     }
 
     //returns true if send was successful
-    private boolean send(String request)
+    private boolean send(DataObject request)
     {
         needRateLimit = !client.send(request, false);
         attemptedToSend = true;

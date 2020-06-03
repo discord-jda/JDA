@@ -21,17 +21,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
+import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
+import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.UncheckedIOException;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -166,6 +165,14 @@ public class DataArray implements Iterable<Object>
         {
             throw new ParsingException(e);
         }
+    }
+
+    @Nonnull
+    @SuppressWarnings("unchecked")
+    public static DataArray fromETF(@Nonnull byte[] data)
+    {
+        List<Object> list = (List<Object>) ExTermDecoder.unpack(ByteBuffer.wrap(data));
+        return new DataArray(list);
     }
 
     /**
@@ -621,6 +628,12 @@ public class DataArray implements Iterable<Object>
         {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public byte[] toETF()
+    {
+        ByteBuffer buffer = ExTermEncoder.pack(data);
+        return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
     }
 
     @Override

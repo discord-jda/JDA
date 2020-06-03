@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.sharding;
 
 import gnu.trove.set.TIntSet;
+import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
@@ -591,7 +592,7 @@ public class DefaultShardManager implements ShardManager
         jda.setSelfUser(selfUser);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents());
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), GatewayEncoding.JSON);
         if (getShardsTotal() == -1)
             shardingConfig.setShardsTotal(shardTotal);
 

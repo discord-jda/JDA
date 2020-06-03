@@ -19,10 +19,7 @@ package net.dv8tion.jda.internal.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDAInfo;
-import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
@@ -83,6 +80,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Compression compression;
     protected final int gatewayIntents;
     protected final MemberChunkManager chunkManager;
+    protected final GatewayEncoding encoding;
 
     public WebSocket socket;
     protected String sessionId = null;
@@ -103,7 +101,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
     protected final Queue<DataObject> chunkSyncQueue = new ConcurrentLinkedQueue<>();
-    protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
+    protected final Queue<DataObject> ratelimitQueue = new ConcurrentLinkedQueue<>();
 
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
@@ -120,7 +118,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents)
+    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents, GatewayEncoding encoding)
     {
         this.api = api;
         this.executor = api.getGatewayPool();
@@ -128,6 +126,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.compression = compression;
         this.gatewayIntents = gatewayIntents;
         this.chunkManager = new MemberChunkManager(this);
+        this.encoding = encoding;
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
         setupHandlers();
@@ -222,7 +221,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         events.forEach(this::onDispatch);
     }
 
-    public void send(String message)
+    public void send(DataObject message)
     {
         locked("Interrupted while trying to add request to queue", () -> ratelimitQueue.add(message));
     }
@@ -238,7 +237,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request));
     }
 
-    protected boolean send(String message, boolean skipQueue)
+    protected boolean send(DataObject message, boolean skipQueue)
     {
         if (!connected)
             return false;
@@ -256,7 +255,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (this.messagesSent.get() <= 115 || (skipQueue && this.messagesSent.get() <= 119))   //technically we could go to 120, but we aren't going to chance it
         {
             LOG.trace("<- {}", message);
-            socket.sendText(message);
+            if (encoding == GatewayEncoding.ETF)
+                socket.sendBinary(message.toETF());
+            else
+                socket.sendText(message.toString());
             this.messagesSent.getAndIncrement();
             return true;
         }
@@ -317,7 +319,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl() + "?encoding=json&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
+        String url = api.getGatewayUrl()
+                + "?encoding=" + encoding.name().toLowerCase()
+                + "&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
         if (compression != Compression.NONE)
         {
             url += "&compress=" + compression.getKey();
@@ -634,11 +638,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void sendKeepAlive()
     {
-        String keepAlivePacket =
+        DataObject keepAlivePacket =
                 DataObject.empty()
                     .put("op", WebSocketCode.HEARTBEAT)
                     .put("d", api.getResponseTotal()
-                ).toString();
+                );
 
         if (missedHeartbeats >= 2)
         {
@@ -685,7 +689,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     .add(shardInfo.getShardId())
                     .add(shardInfo.getShardTotal()));
         }
-        send(identify.toString(), true);
+        send(identify, true);
         handleIdentifyRateLimit = true;
         identifyTime = System.currentTimeMillis();
         sentAuthInfo = true;
@@ -701,7 +705,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .put("session_id", sessionId)
                 .put("token", getToken())
                 .put("seq", api.getResponseTotal()));
-        send(resume.toString(), true);
+        send(resume, true);
         //sentAuthInfo = true; set on RESUMED response as this could fail
         api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
@@ -949,14 +953,14 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DataFormatException
     {
-        DataObject json;
+        DataObject message;
         // Only acquire lock for decompression and unlock for event handling
         synchronized (readLock)
         {
-            json = handleBinary(binary);
+            message = handleBinary(binary);
         }
-        if (json != null)
-            handleEvent(json);
+        if (message != null)
+            handleEvent(message);
     }
 
     protected DataObject handleBinary(byte[] binary) throws DataFormatException
@@ -964,11 +968,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (decompressor == null)
             throw new IllegalStateException("Cannot decompress binary message due to unknown compression algorithm: " + compression);
         // Scoping allows us to print the json that possibly failed parsing
-        byte[] jsonData;
+        byte[] data;
         try
         {
-            jsonData = decompressor.decompress(binary);
-            if (jsonData == null)
+            data = decompressor.decompress(binary);
+            if (data == null)
                 return null;
         }
         catch (DataFormatException e)
@@ -979,14 +983,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            return DataObject.fromJson(jsonData);
+            if (encoding == GatewayEncoding.ETF)
+                return DataObject.fromETF(data);
+            else
+                return DataObject.fromJson(data);
         }
         catch (ParsingException e)
         {
             String jsonString = "malformed";
             try
             {
-                jsonString = new String(jsonData, StandardCharsets.UTF_8);
+                jsonString = new String(data, StandardCharsets.UTF_8);
             }
             catch (Exception ignored) {}
             // Print the string that could not be parsed and re-throw the exception
