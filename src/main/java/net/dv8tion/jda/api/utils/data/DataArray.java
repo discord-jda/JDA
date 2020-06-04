@@ -174,8 +174,16 @@ public class DataArray implements Iterable<Object>
     @SuppressWarnings("unchecked")
     public static DataArray fromETF(@Nonnull byte[] data)
     {
-        List<Object> list = (List<Object>) ExTermDecoder.unpack(ByteBuffer.wrap(data));
-        return new DataArray(list);
+        try
+        {
+            List<Object> list = (List<Object>) ExTermDecoder.unpack(ByteBuffer.wrap(data));
+            return new DataArray(list);
+        }
+        catch (Exception ex)
+        {
+            log.error("Failed to parse ETF data {}", Arrays.toString(data), ex);
+            throw new ParsingException(ex);
+        }
     }
 
     /**

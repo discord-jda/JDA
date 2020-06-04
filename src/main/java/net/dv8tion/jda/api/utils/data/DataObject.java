@@ -184,8 +184,16 @@ public class DataObject implements SerializableData
     @SuppressWarnings("unchecked")
     public static DataObject fromETF(@Nonnull byte[] data)
     {
-        Map<String, Object> map = (Map<String, Object>) ExTermDecoder.unpack(ByteBuffer.wrap(data));
-        return new DataObject(map);
+        try
+        {
+            Map<String, Object> map = (Map<String, Object>) ExTermDecoder.unpack(ByteBuffer.wrap(data));
+            return new DataObject(map);
+        }
+        catch (Exception ex)
+        {
+            log.error("Failed to parse ETF data {}", Arrays.toString(data), ex);
+            throw new ParsingException(ex);
+        }
     }
 
     /**
