@@ -18,14 +18,13 @@ package net.dv8tion.jda.api.utils.data.etf;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
 
 public class ExTermEncoder
 {
-
     public static ByteBuffer pack(Object data)
     {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -41,8 +40,8 @@ public class ExTermEncoder
             return packBinary(buffer, (String) value);
         if (value instanceof Map)
             return packMap(buffer, (Map<String, Object>) value);
-        if (value instanceof List)
-            return packList(buffer, (List<Object>) value);
+        if (value instanceof Collection)
+            return packList(buffer, (Collection<Object>) value);
         if (value instanceof Integer)
             return packInt(buffer, (int) value);
         if (value instanceof Long)
@@ -52,7 +51,7 @@ public class ExTermEncoder
         if (value == null)
             return packAtom(buffer, "nil");
 
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Cannot pack value of type " + value.getClass().getName());
     }
 
     private static ByteBuffer realloc(ByteBuffer buffer, int length)
@@ -80,15 +79,13 @@ public class ExTermEncoder
         return buffer;
     }
 
-    private static ByteBuffer packList(ByteBuffer buffer, List<Object> data)
+    private static ByteBuffer packList(ByteBuffer buffer, Collection<Object> data)
     {
         buffer = realloc(buffer, data.size() + 5);
         buffer.put(LIST);
         buffer.putInt(data.size());
         for (Object element : data)
-        {
             buffer = pack(buffer, element);
-        }
         buffer.put(NIL);
         return buffer;
     }
@@ -113,13 +110,12 @@ public class ExTermEncoder
 
     private static ByteBuffer packLong(ByteBuffer buffer, long value)
     {
-        byte sign = (byte) (value < 0 ? 1 : 0);
-        value = Math.abs(value);
         byte bytes = countBytes(value);
         buffer = realloc(buffer, 3 + bytes);
         buffer.put(SMALL_BIGINT);
         buffer.put(bytes);
-        buffer.put(sign);
+        // We only use "unsigned" value so the sign is always positive
+        buffer.put((byte) 0);
         while (value > 0)
         {
             buffer.put((byte) value);

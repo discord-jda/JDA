@@ -118,17 +118,13 @@ public class ExTermDecoder
     private static String unpackString(ByteBuffer buffer)
     {
         int length = Short.toUnsignedInt(buffer.getShort());
-        byte[] array = new byte[length];
-        buffer.get(array);
-        return new String(array, StandardCharsets.UTF_8);
+        return getString(buffer, StandardCharsets.UTF_8, length);
     }
 
     private static String unpackBinary(ByteBuffer buffer)
     {
         int length = buffer.getInt();
-        byte[] array = new byte[length];
-        buffer.get(array);
-        return new String(array, StandardCharsets.UTF_8);
+        return getString(buffer, StandardCharsets.UTF_8, length);
     }
 
     private static Object unpackSmallAtom(ByteBuffer buffer, Charset charset)
@@ -145,16 +141,21 @@ public class ExTermDecoder
 
     private static Object unpackAtom(ByteBuffer buffer, Charset charset, int length)
     {
+        String value = getString(buffer, StandardCharsets.ISO_8859_1, length);
+        switch (value)
+        {
+        case "true": return true;
+        case "false": return false;
+        case "nil": return null;
+        default: return value;
+        }
+    }
+
+    private static String getString(ByteBuffer buffer, Charset encoding, int length)
+    {
         byte[] array = new byte[length];
         buffer.get(array);
-        String value = new String(array, charset);
-        if (value.equals("true"))
-            return true;
-        if (value.equals("false"))
-            return false;
-        if (value.equals("nil"))
-            return null;
-        return value;
+        return new String(array, StandardCharsets.UTF_8);
     }
 
     private static List<Object> unpackList0(ByteBuffer buffer)
