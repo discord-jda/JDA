@@ -32,8 +32,11 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Represents a list of values used in communication with the Discord API.
@@ -694,5 +697,12 @@ public class DataArray implements Iterable<Object>
     public Iterator<Object> iterator()
     {
         return data.iterator();
+    }
+
+    @Nonnull
+    public <T> Stream<T> stream(BiFunction<? super DataArray, Integer, ? extends T> mapper)
+    {
+        return IntStream.range(0, length())
+                .mapToObj(index -> mapper.apply(this, index));
     }
 }
