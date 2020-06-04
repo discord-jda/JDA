@@ -137,7 +137,7 @@ public interface VoiceDispatchInterceptor
     }
 
     /**
-     * Wrapper for a <a href="https://discordapp.com/developers/docs/topics/gateway#voice-server-update" target="_blank">Voice Server Update</a>
+     * Wrapper for a <a href="https://discord.com/developers/docs/topics/gateway#voice-server-update" target="_blank">Voice Server Update</a>
      */
     class VoiceServerUpdate implements VoiceUpdate
     {
@@ -205,7 +205,7 @@ public interface VoiceDispatchInterceptor
     }
 
     /**
-     * Wrapper for a <a href="https://discordapp.com/developers/docs/topics/gateway#voice-state-update" target="_blank">Voice State Update</a>
+     * Wrapper for a <a href="https://discord.com/developers/docs/topics/gateway#voice-state-update" target="_blank">Voice State Update</a>
      */
     class VoiceStateUpdate implements VoiceUpdate
     {

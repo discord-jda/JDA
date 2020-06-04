@@ -712,15 +712,14 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
+        shutdownInternals();
 
         WebSocketClient client = getClient();
         if (client != null)
         {
-            client.shutdown();
             client.getChunkManager().shutdown();
+            client.shutdown();
         }
-
-        shutdownInternals();
     }
 
     public synchronized void shutdownInternals()
@@ -759,15 +758,17 @@ public class JDAImpl implements JDA
 
     private void closeAudioConnections()
     {
+        List<AudioManagerImpl> managers;
         AbstractCacheView<AudioManager> view = getAudioManagersView();
         try (UnlockHook hook = view.writeLock())
         {
-            TLongObjectMap<AudioManager> map = view.getMap();
-            map.valueCollection().stream()
+            managers = view.stream()
                .map(AudioManagerImpl.class::cast)
-               .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
-            map.clear();
+               .collect(Collectors.toList());
+            view.clear();
         }
+
+        managers.forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
     }
 
     @Override
@@ -904,7 +905,7 @@ public class JDAImpl implements JDA
     {
         if (clientId == null)
             retrieveApplicationInfo().complete();
-        StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?scope=bot&client_id=");
         builder.append(clientId);
         return builder;
     }

@@ -89,7 +89,7 @@ public class ErrorResponseException extends RuntimeException
      *
      * @return The discord error code.
      *
-     * @see <a href="https://discordapp.com/developers/docs/topics/response-codes#json-error-response" target="_blank">Discord Error Codes</a>
+     * @see <a href="https://discord.com/developers/docs/topics/response-codes#json-error-response" target="_blank">Discord Error Codes</a>
      */
     public int getErrorCode()
     {

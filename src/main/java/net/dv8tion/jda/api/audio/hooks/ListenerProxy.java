@@ -43,6 +43,8 @@ public class ListenerProxy implements ConnectionListener
         catch (Throwable t)
         {
             log.error("The ConnectionListener encountered and uncaught exception", t);
+            if (t instanceof Error)
+                throw (Error) t;
         }
     }
 
@@ -60,6 +62,8 @@ public class ListenerProxy implements ConnectionListener
         catch (Throwable t)
         {
             log.error("The ConnectionListener encountered and uncaught exception", t);
+            if (t instanceof Error)
+                throw (Error) t;
         }
     }
 
@@ -81,6 +85,8 @@ public class ListenerProxy implements ConnectionListener
         catch (Throwable t)
         {
             log.error("The ConnectionListener encountered and uncaught exception", t);
+            if (t instanceof Error)
+                throw (Error) t;
         }
     }
 

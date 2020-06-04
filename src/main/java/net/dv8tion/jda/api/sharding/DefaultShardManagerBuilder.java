@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.Compression;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.SessionController;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ShardingConfigFlag;
@@ -60,6 +61,7 @@ public class  DefaultShardManagerBuilder
 {
     protected final List<Object> listeners = new ArrayList<>();
     protected final List<IntFunction<Object>> listenerProviders = new ArrayList<>();
+    protected final EnumSet<CacheFlag> automaticallyDisabled = EnumSet.noneOf(CacheFlag.class);
     protected SessionController sessionController = null;
     protected VoiceDispatchInterceptor voiceDispatchInterceptor = null;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
@@ -170,9 +172,14 @@ public class  DefaultShardManagerBuilder
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param  token
      *         The bot token to use
@@ -205,9 +212,14 @@ public class  DefaultShardManagerBuilder
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param  token
      *         The bot token to use
@@ -223,7 +235,7 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createDefault(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents)).applyDefault();
+        return create(token, intents).applyDefault();
     }
 
     private DefaultShardManagerBuilder applyDefault()
@@ -270,9 +282,14 @@ public class  DefaultShardManagerBuilder
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param  token
      *         The bot token to use
@@ -287,7 +304,9 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents)).applyLight();
+        Checks.notNull(intent, "GatewayIntent");
+        Checks.noneNull(intents, "GatewayIntent");
+        return createLight(token, EnumSet.of(intent, intents));
     }
 
     /**
@@ -300,9 +319,14 @@ public class  DefaultShardManagerBuilder
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param  token
      *         The bot token to use
@@ -315,7 +339,7 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder createLight(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents)).applyLight();
+        return create(token, intents).applyLight();
     }
 
     private DefaultShardManagerBuilder applyLight()
@@ -334,9 +358,14 @@ public class  DefaultShardManagerBuilder
      * {@link #setToken(String) setToken(String)}
      * before calling {@link #build() build()}
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param intent
      *        The first intent
@@ -363,9 +392,14 @@ public class  DefaultShardManagerBuilder
      * <br>If you use this, you need to set the token using
      * {@link #setToken(String) setToken(String)} before calling {@link #build() build()}
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param intents
      *        The gateway intents to use
@@ -388,9 +422,14 @@ public class  DefaultShardManagerBuilder
      * Creates a DefaultShardManagerBuilder with the predefined token.
      * <br>You can use {@link #create(String, Collection) DefaultShardManagerBuilder.create(token, EnumSet.noneOf(GatewayIntent.class))} to disable all intents.
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param token
      *        The bot token to use
@@ -410,15 +449,20 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder create(@Nullable String token, @Nonnull GatewayIntent intent, @Nonnull GatewayIntent... intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents));
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intent, intents)).applyIntents();
     }
 
     /**
      * Creates a DefaultShardManagerBuilder with the predefined token.
      *
-     * <p>If you disable certain intents you also have to disable related {@link CacheFlag CacheFlags}.
-     * This can be achieved using {@link #disableCache(CacheFlag, CacheFlag...)}. The required intents for each
-     * flag are documented in the {@link CacheFlag} enum.
+     * <p>If you don't enable certain intents, the cache will be disabled.
+     * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
+     * be cached when a voice state is available.
+     * If both {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} and {@link GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} are disabled
+     * then no members will be cached.
+     *
+     * <p>The individual {@link CacheFlag CacheFlags} will also be disabled
+     * if the {@link CacheFlag#getRequiredIntent() required intent} is not enabled.
      *
      * @param token
      *        The bot token to use
@@ -436,7 +480,30 @@ public class  DefaultShardManagerBuilder
     @CheckReturnValue
     public static DefaultShardManagerBuilder create(@Nullable String token, @Nonnull Collection<GatewayIntent> intents)
     {
-        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents));
+        return new DefaultShardManagerBuilder(token, GatewayIntent.getRaw(intents)).applyIntents();
+    }
+
+    private DefaultShardManagerBuilder applyIntents()
+    {
+        EnumSet<CacheFlag> disabledCache = EnumSet.allOf(CacheFlag.class);
+        for (CacheFlag flag : CacheFlag.values())
+        {
+            GatewayIntent requiredIntent = flag.getRequiredIntent();
+            if (requiredIntent == null || (requiredIntent.getRawValue() & intents) != 0)
+                disabledCache.remove(flag);
+        }
+
+        boolean enableMembers = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;
+        return setChunkingFilter(enableMembers ? ChunkingFilter.ALL : ChunkingFilter.NONE)
+                .setMemberCachePolicy(enableMembers ? MemberCachePolicy.ALL : MemberCachePolicy.DEFAULT)
+                .setDisabledCache(disabledCache);
+    }
+
+    private DefaultShardManagerBuilder setDisabledCache(EnumSet<CacheFlag> flags)
+    {
+        this.disableCache(flags);
+        this.automaticallyDisabled.addAll(flags);
+        return this;
     }
 
     /**
@@ -598,6 +665,7 @@ public class  DefaultShardManagerBuilder
     public DefaultShardManagerBuilder disableCache(@Nonnull Collection<CacheFlag> flags)
     {
         Checks.noneNull(flags, "CacheFlags");
+        automaticallyDisabled.removeAll(flags);
         cacheFlags.removeAll(flags);
         return this;
     }
@@ -624,8 +692,7 @@ public class  DefaultShardManagerBuilder
     {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(flags, "CacheFlag");
-        cacheFlags.removeAll(EnumSet.of(flag, flags));
-        return this;
+        return disableCache(EnumSet.of(flag, flags));
     }
 
     /**
@@ -775,7 +842,7 @@ public class  DefaultShardManagerBuilder
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/gateway#transport-compression" target="_blank">Official Discord Documentation - Transport Compression</a>
      */
     @Nonnull
     public DefaultShardManagerBuilder setCompression(@Nonnull Compression compression)
@@ -1704,7 +1771,7 @@ public class  DefaultShardManagerBuilder
      *
      * <p>To get a bot token:
      * <ol>
-     *     <li>Go to your <a href="https://discordapp.com/developers/applications/me">Discord Applications</a></li>
+     *     <li>Go to your <a href="https://discord.com/developers/applications/me">Discord Applications</a></li>
      *     <li>Create or select an already existing application</li>
      *     <li>Verify that it has already been turned into a Bot. If you see the "Create a Bot User" button, click it.</li>
      *     <li>Click the <i>click to reveal</i> link beside the <b>Token</b> label to show your Bot's {@code token}</li>
@@ -2166,6 +2233,23 @@ public class  DefaultShardManagerBuilder
             throw new IllegalStateException("Cannot use MemberCachePolicy.ALL without GatewayIntent.GUILD_MEMBERS enabled!");
         else if (!membersIntent && chunkingFilter != ChunkingFilter.NONE)
             DefaultShardManager.LOG.warn("Member chunking is disabled due to missing GUILD_MEMBERS intent.");
+
+        if (!automaticallyDisabled.isEmpty())
+        {
+            JDAImpl.LOG.warn("Automatically disabled CacheFlags due to missing intents");
+            // List each missing intent
+            automaticallyDisabled.stream()
+                .map(it -> "Disabled CacheFlag." + it + " (missing GatewayIntent." + it.getRequiredIntent() + ")")
+                .forEach(JDAImpl.LOG::warn);
+
+            // Tell user how to disable this warning
+            JDAImpl.LOG.warn("You can manually disable these flags to remove this warning by using disableCache({}) on your DefaultShardManagerBuilder",
+                automaticallyDisabled.stream()
+                        .map(it -> "CacheFlag." + it)
+                        .collect(Collectors.joining(", ")));
+            // Only print this warning once
+            automaticallyDisabled.clear();
+        }
 
         if (cacheFlags.isEmpty())
             return;

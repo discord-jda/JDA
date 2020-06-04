@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.JDABuilder#setRawEventsEnabled(boolean) JDABuilder.setRawEventsEnabled(boolean)
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setRawEventsEnabled(boolean) DefaultShardManagerBuilder.setRawEventsEnabled(boolean)
- * @see <a href="https://discordapp.com/developers/docs/topics/gateway" target="_blank">Gateway Documentation</a>
+ * @see <a href="https://discord.com/developers/docs/topics/gateway" target="_blank">Gateway Documentation</a>
  */
 public class RawGatewayEvent extends Event
 {

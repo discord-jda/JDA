@@ -45,6 +45,7 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -114,7 +115,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link MemberAction MemberAction}
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
      * @since  3.7.0
      */
@@ -139,7 +140,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link MemberAction MemberAction}
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
      * @since  3.7.0
      */
@@ -168,7 +169,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link MemberAction MemberAction}
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
      * @since  3.7.0
      */
@@ -1567,9 +1568,10 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.api.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
      *
      * @param  id
      *         the emote id
@@ -1578,6 +1580,8 @@ public interface Guild extends ISnowflake
      *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
      *
      * @return An Emote matching the specified Id.
+     *
+     * @see    #retrieveEmoteById(String)
      */
     @Nullable
     default Emote getEmoteById(@Nonnull String id)
@@ -1590,14 +1594,17 @@ public interface Guild extends ISnowflake
      * one provided.
      * <br>If there is no {@link net.dv8tion.jda.api.entities.Emote Emote} with an id that matches the provided
      * one, then this returns {@code null}.
-     * <br>This will be null if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
      *
      * @param  id
      *         the emote id
      *
      * @return An Emote matching the specified Id.
+     *
+     * @see    #retrieveEmoteById(long)
      */
     @Nullable
     default Emote getEmoteById(long id)
@@ -1616,7 +1623,11 @@ public interface Guild extends ISnowflake
      * a local variable or use {@link #getEmoteCache()} and use its more efficient
      * versions of handling these values.
      *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Emote Emotes}.
+     *
+     * @see    #retrieveEmotes()
      */
     @Nonnull
     default List<Emote> getEmotes()
@@ -1628,9 +1639,10 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Emote Emotes} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Emote Emotes} with the provided name, then this returns an empty list.
-     * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
+     *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
      *
      * @param  name
      *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.Emote Emotes}. Without colons.
@@ -1650,7 +1662,11 @@ public interface Guild extends ISnowflake
      * all cached {@link net.dv8tion.jda.api.entities.Emote Emotes} of this Guild.
      * <br>This will be empty if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE} is disabled.
      *
+     * <p>This requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#EMOTE CacheFlag.EMOTE} to be enabled!
+     *
      * @return {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView}
+     *
+     * @see    #retrieveEmotes()
      */
     @Nonnull
     SnowflakeCacheView<Emote> getEmoteCache();
@@ -2477,6 +2493,306 @@ public interface Guild extends ISnowflake
     {
         return retrieveMemberById(getOwnerIdLong(), update);
     }
+
+    /**
+     * Retrieves a list of members.
+     * <br>If the user does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the users resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembers(boolean, Collection)} to disable presences.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  users
+     *         The users of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembers(@Nonnull Collection<User> users)
+    {
+        Checks.noneNull(users, "Users");
+        if (users.isEmpty())
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
+        return retrieveMembersByIds(ids);
+    }
+
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembersByIds(boolean, Collection)} to disable presences.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids)
+    {
+        Checks.noneNull(ids, "IDs");
+        if (ids.isEmpty())
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
+        return retrieveMembersByIds(arr);
+    }
+
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembersByIds(boolean, String...)} to disable presences.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids)
+    {
+        Checks.notNull(ids, "Array");
+        if (ids.length == 0)
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] arr = new long[ids.length];
+        for (int i = 0; i < ids.length; i++)
+            arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        return retrieveMembersByIds(arr);
+    }
+
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>If the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent is enabled,
+     * this will load the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} and {@link Activity Activities}
+     * of the members. You can use {@link #retrieveMembersByIds(boolean, long...)} to disable presences.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids)
+    {
+        boolean presence = getJDA().getGatewayIntents().contains(GatewayIntent.GUILD_PRESENCES);
+        return retrieveMembersByIds(presence, ids);
+    }
+
+    /**
+     * Retrieves a list of members.
+     * <br>If the user does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the users resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>You can only load presences with the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent enabled.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  includePresence
+     *         Whether to load presences of the members (online status/activity)
+     * @param  users
+     *         The users of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If includePresence is {@code true} and the GUILD_PRESENCES intent is disabled</li>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembers(boolean includePresence, @Nonnull Collection<User> users)
+    {
+        Checks.noneNull(users, "Users");
+        if (users.isEmpty())
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
+        return retrieveMembersByIds(includePresence, ids);
+    }
+
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>You can only load presences with the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent enabled.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  includePresence
+     *         Whether to load presences of the members (online status/activity)
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If includePresence is {@code true} and the GUILD_PRESENCES intent is disabled</li>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull Collection<Long> ids)
+    {
+        Checks.noneNull(ids, "IDs");
+        if (ids.isEmpty())
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
+        return retrieveMembersByIds(includePresence, arr);
+    }
+
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>You can only load presences with the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent enabled.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  includePresence
+     *         Whether to load presences of the members (online status/activity)
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If includePresence is {@code true} and the GUILD_PRESENCES intent is disabled</li>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull String... ids)
+    {
+        Checks.notNull(ids, "Array");
+        if (ids.length == 0)
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+
+        long[] arr = new long[ids.length];
+        for (int i = 0; i < ids.length; i++)
+            arr[i] = MiscUtil.parseSnowflake(ids[i]);
+        return retrieveMembersByIds(includePresence, arr);
+    }
+
+    /**
+     * Retrieves a list of members by their user id.
+     * <br>If the id does not resolve to a member of this guild, then it will not appear in the resulting list.
+     * It is possible that none of the IDs resolve to a member, in which case an empty list will be the result.
+     *
+     * <p>You can only load presences with the {@link GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent enabled.
+     *
+     * <p>The requests automatically timeout after {@code 10} seconds.
+     * When the timeout occurs a {@link java.util.concurrent.TimeoutException TimeoutException} will be used to complete exceptionally.
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  includePresence
+     *         Whether to load presences of the members (online status/activity)
+     * @param  ids
+     *         The ids of the members (max 100)
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If includePresence is {@code true} and the GUILD_PRESENCES intent is disabled</li>
+     *             <li>If the input contains null</li>
+     *             <li>If the input is more than 100 IDs</li>
+     *         </ul>
+     *
+     * @return {@link Task} handle for the request
+     */
+    @Nonnull
+    @CheckReturnValue
+    Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids);
 
     /**
      * Queries a list of members using a radix tree based on the provided name prefix.
@@ -4615,7 +4931,7 @@ public interface Guild extends ISnowflake
      * Represents a Ban object.
      *
      * @see #retrieveBanList()
-     * @see <a href="https://discordapp.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
+     * @see <a href="https://discord.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
      */
     class Ban
     {
