@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils.data.etf;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -30,7 +31,10 @@ public class ExTermEncoder
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         buffer.put((byte) 131);
 
-        return pack(buffer, data).flip();
+        ByteBuffer packed = pack(buffer, data);
+        // This cast prevents issues with backwards compatibility in the ABI (java 11 made breaking changes)
+        ((Buffer) packed).flip();
+        return packed;
     }
 
     @SuppressWarnings("unchecked")
@@ -60,7 +64,9 @@ public class ExTermEncoder
             return buffer;
 
         ByteBuffer allocated = ByteBuffer.allocate((buffer.position() + length) * 2);
-        allocated.put(buffer.flip());
+        // This cast prevents issues with backwards compatibility in the ABI (java 11 made breaking changes)
+        ((Buffer) buffer).flip();
+        allocated.put(buffer);
         return allocated;
     }
 
