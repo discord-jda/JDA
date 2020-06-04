@@ -81,8 +81,8 @@ public class ExTermDecoder
 
     private static double unpackOldFloat(ByteBuffer buffer)
     {
-        String bytes = (String) unpackAtom(buffer, StandardCharsets.ISO_8859_1, 31);
-        return Double.parseDouble(Objects.requireNonNull(bytes));
+        String bytes = getString(buffer, StandardCharsets.ISO_8859_1, 31);
+        return Double.parseDouble(bytes);
     }
 
     private static double unpackFloat(ByteBuffer buffer)
