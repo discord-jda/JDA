@@ -221,6 +221,9 @@ public class MessageBuilder implements Appendable
      * <br>Typical usage would be providing an {@link net.dv8tion.jda.api.entities.IMentionable IMentionable} like
      * {@link net.dv8tion.jda.api.entities.User User} or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      *
+     * <p>This will not add a rule to mention a {@link User} or {@link Role}. You have to use {@link #mention(IMentionable...)}
+     * in addition to this method.
+     *
      * @param  mention
      *         the mention to append
      *
@@ -546,10 +549,10 @@ public class MessageBuilder implements Appendable
     }
 
     /**
-     * Removes the provided {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} to the whitelist.
+     * Removes the provided {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} from the whitelist.
      *
      * @param  types
-     *         The mention types to allow
+     *         The mention types to deny
      *
      * @throws IllegalArgumentException
      *         If null is provided
@@ -573,11 +576,15 @@ public class MessageBuilder implements Appendable
     /**
      * Adds the provided {@link IMentionable IMentionable} instance to the whitelist of mentions.
      * <br>This will only affect instances of {@link User}, {@link Member}, and {@link Role}.
+     * <br>The content will not be affected by this. To append a mention use {@link #append(IMentionable)}.
      *
      * <p>See {@link MessageAction#mention(IMentionable...)} for more details.
      *
      * @param  mentions
      *         Whitelist of mentions to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *
@@ -602,11 +609,15 @@ public class MessageBuilder implements Appendable
     /**
      * Adds the provided {@link IMentionable IMentionable} instance to the whitelist of mentions.
      * <br>This will only affect instances of {@link User}, {@link Member}, and {@link Role}.
+     * <br>The content will not be affected by this. To append a mention use {@link #append(IMentionable)}.
      *
      * <p>See {@link MessageAction#mention(IMentionable...)} for more details.
      *
      * @param  mentions
      *         Whitelist of mentions to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *
@@ -623,11 +634,16 @@ public class MessageBuilder implements Appendable
     /**
      * Adds the provided {@link User Users} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of users.
+     * <br>The content will not be affected by this.
+     * To append a mention use {@link #append(CharSequence) append("<@").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionUsers(String...)} for more details.
      *
      * @param  users
      *         Whitelist of user IDs to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *
@@ -645,11 +661,16 @@ public class MessageBuilder implements Appendable
     /**
      * Adds the provided {@link Role Roles} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of roles.
+     * <br>The content will not be affected by this.
+     * To append a mention use {@link #append(CharSequence) append("<@&").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionRoles(String...)} for more details.
      *
      * @param  roles
      *         Whitelist of role IDs to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *
@@ -667,11 +688,16 @@ public class MessageBuilder implements Appendable
     /**
      * Adds the provided {@link User Users} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of users.
+     * <br>The content will not be affected by this.
+     * To append a mention use {@link #append(CharSequence) append("<@").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionUsers(long...)} for more details.
      *
      * @param  users
      *         Whitelist of user IDs to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *
@@ -688,11 +714,16 @@ public class MessageBuilder implements Appendable
     /**
      * Adds the provided {@link Role Roles} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of roles.
+     * <br>The content will not be affected by this.
+     * To append a mention use {@link #append(CharSequence) append("<@&").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionRoles(long...)} for more details.
      *
      * @param  roles
      *         Whitelist of role IDs to apply
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return The MessageBuilder instance. Useful for chaining.
      *
@@ -716,6 +747,9 @@ public class MessageBuilder implements Appendable
      *        The JDA instance used to resolve the mentions.
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated This is not a reliable way to remove mentions from the content,
+     *             you should use {@link #setAllowedMentions(Collection)} instead.
      */
     @Nonnull
     @Deprecated
@@ -740,6 +774,9 @@ public class MessageBuilder implements Appendable
      *         the guild for {@link net.dv8tion.jda.api.entities.User User} mentions
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated This is not a reliable way to remove mentions from the content,
+     *             you should use {@link #setAllowedMentions(Collection)} instead.
      */
     @Nonnull
     @Deprecated
@@ -766,6 +803,9 @@ public class MessageBuilder implements Appendable
      *         the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be stripped
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated This is not a reliable way to remove mentions from the content,
+     *             you should use {@link #setAllowedMentions(Collection)} instead.
      */
     @Nonnull
     @Deprecated
@@ -789,6 +829,9 @@ public class MessageBuilder implements Appendable
      *         the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be stripped
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated This is not a reliable way to remove mentions from the content,
+     *             you should use {@link #setAllowedMentions(Collection)} instead.
      */
     @Nonnull
     @Deprecated

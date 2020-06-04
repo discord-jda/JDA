@@ -137,7 +137,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @CheckReturnValue
-    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
     public MessageActionImpl apply(final Message message)
     {
         if (message == null || message.getType() != MessageType.DEFAULT)
@@ -362,7 +362,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction mention(IMentionable... mentions)
+    public MessageAction mention(@Nonnull IMentionable... mentions)
     {
         Checks.noneNull(mentions, "Mentionables");
         for (IMentionable mentionable : mentions)
@@ -377,7 +377,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction mentionUsers(String... userIds)
+    public MessageAction mentionUsers(@Nonnull String... userIds)
     {
         Checks.noneNull(userIds, "User Id");
         Collections.addAll(mentionableUsers, userIds);
@@ -386,7 +386,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction mentionRoles(String... roleIds)
+    public MessageAction mentionRoles(@Nonnull String... roleIds)
     {
         Checks.noneNull(roleIds, "Role Id");
         Collections.addAll(mentionableRoles, roleIds);

@@ -551,8 +551,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
-     * <p>
-     * <b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
+     *
+     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
      * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
@@ -569,15 +569,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction mention(IMentionable... mentions);
+    MessageAction mention(@Nonnull IMentionable... mentions);
 
     /**
      * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
      * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
      * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
-     * <p>
-     * <b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
+     *
+     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
      * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
@@ -594,7 +594,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction mention(Collection<? extends IMentionable> mentions)
+    default MessageAction mention(@Nonnull Collection<? extends IMentionable> mentions)
     {
         Checks.noneNull(mentions, "Mention");
         return mention(mentions.toArray(new IMentionable[0]));
@@ -603,8 +603,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <p>
-     * <b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     *
+     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
      * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
@@ -621,13 +621,13 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction mentionUsers(String... userIds);
+    MessageAction mentionUsers(@Nonnull String... userIds);
 
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <p>
-     * <b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
+     *
+     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
      * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
@@ -644,7 +644,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction mentionUsers(long... userIds)
+    default MessageAction mentionUsers(@Nonnull long... userIds)
     {
         Checks.notNull(userIds, "UserId array");
         String[] stringIds = new String[userIds.length];
@@ -658,8 +658,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <p>
-     * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     *
+     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
      * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
@@ -676,13 +676,13 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction mentionRoles(String... roleIds);
+    MessageAction mentionRoles(@Nonnull String... roleIds);
 
     /**
      * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
      * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <p>
-     * <b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
+     *
+     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
      * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
      * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
      *
@@ -699,7 +699,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction mentionRoles(long... roleIds)
+    default MessageAction mentionRoles(@Nonnull long... roleIds)
     {
         Checks.notNull(roleIds, "RoleId array");
         String[] stringIds = new String[roleIds.length];
