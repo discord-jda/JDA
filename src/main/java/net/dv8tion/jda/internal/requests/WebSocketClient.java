@@ -966,7 +966,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected DataObject handleBinary(byte[] binary) throws DataFormatException
     {
         if (decompressor == null)
+        {
+            if (encoding == GatewayEncoding.ETF)
+                return DataObject.fromETF(binary);
             throw new IllegalStateException("Cannot decompress binary message due to unknown compression algorithm: " + compression);
+        }
         // Scoping allows us to print the json that possibly failed parsing
         byte[] data;
         try
