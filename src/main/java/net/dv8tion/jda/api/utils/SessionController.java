@@ -248,7 +248,9 @@ public interface SessionController
         }
 
         /**
-         * The concurrency level for this bot
+         * The concurrency level for this bot.
+         * <br>This should not be a custom value as discord determines the eligible concurrency.
+         * Using a different concurrency value could result in issues and possibly a ban due to login spam.
          *
          * @return The concurrency level
          *
