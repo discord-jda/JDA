@@ -83,7 +83,7 @@ public class SessionControllerAdapter implements SessionController
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
-            (response, request) -> response.getObject().getString("url")).priority().complete();
+                (response, request) -> response.getObject().getString("url")).priority().complete();
     }
 
     @Nonnull
@@ -115,7 +115,7 @@ public class SessionControllerAdapter implements SessionController
                     else
                     {
                         request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                            response.toString()));
+                                response.toString()));
                     }
                 }
                 catch (Exception e)
@@ -232,8 +232,10 @@ public class SessionControllerAdapter implements SessionController
                     Throwable t = e.getCause();
                     if (t instanceof OpeningHandshakeException)
                         log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                    else if (!JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
+                    else if (t != null && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
                         log.error("Failed to establish connection for a node, appending to queue", e);
+                    else
+                        log.error("Unexpected exception when running connect node", e);
                     appendSession(node);
                 }
                 catch (InterruptedException e)
