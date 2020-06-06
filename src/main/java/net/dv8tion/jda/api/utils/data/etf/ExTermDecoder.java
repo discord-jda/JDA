@@ -16,10 +16,14 @@
 
 package net.dv8tion.jda.api.utils.data.etf;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.zip.InflaterOutputStream;
 
 import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
 
@@ -28,7 +32,7 @@ public class ExTermDecoder
     public static Object unpack(ByteBuffer buffer)
     {
         if (buffer.get() != -125)
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Failed header check");
 
         return unpack0(buffer);
     }
@@ -56,6 +60,7 @@ public class ExTermDecoder
     {
         int tag = buffer.get();
         switch (tag) {
+        case COMPRESSED: return unpackCompressed(buffer);
         case SMALL_INT: return unpackSmallInt(buffer);
         case SMALL_BIGINT: return unpackSmallBigint(buffer);
         case INT: return unpackInt(buffer);
@@ -77,6 +82,23 @@ public class ExTermDecoder
         default:
             throw new IllegalArgumentException("Unknown tag " + tag);
         }
+    }
+
+    private static Object unpackCompressed(ByteBuffer buffer)
+    {
+        int size = buffer.getInt();
+        ByteArrayOutputStream decompressed = new ByteArrayOutputStream(size);
+        try (InflaterOutputStream inflater = new InflaterOutputStream(decompressed))
+        {
+            inflater.write(buffer.array(), buffer.position(), buffer.remaining());
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+
+        buffer = ByteBuffer.wrap(decompressed.toByteArray());
+        return unpack0(buffer);
     }
 
     private static double unpackOldFloat(ByteBuffer buffer)

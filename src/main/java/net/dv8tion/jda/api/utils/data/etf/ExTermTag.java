@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.utils.data.etf;
 public class ExTermTag
 {
     public static final byte NEW_FLOAT = 70;
+    public static final byte COMPRESSED = 90;
     public static final byte SMALL_INT = 97;
     public static final byte INT = 98;
     public static final byte FLOAT = 99;
