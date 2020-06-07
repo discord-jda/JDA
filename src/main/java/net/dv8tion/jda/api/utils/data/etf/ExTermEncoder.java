@@ -46,7 +46,9 @@ public class ExTermEncoder
             return packMap(buffer, (Map<String, Object>) value);
         if (value instanceof Collection)
             return packList(buffer, (Collection<Object>) value);
-        if (value instanceof Integer)
+        if (value instanceof Byte)
+            return packSmallInt(buffer, (byte) value);
+        if (value instanceof Integer || value instanceof Short)
             return packInt(buffer, (int) value);
         if (value instanceof Long)
             return packLong(buffer, (long) value);
@@ -63,7 +65,7 @@ public class ExTermEncoder
         if (buffer.remaining() >= length)
             return buffer;
 
-        ByteBuffer allocated = ByteBuffer.allocate((buffer.position() + length) * 2);
+        ByteBuffer allocated = ByteBuffer.allocate((buffer.position() + length) << 1);
         // This cast prevents issues with backwards compatibility in the ABI (java 11 made breaking changes)
         ((Buffer) buffer).flip();
         allocated.put(buffer);
@@ -87,6 +89,14 @@ public class ExTermEncoder
 
     private static ByteBuffer packList(ByteBuffer buffer, Collection<Object> data)
     {
+        if (data.isEmpty())
+        {
+            // NIL is for empty lists
+            buffer = realloc(buffer, 1);
+            buffer.put(NIL);
+            return buffer;
+        }
+
         buffer = realloc(buffer, data.size() + 5);
         buffer.put(LIST);
         buffer.putInt(data.size());
@@ -106,8 +116,18 @@ public class ExTermEncoder
         return buffer;
     }
 
+    private static ByteBuffer packSmallInt(ByteBuffer buffer, byte value)
+    {
+        buffer = realloc(buffer, 2);
+        buffer.put(SMALL_INT);
+        buffer.put(value);
+        return buffer;
+    }
+
     private static ByteBuffer packInt(ByteBuffer buffer, int value)
     {
+        if (countBytes(value) == 1 && value >= 0)
+            return packSmallInt(buffer, (byte) value);
         buffer = realloc(buffer, 5);
         buffer.put(INT);
         buffer.putInt(value);
@@ -117,6 +137,17 @@ public class ExTermEncoder
     private static ByteBuffer packLong(ByteBuffer buffer, long value)
     {
         byte bytes = countBytes(value);
+        if (bytes == 1) // Use optimized small int encoding
+            return packSmallInt(buffer, (byte) value);
+        if (bytes <= 4 && value >= 0)
+        {
+            // Use int to encode it
+            buffer = realloc(buffer, 5);
+            buffer.put(INT);
+            buffer.putInt((int) value);
+            return buffer;
+        }
+
         buffer = realloc(buffer, 3 + bytes);
         buffer.put(SMALL_BIGINT);
         buffer.put(bytes);
