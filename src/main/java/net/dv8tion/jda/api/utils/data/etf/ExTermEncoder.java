@@ -128,7 +128,7 @@ public class ExTermEncoder
 
     private static ByteBuffer packInt(ByteBuffer buffer, int value)
     {
-        if (countBytes(value) == 1 && value >= 0)
+        if (countBytes(value) <= 1 && value >= 0)
             return packSmallInt(buffer, (byte) value);
         buffer = realloc(buffer, 5);
         buffer.put(INT);
@@ -139,7 +139,7 @@ public class ExTermEncoder
     private static ByteBuffer packLong(ByteBuffer buffer, long value)
     {
         byte bytes = countBytes(value);
-        if (bytes == 1) // Use optimized small int encoding
+        if (bytes <= 1) // Use optimized small int encoding
             return packSmallInt(buffer, (byte) value);
         if (bytes <= 4 && value >= 0)
         {
