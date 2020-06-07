@@ -38,7 +38,7 @@ public class ExTermEncoder
     }
 
     @SuppressWarnings("unchecked")
-    public static ByteBuffer pack(ByteBuffer buffer, Object value)
+    private static ByteBuffer pack(ByteBuffer buffer, Object value)
     {
         if (value instanceof String)
             return packBinary(buffer, (String) value);
@@ -52,6 +52,8 @@ public class ExTermEncoder
             return packInt(buffer, (int) value);
         if (value instanceof Long)
             return packLong(buffer, (long) value);
+        if (value instanceof Float || value instanceof Double)
+            return packFloat(buffer, (double) value);
         if (value instanceof Boolean)
             return packAtom(buffer, String.valueOf(value));
         if (value == null)
@@ -159,6 +161,14 @@ public class ExTermEncoder
             value >>>= 8;
         }
 
+        return buffer;
+    }
+
+    private static ByteBuffer packFloat(ByteBuffer buffer, double value)
+    {
+        buffer = realloc(buffer, 9);
+        buffer.put(NEW_FLOAT);
+        buffer.putDouble(value);
         return buffer;
     }
 
