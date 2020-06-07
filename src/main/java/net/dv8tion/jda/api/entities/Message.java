@@ -157,8 +157,9 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
      *
-     * <p>Groups:
+     * <h2>Groups</h2>
      * <table>
+     *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
      *   <tr>
      *     <th>Index</th>
      *     <th>Name</th>

@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
  * Indicates that a {@link VoiceChannel VoiceChannel}'s permission overrides changed.
  *
  * <p>Can be used to get affected VoiceChannel, affected Guild and affected {@link net.dv8tion.jda.api.entities.Role Roles}/{@link net.dv8tion.jda.api.entities.User Users}.
+ *
+ * @deprecated This event is no longer feasible due to members not being cached by default. We replaced this event
+ *             with {@link net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent GenericPermissionOverrideEvent} and derivatives.
  */
 @Deprecated
 @ForRemoval
