@@ -283,19 +283,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void close()
     {
         if (socket != null)
-            socket.disconnect(1000);
+            socket.sendClose(1000);
     }
 
     public void close(int code)
     {
         if (socket != null)
-            socket.disconnect(code);
+            socket.sendClose(code);
     }
 
     public void close(int code, String reason)
     {
         if (socket != null)
-            socket.disconnect(code, reason);
+            socket.sendClose(code, reason);
     }
 
     public synchronized void shutdown()
@@ -648,7 +648,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             missedHeartbeats = 0;
             LOG.warn("Missed 2 heartbeats! Trying to reconnect...");
-            close(4900, "ZOMBIE CONNECTION");
+            socket.disconnect(4900, "ZOMBIE CONNECTION");
         }
         else
         {

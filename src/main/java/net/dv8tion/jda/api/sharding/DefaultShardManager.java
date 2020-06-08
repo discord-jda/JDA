@@ -543,6 +543,7 @@ public class DefaultShardManager implements ShardManager
             try
             {
                 SessionController.ShardedGateway gateway = jda.getShardedGateway();
+                this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
                 this.gatewayURL = gateway.getUrl();
                 if (this.gatewayURL == null)
                     LOG.error("Acquired null gateway url from SessionController");
