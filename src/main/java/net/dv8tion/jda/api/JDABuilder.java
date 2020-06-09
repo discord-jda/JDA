@@ -531,6 +531,14 @@ public class JDABuilder
         return this;
     }
 
+    /**
+     * Choose which {@link GatewayEncoding} JDA should use.
+     *
+     * @param  encoding
+     *         The {@link GatewayEncoding} (default: JSON)
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     */
     @Nonnull
     public JDABuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
     {

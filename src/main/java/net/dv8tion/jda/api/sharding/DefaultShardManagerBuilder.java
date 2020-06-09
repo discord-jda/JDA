@@ -508,7 +508,16 @@ public class  DefaultShardManagerBuilder
         return this;
     }
 
-    public DefaultShardManagerBuilder setGatewayEncoding(GatewayEncoding encoding)
+    /**
+     * Choose which {@link GatewayEncoding} JDA should use.
+     *
+     * @param  encoding
+     *         The {@link GatewayEncoding} (default: JSON)
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
     {
         this.encoding = encoding;
         return this;

@@ -180,8 +180,19 @@ public class DataObject implements SerializableData
         }
     }
 
+    /**
+     * Parses using {@link ExTermDecoder}.
+     * The provided data must start with the correct version header (131).
+     *
+     * @param  data
+     *         The data to decode
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
+     *
+     * @return A DataObject instance for the provided payload
+     */
     @Nonnull
-    @SuppressWarnings("unchecked")
     public static DataObject fromETF(@Nonnull byte[] data)
     {
         try
@@ -665,8 +676,9 @@ public class DataObject implements SerializableData
     /**
      * Serialize this object as JSON.
      *
-     * @return a byte array containing the JSON representation of this object.
+     * @return byte array containing the JSON representation of this object
      */
+    @Nonnull
     public byte[] toJson()
     {
         try
@@ -681,6 +693,12 @@ public class DataObject implements SerializableData
         }
     }
 
+    /**
+     * Serializes this object as ETF MAP term.
+     *
+     * @return byte array containing the encoded ETF term
+     */
+    @Nonnull
     public byte[] toETF()
     {
         ByteBuffer buffer = ExTermEncoder.pack(data);
