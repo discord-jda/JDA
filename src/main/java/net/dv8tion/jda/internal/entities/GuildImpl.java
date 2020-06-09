@@ -1025,17 +1025,24 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Integer> prune(int days, boolean wait)
+    public AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles)
     {
         checkPermission(Permission.KICK_MEMBERS);
 
         Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
+        Checks.notNull(roles, "Roles");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId());
         FormBody.Builder form = new FormBody.Builder();
         form.add("days", Integer.toString(days));
         if (!wait)
             form.add("compute_prune_count", "false");
+        for (Role role : roles)
+        {
+            Checks.notNull(role, "Role");
+            Checks.check(role.getGuild().equals(this), "Role is not from the same guild!");
+            form.add("include_roles", role.getId());
+        }
         return new AuditableRestActionImpl<>(getJDA(), route, form.build(), (response, request) -> response.getObject().getInt("pruned", 0));
     }
 
