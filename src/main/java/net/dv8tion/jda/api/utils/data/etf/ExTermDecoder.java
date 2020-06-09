@@ -27,8 +27,37 @@ import java.util.zip.InflaterOutputStream;
 
 import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
 
+/**
+ * Decodes an ETF encoded payload to a java object representation.
+ *
+ * @see #unpack(ByteBuffer)
+ * @see #unpackMap(ByteBuffer)
+ * @see #unpackList(ByteBuffer)
+ */
 public class ExTermDecoder
 {
+    /**
+     * Unpacks the provided term into a java object.
+     *
+     * <h2>The mapping is as follows:</h2>
+     * <ul>
+     *     <li>{@code Small Int | Int -> Integer}</li>
+     *     <li>{@code Small BigInt -> Long}</li>
+     *     <li>{@code Float | New Float -> Double}</li>
+     *     <li>{@code Small Atom | Atom -> Boolean | null | String}</li>
+     *     <li>{@code Binary | String -> String}</li>
+     *     <li>{@code List | NIL -> List}</li>
+     *     <li>{@code Map -> Map}</li>
+     * </ul>
+     *
+     * @param  buffer
+     *         The {@link ByteBuffer} containing the encoded term
+     *
+     * @throws IllegalArgumentException
+     *         If the buffer does not start with the version byte {@code 131} or contains an unsupported tag
+     *
+     * @return The java object
+     */
     public static Object unpack(ByteBuffer buffer)
     {
         if (buffer.get() != -125)
@@ -37,6 +66,28 @@ public class ExTermDecoder
         return unpack0(buffer);
     }
 
+    /**
+     * Unpacks the provided term into a java {@link Map}.
+     *
+     * <h2>The mapping is as follows:</h2>
+     * <ul>
+     *     <li>{@code Small Int | Int -> Integer}</li>
+     *     <li>{@code Small BigInt -> Long}</li>
+     *     <li>{@code Float | New Float -> Double}</li>
+     *     <li>{@code Small Atom | Atom -> Boolean | null | String}</li>
+     *     <li>{@code Binary | String -> String}</li>
+     *     <li>{@code List | NIL -> List}</li>
+     *     <li>{@code Map -> Map}</li>
+     * </ul>
+     *
+     * @param  buffer
+     *         The {@link ByteBuffer} containing the encoded term
+     *
+     * @throws IllegalArgumentException
+     *         If the buffer does not start with a Map term, does not have the right version byte, or the format includes an unsupported tag
+     *
+     * @return The parsed {@link Map} instance
+     */
     @SuppressWarnings("unchecked")
     public static Map<String, Object> unpackMap(ByteBuffer buffer)
     {
@@ -46,6 +97,28 @@ public class ExTermDecoder
         return (Map<String, Object>) unpack(buffer);
     }
 
+    /**
+     * Unpacks the provided term into a java {@link List}.
+     *
+     * <h2>The mapping is as follows:</h2>
+     * <ul>
+     *     <li>{@code Small Int | Int -> Integer}</li>
+     *     <li>{@code Small BigInt -> Long}</li>
+     *     <li>{@code Float | New Float -> Double}</li>
+     *     <li>{@code Small Atom | Atom -> Boolean | null | String}</li>
+     *     <li>{@code Binary | String -> String}</li>
+     *     <li>{@code List | NIL -> List}</li>
+     *     <li>{@code Map -> Map}</li>
+     * </ul>
+     *
+     * @param  buffer
+     *         The {@link ByteBuffer} containing the encoded term
+     *
+     * @throws IllegalArgumentException
+     *         If the buffer does not start with a List or NIL term, does not have the right version byte, or the format includes an unsupported tag
+     *
+     * @return The parsed {@link List} instance
+     */
     @SuppressWarnings("unchecked")
     public static List<Object> unpackList(ByteBuffer buffer)
     {

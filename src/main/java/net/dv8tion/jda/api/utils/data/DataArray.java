@@ -176,7 +176,7 @@ public class DataArray implements Iterable<Object>
     {
         try
         {
-            List<Object> list = (List<Object>) ExTermDecoder.unpack(ByteBuffer.wrap(data));
+            List<Object> list = ExTermDecoder.unpackList(ByteBuffer.wrap(data));
             return new DataArray(list);
         }
         catch (Exception ex)

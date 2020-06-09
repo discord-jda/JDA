@@ -24,8 +24,37 @@ import java.util.Map;
 
 import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
 
+/**
+ * Encodes an object into a binary ETF representation.
+ *
+ * @see #pack(Object)
+ */
 public class ExTermEncoder
 {
+    /**
+     * Encodes the provided object into an ETF buffer.
+     *
+     * <h2>The mapping is as follows:</h2>
+     * <ul>
+     *     <li>{@code String -> Binary}</li>
+     *     <li>{@code Map -> Map}</li>
+     *     <li>{@code Collection -> List | NIL}</li>
+     *     <li>{@code Byte -> Small Int}</li>
+     *     <li>{@code Integer, Short -> Int | Small Int}</li>
+     *     <li>{@code Long -> Small BigInt | Int | Small Int}</li>
+     *     <li>{@code Float, Double -> New Float}</li>
+     *     <li>{@code Boolean -> Atom(Boolean)}</li>
+     *     <li>{@code null -> Atom("nil")}</li>
+     * </ul>
+     *
+     * @param  data
+     *         The object to encode
+     *
+     * @throws UnsupportedOperationException
+     *         If there is no type mapping for the provided object
+     *
+     * @return {@link ByteBuffer} with the encoded ETF term
+     */
     public static ByteBuffer pack(Object data)
     {
         ByteBuffer buffer = ByteBuffer.allocate(1024);

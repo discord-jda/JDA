@@ -16,6 +16,10 @@
 
 package net.dv8tion.jda.api.utils.data.etf;
 
+/**
+ * Tags used for encoding and decoding for external terms.
+ * <br>This list in incomplete as not all tags are used by this library.
+ */
 public class ExTermTag
 {
     // 8 IEEE float

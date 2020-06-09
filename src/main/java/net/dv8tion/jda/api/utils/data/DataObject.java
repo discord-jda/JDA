@@ -186,7 +186,7 @@ public class DataObject implements SerializableData
     {
         try
         {
-            Map<String, Object> map = (Map<String, Object>) ExTermDecoder.unpack(ByteBuffer.wrap(data));
+            Map<String, Object> map = ExTermDecoder.unpackMap(ByteBuffer.wrap(data));
             return new DataObject(map);
         }
         catch (Exception ex)
