@@ -210,10 +210,13 @@ public class ExTermDecoder
         return buffer.getInt();
     }
 
-    private static String unpackString(ByteBuffer buffer)
+    private static List<Object> unpackString(ByteBuffer buffer)
     {
         int length = Short.toUnsignedInt(buffer.getShort());
-        return getString(buffer, StandardCharsets.UTF_8, length);
+        List<Object> bytes = new ArrayList<>(length);
+        while (length-- > 0)
+            bytes.add(buffer.get());
+        return bytes;
     }
 
     private static String unpackBinary(ByteBuffer buffer)
