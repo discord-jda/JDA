@@ -635,7 +635,7 @@ public class MessageBuilder implements Appendable
      * Adds the provided {@link User Users} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of users.
      * <br>The content will not be affected by this.
-     * To append a mention use {@link #append(CharSequence) append("<@").append(id).append(">")}.
+     * To append a mention use {@code append("<@").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionUsers(String...)} for more details.
      *
@@ -662,7 +662,7 @@ public class MessageBuilder implements Appendable
      * Adds the provided {@link Role Roles} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of roles.
      * <br>The content will not be affected by this.
-     * To append a mention use {@link #append(CharSequence) append("<@&").append(id).append(">")}.
+     * To append a mention use {@code append("<@&").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionRoles(String...)} for more details.
      *
@@ -689,7 +689,7 @@ public class MessageBuilder implements Appendable
      * Adds the provided {@link User Users} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of users.
      * <br>The content will not be affected by this.
-     * To append a mention use {@link #append(CharSequence) append("<@").append(id).append(">")}.
+     * To append a mention use {@code append("<@").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionUsers(long...)} for more details.
      *
@@ -715,7 +715,7 @@ public class MessageBuilder implements Appendable
      * Adds the provided {@link Role Roles} to the whitelist of mentions.
      * <br>The provided list must only contain IDs of roles.
      * <br>The content will not be affected by this.
-     * To append a mention use {@link #append(CharSequence) append("<@&").append(id).append(">")}.
+     * To append a mention use {@code append("<@&").append(id).append(">")}.
      *
      * <p>See {@link MessageAction#mentionRoles(long...)} for more details.
      *
