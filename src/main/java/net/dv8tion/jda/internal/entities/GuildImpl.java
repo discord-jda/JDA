@@ -159,7 +159,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isLoaded()
     {
-        // Only works with guild subscriptions
+        // Only works with GUILD_MEMBERS intent
         return getJDA().isIntent(GatewayIntent.GUILD_MEMBERS)
                 && (long) getMemberCount() <= getMemberCache().size();
     }
@@ -1261,7 +1261,7 @@ public class GuildImpl implements Guild
         }
 
         DataObject body = DataObject.empty()
-            .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
+            .put("roles", roles.stream().map(Role::getId).collect(Collectors.toSet()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
         return new AuditableRestActionImpl<>(getJDA(), route, body);

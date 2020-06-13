@@ -140,7 +140,7 @@ public abstract class ListenerAdapter implements EventListener
 
     @Deprecated
     @DeprecatedSince("4.2.0")
-    @ReplaceWith("onGuildMemberRemoveEvent(GuildMemberRemoveEvent)")
+    @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
 
     @Deprecated
