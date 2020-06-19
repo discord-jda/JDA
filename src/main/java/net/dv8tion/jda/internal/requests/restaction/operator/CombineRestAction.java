@@ -35,10 +35,10 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
 {
     private final RestAction<I1> action1;
     private final RestAction<I2> action2;
-    private final BiFunction<I1, I2, O> accumulator;
+    private final BiFunction<? super I1, ? super I2, ? extends O> accumulator;
     private final AtomicBoolean failed = new AtomicBoolean(false);
 
-    public CombineRestAction(RestAction<I1> action1, RestAction<I2> action2, BiFunction<I1, I2, O> accumulator)
+    public CombineRestAction(RestAction<I1> action1, RestAction<I2> action2, BiFunction<? super I1, ? super I2, ? extends O> accumulator)
     {
         this.action1 = action1;
         this.action2 = action2;

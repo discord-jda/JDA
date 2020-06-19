@@ -29,6 +29,8 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -819,11 +821,41 @@ public interface RestAction<T>
 
     @Nonnull
     @CheckReturnValue
-    default <U, O> RestAction<O> and(@Nonnull RestAction<U> other, @Nonnull BiFunction<T, U, O> accumulator)
+    default <U, O> RestAction<O> and(@Nonnull RestAction<U> other, @Nonnull BiFunction<? super T, ? super U, ? extends O> accumulator)
     {
         Checks.notNull(other, "RestAction");
         Checks.notNull(accumulator, "Accumulator");
         return new CombineRestAction<>(this, other, accumulator);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    @SuppressWarnings("unchecked")
+    default RestAction<List<T>> and(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other)
+    {
+        Checks.notNull(first, "RestAction");
+        Checks.noneNull(other, "RestAction");
+        RestAction<List<T>> out = and(first, (a, b) -> {
+            List<T> list = new ArrayList<>();
+            list.add(a);
+            list.add(b);
+            return list;
+        });
+        for (RestAction<? extends T> action : other)
+        {
+            out = out.and(action, (list, b) -> {
+                list.add(b);
+                return list;
+            });
+        }
+        return out;
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default <U> RestAction<Void> and(@Nonnull RestAction<U> other)
+    {
+        return and(other, (a, b) -> null);
     }
 
     /**
