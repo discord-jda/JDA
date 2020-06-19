@@ -830,8 +830,15 @@ public interface RestAction<T>
 
     @Nonnull
     @CheckReturnValue
+    default <U> RestAction<Void> and(@Nonnull RestAction<U> other)
+    {
+        return and(other, (a, b) -> null);
+    }
+
+    @Nonnull
+    @CheckReturnValue
     @SuppressWarnings("unchecked")
-    default RestAction<List<T>> and(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other)
+    default RestAction<List<T>> accumulate(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other)
     {
         Checks.notNull(first, "RestAction");
         Checks.noneNull(other, "RestAction");
@@ -849,13 +856,6 @@ public interface RestAction<T>
             });
         }
         return out;
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default <U> RestAction<Void> and(@Nonnull RestAction<U> other)
-    {
-        return and(other, (a, b) -> null);
     }
 
     /**
