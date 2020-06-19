@@ -33,10 +33,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -282,6 +279,17 @@ public interface RestAction<T>
      */
     @Nonnull
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
+
+    @Nullable
+    default BooleanSupplier getCheck()
+    {
+        return null;
+    }
+
+    default RestAction<T> addCheck(@Nonnull BooleanSupplier checks)
+    {
+        return setCheck(() -> (getCheck() == null || getCheck().getAsBoolean()) && checks.getAsBoolean());
+    }
 
     /**
      * Timeout for this RestAction instance.
@@ -807,6 +815,15 @@ public interface RestAction<T>
     {
         Checks.notNull(flatMap, "Function");
         return new FlatMapRestAction<>(this, condition, flatMap);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default <U, O> RestAction<O> and(@Nonnull RestAction<U> other, @Nonnull BiFunction<T, U, O> accumulator)
+    {
+        Checks.notNull(other, "RestAction");
+        Checks.notNull(accumulator, "Accumulator");
+        return new CombineRestAction<>(this, other, accumulator);
     }
 
     /**
