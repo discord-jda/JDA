@@ -27,7 +27,6 @@ import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
@@ -1121,7 +1120,10 @@ public class MessageBuilder implements Appendable
      * @return {@link MessageAction MessageAction}
      */
     @Nonnull
-    @CheckReturnValue
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.1")
+    @ReplaceWith("channel.sendMessage(builder.build())")
     public MessageAction sendTo(@Nonnull MessageChannel channel)
     {
         Checks.notNull(channel, "Target Channel");
