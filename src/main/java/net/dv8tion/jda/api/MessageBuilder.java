@@ -1118,6 +1118,8 @@ public class MessageBuilder implements Appendable
      *         If this is a PrivateChannel and both users (sender and receiver) are bots
      *
      * @return {@link MessageAction MessageAction}
+     *
+     * @deprecated Use {@link MessageChannel#sendMessage(Message) channel.sendMessage(builder.build())} instead
      */
     @Nonnull
     @Deprecated
