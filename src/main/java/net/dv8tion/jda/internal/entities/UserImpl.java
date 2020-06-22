@@ -138,7 +138,7 @@ public class UserImpl implements User
     @Override
     public String getAsMention()
     {
-        return "<@" + getId() + '>';
+        return "<@!" + getId() + '>';
     }
 
     @Override
