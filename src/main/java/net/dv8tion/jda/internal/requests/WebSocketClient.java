@@ -54,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
+import javax.net.ssl.SSLException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -1033,7 +1034,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         if (cause.getCause() instanceof SocketTimeoutException)
         {
-            LOG.debug("Socket read timed out", cause);
+            LOG.debug("Socket timed out");
+        }
+        else if (cause.getCause() instanceof IOException)
+        {
+            LOG.debug("Encountered I/O error", cause);
         }
         else
         {
