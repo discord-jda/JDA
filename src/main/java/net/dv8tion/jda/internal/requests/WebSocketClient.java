@@ -54,7 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
-import javax.net.ssl.SSLException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -389,7 +388,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
-        prepareClose(); // set 10s timeout in-case we discord never sends us a HELLO payload
+        prepareClose(); // set 10s timeout in-case discord never sends us a HELLO payload
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
         if (sessionId == null)
         {
