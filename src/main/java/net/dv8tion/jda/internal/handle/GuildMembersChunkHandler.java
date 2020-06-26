@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.requests.MemberChunkManager;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class GuildMembersChunkHandler extends SocketHandler
@@ -49,8 +48,6 @@ public class GuildMembersChunkHandler extends SocketHandler
                 DataObject object = members.getObject(i);
                 builder.updateMemberCache(builder.createMember(guild, object));
             }
-            if (MemberChunkManager.isLastChunk(content))
-                guild.completeChunking();
             return null;
         }
         getJDA().getGuildSetupController().onMemberChunk(guildId, content);
