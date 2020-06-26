@@ -191,7 +191,6 @@ public interface Guild extends ISnowflake
 
     /**
      * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session to all {@link Member Members} of this Guild.
-     * <br>This can be useful if used in combination with {@link #retrieveMembers()}.
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -216,7 +215,6 @@ public interface Guild extends ISnowflake
      *
      * @see #unloadMember(long)
      * @see JDA#unloadUser(long)
-     * @see #retrieveMembers()
      */
     void pruneMemberCache();
 
@@ -830,7 +828,7 @@ public interface Guild extends ISnowflake
      *
      * @return Immutable list of all <b>cached</b> members in this Guild.
      *
-     * @see    #retrieveMembers()
+     * @see    #loadMembers()
      */
     @Nonnull
     default List<Member> getMembers()
@@ -966,7 +964,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.MemberCacheView MemberCacheView}
      *
-     * @see    #retrieveMembers()
+     * @see    #loadMembers()
      */
     @Nonnull
     MemberCacheView getMemberCache();
