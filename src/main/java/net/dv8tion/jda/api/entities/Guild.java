@@ -54,6 +54,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -2252,9 +2253,40 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     default Task<List<Member>> loadMembers()
     {
+        return loadMembers((m) -> true);
+    }
+
+    /**
+     * Retrieves and collects members of this guild into a list.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  filter
+     *         Filter to decide which members to include
+     *
+     * @throws IllegalArgumentException
+     *         If the provided filter is null
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} - Type: {@link List} of {@link Member}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> loadMembers(@Nonnull Predicate<? super Member> filter)
+    {
+        Checks.notNull(filter, "Filter");
         List<Member> list = new ArrayList<>();
         CompletableFuture<List<Member>> future = new CompletableFuture<>();
-        Task<Void> reference = loadMembers(list::add);
+        Task<Void> reference = loadMembers((member) -> {
+            if (filter.test(member))
+                list.add(member);
+        });
         GatewayTask<List<Member>> task = new GatewayTask<>(future, reference::cancel);
         reference.onSuccess(it -> future.complete(list))
                  .onError(future::completeExceptionally);
