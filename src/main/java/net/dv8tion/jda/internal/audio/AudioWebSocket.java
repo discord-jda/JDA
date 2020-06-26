@@ -35,10 +35,7 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
@@ -645,6 +642,20 @@ class AudioWebSocket extends WebSocketAdapter
     {
         if (keepAliveHandle != null)
             LOG.error("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
+
+        try
+        {
+            if (socket != null)
+            {
+                Socket rawSocket = this.socket.getSocket();
+                if (rawSocket != null)
+                    rawSocket.setSoTimeout(keepAliveInterval + 10000);
+            }
+        }
+        catch (SocketException ex)
+        {
+            LOG.warn("Failed to setup timeout for socket", ex);
+        }
 
         Runnable keepAliveRunnable = () ->
         {
