@@ -3002,20 +3002,26 @@ public interface Guild extends ISnowflake
      *
      * @param  days
      *         Minimum number of days since a member has been offline to get affected.
+     * @param  roles
+     *         Optional roles to include in prune filter
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1} or more than {@code 30}
+     *         <ul>
+     *             <li>If the provided days are not in the range from 1 to 30 (inclusive)</li>
+     *             <li>If null is provided</li>
+     *             <li>If any of the provided roles is not from this guild</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>The amount of Members that were pruned from the Guild.
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Integer> prune(int days)
+    default AuditableRestAction<Integer> prune(int days, @Nonnull Role... roles)
     {
-        return prune(days, true);
+        return prune(days, true, roles);
     }
 
     /**
@@ -3037,18 +3043,24 @@ public interface Guild extends ISnowflake
      *         Minimum number of days since a member has been offline to get affected.
      * @param  wait
      *         Whether to calculate the number of pruned members and wait for the response (timeout for too many pruned)
+     * @param  roles
+     *         Optional roles to include in prune filter
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the account doesn't have {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS KICK_MEMBER} Permission.
      * @throws IllegalArgumentException
-     *         If the provided days are less than {@code 1} or more than {@code 30}
+     *         <ul>
+     *             <li>If the provided days are not in the range from 1 to 30 (inclusive)</li>
+     *             <li>If null is provided</li>
+     *             <li>If any of the provided roles is not from this guild</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: Integer
      *         <br>Provides the amount of Members that were pruned from the Guild, if wait is true.
      */
     @Nonnull
     @CheckReturnValue
-    AuditableRestAction<Integer> prune(int days, boolean wait);
+    AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles);
 
     /**
      * Kicks the {@link net.dv8tion.jda.api.entities.Member Member} from the {@link net.dv8tion.jda.api.entities.Guild Guild}.

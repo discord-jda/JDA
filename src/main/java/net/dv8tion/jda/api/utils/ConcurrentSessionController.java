@@ -78,35 +78,45 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
         return worker;
     }
 
-    private static class Worker extends Thread
+    private static class Worker implements Runnable
     {
         private final Queue<SessionConnectNode> queue = new ConcurrentLinkedQueue<>();
+        private final int id;
+        private Thread thread;
 
         public Worker(int id)
         {
-            super("ConcurrentSessionController-Worker-" + id);
+            this.id = id;
+        }
+
+        public synchronized void start()
+        {
+            if (thread == null)
+            {
+                thread = new Thread(this, "ConcurrentSessionController-Worker-" + id);
+                log.debug("Running worker");
+                thread.start();
+            }
+        }
+
+        public synchronized void stop()
+        {
+            thread = null;
+            if (!queue.isEmpty())
+                start();
         }
 
         public void enqueue(SessionConnectNode node)
         {
             log.trace("Appending node to queue {}", node.getShardInfo());
             queue.add(node);
-            execute();
+            start();
         }
 
         public void dequeue(SessionConnectNode node)
         {
             log.trace("Removing node from queue {}", node.getShardInfo());
             queue.remove(node);
-        }
-
-        public void execute()
-        {
-            if (!isAlive())
-            {
-                log.debug("Running worker");
-                start();
-            }
         }
 
         @Override
@@ -124,6 +134,10 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
             catch (InterruptedException ex)
             {
                 log.error("Worker failed to process queue", ex);
+            }
+            finally
+            {
+                stop();
             }
         }
 

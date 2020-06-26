@@ -54,6 +54,9 @@ import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.lang.ref.SoftReference;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -280,20 +283,37 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ratelimitThread.start();
     }
 
+    private void prepareClose()
+    {
+        try
+        {
+            if (socket != null)
+            {
+                Socket rawSocket = this.socket.getSocket();
+                if (rawSocket != null) // attempt to set a 10 second timeout for the close frame
+                    rawSocket.setSoTimeout(10000); // this has no affect if the socket is already stuck in a read call
+            }
+        }
+        catch (SocketException ignored) {}
+    }
+
     public void close()
     {
+        prepareClose();
         if (socket != null)
             socket.sendClose(1000);
     }
 
     public void close(int code)
     {
+        prepareClose();
         if (socket != null)
             socket.sendClose(code);
     }
 
     public void close(int code, String reason)
     {
+        prepareClose();
         if (socket != null)
             socket.sendClose(code, reason);
     }
@@ -372,6 +392,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onConnected(WebSocket websocket, Map<String, List<String>> headers)
     {
+        prepareClose(); // set 10s timeout in-case discord never sends us a HELLO payload
         api.setStatus(JDA.Status.IDENTIFYING_SESSION);
         if (sessionId == null)
         {
@@ -626,8 +647,19 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             previousContext.forEach(MDC::put);
     }
 
-    protected void setupKeepAlive(long timeout)
+    protected void setupKeepAlive(int timeout)
     {
+        try
+        {
+            Socket rawSocket = this.socket.getSocket();
+            if (rawSocket != null)
+                rawSocket.setSoTimeout(timeout + 10000); // setup a timeout when we miss heartbeats
+        }
+        catch (SocketException ex)
+        {
+            LOG.warn("Failed to setup timeout for socket", ex);
+        }
+
         keepAliveThread = executor.scheduleAtFixedRate(() ->
         {
             api.setContext();
@@ -648,6 +680,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             missedHeartbeats = 0;
             LOG.warn("Missed 2 heartbeats! Trying to reconnect...");
+            prepareClose();
             socket.disconnect(4900, "ZOMBIE CONNECTION");
         }
         else
@@ -838,7 +871,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
                 final DataObject data = content.getObject("d");
-                setupKeepAlive(data.getLong("heartbeat_interval"));
+                setupKeepAlive(data.getInt("heartbeat_interval"));
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
@@ -1007,16 +1040,21 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     }
 
     @Override
-    public void onUnexpectedError(WebSocket websocket, WebSocketException cause) throws Exception
+    public void onError(WebSocket websocket, WebSocketException cause) throws Exception
     {
-        handleCallbackError(websocket, cause);
-    }
-
-    @Override
-    public void handleCallbackError(WebSocket websocket, Throwable cause)
-    {
-        LOG.error("There was an error in the WebSocket connection", cause);
-        api.handleEvent(new ExceptionEvent(api, cause, true));
+        if (cause.getCause() instanceof SocketTimeoutException)
+        {
+            LOG.debug("Socket timed out");
+        }
+        else if (cause.getCause() instanceof IOException)
+        {
+            LOG.debug("Encountered I/O error", cause);
+        }
+        else
+        {
+            LOG.error("There was an error in the WebSocket connection", cause);
+            api.handleEvent(new ExceptionEvent(api, cause, true));
+        }
     }
 
     @Override

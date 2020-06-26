@@ -44,11 +44,16 @@ public class SessionConfig
     {
         this.sessionController = sessionController == null ? new ConcurrentSessionController() : sessionController;
         this.httpClient = httpClient;
-        this.webSocketFactory = webSocketFactory == null ? new WebSocketFactory() : webSocketFactory;
+        this.webSocketFactory = webSocketFactory == null ? newWebSocketFactory() : webSocketFactory;
         this.interceptor = interceptor;
         this.flags = flags;
         this.maxReconnectDelay = maxReconnectDelay;
         this.largeThreshold = largeThreshold;
+    }
+
+    private static WebSocketFactory newWebSocketFactory()
+    {
+        return new WebSocketFactory().setConnectionTimeout(10000);
     }
 
     public void setAutoReconnect(boolean autoReconnect)
