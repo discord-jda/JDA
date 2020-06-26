@@ -815,18 +815,26 @@ public class GuildImpl implements Guild
     @Deprecated
     public CompletableFuture<Void> retrieveMembers()
     {
-        if (memberCache.size() >= memberCount)
-            return CompletableFuture.completedFuture(null);
-        Task<Void> task = loadMembers((member) ->
+        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
         {
-            try (UnlockHook hook = memberCache.writeLock())
-            {
-                memberCache.getMap().put(member.getIdLong(), member);
-            }
-        });
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            future.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled GUILD_MEMBERS intent!"));
+            return future;
+        }
+
+        if (isLoaded())
+            return CompletableFuture.completedFuture(null);
+        Task<List<Member>> task = loadMembers();
         CompletableFuture<Void> future = new CompletableFuture<>();
         task.onError(future::completeExceptionally);
-        task.onSuccess(future::complete);
+        task.onSuccess((members) -> {
+            try (UnlockHook hook = memberCache.writeLock())
+            {
+                members.forEach((it) -> memberCache.getMap().put(it.getIdLong(), it));
+            }
+            future.complete(null);
+        });
+
         return future;
     }
 
@@ -837,6 +845,12 @@ public class GuildImpl implements Guild
         Checks.notNull(callback, "Callback");
         if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
             throw new IllegalStateException("Cannot use loadMembers without GatewayIntent.GUILD_MEMBERS!");
+        if (isLoaded())
+        {
+            memberCache.forEachUnordered(callback);
+            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
+        }
+
         MemberChunkManager chunkManager = getJDA().getClient().getChunkManager();
         CompletableFuture<Void> handler = chunkManager.chunkGuild(this, false, (last, list) -> list.forEach(callback));
         return new GatewayTask<>(handler, () -> handler.cancel(false));
