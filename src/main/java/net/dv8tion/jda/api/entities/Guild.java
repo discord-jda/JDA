@@ -2239,6 +2239,8 @@ public interface Guild extends ISnowflake
      * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      * to decide which members to retain in cache.
      *
+     * <p>You can use {@link #findMembers(Predicate)} to filter specific members.
+     *
      * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
      *
      * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
@@ -2253,7 +2255,7 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     default Task<List<Member>> loadMembers()
     {
-        return loadMembers((m) -> true);
+        return findMembers((m) -> true);
     }
 
     /**
@@ -2278,7 +2280,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> loadMembers(@Nonnull Predicate<? super Member> filter)
+    default Task<List<Member>> findMembers(@Nonnull Predicate<? super Member> filter)
     {
         Checks.notNull(filter, "Filter");
         List<Member> list = new ArrayList<>();
@@ -2294,7 +2296,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Retrieves and collects members of this guild into a list.
+     * Retrieves all members of this guild.
      * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      * to decide which members to retain in cache.
      *
