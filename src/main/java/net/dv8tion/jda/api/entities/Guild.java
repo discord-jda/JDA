@@ -53,6 +53,8 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -190,7 +192,6 @@ public interface Guild extends ISnowflake
 
     /**
      * Re-apply the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy} of this session to all {@link Member Members} of this Guild.
-     * <br>This can be useful if used in combination with {@link #retrieveMembers()}.
      *
      * <h2>Example</h2>
      * <pre>{@code
@@ -215,7 +216,6 @@ public interface Guild extends ISnowflake
      *
      * @see #unloadMember(long)
      * @see JDA#unloadUser(long)
-     * @see #retrieveMembers()
      */
     void pruneMemberCache();
 
@@ -829,7 +829,7 @@ public interface Guild extends ISnowflake
      *
      * @return Immutable list of all <b>cached</b> members in this Guild.
      *
-     * @see    #retrieveMembers()
+     * @see    #loadMembers()
      */
     @Nonnull
     default List<Member> getMembers()
@@ -965,7 +965,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.MemberCacheView MemberCacheView}
      *
-     * @see    #retrieveMembers()
+     * @see    #loadMembers()
      */
     @Nonnull
     MemberCacheView getMemberCache();
@@ -2227,9 +2227,98 @@ public interface Guild extends ISnowflake
      * @return {@link CompletableFuture} representing the chunking task
      *
      * @see    #pruneMemberCache()
+     *
+     * @deprecated Replace with {@link #loadMembers()}, {@link #loadMembers(Consumer)}, or {@link #findMembers(Predicate)}
      */
     @Nonnull
+    @Deprecated
+    @DeprecatedSince("4.2.0")
+    @ReplaceWith("loadMembers(Consumer<Member>) or loadMembers()")
     CompletableFuture<Void> retrieveMembers();
+
+    /**
+     * Retrieves and collects members of this guild into a list.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p>You can use {@link #findMembers(Predicate)} to filter specific members.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} - Type: {@link List} of {@link Member}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> loadMembers()
+    {
+        return findMembers((m) -> true);
+    }
+
+    /**
+     * Retrieves and collects members of this guild into a list.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  filter
+     *         Filter to decide which members to include
+     *
+     * @throws IllegalArgumentException
+     *         If the provided filter is null
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} - Type: {@link List} of {@link Member}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> findMembers(@Nonnull Predicate<? super Member> filter)
+    {
+        Checks.notNull(filter, "Filter");
+        List<Member> list = new ArrayList<>();
+        CompletableFuture<List<Member>> future = new CompletableFuture<>();
+        Task<Void> reference = loadMembers((member) -> {
+            if (filter.test(member))
+                list.add(member);
+        });
+        GatewayTask<List<Member>> task = new GatewayTask<>(future, reference::cancel);
+        reference.onSuccess(it -> future.complete(list))
+                 .onError(future::completeExceptionally);
+        return task;
+    }
+
+    /**
+     * Retrieves all members of this guild.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  callback
+     *         Consumer callback for each member
+     *
+     * @throws IllegalArgumentException
+     *         If the callback is null
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} cancellable handle for this request
+     */
+    @Nonnull
+    Task<Void> loadMembers(@Nonnull Consumer<Member> callback);
 
     /**
      * Load the member for the specified user.

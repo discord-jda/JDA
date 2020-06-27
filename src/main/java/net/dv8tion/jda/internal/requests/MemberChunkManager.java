@@ -18,11 +18,19 @@ package net.dv8tion.jda.internal.requests;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.BiConsumer;
 
 public class MemberChunkManager
 {
@@ -61,28 +69,42 @@ public class MemberChunkManager
             timeoutHandle.cancel(false);
     }
 
-    public CompletableFuture<DataObject> chunkGuild(long guildId, String query, int limit)
+    public CompletableFuture<Void> chunkGuild(GuildImpl guild, boolean presence, BiConsumer<Boolean, List<Member>> handler)
     {
         init();
         DataObject request = DataObject.empty()
-                .put("guild_id", guildId)
-                .put("limit", Math.min(100, Math.max(1, limit)))
-                .put("query", query);
+                .put("guild_id", guild.getId())
+                .put("presences", presence)
+                .put("limit", 0)
+                .put("query", "");
 
-        ChunkRequest chunkRequest = new ChunkRequest(request);
+        ChunkRequest chunkRequest = new ChunkRequest(handler, guild, request);
         makeRequest(chunkRequest);
         return chunkRequest;
     }
 
-    public CompletableFuture<DataObject> chunkGuild(long guildId, boolean presence, long[] userIds)
+    public CompletableFuture<Void> chunkGuild(GuildImpl guild, String query, int limit, BiConsumer<Boolean, List<Member>> handler)
     {
         init();
         DataObject request = DataObject.empty()
-                .put("guild_id", guildId)
+                .put("guild_id", guild.getId())
+                .put("limit", Math.min(100, Math.max(1, limit)))
+                .put("query", query);
+
+        ChunkRequest chunkRequest = new ChunkRequest(handler, guild, request);
+        makeRequest(chunkRequest);
+        return chunkRequest;
+    }
+
+    public CompletableFuture<Void> chunkGuild(GuildImpl guild, boolean presence, long[] userIds, BiConsumer<Boolean, List<Member>> handler)
+    {
+        init();
+        DataObject request = DataObject.empty()
+                .put("guild_id", guild.getId())
                 .put("presences", presence)
                 .put("user_ids", userIds);
 
-        ChunkRequest chunkRequest = new ChunkRequest(request);
+        ChunkRequest chunkRequest = new ChunkRequest(handler, guild, request);
         makeRequest(chunkRequest);
         return chunkRequest;
     }
@@ -93,11 +115,18 @@ public class MemberChunkManager
             String nonce = response.getString("nonce", null);
             if (nonce == null || nonce.isEmpty())
                 return false;
-            ChunkRequest request = requests.remove(Long.parseLong(nonce));
+            long key = Long.parseLong(nonce);
+            ChunkRequest request = requests.get(key);
             if (request == null)
                 return false;
 
-            request.complete(response);
+            boolean lastChunk = isLastChunk(response);
+            request.handleChunk(lastChunk, response);
+            if (lastChunk || request.isCancelled())
+            {
+                requests.remove(key);
+                request.complete(null);
+            }
             return true;
         });
     }
@@ -122,14 +151,18 @@ public class MemberChunkManager
         client.sendChunkRequest(request);
     }
 
-    private class ChunkRequest extends CompletableFuture<DataObject>
+    private class ChunkRequest extends CompletableFuture<Void>
     {
+        private final BiConsumer<Boolean, List<Member>> handler;
+        private final GuildImpl guild;
         private final DataObject request;
         private final long nonce;
         private long startTime;
 
-        public ChunkRequest(DataObject request)
+        public ChunkRequest(BiConsumer<Boolean, List<Member>> handler, GuildImpl guild, DataObject request)
         {
+            this.handler = handler;
+            this.guild = guild;
             this.nonce = ThreadLocalRandom.current().nextLong() & ~1;
             this.request = request.put("nonce", getNonce());
         }
@@ -153,6 +186,32 @@ public class MemberChunkManager
         {
             startTime = System.currentTimeMillis();
             return request;
+        }
+
+        private List<Member> toMembers(DataObject chunk)
+        {
+            EntityBuilder builder = guild.getJDA().getEntityBuilder();
+            DataArray memberArray = chunk.getArray("members");
+            TLongObjectMap<DataObject> presences = chunk.optArray("presences").map(it ->
+                builder.convertToUserMap(o -> o.getObject("user").getUnsignedLong("id"), it)
+            ).orElseGet(TLongObjectHashMap::new);
+            List<Member> collect = new ArrayList<>(memberArray.length());
+            for (int i = 0; i < memberArray.length(); i++)
+            {
+                DataObject json = memberArray.getObject(i);
+                long userId = json.getObject("user").getUnsignedLong("id");
+                DataObject presence = presences.get(userId);
+                MemberImpl member = builder.createMember(guild, json, null, presence);
+                builder.updateMemberCache(member);
+                collect.add(member);
+            }
+            return collect;
+        }
+
+        public void handleChunk(boolean last, DataObject chunk)
+        {
+            if (!isCancelled())
+                handler.accept(last, toMembers(chunk));
         }
 
         @Override
