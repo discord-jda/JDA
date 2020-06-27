@@ -2227,10 +2227,12 @@ public interface Guild extends ISnowflake
      * @return {@link CompletableFuture} representing the chunking task
      *
      * @see    #pruneMemberCache()
+     *
+     * @deprecated Replace with {@link #loadMembers()}, {@link #loadMembers(Consumer)}, or {@link #findMembers(Predicate)}
      */
     @Nonnull
     @Deprecated
-    @DeprecatedSince("TBD")
+    @DeprecatedSince("4.2.0")
     @ReplaceWith("loadMembers(Consumer<Member>) or loadMembers()")
     CompletableFuture<Void> retrieveMembers();
 
