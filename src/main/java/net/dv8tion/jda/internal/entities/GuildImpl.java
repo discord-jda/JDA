@@ -852,7 +852,8 @@ public class GuildImpl implements Guild
         }
 
         MemberChunkManager chunkManager = getJDA().getClient().getChunkManager();
-        CompletableFuture<Void> handler = chunkManager.chunkGuild(this, false, (last, list) -> list.forEach(callback));
+        boolean includePresences = getJDA().isIntent(GatewayIntent.GUILD_PRESENCES);
+        CompletableFuture<Void> handler = chunkManager.chunkGuild(this, includePresences, (last, list) -> list.forEach(callback));
         return new GatewayTask<>(handler, () -> handler.cancel(false));
     }
 

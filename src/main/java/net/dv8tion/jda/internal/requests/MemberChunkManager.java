@@ -194,12 +194,13 @@ public class MemberChunkManager
             DataArray memberArray = chunk.getArray("members");
             TLongObjectMap<DataObject> presences = chunk.optArray("presences").map(it ->
                 builder.convertToUserMap(o -> o.getObject("user").getUnsignedLong("id"), it)
-            ).orElse(null);
+            ).orElseGet(TLongObjectHashMap::new);
             List<Member> collect = new ArrayList<>(memberArray.length());
             for (int i = 0; i < memberArray.length(); i++)
             {
                 DataObject json = memberArray.getObject(i);
-                DataObject presence = presences == null ? null : presences.get(json.getObject("user").getUnsignedLong("id"));
+                long userId = json.getObject("user").getUnsignedLong("id");
+                DataObject presence = presences.get(userId);
                 MemberImpl member = builder.createMember(guild, json, null, presence);
                 builder.updateMemberCache(member);
                 collect.add(member);
