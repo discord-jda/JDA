@@ -1912,7 +1912,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * The method calculates the amount of Members that would be pruned if {@link #prune(int)} was executed.
+     * The method calculates the amount of Members that would be pruned if {@link #prune(int, Role...)} was executed.
      * Prunability is determined by a Member being offline for at least <i>days</i> days.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
