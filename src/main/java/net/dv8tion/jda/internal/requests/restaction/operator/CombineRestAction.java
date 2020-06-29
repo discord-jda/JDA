@@ -140,7 +140,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
     public O complete(boolean shouldQueue) throws RateLimitedException
     {
         if (!shouldQueue)
-            return accumulator.apply(action1.complete(), action2.complete());
+            return accumulator.apply(action1.complete(false), action2.complete(false));
         try
         {
             return submit(true).join();
@@ -149,6 +149,8 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
         {
             if (e.getCause() instanceof RuntimeException)
                 throw (RuntimeException) e.getCause();
+            else if (e.getCause() instanceof RateLimitedException)
+                throw (RateLimitedException) e.getCause();
             throw e;
         }
     }

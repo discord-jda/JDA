@@ -29,8 +29,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -262,6 +261,83 @@ public interface RestAction<T>
     }
 
     /**
+     * Creates a RestAction instance which accumulates all results of the provided actions.
+     * <br>If one action fails, all others will be cancelled.
+     *
+     * @param  first
+     *         The initial RestAction starting point
+     * @param  others
+     *         The remaining actions to accumulate
+     * @param  <E>
+     *         The result type
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return RestAction - Type: {@link List} of the results
+     *
+     * @see    #and(RestAction, BiFunction)
+     * @see    #accumulate(RestAction, RestAction[])
+     */
+    @Nonnull
+    @SafeVarargs
+    @CheckReturnValue
+    static <E> RestAction<List<E>> allOf(@Nonnull RestAction<? extends E> first, @Nonnull RestAction<? extends E>... others)
+    {
+        Checks.notNull(first, "RestAction");
+        Checks.noneNull(others, "RestAction");
+        List<RestAction<? extends E>> list = new ArrayList<>(others.length + 1);
+        list.add(first);
+        Collections.addAll(list, others);
+        return allOf(list);
+    }
+
+    /**
+     * Creates a RestAction instance which accumulates all results of the provided actions.
+     * <br>If one action fails, all others will be cancelled.
+     *
+     * @param  actions
+     *         Non-empty collection of RestActions to accumulate
+     * @param  <E>
+     *         The result type
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the collection is empty
+     *
+     * @return RestAction - Type: {@link List} of the results
+     *
+     * @see    #and(RestAction, BiFunction)
+     * @see    #accumulate(RestAction, RestAction[])
+     */
+    @Nonnull
+    @CheckReturnValue
+    static <E> RestAction<List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions)
+    {
+        Checks.notEmpty(actions, "Collection");
+        Iterator<? extends RestAction<? extends E>> iterator = actions.iterator();
+        if (actions.size() == 1)
+            return iterator.next().map(Collections::singletonList);
+
+        List<E> list = new ArrayList<>(actions.size());
+        RestAction<? extends E> handle = iterator.next();
+        handle = handle.map((e) -> {
+            list.add(e);
+            return e;
+        });
+
+        while (iterator.hasNext())
+        {
+            RestAction<? extends E> action = iterator.next();
+            handle = handle.and(action, (a, b) -> {
+                list.add(b);
+                return b;
+            });
+        }
+
+        return handle.map((ignored) -> list);
+    }
+
+    /**
      * The current JDA instance
      *
      * @return The corresponding JDA instance
@@ -278,18 +354,44 @@ public interface RestAction<T>
      *         The checks to run before executing the request, or {@code null} to run no checks
      *
      * @return The current RestAction for chaining convenience
+     *
+     * @see    #getCheck()
+     * @see    #addCheck(BooleanSupplier)
      */
     @Nonnull
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
+    /**
+     * The current checks for this RestAction.
+     *
+     * @return The current checks, or null if none were set
+     *
+     * @see    #setCheck(BooleanSupplier)
+     */
     @Nullable
     default BooleanSupplier getCheck()
     {
         return null;
     }
 
+    /**
+     * Shortcut for {@code setCheck(() -> getCheck().getAsBoolean() && checks.getAsBoolean())}.
+     *
+     * @param  checks
+     *         Other checks to run
+     *
+     * @throws IllegalArgumentException
+     *         If the provided checks are null
+     *
+     * @return The current RestAction for chaining convenience
+     *
+     * @see    #setCheck(BooleanSupplier)
+     */
+    @Nonnull
+    @CheckReturnValue
     default RestAction<T> addCheck(@Nonnull BooleanSupplier checks)
     {
+        Checks.notNull(checks, "Checks");
         return setCheck(() -> (getCheck() == null || getCheck().getAsBoolean()) && checks.getAsBoolean());
     }
 
@@ -819,6 +921,26 @@ public interface RestAction<T>
         return new FlatMapRestAction<>(this, condition, flatMap);
     }
 
+    /**
+     * Combines this RestAction with the provided action.
+     * <br>The result is computed by the provided {@link BiFunction}.
+     *
+     * <p>If one of the actions fails, the other will be cancelled.
+     *
+     * @param  other
+     *         The action to combine
+     * @param  accumulator
+     *         BiFunction to compute the result
+     * @param  <U>
+     *         The type of the other action
+     * @param  <O>
+     *         The result type after applying the accumulator function
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return Combined RestAction
+     */
     @Nonnull
     @CheckReturnValue
     default <U, O> RestAction<O> and(@Nonnull RestAction<U> other, @Nonnull BiFunction<? super T, ? super U, ? extends O> accumulator)
@@ -828,6 +950,21 @@ public interface RestAction<T>
         return new CombineRestAction<>(this, other, accumulator);
     }
 
+    /**
+     * Combines this RestAction with the provided action.
+     *
+     * <p>If one of the actions fails, the other will be cancelled.
+     *
+     * @param  other
+     *         The action to combine
+     * @param  <U>
+     *         The type of the other action
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return Combined RestAction with empty result
+     */
     @Nonnull
     @CheckReturnValue
     default <U> RestAction<Void> and(@Nonnull RestAction<U> other)
@@ -835,6 +972,24 @@ public interface RestAction<T>
         return and(other, (a, b) -> null);
     }
 
+    /**
+     * Accumulates this RestAction with the provided actions into a {@link List}.
+     *
+     * <p>If one of the actions fails, the others will be cancelled.
+     *
+     * @param  first
+     *         The first other action to accumulate into the list
+     * @param  other
+     *         The other actions to accumulate into the list
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return Combined RestAction with empty result
+     *
+     * @see    #allOf(RestAction, RestAction[])
+     * @see    #and(RestAction, BiFunction)
+     */
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
