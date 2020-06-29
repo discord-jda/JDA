@@ -537,9 +537,6 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * @param  allowedMentions
      *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
      *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
      * @return Updated MessageAction for chaining convenience
      */
     @Nonnull

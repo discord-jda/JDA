@@ -17,10 +17,8 @@
 package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
@@ -50,7 +48,6 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
@@ -107,7 +104,6 @@ public class JDAImpl implements JDA
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
-    protected final TLongSet chunkingRequested = TCollections.synchronizedSet(new TLongHashSet());
 
     protected final AuthorizationConfig authConfig;
     protected final ThreadingConfig threadConfig;
@@ -150,16 +146,6 @@ public class JDAImpl implements JDA
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
         this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
-    }
-
-    public void onChunksRequested(GuildImpl guild)
-    {
-        this.chunkingRequested.add(guild.getIdLong());
-    }
-
-    public void onChunksFinished(GuildImpl guild)
-    {
-        this.chunkingRequested.remove(guild.getIdLong());
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -205,8 +191,6 @@ public class JDAImpl implements JDA
 
     public boolean chunkGuild(long id)
     {
-        if (chunkingRequested.contains(id))
-            return true;
         try
         {
             return isIntent(GatewayIntent.GUILD_MEMBERS) && chunkingFilter.filter(id);
