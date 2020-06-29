@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,25 @@
 
 package net.dv8tion.jda.api.requests;
 
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
+/**
+ * Constants for easy use in {@link net.dv8tion.jda.api.exceptions.ErrorResponseException ErrorResponseException} and {@link net.dv8tion.jda.api.exceptions.ErrorHandler ErrorHandler}.
+ *
+ * @see RestAction
+ * @see net.dv8tion.jda.api.exceptions.ErrorHandler ErrorHandler
+ * @see <a href="https://discord.com/developers/docs/topics/opcodes-and-status-codes#json">Discord Error Codes</a>
+ */
 public enum ErrorResponse
 {
     UNKNOWN_ACCOUNT(                10001, "Unknown Account"),
@@ -39,6 +53,13 @@ public enum ErrorResponse
     UNKNOWN_EMOJI(                  10014, "Unknown Emoji"),
     UNKNOWN_WEBHOOK(                10015, "Unknown Webhook"),
     UNKNOWN_BAN(                    10026, "Unknown Ban"),
+    UNKNOWN_SKU(                    10027, "Unknown SKU"),
+    UNKNOWN_STORE_LISTING(          10028, "Unknown Store Listing"),
+    UNKNOWN_ENTITLEMENT(            10029, "Unknown Entitlement"),
+    UNKNOWN_BUILD(                  10030, "Unknown Build"),
+    UNKNOWN_LOBBY(                  10031, "Unknown Lobby"),
+    UNKNOWN_BRANCH(                 10032, "Unknown Branch"),
+    UNKNOWN_REDISTRIBUTABLE(        10036, "Unknown Redistributable"),
     BOTS_NOT_ALLOWED(               20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(              20002, "Only bots can use this endpoint"),
     MAX_GUILDS(                     30001, "Maximum number of Guilds reached (100)"),
@@ -46,9 +67,11 @@ public enum ErrorResponse
     MAX_MESSAGE_PINS(               30003, "Maximum number of pinned messages reached (50)"),
     MAX_USERS_PER_DM(               30004, "Maximum number of recipients reached. (10)"),
     MAX_ROLES_PER_GUILD(            30005, "Maximum number of guild roles reached (250)"),
-    TOO_MANY_REACTIONS(             30010, "Too many reactions"),
+    TOO_MANY_REACTIONS(             30010, "Maximum number of reactions reached (20)"),
     MAX_CHANNELS(                   30013, "Maximum number of guild channels reached (500)"),
+    MAX_INVITES(                    30016, "Maximum number of invites reached (1000)"),
     UNAUTHORIZED(                   40001, "Unauthorized"),
+    REQUEST_ENTITY_TOO_LARGE(       40005, "Request entity too large"),
     USER_NOT_CONNECTED(             40032, "Target user is not connected to voice."),
     MISSING_ACCESS(                 50001, "Missing Access"),
     INVALID_ACCOUNT_TYPE(           50002, "Invalid Account Type"),
@@ -102,6 +125,56 @@ public enum ErrorResponse
     public String getMeaning()
     {
         return meaning;
+    }
+
+    /**
+     * Tests whether the given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} equal to this.
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
+     *
+     * @param  throwable
+     *         The throwable to test
+     *
+     * @return True, if the error response is equal to this
+     */
+    public boolean test(Throwable throwable)
+    {
+        return throwable instanceof ErrorResponseException && ((ErrorResponseException) throwable).getErrorResponse() == this;
+    }
+
+    /**
+     * Provides a tests whether a given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} being one of the provided responses.
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
+     *
+     * @param  responses
+     *         The responses to test for
+     *
+     * @return {@link Predicate} which returns true, if the error response is equal to this
+     */
+    @Nonnull
+    public static Predicate<Throwable> test(@Nonnull ErrorResponse... responses)
+    {
+        Checks.noneNull(responses, "ErrorResponse");
+        EnumSet<ErrorResponse> set = EnumSet.noneOf(ErrorResponse.class);
+        Collections.addAll(set, responses);
+        return test(set);
+    }
+
+    /**
+     * Provides a tests whether a given throwable is an {@link ErrorResponseException} with {@link ErrorResponseException#getErrorResponse()} being one of the provided responses.
+     * <br>This is very useful in combination with {@link RestAction#onErrorMap(Predicate, Function)} and {@link RestAction#onErrorFlatMap(Predicate, Function)}!
+     *
+     * @param  responses
+     *         The responses to test for
+     *
+     * @return {@link Predicate} which returns true, if the error response is equal to this
+     */
+    @Nonnull
+    public static Predicate<Throwable> test(@Nonnull Collection<ErrorResponse> responses)
+    {
+        Checks.noneNull(responses, "ErrorResponse");
+        EnumSet<ErrorResponse> set = EnumSet.copyOf(responses);
+        return (error) -> error instanceof ErrorResponseException && set.contains(((ErrorResponseException) error).getErrorResponse());
+
     }
 
     @Nonnull

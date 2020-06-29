@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -75,12 +76,28 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
      * <br>If the member was loaded through a presence update (lazy loading) this will be identical
-     * to the creation time of the guild.
+     * to the creation time of the guild. You can use {@link #hasTimeJoined()} to test whether this time
+     * can be relied on.
      *
-     * @return The Join Date.
+     * <p>You can use {@link Guild#retrieveMemberById(String) guild.retrieveMemberById(member.getId())}
+     * to load the join time.
+     *
+     * @return The time at which this user has joined the guild.
      */
     @Nonnull
     OffsetDateTime getTimeJoined();
+
+    /**
+     * Whether this member has accurate {@link #getTimeJoined()} information.
+     * <br>Discord doesn't always provide this information when we load members so we have to fallback
+     * to the {@link Guild} creation time.
+     *
+     * <p>You can use {@link Guild#retrieveMemberById(String) guild.retrieveMemberById(member.getId())}
+     * to load the join time.
+     *
+     * @return True, if {@link #getTimeJoined()} is accurate
+     */
+    boolean hasTimeJoined();
 
     /**
      * The time when this member boosted the guild.
@@ -99,6 +116,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p>This can be used to get the Member's VoiceChannel using {@link GuildVoiceState#getChannel()}.
      *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled!
+     *
      * @return {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState}
      */
     @Nullable
@@ -107,6 +126,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     /**
      * The activities of the user.
      * <br>If the user does not currently have any activity, this returns an empty list.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled!
      *
      * @return Immutable list of {@link Activity Activities} for the user
      */
@@ -129,6 +150,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p>If a user is not online on the specified type,
      * {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} is returned.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} to be enabled!
      *
      * @param  type
      *         The type of client
@@ -186,13 +209,17 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * <br>The roles are ordered based on their position. The highest role being at index 0
      * and the lowest at the last index.
      *
-     * <p>A Member's roles can be changed using the <b>addRolesToMember</b>, <b>removeRolesFromMember</b>, and <b>modifyMemberRoles</b>
+     * <p>A Member's roles can be changed using the {@link Guild#addRoleToMember(Member, Role)}, {@link Guild#removeRoleFromMember(Member, Role)}, and {@link Guild#modifyMemberRoles(Member, Collection, Collection)}
      * methods in {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>The Public Role ({@code @everyone}) is not included in the returned immutable list of roles
      * <br>It is implicit that every member holds the Public Role in a Guild thus it is not listed here!</b>
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles} for this Member.
+     *
+     * @see    Guild#addRoleToMember(Member, Role)
+     * @see    Guild#removeRoleFromMember(Member, Role)
+     * @see    Guild#modifyMemberRoles(Member, Collection, Collection)
      */
     @Nonnull
     List<Role> getRoles();
@@ -298,7 +325,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -344,7 +371,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the
      * {@link net.dv8tion.jda.api.entities.Member Member} until Discord sends the
-     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -389,7 +416,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * Kicks this Member from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -425,7 +452,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * Kicks this from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
-     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent GuildMemberLeaveEvent}.
+     * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:

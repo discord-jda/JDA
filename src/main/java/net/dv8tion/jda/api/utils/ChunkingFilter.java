@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@ import javax.annotation.Nonnull;
  * Filter function for member chunking of guilds.
  * <br>The filter decides based on the provided guild id whether chunking should be done
  * on guild initialization.
+ *
+ * <p><b>To use chunking, the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent must be enabled!
+ * Otherwise you <u>must</u> use {@link #NONE}!</b>
  *
  * @since 4.1.0
  *
@@ -66,6 +69,8 @@ public interface ChunkingFilter
     static ChunkingFilter include(@Nonnull long... ids)
     {
         Checks.notNull(ids, "ID array");
+        if (ids.length == 0)
+            return NONE;
         return (guild) -> {
             for (long id : ids)
             {
@@ -92,6 +97,8 @@ public interface ChunkingFilter
     static ChunkingFilter exclude(@Nonnull long... ids)
     {
         Checks.notNull(ids, "ID array");
+        if (ids.length == 0)
+            return ALL;
         return (guild) -> {
             for (long id : ids)
             {

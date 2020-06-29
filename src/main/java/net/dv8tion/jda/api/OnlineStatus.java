@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public enum OnlineStatus
      *
      * @return String representation of the valid API key for this OnlineStatus
      *
-     * @see    <a href="https://discordapp.com/developers/docs/topics/gateway#presence-update">PRESENCE_UPDATE</a>
+     * @see    <a href="https://discord.com/developers/docs/topics/gateway#presence-update">PRESENCE_UPDATE</a>
      */
     public String getKey()
     {

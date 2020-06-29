@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
     {
-        StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?client_id=");
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
         builder.append(this.getId());
         builder.append("&scope=bot");
         if (permissions != null && !permissions.isEmpty())

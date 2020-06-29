@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.Objects;
 
 /**
  * Used to hold additional information about a users {@link Activity Activity}
- * relevant to <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
+ * relevant to <a href="https://discord.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
  *
  * @since  3.4.0
  *

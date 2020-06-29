@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.managers;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.audio.AudioReceiveHandler;
@@ -183,7 +185,12 @@ public interface AudioManager
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that JDA is attempting to setup an audio connection to.
      *
      * @return True, if JDA is currently attempting to create an audio connection.
+     *
+     * @deprecated The internals have changed and this is no longer used
      */
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     boolean isAttemptingToConnect();
 
     /**
@@ -195,8 +202,13 @@ public interface AudioManager
      *
      * @return The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that JDA is attempting to create an
      *         audio connection with, or {@code null} if JDA isn't attempting to create a connection.
+     *
+     * @deprecated The internals have changed and this is no longer used
      */
     @Nullable
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.0")
     VoiceChannel getQueuedAudioConnection();
 
     /**

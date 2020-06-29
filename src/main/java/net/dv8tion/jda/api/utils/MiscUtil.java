@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class MiscUtil
      *
      * Discord determines which guilds a shard is connect to using the following format:
      * {@code shardId == (guildId >>> 22) % totalShards}
-     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * @param guildId
      *        The guild id.
@@ -54,7 +54,7 @@ public class MiscUtil
      *
      * Discord determines which guilds a shard is connect to using the following format:
      * {@code shardId == (guildId >>> 22) % totalShards}
-     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * @param guildId
      *        The guild id.
@@ -73,7 +73,7 @@ public class MiscUtil
      *
      * Discord determines which guilds a shard is connect to using the following format:
      * {@code shardId == (guildId >>> 22) % totalShards}
-     * <br>Source for formula: <a href="https://discordapp.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
+     * <br>Source for formula: <a href="https://discord.com/developers/docs/topics/gateway#sharding">Discord Documentation</a>
      *
      * @param guild
      *        The guild.

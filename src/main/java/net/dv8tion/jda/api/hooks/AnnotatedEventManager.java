@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,6 +103,8 @@ public class AnnotatedEventManager implements IEventManager
                     catch (Throwable throwable)
                     {
                         JDAImpl.LOG.error("One of the EventListeners had an uncaught exception", throwable);
+                        if (throwable instanceof Error)
+                            throw (Error) throwable;
                     }
                 }));
             }

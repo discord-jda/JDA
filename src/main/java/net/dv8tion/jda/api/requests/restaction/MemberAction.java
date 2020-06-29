@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -37,13 +38,21 @@ import java.util.function.BooleanSupplier;
  * @see    Guild#addMember(String, User)
  * @see    Guild#addMember(String, long)
  * @see    Guild#addMember(String, String)
- * @see    <a href="https://discordapp.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
+ * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
 public interface MemberAction extends RestAction<Void>
 {
     @Nonnull
     @Override
     MemberAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    MemberAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    MemberAction deadline(long timestamp);
 
     /**
      * The access token

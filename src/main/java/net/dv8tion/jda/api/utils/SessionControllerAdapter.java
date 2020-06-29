@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ public class SessionControllerAdapter implements SessionController
     {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
-            (response, request) -> response.getObject().getString("url")).complete();
+                (response, request) -> response.getObject().getString("url")).priority().complete();
     }
 
     @Nonnull
@@ -109,12 +109,13 @@ public class SessionControllerAdapter implements SessionController
                     }
                     else if (response.code == 401)
                     {
-                        api.verifyToken(true);
+                        api.shutdownNow();
+                        throw new LoginException("The provided token is invalid!");
                     }
                     else
                     {
                         request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                            response.toString()));
+                                response.toString()));
                     }
                 }
                 catch (Exception e)
@@ -122,7 +123,7 @@ public class SessionControllerAdapter implements SessionController
                     request.onFailure(e);
                 }
             }
-        }.complete();
+        }.priority().complete();
     }
 
     @Nonnull
@@ -231,8 +232,10 @@ public class SessionControllerAdapter implements SessionController
                     Throwable t = e.getCause();
                     if (t instanceof OpeningHandshakeException)
                         log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                    else if (!JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
+                    else if (t != null && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
                         log.error("Failed to establish connection for a node, appending to queue", e);
+                    else
+                        log.error("Unexpected exception when running connect node", e);
                     appendSession(node);
                 }
                 catch (InterruptedException e)

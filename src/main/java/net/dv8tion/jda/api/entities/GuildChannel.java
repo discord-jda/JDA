@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -25,8 +24,6 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -99,6 +96,9 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * <br>Higher values mean they are displayed lower in the Client. Position 0 is the top most GuildChannel
      * Channels of a {@link net.dv8tion.jda.api.entities.Guild Guild} do not have to have continuous positions
      *
+     * @throws IllegalStateException
+     *         If this channel is not in the guild cache
+     *
      * @return Zero-based int of position of the GuildChannel.
      */
     int getPosition();
@@ -148,6 +148,9 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * If you would like only {@link net.dv8tion.jda.api.entities.Member Member} overrides or only {@link net.dv8tion.jda.api.entities.Role Role}
      * overrides, use {@link #getMemberPermissionOverrides()} or {@link #getRolePermissionOverrides()} respectively.
      *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
+     * Without that CacheFlag, this list will only contain overrides for the currently logged in account and roles.
+     *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for this {@link GuildChannel GuildChannel}.
      */
@@ -157,6 +160,8 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.Member Member} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      * that are part of this {@link GuildChannel GuildChannel}.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled!
      *
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for {@link net.dv8tion.jda.api.entities.Member Member}
@@ -368,13 +373,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
         PermissionOverride override = getPermissionOverride(permissionHolder);
         if (override != null)
             return override.getManager();
-        PermissionOverrideAction action = putPermissionOverride(permissionHolder);
-        // Check if we have some information cached already
-        TLongObjectMap<DataObject> cache = ((GuildImpl) getGuild()).getOverrideMap(permissionHolder.getIdLong());
-        DataObject json = cache == null ? null : cache.get(getIdLong());
-        if (json != null)
-            action = action.setPermissions(json.getLong("allow"), json.getLong("deny"));
-        return action;
+        return putPermissionOverride(permissionHolder);
     }
 
     /**

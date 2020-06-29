@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class MessageReactionHandler extends SocketHandler
             Optional<DataObject> memberJson = content.optObject("member");
             if (memberJson.isPresent()) // Check if we can load a member here
             {
-                if (member == null || member.isIncomplete()) // do we need to load a member?
+                if (member == null || !member.hasTimeJoined()) // do we need to load a member?
                     member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
             }
             if (member == null && add && guild.isLoaded())

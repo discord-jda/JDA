@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationActi
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -47,8 +48,7 @@ public interface AuditableRestAction<T> extends RestAction<T>
      * from {@link net.dv8tion.jda.api.entities.Guild#retrieveAuditLogs() Guild.retrieveAuditLogs()}!
      *
      * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
-     * <br><b>Note: This may not be available to accounts for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}.
-     * <br>Using methods with a reason parameter will always work and <u>override</u> this header.</b>
+     * <br>Using methods with a reason parameter will always work and <u>override</u> this header.
      * (ct. {@link net.dv8tion.jda.api.entities.Guild#ban(net.dv8tion.jda.api.entities.User, int, String) Guild.ban(User, int, String)})
      *
      * @param  reason
@@ -67,4 +67,18 @@ public interface AuditableRestAction<T> extends RestAction<T>
     @Nonnull
     @Override
     AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nonnull
+    @Override
+    AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
+
+    /**
+     * {@inheritDoc}
+     */
+    @Nonnull
+    @Override
+    AuditableRestAction<T> deadline(long timestamp);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
             if (equals(channels.get(i)))
                 return i;
         }
-        throw new AssertionError("Somehow when determining position we never found the StoreChannel in the Guild's channels? wtf?");
+        throw new IllegalStateException("Somehow when determining position we never found the StoreChannel in the Guild's channels? wtf?");
     }
 
     @Nonnull

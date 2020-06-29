@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
+import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -33,6 +34,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.pagination.MessagePaginationActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.pagination.ReactionPaginationActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 
@@ -322,10 +324,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does
      *         not have {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         if the provided text is null, empty or longer than 2000 characters
      * @throws java.lang.UnsupportedOperationException
@@ -374,10 +372,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         If the provided format text is {@code null}, empty or longer than 2000 characters
      * @throws java.lang.UnsupportedOperationException
@@ -424,13 +418,9 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
      *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         If the provided embed is {@code null} or if the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}
+     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
@@ -470,9 +460,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *     <br>The send request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
      *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNAUTHORIZED UNAUTHORIZED}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the recipient User blocked you</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
@@ -492,14 +479,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS} (if this message is only an embed)</li>
      *         </ul>
-     * @throws net.dv8tion.jda.api.exceptions.VerificationLevelException
-     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel} and
-     *         {@link net.dv8tion.jda.api.entities.TextChannel#getGuild() TextChannel.getGuild()}{@link net.dv8tion.jda.api.entities.Guild#checkVerification() .checkVerification()}
-     *         returns false.
      * @throws java.lang.IllegalArgumentException
      *         If the provided message is {@code null} or the provided {@link net.dv8tion.jda.api.entities.Message Message}
      *         contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}
+     *         that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
@@ -620,9 +603,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ATTACH_FILES Permission.MESSAGE_ATTACH_FILES}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNAUTHORIZED UNAUTHORIZED}
-     *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the recipient User blocked you</li>
-     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#CANNOT_SEND_TO_USER CANNOT_SEND_TO_USER}
      *     <br>If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} and the currently logged in account
      *         does not share any Guilds with the recipient User</li>
@@ -665,9 +645,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         Checks.notNull(file, "file");
         Checks.check(file.exists() && file.canRead(),
-            "Provided file is either null, doesn't exist or is not readable!");
-        Checks.check(file.length() <= getJDA().getSelfUser().getAllowedFileSize(),
-            "File is too big! Max file-size is 8 MiB for normal and 50 MiB for nitro users");
+                    "Provided file doesn't exist or cannot be read!");
         Checks.notNull(fileName, "fileName");
 
         try
@@ -794,8 +772,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     {
         Checks.notNull(data, "data");
         Checks.notNull(fileName, "fileName");
-        final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
-        Checks.check(data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
+
         return sendFile(new ByteArrayInputStream(data), fileName, options);
     }
 
@@ -1172,7 +1149,7 @@ public interface MessageChannel extends ISnowflake, Formattable
     @CheckReturnValue
     default MessageHistory.MessageRetrieveAction getHistoryAround(long messageId, int limit)
     {
-        return getHistoryAround(Long.toUnsignedString(messageId), limit );
+        return getHistoryAround(Long.toUnsignedString(messageId), limit);
     }
 
     /**
@@ -1727,8 +1704,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1745,7 +1722,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
      *             <li>If provided {@code unicode} is {@code null} or empty.</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -1812,8 +1789,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1829,7 +1806,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The unicode characters to react with
      *
      * @throws java.lang.IllegalArgumentException
-     *         If provided {@code unicode} is {@code null} or empty.
+     *         <ul>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
+     *             <li>If provided {@code unicode} is {@code null} or empty.</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have:
@@ -1870,10 +1850,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
-     *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1934,9 +1912,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
-     *     <br>The request was attempted after the provided {@link net.dv8tion.jda.api.entities.Emote Emote}
-     *         was deleted.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -1953,7 +1930,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is not positive.</li>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
      *             <li>If provided {@code emote} is {@code null}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -2000,10 +1977,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2020,7 +1997,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
      *             <li>If provided {@code unicode} is {@code null} or empty.</li>
      *         </ul>
      *
@@ -2068,10 +2045,10 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
      *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2088,7 +2065,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
      *             <li>If provided {@code unicode} is {@code null} or empty.</li>
      *         </ul>
      *
@@ -2122,10 +2099,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
-     *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2142,7 +2117,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
      *             <li>If provided {@code emote} is {@code null}.</li>
      *         </ul>
      *
@@ -2177,10 +2152,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION} in the
      *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
      *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI}
-     *     <br>The provided unicode character does not refer to a known emoji unicode character.
-     *     <br>Proper unicode characters for emojis can be found at
-     *         <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">http://unicode.org/emoji/charts/full-emoji-list.html</a></li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
@@ -2197,7 +2170,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If provided {@code messageId} is {@code null} or empty.</li>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
      *             <li>If provided {@code emote} is {@code null}.</li>
      *         </ul>
      *
@@ -2208,6 +2181,213 @@ public interface MessageChannel extends ISnowflake, Formattable
     default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote)
     {
         return removeReactionById(Long.toUnsignedString(messageId), emote);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given unicode emoji.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  unicode
+     *         The unicode emote to retrieve users for.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
+     *             <li>If the provided unicode emoji is {@code null} or empty.</li>
+     *         </ul>
+     *
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull String unicode)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notEmpty(unicode, "Emoji");
+        Checks.noWhitespace(unicode, "Emoji");
+
+        return new ReactionPaginationActionImpl(this, messageId, EncodingUtil.encodeReaction(unicode));
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given unicode emoji.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  unicode
+     *         The unicode emote to retrieve users for.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
+     *             <li>If provided unicode emoji is {@code null} or empty.</li>
+     *         </ul>
+     *
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull String unicode)
+    {
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), unicode);
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link net.dv8tion.jda.api.entities.Emote emote}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emote
+     *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is {@code null} or not a valid snowflake.</li>
+     *             <li>If provided {@link net.dv8tion.jda.api.entities.Emote Emote} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(@Nonnull String messageId, @Nonnull Emote emote)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        Checks.notNull(emote, "Emote");
+
+        return new ReactionPaginationActionImpl(this, messageId, String.format("%s:%s", emote, emote.getId()));
+    }
+
+    /**
+     * This obtains the {@link net.dv8tion.jda.api.entities.User users} who reacted to a message using the given {@link net.dv8tion.jda.api.entities.Emote emote}.
+     *
+     * <p>Messages maintain a list of reactions, alongside a list of users who added them.
+     *
+     * <p>Using this data, we can obtain a {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction}
+     * of the users who've reacted to the given message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
+     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to retrieve the users from.
+     * @param  emote
+     *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
+     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If provided {@code messageId} is not a valid snowflake.</li>
+     *             <li>If provided {@link net.dv8tion.jda.api.entities.Emote Emote} is {@code null}.</li>
+     *         </ul>
+     *
+     * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReactionPaginationAction retrieveReactionUsersById(long messageId, @Nonnull Emote emote)
+    {
+        return retrieveReactionUsersById(Long.toUnsignedString(messageId), emote);
     }
 
     /**
@@ -2254,7 +2434,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.ADD_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<Void>(getJDA(), route);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**
@@ -2284,7 +2464,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         The message to pin.
      *
      * @throws IllegalArgumentException
-     *         if the provided messageId is not positive.
+     *         if the provided {@code messageId} is not a valid snowflake.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
@@ -2572,7 +2752,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code newContent} is {@code null}.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.Message Message}
      *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
@@ -2625,7 +2805,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *             <li>If provided {@code newContent} is {@code null}.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.Message Message}
      *                 contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} which
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a TextChannel and this account does not have
@@ -2790,7 +2970,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is {@code null} or empty.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}
@@ -2844,7 +3024,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         <ul>
      *             <li>If provided {@code messageId} is not positive.</li>
      *             <li>If provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      * @throws IllegalStateException
      *         If the provided MessageEmbed is {@code null}

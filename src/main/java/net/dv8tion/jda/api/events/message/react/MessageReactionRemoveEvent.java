@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  */
 public class MessageReactionRemoveEvent extends GenericMessageReactionEvent
 {
-    public MessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user,
+    public MessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,
                                       @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, user, member, reaction, userId);

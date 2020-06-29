@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -138,11 +140,64 @@ public interface Message extends ISnowflake, Formattable
     int MAX_CONTENT_LENGTH = 2000;
 
     /**
-     * Pattern used to find instant invites in messages.
+     * Pattern used to find instant invites in strings.
+     *
+     * <p>The only named group is at index 1 with the name {@code "code"}.
      *
      * @see #getInvites()
      */
-    Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
+    Pattern INVITE_PATTERN = Pattern.compile(
+            "(?:https?://)?" +                     // Scheme
+            "(?:\\w+\\.)?" +                       // Subdomain
+            "discord(?:(?:app)?\\.com" +           // Discord domain
+            "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
+            "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
+     *
+     * <h2>Groups</h2>
+     * <table>
+     *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
+     *   <tr>
+     *     <th>Index</th>
+     *     <th>Name</th>
+     *     <th>Description</th>
+     *   </tr>
+     *   <tr>
+     *     <td>0</td>
+     *     <td>N/A</td>
+     *     <td>The entire link</td>
+     *   </tr>
+     *   <tr>
+     *     <td>1</td>
+     *     <td>guild</td>
+     *     <td>The ID of the target guild</td>
+     *   </tr>
+     *   <tr>
+     *     <td>2</td>
+     *     <td>channel</td>
+     *     <td>The ID of the target channel</td>
+     *   </tr>
+     *   <tr>
+     *     <td>3</td>
+     *     <td>message</td>
+     *     <td>The ID of the target message</td>
+     *   </tr>
+     * </table>
+     * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+     * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
+     *
+     * @see #getJumpUrl()
+     */
+    Pattern JUMP_URL_PATTERN = Pattern.compile(
+            "(?:https?://)?" +                                             // Scheme
+            "(?:\\w+\\.)?" +                                               // Subdomain
+            "discord(?:app)?\\.com" +                                      // Discord domain
+            "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
+            "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
@@ -403,15 +458,20 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
-     * <br>This is just a shortcut to {@link #getGuild()}{@link net.dv8tion.jda.api.entities.Guild#getMember(User) .getMember(getAuthor())}.
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
-     * if it was not sent from a TextChannel.
+     * if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
+     *
+     * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
+     * This will return null if the message was retrieved through {@link MessageChannel#retrieveMessageById(long)} or similar means,
+     * unless the member is already cached.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
-     * @return Message author, or {@code null} if the message was not sent from a TextChannel.
+     * @return Message author, or {@code null} if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
+     *
+     * @see    #isWebhookMessage()
      */
     @Nullable
     Member getMember();
@@ -454,7 +514,7 @@ public interface Message extends ISnowflake, Formattable
      * The raw textual content of this message. Does not resolve {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
      * entities like {@link #getContentDisplay()} does. This means that this is the completely raw textual content of the message
      * received from Discord and can contain mentions specified by
-     * <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
+     * <a href="https://discord.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
@@ -794,7 +854,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalStateException
      *         If the message attempting to be edited was not created by the currently logged in account, or
      *         if the passed-in embed is {@code null}
-     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}
+     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      *
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
@@ -881,7 +941,7 @@ public interface Message extends ISnowflake, Formattable
      *         <ul>
      *             <li>If the message attempting to be edited was not created by the currently logged in account</li>
      *             <li>If the message contains a MessageEmbed that is not
-     *                 {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable(net.dv8tion.jda.api.AccountType) sendable}</li>
+     *                 {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}</li>
      *         </ul>
      *
      * @return {@link MessageAction MessageAction}
@@ -1063,6 +1123,9 @@ public interface Message extends ISnowflake, Formattable
      *         or {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
      * </ul>
@@ -1096,7 +1159,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Adds a reaction to this Message using a unicode emoji.
      * <br>A reference of unicode emojis can be found here:
-     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
      *
@@ -1132,6 +1195,11 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_ADD_REACTION Permission.MESSAGE_ADD_REACTION}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when adding the reaction.</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
      * </ul>
@@ -1161,6 +1229,8 @@ public interface Message extends ISnowflake, Formattable
      * Removes all reactions from this Message.
      * <br>This is useful for moderator commands that wish to remove all reactions at once from a specific message.
      *
+     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
      * <p><b>Neither success nor failure of this request will affect this Message's {@link #getReactions()} return as Message is immutable.</b>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -1187,12 +1257,103 @@ public interface Message extends ISnowflake, Formattable
      *         in the channel.
      * @throws java.lang.IllegalStateException
      *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> clearReactions();
+
+    /**
+     * Removes all reactions for the specified emoji.
+     *
+     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
+     * <h2>Example</h2>
+     * <pre><code>
+     * // custom
+     * message.clearReactions("minn:245267426227388416").queue();
+     * // unicode escape
+     * message.clearReactions("&#92;uD83D&#92;uDE02").queue();
+     * // codepoint notation
+     * message.clearReactions("U+1F602").queue();
+     * </code></pre>
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  unicode
+     *         The unicode emoji to remove reactions for
+     *
+     * @throws UnsupportedOperationException
+     *         If this reaction happened in a private channel
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactions(@Nonnull String unicode);
+
+    /**
+     * Removes all reactions for the specified emote.
+     *
+     * <p>Please note that you <b>can't</b> clear reactions if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The currently logged in account lost access to the channel by either being removed from the guild
+     *         or losing the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message was deleted.</li>
+     * </ul>
+     *
+     * @param  emote
+     *         The {@link Emote} to remove reactions for
+     *
+     * @throws UnsupportedOperationException
+     *         If this reaction happened in a private channel
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
+     * @throws IllegalArgumentException
+     *         If provided with null
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.0
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> clearReactions(@Nonnull Emote emote);
 
     /**
      * Removes a reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
@@ -1212,6 +1373,9 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1243,6 +1407,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes a {@link net.dv8tion.jda.api.entities.User User's} reaction from this Message using an {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
+     * <p>Please note that you <b>can't</b> remove reactions of other users if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
+     *
      * <p>This message instance will not be updated by this operation.
      *
      * <p>Reactions are the small emoji/emotes below a message that have a counter beside them
@@ -1262,6 +1428,9 @@ public interface Message extends ISnowflake, Formattable
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} when removing the reaction.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1283,7 +1452,12 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is fake {@link net.dv8tion.jda.api.entities.Emote#isFake() Emote.isFake()}.</li>
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
+     *             <li>If the provided user is null</li>
      *         </ul>
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1296,7 +1470,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes a reaction from this Message using a unicode emoji.
      * <br>A reference of unicode emojis can be found here:
-     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
      *
      * <p>This message instance will not be updated by this operation.
      *
@@ -1321,6 +1495,11 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1348,7 +1527,9 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Removes a reaction from this Message using a unicode emoji.
      * <br>A reference of unicode emojis can be found here:
-     * <a href="http://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     * <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a>.
+     *
+     * <p>Please note that you <b>can't</b> remove reactions of other users if this message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
      *
      * <p>This message instance will not be updated by this operation.
      *
@@ -1363,6 +1544,11 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The reaction request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The reaction request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
@@ -1387,7 +1573,11 @@ public interface Message extends ISnowflake, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}</li>
      *         </ul>
      * @throws java.lang.IllegalArgumentException
-     *         If the provided unicode emoji is null or empty.
+     *         If the provided unicode emoji is null or empty or if the provided user is null.
+     * @throws java.lang.IllegalStateException
+     *         If this message was <b>not</b> sent in a
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -1411,6 +1601,9 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The retrieve request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided emote was deleted, doesn't exist, or is not available to the currently logged-in account in this channel.</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
@@ -1450,6 +1643,11 @@ public interface Message extends ISnowflake, Formattable
      *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
      *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_EMOJI UNKNOWN_EMOJI}
+     *     <br>The provided unicode character does not refer to a known emoji unicode character.
+     *     <br>Proper unicode characters for emojis can be found here:
+     *         <a href="https://unicode.org/emoji/charts/full-emoji-list.html" target="_blank">Emoji Table</a></li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
      *         The reaction request was attempted after the Message had been deleted.</li>
      * </ul>
@@ -1481,26 +1679,11 @@ public interface Message extends ISnowflake, Formattable
      * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
      * obtained through this method by using the emoji's unicode value.
      *
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
-     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
-     * </ul>
-     *
      * @param  unicode
      *         The unicode value of the reaction emoji.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
-     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode value is null or empty.
      *
@@ -1518,28 +1701,13 @@ public interface Message extends ISnowflake, Formattable
      * <p>Messages store reactions by keeping a list of reaction names.
      *
      * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
-     * obtained through this method by using the emoji's id.
-     *
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
-     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
-     * </ul>
+     * obtained through this method by using the emote's id.
      *
      * @param  id
-     *         The string id of the reaction emoji.
+     *         The string id of the reaction emote.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
-     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
@@ -1557,30 +1725,13 @@ public interface Message extends ISnowflake, Formattable
      * <p>Messages store reactions by keeping a list of reaction names.
      *
      * <p>An instance of the related {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} can be
-     * obtained through this method by using the emoji's id.
-     *
-     *
-     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
-     * <ul>
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
-     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
-     *         due to {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} being revoked
-     *     <br>Also can happen if the account lost the {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
-     *
-     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
-     *         The reaction request was attempted after the Message had been deleted.</li>
-     * </ul>
+     * obtained through this method by using the emote's id.
      *
      * @param  id
-     *         The long id of the reaction emoji.
+     *         The long id of the reaction emote.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
-     *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided id is not a valid snowflake.
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
@@ -1662,7 +1813,7 @@ public interface Message extends ISnowflake, Formattable
     MessageType getType();
 
     /**
-     * Mention formatting constants, useful for use with {@link java.util.regex.Pattern Patterns}
+     * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
      */
     enum MentionType
     {
@@ -1670,42 +1821,58 @@ public interface Message extends ISnowflake, Formattable
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.User User}/{@link net.dv8tion.jda.api.entities.Member Member}
          * <br>The first and only group matches the id of the mention.
          */
-        USER("<@!?(\\d+)>"),
+        USER("<@!?(\\d+)>", "users"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Role Role}
          * <br>The first and only group matches the id of the mention.
          */
-        ROLE("<@&(\\d+)>"),
+        ROLE("<@&(\\d+)>", "roles"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
          * <br>The first and only group matches the id of the mention.
          */
-        CHANNEL("<#(\\d+)>"),
+        CHANNEL("<#(\\d+)>", null),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Emote Emote}
          * <br>The first group matches the name of the emote and the second the id of the mention.
          */
-        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>"),
+        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>", null),
         /**
          * Represents a mention for all active users, literal {@code @here}
          */
-        HERE("@here"),
+        HERE("@here", "everyone"),
         /**
          * Represents a mention for all users in a server, literal {@code @everyone}.
          */
-        EVERYONE("@everyone");
+        EVERYONE("@everyone", "everyone");
 
         private final Pattern pattern;
+        private final String parseKey;
 
-        MentionType(String regex)
+        MentionType(String regex, String parseKey)
         {
             this.pattern = Pattern.compile(regex);
+            this.parseKey = parseKey;
         }
 
         @Nonnull
         public Pattern getPattern()
         {
             return pattern;
+        }
+
+        /**
+         * The Key returned by this method is used to determine the group or parsable mention group they are part of.
+         * <br>It is used internally in methods like {@link net.dv8tion.jda.api.requests.restaction.MessageAction#allowedMentions(Collection) MessageAction#allowedMentions(Collection)}.
+         * <p>
+         * Returns {@code null}, when they don't belong to any mention group.
+         *
+         * @return Nullable group key for mention parsing
+         */
+        @Nullable
+        public String getParseKey()
+        {
+            return parseKey;
         }
     }
 
@@ -2026,11 +2193,23 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
-            Checks.check(!file.exists() || file.canWrite(), "Cannot write to file %s", file.getName());
+            try
+            {
+                if (!file.exists())
+                    file.createNewFile();
+                else
+                    Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
+            }
+            catch (IOException e)
+            {
+                throw new IllegalArgumentException("Cannot create file", e);
+            }
+
             return retrieveInputStream().thenApplyAsync((stream) -> {
                 try (FileOutputStream out = new FileOutputStream(file))
                 {

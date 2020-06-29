@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,18 +216,18 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             this.overridesAdd.clear();
 
             //set all current overrides to-be-removed
-            getChannel().getPermissionOverrides().forEach(permO ->
-                this.overridesRem.add(getId(permO.isRoleOverride() ? permO.getRole() : permO.getMember()))
-            );
+            getChannel().getPermissionOverrides()
+                .stream()
+                .mapToLong(PermissionOverride::getIdLong)
+                .forEach(overridesRem::add);
 
             //re-add all perm-overrides of syncSource
-            syncSource.getPermissionOverrides().forEach(permO ->
-            {
-                int type = permO.isRoleOverride() ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
-                long id = getId(permO.isRoleOverride() ? permO.getRole() : permO.getMember());
+            syncSource.getPermissionOverrides().forEach(override -> {
+                int type = override.isRoleOverride() ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
+                long id = override.getIdLong();
 
                 this.overridesRem.remove(id);
-                this.overridesAdd.put(id, new PermOverrideData(type, id, permO.getAllowedRaw(), permO.getDeniedRaw()));
+                this.overridesAdd.put(id, new PermOverrideData(type, id, override.getAllowedRaw(), override.getDeniedRaw()));
             });
 
             set |= PERMISSION;

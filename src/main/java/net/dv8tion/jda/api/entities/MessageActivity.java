@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ public class MessageActivity
     /**
      * The current {@link net.dv8tion.jda.api.entities.MessageActivity.ActivityType ActivityType}
      *
-     * @return the type of the activity.
+     * @return the type of the activity, or {@link ActivityType#UNKNOWN UNKNOWN}
      */
     @Nonnull
     public ActivityType getType()
@@ -50,7 +50,7 @@ public class MessageActivity
     /**
      * The party id discord uses internally, it may be {@code null}.
      *
-     * @return Possibly-null party id.
+     * @return Possibly-null party id
      */
     @Nullable
     public String getPartyId()
@@ -61,7 +61,7 @@ public class MessageActivity
     /**
      * The {@link net.dv8tion.jda.api.entities.MessageActivity.Application Application} this {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} may have.
      *
-     * @return A possibly-null {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
+     * @return A possibly-null {@link net.dv8tion.jda.api.entities.MessageActivity.Application}
      */
     @Nullable
     public MessageActivity.Application getApplication()
@@ -70,10 +70,7 @@ public class MessageActivity
     }
 
     /**
-     * Represents the {@link net.dv8tion.jda.api.entities.MessageActivity.Application Application} of a
-     * {@link net.dv8tion.jda.api.entities.MessageActivity MessageActivity} if it's set.
-     *
-     * @see <a href="https://discordapp.com/api/v7/games" target="_blank">https://discordapp.com/api/v7/games</a>
+     * Represents the {@link net.dv8tion.jda.api.entities.MessageActivity.Application Application} of a MessageActivity, if it has been set.
      */
     public static class Application implements ISnowflake
     {
@@ -93,9 +90,9 @@ public class MessageActivity
         }
 
         /**
-         * The name of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
+         * The name of this Application.
          *
-         * @return the applications name.
+         * @return the applications name
          */
         @Nonnull
         public String getName()
@@ -104,9 +101,9 @@ public class MessageActivity
         }
 
         /**
-         * A short description of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
+         * A short description of this Application.
          *
-         * @return the applications description.
+         * @return the applications description
          */
         @Nonnull
         public String getDescription()
@@ -115,9 +112,9 @@ public class MessageActivity
         }
 
         /**
-         * The icon id of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
+         * The icon id of this Application.
          *
-         * @return the applications icon id.
+         * @return the applications icon id
          */
         @Nullable
         public String getIconId()
@@ -137,9 +134,9 @@ public class MessageActivity
         }
 
         /**
-         * The cover aka splash id of this {@link net.dv8tion.jda.api.entities.MessageActivity.Application}.
+         * The cover aka splash id of this Application.
          *
-         * @return the applications cover image/id.
+         * @return the applications cover image/id
          */
         @Nullable
         public String getCoverId()
@@ -201,7 +198,7 @@ public class MessageActivity
         /**
          * The id of this {@link net.dv8tion.jda.api.entities.MessageActivity.ActivityType ActivityType}.
          *
-         * @return the id of the type.
+         * @return the id of the type
          */
         public int getId()
         {

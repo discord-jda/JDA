@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,20 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     public InviteActionImpl setCheck(BooleanSupplier checks)
     {
         return (InviteActionImpl) super.setCheck(checks);
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    {
+        return (InviteActionImpl) super.timeout(timeout, unit);
+    }
+
+    @Nonnull
+    @Override
+    public InviteActionImpl deadline(long timestamp)
+    {
+        return (InviteActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull

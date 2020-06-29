@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.utils;
 
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -141,5 +142,21 @@ public final class Helpers
         if (first == second) return true;
         if (first == null || second == null) return false;
         return first.size() == second.size() && second.containsAll(first);
+    }
+
+    public static <E extends Enum<E>> EnumSet<E> copyEnumSet(Class<E> clazz, Collection<E> col)
+    {
+        return col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);
+    }
+
+    // ## ExceptionUtils ##
+
+    public static <T extends Throwable> T appendCause(T throwable, Throwable cause)
+    {
+        Throwable t = throwable;
+        while (t.getCause() != null)
+            t = t.getCause();
+        t.initCause(cause);
+        return throwable;
     }
 }

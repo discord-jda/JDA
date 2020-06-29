@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,25 +39,30 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
         this.condition = condition;
     }
 
+    private RestAction<O> supply(I input)
+    {
+        return applyContext(function.apply(input));
+    }
+
     @Override
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
-        Consumer<? super Throwable> onFailure = contextWrap(failure);
+        Consumer<? super Throwable> contextFailure = contextWrap(failure);
         action.queue((result) -> {
             if (condition != null && !condition.test(result))
                 return;
-            RestAction<O> then = function.apply(result);
+            RestAction<O> then = supply(result);
             if (then == null)
-                doFailure(onFailure, new IllegalStateException("FlatMap operand is null"));
+                doFailure(contextFailure, new IllegalStateException("FlatMap operand is null"));
             else
-                then.queue(success, onFailure);
-        }, onFailure);
+                then.queue(success, contextFailure);
+        }, contextFailure);
     }
 
     @Override
     public O complete(boolean shouldQueue) throws RateLimitedException
     {
-        return function.apply(action.complete(shouldQueue)).complete(shouldQueue);
+        return supply(action.complete(shouldQueue)).complete(shouldQueue);
     }
 
     @Nonnull
@@ -65,6 +70,6 @@ public class FlatMapRestAction<I, O> extends RestActionOperator<I, O>
     public CompletableFuture<O> submit(boolean shouldQueue)
     {
         return action.submit(shouldQueue)
-                .thenCompose((result) -> function.apply(result).submit(shouldQueue));
+                .thenCompose((result) -> supply(result).submit(shouldQueue));
     }
 }

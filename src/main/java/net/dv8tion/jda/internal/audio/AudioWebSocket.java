@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,9 @@ import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.NoRouteToHostException;
+import java.net.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -134,13 +132,15 @@ class AudioWebSocket extends WebSocketAdapter
                     socketFactory.setServerNames(null);
                 socket = socketFactory.createSocket(wssEndpoint);
             }
+            socket.setDirectTextMessage(true);
             socket.addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
             socket.connectAsynchronously();
         }
         catch (IOException e)
         {
-            LOG.warn("Encountered IOException while attempting to connect: {}\nClosing connection and attempting to reconnect.", e.getMessage());
+            LOG.warn("Encountered IOException while attempting to connect to {}: {}\nClosing connection and attempting to reconnect.",
+                            wssEndpoint, e.getMessage());
             this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
         }
     }
@@ -167,9 +167,6 @@ class AudioWebSocket extends WebSocketAdapter
             audioConnection.shutdown();
 
             VoiceChannel disconnectedChannel = manager.getConnectedChannel();
-            if (disconnectedChannel == null)
-                disconnectedChannel = manager.getQueuedAudioConnection();
-
             manager.setAudioConnection(null);
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
@@ -198,7 +195,6 @@ class AudioWebSocket extends WebSocketAdapter
                     LOG.debug("Cannot reconnect due to null voice channel");
                     return;
                 }
-                manager.setQueuedAudioConnection(disconnectedChannel);
                 api.getDirectAudioController().reconnect(disconnectedChannel);
             }
             else if (status == ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
@@ -278,14 +274,20 @@ class AudioWebSocket extends WebSocketAdapter
     }
 
     @Override
-    public void onTextMessage(WebSocket websocket, String message)
+    public void onTextMessage(WebSocket websocket, byte[] data)
     {
         try
         {
-            handleEvent(DataObject.fromJson(message));
+            handleEvent(DataObject.fromJson(data));
         }
         catch (Exception ex)
         {
+            String message = "malformed";
+            try
+            {
+                message = new String(data, StandardCharsets.UTF_8);
+            }
+            catch (Exception ignored) {}
             LOG.error("Encountered exception trying to handle an event message: {}", message, ex);
         }
     }
@@ -373,8 +375,8 @@ class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onConnectError(WebSocket webSocket, WebSocketException e)
     {
-        LOG.warn("Failed to establish websocket connection: {} - {}\nClosing connection and attempting to reconnect.",
-                                 e.getError(), e.getMessage());
+        LOG.warn("Failed to establish websocket connection to {}: {} - {}\nClosing connection and attempting to reconnect.",
+                        wssEndpoint, e.getError(), e.getMessage());
         this.close(ConnectionStatus.ERROR_WEBSOCKET_UNABLE_TO_CONNECT);
     }
 
@@ -640,6 +642,20 @@ class AudioWebSocket extends WebSocketAdapter
     {
         if (keepAliveHandle != null)
             LOG.error("Setting up a KeepAlive runnable while the previous one seems to still be active!!");
+
+        try
+        {
+            if (socket != null)
+            {
+                Socket rawSocket = this.socket.getSocket();
+                if (rawSocket != null)
+                    rawSocket.setSoTimeout(keepAliveInterval + 10000);
+            }
+        }
+        catch (SocketException ex)
+        {
+            LOG.warn("Failed to setup timeout for socket", ex);
+        }
 
         Runnable keepAliveRunnable = () ->
         {

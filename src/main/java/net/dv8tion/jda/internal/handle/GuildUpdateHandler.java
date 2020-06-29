@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,13 +55,17 @@ public class GuildUpdateHandler extends SocketHandler
             return null;
         }
 
-        //////////////
-        //  WARNING //
-        //Do not rely on allContent past this point, this method is also called from GuildCreateHandler!
-        //////////////
-        long ownerId = content.getLong("owner_id");
+        //When member limits aren't initialized we don't fire an update event for them
         int maxMembers = content.getInt("max_members", 0);
         int maxPresences = content.getInt("max_presences", 5000);
+        if (guild.getMaxMembers() == 0)
+        {
+            // Initialize member limits to avoid unwanted update events
+            guild.setMaxPresences(maxPresences);
+            guild.setMaxMembers(maxMembers);
+        }
+
+        long ownerId = content.getLong("owner_id");
         int boostCount = content.getInt("premium_subscription_count", 0);
         int boostTier = content.getInt("premium_tier", 0);
         String description = content.getString("description", null);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild}'s Role. Used to control permissions for Members.
@@ -47,6 +47,9 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * The hierarchical position of this {@link net.dv8tion.jda.api.entities.Role Role}
      * in the {@link net.dv8tion.jda.api.entities.Guild Guild} hierarchy. (higher value means higher role).
      * <br>The {@link net.dv8tion.jda.api.entities.Guild#getPublicRole()}'s getPosition() always return -1.
+     *
+     * @throws IllegalStateException
+     *         If this role is not in the guild cache
      *
      * @return The position of this {@link net.dv8tion.jda.api.entities.Role Role} as integer.
      */

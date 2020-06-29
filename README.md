@@ -6,7 +6,7 @@
 [license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
 [faq]: https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ
 [troubleshooting]: https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting
-[discord-shield]: https://discordapp.com/api/guilds/125227483518861312/widget.png
+[discord-shield]: https://discord.com/api/guilds/125227483518861312/widget.png
 [faq-shield]: https://img.shields.io/badge/Wiki-FAQ-blue.svg
 [troubleshooting-shield]: https://img.shields.io/badge/Wiki-Troubleshooting-red.svg
 [jenkins-shield]: https://img.shields.io/badge/Download-Jenkins-brightgreen.svg
@@ -30,12 +30,9 @@ This library is a helpful tool that provides the functionality to create a disco
 ## Summary
 
 Due to official statements made by the Discord developers we will no longer support unofficial features. These features
-are undocumented API endpoints or protocols that are not available to bot-accounts. We will however continue support
-for the usage of JDA through the client account type through `JDABuilder(AccountType.CLIENT)`. This does not mean
-it is encouraged or recommended to create applications such as selfbots or custom clients which are prohibited by
-the Discord Terms of Service.
+are undocumented API endpoints or protocols that are not available to bot-accounts.
 
-_Please see the [Discord docs](https://discordapp.com/developers/docs/reference) for more information about bot accounts._
+_Please see the [Discord docs](https://discord.com/developers/docs/reference) for more information about bot accounts._
 
 1. [Introduction](#creating-the-jda-object)
 2. [Sharding](#sharding-a-bot)
@@ -51,13 +48,12 @@ _Please see the [Discord docs](https://discordapp.com/developers/docs/reference)
 ## UserBots and SelfBots
 
 Discord is currently prohibiting creation and usage of automated client accounts (AccountType.CLIENT).
-We however still have support to login with these accounts due to legacy support. That does not mean it is allowed or
-welcome to use.
+We have officially dropped support for client login as of version **4.2.0**!
 Note that JDA is not a good tool to build a custom discord client as it loads all servers/guilds on startup unlike
 a client which does this via lazy loading instead.
-If you need a bot, use a bot account from the [Application Dashboard](https://discordapp.com/developers/applications).
+If you need a bot, use a bot account from the [Application Dashboard](https://discord.com/developers/applications).
 
-[Read More](https://support.discordapp.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
+[Read More](https://support.discord.com/hc/en-us/articles/115002192352-Automated-user-accounts-self-bots-)
 
 ## Creating the JDA Object
 
@@ -70,12 +66,8 @@ Note that this method is blocking and will cause the thread to sleep until start
 **Example**:
 
 ```java
-JDA jda = new JDABuilder("token").build();
+JDA jda = JDABuilder.createDefault("token").build();
 ```
-
-**Note**: By default this will use the `AccountType.BOT` as that is the recommended type of account.
-You can change this to use `AccountType.CLIENT`, however you will be risking account termination.
-Use `new JDABuilder(AccountType)` to change to a different account type.
 
 ### Configuration
 
@@ -85,10 +77,10 @@ Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of config
 
 ```java
 public static void main(String[] args) {
-    JDABuilder builder = new JDABuilder(args[0]);
+    JDABuilder builder = JDABuilder.createDefault(args[0]);
     
     // Disable parts of the cache
-    builder.setDisabledCacheFlags(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.VOICE_STATE));
+    builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
     // Enable the bulk delete event
     builder.setBulkDeleteSplittingEnabled(false);
     // Disable compression (not recommended)
@@ -104,18 +96,25 @@ public static void main(String[] args) {
   and [DefaultShardManagerBuilder](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/sharding/DefaultShardManagerBuilder.html)
 
 You can configure the memory usage by changing enabled `CacheFlags` on the `JDABuilder`.
-Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter` or disabling `guild_subscriptions`.
+Additionally, you can change the handling of member/user cache by setting either a `ChunkingFilter`, disabling **intents**, or changing the **member cache policy**.
 
 ```java
 public void configureMemoryUsage(JDABuilder builder) {
     // Disable cache for member activities (streaming/games/spotify)
-    builder.setDisabledCacheFlags(
-        EnumSet.of(CacheFlag.ACTIVITY)
-    );
-    // Disable user/member cache and related events
-    builder.setGuildSubscriptionsEnabled(false);
-    // Disable member chunking on startup (ignored if guild subscriptions are turned off)
+    builder.disableCache(CacheFlag.ACTIVITY);
+
+    // Only cache members who are either in a voice channel or owner of the guild
+    builder.setMemberCachePolicy(MemberCachePolicy.VOICE.or(MemberCachePolicy.OWNER));
+
+    // Disable member chunking on startup
     builder.setChunkingFilter(ChunkingFilter.NONE);
+
+    // Disable presence updates and typing events
+    builder.disableIntents(GatewayIntent.GUILD_PRESENCE, GatewayIntent.GUILD_MESSAGE_TYPING);
+
+    // Consider guilds with more than 50 members as "large". 
+    // Large guilds will only provide online members in their setup and thus reduce bandwidth if chunking is disabled.
+    builder.setLargeThreshold(50);
 }
 ```
 
@@ -143,7 +142,7 @@ public class ReadyListener implements EventListener
             throws LoginException, InterruptedException
     {
         // Note: It is important to register your ReadyListener before building
-        JDA jda = new JDABuilder("token")
+        JDA jda = JDABuilder.createDefault("token")
             .addEventListeners(new ReadyListener())
             .build();
 
@@ -168,7 +167,7 @@ public class MessageListener extends ListenerAdapter
     public static void main(String[] args)
             throws LoginException
     {
-        JDA jda = new JDABuilder("token").build();
+        JDA jda = JDABuilder.createDefault("token").build();
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
@@ -200,7 +199,14 @@ public class Bot extends ListenerAdapter
 {
     public static void main(String[] args) throws LoginException
     {
-        new JDABuilder(args[0])
+        if (args.length < 1) {
+            System.out.println("You have to provide a token as first argument!");
+            System.exit(1);
+        }
+        // args[0] should be the token
+        // We only need 2 intents in this bot. We only respond to messages in guilds and private channels.
+        // All other events will be disabled.
+        JDABuilder.createLight(args[0], GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES)
             .addEventListeners(new Bot())
             .setActivity(Activity.playing("Type !ping"))
             .build();
@@ -288,7 +294,7 @@ Since version **3.4.0** JDA provides a `ShardManager` which automates this build
 ```java
 public static void main(String[] args) throws Exception
 {
-    JDABuilder shardBuilder = new JDABuilder(args[0]);
+    JDABuilder shardBuilder = JDABuilder.createDefault(args[0]);
     //register your listeners here using shardBuilder.addEventListeners(...)
     shardBuilder.addEventListeners(new MessageListener());
     for (int i = 0; i < 10; i++)
@@ -305,8 +311,7 @@ public static void main(String[] args) throws Exception
 ```java
 public static void main(String[] args) throws Exception
 {
-    DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
-    builder.setToken(args[0]);
+    DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(args[0]);
     builder.addEventListeners(new MessageListener());
     builder.build();
 }
@@ -574,7 +579,7 @@ Note that this send system creates an extra UDP-Client which causes audio receiv
 since discord identifies the sending UDP-Client as the receiver.
 
 ```java
-JDABuilder builder = new JDABuilder(BOT_TOKEN)
+JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN)
     .setAudioSendFactory(new NativeAudioSendFactory());
 ```
 
@@ -592,7 +597,7 @@ fun main() {
            .filter { it.message.contentRaw == "!ping" }
            .subscribe { it.channel.sendMessage("Pong!").queue() }
 
-    val jda = JDABuilder(BOT_TOKEN)
+    val jda = JDABuilder.createDefault(BOT_TOKEN)
                .setEventManager(manager)
                .build()
 }
@@ -673,4 +678,4 @@ All dependencies are managed automatically by Gradle.
 - [discord.py](https://github.com/Rapptz/discord.py)
 - [serenity](https://github.com/serenity-rs/serenity)
 
-**See also:** https://discordapp.com/developers/docs/topics/community-resources#libraries
+**See also:** https://discord.com/developers/docs/topics/community-resources#libraries

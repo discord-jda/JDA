@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2019 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * @return A fake {@link net.dv8tion.jda.api.entities.User User} instance
      *         representing the default webhook user.
      *
-     * @see    <a href="https://discordapp.com/developers/docs/resources/webhook#execute-webhook">Execute Webhook Docs</a>
+     * @see    <a href="https://discord.com/developers/docs/resources/webhook#execute-webhook">Execute Webhook Docs</a>
      */
     @Nonnull
     User getDefaultUser();
@@ -135,7 +135,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * <p>Webhook executions are limited with 5 requests per second.
      * The response contains rate limit headers that should be handled
-     * by execution frameworks. (<a href="https://discordapp.com/developers/docs/topics/rate-limits">Learn More</a>)
+     * by execution frameworks. (<a href="https://discord.com/developers/docs/topics/rate-limits">Learn More</a>)
      *
      * @return The execution route for this Webhook.
      */
