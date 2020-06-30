@@ -104,8 +104,9 @@ public class SessionControllerAdapter implements SessionController
 
                         String url = object.getString("url");
                         int shards = object.getInt("shards");
+                        int concurrency = object.getObject("session_start_limit").getInt("max_concurrency", 1);
 
-                        request.onSuccess(new ShardedGateway(url, shards));
+                        request.onSuccess(new ShardedGateway(url, shards, concurrency));
                     }
                     else if (response.code == 401)
                     {
