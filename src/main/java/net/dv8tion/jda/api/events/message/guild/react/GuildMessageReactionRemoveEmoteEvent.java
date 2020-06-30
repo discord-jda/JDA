@@ -32,17 +32,13 @@ import javax.annotation.Nonnull;
  */
 public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEvent
 {
-    private final TextChannel channel;
     private final MessageReaction reaction;
-    private final long messageId;
 
     public GuildMessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull MessageReaction reaction, long messageId)
     {
         super(api, responseNumber, messageId, channel);
 
-        this.channel = channel;
         this.reaction = reaction;
-        this.messageId = messageId;
     }
 
     /**
