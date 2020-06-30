@@ -187,6 +187,35 @@ public class MarkdownSanitizer
                 .withStrategy(SanitizationStrategy.ESCAPE)
                 .compute(sequence);
     }
+    
+    /**
+     * Escapes every markdown formatting found in the provided string.
+     * <br>Example: {@code escape("**Hello** ~~World~~!", MarkdownSanitizer.BOLD | MarkdownSanitizer.STRIKE)}
+     *
+     * @param  sequence
+     *         The string to sanitize
+     * @param  single
+     *         If true removes all markdown characters
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null
+     *
+     * @return The string with escaped markdown
+     */
+    @Nonnull
+    public static String escape(@Nonnull String sequence, boolean single) {
+    	if(single) {
+        	String cleaned = sequence.replaceAll("([_`~*>])", "\\\\$1");
+           	return new MarkdownSanitizer()
+        			.withStrategy(SanitizationStrategy.ESCAPE)
+        			.compute(cleaned);
+    	} else {
+    	   	return new MarkdownSanitizer()
+        			.withStrategy(SanitizationStrategy.ESCAPE)
+        			.compute(sequence);
+    	}
+ 
+    }
 
     /**
      * Switches the used {@link net.dv8tion.jda.api.utils.MarkdownSanitizer.SanitizationStrategy}.
