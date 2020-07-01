@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -170,7 +171,10 @@ class WebSocketSendingThread implements Runnable
         }
         catch (RejectedExecutionException ex)
         {
-            LOG.error("Was unable to schedule next packet due to rejected execution by threadpool", ex);
+            if (api.getStatus() == JDA.Status.SHUTTING_DOWN || api.getStatus() == JDA.Status.SHUTDOWN)
+                LOG.debug("Rejected task after shutdown", ex);
+            else
+                LOG.error("Was unable to schedule next packet due to rejected execution by threadpool", ex);
         }
     }
 
