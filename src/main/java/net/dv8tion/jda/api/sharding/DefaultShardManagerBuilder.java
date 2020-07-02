@@ -514,11 +514,15 @@ public class  DefaultShardManagerBuilder
      * @param  encoding
      *         The {@link GatewayEncoding} (default: JSON)
      *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
      */
     @Nonnull
     public DefaultShardManagerBuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
     {
+        Checks.notNull(encoding, "GatewayEncoding");
         this.encoding = encoding;
         return this;
     }

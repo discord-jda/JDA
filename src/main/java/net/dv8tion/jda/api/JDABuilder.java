@@ -537,11 +537,15 @@ public class JDABuilder
      * @param  encoding
      *         The {@link GatewayEncoding} (default: JSON)
      *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
      * @return The JDABuilder instance. Useful for chaining.
      */
     @Nonnull
     public JDABuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
     {
+        Checks.notNull(encoding, "GatewayEncoding");
         this.encoding = encoding;
         return this;
     }

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.type.MapType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,6 +188,8 @@ public class DataObject implements SerializableData
      * @param  data
      *         The data to decode
      *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
      *
@@ -195,6 +198,7 @@ public class DataObject implements SerializableData
     @Nonnull
     public static DataObject fromETF(@Nonnull byte[] data)
     {
+        Checks.notNull(data, "Data");
         try
         {
             Map<String, Object> map = ExTermDecoder.unpackMap(ByteBuffer.wrap(data));

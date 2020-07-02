@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -177,6 +178,8 @@ public class DataArray implements Iterable<Object>
      * @param  data
      *         The data to decode
      *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
      *
@@ -185,6 +188,7 @@ public class DataArray implements Iterable<Object>
     @Nonnull
     public static DataArray fromETF(@Nonnull byte[] data)
     {
+        Checks.notNull(data, "Data");
         try
         {
             List<Object> list = ExTermDecoder.unpackList(ByteBuffer.wrap(data));
