@@ -20,6 +20,7 @@ import com.neovisionaries.ws.client.WebSocketFactory;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
@@ -243,15 +244,15 @@ public class JDAImpl implements JDA
 
     public int login() throws LoginException
     {
-        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS);
+        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
     }
 
-    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
+    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
     {
-        return login(null, shardInfo, compression, validateToken, intents);
+        return login(null, shardInfo, compression, validateToken, intents, encoding);
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
@@ -285,7 +286,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression, intents);
+        client = new WebSocketClient(this, compression, intents, encoding);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);

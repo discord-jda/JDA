@@ -592,7 +592,7 @@ public class DefaultShardManager implements ShardManager
         jda.setSelfUser(selfUser);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents());
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), this.metaConfig.getEncoding());
         if (getShardsTotal() == -1)
             shardingConfig.setShardsTotal(shardTotal);
 

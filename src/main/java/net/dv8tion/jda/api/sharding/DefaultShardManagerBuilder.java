@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.sharding;
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
@@ -68,6 +69,7 @@ public class  DefaultShardManagerBuilder
     protected EnumSet<ConfigFlag> flags = ConfigFlag.getDefault();
     protected EnumSet<ShardingConfigFlag> shardingFlags = ShardingConfigFlag.getDefault();
     protected Compression compression = Compression.ZLIB;
+    protected GatewayEncoding encoding = GatewayEncoding.JSON;
     protected int shardsTotal = -1;
     protected int maxReconnectDelay = 900;
     protected int largeThreshold = 250;
@@ -503,6 +505,25 @@ public class  DefaultShardManagerBuilder
     {
         this.disableCache(flags);
         this.automaticallyDisabled.addAll(flags);
+        return this;
+    }
+
+    /**
+     * Choose which {@link GatewayEncoding} JDA should use.
+     *
+     * @param  encoding
+     *         The {@link GatewayEncoding} (default: JSON)
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
+    {
+        Checks.notNull(encoding, "GatewayEncoding");
+        this.encoding = encoding;
         return this;
     }
 
@@ -2200,7 +2221,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setIdleProvider(idleProvider);
         final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
-        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression);
+        final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 
         manager.login();
