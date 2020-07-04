@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.entities.UserById;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -79,6 +81,39 @@ public interface User extends IMentionable, IFakeable
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
     /** Template for {@link #getDefaultAvatarUrl()} */
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
+
+    /**
+     * Creates a User instance which only wraps an ID.
+     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
+     *
+     * @param  id
+     *         The user id
+     *
+     * @return A user instance
+     */
+    @Nonnull
+    static User fromId(long id)
+    {
+        return new UserById(id);
+    }
+
+    /**
+     * Creates a User instance which only wraps an ID.
+     * <br>All other methods beside {@link #getIdLong()} and {@link #getId()} will throw {@link UnsupportedOperationException}.
+     *
+     * @param  id
+     *         The user id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is not a valid snowflake
+     *
+     * @return A user instance
+     */
+    @Nonnull
+    static User fromId(@Nonnull String id)
+    {
+        return fromId(MiscUtil.parseSnowflake(id));
+    }
 
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).
