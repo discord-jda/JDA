@@ -16,7 +16,11 @@
 
 package net.dv8tion.jda.internal.requests.restaction.order;
 
+import gnu.trove.map.TLongLongMap;
+import gnu.trove.map.hash.TLongLongHashMap;
+import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
@@ -29,6 +33,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -38,6 +43,8 @@ public class ChannelOrderActionImpl
 {
     protected final Guild guild;
     protected final int bucket;
+    protected final TLongLongMap newParent = new TLongLongHashMap();
+    protected final TLongHashSet locked = new TLongHashSet();
 
     /**
      * Creates a new ChannelOrderAction instance
@@ -102,6 +109,20 @@ public class ChannelOrderActionImpl
         return bucket;
     }
 
+    @Nonnull
+    @Override
+    public ChannelOrderAction moveTo(@Nullable Category newParent, boolean lockPermissions)
+    {
+        Checks.check(newParent == null || getGuild().equals(newParent.getGuild()), "Provided category is not from the same guild");
+        GuildChannel entity = getSelectedEntity();
+        if (lockPermissions)
+            locked.add(entity.getIdLong());
+        else
+            locked.remove(entity.getIdLong());
+        this.newParent.put(entity.getIdLong(), newParent == null ? 0 : newParent.getIdLong());
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -112,9 +133,18 @@ public class ChannelOrderActionImpl
         for (int i = 0; i < orderList.size(); i++)
         {
             GuildChannel chan = orderList.get(i);
-            array.add(DataObject.empty()
+            DataObject json = DataObject.empty()
                     .put("id", chan.getId())
-                    .put("position", i));
+                    .put("position", i);
+            if (locked.contains(chan.getIdLong()))
+                json.put("lock_permissions", true);
+            if (newParent.containsKey(chan.getIdLong()))
+            {
+                long parentId = newParent.get(chan.getIdLong());
+                json.put("parent_id", parentId == 0 ? null : parentId);
+            }
+
+            array.add(json);
         }
 
         return getRequestBody(array);
