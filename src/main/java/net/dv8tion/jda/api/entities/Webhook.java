@@ -72,7 +72,7 @@ public interface Webhook extends ISnowflake, IFakeable
     TextChannel getChannel();
 
     /**
-     * The owner of this Webhook. This will be null for fake Webhooks, such as those retrieved from Audit Logs.
+     * The owner of this Webhook. This will be null for some Webhooks, such as those retrieved from Audit Logs.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} instance
      *         representing the owner of this Webhook.
@@ -83,7 +83,7 @@ public interface Webhook extends ISnowflake, IFakeable
     /**
      * The default User for this Webhook.
      *
-     * <p>The {@link net.dv8tion.jda.api.entities.User User} returned is always {@code fake}.
+     * <p>The {@link net.dv8tion.jda.api.entities.User User} returned is always fake and cannot be interacted with.
      * <br>This User is used for all messages posted to the Webhook route (found in {@link #getUrl()}),
      * it holds the default references for the message authors of messages by this Webhook.
      *
@@ -115,7 +115,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * <br>This can be used to modify/delete/execute
      * this Webhook.
      * 
-     * <p><b>Note: Fake Webhooks, such as those retrieved from Audit Logs, do not contain a token</b>
+     * <p><b>Note: Some Webhooks, such as those retrieved from Audit Logs, do not contain a token</b>
      *
      * @return The execute token for this Webhook
      */
@@ -125,7 +125,7 @@ public interface Webhook extends ISnowflake, IFakeable
     /**
      * The {@code POST} route for this Webhook.
      * <br>This contains the {@link #getToken() token} and {@link #getId() id}
-     * of this Webhook. Fake Webhooks without tokens (such as those retrieved from Audit Logs)
+     * of this Webhook. Some Webhooks without tokens (such as those retrieved from Audit Logs)
      * will return a URL without a token.
      *
      * <p>The route returned by this method does not need permission checks
@@ -159,7 +159,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the Webhook is fake, such as the Webhooks retrieved from Audit Logs and the currently
+     *         If the Webhook does not have a token, such as the Webhooks retrieved from Audit Logs and the currently
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS} in this channel.
      * 
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}

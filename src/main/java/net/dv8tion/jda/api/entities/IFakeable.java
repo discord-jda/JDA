@@ -36,6 +36,10 @@ import net.dv8tion.jda.annotations.ForRemoval;
  *
  * @since 3.0
  */
+@ForRemoval
+@Deprecated
+@DeprecatedSince("4.2.1")
+@SuppressWarnings("DeprecatedIsStillUsed")
 public interface IFakeable
 {
     /**
@@ -45,6 +49,6 @@ public interface IFakeable
      */
     @ForRemoval
     @Deprecated
-    @DeprecatedSince("4.2.0")
+    @DeprecatedSince("4.2.1")
     boolean isFake();
 }

@@ -36,13 +36,6 @@ import java.util.List;
  *
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
- * <h2>Fake Emote</h2>
- * When an emote is declared as fake it cannot be updated by JDA. That means it will not be accessible
- * through cache such as {@link Guild#getEmoteCache()} and similar.
- * <br>Fake emotes may or may not have an attached {@link Guild Guild} and thus might not be manageable though
- * {@link #getManager()} or {@link #delete()}. They also might lack attached roles for {@link #getRoles()}.
- *
- *
  * @since  2.2
  *
  * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
@@ -65,9 +58,9 @@ public interface Emote extends IMentionable, IFakeable
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.
      *
-     * <p><b>This is null if the emote is fake (retrieved from a Message)</b>
+     * <p><b>This is null if the emote is created from a message</b>
      *
-     * @return Guild of this emote or null if it is a fake entity
+     * @return Guild of this emote or null if it is created from a message
      */
     @Nullable
     Guild getGuild();
@@ -173,7 +166,7 @@ public interface Emote extends IMentionable, IFakeable
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws IllegalStateException
-     *         if this emote is fake
+     *         if this emote is created from a message or the bot does not have access to the emote
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}
      *

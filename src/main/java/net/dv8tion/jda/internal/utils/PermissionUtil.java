@@ -114,7 +114,7 @@ public class PermissionUtil
     /**
      * Check whether the provided {@link net.dv8tion.jda.api.entities.Member Member} can use the specified {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
-     * <p>If the specified Member is not in the emote's guild or the emote provided is fake this will return false.
+     * <p>If the specified Member is not in the emote's guild or the emote provided is from a message this will return false.
      * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
      *
      * <p>In the case of an {@link net.dv8tion.jda.api.entities.Emote#isAnimated() animated} Emote, this will

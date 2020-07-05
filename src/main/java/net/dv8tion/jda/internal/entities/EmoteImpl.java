@@ -91,7 +91,7 @@ public class EmoteImpl implements ListedEmote
     public List<Role> getRoles()
     {
         if (!canProvideRoles())
-            throw new IllegalStateException("Unable to return roles because this emote is fake. (We do not know the origin Guild of this emote)");
+            throw new IllegalStateException("Unable to return roles because this emote is from a message. (We do not know the origin Guild of this emote)");
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
@@ -177,7 +177,7 @@ public class EmoteImpl implements ListedEmote
     public AuditableRestAction<Void> delete()
     {
         if (getGuild() == null)
-            throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
+            throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is from a message)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
