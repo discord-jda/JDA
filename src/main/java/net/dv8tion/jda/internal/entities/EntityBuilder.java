@@ -806,7 +806,7 @@ public class EntityBuilder
                 .setName(json.getString("name", ""))
                 .setAnimated(json.getBoolean("animated"))
                 .setManaged(json.getBoolean("managed"))
-                .setAvailable(json.getBoolean("available"));
+                .setAvailable(json.getBoolean("available", true));
     }
 
     public Category createCategory(DataObject json, long guildId)
