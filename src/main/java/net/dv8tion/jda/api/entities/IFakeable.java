@@ -36,9 +36,9 @@ import net.dv8tion.jda.annotations.ForRemoval;
  *
  * @since 3.0
  */
-@ForRemoval
 @Deprecated
 @DeprecatedSince("4.2.1")
+@ForRemoval(deadline="4.3.0")
 @SuppressWarnings("DeprecatedIsStillUsed")
 public interface IFakeable
 {
@@ -47,8 +47,8 @@ public interface IFakeable
      *
      * @return False, if this is an actual JDA entity.
      */
-    @ForRemoval
     @Deprecated
     @DeprecatedSince("4.2.1")
+    @ForRemoval(deadline="4.3.0")
     boolean isFake();
 }

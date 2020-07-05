@@ -1123,8 +1123,8 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
     @DeprecatedSince("4.2.1")
+    @ForRemoval(deadline="4.3.0")
     @ReplaceWith("channel.sendMessage(builder.build())")
     public MessageAction sendTo(@Nonnull MessageChannel channel)
     {
