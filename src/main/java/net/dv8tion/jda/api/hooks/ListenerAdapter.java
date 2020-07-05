@@ -140,7 +140,7 @@ public abstract class ListenerAdapter implements EventListener
 
     @Deprecated
     @DeprecatedSince("4.2.0")
-    @ReplaceWith("onGuildMemberRemoveEvent(GuildMemberRemoveEvent)")
+    @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
 
     @Deprecated
@@ -168,6 +168,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
     public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
+    public void onUserUpdateFlags(@Nonnull UserUpdateFlagsEvent event) {}
     public void onUserTyping(@Nonnull UserTypingEvent event) {}
     public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {}
     public void onUserActivityEnd(@Nonnull UserActivityEndEvent event) {}
@@ -459,6 +460,8 @@ public abstract class ListenerAdapter implements EventListener
             onUserActivityStart((UserActivityStartEvent) event);
         else if (event instanceof UserActivityEndEvent)
             onUserActivityEnd((UserActivityEndEvent) event);
+        else if (event instanceof UserUpdateFlagsEvent)
+            onUserUpdateFlags((UserUpdateFlagsEvent) event);
 
         //Self Events
         else if (event instanceof SelfUpdateAvatarEvent)

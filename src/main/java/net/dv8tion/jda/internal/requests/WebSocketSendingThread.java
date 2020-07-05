@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -42,7 +43,7 @@ class WebSocketSendingThread implements Runnable
     private final JDAImpl api;
     private final ReentrantLock queueLock;
     private final Queue<DataObject> chunkQueue;
-    private final Queue<String> ratelimitQueue;
+    private final Queue<DataObject> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
     private final ScheduledExecutorService executor;
     private Future<?> handle;
@@ -113,9 +114,10 @@ class WebSocketSendingThread implements Runnable
             api.setContext();
             attemptedToSend = false;
             needRateLimit = false;
+            // We do this outside of the lock because otherwise we could potentially deadlock here
+            audioRequest = client.getNextAudioConnectRequest();
             queueLock.lockInterruptibly();
 
-            audioRequest = client.getNextAudioConnectRequest();
             chunkRequest = chunkQueue.peek();
             if (chunkRequest != null)
                 handleChunkSync(chunkRequest);
@@ -169,7 +171,10 @@ class WebSocketSendingThread implements Runnable
         }
         catch (RejectedExecutionException ex)
         {
-            LOG.error("Was unable to schedule next packet due to rejected execution by threadpool", ex);
+            if (api.getStatus() == JDA.Status.SHUTTING_DOWN || api.getStatus() == JDA.Status.SHUTDOWN)
+                LOG.debug("Rejected task after shutdown", ex);
+            else
+                LOG.error("Was unable to schedule next packet due to rejected execution by threadpool", ex);
         }
     }
 
@@ -180,7 +185,6 @@ class WebSocketSendingThread implements Runnable
             DataObject.empty()
                 .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
                 .put("d", chunkOrSyncRequest)
-                .toString()
         );
 
         if (success)
@@ -213,7 +217,7 @@ class WebSocketSendingThread implements Runnable
                 packet = newVoiceOpen(audioManager, channelId, guild.getIdLong());
         }
         LOG.debug("Sending voice request {}", packet);
-        if (send(packet.toString()))
+        if (send(packet))
         {
             //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
             // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
@@ -229,7 +233,7 @@ class WebSocketSendingThread implements Runnable
 
     private void handleNormalRequest()
     {
-        String message = ratelimitQueue.peek();
+        DataObject message = ratelimitQueue.peek();
         if (message != null)
         {
             LOG.debug("Sending normal message {}", message);
@@ -239,7 +243,7 @@ class WebSocketSendingThread implements Runnable
     }
 
     //returns true if send was successful
-    private boolean send(String request)
+    private boolean send(DataObject request)
     {
         needRateLimit = !client.send(request, false);
         attemptedToSend = true;

@@ -36,7 +36,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
     protected final User issuer;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageReaction reaction, long userId)
+    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable User user, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.userId = userId;

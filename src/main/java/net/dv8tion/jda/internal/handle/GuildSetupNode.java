@@ -387,8 +387,6 @@ public class GuildSetupNode
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
-        if (requestedChunk || expectedMemberCount == members.size())
-            guild.completeChunking();
     }
 
     private void ensureMembers()
@@ -444,19 +442,15 @@ public class GuildSetupNode
             newMng.setConnectionListener(listener);
             newMng.setAutoReconnect(mng.isAutoReconnect());
 
-            if (mng.isConnected() || mng.isAttemptingToConnect())
+            if (mng.isConnected())
             {
-                final long channelId = mng.isConnected()
-                                       ? mng.getConnectedChannel().getIdLong()
-                                       : mng.getQueuedAudioConnection().getIdLong();
+                final long channelId = mng.getConnectedChannel().getIdLong();
 
                 final VoiceChannel channel = api.getVoiceChannelById(channelId);
                 if (channel != null)
                 {
                     if (mng.isConnected())
                         mng.closeAudioConnection(ConnectionStatus.ERROR_CANNOT_RESUME);
-                    //closing old connection in order to reconnect later
-                    newMng.setQueuedAudioConnection(channel);
                 }
                 else
                 {

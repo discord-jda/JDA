@@ -76,12 +76,28 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     /**
      * The {@link java.time.OffsetDateTime Time} this Member joined the Guild.
      * <br>If the member was loaded through a presence update (lazy loading) this will be identical
-     * to the creation time of the guild.
+     * to the creation time of the guild. You can use {@link #hasTimeJoined()} to test whether this time
+     * can be relied on.
      *
-     * @return The Join Date.
+     * <p>You can use {@link Guild#retrieveMemberById(String) guild.retrieveMemberById(member.getId())}
+     * to load the join time.
+     *
+     * @return The time at which this user has joined the guild.
      */
     @Nonnull
     OffsetDateTime getTimeJoined();
+
+    /**
+     * Whether this member has accurate {@link #getTimeJoined()} information.
+     * <br>Discord doesn't always provide this information when we load members so we have to fallback
+     * to the {@link Guild} creation time.
+     *
+     * <p>You can use {@link Guild#retrieveMemberById(String) guild.retrieveMemberById(member.getId())}
+     * to load the join time.
+     *
+     * @return True, if {@link #getTimeJoined()} is accurate
+     */
+    boolean hasTimeJoined();
 
     /**
      * The time when this member boosted the guild.
@@ -100,6 +116,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p>This can be used to get the Member's VoiceChannel using {@link GuildVoiceState#getChannel()}.
      *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE} to be enabled!
+     *
      * @return {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState}
      */
     @Nullable
@@ -108,6 +126,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     /**
      * The activities of the user.
      * <br>If the user does not currently have any activity, this returns an empty list.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled!
      *
      * @return Immutable list of {@link Activity Activities} for the user
      */
@@ -130,6 +150,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * <p>If a user is not online on the specified type,
      * {@link net.dv8tion.jda.api.OnlineStatus#OFFLINE OFFLINE} is returned.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#CLIENT_STATUS CacheFlag.CLIENT_STATUS} to be enabled!
      *
      * @param  type
      *         The type of client

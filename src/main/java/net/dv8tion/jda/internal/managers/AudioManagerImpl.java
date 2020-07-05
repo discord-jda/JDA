@@ -44,7 +44,6 @@ public class AudioManagerImpl implements AudioManager
 
     protected final ListenerProxy connectionListener = new ListenerProxy();
     protected final GuildImpl guild;
-    protected VoiceChannel queuedAudioConnection = null;
     protected AudioConnection audioConnection = null;
     protected EnumSet<SpeakingMode> speakingModes = EnumSet.of(SpeakingMode.VOICE);
 
@@ -83,26 +82,15 @@ public class AudioManagerImpl implements AudioManager
         //if (!self.hasPermission(channel, Permission.VOICE_CONNECT))
         //    throw new InsufficientPermissionException(Permission.VOICE_CONNECT);
 
-        if (audioConnection == null)
-        {
-            checkChannel(channel, self);
-            //Start establishing connection, joining provided channel
-            queuedAudioConnection = channel;
-            getJDA().getDirectAudioController().connect(channel);
-        }
-        else
-        {
-            //Connection is already established, move to specified channel
+        //If we are already connected to this VoiceChannel, then do nothing.
+        if (audioConnection != null && channel.equals(audioConnection.getChannel()))
+            return;
 
-            //If we are already connected to this VoiceChannel, then do nothing.
-            if (channel.equals(audioConnection.getChannel()))
-                return;
+        checkChannel(channel, self);
 
-            checkChannel(channel, self);
-
-            getJDA().getDirectAudioController().connect(channel);
+        getJDA().getDirectAudioController().connect(channel);
+        if (audioConnection != null)
             audioConnection.setChannel(channel);
-        }
     }
 
     private void checkChannel(VoiceChannel channel, Member self)
@@ -141,7 +129,6 @@ public class AudioManagerImpl implements AudioManager
     {
         MiscUtil.locked(CONNECTION_LOCK, () ->
         {
-            this.queuedAudioConnection = null;
             if (audioConnection != null)
                 this.audioConnection.close(reason);
             else if (reason != ConnectionStatus.DISCONNECTED_REMOVED_FROM_GUILD)
@@ -189,15 +176,17 @@ public class AudioManagerImpl implements AudioManager
     }
 
     @Override
+    @Deprecated
     public boolean isAttemptingToConnect()
     {
-        return queuedAudioConnection != null;
+        return false;
     }
 
     @Override
+    @Deprecated
     public VoiceChannel getQueuedAudioConnection()
     {
-        return queuedAudioConnection;
+        return null;
     }
 
     @Override
@@ -328,28 +317,21 @@ public class AudioManagerImpl implements AudioManager
 
     public void setAudioConnection(AudioConnection audioConnection)
     {
-        this.audioConnection = audioConnection;
         if (audioConnection == null)
+        {
+            this.audioConnection = null;
             return;
+        }
 
-        this.queuedAudioConnection = null;
+        // This will set the audioConnection to null, which we then immediately override with the new connection
+        if (this.audioConnection != null)
+            closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
+        this.audioConnection = audioConnection;
         audioConnection.setSendingHandler(sendHandler);
         audioConnection.setReceivingHandler(receiveHandler);
         audioConnection.setQueueTimeout(queueTimeout);
         audioConnection.setSpeakingMode(speakingModes);
         audioConnection.setSpeakingDelay(speakingDelay);
-    }
-
-    public void prepareForRegionChange()
-    {
-        VoiceChannel queuedChannel = audioConnection.getChannel();
-        closeAudioConnection(ConnectionStatus.AUDIO_REGION_CHANGE);
-        this.queuedAudioConnection = queuedChannel;
-    }
-
-    public void setQueuedAudioConnection(VoiceChannel channel)
-    {
-        queuedAudioConnection = channel;
     }
 
     public void setConnectedChannel(VoiceChannel channel)
@@ -367,10 +349,9 @@ public class AudioManagerImpl implements AudioManager
 
     protected void updateVoiceState()
     {
-        if (isConnected() || isAttemptingToConnect())
+        VoiceChannel channel = getConnectedChannel();
+        if (channel != null)
         {
-            VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
-
             //This is technically equivalent to an audio open/move packet.
             getJDA().getDirectAudioController().connect(channel);
         }

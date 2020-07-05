@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTime
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -147,7 +148,7 @@ public class EntityBuilder
         }
     }
 
-    private TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
+    public TLongObjectMap<DataObject> convertToUserMap(ToLongFunction<DataObject> getId, DataArray array)
     {
         TLongObjectMap<DataObject> map = new TLongObjectHashMap<>();
         for (int i = 0; i < array.length(); i++)
@@ -313,7 +314,8 @@ public class EntityBuilder
             userObj.setName(user.getString("username"))
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
-                   .setBot(user.getBoolean("bot"));
+                   .setBot(user.getBoolean("bot"))
+                   .setFlags(user.getInt("public_flags", 0));
         }
         else
         {
@@ -332,6 +334,8 @@ public class EntityBuilder
         String newDiscriminator = user.get("discriminator").toString();
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
+        int oldFlags = userObj.getFlagsRaw();
+        int newFlags = user.getInt("public_flags", 0);
 
         JDAImpl jda = getJDA();
         long responseNumber = jda.getResponseTotal();
@@ -360,6 +364,15 @@ public class EntityBuilder
                 new UserUpdateAvatarEvent(
                     jda, responseNumber,
                     userObj, oldAvatar));
+        }
+
+        if (oldFlags != newFlags)
+        {
+            userObj.setFlags(newFlags);
+            jda.handleEvent(
+                    new UserUpdateFlagsEvent(
+                        jda, responseNumber,
+                        userObj, User.UserFlag.getFlags(oldFlags)));
         }
     }
 
@@ -486,7 +499,7 @@ public class EntityBuilder
         }
 
         // Load joined_at if necessary
-        if (!memberJson.isNull("joined_at") && member.isIncomplete())
+        if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
         {
             String joinedAtRaw = memberJson.getString("joined_at");
             TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
@@ -564,6 +577,14 @@ public class EntityBuilder
                         getJDA(), responseNumber,
                         member, oldTime));
             }
+        }
+
+        if (!content.isNull("joined_at") && !member.hasTimeJoined())
+        {
+            String joinedAtRaw = content.getString("joined_at");
+            TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
+            long joinEpoch = Instant.from(joinedAt).toEpochMilli();
+            member.setJoinDate(joinEpoch);
         }
 
         updateUser((UserImpl) member.getUser(), content.getObject("user"));

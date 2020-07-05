@@ -59,7 +59,7 @@ public class IOUtil
     public static OkHttpClient.Builder newHttpClientBuilder()
     {
         Dispatcher dispatcher = new Dispatcher();
-        // Allow 25 parallel requests to the same host (usually discordapp.com)
+        // Allow 25 parallel requests to the same host (usually discord.com)
         dispatcher.setMaxRequestsPerHost(25);
         // Allow 5 idle threads with 10 seconds timeout for each
         ConnectionPool connectionPool = new ConnectionPool(5, 10, TimeUnit.SECONDS);

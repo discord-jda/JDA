@@ -348,17 +348,22 @@ public class DefaultShardManager implements ShardManager
             catch (final Exception ignored) {}
         }
 
-        this.executor.shutdown();
-
         if (this.shards != null)
         {
-            this.shards.forEach(jda ->
-            {
-                if (shardingConfig.isUseShutdownNow())
-                    jda.shutdownNow();
-                else
-                    jda.shutdown();
+            executor.execute(() -> {
+                this.shards.forEach(jda ->
+                {
+                    if (shardingConfig.isUseShutdownNow())
+                        jda.shutdownNow();
+                    else
+                        jda.shutdown();
+                });
+                this.executor.shutdown();
             });
+        }
+        else
+        {
+            this.executor.shutdown();
         }
     }
 
@@ -538,6 +543,7 @@ public class DefaultShardManager implements ShardManager
             try
             {
                 SessionController.ShardedGateway gateway = jda.getShardedGateway();
+                this.sessionConfig.getSessionController().setConcurrency(gateway.getConcurrency());
                 this.gatewayURL = gateway.getUrl();
                 if (this.gatewayURL == null)
                     LOG.error("Acquired null gateway url from SessionController");
@@ -586,7 +592,7 @@ public class DefaultShardManager implements ShardManager
         jda.setSelfUser(selfUser);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents());
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), this.metaConfig.getEncoding());
         if (getShardsTotal() == -1)
             shardingConfig.setShardsTotal(shardTotal);
 
