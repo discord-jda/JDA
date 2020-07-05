@@ -343,14 +343,14 @@ public interface RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    static <E, A, O> RestAction<O> accumulate(@Nonnull Collection<? extends RestAction<? extends E>> actions, @Nonnull Collector<E, A, O> collector)
+    static <E, A, O> RestAction<O> accumulate(@Nonnull Collection<? extends RestAction<? extends E>> actions, @Nonnull Collector<? super E, A, ? extends O> collector)
     {
         Checks.noneNull(actions, "RestAction");
         Checks.notEmpty(actions, "RestActions");
         Checks.notNull(collector, "Collector");
         Supplier<A> accumulator = collector.supplier();
-        BiConsumer<A, E> add = collector.accumulator();
-        Function<A, O> output = collector.finisher();
+        BiConsumer<A, ? super E> add = collector.accumulator();
+        Function<A, ? extends O> output = collector.finisher();
 
         actions = new LinkedHashSet<>(actions);
         Iterator<? extends RestAction<? extends E>> iterator = actions.iterator();
