@@ -30,7 +30,7 @@ import java.util.List;
 
 public class UserById implements User
 {
-    private final long id;
+    protected final long id;
 
     public UserById(long id)
     {
