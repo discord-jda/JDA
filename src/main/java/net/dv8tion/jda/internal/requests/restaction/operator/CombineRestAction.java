@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,14 +37,15 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
     private final RestAction<I1> action1;
     private final RestAction<I2> action2;
     private final BiFunction<? super I1, ? super I2, ? extends O> accumulator;
-    private final AtomicBoolean failed = new AtomicBoolean(false);
+    private volatile boolean failed = false;
 
     public CombineRestAction(RestAction<I1> action1, RestAction<I2> action2, BiFunction<? super I1, ? super I2, ? extends O> accumulator)
     {
+        Checks.check(action1 != action2, "Cannot combine a RestAction with itself!");
         this.action1 = action1;
         this.action2 = action2;
         this.accumulator = accumulator;
-        BooleanSupplier checks = () -> !failed.get();
+        BooleanSupplier checks = () -> !failed;
         action1.addCheck(checks);
         action2.addCheck(checks);
     }
@@ -59,9 +61,18 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
     @Override
     public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
     {
-        BooleanSupplier failure = () -> !failed.get();
-        action1.setCheck(checks).addCheck(failure);
-        action2.setCheck(checks).addCheck(failure);
+        BooleanSupplier check = () -> !failed && (checks == null || checks.getAsBoolean());
+        action1.setCheck(check);
+        action2.setCheck(check);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<O> addCheck(@Nonnull BooleanSupplier checks)
+    {
+        action1.addCheck(checks);
+        action2.addCheck(checks);
         return this;
     }
 
@@ -69,14 +80,12 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
     @Override
     public BooleanSupplier getCheck()
     {
+        BooleanSupplier check1 = action1.getCheck();
+        BooleanSupplier check2 = action2.getCheck();
         return () ->
-        {
-            BooleanSupplier check1 = action1.getCheck();
-            BooleanSupplier check2 = action2.getCheck();
-            return (check1 == null || check1.getAsBoolean())
-                && (check2 == null || check2.getAsBoolean())
-                && !failed.get();
-        };
+                (check1 == null || check1.getAsBoolean())
+             && (check2 == null || check2.getAsBoolean())
+             && !failed;
     }
 
     @Nonnull
@@ -92,20 +101,23 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
     public void queue(@Nullable Consumer<? super O> success, @Nullable Consumer<? super Throwable> failure)
     {
         ReentrantLock lock = new ReentrantLock();
+        AtomicBoolean done1 = new AtomicBoolean(false);
+        AtomicBoolean done2 = new AtomicBoolean(false);
         AtomicReference<I1> result1 = new AtomicReference<>();
         AtomicReference<I2> result2 = new AtomicReference<>();
         Consumer<Throwable> failureCallback = (e) ->
         {
-            if (failed.get()) return;
-            failed.set(true);
+            if (failed) return;
+            failed = true;
             RestActionOperator.doFailure(failure, e);
         };
         action1.queue((s) -> {
             lock.lock();
             try
             {
+                done1.set(true);
                 result1.set(s);
-                if (result2.get() != null)
+                if (done2.get())
                     RestActionOperator.doSuccess(success, accumulator.apply(result1.get(), result2.get()));
             }
             catch (Exception e)
@@ -121,8 +133,9 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
             lock.lock();
             try
             {
+                done2.set(true);
                 result2.set(s);
-                if (result1.get() != null)
+                if (done1.get())
                     RestActionOperator.doSuccess(success, accumulator.apply(result1.get(), result2.get()));
             }
             catch (Exception e)

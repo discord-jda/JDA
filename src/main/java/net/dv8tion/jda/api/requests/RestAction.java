@@ -35,6 +35,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -277,7 +279,7 @@ public interface RestAction<T>
      * @return RestAction - Type: {@link List} of the results
      *
      * @see    #and(RestAction, BiFunction)
-     * @see    #accumulate(RestAction, RestAction[])
+     * @see    #zip(RestAction, RestAction[])
      */
     @Nonnull
     @SafeVarargs
@@ -307,34 +309,67 @@ public interface RestAction<T>
      * @return RestAction - Type: {@link List} of the results
      *
      * @see    #and(RestAction, BiFunction)
-     * @see    #accumulate(RestAction, RestAction[])
+     * @see    #zip(RestAction, RestAction[])
      */
     @Nonnull
     @CheckReturnValue
     static <E> RestAction<List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions)
     {
-        Checks.notEmpty(actions, "Collection");
-        Iterator<? extends RestAction<? extends E>> iterator = actions.iterator();
-        if (actions.size() == 1)
-            return iterator.next().map(Collections::singletonList);
+        return accumulate(actions, Collectors.toList());
+    }
 
-        List<E> list = new ArrayList<>(actions.size());
-        RestAction<? extends E> handle = iterator.next();
-        handle = handle.map((e) -> {
-            list.add(e);
-            return e;
+    /**
+     * Creates a RestAction instance which accumulates all results of the provided actions.
+     * <br>If one action fails, all others will be cancelled.
+     *
+     * @param  actions
+     *         Non-empty collection of RestActions to accumulate
+     * @param  collector
+     *         The {@link Collector} to use
+     * @param  <E>
+     *         The input type
+     * @param  <A>
+     *         The accumulator type
+     * @param  <O>
+     *         The output type
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the collection is empty
+     *
+     * @return RestAction - Type: {@link List} of the results
+     *
+     * @see    #and(RestAction, BiFunction)
+     * @see    #zip(RestAction, RestAction[])
+     */
+    @Nonnull
+    @CheckReturnValue
+    static <E, A, O> RestAction<O> accumulate(@Nonnull Collection<? extends RestAction<? extends E>> actions, @Nonnull Collector<E, A, O> collector)
+    {
+        Checks.noneNull(actions, "RestAction");
+        Checks.notEmpty(actions, "RestActions");
+        Checks.notNull(collector, "Collector");
+        Supplier<A> accumulator = collector.supplier();
+        BiConsumer<A, E> add = collector.accumulator();
+        Function<A, O> output = collector.finisher();
+
+        actions = new LinkedHashSet<>(actions);
+        Iterator<? extends RestAction<? extends E>> iterator = actions.iterator();
+        RestAction<A> result = iterator.next().map(it -> {
+            A list = accumulator.get();
+            add.accept(list, it);
+            return list;
         });
 
         while (iterator.hasNext())
         {
-            RestAction<? extends E> action = iterator.next();
-            handle = handle.and(action, (a, b) -> {
-                list.add(b);
-                return b;
+            RestAction<? extends E> next = iterator.next();
+            result = result.and(next, (list, b) -> {
+                add.accept(list, b);
+                return list;
             });
         }
 
-        return handle.map((ignored) -> list);
+        return result.map(output);
     }
 
     /**
@@ -392,7 +427,8 @@ public interface RestAction<T>
     default RestAction<T> addCheck(@Nonnull BooleanSupplier checks)
     {
         Checks.notNull(checks, "Checks");
-        return setCheck(() -> (getCheck() == null || getCheck().getAsBoolean()) && checks.getAsBoolean());
+        BooleanSupplier check = getCheck();
+        return setCheck(() -> (check == null || check.getAsBoolean()) && checks.getAsBoolean());
     }
 
     /**
@@ -937,7 +973,7 @@ public interface RestAction<T>
      *         The result type after applying the accumulator function
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or you tried to combine an action with itself
      *
      * @return Combined RestAction
      */
@@ -961,7 +997,7 @@ public interface RestAction<T>
      *         The type of the other action
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or you tried to combine an action with itself
      *
      * @return Combined RestAction with empty result
      */
@@ -983,7 +1019,7 @@ public interface RestAction<T>
      *         The other actions to accumulate into the list
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or you tried to combine an action with itself
      *
      * @return Combined RestAction with empty result
      *
@@ -993,24 +1029,15 @@ public interface RestAction<T>
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
-    default RestAction<List<T>> accumulate(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other)
+    default RestAction<List<T>> zip(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other)
     {
         Checks.notNull(first, "RestAction");
         Checks.noneNull(other, "RestAction");
-        RestAction<List<T>> out = and(first, (a, b) -> {
-            List<T> list = new ArrayList<>();
-            list.add(a);
-            list.add(b);
-            return list;
-        });
-        for (RestAction<? extends T> action : other)
-        {
-            out = out.and(action, (list, b) -> {
-                list.add(b);
-                return list;
-            });
-        }
-        return out;
+        List<RestAction<? extends T>> list = new ArrayList<>();
+        list.add(this);
+        list.add(first);
+        Collections.addAll(list, other);
+        return allOf(list);
     }
 
     /**
