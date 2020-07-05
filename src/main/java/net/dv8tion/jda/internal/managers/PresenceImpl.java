@@ -207,7 +207,7 @@ public class PresenceImpl implements Presence
             return;
         api.getClient().send(DataObject.empty()
             .put("d", data)
-            .put("op", WebSocketCode.PRESENCE).toString());
+            .put("op", WebSocketCode.PRESENCE));
     }
 
 }

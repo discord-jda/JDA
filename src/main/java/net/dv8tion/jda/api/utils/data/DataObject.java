@@ -21,17 +21,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
+import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
+import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.UncheckedIOException;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -177,6 +177,36 @@ public class DataObject implements SerializableData
         }
         catch (IOException ex)
         {
+            throw new ParsingException(ex);
+        }
+    }
+
+    /**
+     * Parses using {@link ExTermDecoder}.
+     * The provided data must start with the correct version header (131).
+     *
+     * @param  data
+     *         The data to decode
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
+     *
+     * @return A DataObject instance for the provided payload
+     */
+    @Nonnull
+    public static DataObject fromETF(@Nonnull byte[] data)
+    {
+        Checks.notNull(data, "Data");
+        try
+        {
+            Map<String, Object> map = ExTermDecoder.unpackMap(ByteBuffer.wrap(data));
+            return new DataObject(map);
+        }
+        catch (Exception ex)
+        {
+            log.error("Failed to parse ETF data {}", Arrays.toString(data), ex);
             throw new ParsingException(ex);
         }
     }
@@ -650,8 +680,9 @@ public class DataObject implements SerializableData
     /**
      * Serialize this object as JSON.
      *
-     * @return a byte array containing the JSON representation of this object.
+     * @return byte array containing the JSON representation of this object
      */
+    @Nonnull
     public byte[] toJson()
     {
         try
@@ -664,6 +695,18 @@ public class DataObject implements SerializableData
         {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Serializes this object as ETF MAP term.
+     *
+     * @return byte array containing the encoded ETF term
+     */
+    @Nonnull
+    public byte[] toETF()
+    {
+        ByteBuffer buffer = ExTermEncoder.pack(data);
+        return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
     }
 
     @Override

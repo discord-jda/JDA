@@ -17,10 +17,9 @@
 package net.dv8tion.jda.api.events.message.guild.react;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 
 import javax.annotation.Nonnull;
 
@@ -31,19 +30,15 @@ import javax.annotation.Nonnull;
  *
  * @since  4.2.0
  */
-public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildEvent
+public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEvent
 {
-    private final TextChannel channel;
     private final MessageReaction reaction;
-    private final long messageId;
 
-    public GuildMessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull TextChannel channel, @Nonnull MessageReaction reaction, long messageId)
+    public GuildMessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull MessageReaction reaction, long messageId)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, messageId, channel);
 
-        this.channel = channel;
         this.reaction = reaction;
-        this.messageId = messageId;
     }
 
     /**
