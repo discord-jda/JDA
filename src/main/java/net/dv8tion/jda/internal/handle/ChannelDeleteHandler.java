@@ -140,14 +140,6 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                if (channel.getUser().getMutualGuilds().isEmpty())
-                {
-                    // Remove user from cache, we no longer share any guilds/channels
-                    long userId = channel.getUser().getIdLong();
-                    getJDA().getUsersView().remove(userId);
-                    getJDA().getEventCache().clear(EventCache.Type.USER, userId);
-                }
-
                 getJDA().handleEvent(
                     new PrivateChannelDeleteEvent(
                         getJDA(), responseNumber,

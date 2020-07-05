@@ -391,17 +391,11 @@ public class EntityBuilder
             if (membersView.remove(member.getIdLong()) == null)
                 return false;
             LOG.trace("Unloading member {}", member);
-            if (user.getMutualGuilds().isEmpty()
-                    && (!user.hasPrivateChannel() || api.getPrivateChannelById(user.getPrivateChannel().getIdLong()) == null))
+            if (user.getMutualGuilds().isEmpty())
             {
                 // we no longer share any guilds/channels with this user so remove it from cache
                 user.setFake(true);
                 getJDA().getUsersView().remove(user.getIdLong());
-                if (user.hasPrivateChannel())
-                {
-                    PrivateChannel channel = user.getPrivateChannel();
-                    getJDA().getPrivateChannelsView().remove(channel.getIdLong());
-                }
             }
 
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
@@ -426,16 +420,9 @@ public class EntityBuilder
         if (getJDA().getUserById(user.getIdLong()) == null)
         {
             SnowflakeCacheViewImpl<User> usersView = getJDA().getUsersView();
-            SnowflakeCacheViewImpl<PrivateChannel> privateChannels = getJDA().getPrivateChannelsView();
-            try (UnlockHook hook1 = usersView.writeLock();
-                 UnlockHook hook2 = privateChannels.writeLock())
+            try (UnlockHook hook1 = usersView.writeLock())
             {
                 usersView.getMap().put(user.getIdLong(), user);
-                if (user.hasPrivateChannel())
-                {
-                    PrivateChannel channel = user.getPrivateChannel();
-                    privateChannels.getMap().put(channel.getIdLong(), channel);
-                }
             }
         }
 
