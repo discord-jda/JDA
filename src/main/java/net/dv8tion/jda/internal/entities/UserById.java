@@ -43,6 +43,35 @@ public class UserById implements User
         return this.id;
     }
 
+    @Nonnull
+    @Override
+    public String getAsMention()
+    {
+        return "<@" + getId() + ">";
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof User))
+            return false;
+        return ((User) obj).getIdLong() == this.id;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "U:(" + getId() + ')';
+    }
+
     @Contract("->fail")
     private void unsupported()
     {
@@ -147,13 +176,5 @@ public class UserById implements User
     {
         unsupported();
         return false;
-    }
-
-    @Nonnull
-    @Override
-    public String getAsMention()
-    {
-        unsupported();
-        return null;
     }
 }
