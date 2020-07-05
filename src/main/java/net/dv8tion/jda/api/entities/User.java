@@ -118,6 +118,9 @@ public interface User extends IMentionable, IFakeable
     /**
      * The username of the {@link net.dv8tion.jda.api.entities.User User}. Length is between 2 and 32 characters (inclusive).
      *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User}'s username.
      */
     @Nonnull
@@ -126,6 +129,9 @@ public interface User extends IMentionable, IFakeable
     /**
      * <br>The discriminator of the {@link net.dv8tion.jda.api.entities.User User}. Used to differentiate between users with the same usernames.
      * <br>This only contains the 4 digits after the username and the #.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      * Ex: 6297
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} discriminator.
@@ -137,6 +143,9 @@ public interface User extends IMentionable, IFakeable
      * The Discord Id for this user's avatar image.
      * If the user has not set an image, this will return null.
      *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar id.
      */
     @Nullable
@@ -145,6 +154,9 @@ public interface User extends IMentionable, IFakeable
     /**
      * The URL for the user's avatar image.
      * If the user has not set an image, this will return null.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} avatar url.
      */
@@ -158,6 +170,9 @@ public interface User extends IMentionable, IFakeable
     /**
      * The Discord Id for this user's default avatar image.
      *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar id.
      */
     @Nonnull
@@ -165,6 +180,9 @@ public interface User extends IMentionable, IFakeable
 
     /**
      * The URL for the for the user's default avatar image.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
      */
@@ -179,6 +197,9 @@ public interface User extends IMentionable, IFakeable
      * If they do not have an avatar set, this will return the URL of their
      * default avatar
      *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
      * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
      */
     @Nonnull
@@ -192,6 +213,9 @@ public interface User extends IMentionable, IFakeable
      * The "tag" for this user
      * <p>This is the equivalent of calling {@link java.lang.String#format(String, Object...) String.format}("%#s", user)
      *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
      * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
      */
     @Nonnull
@@ -200,6 +224,9 @@ public interface User extends IMentionable, IFakeable
     /**
      * Whether or not the currently logged in user and this user have a currently open
      * {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} or not.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      *
      * @return True if the logged in account shares a PrivateChannel with this user.
      */
@@ -228,8 +255,9 @@ public interface User extends IMentionable, IFakeable
      * }
      * }</pre>
      *
-     * @throws java.lang.UnsupportedOperationException
+     * @throws UnsupportedOperationException
      *         If the recipient User is the currently logged in account (represented by {@link net.dv8tion.jda.api.entities.SelfUser SelfUser})
+     *         or if the user was created with {@link #fromId(long)}
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         <br>Retrieves the PrivateChannel to use to directly message this User.
@@ -244,6 +272,9 @@ public interface User extends IMentionable, IFakeable
      * Finds and collects all {@link net.dv8tion.jda.api.entities.Guild Guild} instances that contain this {@link net.dv8tion.jda.api.entities.User User} within the current {@link net.dv8tion.jda.api.JDA JDA} instance.<br>
      * <p>This method is a shortcut for {@link net.dv8tion.jda.api.JDA#getMutualGuilds(User...) JDA.getMutualGuilds(User)}.</p>
      *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that this user is a member of.
      */
     @Nonnull
@@ -252,12 +283,18 @@ public interface User extends IMentionable, IFakeable
     /**
      * Returns whether or not the given user is a Bot-Account (special badge in client, some different behaviour)
      *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
      * @return If the User's Account is marked as Bot
      */
     boolean isBot();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this User
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      *
      * @return the corresponding JDA instance
      */
@@ -266,6 +303,9 @@ public interface User extends IMentionable, IFakeable
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of this user.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      * 
      * @return EnumSet containing the flags of the user.
      */
@@ -274,6 +314,9 @@ public interface User extends IMentionable, IFakeable
 
     /**
      * Returns the bitmask representation of the {@link net.dv8tion.jda.api.entities.User.UserFlag UserFlags} of this user.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
      * 
      * @return bitmask representation of the user's flags.
      */
