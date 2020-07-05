@@ -90,6 +90,8 @@ public interface User extends IMentionable, IFakeable
      *         The user id
      *
      * @return A user instance
+     *
+     * @see    JDA#retrieveUserById(long)
      */
     @Nonnull
     static User fromId(long id)
@@ -108,6 +110,8 @@ public interface User extends IMentionable, IFakeable
      *         If the provided ID is not a valid snowflake
      *
      * @return A user instance
+     *
+     * @see    JDA#retrieveUserById(String)
      */
     @Nonnull
     static User fromId(@Nonnull String id)
