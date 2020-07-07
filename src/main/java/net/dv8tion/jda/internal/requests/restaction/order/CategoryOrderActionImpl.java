@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,13 @@ public class CategoryOrderActionImpl
     public Category getCategory()
     {
         return category;
+    }
+
+    @Nonnull
+    @Override
+    public CategoryOrderAction moveTo(@Nullable Category newParent, boolean lockPermissions)
+    {
+        return (CategoryOrderAction) super.moveTo(newParent, lockPermissions);
     }
 
     @Override

@@ -17,8 +17,10 @@
 package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Category;
+import net.dv8tion.jda.api.entities.GuildChannel;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An extension of {@link ChannelOrderAction ChannelOrderAction} with
@@ -44,4 +46,43 @@ public interface CategoryOrderAction extends ChannelOrderAction
      */
     @Nonnull
     Category getCategory();
+
+    @Nonnull
+    @Override
+    default CategoryOrderAction moveTo(@Nullable Category newParent)
+    {
+        return (CategoryOrderAction) ChannelOrderAction.super.moveTo(newParent);
+    }
+
+    @Nonnull
+    @Override
+    default CategoryOrderAction moveTo(int position, @Nullable Category newParent)
+    {
+        return (CategoryOrderAction) ChannelOrderAction.super.moveTo(position, newParent);
+    }
+
+    @Nonnull
+    @Override
+    default CategoryOrderAction moveTo(@Nonnull GuildChannel entity, @Nullable Category newParent)
+    {
+        return (CategoryOrderAction) ChannelOrderAction.super.moveTo(entity, newParent);
+    }
+
+    @Nonnull
+    @Override
+    default CategoryOrderAction moveTo(int position, @Nullable Category newParent, boolean lockPermissions)
+    {
+        return (CategoryOrderAction) ChannelOrderAction.super.moveTo(position, newParent, lockPermissions);
+    }
+
+    @Nonnull
+    @Override
+    default CategoryOrderAction moveTo(@Nonnull GuildChannel entity, @Nullable Category newParent, boolean lockPermissions)
+    {
+        return (CategoryOrderAction) ChannelOrderAction.super.moveTo(entity, newParent, lockPermissions);
+    }
+
+    @Nonnull
+    @Override
+    CategoryOrderAction moveTo(@Nullable Category newParent, boolean lockPermissions);
 }

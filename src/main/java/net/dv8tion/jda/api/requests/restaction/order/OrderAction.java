@@ -43,6 +43,7 @@ import java.util.function.BooleanSupplier;
  *
  * @since 3.0
  */
+@SuppressWarnings("unchecked")
 public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void>
 {
     @Nonnull
@@ -102,6 +103,9 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      *         The entity for the new position that will be in focus for all modification
      *         operations
      *
+     * @throws IllegalArgumentException
+     *         If the entity is null or not tracked by this order action
+     *
      * @return The current OrderAction sub-implementation instance
      *
      * @see    #selectPosition(int)
@@ -150,6 +154,72 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
     M moveUp(int amount);
 
     /**
+     * Moves the entity at the specified position {@code amount} positions <b>UP</b>
+     * in order by pushing all entities down by one position.
+     *
+     * @param  position
+     *         The position of the entity which will be moved
+     * @param  amount
+     *         The amount of positions that should be moved
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified amount would cause the entity to go out-of-bounds,
+     *         or if the target position is out-of-bounds
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveTo(int)
+     */
+    @Nonnull
+    default M moveUp(int position, int amount)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(position).moveUp(amount);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
+
+    /**
+     * Moves the specified entity {@code amount} positions <b>UP</b>
+     * in order by pushing all entities down by one position.
+     *
+     * @param  entity
+     *         The entity which will be moved
+     * @param  amount
+     *         The amount of positions that should be moved
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified amount would cause the entity to go out-of-bounds,
+     *         or if the target entity is null or not tracked by this order action
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveTo(int)
+     */
+    @Nonnull
+    default M moveUp(@Nonnull T entity, int amount)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(entity).moveUp(amount);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
+
+    /**
      * Moves the currently selected entity {@code amount} positions <b>DOWN</b>
      * in order by pushing all entities up by one position.
      *
@@ -169,9 +239,75 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
     M moveDown(int amount);
 
     /**
+     * Moves the entity at the specified position {@code amount} positions <b>DOWN</b>
+     * in order by pushing all entities down by one position.
+     *
+     * @param  position
+     *         The position of the entity which will be moved
+     * @param  amount
+     *         The amount of positions that should be moved
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified amount would cause the entity to go out-of-bounds,
+     *         or if the target position is out-of-bounds
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveTo(int)
+     */
+    @Nonnull
+    default M moveDown(int position, int amount)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(position).moveDown(amount);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
+
+    /**
+     * Moves the specified entity {@code amount} positions <b>DOWN</b>
+     * in order by pushing all entities down by one position.
+     *
+     * @param  entity
+     *         The entity which will be moved
+     * @param  amount
+     *         The amount of positions that should be moved
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified amount would cause the entity to go out-of-bounds,
+     *         or if the target entity is null or not tracked by this order action
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveTo(int)
+     */
+    @Nonnull
+    default M moveDown(@Nonnull T entity, int amount)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(entity).moveDown(amount);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
+
+    /**
      * Moves the currently selected entity to the specified
      * position (0 based index). All entities are moved in the
-     * direction of the left <i>hole</i> to fill the gap.
+     * direction of the left <em>hole</em> to fill the gap.
      *
      * @param  position
      *         The new not-negative position for the currently selected entity
@@ -188,6 +324,73 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      */
     @Nonnull
     M moveTo(int position);
+
+    /**
+     * Moves the entity at the specified position to the new position (0 based index).
+     * All entities are moved in the direction of the left <em>hole</em> to fill the gap.
+     *
+     * @param  position
+     *         The old position
+     * @param  newPosition
+     *         The new not-negative position for the currently selected entity
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either of the specified positions is out-of-bounds
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveDown(int)
+     * @see    #moveUp(int)
+     */
+    @Nonnull
+    default M moveTo(int position, int newPosition)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(position).moveTo(newPosition);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
+
+    /**
+     * Moves the specified entity to the new position (0 based index).
+     * All entities are moved in the direction of the left <em>hole</em> to fill the gap.
+     *
+     * @param  entity
+     *         The entity to move
+     * @param  newPosition
+     *         The new not-negative position for the currently selected entity
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified position is out-of-bounds,
+     *         or the entity is null or not tracked by this order action
+     *
+     * @return The current OrderAction sub-implementation instance
+     *
+     * @see    #moveDown(int)
+     * @see    #moveUp(int)
+     */
+    @Nonnull
+    default M moveTo(@Nonnull T entity, int newPosition)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(entity).moveTo(newPosition);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
 
     /**
      * Swaps the currently selected entity with the entity located
@@ -226,6 +429,98 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
      */
     @Nonnull
     M swapPosition(@Nonnull T swapEntity);
+
+    /**
+     * Swaps the entities at the specified positions.
+     * No other entities are affected by this operation.
+     *
+     * @param  position1
+     *         0 based index of the first target position
+     * @param  position2
+     *         0 based index of the second target position
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either of the specified positions is out-of-bounds
+     *
+     * @return The current OrderAction sub-implementation instance
+     */
+    @Nonnull
+    default M swapPosition(int position1, int position2)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(position1).swapPosition(position2);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
+
+    /**
+     * Swaps the entities at the specified positions.
+     * No other entities are affected by this operation.
+     *
+     * @param  entity
+     *         The first entity to swap
+     * @param  position2
+     *         0 based index of the second target position
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the specified position is out-of-bounds,
+     *         or if the entity is null or not tracked by this order action
+     *
+     * @return The current OrderAction sub-implementation instance
+     */
+    @Nonnull
+    default M swapPosition(@Nonnull T entity, int position2)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(entity).swapPosition(position2);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
+
+    /**
+     * Swaps the entities at the specified positions.
+     * No other entities are affected by this operation.
+     *
+     * @param  entity1
+     *         The first entity to swap
+     * @param  entity2
+     *         The second entity to swap
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If either of the provided entities is null
+     *         or not tracked by this order action
+     *
+     * @return The current OrderAction sub-implementation instance
+     */
+    @Nonnull
+    default M swapPosition(@Nonnull T entity1, @Nonnull T entity2)
+    {
+        int currentPosition = getSelectedPosition();
+        try
+        {
+            selectPosition(entity1).swapPosition(entity2);
+        }
+        finally
+        {
+            if (currentPosition > -1)
+                selectPosition(currentPosition);
+        }
+        return (M) this;
+    }
 
     /**
      * Reverses the {@link #getCurrentOrder() current order} by using
