@@ -76,7 +76,7 @@ Both the `JDABuilder` and the `DefaultShardManagerBuilder` allow a set of config
 **Example**:
 
 ```java
-public static void main(String[] args) {
+public static void main(String[] args) throws Exception {
     JDABuilder builder = JDABuilder.createDefault(args[0]);
     
     // Disable parts of the cache
@@ -512,7 +512,7 @@ the Discord API.
 For general troubleshooting you can visit our wiki [Troubleshooting](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting) and [FAQ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ).
 <br>If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
 
-Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
+Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/api).
 Once you joined, you can find JDA-specific help in the `#java_jda` channel.
 
 For guides and setup help you can also take a look at the [wiki](https://github.com/DV8FromTheWorld/JDA/wiki)
