@@ -102,7 +102,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     @Override
     public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
     {
-        StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?client_id=");
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
         builder.append(this.getId());
         builder.append("&scope=bot");
         if (permissions != null && !permissions.isEmpty())

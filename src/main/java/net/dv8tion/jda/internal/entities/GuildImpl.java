@@ -39,6 +39,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -58,6 +59,8 @@ import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
 import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import okhttp3.FormBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -68,6 +71,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -88,7 +92,6 @@ public class GuildImpl implements Guild
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile GuildManager manager;
 
-    private CompletableFuture<Void> chunkingCallback = new CompletableFuture<>();
     private Member owner;
     private String name;
     private String iconId, splashId;
@@ -156,7 +159,7 @@ public class GuildImpl implements Guild
     @Override
     public boolean isLoaded()
     {
-        // Only works with guild subscriptions
+        // Only works with GUILD_MEMBERS intent
         return getJDA().isIntent(GatewayIntent.GUILD_MEMBERS)
                 && (long) getMemberCount() <= getMemberCache().size();
     }
@@ -287,6 +290,24 @@ public class GuildImpl implements Guild
     public int getMaxPresences()
     {
         return maxPresences;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<MetaData> retrieveMetaData()
+    {
+        Route.CompiledRoute route = Route.Guilds.GET_GUILD.compile(getId());
+        route = route.withQueryParams("with_counts", "true");
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject json = response.getObject();
+            int memberLimit = json.getInt("max_members", 0);
+            int presenceLimit = json.getInt("max_presences", 5000);
+            this.maxMembers = memberLimit;
+            this.maxPresences = presenceLimit;
+            int approxMembers = json.getInt("approximate_member_count", this.memberCount);
+            int approxPresence = json.getInt("approximate_presence_count", 0);
+            return new MetaData(memberLimit, presenceLimit, approxPresence, approxMembers);
+        });
     }
 
     @Override
@@ -791,10 +812,63 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    @Deprecated
     public CompletableFuture<Void> retrieveMembers()
     {
-        startChunking();
-        return chunkingCallback;
+        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
+        {
+            CompletableFuture<Void> future = new CompletableFuture<>();
+            future.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled GUILD_MEMBERS intent!"));
+            return future;
+        }
+
+        if (isLoaded())
+            return CompletableFuture.completedFuture(null);
+        Task<List<Member>> task = loadMembers();
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        task.onError(future::completeExceptionally);
+        task.onSuccess((members) -> {
+            try (UnlockHook hook = memberCache.writeLock())
+            {
+                members.forEach((it) -> memberCache.getMap().put(it.getIdLong(), it));
+            }
+            future.complete(null);
+        });
+
+        return future;
+    }
+
+    @Nonnull
+    @Override
+    public Task<Void> loadMembers(@Nonnull Consumer<Member> callback)
+    {
+        Checks.notNull(callback, "Callback");
+        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
+            throw new IllegalStateException("Cannot use loadMembers without GatewayIntent.GUILD_MEMBERS!");
+        if (isLoaded())
+        {
+            memberCache.forEachUnordered(callback);
+            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
+        }
+
+        MemberChunkManager chunkManager = getJDA().getClient().getChunkManager();
+        boolean includePresences = getJDA().isIntent(GatewayIntent.GUILD_PRESENCES);
+        CompletableFuture<Void> handler = chunkManager.chunkGuild(this, includePresences, (last, list) -> list.forEach(callback));
+        return new GatewayTask<>(handler, () -> handler.cancel(false));
+    }
+
+    // Helper function for deferred cache access
+    private Member getMember(long id, boolean update, JDAImpl jda)
+    {
+        if (!update || jda.isIntent(GatewayIntent.GUILD_MEMBERS))
+        {
+            // return member from cache if member tracking is enabled through intents
+            Member member = getMemberById(id);
+            // if the join time is inaccurate we also have to load it through REST to update this information
+            if (!update || (member != null && member.hasTimeJoined()))
+                return member;
+        }
+        return null;
     }
 
     @Nonnull
@@ -806,12 +880,69 @@ public class GuildImpl implements Guild
             return new CompletedRestAction<>(jda, getSelfMember());
 
         return new DeferredRestAction<>(jda, Member.class,
-                () -> !update || jda.isIntent(GatewayIntent.GUILD_MEMBERS) ? getMemberById(id) : null, // return member from cache if member tracking is enabled through intents
+                () -> getMember(id, update, jda),
                 () -> { // otherwise we need to update the member with a REST request first to get the nickname/roles
                     Route.CompiledRoute route = Route.Guilds.GET_MEMBER.compile(getId(), Long.toUnsignedString(id));
-                    return new RestActionImpl<>(jda, route, (resp, req) ->
-                            jda.getEntityBuilder().createMember(this, resp.getObject()));
+                    return new RestActionImpl<>(jda, route, (resp, req) -> {
+                        MemberImpl member = jda.getEntityBuilder().createMember(this, resp.getObject());
+                        jda.getEntityBuilder().updateMemberCache(member);
+                        return member;
+                    });
                 });
+    }
+
+    @Nonnull
+    @Override
+    public Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids)
+    {
+        Checks.notNull(ids, "ID Array");
+        Checks.check(!includePresence || api.isIntent(GatewayIntent.GUILD_PRESENCES),
+                "Cannot retrieve presences of members without GUILD_PRESENCES intent!");
+
+        if (ids.length == 0)
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+        Checks.check(ids.length <= 100, "You can only request 100 members at once");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+        List<Member> collect = new ArrayList<>(ids.length);
+        CompletableFuture<List<Member>> result = new CompletableFuture<>();
+        CompletableFuture<Void> handle = chunkManager.chunkGuild(this, includePresence, ids, (last, list) -> {
+            collect.addAll(list);
+            if (last)
+                result.complete(collect);
+        });
+
+        result.exceptionally(ex -> {
+            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            return null;
+        });
+
+        return new GatewayTask<>(result, () -> handle.cancel(false));
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
+    {
+        Checks.notEmpty(prefix, "Prefix");
+        Checks.positive(limit, "Limit");
+        Checks.check(limit <= 100, "Limit must not be greater than 100");
+        MemberChunkManager chunkManager = api.getClient().getChunkManager();
+
+        List<Member> collect = new ArrayList<>(limit);
+        CompletableFuture<List<Member>> result = new CompletableFuture<>();
+        CompletableFuture<Void> handle = chunkManager.chunkGuild(this, prefix, limit, (last, list) -> {
+            collect.addAll(list);
+            if (last)
+                result.complete(collect);
+        });
+
+        result.exceptionally(ex -> {
+            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            return null;
+        });
+
+        return new GatewayTask<>(result, () -> handle.cancel(false));
     }
 
     @Override
@@ -905,14 +1036,25 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public AuditableRestAction<Integer> prune(int days)
+    public AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles)
     {
         checkPermission(Permission.KICK_MEMBERS);
 
         Checks.check(days >= 1 && days <= 30, "Provided %d days must be between 1 and 30.", days);
+        Checks.notNull(roles, "Roles");
 
-        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId()).withQueryParams("days", Integer.toString(days));
-        return new AuditableRestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
+        Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId());
+        FormBody.Builder form = new FormBody.Builder();
+        form.add("days", Integer.toString(days));
+        if (!wait)
+            form.add("compute_prune_count", "false");
+        for (Role role : roles)
+        {
+            Checks.notNull(role, "Role");
+            Checks.check(role.getGuild().equals(this), "Role is not from the same guild!");
+            form.add("include_roles", role.getId());
+        }
+        return new AuditableRestActionImpl<>(getJDA(), route, form.build(), (response, request) -> response.getObject().getInt("pruned", 0));
     }
 
     @Nonnull
@@ -1140,7 +1282,7 @@ public class GuildImpl implements Guild
         }
 
         DataObject body = DataObject.empty()
-            .put("roles", roles.stream().map(Role::getId).collect(Collectors.toList()));
+            .put("roles", roles.stream().map(Role::getId).collect(Collectors.toSet()));
         Route.CompiledRoute route = Route.Guilds.MODIFY_MEMBER.compile(getId(), member.getUser().getId());
 
         return new AuditableRestActionImpl<>(getJDA(), route, body);
@@ -1502,62 +1644,6 @@ public class GuildImpl implements Guild
 
     // -- Member Tracking --
 
-    @Nonnull
-    @CheckReturnValue
-    public CompletableFuture<List<Member>> retrieveMembersByName(@Nonnull String prefix, int limit)
-    {
-        Checks.notEmpty(prefix, "Prefix");
-        Checks.positive(limit, "Limit");
-        Checks.check(limit <= 100, "Limit must not be greater than 100");
-        MemberChunkManager chunkManager = api.getClient().getChunkManager();
-        return chunkManager.chunkGuild(id, prefix, limit)
-                .thenApplyAsync((response) -> {
-                    DataArray memberArray = response.getArray("members");
-                    List<Member> memberList = new ArrayList<>(memberArray.length());
-                    if (memberArray.isEmpty())
-                        return memberList;
-
-                    EntityBuilder entityBuilder = api.getEntityBuilder();
-                    for (int i = 0; i< memberArray.length(); i++)
-                    {
-                        DataObject json = memberArray.getObject(i);
-                        MemberImpl member = entityBuilder.createMember(this, json);
-                        entityBuilder.updateMemberCache(member);
-                        memberList.add(member);
-                    }
-
-                    return memberList;
-                });
-    }
-
-    public void startChunking()
-    {
-        if (isLoaded())
-            return;
-
-        if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
-        {
-            chunkingCallback.completeExceptionally(new IllegalStateException("Unable to start member chunking on a guild with disabled GUILD_MEMBERS intent"));
-            return;
-        }
-
-        if (chunkingCallback.isDone())
-            chunkingCallback = new CompletableFuture<>();
-
-        getJDA().onChunksRequested(this);
-
-        DataObject request = DataObject.empty()
-            .put("limit", 0)
-            .put("query", "")
-            .put("guild_id", getId());
-
-        DataObject packet = DataObject.empty()
-            .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
-            .put("d", request);
-
-        getJDA().getClient().chunkOrSyncRequest(packet);
-    }
-
     public void onMemberAdd()
     {
         memberCount++;
@@ -1566,17 +1652,6 @@ public class GuildImpl implements Guild
     public void onMemberRemove()
     {
         memberCount--;
-        acknowledgeMembers();
-    }
-
-    public void acknowledgeMembers()
-    {
-        if (memberCache.size() == memberCount && !chunkingCallback.isDone())
-        {
-            JDALogger.getLog(Guild.class).debug("Chunking completed for guild {}", this);
-            chunkingCallback.complete(null);
-            getJDA().onChunksFinished(this);
-        }
     }
 
     // -- Object overrides --

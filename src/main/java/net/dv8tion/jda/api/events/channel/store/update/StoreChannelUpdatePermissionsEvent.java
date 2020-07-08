@@ -33,6 +33,9 @@ import java.util.stream.Collectors;
  * Indicates that a {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}'s permission overrides changed.
  *
  * <p>Can be use to detect when a StoreChannel's permission overrides change and get affected {@link net.dv8tion.jda.api.entities.Role Roles}/{@link net.dv8tion.jda.api.entities.Member Members}.
+ *
+ * @deprecated This event is no longer feasible due to members not being cached by default. We replaced this event
+ *             with {@link net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent GenericPermissionOverrideEvent} and derivatives.
  */
 @Deprecated
 @ForRemoval

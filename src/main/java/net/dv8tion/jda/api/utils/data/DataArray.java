@@ -21,18 +21,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
+import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
+import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
+import net.dv8tion.jda.internal.utils.Checks;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  * Represents a list of values used in communication with the Discord API.
@@ -163,6 +168,36 @@ public class DataArray implements Iterable<Object>
         catch (IOException e)
         {
             throw new ParsingException(e);
+        }
+    }
+
+    /**
+     * Parses using {@link ExTermDecoder}.
+     * The provided data must start with the correct version header (131).
+     *
+     * @param  data
+     *         The data to decode
+     *
+     * @throws IllegalArgumentException
+     *         If the provided data is null
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
+     *
+     * @return A DataArray instance for the provided payload
+     */
+    @Nonnull
+    public static DataArray fromETF(@Nonnull byte[] data)
+    {
+        Checks.notNull(data, "Data");
+        try
+        {
+            List<Object> list = ExTermDecoder.unpackList(ByteBuffer.wrap(data));
+            return new DataArray(list);
+        }
+        catch (Exception ex)
+        {
+            log.error("Failed to parse ETF data {}", Arrays.toString(data), ex);
+            throw new ParsingException(ex);
         }
     }
 
@@ -602,6 +637,38 @@ public class DataArray implements Iterable<Object>
         return this;
     }
 
+    /**
+     * Serializes this object as JSON.
+     *
+     * @return byte array containing the JSON representation of this object
+     */
+    @Nonnull
+    public byte[] toJson()
+    {
+        try
+        {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            mapper.writeValue(outputStream, data);
+            return outputStream.toByteArray();
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    /**
+     * Serializes this object as ETF LIST term.
+     *
+     * @return byte array containing the encoded ETF term
+     */
+    @Nonnull
+    public byte[] toETF()
+    {
+        ByteBuffer buffer = ExTermEncoder.pack(data);
+        return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
+    }
+
     @Override
     public String toString()
     {
@@ -611,7 +678,7 @@ public class DataArray implements Iterable<Object>
         }
         catch (JsonProcessingException e)
         {
-            throw new IllegalStateException(e);
+            throw new ParsingException(e);
         }
     }
 
@@ -660,5 +727,12 @@ public class DataArray implements Iterable<Object>
     public Iterator<Object> iterator()
     {
         return data.iterator();
+    }
+
+    @Nonnull
+    public <T> Stream<T> stream(BiFunction<? super DataArray, Integer, ? extends T> mapper)
+    {
+        return IntStream.range(0, length())
+                .mapToObj(index -> mapper.apply(this, index));
     }
 }

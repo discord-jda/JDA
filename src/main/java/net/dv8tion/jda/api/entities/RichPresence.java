@@ -23,7 +23,7 @@ import java.util.Objects;
 
 /**
  * Used to hold additional information about a users {@link Activity Activity}
- * relevant to <a href="https://discordapp.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
+ * relevant to <a href="https://discord.com/developers/docs/rich-presence/best-practices" target="_blank">Rich Presence</a>.
  *
  * @since  3.4.0
  *

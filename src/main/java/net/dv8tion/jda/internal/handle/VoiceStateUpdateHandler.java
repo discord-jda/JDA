@@ -166,7 +166,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 {
                     //And this instance of JDA is connected or attempting to connect,
                     // then change the channel we expect to be connected to.
-                    if (mng.isConnected() || mng.isAttemptingToConnect())
+                    if (mng.isConnected())
                         mng.setConnectedChannel(channel);
 
                     //If we have connected (VOICE_SERVER_UPDATE received and AudioConnection created (actual connection might still be setting up)),

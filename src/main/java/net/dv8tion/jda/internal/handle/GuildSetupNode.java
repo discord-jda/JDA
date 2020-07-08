@@ -244,7 +244,7 @@ public class GuildSetupNode
         ensureMembers();
     }
 
-    boolean handleMemberChunk(DataArray arr)
+    boolean handleMemberChunk(boolean last, DataArray arr)
     {
         if (partialGuild == null)
         {
@@ -261,7 +261,7 @@ public class GuildSetupNode
             members.put(id, obj);
         }
 
-        if (members.size() >= expectedMemberCount || !getController().getJDA().chunkGuild(id))
+        if (last || members.size() >= expectedMemberCount || !getController().getJDA().chunkGuild(id))
         {
             completeSetup();
             return false;
@@ -387,7 +387,6 @@ public class GuildSetupNode
         GuildSetupController.log.debug("Finished setup for guild {} firing cached events {}", id, cachedEvents.size());
         api.getClient().handle(cachedEvents);
         api.getEventCache().playbackCache(EventCache.Type.GUILD, id);
-        guild.acknowledgeMembers();
     }
 
     private void ensureMembers()
@@ -398,7 +397,7 @@ public class GuildSetupNode
         DataArray memberArray = partialGuild.getArray("members");
         if (!getController().getJDA().chunkGuild(id))
         {
-            handleMemberChunk(memberArray);
+            handleMemberChunk(true, memberArray);
         }
         else if (memberArray.length() < expectedMemberCount && !requestedChunk)
         {
@@ -406,7 +405,7 @@ public class GuildSetupNode
             getController().addGuildForChunking(id, isJoin());
             requestedChunk = true;
         }
-        else if (handleMemberChunk(memberArray) && !requestedChunk)
+        else if (handleMemberChunk(false, memberArray) && !requestedChunk)
         {
             // Discord sent us enough members to satisfy the member_count
             //  but we found duplicates and still didn't reach enough to satisfy the count
@@ -443,19 +442,15 @@ public class GuildSetupNode
             newMng.setConnectionListener(listener);
             newMng.setAutoReconnect(mng.isAutoReconnect());
 
-            if (mng.isConnected() || mng.isAttemptingToConnect())
+            if (mng.isConnected())
             {
-                final long channelId = mng.isConnected()
-                                       ? mng.getConnectedChannel().getIdLong()
-                                       : mng.getQueuedAudioConnection().getIdLong();
+                final long channelId = mng.getConnectedChannel().getIdLong();
 
                 final VoiceChannel channel = api.getVoiceChannelById(channelId);
                 if (channel != null)
                 {
                     if (mng.isConnected())
                         mng.closeAudioConnection(ConnectionStatus.ERROR_CANNOT_RESUME);
-                    //closing old connection in order to reconnect later
-                    newMng.setQueuedAudioConnection(channel);
                 }
                 else
                 {

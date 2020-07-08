@@ -140,11 +140,64 @@ public interface Message extends ISnowflake, Formattable
     int MAX_CONTENT_LENGTH = 2000;
 
     /**
-     * Pattern used to find instant invites in messages.
+     * Pattern used to find instant invites in strings.
+     *
+     * <p>The only named group is at index 1 with the name {@code "code"}.
      *
      * @see #getInvites()
      */
-    Pattern INVITE_PATTERN = Pattern.compile("(?:https?://)?discord(?:app\\.com/invite|\\.gg)/([a-z0-9-]+)", Pattern.CASE_INSENSITIVE);
+    Pattern INVITE_PATTERN = Pattern.compile(
+            "(?:https?://)?" +                     // Scheme
+            "(?:\\w+\\.)?" +                       // Subdomain
+            "discord(?:(?:app)?\\.com" +           // Discord domain
+            "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
+            "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Pattern used to find {@link #getJumpUrl() Jump URLs} in strings.
+     *
+     * <h2>Groups</h2>
+     * <table>
+     *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
+     *   <tr>
+     *     <th>Index</th>
+     *     <th>Name</th>
+     *     <th>Description</th>
+     *   </tr>
+     *   <tr>
+     *     <td>0</td>
+     *     <td>N/A</td>
+     *     <td>The entire link</td>
+     *   </tr>
+     *   <tr>
+     *     <td>1</td>
+     *     <td>guild</td>
+     *     <td>The ID of the target guild</td>
+     *   </tr>
+     *   <tr>
+     *     <td>2</td>
+     *     <td>channel</td>
+     *     <td>The ID of the target channel</td>
+     *   </tr>
+     *   <tr>
+     *     <td>3</td>
+     *     <td>message</td>
+     *     <td>The ID of the target message</td>
+     *   </tr>
+     * </table>
+     * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+     * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
+     *
+     * @see #getJumpUrl()
+     */
+    Pattern JUMP_URL_PATTERN = Pattern.compile(
+            "(?:https?://)?" +                                             // Scheme
+            "(?:\\w+\\.)?" +                                               // Subdomain
+            "discord(?:app)?\\.com" +                                      // Discord domain
+            "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
+            "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
@@ -405,10 +458,13 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.
-     * <br>This is just a shortcut to {@link #getGuild()}{@link net.dv8tion.jda.api.entities.Guild#getMember(User) .getMember(getAuthor())}.
      * <br><b>This is only valid if the Message was actually sent in a TextChannel.</b> This will return {@code null}
      * if the message was not sent in a TextChannel, or if the message was sent by a Webhook.
      * <br>You can check the type of channel this message was sent from using {@link #isFromType(ChannelType)} or {@link #getChannelType()}.
+     *
+     * <p>Discord does not provide a member object for messages returned by {@link RestAction RestActions} of any kind.
+     * This will return null if the message was retrieved through {@link MessageChannel#retrieveMessageById(long)} or similar means,
+     * unless the member is already cached.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
@@ -458,7 +514,7 @@ public interface Message extends ISnowflake, Formattable
      * The raw textual content of this message. Does not resolve {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}
      * entities like {@link #getContentDisplay()} does. This means that this is the completely raw textual content of the message
      * received from Discord and can contain mentions specified by
-     * <a href="https://discordapp.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
+     * <a href="https://discord.com/developers/docs/resources/channel#message-formatting" target="_blank">Discord's Message Formatting</a>.
      *
      * @return The raw textual content of the message, containing unresolved Discord message formatting.
      */
@@ -1757,7 +1813,7 @@ public interface Message extends ISnowflake, Formattable
     MessageType getType();
 
     /**
-     * Mention formatting constants, useful for use with {@link java.util.regex.Pattern Patterns}
+     * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
      */
     enum MentionType
     {
@@ -1765,42 +1821,58 @@ public interface Message extends ISnowflake, Formattable
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.User User}/{@link net.dv8tion.jda.api.entities.Member Member}
          * <br>The first and only group matches the id of the mention.
          */
-        USER("<@!?(\\d+)>"),
+        USER("<@!?(\\d+)>", "users"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Role Role}
          * <br>The first and only group matches the id of the mention.
          */
-        ROLE("<@&(\\d+)>"),
+        ROLE("<@&(\\d+)>", "roles"),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
          * <br>The first and only group matches the id of the mention.
          */
-        CHANNEL("<#(\\d+)>"),
+        CHANNEL("<#(\\d+)>", null),
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.Emote Emote}
          * <br>The first group matches the name of the emote and the second the id of the mention.
          */
-        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>"),
+        EMOTE("<a?:([a-zA-Z0-9_]+):([0-9]+)>", null),
         /**
          * Represents a mention for all active users, literal {@code @here}
          */
-        HERE("@here"),
+        HERE("@here", "everyone"),
         /**
          * Represents a mention for all users in a server, literal {@code @everyone}.
          */
-        EVERYONE("@everyone");
+        EVERYONE("@everyone", "everyone");
 
         private final Pattern pattern;
+        private final String parseKey;
 
-        MentionType(String regex)
+        MentionType(String regex, String parseKey)
         {
             this.pattern = Pattern.compile(regex);
+            this.parseKey = parseKey;
         }
 
         @Nonnull
         public Pattern getPattern()
         {
             return pattern;
+        }
+
+        /**
+         * The Key returned by this method is used to determine the group or parsable mention group they are part of.
+         * <br>It is used internally in methods like {@link net.dv8tion.jda.api.requests.restaction.MessageAction#allowedMentions(Collection) MessageAction#allowedMentions(Collection)}.
+         * <p>
+         * Returns {@code null}, when they don't belong to any mention group.
+         *
+         * @return Nullable group key for mention parsing
+         */
+        @Nullable
+        public String getParseKey()
+        {
+            return parseKey;
         }
     }
 
@@ -2121,11 +2193,23 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
+        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");
-            Checks.check(!file.exists() || file.canWrite(), "Cannot write to file %s", file.getName());
+            try
+            {
+                if (!file.exists())
+                    file.createNewFile();
+                else
+                    Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
+            }
+            catch (IOException e)
+            {
+                throw new IllegalArgumentException("Cannot create file", e);
+            }
+
             return retrieveInputStream().thenApplyAsync((stream) -> {
                 try (FileOutputStream out = new FileOutputStream(file))
                 {

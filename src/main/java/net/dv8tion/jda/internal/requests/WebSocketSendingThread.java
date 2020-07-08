@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import gnu.trove.map.TLongObjectMap;
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -28,6 +29,7 @@ import org.slf4j.Logger;
 
 import java.util.Queue;
 import java.util.concurrent.Future;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,8 +42,8 @@ class WebSocketSendingThread implements Runnable
     private final WebSocketClient client;
     private final JDAImpl api;
     private final ReentrantLock queueLock;
-    private final Queue<String> chunkSyncQueue;
-    private final Queue<String> ratelimitQueue;
+    private final Queue<DataObject> chunkQueue;
+    private final Queue<DataObject> ratelimitQueue;
     private final TLongObjectMap<ConnectionRequest> queuedAudioConnections;
     private final ScheduledExecutorService executor;
     private Future<?> handle;
@@ -55,7 +57,7 @@ class WebSocketSendingThread implements Runnable
         this.client = client;
         this.api = client.api;
         this.queueLock = client.queueLock;
-        this.chunkSyncQueue = client.chunkSyncQueue;
+        this.chunkQueue = client.chunkSyncQueue;
         this.ratelimitQueue = client.ratelimitQueue;
         this.queuedAudioConnections = client.queuedAudioConnections;
         this.executor = client.executor;
@@ -105,40 +107,46 @@ class WebSocketSendingThread implements Runnable
             return;
         }
 
+        ConnectionRequest audioRequest = null;
+        DataObject chunkRequest = null;
         try
         {
             api.setContext();
             attemptedToSend = false;
             needRateLimit = false;
+            // We do this outside of the lock because otherwise we could potentially deadlock here
+            audioRequest = client.getNextAudioConnectRequest();
             queueLock.lockInterruptibly();
 
-            ConnectionRequest audioRequest = client.getNextAudioConnectRequest();
-            String chunkOrSyncRequest = chunkSyncQueue.peek();
-            if (chunkOrSyncRequest != null)
-                handleChunkSync(chunkOrSyncRequest);
+            chunkRequest = chunkQueue.peek();
+            if (chunkRequest != null)
+                handleChunkSync(chunkRequest);
             else if (audioRequest != null)
                 handleAudioRequest(audioRequest);
             else
                 handleNormalRequest();
-
-            if (needRateLimit)
-                scheduleRateLimit();
-            else if (!attemptedToSend)
-                scheduleIdle();
-            else
-                scheduleSentMessage();
         }
         catch (InterruptedException ignored)
         {
             LOG.debug("Main WS send thread interrupted. Most likely JDA is disconnecting the websocket.");
+            return;
         }
         catch (Throwable ex)
         {
             // Log error
             LOG.error("Encountered error in gateway worker", ex);
-            if (ex instanceof RuntimeException)
-                throw (RuntimeException) ex;
-            else
+
+            if (!attemptedToSend)
+            {
+                // Try to remove the failed request
+                if (chunkRequest != null)
+                    client.chunkSyncQueue.remove(chunkRequest);
+                else if (audioRequest != null)
+                    client.removeAudioConnection(audioRequest.getGuildIdLong());
+            }
+
+            // Rethrow if error to kill thread
+            if (ex instanceof Error)
                 throw (Error) ex;
         }
         finally
@@ -146,13 +154,41 @@ class WebSocketSendingThread implements Runnable
             // on any exception that might cause this lock to not release
             client.maybeUnlock();
         }
+
+        scheduleNext();
     }
 
-    private void handleChunkSync(String chunkOrSyncRequest)
+    private void scheduleNext()
+    {
+        try
+        {
+            if (needRateLimit)
+                scheduleRateLimit();
+            else if (!attemptedToSend)
+                scheduleIdle();
+            else
+                scheduleSentMessage();
+        }
+        catch (RejectedExecutionException ex)
+        {
+            if (api.getStatus() == JDA.Status.SHUTTING_DOWN || api.getStatus() == JDA.Status.SHUTDOWN)
+                LOG.debug("Rejected task after shutdown", ex);
+            else
+                LOG.error("Was unable to schedule next packet due to rejected execution by threadpool", ex);
+        }
+    }
+
+    private void handleChunkSync(DataObject chunkOrSyncRequest)
     {
         LOG.debug("Sending chunk/sync request {}", chunkOrSyncRequest);
-        if (send(chunkOrSyncRequest))
-            chunkSyncQueue.remove();
+        boolean success = send(
+            DataObject.empty()
+                .put("op", WebSocketCode.MEMBER_CHUNK_REQUEST)
+                .put("d", chunkOrSyncRequest)
+        );
+
+        if (success)
+            chunkQueue.remove();
     }
 
     private void handleAudioRequest(ConnectionRequest audioRequest)
@@ -181,7 +217,7 @@ class WebSocketSendingThread implements Runnable
                 packet = newVoiceOpen(audioManager, channelId, guild.getIdLong());
         }
         LOG.debug("Sending voice request {}", packet);
-        if (send(packet.toString()))
+        if (send(packet))
         {
             //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
             // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
@@ -197,7 +233,7 @@ class WebSocketSendingThread implements Runnable
 
     private void handleNormalRequest()
     {
-        String message = ratelimitQueue.peek();
+        DataObject message = ratelimitQueue.peek();
         if (message != null)
         {
             LOG.debug("Sending normal message {}", message);
@@ -207,7 +243,7 @@ class WebSocketSendingThread implements Runnable
     }
 
     //returns true if send was successful
-    private boolean send(String request)
+    private boolean send(DataObject request)
     {
         needRateLimit = !client.send(request, false);
         attemptedToSend = true;

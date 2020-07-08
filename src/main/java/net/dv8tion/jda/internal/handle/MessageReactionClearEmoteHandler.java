@@ -77,7 +77,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         }
 
         MessageReaction reaction = new MessageReaction(channel, reactionEmote, messageId, false, 0);
-        getJDA().handleEvent(new GuildMessageReactionRemoveEmoteEvent(getJDA(), responseNumber, guild, channel, reaction, messageId));
+        getJDA().handleEvent(new GuildMessageReactionRemoveEmoteEvent(getJDA(), responseNumber, channel, reaction, messageId));
         getJDA().handleEvent(new MessageReactionRemoveEmoteEvent(getJDA(), responseNumber, messageId, channel, reaction));
         return null;
     }

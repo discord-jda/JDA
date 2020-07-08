@@ -299,7 +299,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
             if (equals(channels.get(i)))
                 return i;
         }
-        throw new AssertionError("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
+        throw new IllegalStateException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }
 
     @Nonnull

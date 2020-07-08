@@ -17,11 +17,10 @@
 package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.TCollections;
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
-import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
@@ -49,7 +48,6 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.handle.EventCache;
 import net.dv8tion.jda.internal.handle.GuildSetupController;
@@ -102,11 +100,10 @@ public class JDAImpl implements JDA
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache;
-    protected final EventManagerProxy eventManager = new EventManagerProxy(new InterfacedEventManager());
+    protected final EventManagerProxy eventManager;
 
     protected final GuildSetupController guildSetupController;
     protected final DirectAudioControllerImpl audioController;
-    protected final TLongSet chunkingRequested = TCollections.synchronizedSet(new TLongHashSet());
 
     protected final AuthorizationConfig authConfig;
     protected final ThreadingConfig threadConfig;
@@ -148,16 +145,7 @@ public class JDAImpl implements JDA
         this.guildSetupController = new GuildSetupController(this);
         this.audioController = new DirectAudioControllerImpl(this);
         this.eventCache = new EventCache();
-    }
-
-    public void onChunksRequested(GuildImpl guild)
-    {
-        this.chunkingRequested.add(guild.getIdLong());
-    }
-
-    public void onChunksFinished(GuildImpl guild)
-    {
-        this.chunkingRequested.remove(guild.getIdLong());
+        this.eventManager = new EventManagerProxy(new InterfacedEventManager(), this.threadConfig.getEventPool());
     }
 
     public void handleEvent(@Nonnull GenericEvent event)
@@ -203,8 +191,6 @@ public class JDAImpl implements JDA
 
     public boolean chunkGuild(long id)
     {
-        if (chunkingRequested.contains(id))
-            return true;
         try
         {
             return isIntent(GatewayIntent.GUILD_MEMBERS) && chunkingFilter.filter(id);
@@ -258,15 +244,15 @@ public class JDAImpl implements JDA
 
     public int login() throws LoginException
     {
-        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS);
+        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
     }
 
-    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
+    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
     {
-        return login(null, shardInfo, compression, validateToken, intents);
+        return login(null, shardInfo, compression, validateToken, intents, encoding);
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
@@ -300,7 +286,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression, intents);
+        client = new WebSocketClient(this, compression, intents, encoding);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -711,12 +697,14 @@ public class JDAImpl implements JDA
             return;
 
         setStatus(Status.SHUTTING_DOWN);
+        shutdownInternals();
 
         WebSocketClient client = getClient();
         if (client != null)
+        {
+            client.getChunkManager().shutdown();
             client.shutdown();
-
-        shutdownInternals();
+        }
     }
 
     public synchronized void shutdownInternals()
@@ -755,15 +743,17 @@ public class JDAImpl implements JDA
 
     private void closeAudioConnections()
     {
+        List<AudioManagerImpl> managers;
         AbstractCacheView<AudioManager> view = getAudioManagersView();
         try (UnlockHook hook = view.writeLock())
         {
-            TLongObjectMap<AudioManager> map = view.getMap();
-            map.valueCollection().stream()
+            managers = view.stream()
                .map(AudioManagerImpl.class::cast)
-               .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
-            map.clear();
+               .collect(Collectors.toList());
+            view.clear();
         }
+
+        managers.forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
     }
 
     @Override
@@ -900,7 +890,7 @@ public class JDAImpl implements JDA
     {
         if (clientId == null)
             retrieveApplicationInfo().complete();
-        StringBuilder builder = new StringBuilder("https://discordapp.com/oauth2/authorize?scope=bot&client_id=");
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?scope=bot&client_id=");
         builder.append(clientId);
         return builder;
     }

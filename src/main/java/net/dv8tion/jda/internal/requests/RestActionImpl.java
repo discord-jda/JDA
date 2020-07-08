@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -133,7 +132,7 @@ public class RestActionImpl<T> implements RestAction<T>
 
     public RestActionImpl(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
     {
-        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()), handler);
+        this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toJson()), handler);
         this.rawData = data;
     }
 
@@ -209,21 +208,21 @@ public class RestActionImpl<T> implements RestAction<T>
             throw new IllegalStateException("Preventing use of complete() in callback threads! This operation can be a deadlock cause");
         try
         {
-            return submit(shouldQueue).get();
+            return submit(shouldQueue).join();
         }
-        catch (Throwable e)
+        catch (CompletionException e)
         {
-            if (e instanceof ExecutionException)
+            if (e.getCause() != null)
             {
-                Throwable t = e.getCause();
-                if (t instanceof RateLimitedException)
-                    throw (RateLimitedException) t;
-                else if (t instanceof  PermissionException)
-                    throw (PermissionException) t;
-                else if (t instanceof ErrorResponseException)
-                    throw (ErrorResponseException) t;
+                Throwable cause = e.getCause();
+                if (cause instanceof RuntimeException)
+                    throw (RuntimeException) cause;
+                else if (cause instanceof Error)
+                    throw (Error) cause;
+                else if (cause instanceof RateLimitedException)
+                    throw (RateLimitedException) cause;
             }
-            throw new RuntimeException(e);
+            throw e;
         }
     }
 
@@ -236,14 +235,14 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         this.rawData = object;
 
-        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
+        return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toJson());
     }
 
     protected RequestBody getRequestBody(DataArray array)
     {
         this.rawData = array;
 
-        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toString());
+        return array == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson());
     }
 
     private CheckWrapper getFinisher()
