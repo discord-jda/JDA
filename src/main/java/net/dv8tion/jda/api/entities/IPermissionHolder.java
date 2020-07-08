@@ -103,7 +103,7 @@ public interface IPermissionHolder extends ISnowflake
      *         Permissions to check for.
      *
      * @throws IllegalArgumentException
-     *         If nulls is provided
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      */
@@ -117,7 +117,7 @@ public interface IPermissionHolder extends ISnowflake
      *         Permissions to check for.
      *
      * @throws IllegalArgumentException
-     *         If nulls is provided
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      *
@@ -134,7 +134,7 @@ public interface IPermissionHolder extends ISnowflake
      *         Permissions to check for.
      *
      * @throws IllegalArgumentException
-     *         If nulls is provided
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      *
@@ -152,7 +152,7 @@ public interface IPermissionHolder extends ISnowflake
      *         Permissions to check for.
      *
      * @throws IllegalArgumentException
-     *         If nulls is provided
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
@@ -166,7 +166,7 @@ public interface IPermissionHolder extends ISnowflake
      *         The channel to check access for
      *
      * @throws IllegalArgumentException
-     *         If nulls is provided
+     *         If null is provided
      *
      * @return True, if the PermissionHolder has access
      */
