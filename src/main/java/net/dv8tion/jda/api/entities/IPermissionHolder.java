@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -101,6 +102,9 @@ public interface IPermissionHolder extends ISnowflake
      * @param  permissions
      *         Permissions to check for.
      *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      */
     boolean hasPermission(@Nonnull Permission... permissions);
@@ -111,6 +115,9 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @param  permissions
      *         Permissions to check for.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      *
@@ -125,6 +132,9 @@ public interface IPermissionHolder extends ISnowflake
      *         The {@link GuildChannel GuildChannel} in which to check.
      * @param  permissions
      *         Permissions to check for.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      *
@@ -141,7 +151,30 @@ public interface IPermissionHolder extends ISnowflake
      * @param  permissions
      *         Permissions to check for.
      *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
     boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions);
+
+    /**
+     * Checks whether or not this PermissionHolder has {@link Permission#VIEW_CHANNEL VIEW_CHANNEL}
+     * and {@link Permission#VOICE_CONNECT VOICE_CONNECT} permissions in the {@link GuildChannel}.
+     *
+     * @param  channel
+     *         The channel to check access for
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return True, if the PermissionHolder has access
+     */
+    default boolean hasAccess(@Nonnull GuildChannel channel)
+    {
+        Checks.notNull(channel, "Channel");
+        return channel.getType() == ChannelType.VOICE
+                ? hasPermission(channel, Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL)
+                : hasPermission(channel, Permission.VIEW_CHANNEL);
+    }
 }

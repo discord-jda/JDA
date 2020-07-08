@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -70,7 +71,10 @@ public class MessageHistory
         if (channel instanceof TextChannel)
         {
             TextChannel tc = (TextChannel) channel;
-            if (!tc.getGuild().getSelfMember().hasPermission(tc, Permission.MESSAGE_HISTORY))
+            Member selfMember = tc.getGuild().getSelfMember();
+            if (!selfMember.hasAccess(tc))
+                throw new MissingAccessException(tc, Permission.VIEW_CHANNEL);
+            if (!selfMember.hasPermission(tc, Permission.MESSAGE_HISTORY))
                 throw new InsufficientPermissionException(tc, Permission.MESSAGE_HISTORY);
         }
     }
@@ -510,7 +514,10 @@ public class MessageHistory
         if (channel.getType() == ChannelType.TEXT)
         {
             TextChannel t = (TextChannel) channel;
-            if (!t.getGuild().getSelfMember().hasPermission(t, Permission.MESSAGE_HISTORY))
+            Member selfMember = t.getGuild().getSelfMember();
+            if (!selfMember.hasAccess(t))
+                throw new MissingAccessException(t, Permission.VIEW_CHANNEL);
+            if (!selfMember.hasPermission(t, Permission.MESSAGE_HISTORY))
                 throw new InsufficientPermissionException(t, Permission.MESSAGE_HISTORY);
         }
     }

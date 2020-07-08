@@ -17,11 +17,9 @@
 package net.dv8tion.jda.internal.requests.restaction.pagination;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -47,7 +45,10 @@ public class MessagePaginationActionImpl
         if (channel.getType() == ChannelType.TEXT)
         {
             TextChannel textChannel = (TextChannel) channel;
-            if (!textChannel.getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_HISTORY))
+            Member selfMember = textChannel.getGuild().getSelfMember();
+            if (!selfMember.hasAccess(textChannel))
+                throw new MissingAccessException(textChannel, Permission.VIEW_CHANNEL);
+            if (!selfMember.hasPermission(textChannel, Permission.MESSAGE_HISTORY))
                 throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_HISTORY);
         }
 

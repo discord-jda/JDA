@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -209,8 +210,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public InviteAction createInvite()
     {
-        if (!this.getGuild().getSelfMember().hasPermission(this, Permission.CREATE_INSTANT_INVITE))
-            throw new InsufficientPermissionException(this, Permission.CREATE_INSTANT_INVITE);
+        checkPermission(Permission.CREATE_INSTANT_INVITE);
 
         return new InviteActionImpl(this.getJDA(), this.getId());
     }
@@ -219,8 +219,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
-        if (!this.getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(this, Permission.MANAGE_CHANNEL);
+        checkPermission(Permission.MANAGE_CHANNEL);
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
 
@@ -285,9 +284,20 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return (M) this;
     }
 
+    protected void checkAccess()
+    {
+        Member selfMember = getGuild().getSelfMember();
+        if (!selfMember.hasPermission(this, Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
+        // Else we can only be missing VOICE_CONNECT!
+        if (!selfMember.hasAccess(this))
+            throw new MissingAccessException(this, Permission.VOICE_CONNECT);
+    }
+
     protected void checkPermission(Permission permission) {checkPermission(permission, null);}
     protected void checkPermission(Permission permission, String message)
     {
+        checkAccess();
         if (!getGuild().getSelfMember().hasPermission(this, permission))
         {
             if (message != null)
