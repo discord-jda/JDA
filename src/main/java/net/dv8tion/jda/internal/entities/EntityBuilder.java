@@ -943,6 +943,11 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(DataObject json)
     {
+        return createPrivateChannel(json, false);
+    }
+
+    public PrivateChannel createPrivateChannel(DataObject json, boolean modifyCache)
+    {
         final long channelId = json.getUnsignedLong("id");
         PrivateChannel channel = api.getPrivateChannelById(channelId);
         if (channel != null)
@@ -959,22 +964,31 @@ public class EntityBuilder
             user = createUser(recipient);
         }
 
-        return createPrivateChannel(json, user);
+        return createPrivateChannel(json, user, modifyCache);
     }
 
     public PrivateChannel createPrivateChannel(DataObject json, UserImpl user)
+    {
+        return createPrivateChannel(json, user, false);
+    }
+
+    public PrivateChannel createPrivateChannel(DataObject json, UserImpl user, boolean modifyCache)
     {
         final long channelId = json.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
                 .setLastMessageId(json.getLong("last_message_id", 0));
         user.setPrivateChannel(priv);
 
-        SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
-        try (UnlockHook hook = privateView.writeLock())
+        if (modifyCache)
         {
-            privateView.getMap().put(channelId, priv);
+            // only add channels to cache when they come from an event, otherwise we would never remove the channel
+            SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
+            try (UnlockHook hook = privateView.writeLock())
+            {
+                privateView.getMap().put(channelId, priv);
+            }
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
         }
-        getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
         return priv;
     }
 
