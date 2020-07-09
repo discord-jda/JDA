@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
+import gnu.trove.map.TLongObjectMap;
+import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.Request;
@@ -31,14 +33,12 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
-    protected final Set<PermOverrideData> overrides = new HashSet<>();
+    protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
     protected final ChannelType type;
     protected final Class<T> clazz;
@@ -191,7 +191,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         Checks.check(deny <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
 
-        overrides.add(new PermOverrideData(type, targetId, allow, deny));
+        overrides.put(targetId, new PermOverrideData(type, targetId, allow, deny));
         return this;
     }
 
@@ -235,7 +235,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         DataObject object = DataObject.empty();
         object.put("name", name);
         object.put("type", type.getId());
-        object.put("permission_overwrites", DataArray.fromCollection(overrides));
+        object.put("permission_overwrites", DataArray.fromCollection(overrides.valueCollection()));
         if (position != null)
             object.put("position", position);
         switch (type)

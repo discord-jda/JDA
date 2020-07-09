@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -151,8 +152,14 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public PermissionOverrideAction getManager()
     {
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+        Member selfMember = getGuild().getSelfMember();
+        GuildChannel channel = getChannel();
+        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasAccess(channel))
+            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
         PermissionOverrideAction mng = manager;
         if (mng == null)
         {
@@ -170,10 +177,17 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (!getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
-        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(channel.getId(), getId());
+        Member selfMember = getGuild().getSelfMember();
+        GuildChannel channel = getChannel();
+        if (!selfMember.hasPermission(Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasAccess(channel))
+            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
+
+        Route.CompiledRoute route = Route.Channels.DELETE_PERM_OVERRIDE.compile(this.channel.getId(), getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 

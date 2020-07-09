@@ -26,6 +26,12 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that the user is missing a {@link Permission} for some action.
+ *
+ * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(Permission...) IPermissionHolder.hasPermission(Permission...)
+ * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasPermission(GuildChannel, Permission...) IPermissionHolder.hasPermission(GuildChannel, Permission...)
+ */
 public class InsufficientPermissionException extends PermissionException
 {
     private final long guildId;

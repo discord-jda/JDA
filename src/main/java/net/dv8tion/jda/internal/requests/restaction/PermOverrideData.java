@@ -66,4 +66,22 @@ public class PermOverrideData implements SerializableData
         o.put("deny",  deny);
         return o;
     }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof PermOverrideData))
+            return false;
+
+        PermOverrideData other = (PermOverrideData) obj;
+        return other.id == this.id;
+    }
 }

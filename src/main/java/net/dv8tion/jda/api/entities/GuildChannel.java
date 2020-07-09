@@ -16,8 +16,6 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -368,8 +366,6 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     @CheckReturnValue
     default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
     {
-        if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(this, Permission.MANAGE_PERMISSIONS);
         PermissionOverride override = getPermissionOverride(permissionHolder);
         if (override != null)
             return override.getManager();
