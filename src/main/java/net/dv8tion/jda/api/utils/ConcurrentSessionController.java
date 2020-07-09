@@ -18,8 +18,12 @@ package net.dv8tion.jda.api.utils;
 
 import com.neovisionaries.ws.client.OpeningHandshakeException;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -156,12 +160,14 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
                 queue.add(node);
                 throw e;
             }
-            catch (IllegalStateException e)
+            catch (IllegalStateException | ErrorResponseException e)
             {
-                Throwable t = e.getCause();
-                if (t instanceof OpeningHandshakeException)
+                if (Helpers.hasCause(e, OpeningHandshakeException.class))
                     log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
-                else if (t != null && !JDA.Status.RECONNECT_QUEUED.name().equals(t.getMessage()))
+                else if (e instanceof ErrorResponseException && e.getCause() instanceof IOException) { /* This is already logged by the Requester */ }
+                else if (Helpers.hasCause(e, UnknownHostException.class))
+                    log.error("DNS resolution failed: {}", e.getMessage());
+                else if (e.getCause() != null && !JDA.Status.RECONNECT_QUEUED.name().equals(e.getCause().getMessage()))
                     log.error("Failed to establish connection for a node, appending to queue", e);
                 else
                     log.error("Unexpected exception when running connect node", e);
