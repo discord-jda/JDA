@@ -98,6 +98,13 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     boolean isMentionable();
 
     /**
+     * Whether or not this Role is the server's Server Booster role.
+     *
+     * @ return True, if Role is Server Booster role.
+     */
+    boolean isBoosterRole();
+
+    /**
      * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.api.entities.Role Role} has.
      * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link GuildChannel GuildChannel}.
      *

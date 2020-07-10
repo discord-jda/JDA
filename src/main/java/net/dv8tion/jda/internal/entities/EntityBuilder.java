@@ -1059,6 +1059,10 @@ public class EntityBuilder
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
             .setMentionable(roleJson.getBoolean("mentionable"));
+        if(roleJson.hasKey("tags")) {
+            if(roleJson.hasKey("premium_subscriber"))
+                role.setBooster(true);
+        }
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;

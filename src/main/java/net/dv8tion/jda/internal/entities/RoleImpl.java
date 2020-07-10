@@ -56,6 +56,7 @@ public class RoleImpl implements Role
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
+    private boolean booster;
     private long rawPermissions;
     private int color;
     private int rawPosition;
@@ -114,6 +115,12 @@ public class RoleImpl implements Role
     public boolean isMentionable()
     {
         return mentionable;
+    }
+
+    @Override
+    public boolean isBoosterRole()
+    {
+        return booster;
     }
 
     @Override
@@ -365,6 +372,12 @@ public class RoleImpl implements Role
     public RoleImpl setMentionable(boolean mentionable)
     {
         this.mentionable = mentionable;
+        return this;
+    }
+
+    public RoleImpl setBooster(boolean booster)
+    {
+        this.booster = booster;
         return this;
     }
 
