@@ -142,7 +142,7 @@ public interface Emote extends IMentionable, IFakeable
      * the 51st one added, then the emote becomes unavaiable when the BoostTier drops below a level that allows those emotes
      * to be used.
      * <br>Emotes that where added as part of a lower BoostTier (i.e. the 51st emote on BoostTier 2) will remain available,
-     * as long as the BoostTier stays about the required level.
+     * as long as the BoostTier stays above the required level.
      * 
      * @return True, if this emote is available
      */
