@@ -78,7 +78,10 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 
     /**
      * Whether this {@link net.dv8tion.jda.api.entities.Role Role} is managed by an integration
+     * This is any role where the "This role is managed by an integration..." appears in the role list.
+     * Integration can be: Bot role, Booster role, or a connected partner account role.
      *
+     * @see Role#getRoleType()
      * @return True, if this {@link net.dv8tion.jda.api.entities.Role Role} is managed.
      */
     boolean isManaged();
@@ -100,6 +103,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
 
     /**
      * Return the type of role this is
+     * Typically used for finding what kind of managed/integration role this is.
      *
      * @return this role's type
      */
