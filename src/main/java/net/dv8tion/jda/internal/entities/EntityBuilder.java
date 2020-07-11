@@ -1064,23 +1064,23 @@ public class EntityBuilder
             if(roleJson.hasKey("premium_subscriber"))
             {
                 role.setBooster(true);
-                role.setRoleType(RoleType.BOOSTER);
+                role.setType(Role.Type.BOOSTER);
             }
             else if(roleJson.hasKey("bot_id"))
             {
-                role.setRoleType(RoleType.BOT);
+                role.setType(Role.Type.BOT);
             }
             else if(roleJson.hasKey("integration_id"))
             {
-                role.setRoleType(RoleType.INTEGRATION);
+                role.setType(Role.Type.INTEGRATION);
             } else
             {
-                role.setRoleType(RoleType.UNKNOWN);
+                role.setType(Role.Type.UNKNOWN);
             }
         }
         else
         {
-            role.setRoleType(RoleType.NORMAL);
+            role.setType(Role.Type.NORMAL);
         }
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);

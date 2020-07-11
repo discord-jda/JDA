@@ -109,7 +109,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return this role's type
      */
-    RoleType getRoleType();
+    Type getRoleType();
 
     /**
      * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.api.entities.Role Role} has.
@@ -285,4 +285,33 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      */
     @Nonnull
     JDA getJDA();
+
+
+    /**
+     * Enum used to differentiate between the different types of Guild Roles.
+     */
+    enum Type
+    {
+        /**
+         * A basic, user-created role.
+         */
+        NONE,
+        /**
+         * A role created from a bot on join.
+         */
+        BOT,
+        /**
+         * A role created from a YouTube Member or Twitch Subscriber integration..\
+         */
+        INTEGRATION,
+        /**
+         * The Server Booster role.
+         */
+        BOOSTER,
+        /**
+         * Unknown RoleType.
+         */
+        UNKNOWN;
+    }
+
 }

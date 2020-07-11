@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.RoleType;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -58,7 +57,7 @@ public class RoleImpl implements Role
     private boolean hoisted;
     private boolean mentionable;
     private boolean booster;
-    private RoleType roleType;
+    private Type type;
     private long rawPermissions;
     private int color;
     private int rawPosition;
@@ -126,9 +125,9 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public RoleType getRoleType()
+    public Type getRoleType()
     {
-        return roleType;
+        return type;
     }
 
     @Override
@@ -389,9 +388,9 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setRoleType(RoleType roleType)
+    public RoleImpl setType(Type type)
     {
-        this.roleType = roleType;
+        this.type = type;
         return this;
     }
 
