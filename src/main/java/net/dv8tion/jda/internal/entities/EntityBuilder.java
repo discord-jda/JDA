@@ -1080,7 +1080,7 @@ public class EntityBuilder
         }
         else
         {
-            role.setType(Role.Type.NORMAL);
+            role.setType(Role.Type.NONE);
         }
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
