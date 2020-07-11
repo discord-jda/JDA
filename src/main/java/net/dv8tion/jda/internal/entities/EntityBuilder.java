@@ -1061,25 +1061,11 @@ public class EntityBuilder
             .setMentionable(roleJson.getBoolean("mentionable"));
         if(roleJson.hasKey("tags"))
         {
-            if(roleJson.hasKey("premium_subscriber"))
-            {
-                role.setType(Role.Type.BOOSTER);
-            }
-            else if(roleJson.hasKey("bot_id"))
-            {
-                role.setType(Role.Type.BOT);
-            }
-            else if(roleJson.hasKey("integration_id"))
-            {
-                role.setType(Role.Type.INTEGRATION);
-            } else
-            {
-                role.setType(Role.Type.UNKNOWN);
-            }
+            role.setType(Role.RoleType.fromTags(roleJson.getObject("tags")));
         }
         else
         {
-            role.setType(Role.Type.NONE);
+            role.setType(Role.RoleType.NORMAL);
         }
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);

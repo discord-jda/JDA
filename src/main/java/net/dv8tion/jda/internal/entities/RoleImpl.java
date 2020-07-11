@@ -56,7 +56,7 @@ public class RoleImpl implements Role
     private boolean managed;
     private boolean hoisted;
     private boolean mentionable;
-    private Type type;
+    private RoleType roleType;
     private long rawPermissions;
     private int color;
     private int rawPosition;
@@ -118,9 +118,9 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public Type getRoleType()
+    public RoleType getRoleType()
     {
-        return type;
+        return roleType;
     }
 
     @Override
@@ -375,9 +375,9 @@ public class RoleImpl implements Role
         return this;
     }
 
-    public RoleImpl setType(Type type)
+    public RoleImpl setType(RoleType roleType)
     {
-        this.type = type;
+        this.roleType = roleType;
         return this;
     }
 

@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -102,7 +103,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return this role's type
      */
-    Type getRoleType();
+    RoleType getRoleType();
 
     /**
      * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.api.entities.Role Role} has.
@@ -283,12 +284,12 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     /**
      * Enum used to differentiate between the different types of Guild Roles.
      */
-    enum Type
+    enum RoleType
     {
         /**
          * A basic, user-created role.
          */
-        NONE,
+        NORMAL,
         /**
          * A role created from a bot on join.
          */
@@ -305,6 +306,24 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
          * Unknown RoleType.
          */
         UNKNOWN;
+
+        public static RoleType fromTags(DataObject tags) {
+            if(tags.hasKey("premium_subscriber"))
+            {
+                return RoleType.BOOSTER;
+            }
+            else if(tags.hasKey("bot_id"))
+            {
+                return RoleType.BOT;
+            }
+            else if(tags.hasKey("integration_id"))
+            {
+                return RoleType.INTEGRATION;
+            } else
+            {
+                return RoleType.UNKNOWN;
+            }
+        }
     }
 
 }
