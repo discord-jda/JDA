@@ -98,13 +98,6 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     boolean isMentionable();
 
     /**
-     * Whether or not this Role is the server's Server Booster role.
-     *
-     * @ return True, if Role is Server Booster role.
-     */
-    boolean isBoosterRole();
-
-    /**
      * Return the type of role this is
      *
      * @return this role's type

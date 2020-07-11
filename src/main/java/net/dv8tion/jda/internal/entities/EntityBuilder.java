@@ -1063,7 +1063,6 @@ public class EntityBuilder
         {
             if(roleJson.hasKey("premium_subscriber"))
             {
-                role.setBooster(true);
                 role.setType(Role.Type.BOOSTER);
             }
             else if(roleJson.hasKey("bot_id"))
