@@ -1023,12 +1023,14 @@ public class JDAImpl implements JDA
 
     public String getGatewayUrl()
     {
+        if (gatewayUrl == null)
+            return gatewayUrl = getGateway();
         return gatewayUrl;
     }
 
     public void resetGatewayUrl()
     {
-        this.gatewayUrl = getGateway();
+        this.gatewayUrl = null;
     }
 
     public ScheduledThreadPoolExecutor getAudioLifeCyclePool()

@@ -159,4 +159,16 @@ public final class Helpers
         t.initCause(cause);
         return throwable;
     }
+
+    public static boolean hasCause(Throwable throwable, Class<? extends Throwable> cause)
+    {
+        Throwable cursor = throwable;
+        while (cursor != null)
+        {
+            if (cause.isInstance(cursor))
+                return true;
+            cursor = cursor.getCause();
+        }
+        return false;
+    }
 }
