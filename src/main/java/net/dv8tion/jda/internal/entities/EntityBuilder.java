@@ -1059,9 +1059,28 @@ public class EntityBuilder
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
             .setMentionable(roleJson.getBoolean("mentionable"));
-        if(roleJson.hasKey("tags")) {
+        if(roleJson.hasKey("tags"))
+        {
             if(roleJson.hasKey("premium_subscriber"))
+            {
                 role.setBooster(true);
+                role.setRoleType(RoleType.BOOSTER);
+            }
+            else if(roleJson.hasKey("bot_id"))
+            {
+                role.setRoleType(RoleType.BOT);
+            }
+            else if(roleJson.hasKey("integration_id"))
+            {
+                role.setRoleType(RoleType.INTEGRATION);
+            } else
+            {
+                role.setRoleType(RoleType.UNKNOWN);
+            }
+        }
+        else
+        {
+            role.setRoleType(RoleType.NORMAL);
         }
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);

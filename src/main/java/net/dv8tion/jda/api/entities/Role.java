@@ -105,6 +105,13 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     boolean isBoosterRole();
 
     /**
+     * Return the type of role this is
+     *
+     * @return this role's type
+     */
+    RoleType getRoleType();
+
+    /**
      * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.api.entities.Role Role} has.
      * <br><b>NOTE:</b> these do not necessarily represent the permissions this role will have in a {@link GuildChannel GuildChannel}.
      *
