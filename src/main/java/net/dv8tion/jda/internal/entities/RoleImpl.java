@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.TCollections;
+import gnu.trove.map.TObjectLongMap;
+import gnu.trove.map.hash.TObjectLongHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -27,6 +30,8 @@ import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -52,6 +57,7 @@ public class RoleImpl implements Role
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
 
+    private final TObjectLongMap<String> tags;
     private String name;
     private boolean managed;
     private boolean hoisted;
@@ -65,6 +71,7 @@ public class RoleImpl implements Role
         this.id = id;
         this.api =(JDAImpl) guild.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.tags = api.isCacheFlagSet(CacheFlag.ROLE_TAGS) ? TCollections.synchronizedMap(new TObjectLongHashMap<>()) : null;
     }
 
     @Override
@@ -278,6 +285,13 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
+    public RoleTags getTags()
+    {
+        return tags == null ? RoleTagsImpl.EMPTY : new RoleTagsImpl(tags);
+    }
+
+    @Nonnull
+    @Override
     public String getAsMention()
     {
         return isPublicRole() ? "@everyone" : "<@&" + getId() + '>';
@@ -380,5 +394,78 @@ public class RoleImpl implements Role
         roleCache.clearCachedLists();
         this.rawPosition = rawPosition;
         return this;
+    }
+
+    public RoleImpl setTags(DataObject tags)
+    {
+        if (this.tags == null)
+            return this;
+        tags.keys().forEach(tag ->
+            this.tags.put(tag, tags.getUnsignedLong(tag))
+        );
+        return this;
+    }
+
+    public static class RoleTagsImpl implements RoleTags
+    {
+        public static final RoleTags EMPTY = new RoleTagsImpl(new TObjectLongHashMap<>(0));
+        private final TObjectLongMap<String> tags;
+
+        public RoleTagsImpl(TObjectLongMap<String> tags)
+        {
+            this.tags = tags;
+        }
+
+        @Override
+        public boolean isBot()
+        {
+            return tags.containsKey("bot_id");
+        }
+
+        @Override
+        public long getBotIdLong()
+        {
+            return isBot() ? tags.get("bot_id") : 0L;
+        }
+
+        @Override
+        public boolean isBoost()
+        {
+            return tags.containsKey("premium_subscriber");
+        }
+
+        @Override
+        public boolean isIntegration()
+        {
+            return tags.containsKey("integration_id");
+        }
+
+        @Override
+        public long getIntegrationIdLong()
+        {
+            return isIntegration() ? tags.get("integration_id") : 0L;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return tags.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof RoleTagsImpl))
+                return false;
+            return tags.equals(((RoleTagsImpl) obj).tags);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "RoleTags(" + tags.toString() + ')';
+        }
     }
 }

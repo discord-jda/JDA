@@ -1570,6 +1570,46 @@ public interface Guild extends ISnowflake
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
 
+    // TODO: Documentation
+    @Nullable
+    default Role getRoleByBot(long userId)
+    {
+        return getRoleCache().applyStream(stream ->
+            stream.filter(role -> role.getTags().getBotIdLong() == userId)
+                  .findFirst()
+                  .orElse(null)
+        );
+    }
+
+    @Nullable
+    default Role getRoleByBot(@Nonnull String userId)
+    {
+        return getRoleById(MiscUtil.parseSnowflake(userId));
+    }
+
+    @Nullable
+    default Role getRoleByBot(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return getRoleByBot(user.getIdLong());
+    }
+
+    @Nullable
+    default Role getBotRole()
+    {
+        return getRoleByBot(getJDA().getSelfUser());
+    }
+
+    @Nullable
+    default Role getBoostRole()
+    {
+        return getRoleCache().applyStream(stream ->
+            stream.filter(role -> role.getTags().isBoost())
+                  .findFirst()
+                  .orElse(null)
+        );
+    }
+
     /**
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.Role Roles} of this Guild.

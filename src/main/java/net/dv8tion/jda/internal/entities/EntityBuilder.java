@@ -1059,7 +1059,8 @@ public class EntityBuilder
             .setManaged(roleJson.getBoolean("managed"))
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
-            .setMentionable(roleJson.getBoolean("mentionable"));
+            .setMentionable(roleJson.getBoolean("mentionable"))
+            .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;
