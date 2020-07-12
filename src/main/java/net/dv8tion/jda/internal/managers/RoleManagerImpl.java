@@ -63,7 +63,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     public Role getRole()
     {
-        Role realRole = getGuild().getRoleById(role.getIdLong());
+        Role realRole = role.getGuild().getRoleById(role.getIdLong());
         if (realRole != null)
             role = realRole;
         return role;

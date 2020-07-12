@@ -77,7 +77,7 @@ public class MemberImpl implements Member
     @Override
     public GuildImpl getGuild()
     {
-        GuildImpl realGuild = (GuildImpl) getJDA().getGuildById(guild.getIdLong());
+        GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
         if (realGuild != null)
             guild = realGuild;
         return guild;
