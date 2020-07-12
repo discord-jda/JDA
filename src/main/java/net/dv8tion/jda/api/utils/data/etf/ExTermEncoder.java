@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.utils.data.etf;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -87,6 +88,18 @@ public class ExTermEncoder
             return packAtom(buffer, String.valueOf(value));
         if (value == null)
             return packAtom(buffer, "nil");
+        // imagine we had templates :O
+        if (value instanceof long[])
+            return packArray(buffer, (long[]) value);
+        if (value instanceof int[])
+            return packArray(buffer, (int[]) value);
+        if (value instanceof short[])
+            return packArray(buffer, (short[]) value);
+        if (value instanceof byte[])
+            return packArray(buffer, (byte[]) value);
+        // omitting other array types because we don't use them anywhere
+        if (value instanceof Object[])
+            return packList(buffer, Arrays.asList((Object[]) value));
 
         throw new UnsupportedOperationException("Cannot pack value of type " + value.getClass().getName());
     }
@@ -123,24 +136,21 @@ public class ExTermEncoder
         if (data.isEmpty())
         {
             // NIL is for empty lists
-            buffer = realloc(buffer, 1);
-            buffer.put(NIL);
-            return buffer;
+            return packNil(buffer);
         }
 
-        buffer = realloc(buffer, data.size() + 5);
+        buffer = realloc(buffer, data.size() + 6);
         buffer.put(LIST);
         buffer.putInt(data.size());
         for (Object element : data)
             buffer = pack(buffer, element);
-        buffer.put(NIL);
-        return buffer;
+        return packNil(buffer);
     }
 
     private static ByteBuffer packBinary(ByteBuffer buffer, String value)
     {
         byte[] encoded = value.getBytes(StandardCharsets.UTF_8);
-        buffer = realloc(buffer, encoded.length + 5);
+        buffer = realloc(buffer, encoded.length * 4 + 5);
         buffer.put(BINARY);
         buffer.putInt(value.length());
         buffer.put(encoded);
@@ -208,6 +218,65 @@ public class ExTermEncoder
         buffer.put(ATOM);
         buffer.putShort((short) array.length);
         buffer.put(array);
+        return buffer;
+    }
+
+    private static ByteBuffer packArray(ByteBuffer buffer, long[] array)
+    {
+        if (array.length == 0)
+            return packNil(buffer);
+
+        buffer = realloc(buffer, array.length * 8 + 6);
+        buffer.put(LIST);
+        buffer.putInt(array.length);
+        for (long it : array)
+            buffer = packLong(buffer, it);
+        return packNil(buffer);
+    }
+
+    private static ByteBuffer packArray(ByteBuffer buffer, int[] array)
+    {
+        if (array.length == 0)
+            return packNil(buffer);
+
+        buffer = realloc(buffer, array.length * 4 + 6);
+        buffer.put(LIST);
+        buffer.putInt(array.length);
+        for (int it : array)
+            buffer = packInt(buffer, it);
+        return packNil(buffer);
+    }
+
+    private static ByteBuffer packArray(ByteBuffer buffer, short[] array)
+    {
+        if (array.length == 0)
+            return packNil(buffer);
+
+        buffer = realloc(buffer, array.length * 2 + 6);
+        buffer.put(LIST);
+        buffer.putInt(array.length);
+        for (short it : array)
+            buffer = packInt(buffer, it);
+        return packNil(buffer);
+    }
+
+    private static ByteBuffer packArray(ByteBuffer buffer, byte[] array)
+    {
+        if (array.length == 0)
+            return packNil(buffer);
+
+        buffer = realloc(buffer, array.length + 6);
+        buffer.put(LIST);
+        buffer.putInt(array.length);
+        for (byte it : array)
+            buffer = packSmallInt(buffer, it);
+        return packNil(buffer);
+    }
+
+    private static ByteBuffer packNil(ByteBuffer buffer)
+    {
+        buffer = realloc(buffer, 1);
+        buffer.put(NIL);
         return buffer;
     }
 

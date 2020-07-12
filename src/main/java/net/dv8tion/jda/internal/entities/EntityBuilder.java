@@ -780,7 +780,8 @@ public class EntityBuilder
         return emoteObj
                 .setName(json.getString("name", ""))
                 .setAnimated(json.getBoolean("animated"))
-                .setManaged(json.getBoolean("managed"));
+                .setManaged(json.getBoolean("managed"))
+                .setAvailable(json.getBoolean("available", true));
     }
 
     public Category createCategory(DataObject json, long guildId)

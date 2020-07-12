@@ -126,6 +126,22 @@ public interface Emote extends IMentionable, IFakeable
     boolean isManaged();
 
     /**
+     * Whether this emote is available. When an emote becomes unavailable, it cannot be used in messages. An emote becomes
+     * unavailable when the {@link net.dv8tion.jda.api.entities.Guild.BoostTier BoostTier} of the guild drops such that
+     * the maximum allowed emotes is lower than the total amount of emotes added to the guild.
+     * 
+     * <p>If an emote is added to the guild when the boost tier allows for more than 50 normal and 50 animated emotes
+     * (BoostTier is at least {@link net.dv8tion.jda.api.entities.Guild.BoostTier#TIER_1 TIER_1}) and the emote is at least
+     * the 51st one added, then the emote becomes unavaiable when the BoostTier drops below a level that allows those emotes
+     * to be used.
+     * <br>Emotes that where added as part of a lower BoostTier (i.e. the 51st emote on BoostTier 2) will remain available,
+     * as long as the BoostTier stays above the required level.
+     * 
+     * @return True, if this emote is available
+     */
+    boolean isAvailable();
+
+    /**
      * The {@link net.dv8tion.jda.api.JDA JDA} instance of this Emote
      *
      * @return The JDA instance of this Emote
