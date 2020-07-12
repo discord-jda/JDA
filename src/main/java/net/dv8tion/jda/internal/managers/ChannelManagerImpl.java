@@ -30,7 +30,6 @@ import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -39,7 +38,7 @@ import java.util.Collection;
 
 public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements ChannelManager
 {
-    protected final SnowflakeReference<GuildChannel> channel;
+    protected GuildChannel channel;
 
     protected String name;
     protected String parent;
@@ -67,7 +66,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         JDA jda = channel.getJDA();
         ChannelType type = channel.getType();
-        this.channel = new SnowflakeReference<>(channel, (channelId) -> jda.getGuildChannelById(type, channelId));
+        this.channel = channel;
         if (isPermissionChecksEnabled())
             checkPermissions();
         this.overridesAdd = new TLongObjectHashMap<>();
@@ -78,7 +77,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @Override
     public GuildChannel getChannel()
     {
-        return channel.resolve();
+        GuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        if (realChannel != null)
+            channel = realChannel;
+        return channel;
     }
 
     @Nonnull

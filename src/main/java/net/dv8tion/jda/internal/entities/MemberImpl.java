@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -39,12 +38,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
-    private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
     private final Map<ClientType, OnlineStatus> clientStatus;
 
+    private GuildImpl guild;
     private User user;
     private String nickname;
     private long joinDate, boostDate;
@@ -54,7 +53,7 @@ public class MemberImpl implements Member
     public MemberImpl(GuildImpl guild, User user)
     {
         this.api = (JDAImpl) user.getJDA();
-        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.guild = guild;
         this.user = user;
         this.joinDate = 0;
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
@@ -63,19 +62,14 @@ public class MemberImpl implements Member
         this.clientStatus = cacheOnline ? Collections.synchronizedMap(new EnumMap<>(ClientType.class)) : null;
     }
 
-    private void updateUser()
+    @Nonnull
+    @Override
+    public User getUser()
     {
         // Load user from cache if one exists, ideally two members with the same id should wrap the same user object
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null)
             this.user = realUser;
-    }
-
-    @Nonnull
-    @Override
-    public User getUser()
-    {
-        updateUser();
         return user;
     }
 
@@ -83,7 +77,10 @@ public class MemberImpl implements Member
     @Override
     public GuildImpl getGuild()
     {
-        return (GuildImpl) guild.resolve();
+        GuildImpl realGuild = (GuildImpl) getJDA().getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Nonnull

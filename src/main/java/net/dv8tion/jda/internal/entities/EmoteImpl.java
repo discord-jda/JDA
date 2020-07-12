@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ListedEmote;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
@@ -29,7 +28,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -47,7 +45,6 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EmoteImpl implements ListedEmote
 {
     private final long id;
-    private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
     private final Set<Role> roles;
     private final boolean fake;
@@ -55,6 +52,7 @@ public class EmoteImpl implements ListedEmote
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
 
+    private GuildImpl guild;
     private boolean managed = false;
     private boolean available = true;
     private boolean animated = false;
@@ -70,7 +68,7 @@ public class EmoteImpl implements ListedEmote
     {
         this.id = id;
         this.api = guild.getJDA();
-        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.guild = guild;
         this.roles = ConcurrentHashMap.newKeySet();
         this.fake = fake;
     }
@@ -87,7 +85,12 @@ public class EmoteImpl implements ListedEmote
     @Override
     public GuildImpl getGuild()
     {
-        return guild == null ? null : (GuildImpl) guild.resolve();
+        if (guild == null)
+            return null;
+        GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Nonnull
