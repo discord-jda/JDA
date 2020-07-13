@@ -1788,7 +1788,7 @@ public interface Guild extends ISnowflake
         JDA jda = getJDA();
         return new DeferredRestAction<>(jda, ListedEmote.class,
         () -> {
-            if (emote instanceof ListedEmote && !emote.isFake())
+            if (emote instanceof ListedEmote)
             {
                 ListedEmote listedEmote = (ListedEmote) emote;
                 if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))

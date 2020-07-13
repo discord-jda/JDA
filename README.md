@@ -319,27 +319,16 @@ public static void main(String[] args) throws Exception
 
 ## Entity Lifetimes
 
-An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities
-that Discord provides.
-Instances of these entities are created and deleted by JDA when Discord instructs it. This means
-the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
+An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities that Discord provides.
+Instances of these entities are created and deleted by JDA when Discord instructs it. This means the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
 This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
 When Discord instructs JDA to delete entities, they are simply removed from the JDA cache and lose their references.
-Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless. Discord
-may instruct to delete these entities randomly for cache synchronization with the API.
+Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless.
+Discord may instruct to delete these entities randomly for cache synchronization with the API.
 
 **It is not recommended to store _any_ of these entities for a longer period of time!**
 Instead of keeping (e.g.) a `User` instance in some field, an ID should be used. With the ID of a user,
 you can use `getUserById(id)` to get and keep the user reference in a local variable (see below).
-
-### Fake Entities
-
-Some entities in JDA are marked through an interface called `IFakeable`. These entities can exist outside
-of the JDA cache and are inaccessible through the common `get...ById(id)` methods.
-Fake entities are essentially instances that are not directly referenced by the JDA cache and are only
-temporarily created for a specific usage. It may be used for the author of a message that has left the guild
-when requesting the history of a `MessageChannel` or for `Emote` instances used in a `Message` that are not part
-of any of the guilds available to the bot.
 
 ### Entity Updates
 

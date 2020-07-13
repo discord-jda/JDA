@@ -724,9 +724,6 @@ public interface Message extends ISnowflake, Formattable
      * <br><b>This only includes Custom Emotes, not unicode Emojis.</b> JDA classifies Emotes as the Custom Emojis uploaded
      * to a Guild and retrievable with {@link net.dv8tion.jda.api.entities.Guild#getEmotes()}. These are not the same
      * as the unicode emojis that Discord also supports. Elements are sorted in order of appearance.
-     * <p>
-     * <b>This may or may not contain fake Emotes which means they can be displayed but not used by the logged in account.</b>
-     * To check whether an Emote is fake you can test if {@link Emote#isFake()} returns true.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
      *
@@ -1145,7 +1142,6 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.</li>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is fake {@link net.dv8tion.jda.api.entities.Emote#isFake() Emote.isFake()}.</li>
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
@@ -1449,7 +1445,6 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.</li>
-     *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is fake {@link net.dv8tion.jda.api.entities.Emote#isFake() Emote.isFake()}.</li>
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *             <li>If the provided user is null</li>

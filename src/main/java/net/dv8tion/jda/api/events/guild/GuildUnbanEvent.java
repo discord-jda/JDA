@@ -38,7 +38,6 @@ public class GuildUnbanEvent extends GenericGuildEvent
 
     /**
      * The {@link net.dv8tion.jda.api.entities.User User} who was unbanned
-     * <br>Possibly fake user.
      *
      * @return The unbanned user
      */

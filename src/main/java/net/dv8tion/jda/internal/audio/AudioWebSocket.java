@@ -693,11 +693,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private User getUser(final long userId)
     {
-        JDAImpl api = getJDA();
-        User user = api.getUserById(userId);
-        if (user != null)
-            return user;
-        return api.getFakeUserMap().get(userId);
+        return getJDA().getUserById(userId);
     }
 
     @Override
