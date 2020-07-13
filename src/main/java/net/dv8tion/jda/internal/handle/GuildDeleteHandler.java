@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -114,12 +113,8 @@ public class GuildDeleteHandler extends SocketHandler
             memberIds.forEach(memberId -> {
                 if (memberId == selfId)
                     return true; // don't remove selfUser from cache
-                UserImpl user = (UserImpl) userView.getMap().get(memberId);
-                if (!user.hasPrivateChannel() || getJDA().getPrivateChannelById(user.getPrivateChannel().getIdLong()) == null)
-                {
-                    userView.remove(memberId);
-                    getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
-                }
+                userView.remove(memberId);
+                getJDA().getEventCache().clear(EventCache.Type.USER, memberId);
                 return true;
             });
         }

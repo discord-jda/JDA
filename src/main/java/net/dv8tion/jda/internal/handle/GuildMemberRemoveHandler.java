@@ -23,7 +23,10 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -107,15 +110,10 @@ public class GuildMemberRemoveHandler extends SocketHandler
         {
             if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
                     && getJDA().getGuildsView().stream()
-                               .map(GuildImpl.class::cast)
-                               .noneMatch(g -> g.getMembersView().get(userId) != null))
+                               .noneMatch(g -> g.getMemberById(userId) != null))
             {
-                UserImpl removedUser = (UserImpl) userView.getMap().get(userId);
-                if (!removedUser.hasPrivateChannel() || getJDA().getPrivateChannelById(removedUser.getPrivateChannel().getIdLong()) == null)
-                {
-                    userView.remove(userId);
-                    getJDA().getEventCache().clear(EventCache.Type.USER, userId);
-                }
+                userView.remove(userId);
+                getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
         // Cache dependent event
