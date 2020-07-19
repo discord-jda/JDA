@@ -138,7 +138,7 @@ public enum Permission
     /**
      * The binary offset of the permission.
      * <br>For more information about Discord's offset system refer to
-     * <a href="https://discordapp.com/developers/docs/topics/permissions">Discord Permissions</a>.
+     * <a href="https://discord.com/developers/docs/topics/permissions">Discord Permissions</a>.
      *
      * @return The offset that represents this {@link net.dv8tion.jda.api.Permission Permission}.
      */
