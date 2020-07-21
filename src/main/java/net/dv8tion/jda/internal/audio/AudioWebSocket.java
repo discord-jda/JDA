@@ -120,18 +120,9 @@ class AudioWebSocket extends WebSocketAdapter
 
         try
         {
-            WebSocketFactory socketFactory = getJDA().getWebSocketFactory();
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (socketFactory)
-            {
-                String host = IOUtil.getHost(wssEndpoint);
-                // null if the host is undefined, unlikely but we should handle it
-                if (host != null)
-                    socketFactory.setServerName(host);
-                else // practically should never happen
-                    socketFactory.setServerNames(null);
-                socket = socketFactory.createSocket(wssEndpoint);
-            }
+            WebSocketFactory socketFactory = new WebSocketFactory(getJDA().getWebSocketFactory());
+            IOUtil.setServerName(socketFactory, wssEndpoint);
+            socket = socketFactory.createSocket(wssEndpoint);
             socket.setDirectTextMessage(true);
             socket.addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
