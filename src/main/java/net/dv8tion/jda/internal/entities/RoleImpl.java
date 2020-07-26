@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.TCollections;
-import gnu.trove.map.TObjectLongMap;
-import gnu.trove.map.hash.TObjectLongHashMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
@@ -46,6 +43,7 @@ import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class RoleImpl implements Role
@@ -57,7 +55,7 @@ public class RoleImpl implements Role
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
 
-    private final TObjectLongMap<String> tags;
+    private RoleTagsImpl tags;
     private String name;
     private boolean managed;
     private boolean hoisted;
@@ -71,7 +69,7 @@ public class RoleImpl implements Role
         this.id = id;
         this.api =(JDAImpl) guild.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
-        this.tags = api.isCacheFlagSet(CacheFlag.ROLE_TAGS) ? TCollections.synchronizedMap(new TObjectLongHashMap<>()) : null;
+        this.tags = api.isCacheFlagSet(CacheFlag.ROLE_TAGS) ? new RoleTagsImpl() : null;
     }
 
     @Override
@@ -287,7 +285,7 @@ public class RoleImpl implements Role
     @Override
     public RoleTags getTags()
     {
-        return tags == null ? RoleTagsImpl.EMPTY : new RoleTagsImpl(tags);
+        return tags == null ? RoleTagsImpl.EMPTY : tags;
     }
 
     @Nonnull
@@ -400,56 +398,65 @@ public class RoleImpl implements Role
     {
         if (this.tags == null)
             return this;
-        tags.keys().forEach(tag ->
-            this.tags.put(tag, tags.getUnsignedLong(tag))
-        );
+        this.tags = new RoleTagsImpl(tags);
         return this;
     }
 
     public static class RoleTagsImpl implements RoleTags
     {
-        public static final RoleTags EMPTY = new RoleTagsImpl(new TObjectLongHashMap<>(0));
-        private final TObjectLongMap<String> tags;
+        public static final RoleTags EMPTY = new RoleTagsImpl();
+        private final long botId;
+        private final long integrationId;
+        private final boolean premiumSubscriber;
 
-        public RoleTagsImpl(TObjectLongMap<String> tags)
+        public RoleTagsImpl()
         {
-            this.tags = tags;
+            this.botId = 0L;
+            this.integrationId = 0L;
+            this.premiumSubscriber = false;
+        }
+
+        public RoleTagsImpl(DataObject tags)
+        {
+            this.botId = tags.hasKey("bot_id") ? tags.getUnsignedLong("bot_id") : 0L;
+            this.integrationId = tags.hasKey("integration_id") ? tags.getUnsignedLong("integration_id") : 0L;
+            this.premiumSubscriber = tags.hasKey("premium_subscriber");
         }
 
         @Override
         public boolean isBot()
         {
-            return tags.containsKey("bot_id");
+            return botId != 0;
         }
 
         @Override
         public long getBotIdLong()
         {
-            return isBot() ? tags.get("bot_id") : 0L;
+            return botId;
         }
 
         @Override
         public boolean isBoost()
         {
-            return tags.containsKey("premium_subscriber");
+            return premiumSubscriber;
         }
 
         @Override
         public boolean isIntegration()
         {
-            return tags.containsKey("integration_id");
+            return integrationId != 0;
         }
 
         @Override
         public long getIntegrationIdLong()
         {
-            return isIntegration() ? tags.get("integration_id") : 0L;
+            return integrationId;
         }
 
         @Override
         public int hashCode()
         {
-            return tags.hashCode();
+            return Objects.hash(botId, integrationId, premiumSubscriber);
         }
 
         @Override
@@ -459,13 +466,16 @@ public class RoleImpl implements Role
                 return true;
             if (!(obj instanceof RoleTagsImpl))
                 return false;
-            return tags.equals(((RoleTagsImpl) obj).tags);
+            RoleTagsImpl other = (RoleTagsImpl) obj;
+            return botId == other.botId
+                && integrationId == other.integrationId
+                && premiumSubscriber == other.premiumSubscriber;
         }
 
         @Override
         public String toString()
         {
-            return "RoleTags(" + tags.toString() + ')';
+            return "RoleTags(bot=" + getBotId() + ",integration=" + getIntegrationId() + ",boost=" + isBoost() + ")";
         }
     }
 }
