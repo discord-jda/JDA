@@ -21,7 +21,8 @@ import net.dv8tion.jda.api.audio.AudioSendHandler;
 import net.dv8tion.jda.api.audio.CombinedAudio;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.AutoListener;
+import net.dv8tion.jda.api.hooks.IgnoreEvent;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class AudioEchoExample extends ListenerAdapter
+public class AudioEchoExample extends AutoListener
 {
     public static void main(String[] args) throws LoginException
     {
@@ -61,7 +62,6 @@ public class AudioEchoExample extends ListenerAdapter
              .build();                                   // Login with these options
     }
 
-    @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
         Message message = event.getMessage();
@@ -90,6 +90,8 @@ public class AudioEchoExample extends ListenerAdapter
      * @param event
      *        The event for this command
      */
+    // Note: this is a private method so it won't be called by AutoListener automatically!
+    @IgnoreEvent // Add ignore annotation just to be explicit
     private void onEchoCommand(GuildMessageReceivedEvent event)
     {
         // Note: None of these can be null due to our configuration with the JDABuilder!

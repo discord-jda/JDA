@@ -123,7 +123,7 @@ public void configureMemoryUsage(JDABuilder builder) {
 The event system in JDA is configured through a hierarchy of classes/interfaces.
 We offer two implementations for the `IEventManager`:
 
-- **InterfacedEventManager** which uses an `EventListener` interface and the `ListenerAdapter` abstract class
+- **InterfacedEventManager** which uses an `EventListener` interface and the `AutoListener` abstract class
 - **AnnotatedEventManager** which uses the `@SubscribeEvent` annotation that can be applied to methods
 
 By default the **InterfacedEventManager** is used.
@@ -159,10 +159,10 @@ public class ReadyListener implements EventListener
 }
 ```
 
-**Using ListenerAdapter**:
+**Using AutoListener**:
 
 ```java
-public class MessageListener extends ListenerAdapter
+public class MessageListener extends AutoListener
 {
     public static void main(String[] args)
             throws LoginException
@@ -174,7 +174,13 @@ public class MessageListener extends ListenerAdapter
         jda.addEventListeners(new MessageListener());
     }
 
-    @Override
+    /*
+     * This is a listener method which will be called by AutoListener because it fulfills the necessary criteria:
+     * - Public
+     * - Member (non-static)
+     * - Single Parameter which implements GenericEvent
+     * - No IgnoreEvent annotation      
+     */
     public void onMessageReceived(MessageReceivedEvent event)
     {
         if (event.isFromType(ChannelType.PRIVATE))
@@ -195,7 +201,7 @@ public class MessageListener extends ListenerAdapter
 **Ping-Pong Bot**:
 
 ```java
-public class Bot extends ListenerAdapter
+public class Bot extends AutoListener
 {
     public static void main(String[] args) throws LoginException
     {
@@ -211,8 +217,7 @@ public class Bot extends ListenerAdapter
             .setActivity(Activity.playing("Type !ping"))
             .build();
     }
-    
-    @Override
+
     public void onMessageReceived(MessageReceivedEvent event)
     {
         Message msg = event.getMessage();
@@ -352,7 +357,7 @@ by storing their **id** and using the respective `get...ById(id)` method when ne
 #### Example
 
 ```java
-public class UserLogger extends ListenerAdapter 
+public class UserLogger extends AutoListener 
 {
     private final long userId;
     
@@ -360,8 +365,7 @@ public class UserLogger extends ListenerAdapter
     {
         this.userId = user.getIdLong();
     }
-    
-    @Override
+
     public void onMessageReceived(MessageReceivedEvent event)
     {
         User author = event.getAuthor();
@@ -372,8 +376,7 @@ public class UserLogger extends ListenerAdapter
             System.out.println(author.getAsTag() + ": " + message.getContentDisplay());
         }
     }
-    
-    @Override
+
     public void onGuildJoin(GuildJoinEvent event)
     {
         JDA api = event.getJDA();

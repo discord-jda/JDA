@@ -23,8 +23,7 @@ import javax.annotation.Nonnull;
  * Top-level event type
  * <br>All events JDA fires are derived from this class.
  *
- * <p>Can be used to check if an Object is a JDA event in {@link net.dv8tion.jda.api.hooks.EventListener EventListener} implementations to distinguish what event is being fired.
- * <br>Adapter implementation: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
+ * <p>Can be used to check if an Object is a JDA event.
  */
 public abstract class Event implements GenericEvent
 {

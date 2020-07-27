@@ -21,14 +21,14 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.hooks.AutoListener;
 
 import javax.security.auth.login.LoginException;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MessageListenerExample extends ListenerAdapter
+public class MessageListenerExample extends AutoListener
 {
     /**
      * This is the method where the program starts.
@@ -61,22 +61,15 @@ public class MessageListenerExample extends ListenerAdapter
     }
 
     /**
-     * NOTE THE @Override!
-     * This method is actually overriding a method in the ListenerAdapter class! We place an @Override annotation
-     *  right before any method that is overriding another to guarantee to ourselves that it is actually overriding
-     *  a method from a super class properly. You should do this every time you override a method!
+     * This method fulfills all criteria for AutoListener and will be called when an event is received.
+     * <br>It is a public member method with a single event parameter.
      *
-     * As stated above, this method is overriding a hook method in the
-     * {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} class. It has convenience methods for all JDA events!
-     * Consider looking through the events it offers if you plan to use the ListenerAdapter.
-     *
-     * In this example, when a message is received it is printed to the console.
+     * <p>In this example, when a message is received it is printed to the console.
      *
      * @param event
      *          An event containing information about a {@link net.dv8tion.jda.api.entities.Message Message} that was
      *          sent in a channel.
      */
-    @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
         //These are provided with every event in JDA

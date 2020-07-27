@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
  *     {@link net.dv8tion.jda.api.JDA#addEventListener(Object...) jda.addEventListener(listeners)};
  * </code>
  *
- * @see net.dv8tion.jda.api.hooks.ListenerAdapter
+ * @see net.dv8tion.jda.api.hooks.AutoListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
  */
 @FunctionalInterface
@@ -42,7 +42,7 @@ public interface EventListener
      * Handles any {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
      *
      * <p>To get specific events with Methods like {@code onMessageReceived(MessageReceivedEvent event)}
-     * take a look at: {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter}
+     * take a look at: {@link net.dv8tion.jda.api.hooks.AutoListener AutoListener}
      *
      * @param  event
      *         The Event to handle.

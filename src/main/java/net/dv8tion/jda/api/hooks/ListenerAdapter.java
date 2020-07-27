@@ -110,6 +110,9 @@ import javax.annotation.Nonnull;
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
  */
+@Deprecated
+@ReplaceWith("AutoListener")
+@DeprecatedSince("4.3.0")
 @SuppressWarnings("deprecation")
 public abstract class ListenerAdapter implements EventListener
 {

@@ -31,8 +31,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * event listeners.
  *
  * <p>This only accepts listeners that implement {@link net.dv8tion.jda.api.hooks.EventListener EventListener}
- * <br>An adapter implementation is {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} which
- * provides methods for each individual {@link net.dv8tion.jda.api.events.Event}.
+ * <br>A useful implementation is {@link net.dv8tion.jda.api.hooks.AutoListener AutoListener} which
+ * provides automatic method calls for each individual {@link net.dv8tion.jda.api.events.Event}.
  *
  * <p><b>This is the default IEventManager used by JDA</b>
  *

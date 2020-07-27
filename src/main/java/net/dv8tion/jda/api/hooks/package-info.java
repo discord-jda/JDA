@@ -22,8 +22,8 @@
  *
  * <p>The default manager is the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager}
  * which uses the {@link net.dv8tion.jda.api.hooks.EventListener EventListener} to listen for events.
- * <br>The {@link net.dv8tion.jda.api.hooks.ListenerAdapter ListenerAdapter} is an implementation which provides
- * methods for each event of {@link net.dv8tion.jda.api.events}
+ * <br>The {@link net.dv8tion.jda.api.hooks.AutoListener AutoListener} is an implementation which provides
+ * automatic method calls for each event of {@link net.dv8tion.jda.api.events}
  *
  * <p>The {@link net.dv8tion.jda.api.hooks.AnnotatedEventManager AnnotatedEventManager}
  * can forward events directly to methods that have the {@link net.dv8tion.jda.api.hooks.SubscribeEvent SubscribeEvent} annotation.
