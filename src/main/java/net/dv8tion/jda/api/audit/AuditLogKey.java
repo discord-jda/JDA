@@ -25,6 +25,8 @@ import net.dv8tion.jda.api.entities.Guild;
  * <p>Each constant in this enum has elaborate documentation on expected values for the
  * returned {@link AuditLogChange AuditLogChange}.
  * <br>There is no guarantee that the resulting type is accurate or that the value selected is not {@code null}!
+ *
+ * @see <a href="https://discord.com/developers/docs/resources/audit-log#audit-log-change-object-audit-log-change-key" target="_blank">Audit Log Change Key</a>
  */
 public enum AuditLogKey
 {
