@@ -262,6 +262,8 @@ public class BotRateLimiter extends RateLimiter
                     // Update the bucket to the new information
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
                     long retryAfter = parseLong(retryAfterHeader);
+                    if (headers.get("via") == null)
+                        retryAfter *= 1000; // this means we got a cloudflare rate limit which is in seconds
                     bucket.remaining = 0;
                     bucket.reset = getNow() + retryAfter;
                     // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
