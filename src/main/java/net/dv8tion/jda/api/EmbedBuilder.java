@@ -769,7 +769,7 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addField(@Nullable String name, @Nullable String value, boolean inline)
+    public EmbedBuilder addField(String name, String value, boolean inline)
     {
         if (name == null && value == null)
             return this;
