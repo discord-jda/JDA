@@ -39,7 +39,7 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
         return super.setPosition(rawPosition);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public String getAsMention()
     {
