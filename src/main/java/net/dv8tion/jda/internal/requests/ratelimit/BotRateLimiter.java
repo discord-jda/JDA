@@ -229,8 +229,8 @@ public class BotRateLimiter extends RateLimiter
                 Bucket bucket = getBucket(route, true);
                 Headers headers = response.headers();
 
-                boolean wasUnlimited = bucket.isUnlimited();
                 boolean global = headers.get(GLOBAL_HEADER) != null;
+                boolean cloudflare = headers.get("via") == null;
                 String hash = headers.get(HASH_HEADER);
                 long now = getNow();
 
@@ -255,6 +255,14 @@ public class BotRateLimiter extends RateLimiter
                     requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
                     log.error("Encountered global rate limit! Retry-After: {} ms", retryAfter);
                 }
+                // Handle cloudflare rate limits, this applies to all routes and uses seconds for retry-after
+                else if (response.code() == 429 && cloudflare)
+                {
+                    String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
+                    long retryAfter = parseLong(retryAfterHeader);
+                    requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter * 1000);
+                    log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter);
+                }
                 // Handle hard rate limit, pretty much just log that it happened
                 else if (response.code() == 429)
                 {
@@ -262,8 +270,6 @@ public class BotRateLimiter extends RateLimiter
                     // Update the bucket to the new information
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
                     long retryAfter = parseLong(retryAfterHeader);
-                    if (headers.get("via") == null)
-                        retryAfter *= 1000; // this means we got a cloudflare rate limit which is in seconds
                     bucket.remaining = 0;
                     bucket.reset = getNow() + retryAfter;
                     // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
