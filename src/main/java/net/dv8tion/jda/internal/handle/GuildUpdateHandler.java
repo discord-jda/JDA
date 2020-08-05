@@ -265,7 +265,7 @@ public class GuildUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             guild, oldAfkTimeout));
         }
-        if (locale != guild.getLocale())
+        if (!Objects.equals(locale, guild.getLocale()))
         {
             Locale oldLocale = guild.getLocale();
             guild.setLocale(locale.toLanguageTag());
