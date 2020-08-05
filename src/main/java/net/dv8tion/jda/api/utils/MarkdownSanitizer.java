@@ -507,7 +507,7 @@ public class MarkdownSanitizer
             int start = sequence.indexOf('>');
             if (start < 0)
                 start = 0;
-            StringBuilder builder = new StringBuilder(compute(sequence.substring(start + 1)));
+            StringBuilder builder = new StringBuilder(compute(sequence.substring(start + 2)));
             if (strategy == SanitizationStrategy.ESCAPE)
                 builder.insert(0, "\\>");
             if (newline)
