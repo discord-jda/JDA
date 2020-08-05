@@ -18,11 +18,14 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -76,6 +79,14 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      * @return True, If this TextChannel is considered NSFW by the official Discord Client
      */
     boolean isNSFW();
+
+    /**
+     * Whether or not this channel is considered an Announcement-/News-Channel.
+     * <br>These channels can be used to crosspost messages to other guilds by using a follower type webhook.
+     *
+     * @return True, if this is considered a news channel
+     */
+    boolean isNews();
 
     /**
      * The slowmode set for this TextChannel.
@@ -761,6 +772,103 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
     default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote, @Nonnull User user)
     {
         return removeReactionById(Long.toUnsignedString(messageId), emote, user);
+    }
+
+    /**
+     * Attempts to crosspost the provided message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#ALREADY_CROSSPOSTED ALREADY_CROSSPOSTED}
+     *     <br>The target message has already been crossposted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the TextChannel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to crosspost
+     *
+     * @throws IllegalStateException
+     *         If this channel is not a news channel. See {@link #isNews()}.
+     * @throws java.lang.IllegalArgumentException
+     *         If provided {@code messageId} is {@code null} or empty.
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Message> crosspostMessageById(@Nonnull String messageId)
+    {
+        if (!isNews())
+            throw new IllegalStateException("You can only crosspost messages in news channels!");
+        Checks.isSnowflake(messageId);
+        if (!getGuild().getSelfMember().hasAccess(this))
+            throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
+        Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
+        return new RestActionImpl<>(getJDA(), route,
+            (response, request) -> request.getJDA().getEntityBuilder().createMessage(response.getObject()));
+    }
+
+    /**
+     * Attempts to crosspost the provided message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#ALREADY_CROSSPOSTED ALREADY_CROSSPOSTED}
+     *     <br>The target message has already been crossposted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the TextChannel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param  messageId
+     *         The messageId to crosspost
+     *
+     * @throws IllegalStateException
+     *         If this channel is not a news channel. See {@link #isNews()}.
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Message> crosspostMessageById(long messageId)
+    {
+        return crosspostMessageById(Long.toUnsignedString(messageId));
     }
 
     /**

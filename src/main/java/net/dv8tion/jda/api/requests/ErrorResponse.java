@@ -73,6 +73,7 @@ public enum ErrorResponse
     UNAUTHORIZED(                   40001, "Unauthorized"),
     REQUEST_ENTITY_TOO_LARGE(       40005, "Request entity too large"),
     USER_NOT_CONNECTED(             40032, "Target user is not connected to voice."),
+    ALREADY_CROSSPOSTED(            40033, "This message has already been crossposted."),
     MISSING_ACCESS(                 50001, "Missing Access"),
     INVALID_ACCOUNT_TYPE(           50002, "Invalid Account Type"),
     INVALID_DM_ACTION(              50003, "Cannot execute action on a DM channel"),

@@ -51,7 +51,9 @@ public class ChannelUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        ChannelType type = ChannelType.fromId(content.getInt("type"));
+        int rawType = content.getInt("type");
+        boolean news = rawType == 5;
+        ChannelType type = ChannelType.fromId(rawType);
         if (type == ChannelType.GROUP)
         {
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
@@ -168,6 +170,8 @@ public class ChannelUpdateHandler extends SocketHandler
                                     getJDA(), responseNumber,
                                     textChannel, oldSlowmode));
                 }
+
+                textChannel.setNews(news); // TODO: Event
 
                 applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case

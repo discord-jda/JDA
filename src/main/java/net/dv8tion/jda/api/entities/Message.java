@@ -1775,6 +1775,45 @@ public interface Message extends ISnowflake, Formattable
     AuditableRestAction<Void> suppressEmbeds(boolean suppressed);
 
     /**
+     * Attempts to crosspost this message.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#ALREADY_CROSSPOSTED ALREADY_CROSSPOSTED}
+     *     <br>The target message has already been crossposted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the
+     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in the TextChannel.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The provided {@code messageId} is unknown in this MessageChannel, either due to the id being invalid, or
+     *         the message it referred to has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @throws IllegalStateException
+     *         If the channel is not a text or news channel. See {@link TextChannel#isNews()}.
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have
+     *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
+     *         or if this message is from another user and we don't have {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Message> crosspost();
+
+    /**
      * Whether embeds are suppressed for this message.
      * When Embeds are suppressed, they are not displayed on clients nor provided via API until un-suppressed.
      * <br>This is a shortcut method for checking if {@link #getFlags() getFlags()} contains

@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.utils.MarkdownSanitizer;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -828,6 +829,20 @@ public class ReceivedMessage extends AbstractMessage
         else
             newFlags &= ~suppressionValue;
         return new AuditableRestActionImpl<>(jda, route, DataObject.empty().put("flags", newFlags));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Message> crosspost()
+    {
+        if (getFlags().contains(MessageFlag.CROSSPOSTED))
+            return new CompletedRestAction<>(getJDA(), this);
+        TextChannel textChannel = getTextChannel();
+        if (!getGuild().getSelfMember().hasAccess(textChannel))
+            throw new MissingAccessException(textChannel, Permission.VIEW_CHANNEL);
+        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_MANAGE))
+            throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_MANAGE);
+        return textChannel.crosspostMessageById(getId());
     }
 
     @Override
