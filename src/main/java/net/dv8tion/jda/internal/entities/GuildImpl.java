@@ -111,6 +111,7 @@ public class GuildImpl implements Guild
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
+    private Locale preferredLocale = Locale.ENGLISH;
     private boolean available;
     private boolean canSendVerification = false;
     private int memberCount;
@@ -247,6 +248,13 @@ public class GuildImpl implements Guild
     public String getDescription()
     {
         return description;
+    }
+
+    @Nonnull
+    @Override
+    public Locale getLocale()
+    {
+        return preferredLocale;
     }
 
     @Nullable
@@ -1578,6 +1586,12 @@ public class GuildImpl implements Guild
     public GuildImpl setAfkTimeout(Timeout afkTimeout)
     {
         this.afkTimeout = afkTimeout;
+        return this;
+    }
+
+    public GuildImpl setLocale(String locale)
+    {
+        this.preferredLocale = Locale.forLanguageTag(locale);
         return this;
     }
 
