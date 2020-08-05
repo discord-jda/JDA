@@ -192,14 +192,15 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return "GC:" + getName() + '(' + id + ')';
     }
 
-    private void applyPermission(ChannelAction a)
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void applyPermission(ChannelAction<?> a)
     {
         overrides.forEachValue(override ->
         {
             if (override.isMemberOverride())
-                a.addPermissionOverride(override.getMember(), override.getAllowedRaw(), override.getDeniedRaw());
+                a.addMemberPermissionOverride(override.getIdLong(), override.getAllowedRaw(), override.getDeniedRaw());
             else
-                a.addPermissionOverride(override.getRole(), override.getAllowedRaw(), override.getDeniedRaw());
+                a.addRolePermissionOverride(override.getIdLong(), override.getAllowedRaw(), override.getDeniedRaw());
             return true;
         });
     }

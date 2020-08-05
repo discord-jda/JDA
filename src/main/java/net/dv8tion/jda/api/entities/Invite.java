@@ -218,7 +218,7 @@ public interface Invite
     Guild getGuild();
 
     /**
-     * The user who created this invite. This may be a fake user. For not expanded invites this may be null.
+     * The user who created this invite. For not expanded invites this may be null.
      *
      * @return The user who created this invite
      */

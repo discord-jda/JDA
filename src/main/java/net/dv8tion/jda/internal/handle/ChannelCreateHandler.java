@@ -89,7 +89,7 @@ public class ChannelCreateHandler extends SocketHandler
                 jda.handleEvent(
                     new PrivateChannelCreateEvent(
                         jda, responseNumber,
-                        builder.createPrivateChannel(content)));
+                        builder.createPrivateChannel(content, true)));
                 break;
             }
             case GROUP:

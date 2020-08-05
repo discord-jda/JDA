@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.Webhook;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,12 +52,12 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
 
     /**
      * The Author of the Message received as {@link net.dv8tion.jda.api.entities.User User} object.
-     * <br>This will be never-null but might be a fake User if Message was sent via Webhook
+     * <br>This will be never-null but might be a fake User if Message was sent via Webhook.
+     * See {@link Webhook#getDefaultUser()}.
      *
      * @return The Author of the Message.
      *
      * @see    #isWebhookMessage()
-     * @see    net.dv8tion.jda.api.entities.User#isFake()
      */
     @Nonnull
     public User getAuthor()

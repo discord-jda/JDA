@@ -160,8 +160,6 @@ public class MessageUpdateHandler extends SocketHandler
         if (channel == null)
             channel = getJDA().getPrivateChannelsView().get(channelId);
         if (channel == null)
-            channel = getJDA().getFakePrivateChannelMap().get(channelId);
-        if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received message update for embeds for a channel/group that JDA does not have cached yet.");

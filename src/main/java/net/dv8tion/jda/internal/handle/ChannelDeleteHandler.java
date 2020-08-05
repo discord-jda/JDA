@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
@@ -132,8 +131,6 @@ public class ChannelDeleteHandler extends SocketHandler
                 PrivateChannel channel = privateView.remove(channelId);
 
                 if (channel == null)
-                    channel = getJDA().getFakePrivateChannelMap().remove(channelId);
-                if (channel == null)
                 {
 //                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
                     WebSocketClient.LOG.debug(
@@ -143,9 +140,6 @@ public class ChannelDeleteHandler extends SocketHandler
                     return null;
                 }
 
-                if (channel.getUser().isFake())
-                    getJDA().getFakeUserMap().remove(channel.getUser().getIdLong());
-                ((UserImpl) channel.getUser()).setPrivateChannel(null);
                 getJDA().handleEvent(
                     new PrivateChannelDeleteEvent(
                         getJDA(), responseNumber,

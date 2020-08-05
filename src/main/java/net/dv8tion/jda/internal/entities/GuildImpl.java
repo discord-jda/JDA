@@ -580,7 +580,7 @@ public class GuildImpl implements Guild
             {
                 final DataObject object = bannedArr.getObject(i);
                 DataObject user = object.getObject("user");
-                bans.add(new Ban(builder.createFakeUser(user), object.getString("reason", null)));
+                bans.add(new Ban(builder.createUser(user), object.getString("reason", null)));
             }
             return Collections.unmodifiableList(bans);
         });
@@ -602,7 +602,7 @@ public class GuildImpl implements Guild
             EntityBuilder builder = api.getEntityBuilder();
             DataObject bannedObj = response.getObject();
             DataObject user = bannedObj.getObject("user");
-            return new Ban(builder.createFakeUser(user), bannedObj.getString("reason", null));
+            return new Ban(builder.createUser(user), bannedObj.getString("reason", null));
         });
     }
 
@@ -1467,7 +1467,7 @@ public class GuildImpl implements Guild
     public GuildImpl setOwner(Member owner)
     {
         // Only cache owner if user cache is enabled
-        if (owner != null && !owner.isFake())
+        if (owner != null && getMemberById(owner.getIdLong()) != null)
             this.owner = owner;
         return this;
     }
