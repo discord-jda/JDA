@@ -509,7 +509,7 @@ public class MarkdownSanitizer
                 start = 0;
             StringBuilder builder = new StringBuilder(compute(sequence.substring(start + 2)));
             if (strategy == SanitizationStrategy.ESCAPE)
-                builder.insert(0, "\\>");
+                builder.insert(0, "\\> ");
             if (newline)
                 builder.insert(0, '\n');
             return builder.toString();
