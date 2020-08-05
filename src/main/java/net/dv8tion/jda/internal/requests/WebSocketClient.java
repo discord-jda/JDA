@@ -358,18 +358,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            WebSocketFactory socketFactory = api.getWebSocketFactory();
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (socketFactory)
-            {
-                String host = IOUtil.getHost(url);
-                // null if the host is undefined, unlikely but we should handle it
-                if (host != null)
-                    socketFactory.setServerName(host);
-                else // practically should never happen
-                    socketFactory.setServerNames(null);
-                socket = socketFactory.createSocket(url);
-            }
+            WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
+            IOUtil.setServerName(socketFactory, url);
+            socket = socketFactory.createSocket(url);
             socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
@@ -757,8 +748,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getGuildsView().clear();
         api.getUsersView().clear();
         api.getPrivateChannelsView().clear();
-        api.getFakeUserMap().clear();
-        api.getFakePrivateChannelMap().clear();
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
         chunkManager.clear();

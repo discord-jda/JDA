@@ -229,8 +229,8 @@ public class BotRateLimiter extends RateLimiter
                 Bucket bucket = getBucket(route, true);
                 Headers headers = response.headers();
 
-                boolean wasUnlimited = bucket.isUnlimited();
                 boolean global = headers.get(GLOBAL_HEADER) != null;
+                boolean cloudflare = headers.get("via") == null;
                 String hash = headers.get(HASH_HEADER);
                 long now = getNow();
 
@@ -247,28 +247,35 @@ public class BotRateLimiter extends RateLimiter
                     bucket = getBucket(route, true);
                 }
 
-                // Handle global rate limit if necessary
-                if (global)
+                if (response.code() == 429)
                 {
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
                     long retryAfter = parseLong(retryAfterHeader);
-                    requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
-                    log.error("Encountered global rate limit! Retry-After: {} ms", retryAfter);
-                }
-                // Handle hard rate limit, pretty much just log that it happened
-                else if (response.code() == 429)
-                {
-                    boolean firstHit = hitRatelimit.add(baseRoute);
-                    // Update the bucket to the new information
-                    String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
-                    long retryAfter = parseLong(retryAfterHeader);
-                    bucket.remaining = 0;
-                    bucket.reset = getNow() + retryAfter;
-                    // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
-                    if (firstHit)
-                        log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                    // Handle global rate limit if necessary
+                    if (global)
+                    {
+                        requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
+                        log.error("Encountered global rate limit! Retry-After: {} ms", retryAfter);
+                    }
+                    // Handle cloudflare rate limits, this applies to all routes and uses seconds for retry-after
+                    else if (cloudflare)
+                    {
+                        requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter * 1000);
+                        log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter);
+                    }
+                    // Handle hard rate limit, pretty much just log that it happened
                     else
-                        log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                    {
+                        boolean firstHit = hitRatelimit.add(baseRoute);
+                        // Update the bucket to the new information
+                        bucket.remaining = 0;
+                        bucket.reset = getNow() + retryAfter;
+                        // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
+                        if (firstHit)
+                            log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                        else
+                            log.warn("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
+                    }
                     return bucket;
                 }
 

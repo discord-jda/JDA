@@ -33,9 +33,8 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public class UserImpl implements User
+public class UserImpl extends UserById implements User
 {
-    protected final long id;
     protected final JDAImpl api;
 
     protected short discriminator;
@@ -48,7 +47,7 @@ public class UserImpl implements User
 
     public UserImpl(long id, JDAImpl api)
     {
-        this.id = id;
+        super(id);
         this.api = api;
     }
 
@@ -113,8 +112,6 @@ public class UserImpl implements User
         if (!hasPrivateChannel())
             return null;
         PrivateChannel channel = getJDA().getPrivateChannelById(privateChannel);
-        if (channel == null)
-            channel = getJDA().getFakePrivateChannelMap().get(privateChannel);
         return channel != null ? channel : new PrivateChannelImpl(privateChannel, this);
     }
 
@@ -138,19 +135,6 @@ public class UserImpl implements User
         return api;
     }
 
-    @Nonnull
-    @Override
-    public String getAsMention()
-    {
-        return "<@" + getId() + '>';
-    }
-
-    @Override
-    public long getIdLong()
-    {
-        return id;
-    }
-
     @Override
     public boolean isFake()
     {
@@ -171,26 +155,9 @@ public class UserImpl implements User
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (o == this)
-            return true;
-        if (!(o instanceof UserImpl))
-            return false;
-        UserImpl oUser = (UserImpl) o;
-        return this.id == oUser.id;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Long.hashCode(id);
-    }
-
-    @Override
     public String toString()
     {
-        return "U:" + getName() + '(' + id + ')';
+        return "U:" + getName() + '(' + getId() + ')';
     }
 
     // -- Setters --

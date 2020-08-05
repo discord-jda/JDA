@@ -34,7 +34,6 @@ import org.slf4j.MDC;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
 import java.io.IOException;
-import java.io.InterruptedIOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -239,11 +238,6 @@ public class Requester
                 apiRequest.handleResponse(new Response(lastResponse, retryAfter, rays));
 
             return retryAfter;
-        }
-        catch (InterruptedIOException e)
-        {
-            LOG.warn("Got interrupted while executing request", e);
-            return null;
         }
         catch (UnknownHostException e)
         {

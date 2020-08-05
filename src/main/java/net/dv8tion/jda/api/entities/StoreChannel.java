@@ -33,4 +33,4 @@ import net.dv8tion.jda.api.JDA;
  * @see   JDA#getStoreChannelsByName(String, boolean)
  * @see   JDA#getStoreChannelById(long)
  */
-public interface StoreChannel extends GuildChannel {}
+public interface StoreChannel extends GuildChannel, IMentionable {}
