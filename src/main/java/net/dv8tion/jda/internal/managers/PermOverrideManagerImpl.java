@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import okhttp3.RequestBody;
 
@@ -33,7 +34,7 @@ import javax.annotation.Nonnull;
 public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager
 {
     protected final boolean role;
-    protected final PermissionOverride override;
+    protected PermissionOverride override;
 
     protected long allowed;
     protected long denied;
@@ -69,6 +70,10 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Override
     public PermissionOverride getPermissionOverride()
     {
+        AbstractChannelImpl<?, ?> channel = (AbstractChannelImpl<?, ?>) override.getChannel();
+        PermissionOverride realOverride = channel.getOverrideMap().get(override.getIdLong());
+        if (realOverride != null)
+            override = realOverride;
         return override;
     }
 
