@@ -21,6 +21,14 @@ import net.dv8tion.jda.api.entities.TextChannel;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}'s has been converted into a news channel
+ * or reverted into a normal channel.
+ *
+ * <p>Can be used to detect when a TextChannel becomes a news channel.
+ *
+ * <p>Identifier: {@code news}
+ */
 @SuppressWarnings("ConstantConditions")
 public class TextChannelUpdateNewsEvent extends GenericTextChannelUpdateEvent<Boolean>
 {
