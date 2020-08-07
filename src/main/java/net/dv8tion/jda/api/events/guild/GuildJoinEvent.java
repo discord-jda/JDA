@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that you joined a {@link net.dv8tion.jda.api.entities.Guild Guild}.
- * <br>This requires that the guild is available when the guild leave happens. Otherwise a {@link UnavailableGuildJoinedEvent} is fired instead.
+ * <br>This requires that the guild is available when the guild join happens. Otherwise a {@link UnavailableGuildJoinedEvent} is fired instead.
  *
  * <p><b>Warning: Discord already triggered a mass amount of these events due to a downtime. Be careful!</b>
  *
