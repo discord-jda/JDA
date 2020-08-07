@@ -33,14 +33,12 @@ import javax.annotation.Nullable;
 public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {
     protected final long userId;
-    protected final User issuer;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable User user, @Nonnull MessageReaction reaction, long userId)
+    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.userId = userId;
-        this.issuer = user;
         this.reaction = reaction;
     }
 
@@ -74,7 +72,9 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
     @Nullable
     public User getUser()
     {
-        return issuer;
+        return userId == getJDA().getSelfUser().getIdLong()
+                ? getJDA().getSelfUser()
+                : getChannel().getUser();
     }
 
     /**
