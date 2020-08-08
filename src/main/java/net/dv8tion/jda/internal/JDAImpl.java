@@ -91,9 +91,6 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, MessageChannel::getName);
 
-    protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
-    protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
-
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
 
     protected final PresenceImpl presence;
@@ -559,7 +556,7 @@ public class JDAImpl implements JDA
                 () -> {
                     Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(this, route,
-                            (response, request) -> getEntityBuilder().createFakeUser(response.getObject()));
+                            (response, request) -> getEntityBuilder().createUser(response.getObject()));
                 });
     }
 
@@ -984,16 +981,6 @@ public class JDAImpl implements JDA
         return audioManagers;
     }
 
-    public TLongObjectMap<User> getFakeUserMap()
-    {
-        return fakeUsers;
-    }
-
-    public TLongObjectMap<PrivateChannel> getFakePrivateChannelMap()
-    {
-        return fakePrivateChannels;
-    }
-
     public void setSelfUser(SelfUser selfUser)
     {
         try (UnlockHook hook = userCache.writeLock())
@@ -1023,12 +1010,14 @@ public class JDAImpl implements JDA
 
     public String getGatewayUrl()
     {
+        if (gatewayUrl == null)
+            return gatewayUrl = getGateway();
         return gatewayUrl;
     }
 
     public void resetGatewayUrl()
     {
-        this.gatewayUrl = getGateway();
+        this.gatewayUrl = null;
     }
 
     public ScheduledThreadPoolExecutor getAudioLifeCyclePool()

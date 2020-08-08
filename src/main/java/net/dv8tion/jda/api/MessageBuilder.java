@@ -20,6 +20,7 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Route;
@@ -1123,8 +1124,8 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
     @DeprecatedSince("4.2.1")
+    @ForRemoval(deadline="4.3.0")
     @ReplaceWith("channel.sendMessage(builder.build())")
     public MessageAction sendTo(@Nonnull MessageChannel channel)
     {
@@ -1134,8 +1135,8 @@ public class MessageBuilder implements Appendable
             case TEXT:
                 final TextChannel text = (TextChannel) channel;
                 final Member self = text.getGuild().getSelfMember();
-                if (!self.hasPermission(text, Permission.MESSAGE_READ))
-                    throw new InsufficientPermissionException(text, Permission.MESSAGE_READ);
+                if (!self.hasAccess(text))
+                    throw new MissingAccessException(text, Permission.VIEW_CHANNEL);
                 if (!self.hasPermission(text, Permission.MESSAGE_WRITE))
                     throw new InsufficientPermissionException(text, Permission.MESSAGE_WRITE);
                 break;

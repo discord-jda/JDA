@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -293,8 +294,6 @@ public class ReceivedMessage extends AbstractMessage
         if (!mentionedUsers.contains(userId))
             return null;
         User user = getJDA().getUserById(userId);
-        if (user == null)
-            user = api.getFakeUserMap().get(userId);
         if (user == null && userMentions != null)
             user = userMentions.stream().filter(it -> it.getIdLong() == userId).findFirst().orElse(null);
         return user;
@@ -807,6 +806,8 @@ public class ReceivedMessage extends AbstractMessage
         {
             if (isFromType(ChannelType.PRIVATE))
                 throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
+            else if (!getGuild().getSelfMember().hasAccess(getTextChannel()))
+                throw new MissingAccessException(getTextChannel(), Permission.VIEW_CHANNEL);
             else if (!getGuild().getSelfMember()
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);

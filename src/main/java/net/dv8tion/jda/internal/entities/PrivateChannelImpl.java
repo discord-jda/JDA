@@ -36,7 +36,7 @@ import java.util.concurrent.CompletableFuture;
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
-    private final User user;
+    private User user;
     private long lastMessageId;
 
     public PrivateChannelImpl(long id, User user)
@@ -45,10 +45,19 @@ public class PrivateChannelImpl implements PrivateChannel
         this.user = user;
     }
 
+    private void updateUser()
+    {
+        // Load user from cache if one exists, otherwise we might have an outdated user instance
+        User realUser = getJDA().getUserById(user.getIdLong());
+        if (realUser != null)
+            this.user = realUser;
+    }
+
     @Nonnull
     @Override
     public User getUser()
     {
+        updateUser();
         return user;
     }
 
@@ -118,6 +127,7 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
+    @Deprecated
     public boolean isFake()
     {
         return user.isFake();

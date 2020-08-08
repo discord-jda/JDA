@@ -23,7 +23,10 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.entities.GuildImpl;
+import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
@@ -62,7 +65,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         // Update the memberCount
         guild.onMemberRemove();
 
-        User user = api.getEntityBuilder().createFakeUser(content.getObject("user"));
+        User user = api.getEntityBuilder().createUser(content.getObject("user"));
         MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
 
         if (member == null)
@@ -107,17 +110,9 @@ public class GuildMemberRemoveHandler extends SocketHandler
         {
             if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
                     && getJDA().getGuildsView().stream()
-                               .map(GuildImpl.class::cast)
-                               .noneMatch(g -> g.getMembersView().get(userId) != null))
+                               .noneMatch(g -> g.getMemberById(userId) != null))
             {
-                UserImpl removedUser = (UserImpl) userView.getMap().remove(userId);
-                if (removedUser.hasPrivateChannel())
-                {
-                    PrivateChannelImpl priv = (PrivateChannelImpl) removedUser.getPrivateChannel();
-                    removedUser.setFake(true);
-                    getJDA().getFakeUserMap().put(removedUser.getIdLong(), removedUser);
-                    getJDA().getFakePrivateChannelMap().put(priv.getIdLong(), priv);
-                }
+                userView.remove(userId);
                 getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
         }

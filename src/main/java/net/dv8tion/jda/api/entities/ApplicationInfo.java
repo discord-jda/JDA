@@ -222,7 +222,7 @@ public interface ApplicationInfo extends ISnowflake
     String getName();
 
     /**
-     * The owner of the bot's application. This may be a fake user.
+     * The owner of the bot's application.
      * 
      * @return The owner of the bot's application
      */

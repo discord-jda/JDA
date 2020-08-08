@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 public interface TeamMember
 {
     /**
-     * Possibly-fake user for the team member.
+     * User for the team member.
      *
      * @return The user
      */

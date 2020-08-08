@@ -27,4 +27,10 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.CONSTRUCTOR})
 public @interface ForRemoval
 {
+    /**
+     * Version which will most likely remove this feature.
+     *
+     * @return The deadline version or N/A if this isn't known yet
+     */
+    String deadline() default "N/A";
 }

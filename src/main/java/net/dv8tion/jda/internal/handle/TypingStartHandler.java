@@ -49,8 +49,6 @@ public class TypingStartHandler extends SocketHandler
         if (channel == null)
             channel = getJDA().getPrivateChannelsView().get(channelId);
         if (channel == null)
-            channel = getJDA().getFakePrivateChannelMap().get(channelId);
-        if (channel == null)
             return null;    //We don't have the channel cached yet. We chose not to cache this event
                             // because that happen very often and could easily fill up the EventCache if
                             // we, for some reason, never get the channel. Especially in an active channel.

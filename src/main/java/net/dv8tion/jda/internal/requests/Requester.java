@@ -33,9 +33,10 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.net.ssl.SSLPeerUnverifiedException;
-import java.io.InterruptedIOException;
+import java.io.IOException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Map.Entry;
@@ -238,24 +239,23 @@ public class Requester
 
             return retryAfter;
         }
-        catch (SocketTimeoutException e)
+        catch (UnknownHostException e)
         {
-            if (retryOnTimeout && !retried)
-                return execute(apiRequest, true, handleOnRatelimit);
-            LOG.error("Requester timed out while executing a request", e);
+            LOG.error("DNS resolution failed: {}", e.getMessage());
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }
-        catch (InterruptedIOException e)
+        catch (IOException e)
         {
-            LOG.warn("Got interrupted while executing request", e);
+            if (retryOnTimeout && !retried && isRetry(e))
+                return execute(apiRequest, true, handleOnRatelimit);
+            LOG.error("There was an I/O error while executing a REST request: {}", e.getMessage());
+            apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }
         catch (Exception e)
         {
-            if (retryOnTimeout && !retried && isRetry(e))
-                return execute(apiRequest, true, handleOnRatelimit);
-            LOG.error("There was an exception while executing a REST request", e); //This originally only printed on DEBUG in 2.x
+            LOG.error("There was an unexpected error while executing a REST request", e);
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }

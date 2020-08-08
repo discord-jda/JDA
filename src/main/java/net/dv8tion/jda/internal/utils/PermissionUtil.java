@@ -114,7 +114,7 @@ public class PermissionUtil
     /**
      * Check whether the provided {@link net.dv8tion.jda.api.entities.Member Member} can use the specified {@link net.dv8tion.jda.api.entities.Emote Emote}.
      *
-     * <p>If the specified Member is not in the emote's guild or the emote provided is fake this will return false.
+     * <p>If the specified Member is not in the emote's guild or the emote provided is from a message this will return false.
      * Otherwise it will check if the emote is restricted to any roles and if that is the case if the Member has one of these.
      *
      * <p>In the case of an {@link net.dv8tion.jda.api.entities.Emote#isAnimated() animated} Emote, this will
@@ -360,26 +360,13 @@ public class PermissionUtil
         getExplicitOverrides(channel, member, allow, deny);
         permission = apply(permission, allow.get(), deny.get());
         final long viewChannel = Permission.VIEW_CHANNEL.getRawValue();
+        final long connectChannel = Permission.VOICE_CONNECT.getRawValue();
 
-        //When the permission to view the channel is not applied it is not granted
+        //When the permission to view the channel or to connect to the channel is not applied it is not granted
         // This means that we have no access to this channel at all
-        return isApplied(permission, viewChannel) ? permission : 0;
-        /*
-        // currently discord doesn't implicitly grant permissions that the user can grant others
-        // so instead the user has to explicitly make an override to grant them the permission in order to be granted that permission
-        // yes this makes no sense but what can i do, the devs don't like changing things apparently...
-        // I've been told half a year ago this would be changed but nothing happens
-        // so instead I'll just bend over for them so people get "correct" permission checks...
-        //
-        // only time will tell if something happens and I can finally re-implement this section wew
-        final long managePerms = Permission.MANAGE_PERMISSIONS.getRawValue();
-        final long manageChannel = Permission.MANAGE_CHANNEL.getRawValue();
-        if ((permission & (managePerms | manageChannel)) != 0)
-        {
-            // In channels, MANAGE_CHANNEL and MANAGE_PERMISSIONS grant full text/voice permissions
-            permission |= Permission.ALL_TEXT_PERMISSIONS | Permission.ALL_VOICE_PERMISSIONS;
-        }
-        */
+        final boolean hasConnect = channel.getType() != ChannelType.VOICE || isApplied(permission, connectChannel);
+        final boolean hasView = isApplied(permission, viewChannel);
+        return hasView && hasConnect ? permission : 0;
     }
 
     /**

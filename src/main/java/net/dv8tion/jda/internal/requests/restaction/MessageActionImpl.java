@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -529,11 +530,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     protected void checkPermission(Permission perm)
     {
+        if (!channel.getType().isGuild())
+            return;
+        GuildChannel gc = (GuildChannel) channel;
+        if (!gc.getGuild().getSelfMember().hasAccess(gc))
+            throw new MissingAccessException(gc, Permission.VIEW_CHANNEL);
         if (!hasPermission(perm))
-        {
-            TextChannel channel = (TextChannel) this.channel;
-            throw new InsufficientPermissionException(channel, perm);
-        }
+            throw new InsufficientPermissionException(gc, perm);
     }
 
     protected boolean hasPermission(Permission perm)

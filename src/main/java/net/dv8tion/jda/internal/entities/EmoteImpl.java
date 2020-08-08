@@ -50,12 +50,12 @@ public class EmoteImpl implements ListedEmote
     private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
     private final Set<Role> roles;
-    private final boolean fake;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile EmoteManager manager = null;
 
     private boolean managed = false;
+    private boolean available = true;
     private boolean animated = false;
     private String name;
     private User user;
@@ -71,7 +71,6 @@ public class EmoteImpl implements ListedEmote
         this.api = guild.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
         this.roles = ConcurrentHashMap.newKeySet();
-        this.fake = fake;
     }
 
     public EmoteImpl(long id, JDAImpl api)
@@ -80,7 +79,6 @@ public class EmoteImpl implements ListedEmote
         this.api = api;
         this.guild = null;
         this.roles = null;
-        this.fake = true;
     }
 
     @Override
@@ -94,7 +92,7 @@ public class EmoteImpl implements ListedEmote
     public List<Role> getRoles()
     {
         if (!canProvideRoles())
-            throw new IllegalStateException("Unable to return roles because this emote is fake. (We do not know the origin Guild of this emote)");
+            throw new IllegalStateException("Unable to return roles because this emote is from a message. (We do not know the origin Guild of this emote)");
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
@@ -118,9 +116,16 @@ public class EmoteImpl implements ListedEmote
     }
 
     @Override
+    public boolean isAvailable()
+    {
+        return available;
+    }
+
+    @Override
+    @Deprecated
     public boolean isFake()
     {
-        return fake;
+        return false;
     }
 
     @Override
@@ -179,7 +184,7 @@ public class EmoteImpl implements ListedEmote
     public AuditableRestAction<Void> delete()
     {
         if (getGuild() == null)
-            throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
+            throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is from a message)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
@@ -206,6 +211,12 @@ public class EmoteImpl implements ListedEmote
     public EmoteImpl setManaged(boolean val)
     {
         this.managed = val;
+        return this;
+    }
+
+    public EmoteImpl setAvailable(boolean available)
+    {
+        this.available = available;
         return this;
     }
 
@@ -252,7 +263,6 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteImpl clone()
     {
-        if (isFake()) return null;
         EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;

@@ -1510,8 +1510,8 @@ public interface JDA
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
     @DeprecatedSince("4.0.0")
+    @ForRemoval(deadline="4.3.0")
     @ReplaceWith("jda.getVoiceChannelsByName(name, ignoreCase)")
     default List<VoiceChannel> getVoiceChannelByName(@Nonnull String name, boolean ignoreCase)
     {

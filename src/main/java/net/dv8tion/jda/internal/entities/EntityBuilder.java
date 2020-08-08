@@ -291,9 +291,7 @@ public class EntityBuilder
         }
     }
 
-    public UserImpl createFakeUser(DataObject user) { return createUser(user, true); }
-    public UserImpl createUser(DataObject user)     { return createUser(user, false); }
-    private UserImpl createUser(DataObject user, boolean fake)
+    public UserImpl createUser(DataObject user)
     {
         boolean newUser = false;
         final long id = user.getLong("id");
@@ -305,16 +303,12 @@ public class EntityBuilder
             userObj = (UserImpl) userView.getElementById(id);
             if (userObj == null)
             {
-                userObj = (UserImpl) getJDA().getFakeUserMap().get(id);
-                if (userObj == null)
-                {
-                    userObj = new UserImpl(id, getJDA()).setFake(fake);
-                    newUser = true;
-                }
+                userObj = new UserImpl(id, getJDA());
+                newUser = true;
             }
         }
 
-        if (newUser || userObj.isFake())
+        if (newUser)
         {
             // Initial creation
             userObj.setName(user.getString("username"))
@@ -323,7 +317,7 @@ public class EntityBuilder
                    .setBot(user.getBoolean("bot"))
                    .setFlags(user.getInt("public_flags", 0));
         }
-        else if (!userObj.isFake())
+        else
         {
             // Fire update events
             updateUser(userObj, user);
@@ -371,7 +365,7 @@ public class EntityBuilder
                     jda, responseNumber,
                     userObj, oldAvatar));
         }
-        
+
         if (oldFlags != newFlags)
         {
             userObj.setFlags(newFlags);
@@ -397,18 +391,11 @@ public class EntityBuilder
             if (membersView.remove(member.getIdLong()) == null)
                 return false;
             LOG.trace("Unloading member {}", member);
-            if (!user.isFake() && user.getMutualGuilds().isEmpty())
+            if (user.getMutualGuilds().isEmpty())
             {
-                // we no longer share any guilds with this user so remove it from cache
+                // we no longer share any guilds/channels with this user so remove it from cache
                 user.setFake(true);
                 getJDA().getUsersView().remove(user.getIdLong());
-                if (user.hasPrivateChannel())
-                {
-                    PrivateChannel channel = user.getPrivateChannel();
-                    getJDA().getFakeUserMap().put(user.getIdLong(), user);
-                    getJDA().getFakePrivateChannelMap().put(channel.getIdLong(), channel);
-                    getJDA().getPrivateChannelsView().remove(channel.getIdLong());
-                }
             }
 
             GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
@@ -432,21 +419,10 @@ public class EntityBuilder
 
         if (getJDA().getUserById(user.getIdLong()) == null)
         {
-            // promote fake user to real user
-            user.setFake(false);
             SnowflakeCacheViewImpl<User> usersView = getJDA().getUsersView();
-            SnowflakeCacheViewImpl<PrivateChannel> privateChannels = getJDA().getPrivateChannelsView();
-            try (UnlockHook hook1 = usersView.writeLock();
-                 UnlockHook hook2 = privateChannels.writeLock())
+            try (UnlockHook hook1 = usersView.writeLock())
             {
                 usersView.getMap().put(user.getIdLong(), user);
-                getJDA().getFakeUserMap().remove(user.getIdLong());
-                if (user.hasPrivateChannel())
-                {
-                    PrivateChannel channel = user.getPrivateChannel();
-                    privateChannels.getMap().put(channel.getIdLong(), channel);
-                    getJDA().getFakePrivateChannelMap().remove(channel.getIdLong());
-                }
             }
         }
 
@@ -598,8 +574,7 @@ public class EntityBuilder
             member.setJoinDate(joinEpoch);
         }
 
-        if (!member.getUser().isFake())
-            updateUser((UserImpl) member.getUser(), content.getObject("user"));
+        updateUser((UserImpl) member.getUser(), content.getObject("user"));
     }
 
     private void updateMemberRoles(MemberImpl member, List<Role> newRoles, long responseNumber)
@@ -787,7 +762,7 @@ public class EntityBuilder
     {
         DataArray emoteRoles = json.optArray("roles").orElseGet(DataArray::empty);
         final long emoteId = json.getLong("id");
-        final User user = json.isNull("user") ? null : createFakeUser(json.getObject("user"));
+        final User user = json.isNull("user") ? null : createUser(json.getObject("user"));
         EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
         if (emoteObj == null)
             emoteObj = new EmoteImpl(emoteId, guildObj, fake);
@@ -805,7 +780,8 @@ public class EntityBuilder
         return emoteObj
                 .setName(json.getString("name", ""))
                 .setAnimated(json.getBoolean("animated"))
-                .setManaged(json.getBoolean("managed"));
+                .setManaged(json.getBoolean("managed"))
+                .setAvailable(json.getBoolean("available", true));
     }
 
     public Category createCategory(DataObject json, long guildId)
@@ -968,10 +944,13 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(DataObject json)
     {
+        return createPrivateChannel(json, false);
+    }
+
+    public PrivateChannel createPrivateChannel(DataObject json, boolean modifyCache)
+    {
         final long channelId = json.getUnsignedLong("id");
         PrivateChannel channel = api.getPrivateChannelById(channelId);
-        if (channel == null)
-            channel = api.getFakePrivateChannelMap().get(channelId);
         if (channel != null)
             return channel;
 
@@ -983,27 +962,27 @@ public class EntityBuilder
         if (user == null)
         {   //The getJDA() can give us private channels connected to Users that we can no longer communicate with.
             // As such, make a fake user and fake private channel.
-            user = createFakeUser(recipient);
+            user = createUser(recipient);
         }
 
-        return createPrivateChannel(json, user);
+        return createPrivateChannel(json, user, modifyCache);
     }
 
     public PrivateChannel createPrivateChannel(DataObject json, UserImpl user)
+    {
+        return createPrivateChannel(json, user, false);
+    }
+
+    public PrivateChannel createPrivateChannel(DataObject json, UserImpl user, boolean modifyCache)
     {
         final long channelId = json.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
                 .setLastMessageId(json.getLong("last_message_id", 0));
         user.setPrivateChannel(priv);
 
-        if (user.isFake())
+        if (modifyCache)
         {
-            // Promote user and channel to cache of fakers
-            getJDA().getFakePrivateChannelMap().put(channelId, priv);
-            getJDA().getFakeUserMap().put(user.getIdLong(), user);
-        }
-        else
-        {
+            // only add channels to cache when they come from an event, otherwise we would never remove the channel
             SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
             try (UnlockHook hook = privateView.writeLock())
             {
@@ -1054,7 +1033,7 @@ public class EntityBuilder
         final int color = roleJson.getInt("color");
         role.setName(roleJson.getString("name"))
             .setRawPosition(roleJson.getInt("position"))
-            .setRawPermissions(roleJson.getLong("permissions"))
+            .setRawPermissions(roleJson.getLong("permissions_new"))
             .setManaged(roleJson.getBoolean("managed"))
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
@@ -1072,8 +1051,6 @@ public class EntityBuilder
         MessageChannel chan = getJDA().getTextChannelById(channelId);
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
-        if (chan == null)
-            chan = getJDA().getFakePrivateChannelMap().get(channelId);
         if (chan == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
@@ -1137,7 +1114,7 @@ public class EntityBuilder
                 if (user == null)
                 {
                     if (fromWebhook || !modifyCache)
-                        user = createFakeUser(author);
+                        user = createUser(author);
                     else
                         throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
                 }
@@ -1195,7 +1172,7 @@ public class EntityBuilder
             if (mentionJson.isNull("member"))
             {
                 // Can't load user without member context so fake them if possible
-                User mentionedUser = createFakeUser(mentionJson);
+                User mentionedUser = createUser(mentionJson);
                 mentionedUsersList.add(mentionedUser);
                 Member mentionedMember = guild.getMember(mentionedUser);
                 if (mentionedMember != null)
@@ -1405,8 +1382,8 @@ public class EntityBuilder
         if (!role && id != api.getSelfUser().getIdLong() && !api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES))
             return null;
 
-        long allow = override.getLong("allow");
-        long deny = override.getLong("deny");
+        long allow = override.getLong("allow_new");
+        long deny = override.getLong("deny_new");
 
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
         if (permOverride == null)
@@ -1439,7 +1416,7 @@ public class EntityBuilder
                     .put("discriminator", "0000")
                     .put("id", id)
                     .put("avatar", avatar);
-        User defaultUser = createFakeUser(fakeUser);
+        User defaultUser = createUser(fakeUser);
 
         Optional<DataObject> ownerJson = object.optObject("user");
         User owner = null;
@@ -1453,7 +1430,7 @@ public class EntityBuilder
             if (owner == null)
             {
                 json.put("id", userId);
-                owner = createFakeUser(json);
+                owner = createUser(json);
             }
         }
         
@@ -1466,7 +1443,7 @@ public class EntityBuilder
     public Invite createInvite(DataObject object)
     {
         final String code = object.getString("code");
-        final User inviter = object.hasKey("inviter") ? this.createFakeUser(object.getObject("inviter")) : null;
+        final User inviter = object.hasKey("inviter") ? createUser(object.getObject("inviter")) : null;
 
         final DataObject channelObject = object.getObject("channel");
         final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
@@ -1571,7 +1548,7 @@ public class EntityBuilder
         final long id = object.getLong("id");
         final String name = object.getString("name");
         final boolean isBotPublic = object.getBoolean("bot_public");
-        final User owner = createFakeUser(object.getObject("owner"));
+        final User owner = createUser(object.getObject("owner"));
         final ApplicationTeam team = !object.isNull("team") ? createApplicationTeam(object.getObject("team")) : null;
 
         return new ApplicationInfoImpl(getJDA(), description, doesBotRequireCodeGrant, iconId, id, isBotPublic, name, owner, team);
@@ -1585,7 +1562,7 @@ public class EntityBuilder
         List<TeamMember> members = map(object, "members", (o) -> {
             DataObject userJson = o.getObject("user");
             TeamMember.MembershipState state = TeamMember.MembershipState.fromKey(o.getInt("membership_state"));
-            User user = createFakeUser(userJson);
+            User user = createUser(userJson);
             return new TeamMemberImpl(user, state, id);
         });
         return new ApplicationTeamImpl(iconId, members, id, ownerId);
@@ -1600,7 +1577,7 @@ public class EntityBuilder
         final DataObject options = entryJson.isNull("options") ? null : entryJson.getObject("options");
         final String reason = entryJson.getString("reason", null);
 
-        final UserImpl user = userJson == null ? null : createFakeUser(userJson);
+        final UserImpl user = userJson == null ? null : createUser(userJson);
         final WebhookImpl webhook = webhookJson == null ? null : createWebhook(webhookJson);
         final Set<AuditLogChange> changesList;
         final ActionType type = ActionType.from(typeKey);

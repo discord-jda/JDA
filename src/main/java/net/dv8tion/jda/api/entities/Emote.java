@@ -36,13 +36,6 @@ import java.util.List;
  *
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
- * <h2>Fake Emote</h2>
- * When an emote is declared as fake it cannot be updated by JDA. That means it will not be accessible
- * through cache such as {@link Guild#getEmoteCache()} and similar.
- * <br>Fake emotes may or may not have an attached {@link Guild Guild} and thus might not be manageable though
- * {@link #getManager()} or {@link #delete()}. They also might lack attached roles for {@link #getRoles()}.
- *
- *
  * @since  2.2
  *
  * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
@@ -65,9 +58,9 @@ public interface Emote extends IMentionable, IFakeable
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this emote is attached to.
      *
-     * <p><b>This is null if the emote is fake (retrieved from a Message)</b>
+     * <p><b>This is null if the emote is created from a message</b>
      *
-     * @return Guild of this emote or null if it is a fake entity
+     * @return Guild of this emote or null if it is created from a message
      */
     @Nullable
     Guild getGuild();
@@ -133,6 +126,22 @@ public interface Emote extends IMentionable, IFakeable
     boolean isManaged();
 
     /**
+     * Whether this emote is available. When an emote becomes unavailable, it cannot be used in messages. An emote becomes
+     * unavailable when the {@link net.dv8tion.jda.api.entities.Guild.BoostTier BoostTier} of the guild drops such that
+     * the maximum allowed emotes is lower than the total amount of emotes added to the guild.
+     * 
+     * <p>If an emote is added to the guild when the boost tier allows for more than 50 normal and 50 animated emotes
+     * (BoostTier is at least {@link net.dv8tion.jda.api.entities.Guild.BoostTier#TIER_1 TIER_1}) and the emote is at least
+     * the 51st one added, then the emote becomes unavaiable when the BoostTier drops below a level that allows those emotes
+     * to be used.
+     * <br>Emotes that where added as part of a lower BoostTier (i.e. the 51st emote on BoostTier 2) will remain available,
+     * as long as the BoostTier stays above the required level.
+     * 
+     * @return True, if this emote is available
+     */
+    boolean isAvailable();
+
+    /**
      * The {@link net.dv8tion.jda.api.JDA JDA} instance of this Emote
      *
      * @return The JDA instance of this Emote
@@ -155,8 +164,6 @@ public interface Emote extends IMentionable, IFakeable
      *     <br>If we were removed from the Guild</li>
      * </ul>
      *
-     * @throws IllegalStateException
-     *         if this Emote is fake ({@link #isFake()})
      * @throws java.lang.UnsupportedOperationException
      *         If this emote is managed by discord ({@link #isManaged()})
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -175,7 +182,7 @@ public interface Emote extends IMentionable, IFakeable
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
      * @throws IllegalStateException
-     *         if this emote is fake
+     *         if this emote is created from a message or the bot does not have access to the emote
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}
      *

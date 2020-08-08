@@ -40,6 +40,13 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
 
     @Nonnull
     @Override
+    public String getAsMention()
+    {
+        return "<#" + id + '>';
+    }
+
+    @Nonnull
+    @Override
     public ChannelType getType()
     {
         return ChannelType.STORE;
