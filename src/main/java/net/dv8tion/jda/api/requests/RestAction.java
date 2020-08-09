@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.operator.*;
@@ -265,6 +266,7 @@ public interface RestAction<T>
     /**
      * Creates a RestAction instance which accumulates all results of the provided actions.
      * <br>If one action fails, all others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
      *
      * @param  first
      *         The initial RestAction starting point
@@ -297,6 +299,7 @@ public interface RestAction<T>
     /**
      * Creates a RestAction instance which accumulates all results of the provided actions.
      * <br>If one action fails, all others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
      *
      * @param  actions
      *         Non-empty collection of RestActions to accumulate
@@ -321,6 +324,7 @@ public interface RestAction<T>
     /**
      * Creates a RestAction instance which accumulates all results of the provided actions.
      * <br>If one action fails, all others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
      *
      * @param  actions
      *         Non-empty collection of RestActions to accumulate
@@ -697,6 +701,27 @@ public interface RestAction<T>
     CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
+     * Converts the success and failure callbacks into a {@link Result}.
+     * <br>This means the {@link #queue(Consumer, Consumer)} failure consumer will never be used.
+     * Instead, all results will be evaluated into a success consumer which provides an instance of {@link Result}.
+     *
+     * <p>{@link Result} will either be {@link Result#isSuccess() successful} or {@link Result#isFailure() failed}.
+     * This can be useful in combination with {@link #allOf(Collection)} to handle failed requests individually for each
+     * action.
+     *
+     * <p><b>Note: You have to handle failures explicitly with this.</b>
+     * You should use {@link Result#onFailure(Consumer)}, {@link Result#getFailure()}, or {@link Result#expect(Predicate)}!
+     *
+     * @return RestAction - Type: {@link Result}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Result<T>> mapToResult()
+    {
+        return map(Result::success).onErrorMap(Result::failure);
+    }
+
+    /**
      * Intermediate operator that returns a modified RestAction.
      *
      * <p>This does not modify this instance but returns a new RestAction which will apply
@@ -962,6 +987,7 @@ public interface RestAction<T>
      * <br>The result is computed by the provided {@link BiFunction}.
      *
      * <p>If one of the actions fails, the other will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
      *
      * @param  other
      *         The action to combine
@@ -990,6 +1016,7 @@ public interface RestAction<T>
      * Combines this RestAction with the provided action.
      *
      * <p>If one of the actions fails, the other will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
      *
      * @param  other
      *         The action to combine
@@ -1012,6 +1039,7 @@ public interface RestAction<T>
      * Accumulates this RestAction with the provided actions into a {@link List}.
      *
      * <p>If one of the actions fails, the others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
      *
      * @param  first
      *         The first other action to accumulate into the list
