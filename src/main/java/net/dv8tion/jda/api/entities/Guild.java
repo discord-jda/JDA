@@ -1609,6 +1609,9 @@ public interface Guild extends ISnowflake
      * @param  userId
      *         The user id of the bot
      *
+     * @throws IllegalArgumentException
+     *         If the userId is null or not a valid snowflake
+     *
      * @return The bot role, or null if no role matches
      */
     @Nullable
