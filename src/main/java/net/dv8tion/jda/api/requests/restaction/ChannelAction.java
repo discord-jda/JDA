@@ -236,10 +236,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @param  target
      *         The not-null {@link net.dv8tion.jda.api.entities.Role Role} or {@link net.dv8tion.jda.api.entities.Member Member} for the override
      * @param  allow
-     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override.
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      * @param  deny
-     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override.
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      *
      * @throws java.lang.IllegalArgumentException
@@ -347,10 +347,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @param  memberId
      *         The id for the member
      * @param  allow
-     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override.
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      * @param  deny
-     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override.
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      *
      * @throws java.lang.IllegalArgumentException
@@ -380,10 +380,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @param  roleId
      *         The id for the role
      * @param  allow
-     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override.
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      * @param  deny
-     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override
+     *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override.
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      *
      * @throws java.lang.IllegalArgumentException
