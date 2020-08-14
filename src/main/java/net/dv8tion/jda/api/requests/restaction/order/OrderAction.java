@@ -251,8 +251,8 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
 
     /**
      * Sorts the {@link #getCurrentOrder() current order} based on
-     * the specified {@link java.util.Comparator Comparator}.
-     * <br>Using {@link java.util.ArrayList#sort(java.util.Comparator) ArrayList.sort(comparator)}
+     * the specified {@link java.util.Comparator Comparator} by using
+     * {@link java.util.ArrayList#sort(java.util.Comparator) ArrayList.sort(comparator)}
      *
      * @param  comparator
      *         Comparator used to sort the current order
