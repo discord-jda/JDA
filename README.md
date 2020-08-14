@@ -470,7 +470,7 @@ SLF4J: Defaulting to no-operation (NOP) logger implementation
 SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
 ```
 
-JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
+JDA provides a fallback Logger in the case that no SLF4j implementation is present.
 We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as route your Logger's output to a file.
 
 The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
