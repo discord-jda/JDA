@@ -24,13 +24,13 @@
 
 # JDA (Java Discord API)
 
-JDA strives to provide a clean and full wrapping of the Discord REST api and its Websocket-Events for Java.
-This library is a helpful tool that provides the functionality to create a discord bot in java.
+JDA strives to provide a clean and feature-complete implementation of the Discord REST API and its WebSocket-based events for Java.
+This library is a helpful tool that provides the functionality to create a Discord bot in Java.
 
 ## Summary
 
 Due to official statements made by the Discord developers we will no longer support unofficial features. These features
-are undocumented API endpoints or protocols that are not available to bot-accounts.
+are undocumented API endpoints or protocols that are not available to bot accounts.
 
 _Please see the [Discord docs](https://discord.com/developers/docs/reference) for more information about bot accounts._
 
@@ -279,13 +279,13 @@ Discord allows Bot-accounts to share load across sessions by limiting them to a 
 Sharding will limit the amount of Guilds/Channels/Users visible to the JDA session so it is recommended to have some kind of elevated management to
 access information of other shards.
 
-To use sharding in JDA you will need to use `JDABuilder.useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
+To use sharding in JDA you will need to use `JDABuilder#useSharding(int shardId, int shardTotal)`. The **shardId** is 0-based which means the first shard
 has the ID 0. The **shardTotal** is the total amount of shards (not 0-based) which can be seen similar to the length of an array, the last shard has the ID of
 `shardTotal - 1`.
 
 The [`SessionController`](https://ci.dv8tion.net/job/JDA/javadoc/net/dv8tion/jda/api/utils/SessionController.html) is a tool of the JDABuilder
 that allows to control state and behaviour between shards (sessions). When using multiple builders to build shards you have to create one instance
-of this controller and add the same instance to each builder: `builder.setSessionController(controller)`
+of this controller and add the same instance to each builder: `JDABuilder#setSessionController(controller)`
 
 Since version **3.4.0** JDA provides a `ShardManager` which automates this building process.
 
@@ -471,7 +471,7 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 ```
 
 JDA currently provides a fallback Logger in case that no SLF4J implementation is present.
-We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as log to files
+We strongly recommend to use one though, as that can improve speed and allows you to customize the Logger as well as route your Logger's output to a file.
 
 The most popular implementations are [Log4j 2](https://logging.apache.org/log4j/2.x/) and [Logback](https://logback.qos.ch/)
 
@@ -499,7 +499,7 @@ the Discord API.
 ## Getting Help
 
 For general troubleshooting you can visit our wiki [Troubleshooting](https://github.com/DV8FromTheWorld/JDA/wiki/19\)-Troubleshooting) and [FAQ](https://github.com/DV8FromTheWorld/JDA/wiki/10\)-FAQ).
-<br>If you need help, or just want to talk with the JDA or other Devs, you can join the [Official JDA Discord Guild][discord-invite].
+<br>If you need help, or just want to talk with the JDA team or other developers, you can join the [Official JDA Discord Guild][discord-invite].
 
 Alternatively you can also join the [Unofficial Discord API Guild](https://discord.gg/discord-api).
 Once you joined, you can find JDA-specific help in the `#java_jda` channel.
@@ -525,7 +525,7 @@ https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
 ### [Lavalink](https://github.com/frederikam/Lavalink)
 
-Created and maintained by [Frederik Mikkelsen](https://github.com/Frederikam), the creator of FredBoat.
+Created and maintained by [Frederik Mikkelsen](https://github.com/Frederikam), the creator of [FredBoat](https://github.com/Frederikam/FredBoat).
 
 Lavalink is a popular standalone audio sending node based on Lavaplayer. Lavalink was built with scalability in mind,
 and allows streaming music via many servers. It supports most of Lavaplayer's features.
@@ -550,7 +550,7 @@ Features include:
 TODO: Ensure this is compatible with version 4
 ### [JDAction](https://github.com/sedmelluq/jdaction)
 
-Created and maintained by [sedmelluq](https://github.com/sedmelluq)
+Created and maintained by [sedmelluq](https://github.com/sedmelluq),
 <br>JDAction is a [Gradle](https://gradle.org/) plugin which makes sure that the return values of all methods which return a RestAction are used.
 Since it is a common mistake to forget to `.queue()`/`.complete()`/`.submit()` RestActions,
 and it is often only discovered after noticing that something doesn't work,
