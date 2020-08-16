@@ -170,6 +170,7 @@ public class EntityBuilder
         final String description = guildJson.getString("description", null);
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
+        final String locale = guildJson.getString("preferred_locale", "en");
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray emotesArray = guildJson.getArray("emojis");
@@ -205,6 +206,7 @@ public class EntityBuilder
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
+                .setLocale(locale)
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount);

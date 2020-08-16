@@ -18,10 +18,8 @@ package net.dv8tion.jda.api.events.message.priv.react;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was removed from a Message in a PrivateChannel.
@@ -30,8 +28,8 @@ import javax.annotation.Nullable;
  */
 public class PrivateMessageReactionRemoveEvent extends GenericPrivateMessageReactionEvent
 {
-    public PrivateMessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nullable User user, @Nonnull MessageReaction reaction, long userId)
+    public PrivateMessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
     {
-        super(api, responseNumber, user, reaction, userId);
+        super(api, responseNumber, reaction, userId);
     }
 }
