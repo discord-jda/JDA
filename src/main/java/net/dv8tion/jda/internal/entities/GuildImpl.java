@@ -243,6 +243,17 @@ public class GuildImpl implements Guild
         return vanityCode;
     }
 
+    @Override
+    @Nonnull
+    public RestAction<VanityInvite> retrieveVanityInvite()
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        JDAImpl api = getJDA();
+        Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
+        return new RestActionImpl<>(api, route,
+            (response, request) -> new VanityInvite(vanityCode, response.getObject().getInt("uses")));
+    }
+
     @Nullable
     @Override
     public String getDescription()
