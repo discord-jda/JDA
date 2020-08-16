@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -37,7 +36,7 @@ import javax.annotation.Nullable;
 
 public class GuildManagerImpl extends ManagerBase<GuildManager> implements GuildManager
 {
-    protected final SnowflakeReference<Guild> guild;
+    protected Guild guild;
 
     protected String name;
     protected String region;
@@ -54,7 +53,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
         JDA api = guild.getJDA();
-        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.guild = guild;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -63,7 +62,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     public Guild getGuild()
     {
-        return guild.resolve();
+        Guild realGuild = api.getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Nonnull

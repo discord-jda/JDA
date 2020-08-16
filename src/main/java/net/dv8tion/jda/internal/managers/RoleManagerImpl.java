@@ -27,7 +27,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -37,7 +36,7 @@ import java.util.EnumSet;
 
 public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleManager
 {
-    protected final SnowflakeReference<Role> role;
+    protected Role role;
 
     protected String name;
     protected int color;
@@ -55,7 +54,7 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     {
         super(role.getJDA(), Route.Roles.MODIFY_ROLE.compile(role.getGuild().getId(), role.getId()));
         JDA api = role.getJDA();
-        this.role = new SnowflakeReference<>(role, api::getRoleById);
+        this.role = role;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -64,7 +63,10 @@ public class RoleManagerImpl extends ManagerBase<RoleManager> implements RoleMan
     @Override
     public Role getRole()
     {
-        return role.resolve();
+        Role realRole = role.getGuild().getRoleById(role.getIdLong());
+        if (realRole != null)
+            role = realRole;
+        return role;
     }
 
     @Nonnull

@@ -28,7 +28,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -38,10 +37,9 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PermissionOverrideImpl implements PermissionOverride
 {
     private final long id;
-    private final SnowflakeReference<GuildChannel> channel;
-    private final ChannelType channelType;
     private final boolean isRole;
     private final JDAImpl api;
+    private GuildChannel channel;
 
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile PermissionOverrideAction manager;
@@ -52,9 +50,8 @@ public class PermissionOverrideImpl implements PermissionOverride
     public PermissionOverrideImpl(GuildChannel channel, long id, boolean isRole)
     {
         this.isRole = isRole;
-        this.channelType = channel.getType();
         this.api = (JDAImpl) channel.getJDA();
-        this.channel = new SnowflakeReference<>(channel, (channelId) -> api.getGuildChannelById(channelType, channelId));
+        this.channel = channel;
         this.id = id;
     }
 
@@ -126,7 +123,10 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public GuildChannel getChannel()
     {
-        return channel.resolve();
+        GuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        if (realChannel != null)
+            channel = realChannel;
+        return channel;
     }
 
     @Nonnull
