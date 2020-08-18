@@ -2349,14 +2349,25 @@ public interface Message extends ISnowflake, Formattable
         }
 
         /**
-         * Whether or not this attachment is tagged as spoiler,
+         * Whether or not this attachment is marked as spoiler,
          * based on {@link #getFileName()}.
          *
-         * @return True if this attachment is tagged as spoiler
+         * @return True if this attachment is marked as spoiler
          */
         public boolean isSpoiler()
         {
             return getFileName().startsWith("SPOILER_");
+        }
+        
+        /**
+         * Whether or not this attachment is an image and marked as spoiler,
+         * based on {@link #isSpoiler()}, and {@link #isImage()}.
+         *
+         * @return True if this attachment is and image and marked as spoiler
+         */
+        public boolean isImageSpoiler()
+        {
+            return isImage() && isSpoiler();
         }
     }
 }
