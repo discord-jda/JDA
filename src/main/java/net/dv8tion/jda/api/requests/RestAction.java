@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.operator.*;
@@ -29,14 +30,14 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Duration;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * A class representing a terminal between the user and the discord API.
@@ -263,6 +264,119 @@ public interface RestAction<T>
     }
 
     /**
+     * Creates a RestAction instance which accumulates all results of the provided actions.
+     * <br>If one action fails, all others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
+     *
+     * @param  first
+     *         The initial RestAction starting point
+     * @param  others
+     *         The remaining actions to accumulate
+     * @param  <E>
+     *         The result type
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return RestAction - Type: {@link List} of the results
+     *
+     * @see    #and(RestAction, BiFunction)
+     * @see    #zip(RestAction, RestAction[])
+     */
+    @Nonnull
+    @SafeVarargs
+    @CheckReturnValue
+    static <E> RestAction<List<E>> allOf(@Nonnull RestAction<? extends E> first, @Nonnull RestAction<? extends E>... others)
+    {
+        Checks.notNull(first, "RestAction");
+        Checks.noneNull(others, "RestAction");
+        List<RestAction<? extends E>> list = new ArrayList<>(others.length + 1);
+        list.add(first);
+        Collections.addAll(list, others);
+        return allOf(list);
+    }
+
+    /**
+     * Creates a RestAction instance which accumulates all results of the provided actions.
+     * <br>If one action fails, all others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
+     *
+     * @param  actions
+     *         Non-empty collection of RestActions to accumulate
+     * @param  <E>
+     *         The result type
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the collection is empty
+     *
+     * @return RestAction - Type: {@link List} of the results
+     *
+     * @see    #and(RestAction, BiFunction)
+     * @see    #zip(RestAction, RestAction[])
+     */
+    @Nonnull
+    @CheckReturnValue
+    static <E> RestAction<List<E>> allOf(@Nonnull Collection<? extends RestAction<? extends E>> actions)
+    {
+        return accumulate(actions, Collectors.toList());
+    }
+
+    /**
+     * Creates a RestAction instance which accumulates all results of the provided actions.
+     * <br>If one action fails, all others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
+     *
+     * @param  actions
+     *         Non-empty collection of RestActions to accumulate
+     * @param  collector
+     *         The {@link Collector} to use
+     * @param  <E>
+     *         The input type
+     * @param  <A>
+     *         The accumulator type
+     * @param  <O>
+     *         The output type
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the collection is empty
+     *
+     * @return RestAction - Type: {@link List} of the results
+     *
+     * @see    #and(RestAction, BiFunction)
+     * @see    #zip(RestAction, RestAction[])
+     */
+    @Nonnull
+    @CheckReturnValue
+    static <E, A, O> RestAction<O> accumulate(@Nonnull Collection<? extends RestAction<? extends E>> actions, @Nonnull Collector<? super E, A, ? extends O> collector)
+    {
+        Checks.noneNull(actions, "RestAction");
+        Checks.notEmpty(actions, "RestActions");
+        Checks.notNull(collector, "Collector");
+        Supplier<A> accumulator = collector.supplier();
+        BiConsumer<A, ? super E> add = collector.accumulator();
+        Function<A, ? extends O> output = collector.finisher();
+
+        actions = new LinkedHashSet<>(actions);
+        Iterator<? extends RestAction<? extends E>> iterator = actions.iterator();
+        RestAction<A> result = iterator.next().map(it -> {
+            A list = accumulator.get();
+            add.accept(list, it);
+            return list;
+        });
+
+        while (iterator.hasNext())
+        {
+            RestAction<? extends E> next = iterator.next();
+            result = result.and(next, (list, b) -> {
+                add.accept(list, b);
+                return list;
+            });
+        }
+
+        return result.map(output);
+    }
+
+    /**
      * The current JDA instance
      *
      * @return The corresponding JDA instance
@@ -279,9 +393,47 @@ public interface RestAction<T>
      *         The checks to run before executing the request, or {@code null} to run no checks
      *
      * @return The current RestAction for chaining convenience
+     *
+     * @see    #getCheck()
+     * @see    #addCheck(BooleanSupplier)
      */
     @Nonnull
     RestAction<T> setCheck(@Nullable BooleanSupplier checks);
+
+    /**
+     * The current checks for this RestAction.
+     *
+     * @return The current checks, or null if none were set
+     *
+     * @see    #setCheck(BooleanSupplier)
+     */
+    @Nullable
+    default BooleanSupplier getCheck()
+    {
+        return null;
+    }
+
+    /**
+     * Shortcut for {@code setCheck(() -> getCheck().getAsBoolean() && checks.getAsBoolean())}.
+     *
+     * @param  checks
+     *         Other checks to run
+     *
+     * @throws IllegalArgumentException
+     *         If the provided checks are null
+     *
+     * @return The current RestAction for chaining convenience
+     *
+     * @see    #setCheck(BooleanSupplier)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> addCheck(@Nonnull BooleanSupplier checks)
+    {
+        Checks.notNull(checks, "Checks");
+        BooleanSupplier check = getCheck();
+        return setCheck(() -> (check == null || check.getAsBoolean()) && checks.getAsBoolean());
+    }
 
     /**
      * Timeout for this RestAction instance.
@@ -549,6 +701,27 @@ public interface RestAction<T>
     CompletableFuture<T> submit(boolean shouldQueue);
 
     /**
+     * Converts the success and failure callbacks into a {@link Result}.
+     * <br>This means the {@link #queue(Consumer, Consumer)} failure consumer will never be used.
+     * Instead, all results will be evaluated into a success consumer which provides an instance of {@link Result}.
+     *
+     * <p>{@link Result} will either be {@link Result#isSuccess() successful} or {@link Result#isFailure() failed}.
+     * This can be useful in combination with {@link #allOf(Collection)} to handle failed requests individually for each
+     * action.
+     *
+     * <p><b>Note: You have to handle failures explicitly with this.</b>
+     * You should use {@link Result#onFailure(Consumer)}, {@link Result#getFailure()}, or {@link Result#expect(Predicate)}!
+     *
+     * @return RestAction - Type: {@link Result}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Result<T>> mapToResult()
+    {
+        return map(Result::success).onErrorMap(Result::failure);
+    }
+
+    /**
      * Intermediate operator that returns a modified RestAction.
      *
      * <p>This does not modify this instance but returns a new RestAction which will apply
@@ -807,6 +980,92 @@ public interface RestAction<T>
     {
         Checks.notNull(flatMap, "Function");
         return new FlatMapRestAction<>(this, condition, flatMap);
+    }
+
+    /**
+     * Combines this RestAction with the provided action.
+     * <br>The result is computed by the provided {@link BiFunction}.
+     *
+     * <p>If one of the actions fails, the other will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
+     *
+     * @param  other
+     *         The action to combine
+     * @param  accumulator
+     *         BiFunction to compute the result
+     * @param  <U>
+     *         The type of the other action
+     * @param  <O>
+     *         The result type after applying the accumulator function
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or you tried to combine an action with itself
+     *
+     * @return Combined RestAction
+     */
+    @Nonnull
+    @CheckReturnValue
+    default <U, O> RestAction<O> and(@Nonnull RestAction<U> other, @Nonnull BiFunction<? super T, ? super U, ? extends O> accumulator)
+    {
+        Checks.notNull(other, "RestAction");
+        Checks.notNull(accumulator, "Accumulator");
+        return new CombineRestAction<>(this, other, accumulator);
+    }
+
+    /**
+     * Combines this RestAction with the provided action.
+     *
+     * <p>If one of the actions fails, the other will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
+     *
+     * @param  other
+     *         The action to combine
+     * @param  <U>
+     *         The type of the other action
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or you tried to combine an action with itself
+     *
+     * @return Combined RestAction with empty result
+     */
+    @Nonnull
+    @CheckReturnValue
+    default <U> RestAction<Void> and(@Nonnull RestAction<U> other)
+    {
+        return and(other, (a, b) -> null);
+    }
+
+    /**
+     * Accumulates this RestAction with the provided actions into a {@link List}.
+     *
+     * <p>If one of the actions fails, the others will be cancelled.
+     * To handle failures individually instead of cancelling you can use {@link #mapToResult()}.
+     *
+     * @param  first
+     *         The first other action to accumulate into the list
+     * @param  other
+     *         The other actions to accumulate into the list
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or you tried to combine an action with itself
+     *
+     * @return Combined RestAction with empty result
+     *
+     * @see    #allOf(RestAction, RestAction[])
+     * @see    #and(RestAction, BiFunction)
+     */
+    @Nonnull
+    @CheckReturnValue
+    @SuppressWarnings("unchecked")
+    default RestAction<List<T>> zip(@Nonnull RestAction<? extends T> first, @Nonnull RestAction<? extends T>... other)
+    {
+        Checks.notNull(first, "RestAction");
+        Checks.noneNull(other, "RestAction");
+        List<RestAction<? extends T>> list = new ArrayList<>();
+        list.add(this);
+        list.add(first);
+        Collections.addAll(list, other);
+        return allOf(list);
     }
 
     /**

@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
@@ -77,6 +78,13 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     {
         this.transitiveChecks = checks;
         return this;
+    }
+
+    @Nullable
+    @Override
+    public BooleanSupplier getCheck()
+    {
+        return transitiveChecks;
     }
 
     @Nonnull
