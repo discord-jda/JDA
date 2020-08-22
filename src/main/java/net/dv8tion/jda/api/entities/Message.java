@@ -2358,16 +2358,6 @@ public interface Message extends ISnowflake, Formattable
         {
             return getFileName().startsWith("SPOILER_");
         }
-        
-        /**
-         * Whether or not this attachment is an image and marked as spoiler,
-         * based on {@link #isSpoiler()}, and {@link #isImage()}.
-         *
-         * @return True if this attachment is and image and marked as spoiler
-         */
-        public boolean isImageSpoiler()
-        {
-            return isImage() && isSpoiler();
-        }
+
     }
 }
