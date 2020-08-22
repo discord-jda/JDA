@@ -62,6 +62,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -1240,15 +1241,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             return null;
 
         long now = System.currentTimeMillis();
-        TLongObjectIterator<ConnectionRequest> it =  queuedAudioConnections.iterator();
-        while (it.hasNext())
+        AtomicReference<ConnectionRequest> request = new AtomicReference<>();
+        queuedAudioConnections.retainEntries((guildId, audioRequest) -> // we use this because it locks the mutex
         {
-            it.advance();
-            ConnectionRequest audioRequest = it.value();
             if (audioRequest.getNextAttemptEpoch() < now)
             {
                 // Check if the guild is ready
-                long guildId = audioRequest.getGuildIdLong();
                 Guild guild = api.getGuildById(guildId);
                 if (guild == null)
                 {
@@ -1258,37 +1256,37 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         // The guild is not tracked anymore -> we can't connect the audio channel
                         LOG.debug("Removing audio connection request because the guild has been removed. {}", audioRequest);
-                        it.remove();
+                        return false;
                     }
-                    continue;
+                    return true;
                 }
 
                 ConnectionListener listener = guild.getAudioManager().getConnectionListener();
                 if (audioRequest.getStage() != ConnectionStage.DISCONNECT)
                 {
+                    // Check if we can connect to the target channel
                     VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannelId());
                     if (channel == null)
                     {
-                        it.remove();
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                        continue;
+                        return false;
                     }
 
                     if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
                     {
-                        it.remove();
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);
-                        continue;
+                        return false;
                     }
                 }
-
-                return audioRequest;
+                // This will take the first result
+                request.compareAndSet(null, audioRequest);
             }
-        }
+            return true;
+        });
 
-        return null;
+        return request.get();
     }
 
     public Map<String, SocketHandler> getHandlers()

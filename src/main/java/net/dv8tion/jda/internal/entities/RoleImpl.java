@@ -35,7 +35,6 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 
 import javax.annotation.Nonnull;
@@ -49,8 +48,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class RoleImpl implements Role
 {
     private final long id;
-    private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
+    private Guild guild;
 
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
@@ -68,7 +67,7 @@ public class RoleImpl implements Role
     {
         this.id = id;
         this.api =(JDAImpl) guild.getJDA();
-        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.guild = guild;
         this.tags = api.isCacheFlagSet(CacheFlag.ROLE_TAGS) ? new RoleTagsImpl() : null;
     }
 
@@ -225,7 +224,10 @@ public class RoleImpl implements Role
     @Override
     public Guild getGuild()
     {
-        return guild.resolve();
+        Guild realGuild = api.getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Nonnull

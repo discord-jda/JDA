@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
@@ -35,6 +37,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     private final Supplier<T> valueSupplier;
     private final Supplier<R> actionSupplier;
 
+    private String reason;
     private long deadline = -1;
     private BooleanSupplier isAction;
     private BooleanSupplier transitiveChecks;
@@ -65,6 +68,7 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
     @Override
     public AuditableRestAction<T> reason(String reason)
     {
+        this.reason = reason;
         return this;
     }
 
@@ -76,11 +80,19 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         return this;
     }
 
+    @Nullable
+    @Override
+    public BooleanSupplier getCheck()
+    {
+        return transitiveChecks;
+    }
+
     @Nonnull
     @Override
     public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
     {
-        return this;
+        Checks.notNull(unit, "TimeUnit");
+        return deadline(timeout <= 0 ? 0 : System.currentTimeMillis() + unit.toMillis(timeout));
     }
 
     @Nonnull
@@ -166,6 +178,8 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         action.setCheck(transitiveChecks);
         if (deadline >= 0)
             action.deadline(deadline);
+        if (action instanceof AuditableRestAction && reason != null)
+            ((AuditableRestAction<?>) action).reason(reason);
         return action;
     }
 }

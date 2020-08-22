@@ -33,6 +33,7 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.*;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
@@ -164,6 +165,13 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         this.checks = checks;
         return this;
+    }
+
+    @Nullable
+    @Override
+    public BooleanSupplier getCheck()
+    {
+        return this.checks;
     }
 
     @Nonnull

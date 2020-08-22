@@ -21,15 +21,14 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
-    private final SnowflakeReference<Guild> guild;
-    private final SnowflakeReference<Member> member;
     private final JDA api;
+    private Guild guild;
+    private Member member;
 
     private VoiceChannel connectedChannel;
     private String sessionId;
@@ -43,8 +42,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl(Member member)
     {
         this.api = member.getJDA();
-        this.guild = new SnowflakeReference<>(member.getGuild(), api::getGuildById);
-        this.member = new SnowflakeReference<>(member, (id) -> guild.resolve().getMemberById(id));
+        this.guild = member.getGuild();
+        this.member = member;
     }
 
     @Override
@@ -118,14 +117,20 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public Guild getGuild()
     {
-        return this.guild.resolve();
+        Guild realGuild = api.getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Nonnull
     @Override
     public Member getMember()
     {
-        return this.member.resolve();
+        Member realMember = getGuild().getMemberById(member.getIdLong());
+        if (realMember != null)
+            member = realMember;
+        return member;
     }
 
     @Override
