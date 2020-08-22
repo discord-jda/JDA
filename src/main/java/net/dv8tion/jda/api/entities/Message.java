@@ -2342,5 +2342,17 @@ public interface Message extends ISnowflake, Formattable
             String extension = getFileExtension();
             return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
         }
+
+        /**
+         * Whether or not this attachment is marked as spoiler,
+         * based on {@link #getFileName()}.
+         *
+         * @return True if this attachment is marked as spoiler
+         */
+        public boolean isSpoiler()
+        {
+            return getFileName().startsWith("SPOILER_");
+        }
+
     }
 }
