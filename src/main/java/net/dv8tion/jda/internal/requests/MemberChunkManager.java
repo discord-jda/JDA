@@ -210,8 +210,17 @@ public class MemberChunkManager
 
         public void handleChunk(boolean last, DataObject chunk)
         {
-            if (!isCancelled())
-                handler.accept(last, toMembers(chunk));
+            try
+            {
+                if (!isDone())
+                    handler.accept(last, toMembers(chunk));
+            }
+            catch (Throwable ex)
+            {
+                completeExceptionally(ex);
+                if (ex instanceof Error)
+                    throw (Error) ex;
+            }
         }
 
         @Override

@@ -2334,7 +2334,10 @@ public interface Guild extends ISnowflake
     default Task<List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles)
     {
         Checks.noneNull(roles, "Roles");
-        if (isLoaded())
+        for (Role role : roles)
+            Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
+
+        if (isLoaded() || roles.isEmpty() || roles.contains(getPublicRole())) // Member#getRoles never contains the public role
         {
             CompletableFuture<List<Member>> future = CompletableFuture.completedFuture(getMembersWithRoles(roles));
             return new GatewayTask<>(future, () -> {});
