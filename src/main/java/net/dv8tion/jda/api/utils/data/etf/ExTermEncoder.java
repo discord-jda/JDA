@@ -152,7 +152,7 @@ public class ExTermEncoder
         byte[] encoded = value.getBytes(StandardCharsets.UTF_8);
         buffer = realloc(buffer, encoded.length * 4 + 5);
         buffer.put(BINARY);
-        buffer.putInt(value.length());
+        buffer.putInt(encoded.length);
         buffer.put(encoded);
         return buffer;
     }

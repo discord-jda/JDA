@@ -38,7 +38,6 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -51,7 +50,6 @@ import java.util.stream.Collectors;
 public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
 {
     protected final long id;
-    protected final SnowflakeReference<Guild> guild;
     protected final JDAImpl api;
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
@@ -59,6 +57,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     protected final ReentrantLock mngLock = new ReentrantLock();
     protected volatile ChannelManager manager;
 
+    protected GuildImpl guild;
     protected long parentId;
     protected String name;
     protected int rawPosition;
@@ -67,7 +66,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         this.id = id;
         this.api = guild.getJDA();
-        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.guild = guild;
     }
 
     @Override
@@ -103,7 +102,10 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public GuildImpl getGuild()
     {
-        return (GuildImpl) guild.resolve();
+        GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Override

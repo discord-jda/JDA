@@ -415,6 +415,14 @@ public interface Guild extends ISnowflake
     String getDescription();
 
     /**
+     * The preferred locale for this guild.
+     *
+     * @return The preferred {@link Locale} for this guild
+     */
+    @Nonnull
+    Locale getLocale();
+
+    /**
      * The guild banner id.
      * <br>This is shown in guilds below the guild name.
      *

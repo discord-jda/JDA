@@ -16,15 +16,16 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.PermOverrideManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -32,8 +33,8 @@ import javax.annotation.Nonnull;
 
 public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager
 {
-    protected final SnowflakeReference<PermissionOverride> override;
     protected final boolean role;
+    protected PermissionOverride override;
 
     protected long allowed;
     protected long denied;
@@ -49,35 +50,12 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
         super(override.getJDA(),
               Route.Channels.MODIFY_PERM_OVERRIDE.compile(
                   override.getChannel().getId(), override.getId()));
-        this.override = setupReferent(override);
+        this.override = override;
         this.role = override.isRoleOverride();
         this.allowed = override.getAllowedRaw();
         this.denied = override.getDeniedRaw();
         if (isPermissionChecksEnabled())
             checkPermissions();
-    }
-
-    private SnowflakeReference<PermissionOverride> setupReferent(PermissionOverride override)
-    {
-        JDA api = override.getJDA();
-        GuildChannel channel = override.getChannel();
-        long channelId = channel.getIdLong();
-        ChannelType type = channel.getType();
-        boolean role = override.isRoleOverride();
-        return new SnowflakeReference<>(override, (holderId) -> {
-            GuildChannel targetChannel = api.getGuildChannelById(type, channelId);
-            if (targetChannel == null)
-                return null;
-            Guild guild = targetChannel.getGuild();
-            IPermissionHolder holder;
-            if (role)
-                holder = guild.getRoleById(holderId);
-            else
-                holder = guild.getMemberById(holderId);
-            if (holder == null)
-                return null;
-            return targetChannel.getPermissionOverride(holder);
-        });
     }
 
     private void setupValues()
@@ -92,7 +70,11 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Override
     public PermissionOverride getPermissionOverride()
     {
-        return override.resolve();
+        AbstractChannelImpl<?, ?> channel = (AbstractChannelImpl<?, ?>) override.getChannel();
+        PermissionOverride realOverride = channel.getOverrideMap().get(override.getIdLong());
+        if (realOverride != null)
+            override = realOverride;
+        return override;
     }
 
     @Nonnull

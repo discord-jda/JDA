@@ -21,7 +21,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import org.apache.tools.ant.filters.ReplaceTokens
-import java.util.*
+import java.util.Date
 
 plugins {
     signing
@@ -67,7 +67,7 @@ dependencies {
     api("org.slf4j:slf4j-api:1.7.25")
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.9")
+    api("com.neovisionaries:nv-websocket-client:2.10")
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support

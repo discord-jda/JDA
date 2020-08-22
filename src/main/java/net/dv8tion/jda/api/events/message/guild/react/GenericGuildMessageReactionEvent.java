@@ -17,12 +17,12 @@
 package net.dv8tion.jda.api.events.message.guild.react;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -113,5 +113,55 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();
+    }
+
+    /**
+     * Retrieves the {@link User} who added or removed the reaction.
+     * <br>If a user is known, this will return {@link #getUser()}.
+     *
+     * @return {@link RestAction} - Type: {@link User}
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<User> retrieveUser()
+    {
+        if (issuer != null)
+            return new CompletedRestAction<>(getJDA(), issuer.getUser());
+        return getJDA().retrieveUserById(getUserIdLong());
+    }
+
+    /**
+     * Retrieves the {@link Member} who added or removed the reaction.
+     * <br>If a member is known, this will return {@link #getMember()}.
+     *
+     * <p>Note that banning a member will also fire {@link GuildMessageReactionRemoveEvent} and no member will be available
+     * in those cases. An {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER} error response
+     * should be the failure result.
+     *
+     * @return {@link RestAction} - Type: {@link Member}
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Member> retrieveMember()
+    {
+        if (issuer != null)
+            return new CompletedRestAction<>(getJDA(), issuer);
+        return getGuild().retrieveMemberById(getUserIdLong());
+    }
+
+    /**
+     * Retrieves the message for this reaction event.
+     * <br>Simple shortcut for {@code getChannel().retrieveMessageById(getMessageId())}.
+     *
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     *  You can, instead, retrieve the member via {@link #getMember()} or {@link #retrieveMember()}.
+     *
+     * @return {@link RestAction} - Type: {@link Message}
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Message> retrieveMessage()
+    {
+        return getChannel().retrieveMessageById(getMessageId());
     }
 }

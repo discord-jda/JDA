@@ -17,10 +17,7 @@
 package net.dv8tion.jda.api.events.message.react;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.GenericMessageEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -42,7 +39,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     protected Member member;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user,
+    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,
                                        @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
@@ -82,7 +79,9 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     @Nullable
     public User getUser()
     {
-        return issuer;
+        return issuer == null && isFromType(ChannelType.PRIVATE)
+                ? getPrivateChannel().getUser() // this can't be the self user because then issuer would be nonnull
+                : issuer;
     }
 
     /**
@@ -136,8 +135,9 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     @CheckReturnValue
     public RestAction<User> retrieveUser()
     {
-        if (issuer != null)
-            return new CompletedRestAction<>(getJDA(), issuer);
+        User user = getUser();
+        if (user != null)
+            return new CompletedRestAction<>(getJDA(), user);
         return getJDA().retrieveUserById(getUserIdLong());
     }
 

@@ -170,6 +170,7 @@ public class EntityBuilder
         final String description = guildJson.getString("description", null);
         final String vanityCode = guildJson.getString("vanity_url_code", null);
         final String bannerId = guildJson.getString("banner", null);
+        final String locale = guildJson.getString("preferred_locale", "en");
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
         final DataArray emotesArray = guildJson.getArray("emojis");
@@ -205,6 +206,7 @@ public class EntityBuilder
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
+                .setLocale(locale)
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
                 .setMemberCount(memberCount);
@@ -1033,7 +1035,7 @@ public class EntityBuilder
         final int color = roleJson.getInt("color");
         role.setName(roleJson.getString("name"))
             .setRawPosition(roleJson.getInt("position"))
-            .setRawPermissions(roleJson.getLong("permissions"))
+            .setRawPermissions(roleJson.getLong("permissions_new"))
             .setManaged(roleJson.getBoolean("managed"))
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
@@ -1382,8 +1384,8 @@ public class EntityBuilder
         if (!role && id != api.getSelfUser().getIdLong() && !api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES))
             return null;
 
-        long allow = override.getLong("allow");
-        long deny = override.getLong("deny");
+        long allow = override.getLong("allow_new");
+        long deny = override.getLong("deny_new");
 
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
         if (permOverride == null)

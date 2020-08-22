@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -80,6 +81,7 @@ public class GuildUpdateHandler extends SocketHandler
         Guild.MFALevel mfaLevel = Guild.MFALevel.fromKey(content.getInt("mfa_level"));
         Guild.ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
         Guild.Timeout afkTimeout = Guild.Timeout.fromKey(content.getInt("afk_timeout"));
+        Locale locale = Locale.forLanguageTag(content.getString("preferred_locale"));
         VoiceChannel afkChannel = content.isNull("afk_channel_id")
                 ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
@@ -262,6 +264,15 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateAfkTimeoutEvent(
                             getJDA(), responseNumber,
                             guild, oldAfkTimeout));
+        }
+        if (!Objects.equals(locale, guild.getLocale()))
+        {
+            Locale oldLocale = guild.getLocale();
+            guild.setLocale(locale.toLanguageTag());
+            getJDA().handleEvent(
+                new GuildUpdateLocaleEvent(
+                    getJDA(), responseNumber,
+                    guild, oldLocale));
         }
         if (!Objects.equals(afkChannel, guild.getAfkChannel()))
         {

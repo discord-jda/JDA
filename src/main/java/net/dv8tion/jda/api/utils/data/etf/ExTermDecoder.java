@@ -239,7 +239,7 @@ public class ExTermDecoder
 
     private static Object unpackAtom(ByteBuffer buffer, Charset charset, int length)
     {
-        String value = getString(buffer, StandardCharsets.ISO_8859_1, length);
+        String value = getString(buffer, charset, length);
         switch (value)
         {
         case "true": return true;
@@ -249,11 +249,11 @@ public class ExTermDecoder
         }
     }
 
-    private static String getString(ByteBuffer buffer, Charset encoding, int length)
+    private static String getString(ByteBuffer buffer, Charset charset, int length)
     {
         byte[] array = new byte[length];
         buffer.get(array);
-        return new String(array, StandardCharsets.UTF_8);
+        return new String(array, charset);
     }
 
     private static List<Object> unpackList0(ByteBuffer buffer)

@@ -162,7 +162,7 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new PrivateMessageReactionAddEvent(
                         jda, responseNumber,
-                        user, reaction, userId));
+                        reaction, userId));
                 break;
             case GROUP:
                 WebSocketClient.LOG.debug("Received a reaction add for a group which should not be possible");
@@ -190,7 +190,7 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new PrivateMessageReactionRemoveEvent(
                         jda, responseNumber,
-                        user, reaction, userId));
+                        reaction, userId));
                 break;
             case GROUP:
                 WebSocketClient.LOG.debug("Received a reaction remove for a group which should not be possible");
