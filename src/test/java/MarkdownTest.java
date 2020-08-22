@@ -388,5 +388,6 @@ class EscapeMarkdownTest
         Assertions.assertEquals("\\>>> Hello\nWorld", markdown.compute(">>> Hello\nWorld"));
         Assertions.assertEquals("\\>>>\nHello\nWorld", markdown.compute(">>>\nHello\nWorld"));
         Assertions.assertEquals("\\>>>\nHello > World", markdown.compute(">>>\nHello > World"));
+        Assertions.assertEquals("\\> \\_Hello \n\\> World\\_", markdown.compute("> _Hello \n> World_"));
     }
 }

@@ -504,16 +504,14 @@ public class MarkdownSanitizer
         // Special handling for quote
         if (!isIgnored(QUOTE) && quote.matcher(sequence).matches())
         {
-            int end = sequence.indexOf('\n');
-            if (end < 0)
-                end = sequence.length();
-            StringBuilder builder = new StringBuilder(compute(sequence.substring(2, end)));
+            int start = sequence.indexOf('>');
+            if (start < 0)
+                start = 0;
+            StringBuilder builder = new StringBuilder(compute(sequence.substring(start + 2)));
             if (strategy == SanitizationStrategy.ESCAPE)
                 builder.insert(0, "\\> ");
             if (newline)
                 builder.insert(0, '\n');
-            if (end < sequence.length())
-                builder.append(compute(sequence.substring(end)));
             return builder.toString();
 
         }
