@@ -165,6 +165,7 @@ public class WebhookImpl implements Webhook
     }
 
     @Override
+    @Deprecated
     public boolean isFake()
     {
         return token == null;

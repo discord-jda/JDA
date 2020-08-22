@@ -1983,7 +1983,7 @@ public interface Guild extends ISnowflake
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
      *
      * <h1>Examples</h1>
-     * <pre><code>
+     * <pre>{@code
      * public void logBan(GuildBanEvent event) {
      *     Guild guild = event.getGuild();
      *     List<TextChannel> modLog = guild.getTextChannelsByName("mod-log", true);
@@ -2000,7 +2000,7 @@ public interface Guild extends ISnowflake
      *             );
      *          });
      * }
-     * </code></pre>
+     * }</pre>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account
