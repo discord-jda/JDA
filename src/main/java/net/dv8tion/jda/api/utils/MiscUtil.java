@@ -25,6 +25,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Formatter;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
@@ -121,7 +122,8 @@ public class MiscUtil
     {
         try
         {
-            lock.lockInterruptibly();
+            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
             return task.get();
         }
         catch (InterruptedException e)
@@ -139,7 +141,8 @@ public class MiscUtil
     {
         try
         {
-            lock.lockInterruptibly();
+            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
             task.run();
         }
         catch (InterruptedException e)

@@ -116,7 +116,11 @@ class WebSocketSendingThread implements Runnable
             needRateLimit = false;
             // We do this outside of the lock because otherwise we could potentially deadlock here
             audioRequest = client.getNextAudioConnectRequest();
-            queueLock.lockInterruptibly();
+            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
+            {
+                scheduleNext();
+                return;
+            }
 
             chunkRequest = chunkQueue.peek();
             if (chunkRequest != null)

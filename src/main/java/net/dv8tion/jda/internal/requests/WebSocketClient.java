@@ -1080,7 +1080,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            queueLock.lockInterruptibly();
+            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
             task.run();
         }
         catch (InterruptedException e)
@@ -1097,7 +1098,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            queueLock.lockInterruptibly();
+            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
             return task.get();
         }
         catch (InterruptedException e)
