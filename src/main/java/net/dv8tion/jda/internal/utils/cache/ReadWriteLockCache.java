@@ -39,7 +39,7 @@ public abstract class ReadWriteLockCache<T>
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         try
         {
-            if (!writeLock.tryLock(10, TimeUnit.SECONDS))
+            if (!writeLock.tryLock() && !writeLock.tryLock(10, TimeUnit.SECONDS))
                 throw new IllegalStateException("Could not acquire write-lock in a reasonable timeframe! (10 seconds)");
         }
         catch (InterruptedException e)
@@ -56,7 +56,7 @@ public abstract class ReadWriteLockCache<T>
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
         try
         {
-            if (!readLock.tryLock(10, TimeUnit.SECONDS))
+            if (!readLock.tryLock() && !readLock.tryLock(10, TimeUnit.SECONDS))
                 throw new IllegalStateException("Could not acquire read-lock in a reasonable timeframe! (10 seconds)");
         }
         catch (InterruptedException e)
