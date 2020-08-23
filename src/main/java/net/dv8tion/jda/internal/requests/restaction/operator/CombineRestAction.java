@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction.operator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -111,8 +112,8 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
             failed = true;
             RestActionOperator.doFailure(failure, e);
         };
-        action1.queue((s) -> {
-            lock.lock();
+        action1.queue((s) -> MiscUtil.locked(lock, () ->
+        {
             try
             {
                 done1.set(true);
@@ -124,13 +125,9 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
             {
                 failureCallback.accept(e);
             }
-            finally
-            {
-                lock.unlock();
-            }
-        }, failureCallback);
-        action2.queue((s) -> {
-            lock.lock();
+        }), failureCallback);
+        action2.queue((s) -> MiscUtil.locked(lock, () ->
+        {
             try
             {
                 done2.set(true);
@@ -142,11 +139,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
             {
                 failureCallback.accept(e);
             }
-            finally
-            {
-                lock.unlock();
-            }
-        }, failureCallback);
+        }), failureCallback);
     }
 
     @Override
