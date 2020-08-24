@@ -896,6 +896,7 @@ public class EntityBuilder
             .setTopic(json.getString("topic", null))
             .setPosition(json.getInt("position"))
             .setNSFW(json.getBoolean("nsfw"))
+            .setNews(json.getInt("type") == 5)
             .setSlowmode(json.getInt("rate_limit_per_user", 0));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));

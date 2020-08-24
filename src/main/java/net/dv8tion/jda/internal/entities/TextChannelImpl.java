@@ -53,6 +53,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     private String topic;
     private long lastMessageId;
     private boolean nsfw;
+    private boolean news;
     private int slowmode;
 
     public TextChannelImpl(long id, GuildImpl guild)
@@ -269,6 +270,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public boolean isNSFW()
     {
         return nsfw;
+    }
+
+    @Override
+    public boolean isNews()
+    {
+        return news && getGuild().getFeatures().contains("NEWS");
     }
 
     @Override
@@ -622,6 +629,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public TextChannelImpl setSlowmode(int slowmode)
     {
         this.slowmode = slowmode;
+        return this;
+    }
+
+    public TextChannelImpl setNews(boolean news)
+    {
+        this.news = news;
         return this;
     }
 

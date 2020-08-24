@@ -208,6 +208,7 @@ public class Route
 
         public static final Route DELETE_MESSAGE =      new Route(DELETE, "channels/{channel_id}/messages/{message_id}");
         public static final Route GET_MESSAGE_HISTORY = new Route(GET,    "channels/{channel_id}/messages");
+        public static final Route CROSSPOST_MESSAGE =   new Route(POST,   "channels/{channel_id}/messages/{message_id}/crosspost");
 
         //Bot only
         public static final Route GET_MESSAGE =     new Route(GET,  "channels/{channel_id}/messages/{message_id}");

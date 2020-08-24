@@ -542,6 +542,14 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Nonnull
+    @Override
+    public RestAction<Message> crosspost()
+    {
+        unsupported();
+        return null;
+    }
+
     @Override
     public boolean isSuppressedEmbeds()
     {
