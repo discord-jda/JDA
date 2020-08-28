@@ -346,7 +346,7 @@ public interface User extends IMentionable, IFakeable
         SYSTEM(            12, "System User"),
         BUG_HUNTER_LEVEL_2(14, "Bug Hunter Level 2"),
         VERIFIED_BOT(      16, "Verified Bot"),
-        VERIFIED_DEVELOPER(17, "Verified Bot Developer"),
+        VERIFIED_DEVELOPER(17, "Early Verified Bot Developer"),
         
         UNKNOWN(-1, "Unknown");
 
