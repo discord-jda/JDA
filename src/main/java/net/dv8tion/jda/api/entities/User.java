@@ -332,7 +332,7 @@ public interface User extends IMentionable, IFakeable
     enum UserFlag
     {
         STAFF(             0, "Discord Employee"),
-        PARTNER(           1, "Discord Partner"),
+        PARTNER(           1, "Partnered Server Owner"),
         HYPESQUAD(         2, "HypeSquad Events"),
         BUG_HUNTER_LEVEL_1(3, "Bug Hunter Level 1"),
 
