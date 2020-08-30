@@ -71,7 +71,7 @@ public class MarkdownSanitizer
     private static final int ESCAPED_QUOTE_BLOCK = Integer.MIN_VALUE | QUOTE_BLOCK;
 
     private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
-    private static final Pattern quote = Pattern.compile("> +\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern quote = Pattern.compile("> +.*", Pattern.DOTALL | Pattern.MULTILINE);
     private static final Pattern quoteBlock = Pattern.compile(">>>\\s+\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
 
     private static final TIntObjectMap<String> tokens;
