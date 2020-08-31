@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEv
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
@@ -31,8 +32,10 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MessageReactionHandler extends SocketHandler
 {
@@ -81,8 +84,20 @@ public class MessageReactionHandler extends SocketHandler
             Optional<DataObject> memberJson = content.optObject("member");
             if (memberJson.isPresent()) // Check if we can load a member here
             {
+                DataObject json = memberJson.get();
                 if (member == null || !member.hasTimeJoined()) // do we need to load a member?
-                    member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
+                    member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, json);
+                else // otherwise update the cache
+                {
+                    List<Role> roles = json.getArray("roles")
+                            .stream(DataArray::getUnsignedLong)
+                            .map(guild::getRoleById)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+                    getJDA().getEntityBuilder().updateMember((GuildImpl) guild, member, json, roles);
+                }
+                // update internal references
+                getJDA().getEntityBuilder().updateMemberCache(member);
             }
             if (member == null && add && guild.isLoaded())
             {
