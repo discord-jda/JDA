@@ -180,7 +180,7 @@ public class PermissionOverrideImpl implements PermissionOverride
 
         Member selfMember = getGuild().getSelfMember();
         GuildChannel channel = getChannel();
-        if (!selfMember.hasPermission(Permission.VIEW_CHANNEL))
+        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasAccess(channel))
             throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
