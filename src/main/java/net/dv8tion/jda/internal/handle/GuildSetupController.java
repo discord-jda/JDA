@@ -53,8 +53,8 @@ public class GuildSetupController
     private final TLongLongMap pendingChunks = new TLongLongHashMap();
     private final TLongSet unavailableGuilds = new TLongHashSet();
 
+    // TODO: Rewrite this incompleteCount system to just rely on the state of each node
     private int incompleteCount = 0;
-    private int syncingCount = 0;
 
     private Future<?> timeoutHandle;
 
@@ -98,10 +98,18 @@ public class GuildSetupController
     public void ready(long id)
     {
         remove(id);
+        incompleteCount--;
+        checkReady();
+    }
+
+    // Check if we can send a ready event
+    private void checkReady()
+    {
         WebSocketClient client = getJDA().getClient();
-        if (--incompleteCount < 1 && !client.isReady())
+        // If no guilds are marked as incomplete we can fire a ready
+        if (incompleteCount < 1 && !client.isReady())
             client.ready();
-        else
+        else // otherwise see if we can chunk any guilds
             tryChunking();
     }
 
@@ -109,7 +117,6 @@ public class GuildSetupController
     {
         log.debug("Setting incomplete count to {}", count);
         this.incompleteCount = count;
-        this.syncingCount = count;
         boolean ready = count == 0;
         if (ready)
             getJDA().getClient().ready();
@@ -187,7 +194,6 @@ public class GuildSetupController
                     chunkingGuilds.remove(id);
                     synchronized (pendingChunks) { pendingChunks.remove(id); }
                     incompleteCount--;
-                    tryChunking();
                 }
             }
             node.reset();
@@ -202,7 +208,8 @@ public class GuildSetupController
                 ready(id);
             api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
         }
-        log.debug("Updated incompleteCount to {} and syncCount to {}", incompleteCount, syncingCount);
+        log.debug("Updated incompleteCount to {}", incompleteCount);
+        checkReady();
         return true;
     }
 
@@ -424,7 +431,6 @@ public class GuildSetupController
     public enum Status
     {
         INIT,
-        SYNCING,
         CHUNKING,
         BUILDING,
         READY,

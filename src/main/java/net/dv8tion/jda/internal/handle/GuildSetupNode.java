@@ -52,7 +52,6 @@ public class GuildSetupNode
     private TLongSet removedMembers;
     private DataObject partialGuild;
     private int expectedMemberCount = 1;
-    private boolean requestedSync;
     boolean requestedChunk;
 
     final Type type;
@@ -120,11 +119,6 @@ public class GuildSetupNode
         return requestedChunk;
     }
 
-    public boolean requestedSync()
-    {
-        return requestedSync;
-    }
-
     public boolean containsMember(long userId)
     {
         if (members == null || members.isEmpty())
@@ -138,7 +132,6 @@ public class GuildSetupNode
         return "GuildSetupNode[" + id + "|" + status + ']' +
             '{' +
                 "expectedMemberCount=" + expectedMemberCount + ", " +
-                "requestedSync="       + requestedSync + ", " +
                 "requestedChunk="      + requestedChunk + ", " +
                 "type="                + type + ", " +
                 "markedUnavailable="   + markedUnavailable +
@@ -186,7 +179,6 @@ public class GuildSetupNode
         expectedMemberCount = 1;
         partialGuild = null;
         requestedChunk = false;
-        requestedSync = false;
         if (members != null)
             members.clear();
         if (removedMembers != null)
