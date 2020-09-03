@@ -82,7 +82,7 @@ public interface Presence
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for this session.
-     * <br>A Activity can be retrieved via {@link net.dv8tion.jda.api.entities.Activity#playing(String)}.
+     * <br>An Activity can be retrieved via {@link net.dv8tion.jda.api.entities.Activity#playing(String)}.
      * For streams you provide a valid streaming url as second parameter
      *
      * <p>Examples:
@@ -90,7 +90,7 @@ public interface Presence
      * <br>{@code presence.setActivity(Activity.streaming("Thrones", "https://twitch.tv/EasterEggs"));}
      *
      * @param  activity
-     *         A {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
+     *         An {@link net.dv8tion.jda.api.entities.Activity Activity} instance or null to reset
      *
      * @see    net.dv8tion.jda.api.entities.Activity#playing(String)
      * @see    net.dv8tion.jda.api.entities.Activity#streaming(String, String)
