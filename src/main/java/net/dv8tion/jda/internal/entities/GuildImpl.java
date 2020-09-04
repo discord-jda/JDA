@@ -1321,6 +1321,7 @@ public class GuildImpl implements Guild
     {
         if (parent != null)
         {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
             if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
                 throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
         }
@@ -1342,6 +1343,7 @@ public class GuildImpl implements Guild
     {
         if (parent != null)
         {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
             if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
                 throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
         }
