@@ -1991,24 +1991,24 @@ public interface Guild extends ISnowflake
      * <br>This iterates from the most recent action to the first logged one. (Limit 90 days into history by discord api)
      *
      * <h1>Examples</h1>
-     * <pre><code>
-     * public boolean isLogged(Guild guild, ActionType type, long targetId)
-     * {
-     *     for (AuditLogEntry entry : guild.<u>retrieveAuditLogs().cache(false)</u>)
-     *     {
-     *         if (entry.getType() == type{@literal &&} entry.getTargetIdLong() == targetId)
-     *             return true; // The action is logged
-     *     }
-     *     return false; // nothing found in audit logs
+     * <pre>{@code
+     * public void logBan(GuildBanEvent event) {
+     *     Guild guild = event.getGuild();
+     *     List<TextChannel> modLog = guild.getTextChannelsByName("mod-log", true);
+     *     guild.retrieveAuditLogs()
+     *          .type(ActionType.BAN) // filter by type
+     *          .limit(1)
+     *          .queue(list -> {
+     *             if (list.isEmpty()) return;
+     *             AuditLogEntry entry = list.get(0);
+     *             String message = String.format("%#s banned %#s with reason %s",
+     *                                            entry.getUser(), event.getUser(), entry.getReason());
+     *             modLog.forEach(channel ->
+     *               channel.sendMessage(message).queue()
+     *             );
+     *          });
      * }
-     *
-     * public{@literal List<AuditLogEntry>} getActionsBy(Guild guild, User user)
-     * {
-     *     return guild.<u>retrieveAuditLogs().cache(false)</u>.stream()
-     *         .filter(it{@literal ->} it.getUser().equals(user))
-     *         .collect(Collectors.toList()); // collects actions done by user
-     * }
-     * </code></pre>
+     * }</pre>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account

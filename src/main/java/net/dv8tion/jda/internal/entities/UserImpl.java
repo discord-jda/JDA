@@ -136,6 +136,7 @@ public class UserImpl extends UserById implements User
     }
 
     @Override
+    @Deprecated
     public boolean isFake()
     {
         return fake;

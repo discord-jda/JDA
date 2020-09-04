@@ -1368,6 +1368,8 @@ public class JDABuilder
      * Sets the maximum amount of time that JDA will back off to wait when attempting to reconnect the MainWebsocket.
      * <br>Provided value must be 32 or greater.
      *
+     * <p>Default: {@code 900}
+     *
      * @param  maxReconnectDelay
      *         The maximum amount of time that JDA will wait between reconnect attempts in seconds.
      *

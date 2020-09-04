@@ -21,14 +21,23 @@ package net.dv8tion.jda.api.audit;
  * <br>Providing detailed description of possible occasions and expected types.
  *
  * <p>The expected types are not guaranteed to be accurate!
+ *
+ * @see <a href="https://discord.com/developers/docs/resources/audit-log#audit-log-entry-object-optional-audit-entry-info" target="_blank">Optional Audit Entry Info</a>
  */
 public enum AuditLogOption
 {
     /**
-     * Possible detail for {@link net.dv8tion.jda.api.audit.ActionType#MESSAGE_DELETE ActionType.MESSAGE_DELETE}
-     * describing the amount of deleted messages.
+     * Possible detail for
+     * <ul>
+     *     <li>{@link ActionType#MESSAGE_DELETE}</li>
+     *     <li>{@link ActionType#MESSAGE_BULK_DELETE}</li>
+     *     <li>{@link ActionType#MEMBER_VOICE_KICK}</li>
+     *     <li>{@link ActionType#MEMBER_VOICE_MOVE}</li>
+     * </ul>
+     * describing the amount of targeted entities.
+     * <br>Use with {@link Integer#parseInt(String)}.
      *
-     * <p>Expected type: <b>Integer</b>
+     * <p>Expected type: <b>String</b>
      */
     COUNT("count"),
 
@@ -42,9 +51,14 @@ public enum AuditLogOption
 
     /**
      * Possible secondary target of an {@link net.dv8tion.jda.api.audit.ActionType ActionType}
-     * such as {@link net.dv8tion.jda.api.audit.ActionType#CHANNEL_OVERRIDE_CREATE ActionType.CHANNEL_OVERRIDE_CREATE}
-     * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getTextChannelById(String) Guild.getTextChannelById(String)}
-     * or similar method for {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}
+     * such as:
+     * <ul>
+     *     <li>{@link ActionType#MEMBER_VOICE_MOVE}</li>
+     *     <li>{@link ActionType#MESSAGE_PIN}</li>
+     *     <li>{@link ActionType#MESSAGE_UNPIN}</li>
+     *     <li>{@link ActionType#MESSAGE_DELETE}</li>
+     * </ul>
+     * Use with {@link net.dv8tion.jda.api.entities.Guild#getGuildChannelById(String) Guild.getGuildChannelById(String)}.
      *
      * <p>Expected type: <b>String</b>
      */
