@@ -354,6 +354,10 @@ public class PermissionUtil
         final long admin = Permission.ADMINISTRATOR.getRawValue();
         if (isApplied(permission, admin))
             return Permission.ALL_PERMISSIONS;
+        // MANAGE_CHANNEL allows to delete channels within a category (this is undocumented behavior)
+        if (channel.getParent() != null && checkPermission(channel.getParent(), member, Permission.MANAGE_CHANNEL))
+            permission |= Permission.MANAGE_CHANNEL.getRawValue();
+
 
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);

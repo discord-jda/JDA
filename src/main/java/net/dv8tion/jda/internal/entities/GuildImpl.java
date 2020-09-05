@@ -1317,26 +1317,46 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
     {
-        checkPermission(Permission.MANAGE_CHANNEL);
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
+
         Checks.notBlank(name, "Name");
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-        return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT);
+        return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent)
     {
-        checkPermission(Permission.MANAGE_CHANNEL);
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
+
         Checks.notBlank(name, "Name");
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-        return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE);
+        return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
     }
 
     @Nonnull

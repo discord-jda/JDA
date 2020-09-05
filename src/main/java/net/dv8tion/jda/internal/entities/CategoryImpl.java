@@ -158,7 +158,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
-        ChannelAction<TextChannel> action = getGuild().createTextChannel(name).setParent(this);
+        ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
         applyPermission(action);
         return action;
     }
@@ -167,7 +167,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
-        ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name).setParent(this);
+        ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
         applyPermission(action);
         return action;
     }

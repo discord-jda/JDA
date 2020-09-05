@@ -32,7 +32,6 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -281,13 +280,5 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                 return;
         }
         request.onSuccess(clazz.cast(channel));
-    }
-
-    protected void checkPermissions(Collection<Permission> permissions)
-    {
-        if (permissions == null)
-            return;
-        for (Permission p : permissions)
-            Checks.notNull(p, "Permissions");
     }
 }
