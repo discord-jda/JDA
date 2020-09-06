@@ -35,11 +35,11 @@ import javax.annotation.Nullable;
  *
  * <p>This event requires at least one of the following intents:
  * <ul>
- *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} to work in guild text channels
- *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} to work in guild text channels</li>
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
  * </ul>
  *
- * <p>This event will not fire at all if neither is enabled
+ * <p>Will not fire at all if neither is enabled
  */
 public class GenericMessageReactionEvent extends GenericMessageEvent
 {
