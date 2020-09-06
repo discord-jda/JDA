@@ -28,7 +28,8 @@ import javax.annotation.Nonnull;
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent to be enabled
+ * <p>This event requires the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE VOICE_STATE} CacheFlag to be enabled, which requires
+ * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent
  */
 public class GuildVoiceSelfDeafenEvent extends GenericGuildVoiceEvent
 {
