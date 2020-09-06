@@ -30,6 +30,7 @@ import javax.annotation.Nonnull;
  * <h2>Requirements</h2>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled
+ * <br>Also, this event will only fire for invites created in channels where you can {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
  */
 public class GuildInviteCreateEvent extends GenericGuildInviteEvent
 {
