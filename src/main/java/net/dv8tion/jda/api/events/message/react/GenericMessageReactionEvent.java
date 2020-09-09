@@ -50,7 +50,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * The id for the user who added/removed their reaction.
+     * The id for the user who owns the reaction.
      *
      * @return The user id
      */
@@ -61,7 +61,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * The id for the user who added/removed their reaction.
+     * The id for the user who owns reaction.
      *
      * @return The user id
      */
@@ -126,7 +126,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * Retrieves the {@link User} who added or removed the reaction.
+     * Retrieves the {@link User} who owns the reaction.
      * <br>If a user is known, this will return {@link #getUser()}.
      *
      * @return {@link RestAction} - Type: {@link User}
@@ -142,12 +142,15 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     }
 
     /**
-     * Retrieves the {@link Member} who added or removed the reaction.
+     * Retrieves the {@link Member} who owns the reaction.
      * <br>If a member is known, this will return {@link #getMember()}.
      *
      * <p>Note that banning a member will also fire {@link MessageReactionRemoveEvent} and no member will be available
      * in those cases. An {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MEMBER UNKNOWN_MEMBER} error response
      * should be the failure result.
+     *
+     * @throws IllegalStateException
+     *         If this event is not from a guild
      *
      * @return {@link RestAction} - Type: {@link Member}
      */
@@ -165,7 +168,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * <br>Simple shortcut for {@code getChannel().retrieveMessageById(getMessageId())}.
      *
      * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
-     *  You can, instead, retrieve the member via {@link #getMember()} or {@link #retrieveMember()}.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * @return {@link RestAction} - Type: {@link Message}
      */
