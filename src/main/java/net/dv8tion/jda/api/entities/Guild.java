@@ -2780,7 +2780,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>If includePresence is {@code true} and the GUILD_PRESENCES intent is disabled</li>
      *             <li>If the input contains null</li>
-     *             <li>If the input is more than 100 IDs</li>
+     *             <li>If the input is more than 100 users</li>
      *         </ul>
      *
      * @return {@link Task} handle for the request
