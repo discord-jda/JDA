@@ -46,7 +46,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     }
 
     /**
-     * The id for the user who added/removed their reaction.
+     * The id for the user who owns the reaction.
      *
      * @return The user id
      */
@@ -57,7 +57,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     }
 
     /**
-     * The id for the user who added/removed their reaction.
+     * The id for the user who owns the reaction.
      *
      * @return The user id
      */
@@ -116,7 +116,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     }
 
     /**
-     * Retrieves the {@link User} who added or removed the reaction.
+     * Retrieves the {@link User} who owns the reaction.
      * <br>If a user is known, this will return {@link #getUser()}.
      *
      * @return {@link RestAction} - Type: {@link User}
@@ -131,7 +131,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     }
 
     /**
-     * Retrieves the {@link Member} who added or removed the reaction.
+     * Retrieves the {@link Member} who owns the reaction.
      * <br>If a member is known, this will return {@link #getMember()}.
      *
      * <p>Note that banning a member will also fire {@link GuildMessageReactionRemoveEvent} and no member will be available
@@ -154,7 +154,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      * <br>Simple shortcut for {@code getChannel().retrieveMessageById(getMessageId())}.
      *
      * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
-     *  You can, instead, retrieve the member via {@link #getMember()} or {@link #retrieveMember()}.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * @return {@link RestAction} - Type: {@link Message}
      */
