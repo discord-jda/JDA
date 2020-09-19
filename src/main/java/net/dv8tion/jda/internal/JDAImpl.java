@@ -81,7 +81,6 @@ public class JDAImpl implements JDA
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
     protected final Object audioLifeCycleLock = new Object();
-    protected ScheduledThreadPoolExecutor audioLifeCyclePool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -715,8 +714,6 @@ public class JDAImpl implements JDA
         // stop accepting new requests
         if (requester.stop()) // returns true if no more requests will be executed
             shutdownRequester(); // in that case shutdown entirely
-        if (audioLifeCyclePool != null)
-            audioLifeCyclePool.shutdownNow();
         threadConfig.shutdown();
 
         if (shutdownHook != null)
@@ -1020,16 +1017,19 @@ public class JDAImpl implements JDA
         this.gatewayUrl = null;
     }
 
-    public ScheduledThreadPoolExecutor getAudioLifeCyclePool()
+    public ScheduledExecutorService getAudioLifeCyclePool()
     {
-        ScheduledThreadPoolExecutor pool = audioLifeCyclePool;
+        ScheduledExecutorService pool = threadConfig.getAudioPool();
         if (pool == null)
         {
             synchronized (audioLifeCycleLock)
             {
-                pool = audioLifeCyclePool;
+                pool = threadConfig.getAudioPool();
                 if (pool == null)
-                    pool = audioLifeCyclePool = ThreadingConfig.newScheduler(1, this::getIdentifierString, "AudioLifeCycle");
+                {
+                    pool = ThreadingConfig.newScheduler(1, this::getIdentifierString, "AudioLifeCycle");
+                    threadConfig.setAudioPool(pool, threadConfig.isShutdownAudioPool());
+                }
             }
         }
         return pool;

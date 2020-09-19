@@ -69,6 +69,8 @@ public class JDABuilder
     protected boolean shutdownCallbackPool = true;
     protected ExecutorService eventPool = null;
     protected boolean shutdownEventPool = true;
+    protected ScheduledExecutorService audioPool = null;
+    protected boolean shutdownAudioPool = true;
     protected EnumSet<CacheFlag> cacheFlags = EnumSet.allOf(CacheFlag.class);
     protected ConcurrentMap<String, String> contextMap = null;
     protected SessionController controller = null;
@@ -1156,6 +1158,50 @@ public class JDABuilder
     }
 
     /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the audio WebSocket connection. Used for sending keepalives and closing the connection.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread
+     *
+     * @param  pool
+     *         The thread-pool to use for the audio WebSocket
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since 4.2.1
+     */
+    @Nonnull
+    public JDABuilder setAudioPool(@Nullable ScheduledExecutorService pool)
+    {
+        return setAudioPool(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the audio WebSocket connection. Used for sending keepalives and closing the connection.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread
+     *
+     * @param  pool
+     *         The thread-pool to use for the audio WebSocket
+     * @param  automaticShutdown
+     *         Whether {@link JDA#shutdown()} should shutdown this pool
+     *
+     * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since 4.2.1
+     */
+    @Nonnull
+    public JDABuilder setAudioPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
+    {
+        this.audioPool = pool;
+        this.shutdownAudioPool = automaticShutdown;
+        return this;
+    }
+
+    /**
      * If enabled, JDA will separate the bulk delete event into individual delete events, but this isn't as efficient as
      * handling a single event would be. It is recommended that BulkDelete Splitting be disabled and that the developer
      * should instead handle the {@link net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent MessageBulkDeleteEvent}
@@ -1843,6 +1889,7 @@ public class JDABuilder
         threadingConfig.setGatewayPool(mainWsPool, shutdownMainWsPool);
         threadingConfig.setRateLimitPool(rateLimitPool, shutdownRateLimitPool);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
+        threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         SessionConfig sessionConfig = new SessionConfig(controller, httpClient, wsFactory, voiceDispatchInterceptor, flags, maxReconnectDelay, largeThreshold);
         MetaConfig metaConfig = new MetaConfig(maxBufferSize, contextMap, cacheFlags, flags);
 
