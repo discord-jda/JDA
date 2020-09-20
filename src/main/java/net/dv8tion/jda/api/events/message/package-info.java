@@ -31,7 +31,5 @@
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} to work in guild text channels</li>
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
- *
- * <p>Will not fire at all if neither is enabled
  */
 package net.dv8tion.jda.api.events.message;

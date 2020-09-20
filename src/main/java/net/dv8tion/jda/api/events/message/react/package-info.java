@@ -28,6 +28,6 @@
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
  * </ul>
  *
- * <p>Will not fire at all if neither is enabled
+ * This event requires at least one of the following intents (Will not fire at all if neither is enabled):
  */
 package net.dv8tion.jda.api.events.message.react;
