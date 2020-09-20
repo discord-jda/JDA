@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled.
  */
 public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {

@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
  *
  * <h2>Requirements</h2>
  *
- * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled.
  */
 public abstract class GenericGuildMessageEvent extends GenericGuildEvent
 {

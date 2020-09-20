@@ -20,6 +20,6 @@
  *
  * <h2>Requirements</h2>
  *
- * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled.
  */
 package net.dv8tion.jda.api.events.message.priv;

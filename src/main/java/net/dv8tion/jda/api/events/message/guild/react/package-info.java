@@ -20,7 +20,7 @@
  * cannot provide a Message instance due to missing cache but instead provide the Message ID as
  * long representation.
  *
- * <br> These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled
+ * <br> These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  *
  * @since 3.1
  */
