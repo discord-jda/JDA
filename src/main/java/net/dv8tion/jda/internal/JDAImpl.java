@@ -80,8 +80,6 @@ public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
 
-    protected final Object audioLifeCycleLock = new Object();
-
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
     protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName);
@@ -1019,19 +1017,6 @@ public class JDAImpl implements JDA
 
     public ScheduledExecutorService getAudioLifeCyclePool()
     {
-        ScheduledExecutorService pool = threadConfig.getAudioPool();
-        if (pool == null)
-        {
-            synchronized (audioLifeCycleLock)
-            {
-                pool = threadConfig.getAudioPool();
-                if (pool == null)
-                {
-                    pool = ThreadingConfig.newScheduler(1, this::getIdentifierString, "AudioLifeCycle");
-                    threadConfig.setAudioPool(pool, threadConfig.isShutdownAudioPool());
-                }
-            }
-        }
-        return pool;
+        return threadConfig.getAudioPool(this::getIdentifierString);
     }
 }

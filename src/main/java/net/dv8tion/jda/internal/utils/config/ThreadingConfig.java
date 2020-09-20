@@ -25,6 +25,8 @@ import java.util.function.Supplier;
 
 public class ThreadingConfig
 {
+    private final Object audioLock = new Object();
+
     private ScheduledExecutorService rateLimitPool;
     private ScheduledExecutorService gatewayPool;
     private ExecutorService callbackPool;
@@ -155,9 +157,21 @@ public class ThreadingConfig
     }
 
     @Nullable
-    public ScheduledExecutorService getAudioPool()
+    public ScheduledExecutorService getAudioPool(@Nonnull Supplier<String> identifier)
     {
-        return audioPool;
+        ScheduledExecutorService pool = audioPool;
+        if (pool == null)
+        {
+            synchronized (audioLock)
+            {
+                pool = audioPool;
+                if (pool == null)
+                {
+                    pool = audioPool = ThreadingConfig.newScheduler(1, identifier, "AudioLifeCycle");
+                }
+            }
+        }
+        return pool;
     }
 
     public boolean isShutdownRateLimitPool()
