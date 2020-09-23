@@ -197,7 +197,7 @@ public interface User extends IMentionable, IFakeable
     }
 
     /**
-     * The URL for the user's avatar image
+     * The URL for the user's avatar image.
      * If they do not have an avatar set, this will return the URL of their
      * default avatar
      *
