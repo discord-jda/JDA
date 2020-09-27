@@ -166,9 +166,7 @@ public class ThreadingConfig
             {
                 pool = audioPool;
                 if (pool == null)
-                {
                     pool = audioPool = ThreadingConfig.newScheduler(1, identifier, "AudioLifeCycle");
-                }
             }
         }
         return pool;
