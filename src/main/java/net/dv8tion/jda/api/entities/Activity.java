@@ -231,7 +231,7 @@ public interface Activity
      *         The streaming url to use, required to display as "streaming".
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null or empty
+     *         If the specified name is null, empty or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name and url
      *
