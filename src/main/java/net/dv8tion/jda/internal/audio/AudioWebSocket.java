@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -58,7 +58,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private final AudioConnection audioConnection;
     private final ConnectionListener listener;
-    private final ScheduledThreadPoolExecutor keepAlivePool;
+    private final ScheduledExecutorService keepAlivePool;
     private final Guild guild;
     private final String sessionId;
     private final String token;

@@ -30,6 +30,7 @@ public class ThreadingProviderConfig
     private final ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider;
     private final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider;
     private final ThreadPoolProvider<? extends ExecutorService> eventPoolProvider;
+    private final ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider;
     private final ThreadFactory threadFactory;
 
     public ThreadingProviderConfig(
@@ -37,12 +38,14 @@ public class ThreadingProviderConfig
             @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider,
             @Nullable ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
             @Nullable ThreadPoolProvider<? extends ExecutorService> eventPoolProvider,
+            @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider,
             @Nullable ThreadFactory threadFactory)
     {
         this.rateLimitPoolProvider = rateLimitPoolProvider;
         this.gatewayPoolProvider = gatewayPoolProvider;
         this.callbackPoolProvider = callbackPoolProvider;
         this.eventPoolProvider = eventPoolProvider;
+        this.audioPoolProvider = audioPoolProvider;
         this.threadFactory = threadFactory;
     }
 
@@ -76,9 +79,15 @@ public class ThreadingProviderConfig
         return eventPoolProvider;
     }
 
+    @Nullable
+    public ThreadPoolProvider<? extends ScheduledExecutorService> getAudioPoolProvider()
+    {
+        return audioPoolProvider;
+    }
+
     @Nonnull
     public static ThreadingProviderConfig getDefault()
     {
-        return new ThreadingProviderConfig(null, null, null, null, null);
+        return new ThreadingProviderConfig(null, null, null, null, null, null);
     }
 }
