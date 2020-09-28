@@ -19,6 +19,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -122,6 +123,7 @@ public interface Activity
     static Activity playing(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
+        name = name.trim();
         Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         return EntityBuilder.createActivity(name, null, ActivityType.DEFAULT);
     }
@@ -147,6 +149,7 @@ public interface Activity
     static Activity streaming(@Nonnull String name, @Nullable String url)
     {
         Checks.notEmpty(name, "Provided game name");
+        name = Helpers.isBlank(name) ? name : name.trim();
         Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         ActivityType type;
         if (isValidStreamingUrl(url))
@@ -172,6 +175,7 @@ public interface Activity
     static Activity listening(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
+        name = name.trim();
         Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         return EntityBuilder.createActivity(name, null, ActivityType.LISTENING);
     }
@@ -195,6 +199,7 @@ public interface Activity
     static Activity watching(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
+        name = name.trim();
         Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         return EntityBuilder.createActivity(name, null, ActivityType.WATCHING);
     }
