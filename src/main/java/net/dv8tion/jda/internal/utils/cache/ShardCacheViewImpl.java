@@ -22,6 +22,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.ClosableIterator;
 import net.dv8tion.jda.api.utils.LockIterator;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.ShardCacheView;
 import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
@@ -58,6 +59,14 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
         try (UnlockHook hook = writeLock())
         {
             elements.clear();
+        }
+    }
+
+    public JDA remove(int shardId)
+    {
+        try (UnlockHook hook = writeLock())
+        {
+            return elements.remove(shardId);
         }
     }
 
@@ -124,7 +133,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
     public LockIterator<JDA> lockedIterator()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-        readLock.lock();
+        MiscUtil.tryLock(readLock);
         try
         {
             Iterator<JDA> directIterator = elements.valueCollection().iterator();

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Formatter;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
@@ -122,13 +123,8 @@ public class MiscUtil
     {
         try
         {
-            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
+            tryLock(lock);
             return task.get();
-        }
-        catch (InterruptedException e)
-        {
-            throw new IllegalStateException(e);
         }
         finally
         {
@@ -141,18 +137,35 @@ public class MiscUtil
     {
         try
         {
-            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
+            tryLock(lock);
             task.run();
-        }
-        catch (InterruptedException e)
-        {
-            throw new IllegalStateException(e);
         }
         finally
         {
             if (lock.isHeldByCurrentThread())
                 lock.unlock();
+        }
+    }
+
+    /**
+     * Tries to acquire the provided lock in a 10 second timeframe.
+     *
+     * @param  lock
+     *         The lock to acquire
+     *
+     * @throws IllegalStateException
+     *         If the lock could not be acquired
+     */
+    public static void tryLock(Lock lock)
+    {
+        try
+        {
+            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in a reasonable timeframe! (10 seconds)");
+        }
+        catch (InterruptedException e)
+        {
+            throw new IllegalStateException("Unable to acquire lock while thread is interrupted!");
         }
     }
 

@@ -305,16 +305,13 @@ public class DefaultShardManager implements ShardManager
         Checks.notNegative(shardId, "shardId");
         Checks.check(shardId < getShardsTotal(), "shardId must be lower than shardsTotal");
 
-        try (UnlockHook hook = this.shards.writeLock())
+        JDA jda = this.shards.remove(shardId);
+        if (jda != null)
         {
-            final JDA jda = this.shards.getMap().remove(shardId);
-            if (jda != null)
-            {
-                if (shardingConfig.isUseShutdownNow())
-                    jda.shutdownNow();
-                else
-                    jda.shutdown();
-            }
+            if (shardingConfig.isUseShutdownNow())
+                jda.shutdownNow();
+            else
+                jda.shutdown();
         }
 
         enqueueShard(shardId);
@@ -370,16 +367,13 @@ public class DefaultShardManager implements ShardManager
     @Override
     public void shutdown(final int shardId)
     {
-        try (UnlockHook hook = this.shards.writeLock())
+        final JDA jda = this.shards.remove(shardId);
+        if (jda != null)
         {
-            final JDA jda = this.shards.getMap().remove(shardId);
-            if (jda != null)
-            {
-                if (shardingConfig.isUseShutdownNow())
-                    jda.shutdownNow();
-                else
-                    jda.shutdown();
-            }
+            if (shardingConfig.isUseShutdownNow())
+                jda.shutdownNow();
+            else
+                jda.shutdown();
         }
     }
 
