@@ -84,7 +84,7 @@ public class ChannelCreateHandler extends SocketHandler
                         builder.createCategory(content, guildId)));
                 break;
             }
-            case PRIVATE:
+            case PRIVATE: // this never happens in v8
             {
                 jda.handleEvent(
                     new PrivateChannelCreateEvent(

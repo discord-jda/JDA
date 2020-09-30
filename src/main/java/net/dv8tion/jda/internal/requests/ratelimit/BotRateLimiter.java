@@ -250,7 +250,7 @@ public class BotRateLimiter extends RateLimiter
                 if (response.code() == 429)
                 {
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
-                    long retryAfter = parseLong(retryAfterHeader);
+                    long retryAfter = parseLong(retryAfterHeader) * 1000;
                     // Handle global rate limit if necessary
                     if (global)
                     {
@@ -260,7 +260,7 @@ public class BotRateLimiter extends RateLimiter
                     // Handle cloudflare rate limits, this applies to all routes and uses seconds for retry-after
                     else if (cloudflare)
                     {
-                        requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter * 1000);
+                        requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
                         log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter);
                     }
                     // Handle hard rate limit, pretty much just log that it happened

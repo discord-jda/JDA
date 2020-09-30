@@ -1135,7 +1135,7 @@ public class GuildImpl implements Guild
         if (!Helpers.isBlank(reason))
             route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         if (delDays > 0)
-            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
+            route = route.withQueryParams("delete_message_days", Integer.toString(delDays));
 
         return new AuditableRestActionImpl<>(getJDA(), route);
     }

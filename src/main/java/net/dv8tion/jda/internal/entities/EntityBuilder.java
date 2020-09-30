@@ -1036,7 +1036,7 @@ public class EntityBuilder
         final int color = roleJson.getInt("color");
         role.setName(roleJson.getString("name"))
             .setRawPosition(roleJson.getInt("position"))
-            .setRawPermissions(roleJson.getLong("permissions_new"))
+            .setRawPermissions(roleJson.getLong("permissions"))
             .setManaged(roleJson.getBoolean("managed"))
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
@@ -1054,23 +1054,33 @@ public class EntityBuilder
         MessageChannel chan = getJDA().getTextChannelById(channelId);
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
-        if (chan == null)
+        if (chan == null && !jsonObject.isNull("guild_id"))
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
         return createMessage(jsonObject, chan, modifyCache);
     }
-    public Message createMessage(DataObject jsonObject, MessageChannel chan, boolean modifyCache)
+    public Message createMessage(DataObject jsonObject, @Nullable MessageChannel channel, boolean modifyCache)
     {
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         MemberImpl member = null;
 
-        if (chan.getType().isGuild() && !jsonObject.isNull("member"))
+        if (channel == null && jsonObject.isNull("guild_id"))
+        {
+            DataObject channelDate = DataObject.empty()
+                    .put("id", jsonObject.getUnsignedLong("channel_id"))
+                    .put("recipient", author);
+            channel = createPrivateChannel(channelDate, modifyCache);
+        }
+        else if (channel == null)
+            throw new IllegalStateException("Cannot create message for missing channel! JSON: " + jsonObject);
+
+        if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
-            GuildChannel guildChannel = (GuildChannel) chan;
+            GuildChannel guildChannel = (GuildChannel) channel;
             Guild guild = guildChannel.getGuild();
             member = createMember((GuildImpl) guild, memberJson);
             if (modifyCache)
@@ -1089,9 +1099,10 @@ public class EntityBuilder
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
         final int flags = jsonObject.getInt("flags", 0);
 
+        MessageChannel tmpChannel = channel; // because java
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
-        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(tmpChannel, id, obj));
 
         MessageActivity activity = null;
 
@@ -1099,18 +1110,18 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        switch (chan.getType())
+        switch (channel.getType())
         {
             case PRIVATE:
                 if (authorId == getJDA().getSelfUser().getIdLong())
                     user = getJDA().getSelfUser();
                 else
-                    user = ((PrivateChannel) chan).getUser();
+                    user = ((PrivateChannel) channel).getUser();
                 break;
             case GROUP:
                 throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
             case TEXT:
-                Guild guild = ((TextChannel) chan).getGuild();
+                Guild guild = ((TextChannel) channel).getGuild();
                 if (member == null)
                     member = (MemberImpl) guild.getMemberById(authorId);
                 user = member != null ? member.getUser() : null;
@@ -1122,7 +1133,7 @@ public class EntityBuilder
                         throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
                 }
                 break;
-            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
+            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
@@ -1142,14 +1153,14 @@ public class EntityBuilder
         switch (type)
         {
             case DEFAULT:
-                message = new ReceivedMessage(id, chan, type, fromWebhook,
+                message = new ReceivedMessage(id, channel, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
                 break;
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
-                message = new SystemMessage(id, chan, type, fromWebhook,
+                message = new SystemMessage(id, channel, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
                 break;
@@ -1375,18 +1386,18 @@ public class EntityBuilder
     @Nullable
     public PermissionOverride createPermissionOverride(DataObject override, AbstractChannelImpl<?, ?> chan)
     {
-        String type = override.getString("type");
+        int type = override.getInt("type");
         final long id = override.getLong("id");
-        boolean role = type.equals("role");
+        boolean role = type == 0;
         if (role && chan.getGuild().getRoleById(id) == null)
             throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
-        if (!role && !type.equals("member"))
+        if (!role && type != 1)
             throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
         if (!role && id != api.getSelfUser().getIdLong() && !api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES))
             return null;
 
-        long allow = override.getLong("allow_new");
-        long deny = override.getLong("deny_new");
+        long allow = override.getLong("allow");
+        long deny = override.getLong("deny");
 
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
         if (permOverride == null)

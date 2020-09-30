@@ -234,7 +234,7 @@ public class PermissionOverrideActionImpl
     protected RequestBody finalizeData()
     {
         DataObject object = DataObject.empty();
-        object.put("type", isRole() ? "role" : "member");
+        object.put("type", isRole() ? 0 : 1);
         object.put("allow", allowSet ? allow : getCurrentAllow());
         object.put("deny", denySet ? deny : getCurrentDeny());
         reset();

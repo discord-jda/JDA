@@ -77,11 +77,12 @@ public class PresenceUpdateHandler extends SocketHandler
         // The user is not yet known to us, maybe due to lazy loading. Try creating it.
         if (user == null)
         {
-            // If this presence update doesn't have a user or the status is offline we ignore it
-            if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
-                return null;
-            // We should have somewhat enough information to create this member, so lets do it!
-            user = (UserImpl) createMember(content, guildId, guild, jsonUser).getUser();
+//            // If this presence update doesn't have a user or the status is offline we ignore it
+//            if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
+//                return null;
+//            // We should have somewhat enough information to create this member, so lets do it!
+//            user = (UserImpl) createMember(content, guildId, guild, jsonUser).getUser();
+            return null; // We can't create a member here anymore since v8 removed all the member data from this event
         }
 
         if (jsonUser.hasKey("username"))

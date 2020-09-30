@@ -119,6 +119,7 @@ public class ErrorResponseException extends RuntimeException
 
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
+        // TODO: Handle schema errors?
         Optional<DataObject> optObj = response.optObject();
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
