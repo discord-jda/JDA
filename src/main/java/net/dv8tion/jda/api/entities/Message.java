@@ -1288,8 +1288,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emoji to remove reactions for
      *
-     * @throws UnsupportedOperationException
-     *         If this reaction happened in a private channel
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
@@ -1327,8 +1325,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link Emote} to remove reactions for
      *
-     * @throws UnsupportedOperationException
-     *         If this reaction happened in a private channel
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
