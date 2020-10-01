@@ -252,7 +252,7 @@ public class BotRateLimiter extends RateLimiter
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
                     String resetAfterHeader = headers.get(RESET_AFTER_HEADER);
                     long retryAfter = parseLong(retryAfterHeader) * 1000; // seconds precision
-                    if (resetAfterHeader != null) // if available, use bette precision
+                    if (resetAfterHeader != null) // if available, use better precision
                         retryAfter = parseDouble(resetAfterHeader); // milliseconds precision
                     // Handle global rate limit if necessary
                     if (global)
