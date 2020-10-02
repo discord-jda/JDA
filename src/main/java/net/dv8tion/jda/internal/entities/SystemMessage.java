@@ -34,7 +34,7 @@ public class SystemMessage extends ReceivedMessage
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, int flags)
     {
-        super(id, channel, type, fromWebhook, mentionsEveryone, mentionedUsers, mentionedRoles,
+        super(id, channel, type, null, fromWebhook, mentionsEveryone, mentionedUsers, mentionedRoles,
             tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, flags);
     }
 
