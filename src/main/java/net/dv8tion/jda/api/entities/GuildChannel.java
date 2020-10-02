@@ -179,6 +179,8 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     @Nonnull
     List<PermissionOverride> getRolePermissionOverrides();
 
+    boolean isSynced();
+
     /**
      * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in the specified {@link net.dv8tion.jda.api.entities.Guild Guild}.
