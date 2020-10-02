@@ -62,6 +62,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected EnumSet<Message.MentionType> allowedMentions;
     protected Set<String> mentionableUsers = new HashSet<>();
     protected Set<String> mentionableRoles = new HashSet<>();
+    protected long messageReference;
 
     public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
@@ -183,6 +184,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 .mention(message.getMentionedRoles());
         }
         return content(content).tts(message.isTTS());
+    }
+
+    @Nonnull
+    @Override
+    public MessageActionImpl referenceById(long messageId)
+    {
+        messageReference = messageId;
+        return this;
     }
 
     @Nonnull
@@ -480,6 +489,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             if (nonce != null)
                 obj.put("nonce", nonce);
         }
+        if (messageReference != 0)
+            obj.put("message_reference", messageReference);
         obj.put("tts", tts);
         if (allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
         {

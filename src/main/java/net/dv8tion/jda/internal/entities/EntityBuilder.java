@@ -1139,10 +1139,13 @@ public class EntityBuilder
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         ReceivedMessage message;
+        Message referencedMessage = null;
+        if (!jsonObject.isNull("referenced_message"))
+            referencedMessage = createMessage(jsonObject.getObject("referenced_message"), chan, false);
         switch (type)
         {
             case DEFAULT:
-                message = new ReceivedMessage(id, chan, type, fromWebhook,
+                message = new ReceivedMessage(id, chan, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
                 break;

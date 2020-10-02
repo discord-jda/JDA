@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -180,6 +181,24 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @CheckReturnValue
     MessageAction apply(@Nullable final Message message);
+
+    @Nonnull
+    @CheckReturnValue
+    MessageAction referenceById(long messageId);
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction referenceById(@Nonnull String messageId)
+    {
+        return referenceById(MiscUtil.parseSnowflake(messageId));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reference(@Nonnull Message message)
+    {
+        return referenceById(message.getIdLong());
+    }
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.

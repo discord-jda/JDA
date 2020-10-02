@@ -199,6 +199,9 @@ public interface Message extends ISnowflake, Formattable
             "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
+    @Nullable
+    Message getReferencedMessage();
+
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If no user was mentioned, this list is empty. Elements are sorted in order of appearance. This only
