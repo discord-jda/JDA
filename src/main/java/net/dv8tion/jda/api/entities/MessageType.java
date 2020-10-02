@@ -122,6 +122,8 @@ public enum MessageType
     @Nonnull
     public static MessageType fromId(int id)
     {
+        if (id == 19)
+            return DEFAULT; // we don't use the INLINE_REPLY type because its useless (just check for message reference)
         for (MessageType type : values())
         {
             if (type.id == id)
