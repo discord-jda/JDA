@@ -1141,9 +1141,14 @@ public class EntityBuilder
         ReceivedMessage message;
         Message referencedMessage = null;
         if (!jsonObject.isNull("referenced_message"))
+        {
             referencedMessage = createMessage(jsonObject.getObject("referenced_message"), chan, false);
+            if (type == MessageType.DEFAULT)
+                type = MessageType.INLINE_REPLY;
+        }
         switch (type)
         {
+            case INLINE_REPLY:
             case DEFAULT:
                 message = new ReceivedMessage(id, chan, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,

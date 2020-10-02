@@ -88,6 +88,8 @@ public enum MessageType
      */
     CHANNEL_FOLLOW_ADD(12),
 
+    INLINE_REPLY(19),
+
     /**
      * Unknown MessageType.
      */
