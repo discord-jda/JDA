@@ -38,6 +38,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -164,11 +165,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     public boolean isSynced()
     {
         if(getParent() == null)
-        {
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
-        }
         
-        return getPermissionOverrides().equals(getParent().getPermissionOverrides());
+        return Helpers.deepEqualsUnordered(getParent().getPermissionOverrides(), getPermissionOverrides());
     }
 
     @Nonnull
