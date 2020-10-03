@@ -164,7 +164,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public boolean isSynced()
     {
-        if(getParent() == null)
+        if (getParent() == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
         
         return Helpers.deepEqualsUnordered(getParent().getPermissionOverrides(), getPermissionOverrides());
