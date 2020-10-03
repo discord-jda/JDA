@@ -180,14 +180,12 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     List<PermissionOverride> getRolePermissionOverrides();
 
     /**
-     * Returns whether or not this GuildChannel is synced.
-     * <br>A GuildChannel is synced when its {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} match
-     * those of {@link #getParent() its parent category}. If the GuildChannel doesn't have a parent category this will return true.
+     * Whether or not this GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} match
+     * those of {@link #getParent() its parent category}. If the channel doesn't have a parent category this will return true.
      * 
-     * @return Whether this GuildChannel is synced with its parent category.
+     * @return A boolean representing this condition.
      */
     boolean isSynced();
-
     /**
      * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in the specified {@link net.dv8tion.jda.api.entities.Guild Guild}.
