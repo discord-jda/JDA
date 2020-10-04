@@ -33,12 +33,14 @@ import java.time.OffsetDateTime;
  */
 public class UserTypingEvent extends GenericUserEvent
 {
+    private final Member member;
     private final MessageChannel channel;
     private final OffsetDateTime timestamp;
 
-    public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp)
+    public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nullable Member member, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp)
     {
         super(api, responseNumber, user);
+        this.member = member;
         this.channel = channel;
         this.timestamp = timestamp;
     }
@@ -133,6 +135,6 @@ public class UserTypingEvent extends GenericUserEvent
     @Nullable
     public Member getMember()
     {
-        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getUser()) : null;
+        return member;
     }
 }
