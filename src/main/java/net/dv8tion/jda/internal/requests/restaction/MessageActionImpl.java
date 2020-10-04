@@ -490,7 +490,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("nonce", nonce);
         }
         if (messageReference != 0)
-            obj.put("message_reference", messageReference);
+            obj.put("message_reference", DataObject.empty()
+                    .put("message_id", messageReference)
+                    .put("channel_id", channel.getId()));
         obj.put("tts", tts);
         if (allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
         {
