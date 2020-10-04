@@ -100,7 +100,7 @@ public interface IPermissionHolder extends ISnowflake
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.api.Permission Permissions} in the Guild.
      *
      * @param  permissions
-     *         Permissions to check for.
+     *         Permissions to check for
      *
      * @throws IllegalArgumentException
      *         If null is provided
@@ -114,7 +114,7 @@ public interface IPermissionHolder extends ISnowflake
      * {@code Collection<Permission>} in the Guild.
      *
      * @param  permissions
-     *         Permissions to check for.
+     *         Permissions to check for
      *
      * @throws IllegalArgumentException
      *         If null is provided
@@ -129,9 +129,9 @@ public interface IPermissionHolder extends ISnowflake
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.api.Permission Permissions} in the specified GuildChannel.
      *
      * @param  channel
-     *         The {@link GuildChannel GuildChannel} in which to check.
+     *         The {@link GuildChannel GuildChannel} in which to check
      * @param  permissions
-     *         Permissions to check for.
+     *         Permissions to check for
      *
      * @throws IllegalArgumentException
      *         If null is provided
@@ -147,9 +147,9 @@ public interface IPermissionHolder extends ISnowflake
      * {@code Collection<Permission>} in the specified GuildChannel.
      *
      * @param  channel
-     *         The {@link GuildChannel GuildChannel} in which to check.
+     *         The {@link GuildChannel GuildChannel} in which to check
      * @param  permissions
-     *         Permissions to check for.
+     *         Permissions to check for
      *
      * @throws IllegalArgumentException
      *         If null is provided
@@ -160,10 +160,11 @@ public interface IPermissionHolder extends ISnowflake
 
     /**
      * Checks whether or not this PermissionHolder has {@link Permission#VIEW_CHANNEL VIEW_CHANNEL}
-     * and {@link Permission#VOICE_CONNECT VOICE_CONNECT} permissions in the {@link GuildChannel}.
+     * permission in the {@link GuildChannel}.
+     * <br>If provided {@link GuildChannel} is a {@link VoiceChannel}, this will also check for {@link Permission#VOICE_CONNECT VOICE_CONNECT} permission.
      *
      * @param  channel
-     *         The channel to check access for
+     *         The {@link GuildChannel GuildChannel} to check access for
      *
      * @throws IllegalArgumentException
      *         If null is provided
