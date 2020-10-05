@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -75,7 +77,12 @@ public interface MemberCachePolicy
      *
      * <p>Not recommended without {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent enabled.
      * The api will only send the guild member leave events when this intent is enabled. Without those events the members will stay in cache indefinitely.
+     *
+     * @deprecated This is no longer possible due to breaking changes by discord. Presence updates, which are used to detect when people come online, no longer have enough information to cache a member
      */
+    @Deprecated
+    @ForRemoval(deadline = "4.3.0")
+    @ReplaceWith("MemberCachePolicy.ALL")
     MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
     /**
      * Cache members who are connected to a voice channel.
