@@ -247,6 +247,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {}
 
     //PrivateChannel Events
+
+    /**
+     * @deprecated This event is no longer supported by discord
+     */
+    @Deprecated
+    @ForRemoval(deadline = "4.3.0")
     public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
     public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
@@ -548,8 +554,6 @@ public abstract class ListenerAdapter implements EventListener
             onCategoryUpdatePermissions((CategoryUpdatePermissionsEvent) event);
 
         //PrivateChannel Events
-        else if (event instanceof PrivateChannelCreateEvent)
-            onPrivateChannelCreate((PrivateChannelCreateEvent) event);
         else if (event instanceof PrivateChannelDeleteEvent)
             onPrivateChannelDelete((PrivateChannelDeleteEvent) event);
 
