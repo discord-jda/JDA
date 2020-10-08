@@ -1273,7 +1273,7 @@ public class JDABuilder
      * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for our session.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.api.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.api.entities.Activity Activity} object using
+     * <p><b>Hint:</b> You can create an {@link net.dv8tion.jda.api.entities.Activity Activity} object using
      * {@link net.dv8tion.jda.api.entities.Activity#playing(String)} or {@link net.dv8tion.jda.api.entities.Activity#streaming(String, String)}.
      *
      * @param  activity
