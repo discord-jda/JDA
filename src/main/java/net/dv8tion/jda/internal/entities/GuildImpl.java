@@ -1134,12 +1134,13 @@ public class GuildImpl implements Guild
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
+        DataObject params = DataObject.empty();
         if (!Helpers.isBlank(reason))
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+            params.put("reason", reason);
         if (delDays > 0)
-            route = route.withQueryParams("delete_message_days", Integer.toString(delDays));
+            params.put("delete_message_days", delDays);
 
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<>(getJDA(), route, params);
     }
 
     @Nonnull
