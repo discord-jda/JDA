@@ -54,27 +54,6 @@ public class SystemMessage extends ReceivedMessage
 
     @Nonnull
     @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
-    {
-        throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
-    {
-        throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> clearReactions()
-    {
-        throw new UnsupportedOperationException("Cannot clear reactions for message of this Message Type. MessageType: " + getType());
-    }
-
-    @Nonnull
-    @Override
     public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
