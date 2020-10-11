@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.utils.data.etf;
 
+import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.utils.data.SerializableData;
+
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -74,8 +77,12 @@ public class ExTermEncoder
             return packBinary(buffer, (String) value);
         if (value instanceof Map)
             return packMap(buffer, (Map<String, Object>) value);
+        if (value instanceof SerializableData)
+            return packMap(buffer, ((SerializableData) value).toData().toMap());
         if (value instanceof Collection)
             return packList(buffer, (Collection<Object>) value);
+        if (value instanceof DataArray)
+            return packList(buffer, ((DataArray) value).toList());
         if (value instanceof Byte)
             return packSmallInt(buffer, (byte) value);
         if (value instanceof Integer || value instanceof Short)

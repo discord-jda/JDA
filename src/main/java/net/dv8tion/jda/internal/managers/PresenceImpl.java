@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.managers.Presence;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
@@ -172,9 +173,9 @@ public class PresenceImpl implements Presence
         return DataObject.empty()
               .put("afk", idle)
               .put("since", System.currentTimeMillis())
-              .put("activities", activity == null
+              .put("activities", DataArray.fromCollection(activity == null // this is done so that nested DataObject is converted to a Map
                       ? Collections.emptyList()
-                      : Collections.singletonList(activity))
+                      : Collections.singletonList(activity)))
               .put("status", getStatus().getKey());
     }
 
