@@ -35,7 +35,7 @@ public enum CloseCode
     NOT_AUTHENTICATED(    4003, "You sent a payload prior to identifying."),
     AUTHENTICATION_FAILED(4004, "The account token sent with your identify payload is incorrect.", false),
     ALREADY_AUTHENTICATED(4005, "You sent more than one identify payload. Don't do that!"),
-    INVALID_SEQ(          4007, "The sent sent when resuming the session was invalid. Reconnect and start a new session."),
+    INVALID_SEQ(          4007, "The seq sent when resuming the session was invalid. Reconnect and start a new session."),
     RATE_LIMITED(         4008, "Woah nelly! You're sending payloads to us too quickly. Slow it down!"),
     SESSION_TIMEOUT(      4009, "Your session timed out. Reconnect and start a new one."),
     INVALID_SHARD(        4010, "You sent an invalid shard when identifying.", false),
