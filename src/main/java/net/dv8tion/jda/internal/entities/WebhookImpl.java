@@ -49,6 +49,8 @@ public class WebhookImpl implements Webhook
     private Member owner;
     private User user;
     private String token;
+    private ChannelReference sourceChannel;
+    private GuildReference sourceGuild;
 
     public WebhookImpl(TextChannel channel, long id, WebhookType type)
     {
@@ -116,6 +118,18 @@ public class WebhookImpl implements Webhook
     public String getUrl()
     {
         return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
+    }
+
+    @Override
+    public ChannelReference getSourceChannel()
+    {
+        return sourceChannel;
+    }
+
+    @Override
+    public GuildReference getSourceGuild()
+    {
+        return sourceGuild;
     }
 
     @Nonnull
@@ -188,6 +202,18 @@ public class WebhookImpl implements Webhook
     public WebhookImpl setUser(User user)
     {
         this.user = user;
+        return this;
+    }
+
+    public WebhookImpl setSourceGuild(GuildReference reference)
+    {
+        this.sourceGuild = reference;
+        return this;
+    }
+
+    public WebhookImpl setSourceChannel(ChannelReference reference)
+    {
+        this.sourceChannel = reference;
         return this;
     }
 

@@ -158,6 +158,25 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
     @CheckReturnValue
     WebhookAction createWebhook(@Nonnull String name);
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> follow(@Nonnull String targetChannelId);
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> follow(long targetChannelId)
+    {
+        return follow(Long.toUnsignedString(targetChannelId));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> follow(@Nonnull TextChannel targetChannel)
+    {
+        Checks.notNull(targetChannel, "Target Channel");
+        return follow(targetChannel.getId());
+    }
+
     /**
      * Bulk deletes a list of messages.
      * <b>This is not the same as calling {@link net.dv8tion.jda.api.entities.Message#delete()} in a loop.</b>

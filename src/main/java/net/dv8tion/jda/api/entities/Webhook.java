@@ -142,6 +142,11 @@ public interface Webhook extends ISnowflake, IFakeable
     @Nonnull
     String getUrl();
 
+    @Nullable
+    ChannelReference getSourceChannel();
+    @Nullable
+    GuildReference getSourceGuild();
+
     /**
      * Deletes this Webhook.
      *
@@ -214,4 +219,52 @@ public interface Webhook extends ISnowflake, IFakeable
      */
     @Nonnull
     WebhookManager getManager();
+
+    class ChannelReference implements ISnowflake
+    {
+        private final long id;
+        private final String name;
+
+        public ChannelReference(long id, String name)
+        {
+            this.id = id;
+            this.name = name;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+    }
+
+    class GuildReference implements ISnowflake
+    {
+        private final long id;
+        private final String name;
+
+        public GuildReference(long id, String name)
+        {
+            this.id = id;
+            this.name = name;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+    }
 }

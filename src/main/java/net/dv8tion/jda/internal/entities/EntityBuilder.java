@@ -1437,10 +1437,23 @@ public class EntityBuilder
             }
         }
         
-        return new WebhookImpl(channel, id, type)
+        WebhookImpl webhook = new WebhookImpl(channel, id, type)
                 .setToken(token)
                 .setOwner(owner == null ? null : channel.getGuild().getMember(owner))
                 .setUser(defaultUser);
+
+        if (!object.isNull("source_channel"))
+        {
+            DataObject source = object.getObject("source_channel");
+            webhook.setSourceChannel(new Webhook.ChannelReference(source.getUnsignedLong("id"), source.getString("name")));
+        }
+        if (!object.isNull("source_guild"))
+        {
+            DataObject source = object.getObject("source_guild");
+            webhook.setSourceGuild(new Webhook.GuildReference(source.getUnsignedLong("id"), source.getString("name")));
+        }
+
+        return webhook;
     }
 
     public Invite createInvite(DataObject object)

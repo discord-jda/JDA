@@ -119,6 +119,18 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    public RestAction<Void> follow(@Nonnull String targetChannelId)
+    {
+        Checks.notNull(targetChannelId, "Target Channel ID");
+        if (!isNews())
+            throw new IllegalStateException("Can only follow news channels!");
+        Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
+        DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
+        return new RestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
