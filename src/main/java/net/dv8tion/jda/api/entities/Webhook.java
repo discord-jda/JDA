@@ -142,8 +142,19 @@ public interface Webhook extends ISnowflake, IFakeable
     @Nonnull
     String getUrl();
 
+    /**
+     * The source channel for a Webhook of type {@link WebhookType#FOLLOWER FOLLOWER}.
+     *
+     * @return {@link ChannelReference}
+     */
     @Nullable
     ChannelReference getSourceChannel();
+
+    /**
+     * The source guild for a Webhook of type {@link WebhookType#FOLLOWER FOLLOWER}.
+     *
+     * @return {@link GuildReference}
+     */
     @Nullable
     GuildReference getSourceGuild();
 
@@ -220,6 +231,9 @@ public interface Webhook extends ISnowflake, IFakeable
     @Nonnull
     WebhookManager getManager();
 
+    /**
+     * Partial Channel which references the source channel for a follower webhook.
+     */
     class ChannelReference implements ISnowflake
     {
         private final long id;
@@ -237,6 +251,11 @@ public interface Webhook extends ISnowflake, IFakeable
             return id;
         }
 
+        /**
+         * The source channel's name
+         *
+         * @return The channel name
+         */
         @Nonnull
         public String getName()
         {
@@ -244,6 +263,9 @@ public interface Webhook extends ISnowflake, IFakeable
         }
     }
 
+    /**
+     * Partial Guild which references the source guild for a follower webhook.
+     */
     class GuildReference implements ISnowflake
     {
         private final long id;
@@ -261,6 +283,11 @@ public interface Webhook extends ISnowflake, IFakeable
             return id;
         }
 
+        /**
+         * The source guild's name
+         *
+         * @return The guild name
+         */
         @Nonnull
         public String getName()
         {
