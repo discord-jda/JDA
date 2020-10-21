@@ -140,6 +140,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_WEBHOOKS MAX_WEBHOOKS}
+     *     <br>If the channel already has reached the maximum capacity for webhooks</li>
      * </ul>
      *
      * @param  name
@@ -165,7 +168,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
-     *     <br>If the target channel doesn't exist or not visible to the currently logged in account</li>
+     *     <br>If the target channel doesn't exist or is not visible to the currently logged in account</li>
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b></li>
