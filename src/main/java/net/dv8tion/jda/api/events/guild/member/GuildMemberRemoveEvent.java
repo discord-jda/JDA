@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a user left a {@link Guild}.
+ * Indicates that a user was removed from a {@link Guild}. This includes kicks, bans, and leaves respectively.
  * <br>This can be fired for uncached members and cached members alike.
  * If the member was not cached by JDA, due to the {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
  * or disabled member chunking, then {@link #getMember()} will return {@code null}.
