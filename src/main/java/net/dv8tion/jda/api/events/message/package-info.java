@@ -24,9 +24,7 @@
  *
  * <h2>Requirements</h2>
  *
- * <h2>Requirements</h2>
- *
- * <p>The events in this package require at least one of the following intents:
+ * <p>These events require at least one of the following intents (Will not fire at all if neither is enabled):
  * <ul>
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} to work in guild text channels</li>
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
