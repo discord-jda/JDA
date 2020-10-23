@@ -30,6 +30,8 @@ import javax.annotation.Nullable;
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent.
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ *
+ * <p>The {@link net.dv8tion.jda.api.entities.Member Member} must be cached for this event to fire for the Member in question.
  */
 class GenericGuildVoiceUpdateEvent extends GenericGuildVoiceEvent implements GuildVoiceUpdateEvent
 {

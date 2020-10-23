@@ -33,6 +33,10 @@ import javax.annotation.Nonnull;
  *
  * <p>These events require the {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE VOICE_STATE} CacheFlag to be enabled, which requires
  * the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_VOICE_STATES GUILD_VOICE_STATES} intent.
+ *
+ * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
+ *
+ * <p>The {@link net.dv8tion.jda.api.entities.Member Member} must be cached for these events to fire for the Member in question.
  */
 public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
 {

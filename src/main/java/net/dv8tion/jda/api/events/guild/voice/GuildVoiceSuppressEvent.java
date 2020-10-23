@@ -33,6 +33,8 @@ import javax.annotation.Nonnull;
  *
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables that CacheFlag by default!
  *
+ * <p>The {@link net.dv8tion.jda.api.entities.Member Member} must be cached for this event to fire for the Member in question.
+ *
  * @see net.dv8tion.jda.api.entities.GuildVoiceState#isSuppressed() GuildVoiceState.isSuppressed()
  */
 public class GuildVoiceSuppressEvent extends GenericGuildVoiceEvent
