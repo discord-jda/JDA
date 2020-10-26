@@ -951,6 +951,62 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     MessageAction editMessage(@Nonnull Message newContent);
 
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull CharSequence content)
+    {
+        return getChannel().sendMessage(content).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull MessageEmbed content)
+    {
+        return getChannel().sendMessage(content).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull Message content)
+    {
+        return getChannel().sendMessage(content).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyFormat(@Nonnull String format, @Nonnull Object... args)
+    {
+        return getChannel().sendMessageFormat(format, args).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull File file)
+    {
+        return getChannel().sendFile(file).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull File data, @Nonnull String name)
+    {
+        return getChannel().sendFile(data, name).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull InputStream data, @Nonnull String name)
+    {
+        return getChannel().sendFile(data, name).reference(this);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull byte[] data, @Nonnull String name)
+    {
+        return getChannel().sendFile(data, name).reference(this);
+    }
+
     /**
      * Deletes this Message from Discord.
      * <br>If this Message was not sent by the currently logged in account, then this will fail unless the Message is from
