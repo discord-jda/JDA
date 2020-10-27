@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.handle;
 
-import gnu.trove.iterator.TLongIterator;
 import gnu.trove.iterator.TLongLongIterator;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongLongMap;
@@ -382,39 +381,11 @@ public class GuildSetupController
 
     private void tryChunking()
     {
-        if (api.useIntents())
-        {
-            // can only send a single guild id for this
-            chunkingGuilds.forEach((id) -> {
-                sendChunkRequest(id);
-                return true;
-            });
-            chunkingGuilds.clear();
-            return;
-        }
-
-        if (chunkingGuilds.size() >= 50)
-        {
-            // request chunks
-            final DataArray subset = DataArray.empty();
-            for (final TLongIterator it = chunkingGuilds.iterator(); subset.length() < 50; )
-            {
-                subset.add(it.next());
-                it.remove();
-            }
-            sendChunkRequest(subset);
-        }
-        if (incompleteCount > 0 && chunkingGuilds.size() >= incompleteCount)
-        {
-            // request last chunks
-            final DataArray array = DataArray.empty();
-            chunkingGuilds.forEach((guild) -> {
-                array.add(guild);
-                return true;
-            });
-            chunkingGuilds.clear();
-            sendChunkRequest(array);
-        }
+        chunkingGuilds.forEach((id) -> {
+            sendChunkRequest(id);
+            return true;
+        });
+        chunkingGuilds.clear();
     }
 
     private void startTimeout()
