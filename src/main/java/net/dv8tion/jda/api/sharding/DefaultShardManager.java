@@ -401,7 +401,7 @@ public class DefaultShardManager implements ShardManager
             return;
         worker = executor.submit(() ->
         {
-            while (!queue.isEmpty())
+            while (!queue.isEmpty() && !Thread.currentThread().isInterrupted())
                 processQueue();
             this.gatewayURL = null;
             synchronized (queue)
@@ -438,6 +438,14 @@ public class DefaultShardManager implements ShardManager
 
             if (api == null)
                 api = this.buildInstance(shardId);
+        }
+        catch (CompletionException e)
+        {
+            if (e.getCause() instanceof InterruptedException)
+                LOG.debug("The worker thread was interrupted");
+            else
+                LOG.error("Caught an exception in queue processing thread", e);
+            return;
         }
         catch (LoginException e)
         {
