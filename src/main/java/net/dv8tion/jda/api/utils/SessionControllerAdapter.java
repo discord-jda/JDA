@@ -96,32 +96,24 @@ public class SessionControllerAdapter implements SessionController
             @Override
             public void handleResponse(Response response, Request<ShardedGateway> request)
             {
-                try
+                if (response.isOk())
                 {
-                    if (response.isOk())
-                    {
-                        DataObject object = response.getObject();
+                    DataObject object = response.getObject();
 
-                        String url = object.getString("url");
-                        int shards = object.getInt("shards");
-                        int concurrency = object.getObject("session_start_limit").getInt("max_concurrency", 1);
+                    String url = object.getString("url");
+                    int shards = object.getInt("shards");
+                    int concurrency = object.getObject("session_start_limit").getInt("max_concurrency", 1);
 
-                        request.onSuccess(new ShardedGateway(url, shards, concurrency));
-                    }
-                    else if (response.code == 401)
-                    {
-                        api.shutdownNow();
-                        throw new LoginException("The provided token is invalid!");
-                    }
-                    else
-                    {
-                        request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                                response.toString()));
-                    }
+                    request.onSuccess(new ShardedGateway(url, shards, concurrency));
                 }
-                catch (Exception e)
+                else if (response.code == 401)
                 {
-                    request.onFailure(e);
+                    api.shutdownNow();
+                    request.onFailure(new LoginException("The provided token is invalid!"));
+                }
+                else
+                {
+                    request.onFailure(response);
                 }
             }
         }.priority().complete();
