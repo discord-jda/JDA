@@ -333,7 +333,52 @@ public class MessageReaction
     public RestAction<Void> removeReaction(@Nonnull User user)
     {
         Checks.notNull(user, "User");
-        boolean self = user.equals(getJDA().getSelfUser());
+        return removeReaction(user.getId());
+    }
+
+    /**
+     * Removes this Reaction from the Message.
+     * <br>This will remove the reaction of the {@link net.dv8tion.jda.api.entities.User User}
+     * with the id provided.
+     *
+     * <p>If the provided user did not react with this Reaction this does nothing.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message this reaction was attached to got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel this reaction was used in got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the channel/guild</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The user id of which to remove the reaction
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code userId} is null.
+     * @throws IllegalArgumentException
+     *         If the provided {@code userId} is not a valid snowflake
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the provided user is not us and we do not have permission to
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE manage messages}
+     *         in the channel this reaction was used in
+     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     *         If the message is from another user in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     *         Nothing is returned on success
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> removeReaction(@Nonnull String userId)
+    {
+        Checks.notNull(userId, "userId");
+        Checks.isSnowflake(userId, "userId");
+        boolean self = userId.equals(getJDA().getSelfUser().getId());
         if (!self)
         {
             if (channel.getType() == ChannelType.TEXT)
@@ -349,9 +394,52 @@ public class MessageReaction
         }
 
         String code = getReactionCode();
-        String target = self ? "@me" : user.getId();
+        String target = self ? "@me" : userId;
         Route.CompiledRoute route = Route.Messages.REMOVE_REACTION.compile(channel.getId(), getMessageId(), code, target);
         return new RestActionImpl<>(getJDA(), route);
+    }
+
+    /**
+     * Removes this Reaction from the Message.
+     * <br>This will remove the reaction of the {@link net.dv8tion.jda.api.entities.User User}
+     * with the id provided.
+     *
+     * <p>If the provided user did not react with this Reaction this does nothing.
+     *
+     * <p>Possible ErrorResponses include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>If the message this reaction was attached to got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel this reaction was used in got deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>If we were removed from the channel/guild</li>
+     * </ul>
+     *
+     * @param  userId
+     *         The user id of which to remove the reaction
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided {@code userId} is null.
+     * @throws IllegalArgumentException
+     *         If the provided {@code userId} is not a valid snowflake
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the provided user is not us and we do not have permission to
+     *         {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE manage messages}
+     *         in the channel this reaction was used in
+     * @throws net.dv8tion.jda.api.exceptions.PermissionException
+     *         If the message is from another user in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     *         Nothing is returned on success
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> removeReaction(long userId)
+    {
+        return removeReaction(Long.toUnsignedString(userId));
     }
 
     /**
