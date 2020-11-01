@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  */
 public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
 {

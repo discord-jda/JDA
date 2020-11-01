@@ -29,7 +29,7 @@ import javax.annotation.Nonnull;
  *
  * <h2>Requirements</h2>
  *
- * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled.
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled.
  */
 public abstract class GenericPrivateMessageEvent extends Event
 {
