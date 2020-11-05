@@ -481,7 +481,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws java.lang.IllegalArgumentException
      *         If the provided message is {@code null} or the provided {@link net.dv8tion.jda.api.entities.Message Message}
-     *         contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
+     *         contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
      *         that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
