@@ -723,17 +723,10 @@ public class JDAImpl implements JDA
 
     private void closeAudioConnections()
     {
-        List<AudioManagerImpl> managers;
-        AbstractCacheView<AudioManager> view = getAudioManagersView();
-        try (UnlockHook hook = view.writeLock())
-        {
-            managers = view.stream()
-               .map(AudioManagerImpl.class::cast)
-               .collect(Collectors.toList());
-            view.clear();
-        }
-
-        managers.forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
+        getAudioManagerCache()
+            .stream()
+            .map(AudioManagerImpl.class::cast)
+            .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
     }
 
     @Override
