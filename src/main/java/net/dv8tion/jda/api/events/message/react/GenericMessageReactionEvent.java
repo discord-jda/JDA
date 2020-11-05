@@ -31,6 +31,14 @@ import javax.annotation.Nullable;
  * <br>Every MessageReactionEvent is derived from this event and can be casted.
  *
  * <p>Can be used to detect both remove and add events.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>These events require at least one of the following intents (Will not fire at all if neither is enabled):
+ * <ul>
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} to work in guild text channels</li>
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
+ * </ul>
  */
 public class GenericMessageReactionEvent extends GenericMessageEvent
 {
