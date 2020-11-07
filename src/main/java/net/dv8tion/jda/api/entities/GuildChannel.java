@@ -183,7 +183,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * Whether or not this GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} match
      * those of {@link #getParent() its parent category}. If the channel doesn't have a parent category this will return true.
      * 
-     * @return True, if this channel is synced with its parents category
+     * @return True, if this channel is synced with its parent category
      */
     boolean isSynced();
     /**
