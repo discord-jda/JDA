@@ -140,7 +140,9 @@ public enum GatewayIntent
     /**
      * Typing events in private channels.
      */
-    DIRECT_MESSAGE_TYPING(14);
+    DIRECT_MESSAGE_TYPING(14),
+//    INTERACTION_CREATE(15)
+    ;
 
     /**
      * Bitmask with all intents enabled.

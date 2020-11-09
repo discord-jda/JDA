@@ -457,7 +457,7 @@ class AudioWebSocket extends WebSocketAdapter
                 for (int i = 0; i < keyArray.length(); i++)
                     secretKey[i] = (byte) keyArray.getInt(i);
 
-                LOG.trace("Audio connection has finished connecting!");
+                LOG.debug("Audio connection has finished connecting!");
                 ready = true;
                 changeStatus(ConnectionStatus.CONNECTED);
                 break;

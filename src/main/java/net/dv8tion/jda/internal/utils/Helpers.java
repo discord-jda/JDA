@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -28,6 +29,14 @@ import java.util.Objects;
  */
 public final class Helpers
 {
+    @SuppressWarnings("rawtypes")
+    private static final Consumer EMPTY_CONSUMER = (v) -> {};
+
+    @SuppressWarnings("unchecked")
+    public static <T> Consumer<T> emptyConsumer()
+    {
+        return (Consumer<T>) EMPTY_CONSUMER;
+    }
 
     // ## StringUtils ##
 

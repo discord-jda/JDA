@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
@@ -715,6 +717,21 @@ public class DataObject implements SerializableData
         try
         {
             return mapper.writeValueAsString(data);
+        }
+        catch (JsonProcessingException e)
+        {
+            throw new ParsingException(e);
+        }
+    }
+
+    public String toPrettyString()
+    {
+        DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);
+        DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
+        printer.withObjectIndenter(indent).withArrayIndenter(indent);
+        try
+        {
+            return mapper.writer(printer).writeValueAsString(data);
         }
         catch (JsonProcessingException e)
         {

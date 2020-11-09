@@ -31,6 +31,14 @@ import javax.annotation.Nullable;
  */
 public interface SelfUser extends User
 {
+    long getApplicationIdLong();
+
+    @Nonnull
+    default String getApplicationId()
+    {
+        return Long.toUnsignedString(getApplicationIdLong());
+    }
+
 
     /**
      * The status of this account's verification.

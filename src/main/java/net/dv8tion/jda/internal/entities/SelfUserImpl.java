@@ -36,6 +36,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     private boolean mfaEnabled;
 
     //Client only
+    private long applicationId;
     private String email;
     private String phoneNumber;
     private boolean mobile;
@@ -44,6 +45,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public SelfUserImpl(long id, JDAImpl api)
     {
         super(id, api);
+        this.applicationId = id; // configured later by ready event
     }
 
     @Override
@@ -63,6 +65,12 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public RestAction<PrivateChannel> openPrivateChannel()
     {
         throw new UnsupportedOperationException("You cannot open a PrivateChannel with yourself (SelfUser)");
+    }
+
+    @Override
+    public long getApplicationIdLong()
+    {
+        return applicationId;
     }
 
     @Override
@@ -139,6 +147,12 @@ public class SelfUserImpl extends UserImpl implements SelfUser
         return this;
     }
 
+    public SelfUserImpl setApplicationId(long id)
+    {
+        this.applicationId = id;
+        return this;
+    }
+
     public static SelfUserImpl copyOf(SelfUserImpl other, JDAImpl jda)
     {
         SelfUserImpl selfUser = new SelfUserImpl(other.id, jda);
@@ -152,6 +166,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
                 .setEmail(other.email)
                 .setPhoneNumber(other.phoneNumber)
                 .setMobile(other.mobile)
-                .setNitro(other.nitro);
+                .setNitro(other.nitro)
+                .setApplicationId(other.applicationId);
     }
 }

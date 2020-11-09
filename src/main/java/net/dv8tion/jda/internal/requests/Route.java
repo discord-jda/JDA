@@ -57,6 +57,22 @@ public class Route
         public static final Route DELETE_AUTHORIZED_APPLICATION = new Route(DELETE, "oauth2/tokens/{auth_id}");
     }
 
+    public static class Interactions
+    {
+        public static final Route GET_COMMANDS =   new Route(GET,  "applications/{application_id}/commands");
+        public static final Route CREATE_COMMAND = new Route(POST, "applications/{application_id}/commands");
+        public static final Route EDIT_COMMAND =   new Route(GET,  "applications/{application_id}/commands/{command_id}");
+        public static final Route DELETE_COMMAND = new Route(GET,  "applications/{application_id}/commands/{command_id}");
+
+        public static final Route GET_GUILD_COMMANDS =   new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands");
+        public static final Route CREATE_GUILD_COMMAND = new Route(POST, "applications/{application_id}/guilds/{guild_id}/commands");
+        public static final Route EDIT_GUILD_COMMAND =   new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+        public static final Route DELETE_GUILD_COMMAND = new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+
+        public static final Route CALLBACK = new Route(POST, "interactions/{interaction_id}/{interaction_token}/callback");
+        public static final Route CALLBACK_UPDATE = new Route(PATCH, "webhooks/{application_id}/{interaction_token}/messages/@original");
+    }
+
     public static class Self
     {
         public static final Route GET_SELF =               new Route(GET,    "users/@me");
@@ -155,9 +171,11 @@ public class Route
         public static final Route MODIFY_TOKEN_WEBHOOK = new Route(PATCH,  "webhooks/{webhook_id}/{token}");
 
         // Separate
-        public static final Route EXECUTE_WEBHOOK        = new Route(POST, "webhooks/{webhook_id}/{token}");
-        public static final Route EXECUTE_WEBHOOK_SLACK  = new Route(POST, "webhooks/{webhook_id}/{token}/slack");
-        public static final Route EXECUTE_WEBHOOK_GITHUB = new Route(POST, "webhooks/{webhook_id}/{token}/github");
+        public static final Route EXECUTE_WEBHOOK        = new Route(POST,   "webhooks/{webhook_id}/{token}");
+        public static final Route EXECUTE_WEBHOOK_EDIT   = new Route(PATCH,  "webhooks/{webhook_id}/{token}/messages/{message_id}");
+        public static final Route EXECUTE_WEBHOOK_DELETE = new Route(DELETE, "webhooks/{webhook_id}/{token}/messages/{message_id}");
+        public static final Route EXECUTE_WEBHOOK_SLACK  = new Route(POST,   "webhooks/{webhook_id}/{token}/slack");
+        public static final Route EXECUTE_WEBHOOK_GITHUB = new Route(POST,   "webhooks/{webhook_id}/{token}/github");
     }
 
     public static class Roles
