@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.GatewayEncoding;
@@ -73,7 +72,10 @@ import org.slf4j.MDC;
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -345,32 +347,18 @@ public class JDAImpl implements JDA
                 else if (response.code == 401)
                     request.onSuccess(null);
                 else
-                    request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                            response.toString()));
+                    request.onFailure(response);
             }
         }.priority();
 
-        try
+        DataObject userResponse = login.complete();
+        if (userResponse != null)
         {
-            DataObject userResponse = login.complete();
-            if (userResponse != null)
-            {
-                getEntityBuilder().createSelfUser(userResponse);
-                return;
-            }
-            shutdownNow();
-            throw new LoginException("The provided token is invalid!");
+            getEntityBuilder().createSelfUser(userResponse);
+            return;
         }
-        catch (RuntimeException | Error e)
-        {
-            shutdownNow();
-            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-            Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
-            if (ex instanceof LoginException)
-                throw new LoginException(ex.getMessage());
-            else
-                throw e;
-        }
+        shutdownNow();
+        throw new LoginException("The provided token is invalid!");
     }
 
     public AuthorizationConfig getAuthorizationConfig()
@@ -735,17 +723,10 @@ public class JDAImpl implements JDA
 
     private void closeAudioConnections()
     {
-        List<AudioManagerImpl> managers;
-        AbstractCacheView<AudioManager> view = getAudioManagersView();
-        try (UnlockHook hook = view.writeLock())
-        {
-            managers = view.stream()
-               .map(AudioManagerImpl.class::cast)
-               .collect(Collectors.toList());
-            view.clear();
-        }
-
-        managers.forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
+        getAudioManagerCache()
+            .stream()
+            .map(AudioManagerImpl.class::cast)
+            .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
     }
 
     @Override

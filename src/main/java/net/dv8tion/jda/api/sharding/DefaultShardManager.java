@@ -274,11 +274,6 @@ public class DefaultShardManager implements ShardManager
                 this.queue.remove(shardId);
             }
         }
-        catch (final InterruptedException e)
-        {
-            LOG.error("Interrupted Startup", e);
-            throw new IllegalStateException(e);
-        }
         catch (final Exception e)
         {
             if (jda != null)
@@ -348,13 +343,17 @@ public class DefaultShardManager implements ShardManager
         if (this.shards != null)
         {
             executor.execute(() -> {
-                this.shards.forEach(jda ->
+                synchronized (queue) // this makes sure we also get shards that were starting when shutdown is called
                 {
-                    if (shardingConfig.isUseShutdownNow())
-                        jda.shutdownNow();
-                    else
-                        jda.shutdown();
-                });
+                    this.shards.forEach(jda ->
+                    {
+                        if (shardingConfig.isUseShutdownNow())
+                            jda.shutdownNow();
+                        else
+                            jda.shutdown();
+                    });
+                    queue.clear();
+                }
                 this.executor.shutdown();
             });
         }
@@ -396,11 +395,13 @@ public class DefaultShardManager implements ShardManager
 
     protected void runQueueWorker()
     {
+        if (shutdown.get())
+            throw new RejectedExecutionException("ShardManager is already shutdown!");
         if (worker != null)
             return;
         worker = executor.submit(() ->
         {
-            while (!queue.isEmpty())
+            while (!queue.isEmpty() && !Thread.currentThread().isInterrupted())
                 processQueue();
             this.gatewayURL = null;
             synchronized (queue)
@@ -438,10 +439,12 @@ public class DefaultShardManager implements ShardManager
             if (api == null)
                 api = this.buildInstance(shardId);
         }
-        catch (InterruptedException e)
+        catch (CompletionException e)
         {
-            //caused by shutdown
-            LOG.debug("Queue has been interrupted", e);
+            if (e.getCause() instanceof InterruptedException)
+                LOG.debug("The worker thread was interrupted");
+            else
+                LOG.error("Caught an exception in queue processing thread", e);
             return;
         }
         catch (LoginException e)
@@ -468,7 +471,7 @@ public class DefaultShardManager implements ShardManager
         }
     }
 
-    protected JDAImpl buildInstance(final int shardId) throws LoginException, InterruptedException
+    protected JDAImpl buildInstance(final int shardId) throws LoginException
     {
         OkHttpClient httpClient = sessionConfig.getHttpClient();
         if (httpClient == null)
@@ -561,16 +564,11 @@ public class DefaultShardManager implements ShardManager
                     }
                 }
             }
-            catch (RuntimeException e)
+            catch (CompletionException e)
             {
-                if (e.getCause() instanceof InterruptedException)
-                    throw (InterruptedException) e.getCause();
-                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-                Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
-                if (ex instanceof LoginException)
-                    throw new LoginException(ex.getMessage());
-                else
-                    throw e;
+                if (e.getCause() instanceof LoginException)
+                    throw (LoginException) e.getCause(); // complete() can't throw this because its a checked-exception so we have to unwrap it first
+                throw e;
             }
         }
 

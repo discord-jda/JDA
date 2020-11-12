@@ -2268,6 +2268,8 @@ public class  DefaultShardManagerBuilder
      *          If the provided token is invalid.
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
+     * @throws  net.dv8tion.jda.api.exceptions.ErrorResponseException
+     *          If some other HTTP error occurred.
      *
      * @return A {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
