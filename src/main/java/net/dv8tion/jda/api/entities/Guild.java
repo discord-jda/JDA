@@ -896,7 +896,7 @@ public interface Guild extends ISnowflake
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same effective name as the one provided.
-     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}}.
+     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
      *
      * <p>This will only check cached members!
