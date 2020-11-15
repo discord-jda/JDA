@@ -67,7 +67,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     /**
      * Parent {@link net.dv8tion.jda.api.entities.Category Category} of this
      * GuildChannel. Channels don't need to have a parent Category.
-     * <br>Note that an {@link net.dv8tion.jda.api.entities.Category Category} will
+     * <br>Note that a {@link net.dv8tion.jda.api.entities.Category Category} will
      * always return {@code null} for this method as nested categories are not supported.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for this GuildChannel

@@ -29,7 +29,7 @@
  *     <li>{@link net.dv8tion.jda.api.MessageBuilder MessageBuilder}
  *     <br>Used to build a {@link net.dv8tion.jda.api.entities.Message Message} which can be used to
  *         send a message to a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel} together with
- *         an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} and Text-To-Speech!</li>
+ *         a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} and Text-To-Speech!</li>
  *
  *     <li>{@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder}
  *     <br>Used to build a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
