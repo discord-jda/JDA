@@ -88,6 +88,9 @@ public enum MessageType
      */
     CHANNEL_FOLLOW_ADD(12),
 
+    /**
+     * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
+     */
     INLINE_REPLY(19),
 
     /**
