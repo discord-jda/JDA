@@ -64,7 +64,6 @@ import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -350,7 +349,7 @@ public class GuildImpl implements Guild
                 {
                     webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
-                catch (UncheckedIOException | NullPointerException e)
+                catch (Exception e)
                 {
                     JDAImpl.LOG.error("Error creating webhook from json", e);
                 }

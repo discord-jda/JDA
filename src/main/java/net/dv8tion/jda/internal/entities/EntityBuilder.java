@@ -1401,8 +1401,8 @@ public class EntityBuilder
     public WebhookImpl createWebhook(DataObject object)
     {
         final long id = object.getLong("id");
-        final long guildId = object.getLong("guild_id");
-        final long channelId = object.getLong("channel_id");
+        final long guildId = object.getUnsignedLong("guild_id");
+        final long channelId = object.getUnsignedLong("channel_id");
         final String token = object.getString("token", null);
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
