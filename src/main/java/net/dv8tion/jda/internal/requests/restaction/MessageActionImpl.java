@@ -59,6 +59,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
+    protected boolean mentionRepliedUser = true;
     protected EnumSet<Message.MentionType> allowedMentions;
     protected Set<String> mentionableUsers = new HashSet<>();
     protected Set<String> mentionableRoles = new HashSet<>();
@@ -191,6 +192,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl referenceById(long messageId)
     {
         messageReference = messageId;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction mentionRepliedUser(boolean mention)
+    {
+        mentionRepliedUser = mention;
         return this;
     }
 
@@ -490,14 +499,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("nonce", nonce);
         }
         if (messageReference != 0)
-            obj.put("message_reference", DataObject.empty()
-                    .put("message_id", messageReference)
-                    .put("channel_id", channel.getId()));
-        obj.put("tts", tts);
-        if (allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
         {
-            obj.put("allowed_mentions", getAllowedMentionsObj());
+            obj.put("message_reference", DataObject.empty()
+                .put("message_id", messageReference)
+                .put("channel_id", channel.getId()));
         }
+        obj.put("tts", tts);
+        if (messageReference != 0L || allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
+            obj.put("allowed_mentions", getAllowedMentionsObj());
         return obj;
     }
 
@@ -526,6 +535,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             parsable.remove(Message.MentionType.ROLE.getParseKey());
             allowedMentionsObj.put("roles", DataArray.fromCollection(mentionableRoles));
         }
+        if (messageReference != 0L)
+            allowedMentionsObj.put("replied_user", mentionRepliedUser);
         return allowedMentionsObj.put("parse", parsable);
     }
 

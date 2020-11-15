@@ -109,7 +109,6 @@ public abstract class AbstractMessage implements Message
     @Override
     public Message getReferencedMessage()
     {
-        unsupported();
         return null;
     }
 

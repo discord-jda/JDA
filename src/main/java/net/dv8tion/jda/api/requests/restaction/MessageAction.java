@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -182,10 +183,36 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @CheckReturnValue
     MessageAction apply(@Nullable final Message message);
 
+    /**
+     * Make the message a reply to the referenced message.
+     * <br>You can only reply to messages from the same channel!
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     *
+     * @param  messageId
+     *         The target message
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     MessageAction referenceById(long messageId);
 
+    /**
+     * Make the message a reply to the referenced message.
+     * <br>You can only reply to messages from the same channel!
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages (such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar).
+     *
+     * @param  messageId
+     *         The target message
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     default MessageAction referenceById(@Nonnull String messageId)
@@ -193,12 +220,42 @@ public interface MessageAction extends RestAction<Message>, Appendable
         return referenceById(MiscUtil.parseSnowflake(messageId));
     }
 
+    /**
+     * Make the message a reply to the referenced message.
+     * <br>You can only reply to messages from the same channel!
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     *
+     * @param  message
+     *         The target message
+     *
+     * @throws IllegalArgumentException
+     *         If the provided message is null
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     default MessageAction reference(@Nonnull Message message)
     {
+        Checks.notNull(message, "Message");
         return referenceById(message.getIdLong());
     }
+
+    /**
+     * Whether to mention the used, when replying to a message.
+     * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
+     *
+     * @param  mention
+     *         True, to mention the author if the referenced message
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction mentionRepliedUser(boolean mention);
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.
