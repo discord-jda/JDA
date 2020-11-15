@@ -45,7 +45,7 @@ import java.util.stream.StreamSupport;
  *   * Retrieves messages until the specified limit is reached. The messages will be limited after being filtered by the user.
  *   * If the user hasn't sent enough messages this will go through all messages so it is recommended to add an additional end condition.
  *   *&#47;
- * public static{@literal List<Message>} getMessagesByUser(MessageChannel channel, User user, int limit)
+ * public static {@literal List<Message>} getMessagesByUser(MessageChannel channel, User user, int limit)
  * {
  *     <u>MessagePaginationAction</u> action = channel.<u>getIterableHistory</u>();
  *     Stream{@literal <Message>} messageStream = action.stream()
