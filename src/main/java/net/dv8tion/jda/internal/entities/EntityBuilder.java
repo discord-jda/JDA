@@ -1168,10 +1168,6 @@ public class EntityBuilder
 
         GuildImpl guild = (GuildImpl) message.getGuild();
 
-        // Don't do more computations when members are loaded already
-        if (guild.isLoaded())
-            return message;
-
         // Load users/members from message object through mentions
         List<User> mentionedUsersList = new ArrayList<>();
         List<Member> mentionedMembersList = new ArrayList<>();
