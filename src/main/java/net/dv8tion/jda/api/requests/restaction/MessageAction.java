@@ -186,6 +186,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
     /**
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
+     * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
      *
@@ -201,6 +202,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
     /**
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
+     * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
      * You cannot reply to system messages (such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar).
@@ -223,6 +225,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
     /**
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
+     * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
      *

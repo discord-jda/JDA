@@ -985,7 +985,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      *
-     * <p>For further info, see {@link MessageChannel#sendMessage(CharSequence)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendMessage(MessageEmbed)} and {@link MessageAction#reference(Message)}.
      *
      * @param  content
      *         The content of the reply message
@@ -1004,7 +1004,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      *
-     * <p>For further info, see {@link MessageChannel#sendMessage(CharSequence)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendMessage(Message)} and {@link MessageAction#reference(Message)}.
      *
      * @param  content
      *         The content of the reply message
@@ -1023,7 +1023,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This is identical to {@code message.getChannel().sendMessageFormat(content, args).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      *
-     * <p>For further info, see {@link MessageChannel#sendMessage(CharSequence)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendMessageFormat(String, Object...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  format
      *         The string that should be formatted, if this is null or empty the content of the Message would be empty and cause a builder exception.
@@ -1065,7 +1065,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      *
-     * <p>For further info, see {@link MessageChannel#sendFile(File, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendFile(File, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  data
      *         The data to upload to the channel in the reply
@@ -1088,7 +1088,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      *
-     * <p>For further info, see {@link MessageChannel#sendFile(File, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendFile(InputStream, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  data
      *         The data to upload to the channel in the reply
@@ -1111,7 +1111,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
      *
-     * <p>For further info, see {@link MessageChannel#sendFile(File, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendFile(byte[], String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  data
      *         The data to upload to the channel in the reply
