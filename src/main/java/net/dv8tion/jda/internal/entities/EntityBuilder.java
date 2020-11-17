@@ -1163,10 +1163,7 @@ public class EntityBuilder
                 break;
         }
 
-        if (!message.isFromGuild())
-            return message;
-
-        GuildImpl guild = (GuildImpl) message.getGuild();
+        GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
 
         // Load users/members from message object through mentions
         List<User> mentionedUsersList = new ArrayList<>();
@@ -1176,14 +1173,17 @@ public class EntityBuilder
         for (int i = 0; i < userMentions.length(); i++)
         {
             DataObject mentionJson = userMentions.getObject(i);
-            if (mentionJson.isNull("member"))
+            if (guild == null || mentionJson.isNull("member"))
             {
                 // Can't load user without member context so fake them if possible
                 User mentionedUser = createUser(mentionJson);
                 mentionedUsersList.add(mentionedUser);
-                Member mentionedMember = guild.getMember(mentionedUser);
-                if (mentionedMember != null)
-                    mentionedMembersList.add(mentionedMember);
+                if (guild != null)
+                {
+                    Member mentionedMember = guild.getMember(mentionedUser);
+                    if (mentionedMember != null)
+                        mentionedMembersList.add(mentionedMember);
+                }
                 continue;
             }
 
@@ -1196,8 +1196,7 @@ public class EntityBuilder
             mentionedUsersList.add(mentionedMember.getUser());
         }
 
-        if (!mentionedUsersList.isEmpty())
-            message.setMentions(mentionedUsersList, mentionedMembersList);
+        message.setMentions(mentionedUsersList, mentionedMembersList);
         return message;
     }
 
