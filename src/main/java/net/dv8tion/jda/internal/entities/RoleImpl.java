@@ -27,6 +27,8 @@ import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.RoleManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -40,6 +42,7 @@ import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class RoleImpl implements Role
@@ -51,6 +54,7 @@ public class RoleImpl implements Role
     private final ReentrantLock mngLock = new ReentrantLock();
     private volatile RoleManager manager;
 
+    private RoleTagsImpl tags;
     private String name;
     private boolean managed;
     private boolean hoisted;
@@ -64,6 +68,7 @@ public class RoleImpl implements Role
         this.id = id;
         this.api =(JDAImpl) guild.getJDA();
         this.guild = guild;
+        this.tags = api.isCacheFlagSet(CacheFlag.ROLE_TAGS) ? new RoleTagsImpl() : null;
     }
 
     @Override
@@ -280,6 +285,13 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
+    public RoleTags getTags()
+    {
+        return tags == null ? RoleTagsImpl.EMPTY : tags;
+    }
+
+    @Nonnull
+    @Override
     public String getAsMention()
     {
         return isPublicRole() ? "@everyone" : "<@&" + getId() + '>';
@@ -382,5 +394,90 @@ public class RoleImpl implements Role
         roleCache.clearCachedLists();
         this.rawPosition = rawPosition;
         return this;
+    }
+
+    public RoleImpl setTags(DataObject tags)
+    {
+        if (this.tags == null)
+            return this;
+        this.tags = new RoleTagsImpl(tags);
+        return this;
+    }
+
+    public static class RoleTagsImpl implements RoleTags
+    {
+        public static final RoleTags EMPTY = new RoleTagsImpl();
+        private final long botId;
+        private final long integrationId;
+        private final boolean premiumSubscriber;
+
+        public RoleTagsImpl()
+        {
+            this.botId = 0L;
+            this.integrationId = 0L;
+            this.premiumSubscriber = false;
+        }
+
+        public RoleTagsImpl(DataObject tags)
+        {
+            this.botId = tags.hasKey("bot_id") ? tags.getUnsignedLong("bot_id") : 0L;
+            this.integrationId = tags.hasKey("integration_id") ? tags.getUnsignedLong("integration_id") : 0L;
+            this.premiumSubscriber = tags.hasKey("premium_subscriber");
+        }
+
+        @Override
+        public boolean isBot()
+        {
+            return botId != 0;
+        }
+
+        @Override
+        public long getBotIdLong()
+        {
+            return botId;
+        }
+
+        @Override
+        public boolean isBoost()
+        {
+            return premiumSubscriber;
+        }
+
+        @Override
+        public boolean isIntegration()
+        {
+            return integrationId != 0;
+        }
+
+        @Override
+        public long getIntegrationIdLong()
+        {
+            return integrationId;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(botId, integrationId, premiumSubscriber);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this)
+                return true;
+            if (!(obj instanceof RoleTagsImpl))
+                return false;
+            RoleTagsImpl other = (RoleTagsImpl) obj;
+            return botId == other.botId
+                && integrationId == other.integrationId
+                && premiumSubscriber == other.premiumSubscriber;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "RoleTags(bot=" + getBotId() + ",integration=" + getIntegrationId() + ",boost=" + isBoost() + ")";
+        }
     }
 }

@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.utils.cache;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nullable;
@@ -58,6 +59,10 @@ public enum CacheFlag
      * Enables cache for {@link GuildChannel#getMemberPermissionOverrides()}
      */
     MEMBER_OVERRIDES(null),
+    /**
+     * Enables cache for {@link Role#getTags()}
+     */
+    ROLE_TAGS(null),
     ;
     private final GatewayIntent requiredIntent;
 
