@@ -125,6 +125,33 @@ public interface MessageAction extends RestAction<Message>, Appendable
         return MessageActionImpl.getDefaultMentions();
     }
 
+    /**
+     * Sets the default value for {@link #mentionRepliedUser(boolean)}
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @param mention
+     *        True, if replies should mention by default
+     */
+    static void setDefaultMentionRepliedUser(boolean mention)
+    {
+        MessageActionImpl.setDefaultMentionRepliedUser(mention);
+    }
+
+    /**
+     * Returns the default mention behavior for replies.
+     * <br>If this is {@code true} then all replies will mention the author of the target message by default.
+     * You can specify this individually with {@link #mentionRepliedUser(boolean)} for each message.
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @return True, if replies mention by default
+     */
+    static boolean isDefaultMentionRepliedUser()
+    {
+        return MessageActionImpl.isDefaultMentionRepliedUser();
+    }
+
     @Nonnull
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
@@ -250,6 +277,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
     /**
      * Whether to mention the used, when replying to a message.
      * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
+     *
+     * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
      *
      * @param  mention
      *         True, to mention the author if the referenced message

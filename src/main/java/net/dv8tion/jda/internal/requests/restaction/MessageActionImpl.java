@@ -52,6 +52,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected static EnumSet<Message.MentionType> defaultMentions = EnumSet.allOf(Message.MentionType.class);
+    protected static boolean defaultMentionRepliedUser = true;
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
@@ -59,7 +60,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
-    protected boolean mentionRepliedUser = true;
+    protected boolean mentionRepliedUser = defaultMentionRepliedUser;
     protected EnumSet<Message.MentionType> allowedMentions;
     protected Set<String> mentionableUsers = new HashSet<>();
     protected Set<String> mentionableRoles = new HashSet<>();
@@ -76,6 +77,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return defaultMentions.clone();
+    }
+
+    public static void setDefaultMentionRepliedUser(boolean mention)
+    {
+        defaultMentionRepliedUser = mention;
+    }
+
+    public static boolean isDefaultMentionRepliedUser()
+    {
+        return defaultMentionRepliedUser;
     }
 
     public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel)
@@ -505,7 +516,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 .put("channel_id", channel.getId()));
         }
         obj.put("tts", tts);
-        if (messageReference != 0L || allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
+        if ((messageReference != 0L && !mentionRepliedUser) || allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
             obj.put("allowed_mentions", getAllowedMentionsObj());
         return obj;
     }
