@@ -469,7 +469,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
             builder.addFormDataPart("file" + index++, entry.getKey(), body);
         }
-        if (!isEmpty())
+        if (messageReference != 0L || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
         // clear remaining resources, they will be closed after being sent
         files.clear();
