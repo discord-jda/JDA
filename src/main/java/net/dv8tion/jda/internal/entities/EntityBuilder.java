@@ -1140,10 +1140,18 @@ public class EntityBuilder
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         ReceivedMessage message;
+        Message referencedMessage = null;
+        if (!jsonObject.isNull("referenced_message"))
+        {
+            referencedMessage = createMessage(jsonObject.getObject("referenced_message"), chan, false);
+            if (type == MessageType.DEFAULT)
+                type = MessageType.INLINE_REPLY;
+        }
         switch (type)
         {
+            case INLINE_REPLY:
             case DEFAULT:
-                message = new ReceivedMessage(id, chan, type, fromWebhook,
+                message = new ReceivedMessage(id, chan, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
                 break;
@@ -1156,14 +1164,7 @@ public class EntityBuilder
                 break;
         }
 
-        if (!message.isFromGuild())
-            return message;
-
-        GuildImpl guild = (GuildImpl) message.getGuild();
-
-        // Don't do more computations when members are loaded already
-        if (guild.isLoaded())
-            return message;
+        GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
 
         // Load users/members from message object through mentions
         List<User> mentionedUsersList = new ArrayList<>();
@@ -1173,14 +1174,17 @@ public class EntityBuilder
         for (int i = 0; i < userMentions.length(); i++)
         {
             DataObject mentionJson = userMentions.getObject(i);
-            if (mentionJson.isNull("member"))
+            if (guild == null || mentionJson.isNull("member"))
             {
                 // Can't load user without member context so fake them if possible
                 User mentionedUser = createUser(mentionJson);
                 mentionedUsersList.add(mentionedUser);
-                Member mentionedMember = guild.getMember(mentionedUser);
-                if (mentionedMember != null)
-                    mentionedMembersList.add(mentionedMember);
+                if (guild != null)
+                {
+                    Member mentionedMember = guild.getMember(mentionedUser);
+                    if (mentionedMember != null)
+                        mentionedMembersList.add(mentionedMember);
+                }
                 continue;
             }
 
@@ -1193,8 +1197,7 @@ public class EntityBuilder
             mentionedUsersList.add(mentionedMember.getUser());
         }
 
-        if (!mentionedUsersList.isEmpty())
-            message.setMentions(mentionedUsersList, mentionedMembersList);
+        message.setMentions(mentionedUsersList, mentionedMembersList);
         return message;
     }
 

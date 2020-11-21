@@ -16,12 +16,14 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -123,6 +125,33 @@ public interface MessageAction extends RestAction<Message>, Appendable
         return MessageActionImpl.getDefaultMentions();
     }
 
+    /**
+     * Sets the default value for {@link #mentionRepliedUser(boolean)}
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @param mention
+     *        True, if replies should mention by default
+     */
+    static void setDefaultMentionRepliedUser(boolean mention)
+    {
+        MessageActionImpl.setDefaultMentionRepliedUser(mention);
+    }
+
+    /**
+     * Returns the default mention behavior for replies.
+     * <br>If this is {@code true} then all replies will mention the author of the target message by default.
+     * You can specify this individually with {@link #mentionRepliedUser(boolean)} for each message.
+     *
+     * <p>Default: <b>true</b>
+     *
+     * @return True, if replies mention by default
+     */
+    static boolean isDefaultMentionRepliedUser()
+    {
+        return MessageActionImpl.isDefaultMentionRepliedUser();
+    }
+
     @Nonnull
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
@@ -180,6 +209,85 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @CheckReturnValue
     MessageAction apply(@Nullable final Message message);
+
+    /**
+     * Make the message a reply to the referenced message.
+     * <br>You can only reply to messages from the same channel!
+     * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     *
+     * @param  messageId
+     *         The target message
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction referenceById(long messageId);
+
+    /**
+     * Make the message a reply to the referenced message.
+     * <br>You can only reply to messages from the same channel!
+     * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages (such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar).
+     *
+     * @param  messageId
+     *         The target message
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction referenceById(@Nonnull String messageId)
+    {
+        return referenceById(MiscUtil.parseSnowflake(messageId));
+    }
+
+    /**
+     * Make the message a reply to the referenced message.
+     * <br>You can only reply to messages from the same channel!
+     * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     *
+     * @param  message
+     *         The target message
+     *
+     * @throws IllegalArgumentException
+     *         If the provided message is null
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reference(@Nonnull Message message)
+    {
+        Checks.notNull(message, "Message");
+        return referenceById(message.getIdLong());
+    }
+
+    /**
+     * Whether to mention the used, when replying to a message.
+     * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
+     *
+     * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
+     *
+     * @param  mention
+     *         True, to mention the author if the referenced message
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction mentionRepliedUser(boolean mention);
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.

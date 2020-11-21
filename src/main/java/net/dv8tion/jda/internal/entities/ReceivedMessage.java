@@ -55,6 +55,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final long id;
     protected final MessageType type;
     protected final MessageChannel channel;
+    protected final Message referencedMessage;
     protected final boolean fromWebhook;
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
@@ -81,7 +82,7 @@ public class ReceivedMessage extends AbstractMessage
     protected List<String> invites = null;
 
     public ReceivedMessage(
-        long id, MessageChannel channel, MessageType type,
+        long id, MessageChannel channel, MessageType type, Message referencedMessage,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, int flags)
@@ -89,6 +90,7 @@ public class ReceivedMessage extends AbstractMessage
         super(content, nonce, tts);
         this.id = id;
         this.channel = channel;
+        this.referencedMessage = referencedMessage;
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
@@ -111,6 +113,12 @@ public class ReceivedMessage extends AbstractMessage
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Override
+    public Message getReferencedMessage()
+    {
+        return referencedMessage;
     }
 
     @Override
