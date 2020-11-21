@@ -87,7 +87,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final GatewayEncoding encoding;
 
     public WebSocket socket;
-    protected String sessionId = null;
+    protected volatile String sessionId = null;
     protected final Object readLock = new Object();
     protected Decompressor decompressor;
 
@@ -218,6 +218,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public boolean isReady()
     {
         return !initiating;
+    }
+
+    public boolean isSession()
+    {
+        return sessionId != null;
     }
 
     public void handle(List<DataObject> events)
@@ -411,6 +416,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
+        sentAuthInfo = false;
+        connected = false;
         // Use a new thread to avoid issues with sleep interruption
         if (Thread.currentThread().isInterrupted())
         {
@@ -427,10 +434,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void handleDisconnect(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        sentAuthInfo = false;
-        connected = false;
         api.setStatus(JDA.Status.DISCONNECTED);
-
         CloseCode closeCode = null;
         int rawCloseCode = 1005;
         //When we get 1000 from remote close we will try to resume
