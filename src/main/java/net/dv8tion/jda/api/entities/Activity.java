@@ -19,6 +19,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -114,7 +115,7 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null, empty or blank
+     *         if the specified name is null, empty, blank or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#DEFAULT}
      */
@@ -122,6 +123,8 @@ public interface Activity
     static Activity playing(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         return EntityBuilder.createActivity(name, null, ActivityType.DEFAULT);
     }
 
@@ -136,7 +139,7 @@ public interface Activity
      *         The streaming url to use, required to display as "streaming"
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null or empty
+     *         If the specified name is null, empty or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name and url
      *
@@ -146,6 +149,8 @@ public interface Activity
     static Activity streaming(@Nonnull String name, @Nullable String url)
     {
         Checks.notEmpty(name, "Provided game name");
+        name = Helpers.isBlank(name) ? name : name.trim();
+        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         ActivityType type;
         if (isValidStreamingUrl(url))
             type = ActivityType.STREAMING;
@@ -162,7 +167,7 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null, empty or blank
+     *         if the specified name is null, empty, blank or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#LISTENING}
      */
@@ -170,6 +175,8 @@ public interface Activity
     static Activity listening(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         return EntityBuilder.createActivity(name, null, ActivityType.LISTENING);
     }
 
@@ -181,7 +188,7 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         if the specified name is null, empty or blank
+     *         if the specified name is null, empty, blank or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#WATCHING}
      *
@@ -192,6 +199,8 @@ public interface Activity
     static Activity watching(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         return EntityBuilder.createActivity(name, null, ActivityType.WATCHING);
     }
 
@@ -204,7 +213,7 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null or empty
+     *         If the specified name is null, empty or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name and url
      */
@@ -227,7 +236,7 @@ public interface Activity
      *         The streaming url to use, required to display as "streaming".
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null or empty
+     *         If the specified name is null, empty or longer than 128 characters
      *
      * @return A valid Activity instance with the provided name and url
      *

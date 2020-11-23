@@ -27,7 +27,6 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
-import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
@@ -70,7 +69,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
         if (member == null)
         {
-            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);
+//            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);
             // Remove user from voice channel if applicable
             guild.getVoiceChannelsView().forEachUnordered((channel) -> {
                 VoiceChannelImpl impl = (VoiceChannelImpl) channel;

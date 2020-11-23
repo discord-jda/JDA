@@ -52,6 +52,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected static EnumSet<Message.MentionType> defaultMentions = EnumSet.allOf(Message.MentionType.class);
+    protected static boolean defaultMentionRepliedUser = true;
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
@@ -59,9 +60,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
+    protected boolean mentionRepliedUser = defaultMentionRepliedUser;
     protected EnumSet<Message.MentionType> allowedMentions;
     protected Set<String> mentionableUsers = new HashSet<>();
     protected Set<String> mentionableRoles = new HashSet<>();
+    protected long messageReference;
 
     public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
@@ -74,6 +77,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return defaultMentions.clone();
+    }
+
+    public static void setDefaultMentionRepliedUser(boolean mention)
+    {
+        defaultMentionRepliedUser = mention;
+    }
+
+    public static boolean isDefaultMentionRepliedUser()
+    {
+        return defaultMentionRepliedUser;
     }
 
     public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel)
@@ -183,6 +196,22 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 .mention(message.getMentionedRoles());
         }
         return content(content).tts(message.isTTS());
+    }
+
+    @Nonnull
+    @Override
+    public MessageActionImpl referenceById(long messageId)
+    {
+        messageReference = messageId;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction mentionRepliedUser(boolean mention)
+    {
+        mentionRepliedUser = mention;
+        return this;
     }
 
     @Nonnull
@@ -440,7 +469,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
             builder.addFormDataPart("file" + index++, entry.getKey(), body);
         }
-        if (!isEmpty())
+        if (messageReference != 0L || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
         // clear remaining resources, they will be closed after being sent
         files.clear();
@@ -480,11 +509,15 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             if (nonce != null)
                 obj.put("nonce", nonce);
         }
-        obj.put("tts", tts);
-        if (allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
+        if (messageReference != 0)
         {
-            obj.put("allowed_mentions", getAllowedMentionsObj());
+            obj.put("message_reference", DataObject.empty()
+                .put("message_id", messageReference)
+                .put("channel_id", channel.getId()));
         }
+        obj.put("tts", tts);
+        if ((messageReference != 0L && !mentionRepliedUser) || allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
+            obj.put("allowed_mentions", getAllowedMentionsObj());
         return obj;
     }
 
@@ -513,6 +546,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             parsable.remove(Message.MentionType.ROLE.getParseKey());
             allowedMentionsObj.put("roles", DataArray.fromCollection(mentionableRoles));
         }
+        if (messageReference != 0L)
+            allowedMentionsObj.put("replied_user", mentionRepliedUser);
         return allowedMentionsObj.put("parse", parsable);
     }
 

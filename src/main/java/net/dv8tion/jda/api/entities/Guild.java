@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -1576,6 +1577,119 @@ public interface Guild extends ISnowflake
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Looks up a role which is the integration role for a bot.
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @param  userId
+     *         The user id of the bot
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getRoleByBot(long userId)
+    {
+        return getRoleCache().applyStream(stream ->
+            stream.filter(role -> role.getTags().getBotIdLong() == userId)
+                  .findFirst()
+                  .orElse(null)
+        );
+    }
+
+    /**
+     * Looks up a role which is the integration role for a bot.
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @param  userId
+     *         The user id of the bot
+     *
+     * @throws IllegalArgumentException
+     *         If the userId is null or not a valid snowflake
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getRoleByBot(@Nonnull String userId)
+    {
+        return getRoleByBot(MiscUtil.parseSnowflake(userId));
+    }
+
+    /**
+     * Looks up a role which is the integration role for a bot.
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @param  user
+     *         The bot user
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getRoleByBot(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return getRoleByBot(user.getIdLong());
+    }
+
+    /**
+     * Looks up the role which is the integration role for the currently connected bot (self-user).
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getBotRole()
+    {
+        return getRoleByBot(getJDA().getSelfUser());
+    }
+
+    /**
+     * Looks up the role which is the booster role of this guild.
+     * <br>These roles are created when the first user boosts this guild.
+     *
+     * <p>To check whether a role is a booster role you can use {@code role.getTags().isBoost()}.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @return The boost role, or null if no role matches
+     */
+    @Nullable
+    default Role getBoostRole()
+    {
+        return getRoleCache().applyStream(stream ->
+            stream.filter(role -> role.getTags().isBoost())
+                  .findFirst()
+                  .orElse(null)
+        );
     }
 
     /**

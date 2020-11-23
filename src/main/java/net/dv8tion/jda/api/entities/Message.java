@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -198,6 +199,18 @@ public interface Message extends ISnowflake, Formattable
             "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
             "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Referenced message.
+     *
+     * <p>This will have different meaning depending on the {@link #getType() type} of message.
+     * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
+     * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
+     *
+     * @return The referenced message, or null
+     */
+    @Nullable
+    Message getReferencedMessage();
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
@@ -949,6 +962,174 @@ public interface Message extends ISnowflake, Formattable
     MessageAction editMessage(@Nonnull Message newContent);
 
     /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessage(CharSequence)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  content
+     *         The content of the reply message
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull CharSequence content)
+    {
+        return getChannel().sendMessage(content).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessage(MessageEmbed)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  content
+     *         The content of the reply message
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull MessageEmbed content)
+    {
+        return getChannel().sendMessage(content).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessage(Message)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  content
+     *         The content of the reply message
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull Message content)
+    {
+        return getChannel().sendMessage(content).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessageFormat(content, args).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessageFormat(String, Object...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  format
+     *         The string that should be formatted, if this is null or empty the content of the Message would be empty and cause a builder exception.
+     * @param  args
+     *         The arguments for your format
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyFormat(@Nonnull String format, @Nonnull Object... args)
+    {
+        return getChannel().sendMessageFormat(format, args).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendFile(file, options).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendFile(File, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  file
+     *         The file to upload to the channel in the reply
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
+    {
+        return getChannel().sendFile(file, options).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendFile(File, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  data
+     *         The data to upload to the channel in the reply
+     * @param  name
+     *         The name that should be sent to discord
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull File data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return getChannel().sendFile(data, name, options).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendFile(InputStream, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  data
+     *         The data to upload to the channel in the reply
+     * @param  name
+     *         The name that should be sent to discord
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return getChannel().sendFile(data, name, options).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     *
+     * <p>For further info, see {@link MessageChannel#sendFile(byte[], String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  data
+     *         The data to upload to the channel in the reply
+     * @param  name
+     *         The name that should be sent to discord
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return getChannel().sendFile(data, name, options).reference(this);
+    }
+
+    /**
      * Deletes this Message from Discord.
      * <br>If this Message was not sent by the currently logged in account, then this will fail unless the Message is from
      * a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the current account has
@@ -1130,8 +1311,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to add as a reaction to this Message.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1203,8 +1382,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emoji to add as a reaction to this Message.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1245,8 +1422,6 @@ public interface Message extends ISnowflake, Formattable
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
@@ -1294,8 +1469,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emoji to remove reactions for
      *
-     * @throws UnsupportedOperationException
-     *         If this reaction happened in a private channel
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
@@ -1333,8 +1506,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link Emote} to remove reactions for
      *
-     * @throws UnsupportedOperationException
-     *         If this reaction happened in a private channel
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
@@ -1380,8 +1551,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to remove as a reaction from this Message.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -1437,8 +1606,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
@@ -1503,8 +1670,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emoji to add as a reaction to this Message.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -1558,8 +1723,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1607,8 +1770,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
@@ -1650,8 +1811,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emote to retrieve users for.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
@@ -1677,8 +1836,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode value of the reaction emoji.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode value is null or empty.
      *
@@ -1701,8 +1858,6 @@ public interface Message extends ISnowflake, Formattable
      * @param  id
      *         The string id of the reaction emote.
      *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws java.lang.IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
@@ -1724,9 +1879,6 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  id
      *         The long id of the reaction emote.
-     *
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *

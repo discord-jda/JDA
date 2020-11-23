@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -58,7 +58,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private final AudioConnection audioConnection;
     private final ConnectionListener listener;
-    private final ScheduledThreadPoolExecutor keepAlivePool;
+    private final ScheduledExecutorService keepAlivePool;
     private final Guild guild;
     private final String sessionId;
     private final String token;
@@ -162,7 +162,12 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
             JDAImpl api = getJDA();
-            if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
+            if (status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL && (!api.getClient().isSession() || !api.getClient().isConnected()))
+            {
+                LOG.debug("Connection was closed due to session invalidate!");
+                status = ConnectionStatus.ERROR_CANNOT_RESUME;
+            }
+            else if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 //Get guild from JDA, don't use [guild] field to make sure that we don't have
                 // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.

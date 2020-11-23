@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -271,4 +272,89 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      */
     @Nonnull
     JDA getJDA();
+
+    /**
+     * The tags of this role.
+     * <br>This is useful to determine the purpose of a managed role.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS}
+     * to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @return {@link RoleTags}
+     */
+    @Nonnull
+    RoleTags getTags();
+
+    /**
+     * Tags associated with this role.
+     */
+    interface RoleTags
+    {
+        /**
+         * Whether this role is associated with a bot.
+         *
+         * @return True, if this role is for a bot
+         */
+        boolean isBot();
+
+        /**
+         * The id for the bot associated with this role.
+         *
+         * @return The bot id, or 0 if this role is not for a bot
+         *
+         * @see    #isBot()
+         */
+        long getBotIdLong();
+
+        /**
+         * The id for the bot associated with this role.
+         *
+         * @return The bot id, or null if this role is not for a bot
+         *
+         * @see    #isBot()
+         */
+        @Nullable
+        default String getBotId()
+        {
+            return isBot() ? Long.toUnsignedString(getBotIdLong()) : null;
+        }
+
+        /**
+         * Whether this role is the boost role of this guild.
+         *
+         * @return True, if this role is the boost role
+         */
+        boolean isBoost();
+
+        /**
+         * Whether this role is managed by an integration.
+         * <br>This is usually true for roles such as those created for twitch subscribers.
+         *
+         * @return True, if this role is managed by an integration
+         */
+        boolean isIntegration();
+
+        /**
+         * The id for the integration associated with this role.
+         *
+         * @return The integration id, or 0 if this role is not for an integration
+         *
+         * @see    #isIntegration()
+         */
+        long getIntegrationIdLong();
+
+        /**
+         * The id for the integration associated with this role.
+         *
+         * @return The integration id, or null if this role is not for an integration
+         *
+         * @see    #isIntegration()
+         */
+        @Nullable
+        default String getIntegrationId()
+        {
+            return isIntegration() ? Long.toUnsignedString(getIntegrationIdLong()) : null;
+        }
+    }
 }

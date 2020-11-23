@@ -60,12 +60,10 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
-import okhttp3.FormBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -351,7 +349,7 @@ public class GuildImpl implements Guild
                 {
                     webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
-                catch (UncheckedIOException | NullPointerException e)
+                catch (Exception e)
                 {
                     JDAImpl.LOG.error("Error creating webhook from json", e);
                 }
@@ -1052,17 +1050,20 @@ public class GuildImpl implements Guild
         Checks.notNull(roles, "Roles");
 
         Route.CompiledRoute route = Route.Guilds.PRUNE_MEMBERS.compile(getId());
-        FormBody.Builder form = new FormBody.Builder();
-        form.add("days", Integer.toString(days));
+        DataObject body = DataObject.empty();
+        body.put("days", days);
         if (!wait)
-            form.add("compute_prune_count", "false");
-        for (Role role : roles)
+            body.put("compute_prune_count", false);
+        if (roles.length != 0)
         {
-            Checks.notNull(role, "Role");
-            Checks.check(role.getGuild().equals(this), "Role is not from the same guild!");
-            form.add("include_roles", role.getId());
+            for (Role role : roles)
+            {
+                Checks.notNull(role, "Role");
+                Checks.check(role.getGuild().equals(this), "Role is not from the same guild!");
+            }
+            body.put("include_roles", Arrays.stream(roles).map(Role::getId).collect(Collectors.toList()));
         }
-        return new AuditableRestActionImpl<>(getJDA(), route, form.build(), (response, request) -> response.getObject().getInt("pruned", 0));
+        return new AuditableRestActionImpl<>(getJDA(), route, body, (response, request) -> response.getObject().getInt("pruned", 0));
     }
 
     @Nonnull

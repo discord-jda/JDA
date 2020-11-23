@@ -85,6 +85,7 @@ public class  DefaultShardManagerBuilder
     protected ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider = null;
     protected ThreadPoolProvider<? extends ExecutorService> eventPoolProvider = null;
+    protected ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider = null;
     protected Collection<Integer> shards = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected OkHttpClient httpClient = null;
@@ -1639,6 +1640,69 @@ public class  DefaultShardManagerBuilder
     }
 
     /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the audio WebSocket connection. Used for sending keepalives and closing the connection.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread
+     *
+     * @param  pool
+     *         The thread-pool to use for the audio WebSocket
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since 4.2.1
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setAudioPool(@Nullable ScheduledExecutorService pool)
+    {
+        return setAudioPool(pool, pool == null);
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the audio WebSocket connection. Used for sending keepalives and closing the connection.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread
+     *
+     * @param  pool
+     *         The thread-pool to use for the audio WebSocket
+     * @param  automaticShutdown
+     *         True, if the executor should be shutdown when JDA shuts down
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since 4.2.1
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setAudioPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
+    {
+        return setAudioPoolProvider(pool == null ? null : new ThreadPoolProviderImpl<>(pool, automaticShutdown));
+    }
+
+    /**
+     * Sets the {@link ScheduledExecutorService ScheduledExecutorService} used by
+     * the audio WebSocket connection. Used for sending keepalives and closing the connection.
+     * <br><b>Only change this pool if you know what you're doing.</b>
+     *
+     * <p>Default: {@link ScheduledThreadPoolExecutor} with 1 thread
+     *
+     * @param  provider
+     *         The thread-pool provider to use for the audio WebSocket
+     *
+     * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since 4.2.1
+     */
+    @Nonnull
+    public DefaultShardManagerBuilder setAudioPoolProvider(@Nullable ThreadPoolProvider<? extends ScheduledExecutorService> provider)
+    {
+        this.audioPoolProvider = provider;
+        return this;
+    }
+
+    /**
      * Sets the maximum amount of time that JDA will back off to wait when attempting to reconnect the MainWebsocket.
      * <br>Provided value must be 32 or greater.
      *
@@ -2204,6 +2268,8 @@ public class  DefaultShardManagerBuilder
      *          If the provided token is invalid.
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
+     * @throws  net.dv8tion.jda.api.exceptions.ErrorResponseException
+     *          If some other HTTP error occurred.
      *
      * @return A {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
      *         to whether or not loading has finished when this returns.
@@ -2221,7 +2287,7 @@ public class  DefaultShardManagerBuilder
         presenceConfig.setActivityProvider(activityProvider);
         presenceConfig.setStatusProvider(statusProvider);
         presenceConfig.setIdleProvider(idleProvider);
-        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, threadFactory);
+        final ThreadingProviderConfig threadingConfig = new ThreadingProviderConfig(rateLimitPoolProvider, gatewayPoolProvider, callbackPoolProvider, eventPoolProvider, audioPoolProvider, threadFactory);
         final ShardingSessionConfig sessionConfig = new ShardingSessionConfig(sessionController, voiceDispatchInterceptor, httpClient, httpClientBuilder, wsFactory, audioSendFactory, flags, shardingFlags, maxReconnectDelay, largeThreshold);
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);

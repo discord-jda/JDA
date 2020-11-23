@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.utils.cache;
 
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 
 import java.lang.ref.WeakReference;
@@ -23,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.NavigableSet;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public abstract class ReadWriteLockCache<T>
@@ -37,15 +37,7 @@ public abstract class ReadWriteLockCache<T>
         if (lock.getReadHoldCount() > 0)
             throw new IllegalStateException("Unable to acquire write-lock while holding read-lock!");
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
-        try
-        {
-            if (!writeLock.tryLock() && !writeLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire write-lock in a reasonable timeframe! (10 seconds)");
-        }
-        catch (InterruptedException e)
-        {
-            throw new IllegalStateException("Unable to acquire write-lock while thread is interrupted!");
-        }
+        MiscUtil.tryLock(writeLock);
         onAcquireWriteLock();
         clearCachedLists();
         return new UnlockHook(writeLock);
@@ -54,15 +46,7 @@ public abstract class ReadWriteLockCache<T>
     public UnlockHook readLock()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-        try
-        {
-            if (!readLock.tryLock() && !readLock.tryLock(10, TimeUnit.SECONDS))
-                throw new IllegalStateException("Could not acquire read-lock in a reasonable timeframe! (10 seconds)");
-        }
-        catch (InterruptedException e)
-        {
-            throw new IllegalStateException("Unable to acquire read-lock while thread is interrupted!");
-        }
+        MiscUtil.tryLock(readLock);
         onAcquireReadLock();
         return new UnlockHook(readLock);
     }
