@@ -81,6 +81,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     /**
      * The reacting {@link net.dv8tion.jda.api.entities.User User}
      * <br>This might be missing if the user was not cached.
+     * Use {@link #retrieveUser()} to load the user.
      *
      * @return The reacting user or null if this information is missing
      */
@@ -95,6 +96,8 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user
      * or {@code null} if the reaction was from a user not in this guild.
+     * <br>This will also be {@code null} if the member is not available in the cache.
+     * Use {@link #retrieveMember()} to load the member.
      *
      * @throws java.lang.IllegalStateException
      *         If this was not sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.

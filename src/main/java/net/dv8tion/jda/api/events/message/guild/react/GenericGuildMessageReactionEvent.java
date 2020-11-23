@@ -73,6 +73,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     /**
      * The reacting {@link net.dv8tion.jda.api.entities.User User}
      * <br>This might be missing if the user was not previously cached or the member was removed.
+     * Use {@link #retrieveUser()} to load the user.
      *
      * @return The reacting user or null if this information is missing
      *
@@ -87,6 +88,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user
      * <br>This might be missing if the user was not previously cached or the member was removed.
+     * Use {@link #retrieveMember()} to load the member.
      *
      * @return The member instance for the reacting user or null if this information is missing
      */
