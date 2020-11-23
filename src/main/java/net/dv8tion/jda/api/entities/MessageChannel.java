@@ -781,7 +781,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
-     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -836,7 +837,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
-     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
