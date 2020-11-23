@@ -1509,7 +1509,6 @@ public class JDABuilder
 
     /**
      * The {@link ChunkingFilter} to filter which guilds should use member chunking.
-     * <br>By default this uses {@link ChunkingFilter#ALL}.
      *
      * <p>If a guild is configured for chunking the {@link #setMemberCachePolicy(MemberCachePolicy)} will be ignored.
      *
@@ -1549,7 +1548,7 @@ public class JDABuilder
      *
      * @since  4.1.0
      *
-     * @deprecated This is now superceded by {@link #setDisabledIntents(Collection)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
+     * @deprecated This is now superseded by {@link #setDisabledIntents(Collection)} and {@link #setMemberCachePolicy(MemberCachePolicy)}.
      *             To get identical behavior you can do {@code setMemberCachePolicy(VOICE).setDisabledIntents(GatewayIntent.GUILD_PRESENCES, GatewayIntent.GUILD_MESSAGE_TYPING, GatewayIntent.GUILD_MEMBERS)}
      */
     @Nonnull
