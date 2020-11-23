@@ -39,7 +39,7 @@ import javax.annotation.Nonnull;
 @FunctionalInterface
 public interface ChunkingFilter
 {
-    /** Chunk all guilds (default) */
+    /** Chunk all guilds */
     ChunkingFilter ALL = (x) -> true;
     /** Do not chunk any guilds (lazy loading) */
     ChunkingFilter NONE = (x) -> false;
