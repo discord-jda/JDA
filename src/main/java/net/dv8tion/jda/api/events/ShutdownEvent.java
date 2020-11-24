@@ -26,7 +26,7 @@ import java.time.OffsetDateTime;
  * Indicates that JDA has fully disconnected from Discord and will not attempt to reconnect again.
  * <br>At this stage all internal cache is invalid!
  */
-public class ShutdownEvent extends Event
+public class ShutdownEvent extends Event implements LifecycleEvent
 {
     protected final OffsetDateTime shutdownTime;
     protected final int code;

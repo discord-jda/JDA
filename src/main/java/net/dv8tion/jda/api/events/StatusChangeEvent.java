@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code status}
  */
-public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Status>
+public class StatusChangeEvent extends Event implements UpdateEvent<JDA, JDA.Status>, LifecycleEvent
 {
     public static final String IDENTIFIER = "status";
 

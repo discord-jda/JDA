@@ -17,6 +17,8 @@
 package net.dv8tion.jda.internal.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
+import net.dv8tion.jda.api.events.LifecycleEvent;
+import net.dv8tion.jda.api.events.ReconnectedEvent;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -30,11 +32,17 @@ public class EventManagerProxy implements IEventManager
 {
     private final ExecutorService executor;
     private IEventManager subject;
+    private boolean awaitRestart = false;
 
     public EventManagerProxy(IEventManager subject, ExecutorService executor)
     {
         this.subject = subject;
         this.executor = executor;
+    }
+
+    public void prepareRestart()
+    {
+        awaitRestart = true; // stop handling events until shutdown
     }
 
     public void setSubject(IEventManager subject)
@@ -62,6 +70,14 @@ public class EventManagerProxy implements IEventManager
     @Override
     public void handle(@Nonnull GenericEvent event)
     {
+        if (awaitRestart)
+        {
+            if (event instanceof ReconnectedEvent)
+                awaitRestart = false;
+            else if (!(event instanceof LifecycleEvent))
+                return; // we are currently restarting, discard non-lifecycle events
+        }
+
         try
         {
             if (executor != null && !executor.isShutdown())

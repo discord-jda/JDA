@@ -13,22 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.dv8tion.jda.api.events;
 
-import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
-
 /**
- * Indicates that JDA successfully resumed its connection to the gateway.
- * <br>All Objects are still in place and events are replayed.
+ * Marker interface for all events that are strictly related to the lifecycle of a JDA session.
  *
- * <p>Can be used to marks the continuation of event flow stopped by the {@link net.dv8tion.jda.api.events.DisconnectEvent DisconnectEvent}.
+ * @see net.dv8tion.jda.api.JDA#restart() restart()
  */
-public class ResumedEvent extends Event implements LifecycleEvent
+public interface LifecycleEvent extends GenericEvent
 {
-    public ResumedEvent(@Nonnull JDA api, long responseNumber)
-    {
-        super(api, responseNumber);
-    }
 }
