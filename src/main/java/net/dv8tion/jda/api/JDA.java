@@ -1884,7 +1884,7 @@ public interface JDA
      *
      * <p>This method is a last measure to fix a broken session. It will do the following:
      * <ol>
-     *     <li>Stop listening to events except for {@link net.dv8tion.jda.api.events.LifecycleEvent LifecycleEvents}</li>
+     *     <li>Stop listening to events except for {@link net.dv8tion.jda.api.events.LifecycleEvent LifecycleEvents} until the session has reconnected.</li>
      *     <li>Stop all currently queued requests with {@link #cancelRequests()}</li>
      *     <li>Invalidate and restart the gateway connection</li>
      * </ol>
