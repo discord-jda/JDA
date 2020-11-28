@@ -62,6 +62,8 @@ public interface ChannelManager extends Manager<ChannelManager>
     long PERMISSION = 0x80;
     /** Used to reset the rate-limit per user field */
     long SLOWMODE   = 0x100;
+    /** Used to reset the channel type field */
+    long NEWS       = 0x120;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -79,6 +81,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
+     *     <li>{@link #NEWS}</li>
      * </ul>
      *
      * @param  fields
@@ -104,6 +107,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link #USERLIMIT}</li>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
+     *     <li>{@link #NEWS}</li>
      * </ul>
      *
      * @param  fields
@@ -467,4 +471,25 @@ public interface ChannelManager extends Manager<ChannelManager>
     @Nonnull
     @CheckReturnValue
     ChannelManager setBitrate(int bitrate);
+
+    /**
+     * Sets the <b><u>news flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     *
+     * @param  news
+     *         The new news flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
+     * @throws IllegalStateException
+     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
+     * @throws java.lang.IllegalStateException
+     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
+     *
+     * @return ChannelManager for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelManager setNews(boolean news);
 }

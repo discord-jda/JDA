@@ -186,6 +186,21 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> setSlowmode(int slowmode);
 
     /**
+     * Sets the news flag for the new TextChannel
+     *
+     * @param  news
+     *         The news flag for the new GuildChannel
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a TextChannel
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setNews(boolean news);
+
+    /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
