@@ -175,6 +175,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set news for a TextChannel!");
+        if (news && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
         this.news = news;
         return this;
     }

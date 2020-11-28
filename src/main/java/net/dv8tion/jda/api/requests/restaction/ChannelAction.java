@@ -193,6 +193,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @throws UnsupportedOperationException
      *         If this ChannelAction is not for a TextChannel
+     * @throws java.lang.IllegalStateException
+     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
      *
      * @return The current ChannelAction, for chaining convenience
      */
