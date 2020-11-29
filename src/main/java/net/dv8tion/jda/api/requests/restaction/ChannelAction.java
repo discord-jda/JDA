@@ -197,6 +197,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
      *
      * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
      */
     @Nonnull
     @CheckReturnValue
