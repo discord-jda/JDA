@@ -63,7 +63,7 @@ public interface ChannelManager extends Manager<ChannelManager>
     /** Used to reset the rate-limit per user field */
     long SLOWMODE   = 0x100;
     /** Used to reset the channel type field */
-    long NEWS       = 0x120;
+    long NEWS       = 0x200;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
