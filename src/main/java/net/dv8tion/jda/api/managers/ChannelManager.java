@@ -391,8 +391,6 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @param  nsfw
      *         The new nsfw flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
      *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
      *
@@ -478,11 +476,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @param  news
      *         The new news flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
      *
-     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the currently logged in account does not have the Permission {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}
      * @throws IllegalStateException
      *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
-     * @throws java.lang.IllegalStateException
+     * @throws IllegalStateException
      *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
      *
      * @return ChannelManager for chaining convenience
