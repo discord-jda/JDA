@@ -472,6 +472,7 @@ public interface ChannelManager extends Manager<ChannelManager>
 
     /**
      * Sets the <b><u>news flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
      *
      * @param  news
      *         The new news flag for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},

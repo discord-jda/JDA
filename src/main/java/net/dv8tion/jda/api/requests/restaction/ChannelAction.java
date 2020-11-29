@@ -186,7 +186,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> setSlowmode(int slowmode);
 
     /**
-     * Sets the news flag for the new TextChannel
+     * Sets the news flag for the new TextChannel.
+     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
      *
      * @param  news
      *         The news flag for the new GuildChannel
