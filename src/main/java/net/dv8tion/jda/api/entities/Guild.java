@@ -586,6 +586,30 @@ public interface Guild extends ISnowflake
     TextChannel getSystemChannel();
 
     /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that has been set as the channel
+     * which rules are in.
+     * <br>If this guild doesn't have the COMMUNITY updates feature, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the rules Channel.
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getRulesChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that has been set as the channel
+     * which community updates messages will be sent in.
+     * <br>If this guild doesn't have the COMMUNITY updates feature, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the community updates Channel.
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getCommunityUpdatesChannel();
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
      * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
      * Sometimes owners of guilds delete their account or get banned by Discord.

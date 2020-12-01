@@ -72,6 +72,10 @@ public interface GuildManager extends Manager<GuildManager>
     long VANITY_URL   = 0x1000;
     /** Used to reset the description field */
     long DESCRIPTION  = 0x2000;
+    /** Used to reset the rules channel field */
+    long RULES_CHANNEL              = 0x4000;
+    /** Used to reset the community updates channel field */
+    long COMMUNITY_UPDATES_CHANNEL  = 0x8000;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -87,6 +91,8 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>
      *     <li>{@link #SYSTEM_CHANNEL}</li>
+     *     <li>{@link #RULES_CHANNEL}</li>
+     *     <li>{@link #COMMUNITY_UPDATES_CHANNEL}</li>
      *     <li>{@link #MFA_LEVEL}</li>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
@@ -116,6 +122,8 @@ public interface GuildManager extends Manager<GuildManager>
      *     <li>{@link #AFK_CHANNEL}</li>
      *     <li>{@link #AFK_TIMEOUT}</li>
      *     <li>{@link #SYSTEM_CHANNEL}</li>
+     *     <li>{@link #RULES_CHANNEL}</li>
+     *     <li>{@link #COMMUNITY_UPDATES_CHANNEL}</li>
      *     <li>{@link #MFA_LEVEL}</li>
      *     <li>{@link #NOTIFICATION_LEVEL}</li>
      *     <li>{@link #EXPLICIT_CONTENT_LEVEL}</li>
@@ -234,6 +242,38 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setSystemChannel(@Nullable TextChannel systemChannel);
+
+    /**
+     * Sets the rules {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @param  rulesChannel
+     *         The new rules channel for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         or {@code null} to reset
+     *
+     * @throws IllegalArgumentException
+     *         If the provided channel is not from this guild
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setRulesChannel(@Nullable TextChannel rulesChannel);
+
+    /**
+     * Sets the community updates {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @param  communityUpdatesChannel
+     *         The new community updates channel for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         or {@code null} to reset
+     *
+     * @throws IllegalArgumentException
+     *         If the provided channel is not from this guild
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setCommunityUpdatesChannel(@Nullable TextChannel communityUpdatesChannel);
 
     /**
      * Sets the afk {@link net.dv8tion.jda.api.entities.Guild.Timeout Timeout} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
