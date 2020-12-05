@@ -1547,6 +1547,32 @@ public class EntityBuilder
                               timeCreated, uses, channel, guild, group, type);
     }
 
+    public Template createTemplate(DataObject object)
+    {
+        final String code = object.getString("code");
+        final String name = object.getString("name");
+        final String description = object.getString("description", null);
+        final int uses = object.getInt("usage_count");
+        final User creator = createUser(object.getObject("creator"));
+        final OffsetDateTime createdAt = OffsetDateTime.parse(object.getString("created_at"));
+        final OffsetDateTime updatedAt = OffsetDateTime.parse(object.getString("updated_at"));
+
+        final long guildId = object.getLong("source_guild_id");
+
+        final DataObject guildObject = object.getObject("serialized_source_guild");
+        final String guildName = guildObject.getString("name");
+        final String guildIconId = guildObject.getString("icon_hash", null);
+        final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
+
+        final Template.Guild guild = new TemplateImpl.GuildImpl(guildId, guildName, guildIconId, guildVerificationLevel);
+
+        final boolean synced = !object.getBoolean("is_dirty", false);
+
+        return new TemplateImpl(getJDA(), code, name, description,
+                uses, creator, createdAt, updatedAt,
+                guild, synced);
+    }
+
     public ApplicationInfo createApplicationInfo(DataObject object)
     {
         final String description = object.getString("description");

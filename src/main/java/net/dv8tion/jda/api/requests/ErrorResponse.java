@@ -60,6 +60,7 @@ public enum ErrorResponse
     UNKNOWN_LOBBY(                  10031, "Unknown Lobby"),
     UNKNOWN_BRANCH(                 10032, "Unknown Branch"),
     UNKNOWN_REDISTRIBUTABLE(        10036, "Unknown Redistributable"),
+    UNKNOWN_GUILD_TEMPLATE(         10057, "Unknown Guild Template"),
     BOTS_NOT_ALLOWED(               20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(              20002, "Only bots can use this endpoint"),
     MAX_GUILDS(                     30001, "Maximum number of Guilds reached (100)"),

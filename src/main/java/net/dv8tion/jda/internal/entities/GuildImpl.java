@@ -60,6 +60,7 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import org.graalvm.compiler.lir.LIRInstruction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -974,6 +975,51 @@ public class GuildImpl implements Guild
             for (int i = 0; i < array.length(); i++)
                 invites.add(entityBuilder.createInvite(array.getObject(i)));
             return Collections.unmodifiableList(invites);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<Template>> retrieveTemplates()
+    {
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Templates.GET_GUILD_TEMPLATES.compile(getId());
+
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            DataArray array = response.getArray();
+            List<Template> templates = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+                templates.add(entityBuilder.createTemplate(array.getObject(i)));
+            return Collections.unmodifiableList(templates);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Template> createTemplate(@Nonnull String name, @Nullable String description)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+
+        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        if (description != null)
+            Checks.check(description.length() <= 120, "Provided name must be 0 - 120 characters in length");
+
+        final Route.CompiledRoute route = Route.Templates.CREATE_TEMPLATE.compile(getId());
+
+        DataObject object = DataObject.empty();
+        object.put("name", name);
+        object.put("description", description);
+
+        return new RestActionImpl<>(getJDA(), route, object, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createTemplate(response.getObject());
         });
     }
 

@@ -2230,6 +2230,25 @@ public interface Guild extends ISnowflake
     RestAction<List<Invite>> retrieveInvites();
 
     /**
+     * Retrieves all {@link net.dv8tion.jda.api.entities.Template Templates} for this guild.
+     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
+     * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Template Template}{@literal >}
+     *         <br>The list of Template objects
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Template>> retrieveTemplates();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Template> createTemplate(@Nonnull String name, @Nullable String description);
+
+    /**
      * Retrieves all {@link net.dv8tion.jda.api.entities.Webhook Webhooks} for this Guild.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_WEBHOOKS MANAGE_WEBHOOKS} in this Guild.
      *
