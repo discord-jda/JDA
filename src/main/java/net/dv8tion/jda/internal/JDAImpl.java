@@ -70,6 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.MDC;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -807,6 +808,27 @@ public class JDAImpl implements JDA
         if (guildCache.size() >= 10)
             throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
         return new GuildActionImpl(this, name);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, @Nullable Icon icon)
+    {
+        if (guildCache.size() >= 10)
+            throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
+
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must have 2-100 characters in length!");
+
+        final Route.CompiledRoute route = Route.Templates.CREATE_GUILD_FROM_TEMPLATE.compile(code);
+
+        DataObject object = DataObject.empty();
+        object.put("name", name);
+        if (icon != null)
+            object.put("icon", icon.getEncoding());
+
+        return new RestActionImpl<>(this, route, object);
     }
 
     @Nonnull
