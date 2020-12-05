@@ -60,7 +60,6 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
-import org.graalvm.compiler.lir.LIRInstruction;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;

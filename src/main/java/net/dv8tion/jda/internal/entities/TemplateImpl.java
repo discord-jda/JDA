@@ -14,7 +14,6 @@ import net.dv8tion.jda.internal.managers.TemplateManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import org.graalvm.compiler.lir.LIRInstruction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
