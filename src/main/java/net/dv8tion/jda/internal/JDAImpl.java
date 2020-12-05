@@ -817,6 +817,7 @@ public class JDAImpl implements JDA
         if (guildCache.size() >= 10)
             throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
 
+        Checks.notBlank(code, "Template code");
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.check(name.length() >= 2 && name.length() <= 100, "Name must have 2-100 characters in length!");
