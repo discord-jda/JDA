@@ -229,7 +229,7 @@ public class Route
 
     public static class Templates
     {
-        public static final Route GET_TEMPLATE =        new Route(GET,     "templates/{code}");
+        public static final Route GET_TEMPLATE =        new Route(GET,     "guilds/templates/{code}");
         public static final Route GET_GUILD_TEMPLATES = new Route(GET,     "guilds/{guild_id}/templates");
         public static final Route CREATE_TEMPLATE =     new Route(POST,    "guilds/{guild_id}/templates");
         public static final Route SYNC_TEMPLATE =       new Route(PUT,     "guilds/{guild_id}/templates/{code}");
