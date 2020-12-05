@@ -81,7 +81,7 @@ public interface Template
     RestAction<Void> delete();
 
     /**
-     * The template code
+     * The template code.
      *
      * @return The template code
      */
@@ -89,7 +89,7 @@ public interface Template
     String getCode();
 
     /**
-     * The template name
+     * The template name.
      *
      * @return The template name
      */
@@ -97,7 +97,7 @@ public interface Template
     String getName();
 
     /**
-     * The template description
+     * The template description.
      *
      * @return The template description
      */
@@ -136,7 +136,7 @@ public interface Template
     OffsetDateTime getTimeUpdated();
 
     /**
-     * An {@link net.dv8tion.jda.api.entities.Template.Guild Template.Guild} object
+     * A {@link net.dv8tion.jda.api.entities.Template.Guild Template.Guild} object
      * containing information about this template's origin guild.
      *
      * @return Information about this template's origin guild
@@ -169,7 +169,7 @@ public interface Template
     TemplateManager getManager();
 
     /**
-     * The {@link net.dv8tion.jda.api.JDA JDA} instance used to create this Template
+     * The {@link net.dv8tion.jda.api.JDA JDA} instance used to create this Template.
      *
      * @return The corresponding JDA instance
      */
