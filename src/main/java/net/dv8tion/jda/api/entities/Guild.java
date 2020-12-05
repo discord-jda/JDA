@@ -2212,7 +2212,7 @@ public interface Guild extends ISnowflake
     /**
      * Retrieves all {@link net.dv8tion.jda.api.entities.Invite Invites} for this guild.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
-     * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
+     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * <p>To get all invites for a {@link GuildChannel GuildChannel}
      * use {@link GuildChannel#retrieveInvites() GuildChannel.retrieveInvites()}
@@ -2232,7 +2232,7 @@ public interface Guild extends ISnowflake
     /**
      * Retrieves all {@link net.dv8tion.jda.api.entities.Template Templates} for this guild.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
-     * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
+     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
@@ -2244,6 +2244,26 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     RestAction<List<Template>> retrieveTemplates();
 
+    /**
+     * Used to create a new {@link net.dv8tion.jda.api.entities.Template Template} for this Guild.
+     * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
+     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
+     *
+     * @param  name
+     *         The name of the template
+     * @param  description
+     *         The description the template
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or not between 1-100 characters long
+     * @throws IllegalArgumentException
+     *         If the provided description is not between 0-120 characters long
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Template Template}
+     *         <br>The created Template object
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Template> createTemplate(@Nonnull String name, @Nullable String description);

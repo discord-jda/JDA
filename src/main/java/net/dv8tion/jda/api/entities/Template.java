@@ -50,7 +50,7 @@ public interface Template
     /**
      * Syncs this template.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the template's guild.
-     * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
+     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * @throws IllegalStateException
      *         if the account is not in the template's guild
@@ -67,7 +67,7 @@ public interface Template
     /**
      * Deletes this template.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the template's guild.
-     * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
+     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * @throws IllegalStateException
      *         if the account is not in the template's guild
