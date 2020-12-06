@@ -292,7 +292,9 @@ public interface Guild extends ISnowflake
      *     <li>ANIMATED_ICON - Guild can have an animated icon</li>
      *     <li>BANNER - Guild can have a banner</li>
      *     <li>COMMERCE - Guild can sell software through a store channel</li>
+     *     <li>COMMUNITY - Guild can enable welcome screen and discovery, and receives community updates. See {@link #getRulesChannel()} and {@link #getCommunityUpdatesChannel()}</li>
      *     <li>DISCOVERABLE - Guild shows up in discovery tab</li>
+     *     <li>FEATURABLE - Guild is able to be featured in discovery tab</li>
      *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
      *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
      *     <li>NEWS - Guild can create news channels</li>
