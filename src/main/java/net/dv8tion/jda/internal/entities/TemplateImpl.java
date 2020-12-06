@@ -171,7 +171,7 @@ public class TemplateImpl implements Template
         final net.dv8tion.jda.api.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
 
         if (guild == null)
-            throw new UnsupportedOperationException("Cannot interact with a template without shared guild");
+            throw new IllegalStateException("Cannot interact with a template without shared guild");
         if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(guild, Permission.MANAGE_SERVER);
     }
