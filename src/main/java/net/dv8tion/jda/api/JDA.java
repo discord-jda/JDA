@@ -507,7 +507,7 @@ public interface JDA
     GuildAction createGuild(@Nonnull String name);
 
     /**
-     * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} from the specified code.
+     * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} from the specified template code.
      *
      * <p>This RestAction does not provide the resulting Guild!
      * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
