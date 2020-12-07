@@ -177,7 +177,7 @@ public interface Template
     JDA getJDA();
 
     /**
-     * POJO for the guild information provided by an invite.
+     * POJO for the guild information provided by a template.
      *
      * @see #getGuild()
      */
