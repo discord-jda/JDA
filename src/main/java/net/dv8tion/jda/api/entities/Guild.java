@@ -2252,7 +2252,7 @@ public interface Guild extends ISnowflake
      * @param  name
      *         The name of the template
      * @param  description
-     *         The description the template
+     *         The description of the template
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild
