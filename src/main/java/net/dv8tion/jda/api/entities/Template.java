@@ -31,7 +31,7 @@ import java.time.OffsetDateTime;
  * Representation of a Discord Guild Template
  * This class is immutable.
  *
- * @since  4.2.0
+ * @since  4.2.1
  *
  * @see    #resolve(JDA, String)
  *
