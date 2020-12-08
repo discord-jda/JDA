@@ -2257,9 +2257,8 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or not between 1-100 characters long
-     * @throws IllegalArgumentException
-     *         If the provided description is not between 0-120 characters long
+     *         If the provided name is {@code null} or not between 1-100 characters long, or
+     *         if the provided description is not between 0-120 characters long
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Template Template}
      *         <br>The created Template object

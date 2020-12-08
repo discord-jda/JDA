@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
 
 public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements TemplateManager
 {
-    protected Template template;
-    protected JDA api;
+    protected final Template template;
+    protected final JDA api;
 
     protected String name;
     protected String description;
@@ -89,8 +89,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @CheckReturnValue
     public TemplateManagerImpl setDescription(@Nullable String description)
     {
-        if (description != null)
-            Checks.check(description.length() <= 120, "Provided name must be 0 - 120 characters in length");
+        Checks.check(description == null || description.length() <= 120, "Provided name must be 0 - 120 characters in length");
         this.description = description;
         set |= DESCRIPTION;
         return this;

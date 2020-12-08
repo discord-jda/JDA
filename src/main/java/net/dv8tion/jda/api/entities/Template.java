@@ -149,7 +149,7 @@ public interface Template
     /**
      * Whether or not this template is synced.
      *
-     * @return Whether or not this template is synced
+     * @return True, if this template matches the current guild structure
      */
     boolean isSynced();
 
@@ -169,7 +169,7 @@ public interface Template
     TemplateManager getManager();
 
     /**
-     * The {@link net.dv8tion.jda.api.JDA JDA} instance used to create this Template.
+     * The {@link net.dv8tion.jda.api.JDA JDA} instance used to create this Template instance.
      *
      * @return The corresponding JDA instance
      */

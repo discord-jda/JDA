@@ -985,7 +985,6 @@ public class GuildImpl implements Guild
             throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
 
         final Route.CompiledRoute route = Route.Templates.GET_GUILD_TEMPLATES.compile(getId());
-
         return new RestActionImpl<>(getJDA(), route, (response, request) ->
         {
             EntityBuilder entityBuilder = api.getEntityBuilder();
@@ -1006,8 +1005,7 @@ public class GuildImpl implements Guild
         name = name.trim();
 
         Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-        if (description != null)
-            Checks.check(description.length() <= 120, "Provided name must be 0 - 120 characters in length");
+        Checks.check(description == null || description.length() <= 120, "Provided name must be 0 - 120 characters in length");
 
         final Route.CompiledRoute route = Route.Templates.CREATE_TEMPLATE.compile(getId());
 

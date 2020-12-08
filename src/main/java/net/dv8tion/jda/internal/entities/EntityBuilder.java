@@ -1556,9 +1556,7 @@ public class EntityBuilder
         final User creator = createUser(object.getObject("creator"));
         final OffsetDateTime createdAt = OffsetDateTime.parse(object.getString("created_at"));
         final OffsetDateTime updatedAt = OffsetDateTime.parse(object.getString("updated_at"));
-
         final long guildId = object.getLong("source_guild_id");
-
         final DataObject guildObject = object.getObject("serialized_source_guild");
         final String guildName = guildObject.getString("name");
         final String guildIconId = guildObject.getString("icon_hash", null);

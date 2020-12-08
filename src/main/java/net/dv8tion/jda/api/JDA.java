@@ -517,7 +517,7 @@ public interface JDA
      * @param  name
      *         The name of the resulting guild
      * @param  icon
-     *         The {@link net.dv8tion.jda.api.entities.Icon Icon} to use
+     *         The {@link net.dv8tion.jda.api.entities.Icon Icon} to use, or null to use no icon
      *
      * @throws java.lang.IllegalStateException
      *         If the currently logged in account is in 10 or more guilds
