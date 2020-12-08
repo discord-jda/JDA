@@ -2249,6 +2249,12 @@ public interface Guild extends ISnowflake
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#ALREADY_HAS_TEMPLATE Guild already has a template}
+     *     <br>The template doesn't exist.</li>
+     * </ul>
+     *
      * @param  name
      *         The name of the template
      * @param  description

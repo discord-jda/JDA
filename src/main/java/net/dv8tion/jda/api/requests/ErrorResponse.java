@@ -71,6 +71,7 @@ public enum ErrorResponse
     TOO_MANY_REACTIONS(             30010, "Maximum number of reactions reached (20)"),
     MAX_CHANNELS(                   30013, "Maximum number of guild channels reached (500)"),
     MAX_INVITES(                    30016, "Maximum number of invites reached (1000)"),
+    ALREADY_HAS_TEMPLATE(           30031, "Guild already has a template"),
     UNAUTHORIZED(                   40001, "Unauthorized"),
     REQUEST_ENTITY_TOO_LARGE(       40005, "Request entity too large"),
     USER_NOT_CONNECTED(             40032, "Target user is not connected to voice."),

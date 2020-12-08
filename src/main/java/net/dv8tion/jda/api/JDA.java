@@ -512,6 +512,12 @@ public interface JDA
      * <p>This RestAction does not provide the resulting Guild!
      * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
      *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_TEMPLATE Unknown Guild Template}
+     *     <br>The template doesn't exist.</li>
+     * </ul>
+     *
      * @param  code
      *         The template code to use to create a guild
      * @param  name
