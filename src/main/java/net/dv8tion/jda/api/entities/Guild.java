@@ -588,11 +588,10 @@ public interface Guild extends ISnowflake
     TextChannel getSystemChannel();
 
     /**
-     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that has been set as the channel
-     * which rules are in.
-     * <br>If this guild doesn't have the COMMUNITY updates feature, this returns {@code null}.
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that lists the rules of the guild.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the rules Channel.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the rules channel
      *
      * @see    #getFeatures()
      */
@@ -600,11 +599,10 @@ public interface Guild extends ISnowflake
     TextChannel getRulesChannel();
 
     /**
-     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that has been set as the channel
-     * which community updates messages will be sent in.
-     * <br>If this guild doesn't have the COMMUNITY updates feature, this returns {@code null}.
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that receives community updates.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
      *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the community updates Channel.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the community updates channel
      *
      * @see    #getFeatures()
      */
