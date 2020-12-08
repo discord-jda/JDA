@@ -37,7 +37,8 @@ public class ReadyEvent extends Event
     {
         super(api, responseNumber);
         this.availableGuilds = (int) getJDA().getGuildCache().size();
-        this.unavailableGuilds = ((JDAImpl) getJDA()).getGuildSetupController().getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size();
+        GuildSetupController setupController = ((JDAImpl) getJDA()).getGuildSetupController();
+        this.unavailableGuilds = setupController.getSetupNodes(GuildSetupController.Status.UNAVAILABLE).size() + setupController.getUnavailableGuilds().size();
     }
 
     /**
