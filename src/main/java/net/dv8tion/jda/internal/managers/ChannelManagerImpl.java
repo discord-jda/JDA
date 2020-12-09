@@ -96,6 +96,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             this.parent = null;
         if ((fields & TOPIC) == TOPIC)
             this.topic = null;
+        if ((fields & NEWS) == NEWS)
+            this.news = false;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -125,6 +127,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         this.name = null;
         this.parent = null;
         this.topic = null;
+        this.news = false;
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
