@@ -244,7 +244,7 @@ public class TemplateImpl implements Template
         public String getIconUrl()
         {
             return this.iconId == null ? null
-                    : "https://cdn.discordapp.com/icons/" + this.id + "/" + this.iconId + ".png";
+                    : String.format(net.dv8tion.jda.api.entities.Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
         }
 
         @Override
