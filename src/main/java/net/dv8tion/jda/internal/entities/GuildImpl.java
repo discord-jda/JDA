@@ -991,7 +991,16 @@ public class GuildImpl implements Guild
             DataArray array = response.getArray();
             List<Template> templates = new ArrayList<>(array.length());
             for (int i = 0; i < array.length(); i++)
-                templates.add(entityBuilder.createTemplate(array.getObject(i)));
+            {
+                try
+                {
+                    templates.add(entityBuilder.createTemplate(array.getObject(i)));
+                }
+                catch (Exception e)
+                {
+                    JDAImpl.LOG.error("Error creating template from json", e);
+                }
+            }
             return Collections.unmodifiableList(templates);
         });
     }
