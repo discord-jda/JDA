@@ -215,11 +215,8 @@ public interface Activity
      *         If the specified name is null, empty, blank or longer than 128 characters
      * 
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#COMPETING}
-     *
-     * @incubating This feature is not yet confirmed for the official bot API
      */
     @Nonnull
-    @Incubating
     static Activity competing(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
