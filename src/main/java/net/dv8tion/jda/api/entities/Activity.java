@@ -224,7 +224,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in lentgh");
+        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
         return EntityBuilder.createActivity(name, null, ActivityType.COMPETING);
     }
 
