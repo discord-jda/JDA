@@ -788,7 +788,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * All {@link net.dv8tion.jda.api.entities.MessageSticker MessageStickers} that are in this Message.
      *
-     * @return Immutable list of all MessageStickers on this message.
+     * @return Immutable list of all MessageStickers in this message.
      */
     @Nonnull
     List<MessageSticker> getStickers();
