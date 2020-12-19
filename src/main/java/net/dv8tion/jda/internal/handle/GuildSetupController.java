@@ -44,7 +44,7 @@ public class GuildSetupController
 {
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
 
-    private static final long timeoutDuration = 10; // seconds
+    private static final long timeoutDuration = 75; // seconds
     private static final int timeoutThreshold = 60; // Half of 120 rate limit
 
     private final JDAImpl api;
