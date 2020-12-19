@@ -29,7 +29,7 @@ import java.time.OffsetDateTime;
 
 /**
  * Representation of a Discord Guild Template
- * This class is immutable.
+ * <br>This class is immutable.
  *
  * @since  4.2.1
  *
