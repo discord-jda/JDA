@@ -83,10 +83,10 @@ public class ReceivedMessage extends AbstractMessage
     protected List<String> invites = null;
 
     public ReceivedMessage(
-            long id, MessageChannel channel, MessageType type, Message referencedMessage,
-            boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
-            String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-            List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
+        long id, MessageChannel channel, MessageType type, Message referencedMessage,
+        boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
+        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
     {
         super(content, nonce, tts);
         this.id = id;
