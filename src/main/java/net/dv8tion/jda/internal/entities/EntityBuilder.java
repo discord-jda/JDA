@@ -406,7 +406,6 @@ public class EntityBuilder
                 VoiceChannelImpl connectedChannel = (VoiceChannelImpl) voiceState.getChannel();
                 if (connectedChannel != null)
                     connectedChannel.getConnectedMembersMap().remove(member.getIdLong());
-                voiceState.setConnectedChannel(null);
             }
 
             return false;
@@ -523,8 +522,7 @@ public class EntityBuilder
                   .setGuildDeafened(voiceStateJson.getBoolean("deaf"))
                   .setSuppressed(voiceStateJson.getBoolean("suppress"))
                   .setSessionId(voiceStateJson.getString("session_id"))
-                  .setStream(voiceStateJson.getBoolean("self_stream"))
-                  .setConnectedChannel(voiceChannel);
+                  .setStream(voiceStateJson.getBoolean("self_stream"));
     }
 
     public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
