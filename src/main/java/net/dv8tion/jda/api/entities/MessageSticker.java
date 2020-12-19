@@ -35,7 +35,8 @@ public class MessageSticker implements ISnowflake
     private final StickerFormat formatType;
     private final Set<String> tags;
 
-    private static final String STICKER_URL = "https://cdn.discordapp.com/stickers/%s/%s.png";
+    /** Template for {@link #getStickerUrl()} ()} */
+    public static final String STICKER_URL = "https://cdn.discordapp.com/stickers/%s/%s.png";
 
     public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final String previewAsset, final StickerFormat formatType, final Set<String> tags)
     {
