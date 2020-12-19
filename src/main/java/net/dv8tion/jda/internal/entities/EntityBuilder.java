@@ -1572,8 +1572,9 @@ public class EntityBuilder
         final Locale locale = Locale.forLanguageTag(guildObject.getString("preferred_locale", "en"));
         final Timeout afkTimeout = Guild.Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
         final DataArray roleArray = guildObject.getArray("roles");
-        final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L);
-        final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L);
+        final DataArray channelsArray = guildObject.getArray("channels"); // TODO actually implement this
+        final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L); // TODO actually implement this
+        final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L); // TODO actually implement this
 
         final List<Template.Role> roles = new ArrayList<>();
         for (int i = 0; i < roleArray.length(); i++)
