@@ -17,7 +17,12 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
+import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
+import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
+import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.managers.TemplateManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.entities.TemplateImpl;
@@ -25,7 +30,11 @@ import net.dv8tion.jda.internal.entities.TemplateImpl;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Representation of a Discord Guild Template
@@ -199,6 +208,45 @@ public interface Template
     interface Guild extends ISnowflake
     {
         /**
+         * The name of this guild.
+         *
+         * @return The guild's name
+         */
+        @Nonnull
+        String getName();
+
+        /**
+         * The description for this guild.
+         * <br>This is displayed in the server browser below the guild name for verified guilds.
+         *
+         * @return The description
+         */
+        @Nullable
+        String getDescription();
+
+        /**
+         * The Voice {@link net.dv8tion.jda.api.Region Region} that this Guild is using for audio connections.
+         * <br>If the Region is not recognized, this returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN} but you
+         * can still use the {@link #getRegionRaw()} to retrieve the raw name this region has.
+         *
+         * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
+         */
+        @Nonnull
+        default Region getRegion()
+        {
+            return Region.fromKey(getRegionRaw());
+        }
+
+        /**
+         * The raw voice region name that this Guild is using for audio connections.
+         * <br>This is resolved to an enum constant of {@link net.dv8tion.jda.api.Region Region} by {@link #getRegion()}!
+         *
+         * @return Raw region name
+         */
+        @Nonnull
+        String getRegionRaw();
+
+        /**
          * The icon id of this guild.
          *
          * @return The guild's icon id
@@ -219,19 +267,116 @@ public interface Template
         String getIconUrl();
 
         /**
-         * The name of this guild.
-         *
-         * @return The guild's name
-         */
-        @Nonnull
-        String getName();
-
-        /**
          * Returns the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of this guild.
          *
          * @return the verification level of the guild
          */
         @Nonnull
         VerificationLevel getVerificationLevel();
+
+        /**
+         * Returns the {@link net.dv8tion.jda.api.entities.Guild.NotificationLevel NotificationLevel} of this guild.
+         *
+         * @return the notification level of the guild
+         */
+        @Nonnull
+        NotificationLevel getDefaultNotificationLevel();
+
+        /**
+         * Returns the {@link net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel ExplicitContentLevel} of this guild.
+         *
+         * @return the explicit content level of the guild
+         */
+        @Nonnull
+        ExplicitContentLevel getExplicitContentLevel();
+
+        /**
+         * The preferred locale for this guild.
+         *
+         * @return The preferred {@link Locale} for this guild
+         */
+        @Nonnull
+        Locale getLocale();
+
+        /**
+         * Returns the {@link net.dv8tion.jda.api.entities.Guild.Timeout AFK Timeout} for this guild.
+         *
+         * @return the afk timeout for this guild
+         */
+        @Nonnull
+        Timeout getAfkTimeout();
+
+        /**
+         * Gets all {@link net.dv8tion.jda.api.entities.Template.Role Roles} in this {@link net.dv8tion.jda.api.entities.Template.Guild Guild}.
+         *
+         * @return An immutable List of {@link net.dv8tion.jda.api.entities.Template.Role Roles}.
+         */
+        @Nonnull
+        List<Role> getRoles();
+    }
+
+    /**
+     * POJO for the roles information provided by a template.
+     *
+     * @see Guild#getRoles()
+     */
+    interface Role extends ISnowflake
+    {
+        /**
+         * The Name of this {@link net.dv8tion.jda.api.entities.Template.Role Role}.
+         *
+         * @return Never-null String containing the name of this {@link net.dv8tion.jda.api.entities.Template.Role Role}.
+         */
+        @Nonnull
+        String getName();
+
+        /**
+         * The color this {@link net.dv8tion.jda.api.entities.Template.Role Role} is displayed in.
+         *
+         * @return Color value of Role-color
+         *
+         * @see    #getColorRaw()
+         */
+        @Nullable
+        Color getColor();
+
+        /**
+         * The raw color RGB value used for this role
+         * <br>Defaults to {@link net.dv8tion.jda.api.entities.Role#DEFAULT_COLOR_RAW} if this role has no set color
+         *
+         * @return The raw RGB color value or default
+         */
+        int getColorRaw();
+
+        /**
+         * Whether this {@link net.dv8tion.jda.api.entities.Template.Role Role} is hoisted
+         * <br>Members in a hoisted role are displayed in their own grouping on the user-list
+         *
+         * @return True, if this {@link net.dv8tion.jda.api.entities.Template.Role Role} is hoisted.
+         */
+        boolean isHoisted();
+
+        /**
+         * Whether or not this Role is mentionable
+         *
+         * @return True, if Role is mentionable.
+         */
+        boolean isMentionable();
+
+        /**
+         * The Guild-Wide Permissions this PermissionHolder holds.
+         * <br><u>Changes to the returned set do not affect this entity directly.</u>
+         *
+         * @return An EnumSet of Permissions granted to this PermissionHolder.
+         */
+        @Nonnull
+        EnumSet<Permission> getPermissions();
+
+        /**
+         * The {@code long} representation of the literal permissions that this {@link net.dv8tion.jda.api.entities.Template.Role Role} has.
+         *
+         * @return Never-negative long containing offset permissions of this role.
+         */
+        long getPermissionsRaw();
     }
 }

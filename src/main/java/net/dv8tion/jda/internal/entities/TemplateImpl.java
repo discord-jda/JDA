@@ -18,6 +18,10 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
+import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
+import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.Template;
 import net.dv8tion.jda.api.entities.User;
@@ -33,7 +37,12 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class TemplateImpl implements Template
@@ -220,16 +229,64 @@ public class TemplateImpl implements Template
 
     public static class GuildImpl implements Guild
     {
-        private final String name, iconId;
         private final long id;
+        private final String name, description, region, iconId;
         private final VerificationLevel verificationLevel;
+        private final NotificationLevel notificationLevel;
+        private final ExplicitContentLevel explicitContentLevel;
+        private final Locale locale;
+        private final Timeout afkTimeout;
+        private final List<Template.Role> roles;
 
-        public GuildImpl(final long id, final String iconId, final String name, final VerificationLevel verificationLevel)
+        public GuildImpl(final long id, final String name, final String description, final String region, final String iconId, final VerificationLevel verificationLevel,
+                         final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final Locale locale, final Timeout afkTimeout,
+                         final List<Template.Role> roles)
         {
             this.id = id;
-            this.iconId = iconId;
             this.name = name;
+            this.description = description;
+            this.region = region;
+            this.iconId = iconId;
             this.verificationLevel = verificationLevel;
+            this.notificationLevel = notificationLevel;
+            this.explicitContentLevel = explicitContentLevel;
+            this.locale = locale;
+            this.afkTimeout = afkTimeout;
+            this.roles = roles;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return this.id;
+        }
+
+        @Nonnull
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Nullable
+        @Override
+        public String getDescription()
+        {
+            return this.description;
+        }
+
+        @Nonnull
+        @Override
+        public Region getRegion()
+        {
+            return Region.fromKey(region);
+        }
+
+        @Nonnull
+        @Override
+        public String getRegionRaw()
+        {
+            return region;
         }
 
         @Nullable
@@ -247,6 +304,68 @@ public class TemplateImpl implements Template
                     : String.format(net.dv8tion.jda.api.entities.Guild.ICON_URL, this.id, this.iconId, iconId.startsWith("a_") ? "gif" : "png");
         }
 
+        @Nonnull
+        @Override
+        public VerificationLevel getVerificationLevel()
+        {
+            return this.verificationLevel;
+        }
+
+        @Nonnull
+        @Override
+        public NotificationLevel getDefaultNotificationLevel()
+        {
+            return this.notificationLevel;
+        }
+
+        @Nonnull
+        @Override
+        public ExplicitContentLevel getExplicitContentLevel()
+        {
+            return this.explicitContentLevel;
+        }
+
+        @Nonnull
+        @Override
+        public Locale getLocale()
+        {
+            return this.locale;
+        }
+
+        @Nonnull
+        @Override
+        public Timeout getAfkTimeout()
+        {
+            return this.afkTimeout;
+        }
+
+        @Nonnull
+        @Override
+        public List<Role> getRoles()
+        {
+            return Collections.unmodifiableList(this.roles);
+        }
+    }
+
+    public static class RoleImpl implements Role
+    {
+        private final long id;
+        private final String name;
+        private final int color;
+        private final boolean hoisted;
+        private final boolean mentionable;
+        private final long rawPermissions;
+
+        public RoleImpl(final long id, final String name, final int color, final boolean hoisted, final boolean mentionable, final long rawPermissions)
+        {
+            this.id = id;
+            this.name = name;
+            this.color = color;
+            this.hoisted = hoisted;
+            this.mentionable = mentionable;
+            this.rawPermissions = rawPermissions;
+        }
+
         @Override
         public long getIdLong()
         {
@@ -260,11 +379,42 @@ public class TemplateImpl implements Template
             return this.name;
         }
 
+        @Nullable
+        @Override
+        public Color getColor()
+        {
+            return this.color == net.dv8tion.jda.api.entities.Role.DEFAULT_COLOR_RAW ? null : new Color(this.color);
+        }
+
+        @Override
+        public int getColorRaw()
+        {
+            return this.color;
+        }
+
+        @Override
+        public boolean isHoisted()
+        {
+            return this.hoisted;
+        }
+
+        @Override
+        public boolean isMentionable()
+        {
+            return this.mentionable;
+        }
+
         @Nonnull
         @Override
-        public VerificationLevel getVerificationLevel()
+        public EnumSet<Permission> getPermissions()
         {
-            return this.verificationLevel;
+            return Permission.getPermissions(rawPermissions);
+        }
+
+        @Override
+        public long getPermissionsRaw()
+        {
+            return rawPermissions;
         }
     }
 }

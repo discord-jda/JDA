@@ -22,11 +22,15 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogChange;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
+import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
+import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
+import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
@@ -1427,7 +1431,7 @@ public class EntityBuilder
 
         Optional<DataObject> ownerJson = object.optObject("user");
         User owner = null;
-        
+
         if (ownerJson.isPresent())
         {
             DataObject json = ownerJson.get();
@@ -1440,7 +1444,7 @@ public class EntityBuilder
                 owner = createUser(json);
             }
         }
-        
+
         return new WebhookImpl(channel, id, type)
                 .setToken(token)
                 .setOwner(owner == null ? null : channel.getGuild().getMember(owner))
@@ -1559,10 +1563,33 @@ public class EntityBuilder
         final long guildId = object.getLong("source_guild_id");
         final DataObject guildObject = object.getObject("serialized_source_guild");
         final String guildName = guildObject.getString("name");
+        final String guildDescription = guildObject.getString("description", null);
+        final String region = guildObject.getString("region", null);
         final String guildIconId = guildObject.getString("icon_hash", null);
         final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
+        final NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(guildObject.getInt("default_message_notifications", 0));
+        final ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(guildObject.getInt("explicit_content_filter", 0));
+        final Locale locale = Locale.forLanguageTag(guildObject.getString("preferred_locale", "en"));
+        final Timeout afkTimeout = Guild.Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
+        final DataArray roleArray = guildObject.getArray("roles");
+        final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L);
+        final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L);
 
-        final Template.Guild guild = new TemplateImpl.GuildImpl(guildId, guildName, guildIconId, guildVerificationLevel);
+        final List<Template.Role> roles = new ArrayList<>();
+        for (int i = 0; i < roleArray.length(); i++)
+        {
+               DataObject obj = roleArray.getObject(i);
+               final long roleId = obj.getLong("id");
+               final String roleName = obj.getString("name");
+               final int roleColor = obj.getInt("color");
+               final boolean hoisted = obj.getBoolean("hoist");
+               final boolean mentionable = obj.getBoolean("mentionable");
+               final long rawPermissions = obj.getLong("permissions");
+               roles.add(new TemplateImpl.RoleImpl(roleId, roleName, roleColor == 0 ? Role.DEFAULT_COLOR_RAW : roleColor, hoisted, mentionable, rawPermissions));
+        }
+
+        final Template.Guild guild = new TemplateImpl.GuildImpl(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
+                afkTimeout, roles);
 
         final boolean synced = !object.getBoolean("is_dirty", false);
 
