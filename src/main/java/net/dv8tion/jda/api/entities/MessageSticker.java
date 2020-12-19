@@ -98,9 +98,9 @@ public class MessageSticker implements ISnowflake
     }
 
     /**
-     * The asset hash of the sticker.
+     * The Discord hash-id of the sticker.
      *
-     * @return the asset hash of the sticker
+     * @return the Discord hash-id of the sticker
      */
     @Nonnull
     public String getAsset()
@@ -111,7 +111,7 @@ public class MessageSticker implements ISnowflake
     /**
      * The preview asset hash of the sticker.
      *
-     * @return the preview asset hash of the sticker or {@code null} if the sticker has no preview asset
+     * @return the Discord hash-id of the preview image of the sticker or {@code null} if the sticker has no preview image
      */
     @Nullable
     public String getPreviewAsset()
