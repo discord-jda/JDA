@@ -69,9 +69,9 @@ public interface GuildManager extends Manager<GuildManager>
     /** Used to reset the banner field */
     long BANNER                 = 0x800;
     /** Used to reset the vanity code field */
-    long VANITY_URL   = 0x1000;
+    long VANITY_URL                 = 0x1000;
     /** Used to reset the description field */
-    long DESCRIPTION  = 0x2000;
+    long DESCRIPTION                = 0x2000;
     /** Used to reset the rules channel field */
     long RULES_CHANNEL              = 0x4000;
     /** Used to reset the community updates channel field */
