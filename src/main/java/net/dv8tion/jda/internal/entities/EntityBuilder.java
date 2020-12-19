@@ -1093,6 +1093,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+        final List<MessageSticker>     stickers    = map(jsonObject, "stickers",    this::createSticker);
 
         MessageActivity activity = null;
 
@@ -1153,14 +1154,14 @@ public class EntityBuilder
             case DEFAULT:
                 message = new ReceivedMessage(id, chan, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
                 break;
             case UNKNOWN:
                 throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
             default:
                 message = new SystemMessage(id, chan, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
                 break;
         }
 
@@ -1374,6 +1375,18 @@ public class EntityBuilder
     {
         return new MessageEmbed(url, title, description, type, timestamp,
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
+    }
+
+    public MessageSticker createSticker(DataObject content)
+    {
+        final long id = content.getLong("id");
+        final long packId = content.getLong("pack_id");
+        final String name = content.getString("name");
+        final String description = content.getString("description");
+        final String asset = content.getString("asset");
+        final String previewAsset = content.getString("preview_asset", null);
+        final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
+        return new MessageSticker(id, packId, name, description, asset, previewAsset, format);
     }
 
     @Nullable

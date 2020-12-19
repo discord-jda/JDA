@@ -786,6 +786,14 @@ public interface Message extends ISnowflake, Formattable
     List<MessageReaction> getReactions();
 
     /**
+     * All {@link net.dv8tion.jda.api.entities.MessageReaction MessageReactions} that are in this Message.
+     *
+     * @return Immutable list of all MessageStickers on this message.
+     */
+    @Nonnull
+    List<MessageSticker> getStickers();
+
+    /**
      * Defines whether or not this Message triggers TTS (Text-To-Speech).
      *
      * @return If this message is TTS.
