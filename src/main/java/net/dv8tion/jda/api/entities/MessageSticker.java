@@ -2,42 +2,35 @@ package net.dv8tion.jda.api.entities;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Set;
 
 public class MessageSticker implements ISnowflake
 {
     private final long id;
-    private final long packId;
     private final String name;
     private final String description;
+    private final long packId;
     private final String asset;
     private final String previewAsset;
     private final StickerFormat formatType;
+    private final Set<String> tags;
 
-    public MessageSticker(final long id, final long packId, final String name, final String description, final String asset, final String previewAsset, final StickerFormat formatType)
+    public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final String previewAsset, final StickerFormat formatType, final Set<String> tags)
     {
         this.id = id;
-        this.packId = packId;
         this.name = name;
         this.description = description;
+        this.packId = packId;
         this.asset = asset;
         this.previewAsset = previewAsset;
         this.formatType = formatType;
+        this.tags = tags;
     }
 
     @Override
     public long getIdLong()
     {
         return id;
-    }
-
-    /**
-     * The ID of the pack the sticker is from.
-     *
-     * @return the ID of the pack the sticker is from
-     */
-    public long getPackId()
-    {
-        return packId;
     }
 
     /**
@@ -60,6 +53,26 @@ public class MessageSticker implements ISnowflake
     public String getDescription()
     {
         return description;
+    }
+
+    /**
+     * The ID of the pack the sticker is from.
+     *
+     * @return the ID of the pack the sticker is from
+     */
+    public String getPackId()
+    {
+        return Long.toUnsignedString(getPackIdLong());
+    }
+
+    /**
+     * The ID of the pack the sticker is from.
+     *
+     * @return the ID of the pack the sticker is from
+     */
+    public long getPackIdLong()
+    {
+        return packId;
     }
 
     /**
@@ -104,6 +117,17 @@ public class MessageSticker implements ISnowflake
     public StickerFormat getFormatType()
     {
         return formatType;
+    }
+
+    /**
+     * Set of tags of the sticker.
+     *
+     * @return Possibly-empty unmodifiable Set of tags of the sticker
+     */
+    @Nonnull
+    public Set<String> getTags()
+    {
+        return tags;
     }
 
     public enum StickerFormat

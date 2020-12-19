@@ -1380,13 +1380,22 @@ public class EntityBuilder
     public MessageSticker createSticker(DataObject content)
     {
         final long id = content.getLong("id");
-        final long packId = content.getLong("pack_id");
         final String name = content.getString("name");
         final String description = content.getString("description");
+        final long packId = content.getLong("pack_id");
         final String asset = content.getString("asset");
         final String previewAsset = content.getString("preview_asset", null);
         final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
-        return new MessageSticker(id, packId, name, description, asset, previewAsset, format);
+        final Set<String> tags;
+        if (content.isNull("tags"))
+            tags = Collections.emptySet();
+        else
+        {
+            final String[] split = content.getString("tags").split(", ");
+            final Set<String> tmp = new HashSet<>(Arrays.asList(split));
+            tags = Collections.unmodifiableSet(tmp);
+        }
+        return new MessageSticker(id, name, description, packId, asset, previewAsset, format, tags);
     }
 
     @Nullable
