@@ -1,3 +1,5 @@
+package net.dv8tion.jda.api.entities;
+
 /*
  * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
@@ -13,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
@@ -43,7 +44,7 @@ import java.util.Objects;
  * @see EmbedBuilder
  * @see Message#getEmbeds()
  */
-public class MessageEmbed implements SerializableData
+public class MessageEmbed implements SerializableData, Cloneable
 {
     /**
      * The maximum length an embed title can have
@@ -119,9 +120,9 @@ public class MessageEmbed implements SerializableData
     protected volatile DataObject json = null;
 
     public MessageEmbed(
-        String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
-        int color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
-        VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
+            String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
+            int color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
+            VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)
     {
         this.url = url;
         this.title = title;
@@ -136,11 +137,23 @@ public class MessageEmbed implements SerializableData
         this.footer = footer;
         this.image = image;
         this.fields = fields != null && !fields.isEmpty()
-            ? Collections.unmodifiableList(fields) : Collections.emptyList();
+                ? Collections.unmodifiableList(fields) : Collections.emptyList();
     }
 
     /**
-     * The that was originally placed into chat that spawned this embed.
+     * <br>Creates a clone of the object that called the method.
+     * 
+     * @return A new instance of MessageEmbed with the same values as the object that called it.
+     */
+    @Override
+    public Object clone() {
+        return new MessageEmbed(image.url, title, description, type, timestamp,
+                                color, thumbnail, siteProvider, author, videoInfo,
+                                footer, image, fields);
+    }
+
+    /**
+     * The URL that was originally placed into chat that spawned this embed.
      *
      * @return Possibly-null String containing the original message url.
      */
@@ -240,7 +253,7 @@ public class MessageEmbed implements SerializableData
     {
         return videoInfo;
     }
-    
+
     /**
      * The footer (bottom) of the embedded content.
      * <br>This is typically used for timestamps or site icons.
@@ -253,7 +266,7 @@ public class MessageEmbed implements SerializableData
     {
         return footer;
     }
-    
+
     /**
      * The information about the image in the message embed
      *
@@ -265,7 +278,7 @@ public class MessageEmbed implements SerializableData
     {
         return image;
     }
-    
+
     /**
      * The fields in a message embed.
      * <br>Message embeds can contain multiple fields, each with a name, value, and a boolean
@@ -280,7 +293,7 @@ public class MessageEmbed implements SerializableData
     {
         return fields;
     }
-    
+
     /**
      * The color of the stripe on the side of the embed.
      * <br>If the color is 0 (no color), this will return null.
@@ -303,7 +316,7 @@ public class MessageEmbed implements SerializableData
     {
         return color;
     }
-    
+
     /**
      * The timestamp of the embed.
      *
@@ -323,10 +336,10 @@ public class MessageEmbed implements SerializableData
     public boolean isEmpty()
     {
         return color == Role.DEFAULT_COLOR_RAW
-            && timestamp == null
-            && getImage() == null
-            && getThumbnail() == null
-            && getLength() == 0;
+                && timestamp == null
+                && getImage() == null
+                && getThumbnail() == null
+                && getLength() == 0;
     }
 
     /**
@@ -430,18 +443,18 @@ public class MessageEmbed implements SerializableData
             return true;
         MessageEmbed other = (MessageEmbed) obj;
         return Objects.equals(url, other.url)
-            && Objects.equals(title, other.title)
-            && Objects.equals(description, other.description)
-            && Objects.equals(type, other.type)
-            && Objects.equals(thumbnail, other.thumbnail)
-            && Objects.equals(siteProvider, other.siteProvider)
-            && Objects.equals(author, other.author)
-            && Objects.equals(videoInfo, other.videoInfo)
-            && Objects.equals(footer, other.footer)
-            && Objects.equals(image, other.image)
-            && (color & 0xFFFFFF) == (other.color & 0xFFFFFF)
-            && Objects.equals(timestamp, other.timestamp)
-            && Helpers.deepEquals(fields, other.fields);
+                && Objects.equals(title, other.title)
+                && Objects.equals(description, other.description)
+                && Objects.equals(type, other.type)
+                && Objects.equals(thumbnail, other.thumbnail)
+                && Objects.equals(siteProvider, other.siteProvider)
+                && Objects.equals(author, other.author)
+                && Objects.equals(videoInfo, other.videoInfo)
+                && Objects.equals(footer, other.footer)
+                && Objects.equals(image, other.image)
+                && (color & 0xFFFFFF) == (other.color & 0xFFFFFF)
+                && Objects.equals(timestamp, other.timestamp)
+                && Helpers.deepEquals(fields, other.fields);
     }
 
     /**
@@ -512,10 +525,10 @@ public class MessageEmbed implements SerializableData
                 for (Field field : fields)
                 {
                     fieldsArray
-                        .add(DataObject.empty()
-                            .put("name", field.getName())
-                            .put("value", field.getValue())
-                            .put("inline", field.isInline()));
+                            .add(DataObject.empty()
+                                    .put("name", field.getName())
+                                    .put("value", field.getValue())
+                                    .put("inline", field.isInline()));
                 }
                 obj.put("fields", fieldsArray);
             }
@@ -592,9 +605,9 @@ public class MessageEmbed implements SerializableData
                 return false;
             Thumbnail thumbnail = (Thumbnail) obj;
             return thumbnail == this || (Objects.equals(thumbnail.url, url)
-                && Objects.equals(thumbnail.proxyUrl, proxyUrl)
-                && thumbnail.width == width
-                && thumbnail.height == height);
+                    && Objects.equals(thumbnail.proxyUrl, proxyUrl)
+                    && thumbnail.width == width
+                    && thumbnail.height == height);
         }
     }
 
@@ -644,7 +657,7 @@ public class MessageEmbed implements SerializableData
                 return false;
             Provider provider = (Provider) obj;
             return provider == this || (Objects.equals(provider.name, name)
-                && Objects.equals(provider.url, url));
+                    && Objects.equals(provider.url, url));
         }
     }
 
@@ -711,11 +724,11 @@ public class MessageEmbed implements SerializableData
                 return false;
             VideoInfo video = (VideoInfo) obj;
             return video == this || (Objects.equals(video.url, url)
-                && video.width == width
-                && video.height == height);
+                    && video.width == width
+                    && video.height == height);
         }
     }
-    
+
     /**
      * Represents the information provided to embed an image.
      */
@@ -744,7 +757,7 @@ public class MessageEmbed implements SerializableData
         {
             return url;
         }
-        
+
         /**
          * The url of the image, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -784,12 +797,12 @@ public class MessageEmbed implements SerializableData
                 return false;
             ImageInfo image = (ImageInfo) obj;
             return image == this || (Objects.equals(image.url, url)
-                && Objects.equals(image.proxyUrl, proxyUrl)
-                && image.width == width
-                && image.height == height);
+                    && Objects.equals(image.proxyUrl, proxyUrl)
+                    && image.width == width
+                    && image.height == height);
         }
     }
-    
+
     /**
      * Class that represents the author of content, possibly including an icon
      * that Discord proxies.
@@ -831,7 +844,7 @@ public class MessageEmbed implements SerializableData
         {
             return url;
         }
-        
+
         /**
          * The url of the author's icon.
          *
@@ -842,7 +855,7 @@ public class MessageEmbed implements SerializableData
         {
             return iconUrl;
         }
-        
+
         /**
          * The url of the author's icon, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -862,12 +875,12 @@ public class MessageEmbed implements SerializableData
                 return false;
             AuthorInfo author = (AuthorInfo) obj;
             return author == this || (Objects.equals(author.name, name)
-                && Objects.equals(author.url, url)
-                && Objects.equals(author.iconUrl, iconUrl)
-                && Objects.equals(author.proxyIconUrl, proxyIconUrl));
+                    && Objects.equals(author.url, url)
+                    && Objects.equals(author.iconUrl, iconUrl)
+                    && Objects.equals(author.proxyIconUrl, proxyIconUrl));
         }
     }
-    
+
     /**
      * Class that represents a footer at the bottom of an embed
      */
@@ -894,7 +907,7 @@ public class MessageEmbed implements SerializableData
         {
             return text;
         }
-        
+
         /**
          * The url of the footer's icon.
          *
@@ -905,7 +918,7 @@ public class MessageEmbed implements SerializableData
         {
             return iconUrl;
         }
-        
+
         /**
          * The url of the footer's icon, proxied by Discord
          * <br>This url is used to access the image through Discord instead of directly to prevent ip scraping.
@@ -925,11 +938,11 @@ public class MessageEmbed implements SerializableData
                 return false;
             Footer footer = (Footer) obj;
             return footer == this || (Objects.equals(footer.text, text)
-                && Objects.equals(footer.iconUrl, iconUrl)
-                && Objects.equals(footer.proxyIconUrl, proxyIconUrl));
+                    && Objects.equals(footer.iconUrl, iconUrl)
+                    && Objects.equals(footer.proxyIconUrl, proxyIconUrl));
         }
     }
-    
+
     /**
      * Represents a field in an embed. A single embed contains an array of
      * embed fields, each with a name and value, and a boolean determining if
@@ -974,7 +987,7 @@ public class MessageEmbed implements SerializableData
                 this.inline = inline;
             }
         }
-        
+
         public Field(String name, String value, boolean inline)
         {
             this(name, value, inline, true);
@@ -1001,7 +1014,7 @@ public class MessageEmbed implements SerializableData
         {
             return value;
         }
-        
+
         /**
          * If the field is in line.
          *
@@ -1019,8 +1032,8 @@ public class MessageEmbed implements SerializableData
                 return false;
             final Field field = (Field) obj;
             return field == this || (field.inline == inline
-                && Objects.equals(field.name, name)
-                && Objects.equals(field.value, value));
+                    && Objects.equals(field.name, name)
+                    && Objects.equals(field.value, value));
         }
     }
 }
