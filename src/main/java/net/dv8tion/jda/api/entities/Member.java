@@ -304,6 +304,14 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     boolean isOwner();
 
     /**
+     * Checks whether this member has passed the {@link net.dv8tion.jda.api.entities.Guild Guild's}
+     * Membership Screening requirements.
+     *
+     * @return True, if this member hasn't passed the guild's Membership Screening requirements
+     */
+    boolean isPending();
+
+    /**
      * The default {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} for a {@link net.dv8tion.jda.api.entities.Member Member}.
      * <br>This is the channel that the Discord client will default to opening when a Guild is opened for the first time
      * after joining the guild.

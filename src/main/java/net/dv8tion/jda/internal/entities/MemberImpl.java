@@ -49,6 +49,7 @@ public class MemberImpl implements Member
     private long joinDate, boostDate;
     private List<Activity> activities = null;
     private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
+    private boolean pending = false;
 
     public MemberImpl(GuildImpl guild, User user)
     {
@@ -286,6 +287,12 @@ public class MemberImpl implements Member
     }
 
     @Override
+    public boolean isPending()
+    {
+        return this.pending;
+    }
+
+    @Override
     public long getIdLong()
     {
         return user.getIdLong();
@@ -329,6 +336,12 @@ public class MemberImpl implements Member
     public MemberImpl setOnlineStatus(OnlineStatus onlineStatus)
     {
         this.onlineStatus = onlineStatus;
+        return this;
+    }
+
+    public MemberImpl setPending(boolean pending)
+    {
+        this.pending = pending;
         return this;
     }
 

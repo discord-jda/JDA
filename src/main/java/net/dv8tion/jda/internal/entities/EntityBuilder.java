@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
@@ -464,6 +465,8 @@ public class EntityBuilder
                 epoch = Instant.from(date).toEpochMilli();
             }
             member.setBoostDate(epoch);
+            if (!memberJson.isNull("pending"))
+                member.setPending(memberJson.getBoolean("pending"));
             Set<Role> roles = member.getRoleSet();
             for (int i = 0; i < roleArray.length(); i++)
             {
@@ -574,6 +577,20 @@ public class EntityBuilder
             TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
             long joinEpoch = Instant.from(joinedAt).toEpochMilli();
             member.setJoinDate(joinEpoch);
+        }
+
+        if (!content.isNull("pending"))
+        {
+            boolean pending = content.getBoolean("pending");
+            boolean oldPending = member.isPending();
+            if (pending != oldPending)
+            {
+                member.setPending(pending);
+                getJDA().handleEvent(
+                    new GuildMemberUpdatePendingEvent(
+                        getJDA(), responseNumber,
+                        member, oldPending));
+            }
         }
 
         updateUser((UserImpl) member.getUser(), content.getObject("user"));
