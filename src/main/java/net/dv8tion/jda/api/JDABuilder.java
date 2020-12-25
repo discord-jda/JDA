@@ -210,9 +210,9 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intent
-     *         The intent to enable
+     *         The intent to enable. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
      * @param  intents
-     *         Any other intents to enable
+     *         Any other intents to enable. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
      *
      * @throws IllegalArgumentException
      *         If provided with null intents
@@ -250,7 +250,7 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intents
-     *         The intents to enable
+     *         The intents to enable. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
      *
      * @throws IllegalArgumentException
      *         If provided with null intents
@@ -320,9 +320,9 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intent
-     *         The first intent to use
+     *         The first intent to use. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
      * @param  intents
-     *         The other gateway intents to use
+     *         The other gateway intents to use. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
      *
      * @return The new JDABuilder
      */
@@ -357,7 +357,7 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intents
-     *         The gateway intents to use
+     *         The gateway intents to use. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
      *
      * @return The new JDABuilder
      */
