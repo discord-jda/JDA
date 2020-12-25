@@ -198,6 +198,9 @@ public class JDABuilder
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     * 
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -210,9 +213,9 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intent
-     *         The intent to enable. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
+     *         The intent to enable
      * @param  intents
-     *         Any other intents to enable. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
+     *         Any other intents to enable
      *
      * @throws IllegalArgumentException
      *         If provided with null intents
@@ -238,6 +241,9 @@ public class JDABuilder
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -250,7 +256,7 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intents
-     *         The intents to enable. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
+     *         The intents to enable
      *
      * @throws IllegalArgumentException
      *         If provided with null intents
@@ -308,6 +314,9 @@ public class JDABuilder
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -320,9 +329,9 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intent
-     *         The first intent to use. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
+     *         The first intent to use
      * @param  intents
-     *         The other gateway intents to use. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
+     *         The other gateway intents to use
      *
      * @return The new JDABuilder
      */
@@ -345,6 +354,9 @@ public class JDABuilder
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -357,7 +369,7 @@ public class JDABuilder
      * @param  token
      *         The bot token to use
      * @param  intents
-     *         The gateway intents to use. This will override the {@link GatewayIntent#DEFAULT default Intents} used by this method
+     *         The gateway intents to use
      *
      * @return The new JDABuilder
      */
