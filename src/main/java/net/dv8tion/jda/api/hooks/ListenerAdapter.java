@@ -153,13 +153,13 @@ public abstract class ListenerAdapter implements EventListener
 
     @Deprecated
     @ForRemoval
-    @DeprecatedSince("4.3.0")
+    @DeprecatedSince("4.2.1")
     @ReplaceWith("onResumed(ResumedEvent)")
     public void onResume(@Nonnull ResumedEvent event) {}
 
     @Deprecated
     @ForRemoval
-    @DeprecatedSince("4.3.0")
+    @DeprecatedSince("4.2.1")
     @ReplaceWith("onReconnected(ReconnectedEvent)")
     public void onReconnect(@Nonnull ReconnectedEvent event) {}
 
@@ -392,7 +392,7 @@ public abstract class ListenerAdapter implements EventListener
         if (event instanceof ResumedEvent)
             onResume((ResumedEvent) event);
         else if (event instanceof ReconnectedEvent)
-            onReconnected((ReconnectedEvent) event);
+            onReconnect((ReconnectedEvent) event);
 
         Class<ListenerAdapter> handle = ListenerAdapter.class;
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
