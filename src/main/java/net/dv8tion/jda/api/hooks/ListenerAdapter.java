@@ -82,8 +82,11 @@ import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.*;
+import net.dv8tion.jda.internal.utils.ClassWalker;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * An abstract implementation of {@link net.dv8tion.jda.api.hooks.EventListener EventListener} which divides {@link net.dv8tion.jda.api.events.Event Events}
@@ -148,6 +151,18 @@ public abstract class ListenerAdapter implements EventListener
     @DeprecatedSince("4.2.0")
     public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.1")
+    @ReplaceWith("onResumed(ResumedEvent)")
+    public void onResume(@Nonnull ResumedEvent event) {}
+
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.2.1")
+    @ReplaceWith("onReconnected(ReconnectedEvent)")
+    public void onReconnect(@Nonnull ReconnectedEvent event) {}
+
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
@@ -155,8 +170,8 @@ public abstract class ListenerAdapter implements EventListener
 
     //JDA Events
     public void onReady(@Nonnull ReadyEvent event) {}
-    public void onResume(@Nonnull ResumedEvent event) {}
-    public void onReconnect(@Nonnull ReconnectedEvent event) {}
+    public void onResumed(@Nonnull ResumedEvent event) {}
+    public void onReconnected(@Nonnull ReconnectedEvent event) {}
     public void onDisconnect(@Nonnull DisconnectEvent event) {}
     public void onShutdown(@Nonnull ShutdownEvent event) {}
     public void onStatusChange(@Nonnull StatusChangeEvent event) {}
@@ -372,403 +387,33 @@ public abstract class ListenerAdapter implements EventListener
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
-        else if (event instanceof RawGatewayEvent)
-            onRawGateway((RawGatewayEvent) event);
 
-        //JDA Events
-        if (event instanceof ReadyEvent)
-            onReady((ReadyEvent) event);
-        else if (event instanceof ResumedEvent)
+        //TODO: Remove once deprecated methods are removed
+        if (event instanceof ResumedEvent)
             onResume((ResumedEvent) event);
         else if (event instanceof ReconnectedEvent)
             onReconnect((ReconnectedEvent) event);
-        else if (event instanceof DisconnectEvent)
-            onDisconnect((DisconnectEvent) event);
-        else if (event instanceof ShutdownEvent)
-            onShutdown((ShutdownEvent) event);
-        else if (event instanceof StatusChangeEvent)
-            onStatusChange((StatusChangeEvent) event);
-        else if (event instanceof ExceptionEvent)
-            onException((ExceptionEvent) event);
-        else if (event instanceof GatewayPingEvent)
-            onGatewayPing((GatewayPingEvent) event);
 
-        //Message Events
-        //Guild (TextChannel) Message Events
-        else if (event instanceof GuildMessageReceivedEvent)
-            onGuildMessageReceived((GuildMessageReceivedEvent) event);
-        else if (event instanceof GuildMessageUpdateEvent)
-            onGuildMessageUpdate((GuildMessageUpdateEvent) event);
-        else if (event instanceof GuildMessageDeleteEvent)
-            onGuildMessageDelete((GuildMessageDeleteEvent) event);
-        else if (event instanceof GuildMessageEmbedEvent)
-            onGuildMessageEmbed((GuildMessageEmbedEvent) event);
-        else if (event instanceof GuildMessageReactionAddEvent)
-            onGuildMessageReactionAdd((GuildMessageReactionAddEvent) event);
-        else if (event instanceof GuildMessageReactionRemoveEvent)
-            onGuildMessageReactionRemove((GuildMessageReactionRemoveEvent) event);
-        else if (event instanceof GuildMessageReactionRemoveAllEvent)
-            onGuildMessageReactionRemoveAll((GuildMessageReactionRemoveAllEvent) event);
-        else if (event instanceof GuildMessageReactionRemoveEmoteEvent)
-            onGuildMessageReactionRemoveEmote((GuildMessageReactionRemoveEmoteEvent) event);
-
-        //Private Message Events
-        else if (event instanceof PrivateMessageReceivedEvent)
-            onPrivateMessageReceived((PrivateMessageReceivedEvent) event);
-        else if (event instanceof PrivateMessageUpdateEvent)
-            onPrivateMessageUpdate((PrivateMessageUpdateEvent) event);
-        else if (event instanceof PrivateMessageDeleteEvent)
-            onPrivateMessageDelete((PrivateMessageDeleteEvent) event);
-        else if (event instanceof PrivateMessageEmbedEvent)
-            onPrivateMessageEmbed((PrivateMessageEmbedEvent) event);
-        else if (event instanceof PrivateMessageReactionAddEvent)
-            onPrivateMessageReactionAdd((PrivateMessageReactionAddEvent) event);
-        else if (event instanceof PrivateMessageReactionRemoveEvent)
-            onPrivateMessageReactionRemove((PrivateMessageReactionRemoveEvent) event);
-
-        //Combined Message Events (Combines Guild and Private message into 1 event)
-        else if (event instanceof MessageReceivedEvent)
-            onMessageReceived((MessageReceivedEvent) event);
-        else if (event instanceof MessageUpdateEvent)
-            onMessageUpdate((MessageUpdateEvent) event);
-        else if (event instanceof MessageDeleteEvent)
-            onMessageDelete((MessageDeleteEvent) event);
-        else if (event instanceof MessageBulkDeleteEvent)
-            onMessageBulkDelete((MessageBulkDeleteEvent) event);
-        else if (event instanceof MessageEmbedEvent)
-            onMessageEmbed((MessageEmbedEvent) event);
-        else if (event instanceof MessageReactionAddEvent)
-            onMessageReactionAdd((MessageReactionAddEvent) event);
-        else if (event instanceof MessageReactionRemoveEvent)
-            onMessageReactionRemove((MessageReactionRemoveEvent) event);
-        else if (event instanceof MessageReactionRemoveAllEvent)
-            onMessageReactionRemoveAll((MessageReactionRemoveAllEvent) event);
-        else if (event instanceof MessageReactionRemoveEmoteEvent)
-            onMessageReactionRemoveEmote((MessageReactionRemoveEmoteEvent) event);
-
-        //User Events
-        else if (event instanceof UserUpdateNameEvent)
-            onUserUpdateName((UserUpdateNameEvent) event);
-        else if (event instanceof UserUpdateDiscriminatorEvent)
-            onUserUpdateDiscriminator((UserUpdateDiscriminatorEvent) event);
-        else if (event instanceof UserUpdateAvatarEvent)
-            onUserUpdateAvatar((UserUpdateAvatarEvent) event);
-        else if (event instanceof UserUpdateActivityOrderEvent)
-            onUserUpdateActivityOrder((UserUpdateActivityOrderEvent) event);
-        else if (event instanceof UserUpdateOnlineStatusEvent)
-            onUserUpdateOnlineStatus((UserUpdateOnlineStatusEvent) event);
-        else if (event instanceof UserTypingEvent)
-            onUserTyping((UserTypingEvent) event);
-        else if (event instanceof UserActivityStartEvent)
-            onUserActivityStart((UserActivityStartEvent) event);
-        else if (event instanceof UserActivityEndEvent)
-            onUserActivityEnd((UserActivityEndEvent) event);
-        else if (event instanceof UserUpdateFlagsEvent)
-            onUserUpdateFlags((UserUpdateFlagsEvent) event);
-
-        //Self Events
-        else if (event instanceof SelfUpdateAvatarEvent)
-            onSelfUpdateAvatar((SelfUpdateAvatarEvent) event);
-        else if (event instanceof SelfUpdateMFAEvent)
-            onSelfUpdateMFA((SelfUpdateMFAEvent) event);
-        else if (event instanceof SelfUpdateNameEvent)
-            onSelfUpdateName((SelfUpdateNameEvent) event);
-        else if (event instanceof SelfUpdateVerifiedEvent)
-            onSelfUpdateVerified((SelfUpdateVerifiedEvent) event);
-
-        //PermissionOverride Events
-        else if (event instanceof PermissionOverrideDeleteEvent)
-            onPermissionOverrideDelete((PermissionOverrideDeleteEvent) event);
-        else if (event instanceof PermissionOverrideUpdateEvent)
-            onPermissionOverrideUpdate((PermissionOverrideUpdateEvent) event);
-        else if (event instanceof PermissionOverrideCreateEvent)
-            onPermissionOverrideCreate((PermissionOverrideCreateEvent) event);
-
-        //StoreChannel Events
-        else if (event instanceof StoreChannelCreateEvent)
-            onStoreChannelCreate((StoreChannelCreateEvent) event);
-        else if (event instanceof StoreChannelDeleteEvent)
-            onStoreChannelDelete((StoreChannelDeleteEvent) event);
-        else if (event instanceof StoreChannelUpdateNameEvent)
-            onStoreChannelUpdateName((StoreChannelUpdateNameEvent) event);
-        else if (event instanceof StoreChannelUpdatePositionEvent)
-            onStoreChannelUpdatePosition((StoreChannelUpdatePositionEvent) event);
-        else if (event instanceof StoreChannelUpdatePermissionsEvent)
-            onStoreChannelUpdatePermissions((StoreChannelUpdatePermissionsEvent) event);
-
-        //TextChannel Events
-        else if (event instanceof TextChannelCreateEvent)
-            onTextChannelCreate((TextChannelCreateEvent) event);
-        else if (event instanceof TextChannelUpdateNameEvent)
-            onTextChannelUpdateName((TextChannelUpdateNameEvent) event);
-        else if (event instanceof TextChannelUpdateTopicEvent)
-            onTextChannelUpdateTopic((TextChannelUpdateTopicEvent) event);
-        else if (event instanceof TextChannelUpdatePositionEvent)
-            onTextChannelUpdatePosition((TextChannelUpdatePositionEvent) event);
-        else if (event instanceof TextChannelUpdateNSFWEvent)
-            onTextChannelUpdateNSFW((TextChannelUpdateNSFWEvent) event);
-        else if (event instanceof TextChannelUpdateParentEvent)
-            onTextChannelUpdateParent((TextChannelUpdateParentEvent) event);
-        else if (event instanceof TextChannelUpdateSlowmodeEvent)
-            onTextChannelUpdateSlowmode((TextChannelUpdateSlowmodeEvent) event);
-        else if (event instanceof TextChannelDeleteEvent)
-            onTextChannelDelete((TextChannelDeleteEvent) event);
-        else if (event instanceof TextChannelUpdatePermissionsEvent)
-            onTextChannelUpdatePermissions((TextChannelUpdatePermissionsEvent) event);
-        else if (event instanceof TextChannelUpdateNewsEvent)
-            onTextChannelUpdateNews((TextChannelUpdateNewsEvent) event);
-
-        //VoiceChannel Events
-        else if (event instanceof VoiceChannelCreateEvent)
-            onVoiceChannelCreate((VoiceChannelCreateEvent) event);
-        else if (event instanceof VoiceChannelUpdateNameEvent)
-            onVoiceChannelUpdateName((VoiceChannelUpdateNameEvent) event);
-        else if (event instanceof VoiceChannelUpdatePositionEvent)
-            onVoiceChannelUpdatePosition((VoiceChannelUpdatePositionEvent) event);
-        else if (event instanceof VoiceChannelUpdateUserLimitEvent)
-            onVoiceChannelUpdateUserLimit((VoiceChannelUpdateUserLimitEvent) event);
-        else if (event instanceof VoiceChannelUpdateBitrateEvent)
-            onVoiceChannelUpdateBitrate((VoiceChannelUpdateBitrateEvent) event);
-        else if (event instanceof VoiceChannelUpdateParentEvent)
-            onVoiceChannelUpdateParent((VoiceChannelUpdateParentEvent) event);
-        else if (event instanceof VoiceChannelDeleteEvent)
-            onVoiceChannelDelete((VoiceChannelDeleteEvent) event);
-        else if (event instanceof VoiceChannelUpdatePermissionsEvent)
-            onVoiceChannelUpdatePermissions((VoiceChannelUpdatePermissionsEvent) event);
-
-        //Category Events
-        else if (event instanceof CategoryCreateEvent)
-            onCategoryCreate((CategoryCreateEvent) event);
-        else if (event instanceof CategoryUpdateNameEvent)
-            onCategoryUpdateName((CategoryUpdateNameEvent) event);
-        else if (event instanceof CategoryUpdatePositionEvent)
-            onCategoryUpdatePosition((CategoryUpdatePositionEvent) event);
-        else if (event instanceof CategoryDeleteEvent)
-            onCategoryDelete((CategoryDeleteEvent) event);
-        else if (event instanceof CategoryUpdatePermissionsEvent)
-            onCategoryUpdatePermissions((CategoryUpdatePermissionsEvent) event);
-
-        //PrivateChannel Events
-        else if (event instanceof PrivateChannelCreateEvent)
-            onPrivateChannelCreate((PrivateChannelCreateEvent) event);
-        else if (event instanceof PrivateChannelDeleteEvent)
-            onPrivateChannelDelete((PrivateChannelDeleteEvent) event);
-
-        //Guild Events
-        else if (event instanceof GuildReadyEvent)
-            onGuildReady((GuildReadyEvent) event);
-        else if (event instanceof GuildJoinEvent)
-            onGuildJoin((GuildJoinEvent) event);
-        else if (event instanceof GuildLeaveEvent)
-            onGuildLeave((GuildLeaveEvent) event);
-        else if (event instanceof GuildAvailableEvent)
-            onGuildAvailable((GuildAvailableEvent) event);
-        else if (event instanceof GuildUnavailableEvent)
-            onGuildUnavailable((GuildUnavailableEvent) event);
-        else if (event instanceof UnavailableGuildJoinedEvent)
-            onUnavailableGuildJoined((UnavailableGuildJoinedEvent) event);
-        else if (event instanceof UnavailableGuildLeaveEvent)
-            onUnavailableGuildLeave((UnavailableGuildLeaveEvent) event);
-        else if (event instanceof GuildBanEvent)
-            onGuildBan((GuildBanEvent) event);
-        else if (event instanceof GuildUnbanEvent)
-            onGuildUnban((GuildUnbanEvent) event);
-        else if (event instanceof GuildMemberRemoveEvent)
-            onGuildMemberRemove((GuildMemberRemoveEvent) event);
-
-        //Guild Update Events
-        else if (event instanceof GuildUpdateAfkChannelEvent)
-            onGuildUpdateAfkChannel((GuildUpdateAfkChannelEvent) event);
-        else if (event instanceof GuildUpdateSystemChannelEvent)
-            onGuildUpdateSystemChannel((GuildUpdateSystemChannelEvent) event);
-        else if (event instanceof GuildUpdateAfkTimeoutEvent)
-            onGuildUpdateAfkTimeout((GuildUpdateAfkTimeoutEvent) event);
-        else if (event instanceof GuildUpdateExplicitContentLevelEvent)
-            onGuildUpdateExplicitContentLevel((GuildUpdateExplicitContentLevelEvent) event);
-        else if (event instanceof GuildUpdateIconEvent)
-            onGuildUpdateIcon((GuildUpdateIconEvent) event);
-        else if (event instanceof GuildUpdateMFALevelEvent)
-            onGuildUpdateMFALevel((GuildUpdateMFALevelEvent) event);
-        else if (event instanceof GuildUpdateNameEvent)
-            onGuildUpdateName((GuildUpdateNameEvent) event);
-        else if (event instanceof GuildUpdateNotificationLevelEvent)
-            onGuildUpdateNotificationLevel((GuildUpdateNotificationLevelEvent) event);
-        else if (event instanceof GuildUpdateOwnerEvent)
-            onGuildUpdateOwner((GuildUpdateOwnerEvent) event);
-        else if (event instanceof GuildUpdateRegionEvent)
-            onGuildUpdateRegion((GuildUpdateRegionEvent) event);
-        else if (event instanceof GuildUpdateSplashEvent)
-            onGuildUpdateSplash((GuildUpdateSplashEvent) event);
-        else if (event instanceof GuildUpdateVerificationLevelEvent)
-            onGuildUpdateVerificationLevel((GuildUpdateVerificationLevelEvent) event);
-        else if (event instanceof GuildUpdateLocaleEvent)
-            onGuildUpdateLocale((GuildUpdateLocaleEvent) event);
-        else if (event instanceof GuildUpdateFeaturesEvent)
-            onGuildUpdateFeatures((GuildUpdateFeaturesEvent) event);
-        else if (event instanceof GuildUpdateVanityCodeEvent)
-            onGuildUpdateVanityCode((GuildUpdateVanityCodeEvent) event);
-        else if (event instanceof GuildUpdateBannerEvent)
-            onGuildUpdateBanner((GuildUpdateBannerEvent) event);
-        else if (event instanceof GuildUpdateDescriptionEvent)
-            onGuildUpdateDescription((GuildUpdateDescriptionEvent) event);
-        else if (event instanceof GuildUpdateBoostTierEvent)
-            onGuildUpdateBoostTier((GuildUpdateBoostTierEvent) event);
-        else if (event instanceof GuildUpdateBoostCountEvent)
-            onGuildUpdateBoostCount((GuildUpdateBoostCountEvent) event);
-        else if (event instanceof GuildUpdateMaxMembersEvent)
-            onGuildUpdateMaxMembers((GuildUpdateMaxMembersEvent) event);
-        else if (event instanceof GuildUpdateMaxPresencesEvent)
-            onGuildUpdateMaxPresences((GuildUpdateMaxPresencesEvent) event);
-
-        //Guild Invite Events
-        else if (event instanceof GuildInviteCreateEvent)
-            onGuildInviteCreate((GuildInviteCreateEvent) event);
-        else if (event instanceof GuildInviteDeleteEvent)
-            onGuildInviteDelete((GuildInviteDeleteEvent) event);
-
-        //Guild Member Events
-        else if (event instanceof GuildMemberJoinEvent)
-            onGuildMemberJoin((GuildMemberJoinEvent) event);
-        else if (event instanceof GuildMemberLeaveEvent)
-            onGuildMemberLeave((GuildMemberLeaveEvent) event);
-        else if (event instanceof GuildMemberRoleAddEvent)
-            onGuildMemberRoleAdd((GuildMemberRoleAddEvent) event);
-        else if (event instanceof GuildMemberRoleRemoveEvent)
-            onGuildMemberRoleRemove((GuildMemberRoleRemoveEvent) event);
-
-        //Guild Member Update Events
-        else if (event instanceof GuildMemberUpdateEvent)
-            onGuildMemberUpdate((GuildMemberUpdateEvent) event);
-        else if (event instanceof GuildMemberUpdateNicknameEvent)
-            onGuildMemberUpdateNickname((GuildMemberUpdateNicknameEvent) event);
-        else if (event instanceof GuildMemberUpdateBoostTimeEvent)
-            onGuildMemberUpdateBoostTime((GuildMemberUpdateBoostTimeEvent) event);
-
-        //Guild Voice Events
-        else if (event instanceof GuildVoiceJoinEvent)
-            onGuildVoiceJoin((GuildVoiceJoinEvent) event);
-        else if (event instanceof GuildVoiceMoveEvent)
-            onGuildVoiceMove((GuildVoiceMoveEvent) event);
-        else if (event instanceof GuildVoiceLeaveEvent)
-            onGuildVoiceLeave((GuildVoiceLeaveEvent) event);
-        else if (event instanceof GuildVoiceMuteEvent)
-            onGuildVoiceMute((GuildVoiceMuteEvent) event);
-        else if (event instanceof GuildVoiceDeafenEvent)
-            onGuildVoiceDeafen((GuildVoiceDeafenEvent) event);
-        else if (event instanceof GuildVoiceGuildMuteEvent)
-            onGuildVoiceGuildMute((GuildVoiceGuildMuteEvent) event);
-        else if (event instanceof GuildVoiceGuildDeafenEvent)
-            onGuildVoiceGuildDeafen((GuildVoiceGuildDeafenEvent) event);
-        else if (event instanceof GuildVoiceSelfMuteEvent)
-            onGuildVoiceSelfMute((GuildVoiceSelfMuteEvent) event);
-        else if (event instanceof GuildVoiceSelfDeafenEvent)
-            onGuildVoiceSelfDeafen((GuildVoiceSelfDeafenEvent) event);
-        else if (event instanceof GuildVoiceSuppressEvent)
-            onGuildVoiceSuppress((GuildVoiceSuppressEvent) event);
-        else if (event instanceof GuildVoiceStreamEvent)
-            onGuildVoiceStream((GuildVoiceStreamEvent) event);
-
-        //Role Events
-        else if (event instanceof RoleCreateEvent)
-            onRoleCreate((RoleCreateEvent) event);
-        else if (event instanceof RoleDeleteEvent)
-            onRoleDelete((RoleDeleteEvent) event);
-
-        //Role Update Events
-        else if (event instanceof RoleUpdateColorEvent)
-            onRoleUpdateColor(((RoleUpdateColorEvent) event));
-        else if (event instanceof RoleUpdateHoistedEvent)
-            onRoleUpdateHoisted(((RoleUpdateHoistedEvent) event));
-        else if (event instanceof RoleUpdateMentionableEvent)
-            onRoleUpdateMentionable((RoleUpdateMentionableEvent) event);
-        else if (event instanceof RoleUpdateNameEvent)
-            onRoleUpdateName(((RoleUpdateNameEvent) event));
-        else if (event instanceof RoleUpdatePermissionsEvent)
-            onRoleUpdatePermissions(((RoleUpdatePermissionsEvent) event));
-        else if (event instanceof RoleUpdatePositionEvent)
-            onRoleUpdatePosition(((RoleUpdatePositionEvent) event));
-
-        //Emote Events
-        else if (event instanceof EmoteAddedEvent)
-            onEmoteAdded((EmoteAddedEvent) event);
-        else if (event instanceof EmoteRemovedEvent)
-            onEmoteRemoved((EmoteRemovedEvent) event);
-
-        //Emote Update Events
-        else if (event instanceof EmoteUpdateNameEvent)
-            onEmoteUpdateName((EmoteUpdateNameEvent) event);
-        else if (event instanceof EmoteUpdateRolesEvent)
-            onEmoteUpdateRoles((EmoteUpdateRolesEvent) event);
-
-        // Debug Events
-        else if (event instanceof HttpRequestEvent)
-            onHttpRequest((HttpRequestEvent) event);
-
-        //Generic subclasses - combining multiple events
-        if (event instanceof GuildVoiceUpdateEvent)
-            onGuildVoiceUpdate((GuildVoiceUpdateEvent) event);
-
-        //Generic Events
-        //Start a new if statement so that these are no overridden by the above events.
-        if (event instanceof GenericMessageReactionEvent)
-            onGenericMessageReaction((GenericMessageReactionEvent) event);
-        else if (event instanceof GenericPrivateMessageReactionEvent)
-            onGenericPrivateMessageReaction((GenericPrivateMessageReactionEvent) event);
-        else if (event instanceof GenericStoreChannelUpdateEvent)
-            onGenericStoreChannelUpdate((GenericStoreChannelUpdateEvent) event);
-        else if (event instanceof GenericTextChannelUpdateEvent)
-            onGenericTextChannelUpdate((GenericTextChannelUpdateEvent) event);
-        else if (event instanceof GenericCategoryUpdateEvent)
-            onGenericCategoryUpdate((GenericCategoryUpdateEvent) event);
-        else if (event instanceof GenericGuildMessageReactionEvent)
-            onGenericGuildMessageReaction((GenericGuildMessageReactionEvent) event);
-        else if (event instanceof GenericVoiceChannelUpdateEvent)
-            onGenericVoiceChannelUpdate((GenericVoiceChannelUpdateEvent) event);
-        else if (event instanceof GenericGuildUpdateEvent)
-            onGenericGuildUpdate((GenericGuildUpdateEvent) event);
-        else if (event instanceof GenericGuildMemberUpdateEvent)
-            onGenericGuildMemberUpdate((GenericGuildMemberUpdateEvent) event);
-        else if (event instanceof GenericGuildVoiceEvent)
-            onGenericGuildVoice((GenericGuildVoiceEvent) event);
-        else if (event instanceof GenericRoleUpdateEvent)
-            onGenericRoleUpdate(((GenericRoleUpdateEvent) event));
-        else if (event instanceof GenericEmoteUpdateEvent)
-            onGenericEmoteUpdate((GenericEmoteUpdateEvent) event);
-        else if (event instanceof GenericUserPresenceEvent)
-            onGenericUserPresence((GenericUserPresenceEvent) event);
-        else if (event instanceof GenericPermissionOverrideEvent)
-            onGenericPermissionOverride((GenericPermissionOverrideEvent) event);
-
-        //Generic events that have generic subclasses (the subclasses as above).
-        if (event instanceof GenericMessageEvent)
-            onGenericMessage((GenericMessageEvent) event);
-        else if (event instanceof GenericPrivateMessageEvent)
-            onGenericPrivateMessage((GenericPrivateMessageEvent) event);
-        else if (event instanceof GenericGuildMessageEvent)
-            onGenericGuildMessage((GenericGuildMessageEvent) event);
-        else if (event instanceof GenericGuildInviteEvent)
-            onGenericGuildInvite((GenericGuildInviteEvent) event);
-        else if (event instanceof GenericGuildMemberEvent)
-            onGenericGuildMember((GenericGuildMemberEvent) event);
-        else if (event instanceof GenericUserEvent)
-            onGenericUser((GenericUserEvent) event);
-        else if (event instanceof GenericSelfUpdateEvent)
-            onGenericSelfUpdate((GenericSelfUpdateEvent) event);
-        else if (event instanceof GenericStoreChannelEvent)
-            onGenericStoreChannel((GenericStoreChannelEvent) event);
-        else if (event instanceof GenericTextChannelEvent)
-            onGenericTextChannel((GenericTextChannelEvent) event);
-        else if (event instanceof GenericVoiceChannelEvent)
-            onGenericVoiceChannel((GenericVoiceChannelEvent) event);
-        else if (event instanceof GenericCategoryEvent)
-            onGenericCategory((GenericCategoryEvent) event);
-        else if (event instanceof GenericRoleEvent)
-            onGenericRole((GenericRoleEvent) event);
-        else if (event instanceof GenericEmoteEvent)
-            onGenericEmote((GenericEmoteEvent) event);
-
-        //Generic events that have 2 levels of generic subclasses
-        if (event instanceof GenericGuildEvent)
-            onGenericGuild((GenericGuildEvent) event);
+        Class<ListenerAdapter> handle = ListenerAdapter.class;
+        for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
+        {
+            String name = clazz.getSimpleName();
+            try
+            {
+                name = "on" + name.substring(0, name.length() - "Event".length());
+                Method method = handle.getDeclaredMethod(name, clazz);
+                method.invoke(this, event);
+            }
+            catch (NoSuchMethodException | IllegalAccessException ignored) {} // this means this is probably a custom event!
+            catch (InvocationTargetException e)
+            {
+                Throwable cause = e.getCause();
+                if (cause instanceof RuntimeException)
+                    throw (RuntimeException) cause;
+                if (cause instanceof Error)
+                    throw (Error) cause;
+                throw new RuntimeException(cause);
+            }
+        }
     }
 }
