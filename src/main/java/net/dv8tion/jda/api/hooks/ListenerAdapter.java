@@ -151,6 +151,18 @@ public abstract class ListenerAdapter implements EventListener
     @DeprecatedSince("4.2.0")
     public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
 
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.3.0")
+    @ReplaceWith("onResumed(ResumedEvent)")
+    public void onResume(@Nonnull ResumedEvent event) {}
+
+    @Deprecated
+    @ForRemoval
+    @DeprecatedSince("4.3.0")
+    @ReplaceWith("onReconnected(ReconnectedEvent)")
+    public void onReconnect(@Nonnull ReconnectedEvent event) {}
+
     public void onGenericEvent(@Nonnull GenericEvent event) {}
     public void onGenericUpdate(@Nonnull UpdateEvent<?, ?> event) {}
     public void onRawGateway(@Nonnull RawGatewayEvent event) {}
@@ -158,8 +170,8 @@ public abstract class ListenerAdapter implements EventListener
 
     //JDA Events
     public void onReady(@Nonnull ReadyEvent event) {}
-    public void onResume(@Nonnull ResumedEvent event) {}
-    public void onReconnect(@Nonnull ReconnectedEvent event) {}
+    public void onResumed(@Nonnull ResumedEvent event) {}
+    public void onReconnected(@Nonnull ReconnectedEvent event) {}
     public void onDisconnect(@Nonnull DisconnectEvent event) {}
     public void onShutdown(@Nonnull ShutdownEvent event) {}
     public void onStatusChange(@Nonnull StatusChangeEvent event) {}
@@ -375,6 +387,13 @@ public abstract class ListenerAdapter implements EventListener
         onGenericEvent(event);
         if (event instanceof UpdateEvent)
             onGenericUpdate((UpdateEvent<?, ?>) event);
+
+        //TODO: Remove once deprecated methods are removed
+        if (event instanceof ResumedEvent)
+            onResume((ResumedEvent) event);
+        else if (event instanceof ReconnectedEvent)
+            onReconnected((ReconnectedEvent) event);
+
         Class<ListenerAdapter> handle = ListenerAdapter.class;
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
         {
