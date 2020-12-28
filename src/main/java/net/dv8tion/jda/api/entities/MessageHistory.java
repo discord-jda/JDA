@@ -196,7 +196,7 @@ public class MessageHistory
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                messages.add(builder.createMessage(historyJson.getObject(i)));
+                messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
 
             messages.forEach(msg -> history.put(msg.getIdLong(), msg));
             return messages;
@@ -265,7 +265,7 @@ public class MessageHistory
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                messages.add(builder.createMessage(historyJson.getObject(i)));
+                messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
 
             for (Iterator<Message> it = messages.descendingIterator(); it.hasNext();)
             {
