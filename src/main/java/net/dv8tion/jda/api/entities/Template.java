@@ -153,8 +153,11 @@ public interface Template
 
     /**
      * Returns the last update date of this template.
+     * If this template has never been updated, this returns the date of creation.
      *
-     * @return The the last update date of this template
+     * @return The last update date of this template
+     *
+     * @see    #getTimeCreated()
      */
     @Nonnull
     OffsetDateTime getTimeUpdated();
