@@ -2252,7 +2252,7 @@ public interface Guild extends ISnowflake
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#ALREADY_HAS_TEMPLATE Guild already has a template}
-     *     <br>The template doesn't exist.</li>
+     *     <br>The guild already has a template.</li>
      * </ul>
      *
      * @param  name
