@@ -41,12 +41,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
 {
@@ -166,8 +164,26 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         if (getParent() == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
-        
-        return Helpers.deepEqualsUnordered(getParent().getPermissionOverrides(), getPermissionOverrides());
+
+        Stream<PermissionOverride> thisStream = getRolePermissionOverrides().stream().filter(
+                po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
+        );
+        Stream<PermissionOverride> parentStream = getParent().getRolePermissionOverrides().stream().filter(
+                po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
+        );
+        Collection<PermissionOverride> thisCheck = thisStream.collect(Collectors.toList());
+        Collection<PermissionOverride> parentCheck = parentStream.collect(Collectors.toList());
+
+        for(PermissionOverride check : thisCheck)
+        {
+            PermissionOverride matching = parentCheck.stream().filter(po -> check.getIdLong() == po.getIdLong()).findFirst().orElse(null);
+            if(matching == null)
+                return false;
+
+            if(matching.getAllowedRaw() != check.getAllowedRaw() || matching.getDeniedRaw() != check.getDeniedRaw())
+                return false;
+        }
+        return thisCheck.size() == parentCheck.size();
     }
 
     @Nonnull
