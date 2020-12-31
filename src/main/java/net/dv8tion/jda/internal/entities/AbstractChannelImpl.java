@@ -168,15 +168,15 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         Stream<PermissionOverride> thisStream = getRolePermissionOverrides().stream().filter(
                 po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
         );
-        Stream<PermissionOverride> parentStream = getParent().getRolePermissionOverrides().stream().filter(
+        HashMap<Long, PermissionOverride> parentCheck = new HashMap<>();
+        getParent().getRolePermissionOverrides().stream().filter(
                 po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
-        );
+        ).forEach(po -> parentCheck.put(po.getIdLong(), po));
         Collection<PermissionOverride> thisCheck = thisStream.collect(Collectors.toList());
-        Collection<PermissionOverride> parentCheck = parentStream.collect(Collectors.toList());
 
         for(PermissionOverride check : thisCheck)
         {
-            PermissionOverride matching = parentCheck.stream().filter(po -> check.getIdLong() == po.getIdLong()).findFirst().orElse(null);
+            PermissionOverride matching = parentCheck.getOrDefault(check.getIdLong(), null);
             if(matching == null)
                 return false;
 
