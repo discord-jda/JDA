@@ -165,14 +165,14 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         if (getParent() == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
 
-        Stream<PermissionOverride> thisStream = getPermissionOverrides().stream().filter(
+        Collection<PermissionOverride> thisCheck = getPermissionOverrides().stream().filter(
                 po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
-        );
+        ).collect(Collectors.toList());
+
         HashMap<Long, PermissionOverride> parentCheck = new HashMap<>();
         getParent().getPermissionOverrides().stream().filter(
                 po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
         ).forEach(po -> parentCheck.put(po.getIdLong(), po));
-        Collection<PermissionOverride> thisCheck = thisStream.collect(Collectors.toList());
 
         for(PermissionOverride check : thisCheck)
         {
