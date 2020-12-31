@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
 import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
@@ -369,6 +370,9 @@ public enum GatewayIntent
                 intents.add(DIRECT_MESSAGE_REACTIONS);
             else if (GenericPrivateMessageEvent.class.isAssignableFrom(event))
                 intents.add(DIRECT_MESSAGES);
+
+            else if (GenericMessageReactionEvent.class.isAssignableFrom(event))
+                Collections.addAll(intents, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGE_REACTIONS);
 
             else if (GenericMessageEvent.class.isAssignableFrom(event))
                 Collections.addAll(intents, GUILD_MESSAGES, DIRECT_MESSAGES);
