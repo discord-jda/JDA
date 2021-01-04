@@ -44,9 +44,9 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
     }
 
     /**
-     * The previous owner user id
+     * The new owner user id
      *
-     * @return The previous owner id
+     * @return The new owner id
      */
     public long getNewOwnerIdLong()
     {
@@ -54,9 +54,9 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
     }
 
     /**
-     * The previous owner user id
+     * The new owner user id
      *
-     * @return The previous owner id
+     * @return The new owner id
      */
     @Nonnull
     public String getNewOwnerId()
@@ -65,9 +65,9 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
     }
 
     /**
-     * The new owner user id
+     * The previous owner user id
      *
-     * @return The new owner id
+     * @return The previous owner id
      */
     public long getOldOwnerIdLong()
     {
@@ -75,9 +75,9 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
     }
 
     /**
-     * The new owner user id
+     * The previous owner user id
      *
-     * @return The new owner id
+     * @return The previous owner id
      */
     @Nonnull
     public String getOldOwnerId()
