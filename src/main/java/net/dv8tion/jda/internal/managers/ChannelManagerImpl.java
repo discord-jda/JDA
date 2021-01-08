@@ -48,6 +48,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     protected int slowmode;
     protected int userlimit;
     protected int bitrate;
+    protected boolean news;
 
     protected final Object lock = new Object();
     protected final TLongObjectHashMap<PermOverrideData> overridesAdd;
@@ -95,6 +96,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             this.parent = null;
         if ((fields & TOPIC) == TOPIC)
             this.topic = null;
+        if ((fields & NEWS) == NEWS)
+            this.news = false;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -124,6 +127,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         this.name = null;
         this.parent = null;
         this.topic = null;
+        this.news = false;
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
@@ -345,6 +349,20 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl setNews(boolean news)
+    {
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set channel as news on text channels");
+        if (news && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
+        this.news = news;
+        set |= NEWS;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -365,6 +383,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             frame.put("bitrate", bitrate);
         if (shouldUpdate(PARENT))
             frame.put("parent_id", parent);
+        if (shouldUpdate(NEWS))
+            frame.put("type", news ? 5 : 0);
         withLock(lock, (lock) ->
         {
             if (shouldUpdate(PERMISSION))
