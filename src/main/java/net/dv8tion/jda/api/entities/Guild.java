@@ -417,6 +417,7 @@ public interface Guild extends ISnowflake
 
     /**
      * The preferred locale for this guild.
+     * <br>If the guild doesn't have the COMMUNITY feature, this returns {@link Locale#US Locale.US}.
      *
      * @return The preferred {@link Locale} for this guild
      */
