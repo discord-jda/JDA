@@ -15,9 +15,9 @@
  */
 package net.dv8tion.jda.api.hooks;
 
-import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.utils.ClassWalker;
 
 import javax.annotation.Nonnull;
 import java.lang.reflect.InvocationTargetException;
@@ -80,11 +80,9 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void handle(@Nonnull GenericEvent event)
     {
-        Class<?> eventClass = event.getClass();
-        do
+        for (Class<?> eventClass : ClassWalker.walk(event.getClass()))
         {
             Map<Object, List<Method>> listeners = methods.get(eventClass);
             if (listeners != null)
@@ -108,9 +106,7 @@ public class AnnotatedEventManager implements IEventManager
                     }
                 }));
             }
-            eventClass = eventClass == Event.class ? null : (Class<? extends GenericEvent>) eventClass.getSuperclass();
         }
-        while (eventClass != null);
     }
 
     private void updateMethods()

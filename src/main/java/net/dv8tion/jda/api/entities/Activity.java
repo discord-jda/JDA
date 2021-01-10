@@ -205,6 +205,27 @@ public interface Activity
     }
 
     /**
+     * Creates a new Activity instance with the specified name.
+     * <br>This will display as {@code Competing in name} in the official client
+     * 
+     * @param  name
+     *         The not-null name of the newly created game
+     * 
+     * @throws IllegalArgumentException
+     *         If the specified name is null, empty, blank or longer than 128 characters
+     * 
+     * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#COMPETING}
+     */
+    @Nonnull
+    static Activity competing(@Nonnull String name)
+    {
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
+        return EntityBuilder.createActivity(name, null, ActivityType.COMPETING);
+    }
+
+    /**
      * Creates a new Activity instance with the specified name and url.
      *
      * @param  type
@@ -256,6 +277,8 @@ public interface Activity
                 return listening(name);
             case WATCHING:
                 return watching(name);
+            case COMPETING:
+                return competing(name);
             default:
                 throw new IllegalArgumentException("ActivityType " + type + " is not supported!");
         }
@@ -308,7 +331,13 @@ public interface Activity
          * @incubating This feature is currently not officially documented and might change
          */
         @Incubating
-        CUSTOM_STATUS(4);
+        CUSTOM_STATUS(4),
+
+        /**
+         * Used to indicate that the {@link Activity Activity} should display
+         * as {@code Competing in...} in the official client.
+         */
+        COMPETING(5);
 
         private final int key;
 
@@ -352,6 +381,8 @@ public interface Activity
                     return WATCHING;
                 case 4:
                     return CUSTOM_STATUS;
+                case 5:
+                    return COMPETING;
             }
         }
     }

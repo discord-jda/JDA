@@ -49,6 +49,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected String topic = null;
     protected Boolean nsfw = null;
     protected Integer slowmode = null;
+    protected Boolean news = null;
 
     // --voice only--
     protected Integer bitrate = null;
@@ -170,6 +171,19 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
+    public ChannelActionImpl<T> setNews(boolean news)
+    {
+        if (type != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Can only set news for a TextChannel!");
+        if (news && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
+        this.news = news;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public ChannelActionImpl<T> addMemberPermissionOverride(long userId, long allow, long deny)
     {
         return addOverride(userId, PermOverrideData.MEMBER_TYPE, allow, deny);
@@ -252,6 +266,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                     object.put("nsfw", nsfw);
                 if (slowmode != null)
                     object.put("rate_limit_per_user", slowmode);
+                if (news != null)
+                    object.put("type", news ? 5 : 0);
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());
