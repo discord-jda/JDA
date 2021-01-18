@@ -449,7 +449,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
     }
 
     /**
-     * Kicks this from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * Kicks this Member from the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
      * <p><b>Note:</b> {@link net.dv8tion.jda.api.entities.Guild#getMembers()} will still contain the {@link net.dv8tion.jda.api.entities.User User}
      * until Discord sends the {@link net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent GuildMemberRemoveEvent}.
