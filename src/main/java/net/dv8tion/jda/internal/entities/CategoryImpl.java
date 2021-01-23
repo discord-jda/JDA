@@ -159,8 +159,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
         ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
-        applyPermission(action);
-        return action;
+        return action.syncPermissionOverrides();
     }
 
     @Nonnull
@@ -168,8 +167,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
         ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
-        applyPermission(action);
-        return action;
+        return action.syncPermissionOverrides();
     }
 
     @Nonnull
@@ -190,18 +188,5 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public String toString()
     {
         return "GC:" + getName() + '(' + id + ')';
-    }
-
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void applyPermission(ChannelAction<?> a)
-    {
-        overrides.forEachValue(override ->
-        {
-            if (override.isMemberOverride())
-                a.addMemberPermissionOverride(override.getIdLong(), override.getAllowedRaw(), override.getDeniedRaw());
-            else
-                a.addRolePermissionOverride(override.getIdLong(), override.getAllowedRaw(), override.getDeniedRaw());
-            return true;
-        });
     }
 }

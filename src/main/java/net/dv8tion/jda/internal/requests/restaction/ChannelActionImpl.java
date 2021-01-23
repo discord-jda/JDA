@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -197,12 +198,75 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return addOverride(roleId, PermOverrideData.ROLE_TYPE, allow, deny);
     }
 
+    @Nonnull
+    @Override
+    public ChannelAction<T> removePermissionOverride(long id)
+    {
+        overrides.remove(id);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> clearPermissionOverrides()
+    {
+        overrides.clear();
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public ChannelAction<T> syncPermissionOverrides()
+    {
+        if (parent == null)
+            throw new IllegalStateException("Cannot sync overrides without parent category! Use setParent(category) first!");
+        clearPermissionOverrides();
+        boolean canSetRoles = getGuild().getSelfMember().hasPermission(parent, Permission.MANAGE_ROLES);
+        parent.getRolePermissionOverrides().forEach(override -> {
+            long allow = override.getAllowedRaw();
+            long deny = override.getDeniedRaw();
+            if (!canSetRoles)
+            {
+                // Discord is dumb, you can't give other members/roles the same perms they already had before in the category lmao, how is this a "permission escalation" pls
+                allow &= ~Permission.MANAGE_ROLES.getRawValue();
+                deny &= ~Permission.MANAGE_ROLES.getRawValue();
+            }
+            addRolePermissionOverride(override.getIdLong(), allow, deny);
+        });
+
+        parent.getMemberPermissionOverrides().forEach(override -> {
+            long allow = override.getAllowedRaw();
+            long deny = override.getDeniedRaw();
+            if (!canSetRoles)
+            {
+                allow &= ~Permission.MANAGE_ROLES.getRawValue();
+                deny &= ~Permission.MANAGE_ROLES.getRawValue();
+            }
+            addMemberPermissionOverride(override.getIdLong(), allow, deny);
+        });
+        return this;
+    }
+
     private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny)
     {
         Checks.notNegative(allow, "Granted permissions value");
         Checks.notNegative(deny, "Denied permissions value");
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         Checks.check(deny <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
+        boolean canSetRoles;
+        if (parent != null)
+            canSetRoles = getGuild().getSelfMember().hasPermission(parent, Permission.MANAGE_ROLES);
+        else
+            canSetRoles = getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES);
+        if (!canSetRoles)
+        {
+            // Prevent permission escalation
+            if ((allow & Permission.MANAGE_ROLES.getRawValue()) != 0)
+                throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
+            if ((deny & Permission.MANAGE_ROLES.getRawValue()) != 0)
+                throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
+        }
 
         overrides.put(targetId, new PermOverrideData(type, targetId, allow, deny));
         return this;
