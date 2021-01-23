@@ -214,6 +214,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     *
      * <p>Example:
      * <pre>{@code
      * Role role = guild.getPublicRole();
@@ -230,9 +232,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If allow or deny contain {@link Permission#MANAGE_PERMISSIONS}
-     *         while the bot does not have {@link Permission#MANAGE_PERMISSIONS} in the category
-     *         or {@link Permission#MANAGE_ROLES} in any of its roles
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
      * @throws java.lang.IllegalArgumentException
      *         If the specified target is null or not within the same guild.
      *
@@ -254,6 +255,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     *
      * <p>Example:
      * <pre>{@code
      * Role role = guild.getPublicRole();
@@ -272,9 +275,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If allow or deny contain {@link Permission#MANAGE_PERMISSIONS}
-     *         while the bot does not have {@link Permission#MANAGE_PERMISSIONS} in the category
-     *         or {@link Permission#MANAGE_ROLES} in any of its roles
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the specified target is null
@@ -304,6 +306,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Adds a new Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     *
      * <p>Example:
      * <pre>{@code
      * long userId = user.getIdLong();
@@ -320,9 +324,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If allow or deny contain {@link Permission#MANAGE_PERMISSIONS}
-     *         while the bot does not have {@link Permission#MANAGE_PERMISSIONS} in the category
-     *         or {@link Permission#MANAGE_ROLES} in any of its roles
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -342,6 +345,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Adds a new Role {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     *
      * <p>Example:
      * <pre>{@code
      * long roleId = role.getIdLong();
@@ -358,9 +363,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If allow or deny contain {@link Permission#MANAGE_PERMISSIONS}
-     *         while the bot does not have {@link Permission#MANAGE_PERMISSIONS} in the category
-     *         or {@link Permission#MANAGE_ROLES} in any of its roles
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -378,6 +382,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
 
     /**
      * Adds a new Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the new GuildChannel.
+     *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
      *
      * <p>Example:
      * <pre>{@code
@@ -399,9 +405,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @throws java.lang.IllegalArgumentException
      *         If one of the provided Permission values is invalid
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If allow or deny contain {@link Permission#MANAGE_PERMISSIONS}
-     *         while the bot does not have {@link Permission#MANAGE_PERMISSIONS} in the category
-     *         or {@link Permission#MANAGE_ROLES} in any of its roles
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -415,6 +420,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
 
     /**
      * Adds a new Role {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the new GuildChannel.
+     *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
      *
      * <p>Example:
      * <pre>{@code
@@ -436,9 +443,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @throws java.lang.IllegalArgumentException
      *         If one of the provided Permission values is invalid
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If allow or deny contain {@link Permission#MANAGE_PERMISSIONS}
-     *         while the bot does not have {@link Permission#MANAGE_PERMISSIONS} in the category
-     *         or {@link Permission#MANAGE_ROLES} in any of its roles
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -514,9 +520,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     /**
      * Syncs the permission overrides of the channel with the category.
      *
-     * <p>If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS} in the parent category
-     * and is missing {@link Permission#MANAGE_ROLES}, then the {@link Permission#MANAGE_PERMISSIONS} will not by synced with the parent category.
-     * <br>This is a Discord limitation to prevent possible permission escalations.
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     * In order to properly sync permissions the currently logged in account must have all allowed/denied permissions or {@link Permission#MANAGE_ROLES} in the parent category.
      *
      * @throws IllegalArgumentException
      *         If no parent has been configured. You have to use {@link #setParent(Category)} before calling this method.
