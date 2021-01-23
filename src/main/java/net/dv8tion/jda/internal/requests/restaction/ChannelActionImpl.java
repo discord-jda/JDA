@@ -33,6 +33,7 @@ import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -222,15 +223,20 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (parent == null)
             throw new IllegalStateException("Cannot sync overrides without parent category! Use setParent(category) first!");
         clearPermissionOverrides();
-        boolean canSetRoles = getGuild().getSelfMember().hasPermission(parent, Permission.MANAGE_ROLES);
+        Member selfMember = getGuild().getSelfMember();
+        boolean canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
+        long botPerms;
+        if (parent != null)
+            botPerms = Permission.getRaw(selfMember.getPermissions(parent));
+        else
+            botPerms = Permission.getRaw(selfMember.getPermissions());
         parent.getRolePermissionOverrides().forEach(override -> {
             long allow = override.getAllowedRaw();
             long deny = override.getDeniedRaw();
             if (!canSetRoles)
             {
-                // Discord is dumb, you can't give other members/roles the same perms they already had before in the category lmao, how is this a "permission escalation" pls
-                allow &= ~Permission.MANAGE_ROLES.getRawValue();
-                deny &= ~Permission.MANAGE_ROLES.getRawValue();
+                allow &= ~botPerms;
+                deny &= ~botPerms;
             }
             addRolePermissionOverride(override.getIdLong(), allow, deny);
         });
@@ -240,8 +246,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             long deny = override.getDeniedRaw();
             if (!canSetRoles)
             {
-                allow &= ~Permission.MANAGE_ROLES.getRawValue();
-                deny &= ~Permission.MANAGE_ROLES.getRawValue();
+                allow &= ~botPerms;
+                deny &= ~botPerms;
             }
             addMemberPermissionOverride(override.getIdLong(), allow, deny);
         });
@@ -255,17 +261,23 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         Checks.check(deny <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
         boolean canSetRoles;
+        Member selfMember = getGuild().getSelfMember();
         if (parent != null)
-            canSetRoles = getGuild().getSelfMember().hasPermission(parent, Permission.MANAGE_ROLES);
+            canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
         else
-            canSetRoles = getGuild().getSelfMember().hasPermission(Permission.MANAGE_ROLES);
+            canSetRoles = selfMember.hasPermission(Permission.MANAGE_ROLES);
         if (!canSetRoles)
         {
             // Prevent permission escalation
-            if ((allow & Permission.MANAGE_ROLES.getRawValue()) != 0)
-                throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
-            if ((deny & Permission.MANAGE_ROLES.getRawValue()) != 0)
-                throw new InsufficientPermissionException(guild, Permission.MANAGE_ROLES);
+            long botPerms;
+            if (parent != null)
+                botPerms = Permission.getRaw(selfMember.getPermissions(parent));
+            else
+                botPerms = Permission.getRaw(selfMember.getPermissions());
+
+            EnumSet<Permission> missingPerms = Permission.getPermissions((allow | deny) &~ botPerms);
+            if (!missingPerms.isEmpty())
+                throw new InsufficientPermissionException(guild, missingPerms.iterator().next());
         }
 
         overrides.put(targetId, new PermOverrideData(type, targetId, allow, deny));
