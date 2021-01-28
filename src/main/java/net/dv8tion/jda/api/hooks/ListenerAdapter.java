@@ -57,6 +57,7 @@ import net.dv8tion.jda.api.events.guild.member.*;
 import net.dv8tion.jda.api.events.guild.member.update.GenericGuildMemberUpdateEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
 import net.dv8tion.jda.api.events.guild.override.GenericPermissionOverrideEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideCreateEvent;
 import net.dv8tion.jda.api.events.guild.override.PermissionOverrideDeleteEvent;
@@ -313,6 +314,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildMemberUpdate(@Nonnull GuildMemberUpdateEvent event) {}
     public void onGuildMemberUpdateNickname(@Nonnull GuildMemberUpdateNicknameEvent event) {}
     public void onGuildMemberUpdateBoostTime(@Nonnull GuildMemberUpdateBoostTimeEvent event) {}
+    public void onGuildMemberUpdatePending(@Nonnull GuildMemberUpdatePendingEvent event) {}
 
     //Guild Voice Events
     public void onGuildVoiceUpdate(@Nonnull GuildVoiceUpdateEvent event) {}
