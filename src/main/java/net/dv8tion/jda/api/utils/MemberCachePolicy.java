@@ -86,6 +86,13 @@ public interface MemberCachePolicy
         return voiceState != null && voiceState.getChannel() != null;
     };
     /**
+     * Caches members who haven't passed Membership Screening.
+     *
+     * <p>Not recommended without {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent enabled.
+     * The api will only send the guild member update events when this intent is enabled. Without those events the members will stay in cache indefinitely.
+     */
+    MemberCachePolicy PENDING = Member::isPending;
+    /**
      * The default policy to use with {@link net.dv8tion.jda.api.JDABuilder#createDefault(String)}.
      * <br>This is identical to {@code VOICE.or(OWNER)}.
      *
