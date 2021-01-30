@@ -186,7 +186,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *         If the provided permission holder is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
-     *         in this channel
+     *         in this channel, or tries to set permissions it does not have without having {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS} explicitly for this channel through an override.
      *
      * @return ChannelManager for chaining convenience
      *
@@ -214,7 +214,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *         If the provided permission holder is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
-     *         in this channel
+     *         in this channel, or tries to set permissions it does not have without having {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS} explicitly for this channel through an override.
      *
      * @return ChannelManager for chaining convenience
      *

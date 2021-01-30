@@ -467,13 +467,45 @@ public class PermissionUtil
      */
     public static long getExplicitPermission(GuildChannel channel, Member member)
     {
+        return getExplicitPermission(channel, member, true);
+    }
+
+    /**
+     * Retrieves the explicit permissions of the specified {@link net.dv8tion.jda.api.entities.Member Member}
+     * in its hosting {@link net.dv8tion.jda.api.entities.Guild Guild} and specific {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+     * <br>This method does not calculate the owner in.
+     * <b>Allowed permissions override denied permissions of {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}!</b>
+     *
+     * <p>All permissions returned are explicitly granted to this Member via its {@link net.dv8tion.jda.api.entities.Role Roles}.
+     * <br>Permissions like {@link net.dv8tion.jda.api.Permission#ADMINISTRATOR Permission.ADMINISTRATOR} do not
+     * grant other permissions in this value.
+     * <p>This factor in all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} that affect this member
+     * and only grants the ones that are explicitly given.
+     *
+     * @param  channel
+     *         The target channel of which to check {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @param  member
+     *         The non-null {@link net.dv8tion.jda.api.entities.Member Member} for which to get implicit permissions
+     * @param  includeRoles
+     *         Whether the base role permissions should be included
+     *
+     * @throws IllegalArgumentException
+     *         If any of the arguments is {@code null}
+     *         or the specified entities are not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *
+     * @return Primitive (unsigned) long value with the implicit permissions of the specified member in the specified channel
+     *
+     * @since  3.1
+     */
+    public static long getExplicitPermission(GuildChannel channel, Member member, boolean includeRoles)
+    {
         Checks.notNull(channel, "Channel");
         Checks.notNull(member, "Member");
 
         final Guild guild = member.getGuild();
         checkGuild(channel.getGuild(), guild, "Member");
 
-        long permission = getExplicitPermission(member);
+        long permission = includeRoles ? getExplicitPermission(member) : 0L;
 
         AtomicLong allow = new AtomicLong(0);
         AtomicLong deny = new AtomicLong(0);

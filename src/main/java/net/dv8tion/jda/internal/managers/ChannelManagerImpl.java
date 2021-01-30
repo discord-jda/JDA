@@ -30,11 +30,13 @@ import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.EnumSet;
 
 public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements ChannelManager
 {
@@ -171,8 +173,23 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+        Member selfMember = getGuild().getSelfMember();
+        if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
+        {
+            if (!selfMember.hasPermission(channel, Permission.MANAGE_ROLES))
+                throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
+
+            // Check on channel level to make sure we are actually able to set all the permissions!
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
+            if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) // This implies we can only set permissions the bot also has in the channel!
+            {
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember);
+                EnumSet<Permission> missing = Permission.getPermissions(botPerms & ~(allow | deny));
+                if (!missing.isEmpty())
+                    throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+            }
+
+        }
         final long id = getId(permHolder);
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
         withLock(lock, (lock) ->

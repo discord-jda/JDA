@@ -233,7 +233,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If any permission is set in allow/deny that the currently logged in account is missing,
-     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      * @throws java.lang.IllegalArgumentException
      *         If the specified target is null or not within the same guild.
      *
@@ -276,7 +276,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If any permission is set in allow/deny that the currently logged in account is missing,
-     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the specified target is null
@@ -325,7 +325,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If any permission is set in allow/deny that the currently logged in account is missing,
-     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -364,7 +364,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If any permission is set in allow/deny that the currently logged in account is missing,
-     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -406,7 +406,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         If one of the provided Permission values is invalid
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If any permission is set in allow/deny that the currently logged in account is missing,
-     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -444,7 +444,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         If one of the provided Permission values is invalid
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If any permission is set in allow/deny that the currently logged in account is missing,
-     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category or guild.
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *

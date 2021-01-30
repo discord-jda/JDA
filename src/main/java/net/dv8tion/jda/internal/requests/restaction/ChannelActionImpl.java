@@ -260,12 +260,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         Checks.notNegative(deny, "Denied permissions value");
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         Checks.check(deny <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
-        boolean canSetRoles;
         Member selfMember = getGuild().getSelfMember();
-        if (parent != null)
+        boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
+        if (!canSetRoles && parent != null) // You can also set MANAGE_ROLES if you have it on the category (apparently?)
             canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
-        else
-            canSetRoles = selfMember.hasPermission(Permission.MANAGE_ROLES);
         if (!canSetRoles)
         {
             // Prevent permission escalation
