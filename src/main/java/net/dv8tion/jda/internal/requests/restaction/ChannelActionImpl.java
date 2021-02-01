@@ -225,11 +225,15 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         clearPermissionOverrides();
         Member selfMember = getGuild().getSelfMember();
         boolean canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
+        //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
+        // That is why we explicitly exclude it here!
+        // This is by far the most complex and weird permission logic in the entire API...
         long botPerms;
         if (parent != null)
-            botPerms = Permission.getRaw(selfMember.getPermissions(parent));
+            botPerms = Permission.getRaw(selfMember.getPermissions(parent)) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
         else
-            botPerms = Permission.getRaw(selfMember.getPermissions());
+            botPerms = Permission.getRaw(selfMember.getPermissions()) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+
         parent.getRolePermissionOverrides().forEach(override -> {
             long allow = override.getAllowedRaw();
             long deny = override.getDeniedRaw();
@@ -272,10 +276,14 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                 botPerms = Permission.getRaw(selfMember.getPermissions(parent));
             else
                 botPerms = Permission.getRaw(selfMember.getPermissions());
+            //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
+            // That is why we explicitly exclude it here!
+            // This is by far the most complex and weird permission logic in the entire API...
+            botPerms &= ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
             EnumSet<Permission> missingPerms = Permission.getPermissions((allow | deny) &~ botPerms);
             if (!missingPerms.isEmpty())
-                throw new InsufficientPermissionException(guild, missingPerms.iterator().next());
+                throw new InsufficientPermissionException(guild, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
         }
 
         overrides.put(targetId, new PermOverrideData(type, targetId, allow, deny));

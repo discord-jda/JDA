@@ -183,12 +183,14 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
             if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) // This implies we can only set permissions the bot also has in the channel!
             {
-                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember);
+                //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
+                // That is why we explicitly exclude it here!
+                // This is by far the most complex and weird permission logic in the entire API...
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
                 EnumSet<Permission> missing = Permission.getPermissions(botPerms & ~(allow | deny));
                 if (!missing.isEmpty())
                     throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
             }
-
         }
         final long id = getId(permHolder);
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
