@@ -239,8 +239,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             long deny = override.getDeniedRaw();
             if (!canSetRoles)
             {
-                allow &= ~botPerms;
-                deny &= ~botPerms;
+                allow &= botPerms;
+                deny &= botPerms;
             }
             addRolePermissionOverride(override.getIdLong(), allow, deny);
         });
@@ -250,8 +250,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             long deny = override.getDeniedRaw();
             if (!canSetRoles)
             {
-                allow &= ~botPerms;
-                deny &= ~botPerms;
+                allow &= botPerms;
+                deny &= botPerms;
             }
             addMemberPermissionOverride(override.getIdLong(), allow, deny);
         });
@@ -281,7 +281,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
             // This is by far the most complex and weird permission logic in the entire API...
             botPerms &= ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
-            EnumSet<Permission> missingPerms = Permission.getPermissions((allow | deny) &~ botPerms);
+            EnumSet<Permission> missingPerms = Permission.getPermissions((allow | deny) & ~botPerms);
             if (!missingPerms.isEmpty())
                 throw new InsufficientPermissionException(guild, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
         }

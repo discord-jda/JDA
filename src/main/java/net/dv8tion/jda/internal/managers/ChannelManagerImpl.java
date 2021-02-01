@@ -187,7 +187,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
                 // That is why we explicitly exclude it here!
                 // This is by far the most complex and weird permission logic in the entire API...
                 long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
-                EnumSet<Permission> missing = Permission.getPermissions(botPerms & ~(allow | deny));
+                EnumSet<Permission> missing = Permission.getPermissions((allow | deny) & ~botPerms);
                 if (!missing.isEmpty())
                     throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
             }
@@ -230,11 +230,36 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notNull(syncSource, "SyncSource");
         Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
 
-        if(syncSource.equals(getChannel()))
+        if (syncSource.equals(getChannel()))
             return this;
 
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+        if (isPermissionChecksEnabled())
+        {
+            Member selfMember = getGuild().getSelfMember();
+            if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
+                throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+
+            boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR)
+                    || (PermissionUtil.getExplicitPermission(getChannel(), selfMember, false) & Permission.MANAGE_PERMISSIONS.getRawValue()) != 0;
+
+            if (!canSetRoles)
+            {
+                // Requires either administrator or MANAGE_PERMISSIONS explicitly on the channel itself
+                long botPerms = PermissionUtil.getEffectivePermission(getChannel(), selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+                boolean wouldRequireManageRoles = syncSource
+                        .getPermissionOverrides()
+                        .stream()
+                        .mapToLong(p -> p.getAllowedRaw() | p.getDeniedRaw())
+                        .anyMatch(perms -> (perms & ~botPerms) != 0);
+                if (wouldRequireManageRoles)
+                {
+                    throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS,
+                            "Cannot sync channel with parent due to permission escalation issues. " +
+                            "One of the overrides would set MANAGE_PERMISSIONS or a permission that the bot does not have. " +
+                            "This is not possible without explicitly having MANAGE_PERMISSIONS on this channel or ADMINISTRATOR on a role.");
+                }
+            }
+        }
 
         withLock(lock, (lock) ->
         {
