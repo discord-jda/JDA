@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.managers;
 
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
@@ -240,40 +239,13 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
                 throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
-            boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR)
-                    || (PermissionUtil.getExplicitPermission(getChannel(), selfMember, false) & Permission.MANAGE_PERMISSIONS.getRawValue()) != 0;
-
-            if (!canSetRoles)
-            {
-                @SuppressWarnings("unchecked")
-                TLongObjectMap<PermissionOverride> existingOverrides = ((AbstractChannelImpl) channel).getOverrideMap();
-                // Requires either administrator or MANAGE_PERMISSIONS explicitly on the channel itself
-                long botPerms = PermissionUtil.getEffectivePermission(getChannel(), selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
-                boolean wouldRequireManageRoles = syncSource
-                        .getPermissionOverrides()
-                        .stream()
-                        .mapToLong(p -> {
-                            PermissionOverride existing = existingOverrides.get(p.getIdLong());
-                            long allow = p.getAllowedRaw();
-                            long deny = p.getDeniedRaw();
-                            if (existing != null)
-                            {
-                                // Check which permissions were changed
-                                allow ^= existing.getAllowedRaw();
-                                deny ^= existing.getDeniedRaw();
-                            }
-                            return allow | deny;
-                        })
-                        .anyMatch(perms -> (perms & ~botPerms) != 0);
-                if (wouldRequireManageRoles)
-                {
-                    throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS,
-                            "Cannot sync channel with parent due to permission escalation issues. " +
-                            "One of the overrides would set MANAGE_PERMISSIONS or a permission that the bot does not have. " +
-                            "This is not possible without explicitly having MANAGE_PERMISSIONS on this channel or ADMINISTRATOR on a role.");
-                }
-            }
+            if (!selfMember.canSync(channel, syncSource))
+                throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS,
+                    "Cannot sync channel with parent due to permission escalation issues. " +
+                    "One of the overrides would set MANAGE_PERMISSIONS or a permission that the bot does not have. " +
+                    "This is not possible without explicitly having MANAGE_PERMISSIONS on this channel or ADMINISTRATOR on a role.");
         }
+
 
         withLock(lock, (lock) ->
         {

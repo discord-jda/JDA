@@ -264,7 +264,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *          If this GuildChannel has no parent
      * @throws  net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *          If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
-     *          in this channel
+     *          in this channel or {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} is false for the self member.
      *
      * @return  ChannelManager for chaining convenience
      *
@@ -296,7 +296,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *          If the given snySource is {@code null}, this GuildChannel or from a different Guild.
      * @throws  net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *          If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
-     *          in this channel
+     *          in this channel or {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} is false for the self member.
      *
      * @return  ChannelManager for chaining convenience
      *

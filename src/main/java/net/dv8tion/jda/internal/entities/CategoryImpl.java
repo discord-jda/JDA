@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -159,7 +160,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
         ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
-        return action.syncPermissionOverrides();
+        return trySync(action);
     }
 
     @Nonnull
@@ -167,6 +168,22 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
         ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
+        return trySync(action);
+    }
+
+    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
+    {
+        Member selfMember = getGuild().getSelfMember();
+        if (!selfMember.canSync(this))
+        {
+            long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
+            for (PermissionOverride override : getPermissionOverrides())
+            {
+                long perms = override.getDeniedRaw() | override.getAllowedRaw();
+                if ((perms & ~botPerms) != 0)
+                    return action;
+            }
+        }
         return action.syncPermissionOverrides();
     }
 

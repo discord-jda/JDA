@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
@@ -252,6 +253,55 @@ public class MemberImpl implements Member
         Checks.notNull(permissions, "Permission Collection");
 
         return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
+    }
+
+    @Override
+    public boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource)
+    {
+        Checks.notNull(targetChannel, "Channel");
+        Checks.notNull(syncSource, "Channel");
+        Checks.check(targetChannel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        Checks.check(syncSource.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        long userPerms = PermissionUtil.getEffectivePermission(targetChannel, this);
+        if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+            return false; // We can't manage permissions at all!
+
+        long channelPermissions = PermissionUtil.getExplicitPermission(targetChannel, this, false);
+        // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other permission on the channel
+        boolean hasLocalAdmin = ((userPerms & Permission.ADMINISTRATOR.getRawValue()) | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue())) != 0;
+        if (hasLocalAdmin)
+            return true;
+
+        TLongObjectMap<PermissionOverride> existingOverrides = ((AbstractChannelImpl<?, ?>) targetChannel).getOverrideMap();
+        for (PermissionOverride override : syncSource.getPermissionOverrides())
+        {
+            PermissionOverride existing = existingOverrides.get(override.getIdLong());
+            long allow = override.getAllowedRaw();
+            long deny = override.getDeniedRaw();
+            if (existing != null)
+            {
+                allow ^= existing.getAllowedRaw();
+                deny ^= existing.getDeniedRaw();
+            }
+            // If any permissions changed that the user doesn't have in the channel, they can't sync it :(
+            if (((allow | deny) & ~userPerms) != 0)
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean canSync(@Nonnull GuildChannel channel)
+    {
+        Checks.notNull(channel, "Channel");
+        Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
+        long userPerms = PermissionUtil.getEffectivePermission(channel, this);
+        if ((userPerms & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+            return false; // We can't manage permissions at all!
+
+        long channelPermissions = PermissionUtil.getExplicitPermission(channel, this, false);
+        // If the user has ADMINISTRATOR or MANAGE_PERMISSIONS then it can also set any other permission on the channel
+        return ((userPerms & Permission.ADMINISTRATOR.getRawValue()) | (channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue())) != 0;
     }
 
     @Override

@@ -541,13 +541,43 @@ public class PermissionUtil
      */
     public static long getExplicitPermission(GuildChannel channel, Role role)
     {
+        return getExplicitPermission(channel, role, true);
+    }
+
+    /**
+     * Retrieves the explicit permissions of the specified {@link net.dv8tion.jda.api.entities.Role Role}
+     * in its hosting {@link net.dv8tion.jda.api.entities.Guild Guild} and specific {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+     * <br><b>Allowed permissions override denied permissions of {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}!</b>
+     *
+     * <p>All permissions returned are explicitly granted to this Role.
+     * <br>Permissions like {@link net.dv8tion.jda.api.Permission#ADMINISTRATOR Permission.ADMINISTRATOR} do not
+     * grant other permissions in this value.
+     * <p>This factor in existing {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} if possible.
+     *
+     * @param  channel
+     *         The target channel of which to check {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
+     * @param  role
+     *         The non-null {@link net.dv8tion.jda.api.entities.Role Role} for which to get implicit permissions
+     * @param  includeRoles
+     *         Whether the base role permissions should be included
+     *
+     * @throws IllegalArgumentException
+     *         If any of the arguments is {@code null}
+     *         or the specified entities are not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *
+     * @return Primitive (unsigned) long value with the implicit permissions of the specified role in the specified channel
+     *
+     * @since  3.1
+     */
+    public static long getExplicitPermission(GuildChannel channel, Role role, boolean includeRoles)
+    {
         Checks.notNull(channel, "Channel");
         Checks.notNull(role, "Role");
 
         final Guild guild = role.getGuild();
         checkGuild(channel.getGuild(), guild, "Role");
 
-        long permission = role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw();
+        long permission = includeRoles ? role.getPermissionsRaw() | guild.getPublicRole().getPermissionsRaw() : 0;
         PermissionOverride override = channel.getPermissionOverride(guild.getPublicRole());
         if (override != null)
             permission = apply(permission, override.getAllowedRaw(), override.getDeniedRaw());
