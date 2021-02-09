@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.managers;
 
+import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
@@ -244,12 +245,25 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
 
             if (!canSetRoles)
             {
+                @SuppressWarnings("unchecked")
+                TLongObjectMap<PermissionOverride> existingOverrides = ((AbstractChannelImpl) channel).getOverrideMap();
                 // Requires either administrator or MANAGE_PERMISSIONS explicitly on the channel itself
                 long botPerms = PermissionUtil.getEffectivePermission(getChannel(), selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
                 boolean wouldRequireManageRoles = syncSource
                         .getPermissionOverrides()
                         .stream()
-                        .mapToLong(p -> p.getAllowedRaw() | p.getDeniedRaw())
+                        .mapToLong(p -> {
+                            PermissionOverride existing = existingOverrides.get(p.getIdLong());
+                            long allow = p.getAllowedRaw();
+                            long deny = p.getDeniedRaw();
+                            if (existing != null)
+                            {
+                                // Check which permissions were changed
+                                allow ^= existing.getAllowedRaw();
+                                deny ^= existing.getDeniedRaw();
+                            }
+                            return allow | deny;
+                        })
                         .anyMatch(perms -> (perms & ~botPerms) != 0);
                 if (wouldRequireManageRoles)
                 {
