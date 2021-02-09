@@ -61,14 +61,14 @@ dependencies {
 
     //Code safety
     api("com.google.code.findbugs:jsr305:3.0.2")
-    api("org.jetbrains:annotations:16.0.1")
+    api("org.jetbrains:annotations:20.1.0")
 
     //Logger
-    api("org.slf4j:slf4j-api:1.7.25")
+    api("org.slf4j:slf4j-api:1.7.30")
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.10")
-    api("com.squareup.okhttp3:okhttp:3.13.0")
+    api("com.neovisionaries:nv-websocket-client:2.11")
+    api("com.squareup.okhttp3:okhttp:4.9.1")
 
     //Opus library support
     api("club.minnced:opus-java:1.0.4@pom") {
@@ -76,7 +76,7 @@ dependencies {
     }
 
     //Collections Utility
-    api("org.apache.commons:commons-collections4:4.1")
+    api("org.apache.commons:commons-collections4:4.4")
 
     //we use this only together with opus-java
     // if that dependency is excluded it also doesn't need jna anymore

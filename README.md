@@ -632,15 +632,15 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.9**
+   * Version: **2.11**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
-   * Version: **3.13.0**
+   * Version: **4.9.1**
    * [Github](https://github.com/square/okhttp)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
-   * Version: **4.1**
+   * Version: **4.4**
    * [Website](https://commons.apache.org/proper/commons-collections)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
@@ -652,7 +652,7 @@ All dependencies are managed automatically by Gradle.
    * [BitBucket](https://bitbucket.org/trove4j/trove)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/net.sf.trove4j%3Atrove4j/view)
  * slf4j-api
-   * Version: **1.7.25**
+   * Version: **1.7.30**
    * [Website](https://www.slf4j.org/)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
  * opus-java (optional)
