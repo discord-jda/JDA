@@ -216,9 +216,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  messageId
      *         The target message
+     
+     * @throws IllegalArgumentException
+     *         If the provided ID is null or not a valid snowflake
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -232,13 +238,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
-     * You cannot reply to system messages (such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar).
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  messageId
      *         The target message
      *
      * @throws IllegalArgumentException
      *         If the provided ID is null or not a valid snowflake
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -255,6 +263,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  message
      *         The target message
