@@ -30,11 +30,13 @@ import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.EnumSet;
 
 public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements ChannelManager
 {
@@ -171,8 +173,25 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+        Member selfMember = getGuild().getSelfMember();
+        if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
+        {
+            if (!selfMember.hasPermission(channel, Permission.MANAGE_ROLES))
+                throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
+
+            // Check on channel level to make sure we are actually able to set all the permissions!
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
+            if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) // This implies we can only set permissions the bot also has in the channel!
+            {
+                //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
+                // That is why we explicitly exclude it here!
+                // This is by far the most complex and weird permission logic in the entire API...
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
+                EnumSet<Permission> missing = Permission.getPermissions((allow | deny) & ~botPerms);
+                if (!missing.isEmpty())
+                    throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+            }
+        }
         final long id = getId(permHolder);
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
         withLock(lock, (lock) ->
@@ -211,11 +230,22 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notNull(syncSource, "SyncSource");
         Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
 
-        if(syncSource.equals(getChannel()))
+        if (syncSource.equals(getChannel()))
             return this;
 
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+        if (isPermissionChecksEnabled())
+        {
+            Member selfMember = getGuild().getSelfMember();
+            if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
+                throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+
+            if (!selfMember.canSync(channel, syncSource))
+                throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS,
+                    "Cannot sync channel with parent due to permission escalation issues. " +
+                    "One of the overrides would set MANAGE_PERMISSIONS or a permission that the bot does not have. " +
+                    "This is not possible without explicitly having MANAGE_PERMISSIONS on this channel or ADMINISTRATOR on a role.");
+        }
+
 
         withLock(lock, (lock) ->
         {
