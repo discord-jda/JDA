@@ -180,6 +180,7 @@ public class EntityBuilder
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
         final long afkChannelId = guildJson.getUnsignedLong("afk_channel_id", 0L);
         final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
+        final long publicUpdatesChannelId = guildJson.getUnsignedLong("public_updates_channel_id", 0L);
         final int boostCount = guildJson.getInt("premium_subscription_count", 0);
         final int boostTier = guildJson.getInt("premium_tier", 0);
         final int maxMembers = guildJson.getInt("max_members", 0);
@@ -266,7 +267,8 @@ public class EntityBuilder
         createGuildEmotePass(guildObj, emotesArray);
 
         guildObj.setAfkChannel(guildObj.getVoiceChannelById(afkChannelId))
-                .setSystemChannel(guildObj.getTextChannelById(systemChannelId));
+                .setSystemChannel(guildObj.getTextChannelById(systemChannelId))
+                .setPublicUpdatesChannel(guildObj.getTextChannelById(publicUpdatesChannelId));
 
         return guildObj;
     }

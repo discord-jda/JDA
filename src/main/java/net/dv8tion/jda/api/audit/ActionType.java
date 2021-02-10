@@ -38,6 +38,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_REGION GUILD_REGION}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_SPLASH GUILD_SPLASH}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_SYSTEM_CHANNEL GUILD_SYSTEM_CHANNEL}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_PUBLIC_UPDATES_CHANNEL GUILD_PUBLIC_UPDATES_CHANNEL}</li>
      * </ul>
      */
     GUILD_UPDATE(1, TargetType.GUILD),

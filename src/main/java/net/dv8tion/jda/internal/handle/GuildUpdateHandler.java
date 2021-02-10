@@ -86,6 +86,8 @@ public class GuildUpdateHandler extends SocketHandler
                 ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
                 ? null : guild.getTextChannelsView().get(content.getLong("system_channel_id"));
+        TextChannel publicUpdatesChannel = content.isNull("public_updates_channel_id")
+                ? null : guild.getTextChannelsView().get(content.getLong("public_updates_channel_id"));
         Set<String> features;
         if (!content.isNull("features"))
         {
@@ -291,6 +293,15 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateSystemChannelEvent(
                             getJDA(), responseNumber,
                             guild, oldSystemChannel));
+        }
+        if (!Objects.equals(publicUpdatesChannel, guild.getPublicUpdatesChannel()))
+        {
+            TextChannel oldPublicUpdatesChannel = guild.getPublicUpdatesChannel();
+            guild.setPublicUpdatesChannel(publicUpdatesChannel);
+            getJDA().handleEvent(
+                    new GuildUpdatePublicUpdatesChannelEvent(
+                            getJDA(), responseNumber,
+                            guild, oldPublicUpdatesChannel));
         }
         return null;
     }

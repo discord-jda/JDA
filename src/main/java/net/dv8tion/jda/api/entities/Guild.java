@@ -575,6 +575,17 @@ public interface Guild extends ISnowflake
 
     /**
      * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that has been set as the channel
+     * <br>If no public updates channel has been set as the AFK channel, this returns {@code null}.
+     * <p>
+     * This value can be modified using {@link GuildManager#setPublicUpdatesChannel(TextChannel)}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that is the AFK Channel.
+     */
+    @Nullable
+    TextChannel getPublicUpdatesChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that has been set as the channel
      * which newly joined {@link net.dv8tion.jda.api.entities.Member Members} will be announced in.
      * <br>If no channel has been set as the system channel, this returns {@code null}.
      * <p>

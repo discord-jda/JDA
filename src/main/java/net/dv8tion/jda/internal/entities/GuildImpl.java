@@ -101,6 +101,7 @@ public class GuildImpl implements Guild
     private long ownerId;
     private Set<String> features;
     private VoiceChannel afkChannel;
+    private TextChannel publicUpdatesChannel;
     private TextChannel systemChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
@@ -320,6 +321,12 @@ public class GuildImpl implements Guild
     public VoiceChannel getAfkChannel()
     {
         return afkChannel;
+    }
+
+    @Override
+    public TextChannel getPublicUpdatesChannel()
+    {
+        return publicUpdatesChannel;
     }
 
     @Override
@@ -1570,6 +1577,12 @@ public class GuildImpl implements Guild
     public GuildImpl setSystemChannel(TextChannel systemChannel)
     {
         this.systemChannel = systemChannel;
+        return this;
+    }
+
+    public GuildImpl setPublicUpdatesChannel(TextChannel publicUpdatesChannel)
+    {
+        this.publicUpdatesChannel = publicUpdatesChannel;
         return this;
     }
 

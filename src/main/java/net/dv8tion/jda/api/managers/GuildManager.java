@@ -54,6 +54,8 @@ public interface GuildManager extends Manager<GuildManager>
     long SPLASH = 0x8;
     /** Used to reset the afk channel field */
     long AFK_CHANNEL    = 0x10;
+    /** Used to reset the public updates channel field */
+    long PUBLIC_UPDATES_CHANNEL = 0x15;
     /** Used to reset the afk timeout field */
     long AFK_TIMEOUT    = 0x20;
     /** Used to reset the system channel field */
@@ -202,6 +204,22 @@ public interface GuildManager extends Manager<GuildManager>
     @Nonnull
     @CheckReturnValue
     GuildManager setSplash(@Nullable Icon splash);
+
+    /**
+     * Sets the public updates {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *
+     * @param  publicUpdatesChannel
+     *         The new afk channel for this {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         or {@code null} to reset
+     *
+     * @throws IllegalArgumentException
+     *         If the provided channel is not from this guild
+     *
+     * @return GuildManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    GuildManager setPublicUpdatesChannel(@Nullable TextChannel publicUpdatesChannel);
 
     /**
      * Sets the AFK {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} of this {@link net.dv8tion.jda.api.entities.Guild Guild}.

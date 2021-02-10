@@ -41,7 +41,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected String name;
     protected String region;
     protected Icon icon, splash, banner;
-    protected String afkChannel, systemChannel;
+    protected String afkChannel, systemChannel, publicUpdatesChannel;
     protected String description, vanityCode;
     protected int afkTimeout;
     protected int mfaLevel;
@@ -84,6 +84,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             this.splash = null;
         if ((fields & AFK_CHANNEL) == AFK_CHANNEL)
             this.afkChannel = null;
+        if ((fields & PUBLIC_UPDATES_CHANNEL) == PUBLIC_UPDATES_CHANNEL)
+            this.publicUpdatesChannel = null;
         if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL)
             this.systemChannel = null;
         if ((fields & DESCRIPTION) == DESCRIPTION)
@@ -174,6 +176,17 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         Checks.check(afkChannel == null || afkChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
         this.afkChannel = afkChannel == null ? null : afkChannel.getId();
         set |= AFK_CHANNEL;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildManagerImpl setPublicUpdatesChannel(TextChannel publicUpdatesChannel)
+    {
+        Checks.check(publicUpdatesChannel == null || publicUpdatesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        this.publicUpdatesChannel = publicUpdatesChannel == null ? null : publicUpdatesChannel.getId();
+        set |= PUBLIC_UPDATES_CHANNEL;
         return this;
     }
 
@@ -293,6 +306,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("splash", splash == null ? null : splash.getEncoding());
         if (shouldUpdate(AFK_CHANNEL))
             body.put("afk_channel_id", afkChannel);
+        if (shouldUpdate(PUBLIC_UPDATES_CHANNEL))
+            body.put("public_updates_channel_id", publicUpdatesChannel);
         if (shouldUpdate(SYSTEM_CHANNEL))
             body.put("system_channel_id", systemChannel);
         if (shouldUpdate(VERIFICATION_LEVEL))

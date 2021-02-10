@@ -101,6 +101,14 @@ public enum AuditLogKey
     GUILD_SYSTEM_CHANNEL("system_channel_id"),
 
     /**
+     * Change of the {@link net.dv8tion.jda.api.entities.Guild#getPublicUpdatesChannel()} value represented by a TextChannel ID.
+     * <br>Use with {@link net.dv8tion.jda.api.entities.Guild#getTextChannelById(String) Guild.getTextChannelById(String)}
+     *
+     * <p>Expected type: <b>String</b>
+     */
+    GUILD_PUBLIC_UPDATES_CHANNEL("public_updates_channel_id"),
+
+    /**
      * Change of the {@link net.dv8tion.jda.api.entities.Guild#getExplicitContentLevel() Guild.getExplicitContentLevel()} of a Guild.
      * <br>Use with {@link net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel#fromKey(int) Guild.ExplicitContentLevel.fromKey(int)}
      *
