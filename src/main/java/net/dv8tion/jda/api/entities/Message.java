@@ -139,6 +139,13 @@ public interface Message extends ISnowflake, Formattable
      * @see MessageAction#append(CharSequence) MessageAction.append(...)
      */
     int MAX_CONTENT_LENGTH = 2000;
+    
+    /**
+    * The maximum amount of reactions that can be added to one message ({@value})
+    * 
+    * @see Message#addReaction(String) Message#addReaction(net.dv8tion.jda.api.entities.Emote)
+    */
+    int MAX_REACTIONS = 20;
 
     /**
      * Pattern used to find instant invites in strings.
