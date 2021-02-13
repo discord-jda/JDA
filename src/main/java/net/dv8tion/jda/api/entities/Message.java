@@ -143,7 +143,8 @@ public interface Message extends ISnowflake, Formattable
     /**
     * The maximum amount of reactions that can be added to one message ({@value})
     * 
-    * @see Message#addReaction(String) Message#addReaction(net.dv8tion.jda.api.entities.Emote)
+    * @see Message#addReaction(String)
+    * @see Message#addReaction(net.dv8tion.jda.api.entities.Emote)
     */
     int MAX_REACTIONS = 20;
 
