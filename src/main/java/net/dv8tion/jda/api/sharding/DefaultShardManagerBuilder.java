@@ -2303,6 +2303,32 @@ public class  DefaultShardManagerBuilder
     @Nonnull
     public ShardManager build() throws LoginException, IllegalArgumentException
     {
+        return build(true);
+    }
+
+    /**
+     * Builds a new {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance. If the login parameter is true, then it will start the login process.
+     * <br>The login process runs in a different thread, so while this will return immediately, {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} has not
+     * finished loading, thus many {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} methods have the chance to return incorrect information.
+     * <br>The main use of this method is to start the JDA connect process and do other things in parallel while startup is
+     * being performed like database connection or local resource loading.
+     *
+     * <p>Note that this method is async and as such will <b>not</b> block until all shards are started.
+     *
+     * @param  login
+     *         Whether the login process will be started
+     *
+     * @throws  LoginException
+     *          If the provided token is invalid.
+     * @throws  IllegalArgumentException
+     *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
+     *
+     * @return A {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
+     *         to whether or not loading has finished when this returns.
+     */
+    @Nonnull
+    public ShardManager build(boolean login) throws LoginException, IllegalArgumentException
+    {
         checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
         final ShardingConfig shardingConfig = new ShardingConfig(shardsTotal, useShutdownNow, intents, memberCachePolicy);
@@ -2318,7 +2344,9 @@ public class  DefaultShardManagerBuilder
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 
-        manager.login();
+        if(login) {
+            manager.login();
+        }
 
         return manager;
     }
