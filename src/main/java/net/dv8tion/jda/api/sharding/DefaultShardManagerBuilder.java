@@ -2344,9 +2344,8 @@ public class  DefaultShardManagerBuilder
         final ShardingMetaConfig metaConfig = new ShardingMetaConfig(maxBufferSize, contextProvider, cacheFlags, flags, compression, encoding);
         final DefaultShardManager manager = new DefaultShardManager(this.token, this.shards, shardingConfig, eventConfig, presenceConfig, threadingConfig, sessionConfig, metaConfig, chunkingFilter);
 
-        if(login) {
-            manager.login();
-        }
+        if (login)
+             manager.login();
 
         return manager;
     }
