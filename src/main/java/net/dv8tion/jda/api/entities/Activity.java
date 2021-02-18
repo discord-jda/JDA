@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
  * @see    #watching(String)
  * @see    #listening(String)
  * @see    #streaming(String, String)
+ * @see    #competing(String)
  */
 public interface Activity
 {
