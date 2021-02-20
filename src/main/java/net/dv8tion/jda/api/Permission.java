@@ -119,7 +119,7 @@ public enum Permission
     Permission(int offset, boolean isGuild, boolean isChannel, @Nonnull String name)
     {
         this.offset = offset;
-        this.raw = 1 << offset;
+        this.raw = 1L << offset;
         this.isGuild = isGuild;
         this.isChannel = isChannel;
         this.name = name;
