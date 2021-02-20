@@ -52,6 +52,7 @@ public enum Permission
     MESSAGE_HISTORY(         16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
+    USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
     // Voice Permissions
     VOICE_STREAM(      9, true, true, "Stream"),
