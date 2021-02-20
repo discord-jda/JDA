@@ -152,6 +152,33 @@ public interface MessageAction extends RestAction<Message>, Appendable
         return MessageActionImpl.isDefaultMentionRepliedUser();
     }
 
+    /**
+     * Sets the default value for {@link #failIfNotExists(boolean)}
+     *
+     * <p>Default: <b>false</b>
+     *
+     * @param fail
+     *        True, to throw a exception if the referenced message was deleted
+     */
+    static void setDefaultFailIfNotExists(boolean fail)
+    {
+        MessageActionImpl.setDefaultFailIfNotExists(fail);
+    }
+
+    /**
+     * Returns the default behavior for replies when the referenced message was deleted.
+     * <br>If this is {@code true} then all replies will throw an exception if the referenced message was deleted.
+     * You can specify this individually with {@link #failIfNotExists(boolean)} for each message.
+     *
+     * <p>Default: <b>false</b>
+     *
+     * @return True, to throw a exception if the referenced message was deleted
+     */
+    static boolean isDefaultFailIfNotExists()
+    {
+        return MessageActionImpl.isDefaultFailIfNotExists();
+    }
+
     @Nonnull
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
@@ -288,6 +315,21 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @CheckReturnValue
     MessageAction mentionRepliedUser(boolean mention);
+
+    /**
+     * Whether to throw a exception if the referenced message was deleted, when replying to a message.
+     * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
+     *
+     * <p>This is false by default but can be configured using {@link #setDefaultFailIfNotExists(boolean)}!
+     *
+     * @param  fail
+     *         True, to throw a exception if the referenced message was deleted
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction failIfNotExists(boolean fail);
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.
