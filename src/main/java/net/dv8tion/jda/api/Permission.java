@@ -102,7 +102,7 @@ public enum Permission
     public static final long ALL_TEXT_PERMISSIONS
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS,
                                 MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE);
+                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_SLASH_COMMANDS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
