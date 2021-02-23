@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.guild.member.update;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 
@@ -38,7 +39,10 @@ import javax.annotation.Nonnull;
  * to cache the updated members. Discord does not specifically tell us about the updates, but merely tells us the
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
+ *
+ * @incubating Discord is still trying to figure this out
  */
+@Incubating
 public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "pending";

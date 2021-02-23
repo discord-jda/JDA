@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
@@ -90,7 +91,10 @@ public interface MemberCachePolicy
      *
      * <p>Not recommended without {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent enabled.
      * The api will only send the guild member update events when this intent is enabled. Without those events the members will stay in cache indefinitely.
+     *
+     * @incubating Discord is still trying to figure this out
      */
+    @Incubating
     MemberCachePolicy PENDING = Member::isPending;
     /**
      * The default policy to use with {@link net.dv8tion.jda.api.JDABuilder#createDefault(String)}.

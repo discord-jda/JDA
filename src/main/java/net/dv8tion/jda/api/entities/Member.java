@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -307,8 +308,11 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * Checks whether this member has passed the {@link net.dv8tion.jda.api.entities.Guild Guild's}
      * Membership Screening requirements.
      *
+     * @incubating Discord is still trying to figure this out
+     *
      * @return True, if this member hasn't passed the guild's Membership Screening requirements
      */
+    @Incubating
     boolean isPending();
 
     /**
