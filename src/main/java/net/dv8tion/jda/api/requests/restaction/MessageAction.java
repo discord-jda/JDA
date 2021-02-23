@@ -153,30 +153,30 @@ public interface MessageAction extends RestAction<Message>, Appendable
     }
 
     /**
-     * Sets the default value for {@link #failIfNotExists(boolean)}
+     * Sets the default value for {@link #failOnInvalidReply(boolean)}
      *
      * <p>Default: <b>false</b>
      *
      * @param fail
      *        True, to throw a exception if the referenced message was deleted
      */
-    static void setDefaultFailIfNotExists(boolean fail)
+    static void setDefaultFailOnInvalidReply(boolean fail)
     {
-        MessageActionImpl.setDefaultFailIfNotExists(fail);
+        MessageActionImpl.setDefaultFailOnInvalidReply(fail);
     }
 
     /**
      * Returns the default behavior for replies when the referenced message was deleted.
      * <br>If this is {@code true} then all replies will throw an exception if the referenced message was deleted.
-     * You can specify this individually with {@link #failIfNotExists(boolean)} for each message.
+     * You can specify this individually with {@link #failOnInvalidReply(boolean)} for each message.
      *
      * <p>Default: <b>false</b>
      *
      * @return True, to throw a exception if the referenced message was deleted
      */
-    static boolean isDefaultFailIfNotExists()
+    static boolean isDefaultFailOnInvalidReply()
     {
-        return MessageActionImpl.isDefaultFailIfNotExists();
+        return MessageActionImpl.isDefaultFailOnInvalidReply();
     }
 
     @Nonnull
@@ -320,7 +320,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * Whether to throw a exception if the referenced message was deleted, when replying to a message.
      * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
      *
-     * <p>This is false by default but can be configured using {@link #setDefaultFailIfNotExists(boolean)}!
+     * <p>This is false by default but can be configured using {@link #setDefaultFailOnInvalidReply(boolean)}!
      *
      * @param  fail
      *         True, to throw a exception if the referenced message was deleted
@@ -329,7 +329,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction failIfNotExists(boolean fail);
+    MessageAction failOnInvalidReply(boolean fail);
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.
