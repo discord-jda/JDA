@@ -158,7 +158,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <p>Default: <b>false</b>
      *
      * @param fail
-     *        True, to throw a exception if the referenced message was deleted
+     *        True, to throw a exception if the referenced message does not exist
      */
     static void setDefaultFailOnInvalidReply(boolean fail)
     {
@@ -166,13 +166,13 @@ public interface MessageAction extends RestAction<Message>, Appendable
     }
 
     /**
-     * Returns the default behavior for replies when the referenced message was deleted.
-     * <br>If this is {@code true} then all replies will throw an exception if the referenced message was deleted.
+     * Returns the default behavior for replies when the referenced message does not exist.
+     * <br>If this is {@code true} then all replies will throw an exception if the referenced message does not exist.
      * You can specify this individually with {@link #failOnInvalidReply(boolean)} for each message.
      *
      * <p>Default: <b>false</b>
      *
-     * @return True, to throw a exception if the referenced message was deleted
+     * @return True, to throw a exception if the referenced message does not exist
      */
     static boolean isDefaultFailOnInvalidReply()
     {
@@ -241,6 +241,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
      *
@@ -257,6 +259,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
      * You cannot reply to system messages (such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar).
@@ -280,6 +284,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
      *
@@ -317,13 +323,13 @@ public interface MessageAction extends RestAction<Message>, Appendable
     MessageAction mentionRepliedUser(boolean mention);
 
     /**
-     * Whether to throw a exception if the referenced message was deleted, when replying to a message.
+     * Whether to throw a exception if the referenced message does not exist, when replying to a message.
      * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
      *
      * <p>This is false by default but can be configured using {@link #setDefaultFailOnInvalidReply(boolean)}!
      *
      * @param  fail
-     *         True, to throw a exception if the referenced message was deleted
+     *         True, to throw a exception if the referenced message does not exist
      *
      * @return Updated MessageAction for chaining convenience
      */
