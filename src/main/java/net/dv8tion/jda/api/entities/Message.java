@@ -140,7 +140,7 @@ public interface Message extends ISnowflake, Formattable
      */
     int MAX_CONTENT_LENGTH = 2000;
     
-    /**
+   /**
     * The maximum amount of reactions that can be added to one message ({@value})
     * 
     * @see Message#addReaction(String)
