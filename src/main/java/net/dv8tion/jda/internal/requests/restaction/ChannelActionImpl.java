@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -228,11 +229,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
         // That is why we explicitly exclude it here!
         // This is by far the most complex and weird permission logic in the entire API...
-        long botPerms;
-        if (parent != null)
-            botPerms = Permission.getRaw(selfMember.getPermissions(parent)) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
-        else
-            botPerms = Permission.getRaw(selfMember.getPermissions()) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+        long botPerms = PermissionUtil.getEffectivePermission(selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
         parent.getRolePermissionOverrides().forEach(override -> {
             long allow = override.getAllowedRaw();
@@ -271,15 +268,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         if (!canSetRoles)
         {
             // Prevent permission escalation
-            long botPerms;
-            if (parent != null)
-                botPerms = Permission.getRaw(selfMember.getPermissions(parent));
-            else
-                botPerms = Permission.getRaw(selfMember.getPermissions());
             //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
             // That is why we explicitly exclude it here!
             // This is by far the most complex and weird permission logic in the entire API...
-            botPerms &= ~Permission.MANAGE_PERMISSIONS.getRawValue();
+            long botPerms = PermissionUtil.getEffectivePermission(selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
 
             EnumSet<Permission> missingPerms = Permission.getPermissions((allow | deny) & ~botPerms);
             if (!missingPerms.isEmpty())
