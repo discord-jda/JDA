@@ -53,7 +53,7 @@ public interface GuildVoiceState
 
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} is muted, either
-     * by choice {@link #isSelfMuted()} or deafened by an admin {@link #isGuildMuted()}
+     * by choice {@link #isSelfMuted()} or muted by an admin {@link #isGuildMuted()}
      *
      * @return the Member's mute status
      */
