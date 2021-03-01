@@ -46,7 +46,7 @@ import java.util.Objects;
 public class MessageEmbed implements SerializableData
 {
     /**
-     * The maximum length an embed title can have
+     * The maximum length the title and author of an embed can have
      *
      * @see net.dv8tion.jda.api.EmbedBuilder#setTitle(String) EmbedBuilder.setTitle(title)
      * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean) EmbedBuilder.addField(title, value, inline)

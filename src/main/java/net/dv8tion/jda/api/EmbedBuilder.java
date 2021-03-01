@@ -631,7 +631,7 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the length of {@code name} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code name} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#TITLE_MAX_LENGTH}.</li>
      *             <li>If the length of {@code url} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code url} is not a properly formatted http or https url.</li>
      *             <li>If the length of {@code iconUrl} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
@@ -651,7 +651,7 @@ public class EmbedBuilder
         }
         else
         {
-            Checks.check(name.length() <= MessageEmbed.TEXT_MAX_LENGTH, "Name cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
+            Checks.check(name.length() <= MessageEmbed.TITLE_MAX_LENGTH, "Name cannot be longer than %d characters.", MessageEmbed.TITLE_MAX_LENGTH);
             urlCheck(url);
             urlCheck(iconUrl);
             this.author = new MessageEmbed.AuthorInfo(name, url, iconUrl, null);
