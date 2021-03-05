@@ -53,6 +53,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected static EnumSet<Message.MentionType> defaultMentions = EnumSet.allOf(Message.MentionType.class);
     protected static boolean defaultMentionRepliedUser = true;
+    protected static boolean defaultFailOnInvalidReply = false;
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
@@ -61,6 +62,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected String nonce = null;
     protected boolean tts = false, override = false;
     protected boolean mentionRepliedUser = defaultMentionRepliedUser;
+    protected boolean failOnInvalidReply = defaultFailOnInvalidReply;
     protected EnumSet<Message.MentionType> allowedMentions;
     protected Set<String> mentionableUsers = new HashSet<>();
     protected Set<String> mentionableRoles = new HashSet<>();
@@ -87,6 +89,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public static boolean isDefaultMentionRepliedUser()
     {
         return defaultMentionRepliedUser;
+    }
+
+    public static void setDefaultFailOnInvalidReply(boolean fail)
+    {
+        defaultFailOnInvalidReply = fail;
+    }
+
+    public static boolean isDefaultFailOnInvalidReply()
+    {
+        return defaultFailOnInvalidReply;
     }
 
     public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel)
@@ -211,6 +223,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageAction mentionRepliedUser(boolean mention)
     {
         mentionRepliedUser = mention;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction failOnInvalidReply(boolean fail)
+    {
+        failOnInvalidReply = fail;
         return this;
     }
 
@@ -513,7 +533,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         {
             obj.put("message_reference", DataObject.empty()
                 .put("message_id", messageReference)
-                .put("channel_id", channel.getId()));
+                .put("channel_id", channel.getId())
+                .put("fail_if_not_exists", failOnInvalidReply));
         }
         obj.put("tts", tts);
         if ((messageReference != 0L && !mentionRepliedUser) || allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
