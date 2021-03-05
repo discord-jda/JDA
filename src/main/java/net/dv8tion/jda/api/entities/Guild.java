@@ -287,21 +287,8 @@ public interface Guild extends ISnowflake
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
-     * <b>Possible known features:</b>
-     * <ul>
-     *     <li>ANIMATED_ICON - Guild can have an animated icon</li>
-     *     <li>BANNER - Guild can have a banner</li>
-     *     <li>COMMERCE - Guild can sell software through a store channel</li>
-     *     <li>DISCOVERABLE - Guild shows up in discovery tab</li>
-     *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
-     *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
-     *     <li>NEWS - Guild can create news channels</li>
-     *     <li>PARTNERED - Guild is "partnered"</li>
-     *     <li>PUBLIC - Guild is public</li>
-     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
-     *     <li>VERIFIED - Guild is "verified"</li>
-     *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
-     * </ul>
+     * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
+     *
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
      */
