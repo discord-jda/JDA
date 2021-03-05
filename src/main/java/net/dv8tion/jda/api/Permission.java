@@ -52,6 +52,7 @@ public enum Permission
     MESSAGE_HISTORY(         16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
+    USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
     // Voice Permissions
     VOICE_STREAM(      9, true, true, "Stream"),
@@ -101,7 +102,7 @@ public enum Permission
     public static final long ALL_TEXT_PERMISSIONS
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS,
                                 MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE);
+                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_SLASH_COMMANDS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
@@ -118,7 +119,7 @@ public enum Permission
     Permission(int offset, boolean isGuild, boolean isChannel, @Nonnull String name)
     {
         this.offset = offset;
-        this.raw = 1 << offset;
+        this.raw = 1L << offset;
         this.isGuild = isGuild;
         this.isChannel = isChannel;
         this.name = name;
