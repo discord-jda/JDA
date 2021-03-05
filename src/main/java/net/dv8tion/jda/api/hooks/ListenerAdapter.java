@@ -267,6 +267,7 @@ public abstract class ListenerAdapter implements EventListener
 
     //Guild Events
     public void onGuildReady(@Nonnull GuildReadyEvent event) {}
+    public void onGuildTimeout(@Nonnull GuildTimeoutEvent event) {}
     public void onGuildJoin(@Nonnull GuildJoinEvent event) {}
     public void onGuildLeave(@Nonnull GuildLeaveEvent event) {}
     public void onGuildAvailable(@Nonnull GuildAvailableEvent event) {}

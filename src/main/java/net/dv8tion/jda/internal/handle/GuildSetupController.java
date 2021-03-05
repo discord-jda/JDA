@@ -21,6 +21,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
+import net.dv8tion.jda.api.events.guild.GuildTimeoutEvent;
 import net.dv8tion.jda.api.events.guild.UnavailableGuildLeaveEvent;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -370,7 +371,7 @@ public class GuildSetupController
 
     private void startTimeout()
     {
-        if (timeoutHandle != null)
+        if (timeoutHandle != null || incompleteCount < 1) // We don't need to start a timeout for 0 guilds
             return;
 
         log.debug("Starting {} second timeout for {} guilds", timeoutDuration, incompleteCount);
@@ -395,6 +396,8 @@ public class GuildSetupController
             GuildSetupNode node = iterator.value();
             iterator.remove();
             unavailableGuilds.add(node.getIdLong());
+            // Inform users that the guild timed out
+            getJDA().handleEvent(new GuildTimeoutEvent(getJDA(), node.getIdLong()));
         }
         incompleteCount = 0;
         checkReady();

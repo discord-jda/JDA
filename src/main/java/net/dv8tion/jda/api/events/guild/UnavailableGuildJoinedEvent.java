@@ -24,6 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that you joined a {@link net.dv8tion.jda.api.entities.Guild Guild} that is not yet available.
  * <b>This does not extend {@link net.dv8tion.jda.api.events.guild.GenericGuildEvent GenericGuildEvent}</b>
+ * <br>This will be followed by a {@link GuildAvailableEvent} once the guild becomes available again.
  *
  * <p>Can be used to retrieve id of new unavailable Guild.
  */
