@@ -165,25 +165,25 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         if (getParent() == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
 
-        Collection<PermissionOverride> thisCheck = getPermissionOverrides().stream().filter(
-                po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
-        ).collect(Collectors.toList());
+        // Unchecked cast can be ignored as getParent() always return a Category and it is already checked for null.
+        AbstractChannelImpl<Category, CategoryImpl> parent = (AbstractChannelImpl<Category, CategoryImpl>)getParent();
 
-        HashMap<Long, PermissionOverride> parentCheck = new HashMap<>();
-        getParent().getPermissionOverrides().stream().filter(
-                po -> po.getAllowedRaw() != 0 || po.getDeniedRaw() != 0
-        ).forEach(po -> parentCheck.put(po.getIdLong(), po));
-
-        for(PermissionOverride check : thisCheck)
+        for(PermissionOverride check : getPermissionOverrides())
         {
-            PermissionOverride matching = parentCheck.getOrDefault(check.getIdLong(), null);
-            if(matching == null)
+            long selfAllowed = check.getAllowedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
+            long selfDenied = check.getDeniedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
+
+            PermissionOverride other = parent.overrides.get(check.getIdLong());
+            if(other == null)
                 return false;
 
-            if(matching.getAllowedRaw() != check.getAllowedRaw() || matching.getDeniedRaw() != check.getDeniedRaw())
+            long otherAllowed = other.getAllowedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
+            long otherDenied = other.getDeniedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
+
+            if(selfAllowed != otherAllowed || selfDenied != otherDenied)
                 return false;
         }
-        return thisCheck.size() == parentCheck.size();
+        return overrides.size() == parent.overrides.size();
     }
 
     @Nonnull
