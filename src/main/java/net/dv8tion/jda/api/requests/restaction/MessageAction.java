@@ -220,7 +220,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *
      * @param  messageId
      *         The target message
-     
+     *
      * @throws IllegalArgumentException
      *         If the provided ID is null or not a valid snowflake
      * @throws UnsupportedOperationException
