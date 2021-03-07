@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,10 @@ import javax.annotation.Nonnull;
  * Indicates that a Message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
  * 
  * <p>Can be used to retrieve affected PrivateChannel and Message.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled.
  */
 public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
 {

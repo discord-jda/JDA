@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,10 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added to a Message in a Guild
  *
  * <p>Can be used to detect when a reaction is added in a guild
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  */
 public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEvent
 {
@@ -35,6 +39,13 @@ public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEve
         super(api, responseNumber, member, reaction, member.getIdLong());
     }
 
+    /**
+     * The reacting {@link net.dv8tion.jda.api.entities.User User}
+     *
+     * @return The reacting user
+     *
+     * @see    #getUserIdLong()
+     */
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
@@ -43,6 +54,11 @@ public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEve
         return super.getUser();
     }
 
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Member Member} instance for the reacting user
+     *
+     * @return The member instance for the reacting user
+     */
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -481,7 +481,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      *         </ul>
      * @throws java.lang.IllegalArgumentException
      *         If the provided message is {@code null} or the provided {@link net.dv8tion.jda.api.entities.Message Message}
-     *         contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
+     *         contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
      *         that is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
@@ -781,7 +781,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
-     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -836,7 +837,8 @@ public interface MessageChannel extends ISnowflake, Formattable
      * the same id as the id provided.
      * <br>Note: when retrieving a Message, you must retrieve it from the channel it was sent in!
      *
-     * <p><b>Only bots can use this endpoint! A similar behaviour can be simulated using {@link #getHistoryAround(long, int)}!</b>
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>

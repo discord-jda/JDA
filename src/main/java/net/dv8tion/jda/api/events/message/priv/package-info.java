@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,5 +17,9 @@
 /**
  * Events for {@link net.dv8tion.jda.api.entities.Message Messages}
  * in {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannels}
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled.
  */
 package net.dv8tion.jda.api.events.message.priv;

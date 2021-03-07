@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -227,7 +227,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         The nullable Message to apply settings from
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the message contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
+     *         If the message contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
      *         that exceeds the sendable character limit,
      *         see {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}
      *
@@ -245,9 +245,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  messageId
      *         The target message
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is null or not a valid snowflake
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -263,13 +269,15 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
-     * You cannot reply to system messages (such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar).
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  messageId
      *         The target message
      *
      * @throws IllegalArgumentException
      *         If the provided ID is null or not a valid snowflake
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -288,6 +296,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  message
      *         The target message
