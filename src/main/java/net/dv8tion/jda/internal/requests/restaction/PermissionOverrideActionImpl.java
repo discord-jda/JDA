@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
@@ -187,8 +186,6 @@ public class PermissionOverrideActionImpl
     @CheckReturnValue
     public PermissionOverrideActionImpl setAllow(long allowBits)
     {
-        Checks.notNegative(allowBits, "Granted permissions value");
-        Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         checkPermissions(getCurrentAllow() ^ allowBits);
         this.allow = allowBits;
         this.deny &= ~allowBits;
@@ -201,8 +198,6 @@ public class PermissionOverrideActionImpl
     @CheckReturnValue
     public PermissionOverrideActionImpl setDeny(long denyBits)
     {
-        Checks.notNegative(denyBits, "Denied permissions value");
-        Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
         checkPermissions(getCurrentDeny() ^ denyBits);
         this.deny = denyBits;
         this.allow &= ~denyBits;

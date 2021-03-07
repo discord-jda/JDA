@@ -233,9 +233,6 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *         The <b>positive</b> bits representing the granted
      *         permissions for the new PermissionOverride
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided bits are negative
-     *         or higher than {@link net.dv8tion.jda.api.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *         on the channel and tries to set permissions it does not have in the channel
@@ -391,9 +388,6 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *         on the channel and tries to set permissions it does not have in the channel
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided bits are negative
-     *         or higher than {@link net.dv8tion.jda.api.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
@@ -608,9 +602,6 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *         An unsigned bitwise representation
      *         of denied Permissions
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If any of the provided bits are negative
-     *         or higher than {@link net.dv8tion.jda.api.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *         on the channel and tries to set permissions it does not have in the channel

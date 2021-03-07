@@ -257,10 +257,6 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny)
     {
-        Checks.notNegative(allow, "Granted permissions value");
-        Checks.notNegative(deny, "Denied permissions value");
-        Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-        Checks.check(deny <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
         Member selfMember = getGuild().getSelfMember();
         boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
         if (!canSetRoles && parent != null) // You can also set MANAGE_ROLES if you have it on the category (apparently?)

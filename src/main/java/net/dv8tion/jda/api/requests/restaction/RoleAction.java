@@ -196,8 +196,6 @@ public interface RoleAction extends AuditableRestAction<Role>
      *         The raw {@link net.dv8tion.jda.api.Permission Permissions} value for the new role.
      *         To retrieve this use {@link net.dv8tion.jda.api.Permission#getRawValue()}
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided permission value is invalid
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      *
