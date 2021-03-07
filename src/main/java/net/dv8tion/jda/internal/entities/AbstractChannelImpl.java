@@ -38,7 +38,6 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -164,10 +163,25 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public boolean isSynced()
     {
-        if (getParent() == null)
+        AbstractChannelImpl<?, ?> parent = (AbstractChannelImpl<?, ?>) getParent(); // We accept the unchecked cast here
+        if (parent == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
-        
-        return Helpers.deepEqualsUnordered(getParent().getPermissionOverrides(), getPermissionOverrides());
+        TLongObjectMap<PermissionOverride> parentOverrides = parent.getOverrideMap();
+        if (parentOverrides.size() != overrides.size())
+            return false;
+        // Check that each override matches with the parent override
+        for (PermissionOverride override : parentOverrides.valueCollection())
+        {
+            PermissionOverride ourOverride = overrides.get(override.getIdLong());
+            if (ourOverride == null) // this means we don't have the parent override => not synced
+                return false;
+            // Permissions are different => not synced
+            if (ourOverride.getAllowedRaw() != override.getAllowedRaw() || ourOverride.getDeniedRaw() != override.getDeniedRaw())
+                return false;
+        }
+
+        // All overrides exist and are the same as the parent => synced
+        return true;
     }
 
     @Nonnull
