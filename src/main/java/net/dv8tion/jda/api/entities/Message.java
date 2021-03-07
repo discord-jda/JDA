@@ -973,6 +973,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessage(CharSequence)} and {@link MessageAction#reference(Message)}.
      *
@@ -992,6 +994,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessage(MessageEmbed)} and {@link MessageAction#reference(Message)}.
      *
@@ -1011,6 +1015,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessage(Message)} and {@link MessageAction#reference(Message)}.
      *
@@ -1030,6 +1036,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessageFormat(content, args).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessageFormat(String, Object...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1051,6 +1059,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(file, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(File, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1072,6 +1082,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(File, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1095,6 +1107,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(InputStream, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1118,6 +1132,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(byte[], String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *

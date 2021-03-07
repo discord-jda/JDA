@@ -576,6 +576,28 @@ public interface Guild extends ISnowflake
     TextChannel getSystemChannel();
 
     /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that lists the rules of the guild.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the rules channel
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getRulesChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that receives community updates.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the community updates channel
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getCommunityUpdatesChannel();
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
      * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
      * Sometimes owners of guilds delete their account or get banned by Discord.
@@ -804,8 +826,8 @@ public interface Guild extends ISnowflake
      *         If the provided arguments are null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
-     * 
-     * @see    #getMemberByTag(String) 
+     *
+     * @see    #getMemberByTag(String)
      */
     @Nullable
     default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator)

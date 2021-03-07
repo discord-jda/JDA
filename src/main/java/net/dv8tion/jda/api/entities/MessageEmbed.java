@@ -54,6 +54,15 @@ public class MessageEmbed implements SerializableData
     public static final int TITLE_MAX_LENGTH = 256;
 
     /**
+     * The maximum length the author name of an embed can have
+     *
+     * @see net.dv8tion.jda.api.EmbedBuilder#setAuthor(String) (String) EmbedBuilder.setAuthor(title)
+     * @see net.dv8tion.jda.api.EmbedBuilder#setAuthor(String, String) EmbedBuilder.setAuthor(title, url)
+     * @see net.dv8tion.jda.api.EmbedBuilder#setAuthor(String, String, String) EmbedBuilder.setAuthor(title, url, iconUrl)
+     */
+    public static final int AUTHOR_MAX_LENGTH = 256;
+
+    /**
      * The maximum length an embed field value can have
      *
      * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean) EmbedBuilder.addField(title, value, inline)
