@@ -198,6 +198,9 @@ public class JDABuilder
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     * 
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -237,6 +240,9 @@ public class JDABuilder
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
+     *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
      *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
@@ -308,6 +314,9 @@ public class JDABuilder
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -344,6 +353,9 @@ public class JDABuilder
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
+     *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
      *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
