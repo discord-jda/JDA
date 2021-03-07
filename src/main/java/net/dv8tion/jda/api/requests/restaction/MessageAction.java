@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,6 +152,33 @@ public interface MessageAction extends RestAction<Message>, Appendable
         return MessageActionImpl.isDefaultMentionRepliedUser();
     }
 
+    /**
+     * Sets the default value for {@link #failOnInvalidReply(boolean)}
+     *
+     * <p>Default: <b>false</b>
+     *
+     * @param fail
+     *        True, to throw a exception if the referenced message does not exist
+     */
+    static void setDefaultFailOnInvalidReply(boolean fail)
+    {
+        MessageActionImpl.setDefaultFailOnInvalidReply(fail);
+    }
+
+    /**
+     * Returns the default behavior for replies when the referenced message does not exist.
+     * <br>If this is {@code true} then all replies will throw an exception if the referenced message does not exist.
+     * You can specify this individually with {@link #failOnInvalidReply(boolean)} for each message.
+     *
+     * <p>Default: <b>false</b>
+     *
+     * @return True, to throw a exception if the referenced message does not exist
+     */
+    static boolean isDefaultFailOnInvalidReply()
+    {
+        return MessageActionImpl.isDefaultFailOnInvalidReply();
+    }
+
     @Nonnull
     @Override
     MessageAction setCheck(@Nullable BooleanSupplier checks);
@@ -200,7 +227,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         The nullable Message to apply settings from
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the message contains an {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
+     *         If the message contains a {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
      *         that exceeds the sendable character limit,
      *         see {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}
      *
@@ -214,11 +241,19 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  messageId
      *         The target message
+     *
+     * @throws IllegalArgumentException
+     *         If the provided ID is null or not a valid snowflake
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -230,15 +265,19 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
-     * You cannot reply to system messages (such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar).
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  messageId
      *         The target message
      *
      * @throws IllegalArgumentException
      *         If the provided ID is null or not a valid snowflake
+     * @throws UnsupportedOperationException
+     *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -253,8 +292,11 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * Make the message a reply to the referenced message.
      * <br>You can only reply to messages from the same channel!
      * <br>This will mention the author of the target message. You can disable this through {@link #mentionRepliedUser(boolean)}.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link #failOnInvalidReply(boolean)}.
      *
      * <p>This requires {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel!
+     * You cannot reply to system messages such as {@link net.dv8tion.jda.api.entities.MessageType#CHANNEL_PINNED_ADD CHANNEL_PINNED_ADD} and similar.
      *
      * @param  message
      *         The target message
@@ -288,6 +330,21 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @CheckReturnValue
     MessageAction mentionRepliedUser(boolean mention);
+
+    /**
+     * Whether to throw a exception if the referenced message does not exist, when replying to a message.
+     * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
+     *
+     * <p>This is false by default but can be configured using {@link #setDefaultFailOnInvalidReply(boolean)}!
+     *
+     * @param  fail
+     *         True, to throw a exception if the referenced message does not exist
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction failOnInvalidReply(boolean fail);
 
     /**
      * Enable/Disable Text-To-Speech for the resulting message.

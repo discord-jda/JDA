@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
@@ -28,10 +29,12 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -49,6 +52,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected String topic = null;
     protected Boolean nsfw = null;
     protected Integer slowmode = null;
+    protected Boolean news = null;
 
     // --voice only--
     protected Integer bitrate = null;
@@ -170,6 +174,19 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
+    public ChannelActionImpl<T> setNews(boolean news)
+    {
+        if (type != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Can only set news for a TextChannel!");
+        if (news && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
+        this.news = news;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public ChannelActionImpl<T> addMemberPermissionOverride(long userId, long allow, long deny)
     {
         return addOverride(userId, PermOverrideData.MEMBER_TYPE, allow, deny);
@@ -183,12 +200,83 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return addOverride(roleId, PermOverrideData.ROLE_TYPE, allow, deny);
     }
 
+    @Nonnull
+    @Override
+    public ChannelAction<T> removePermissionOverride(long id)
+    {
+        overrides.remove(id);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<T> clearPermissionOverrides()
+    {
+        overrides.clear();
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public ChannelAction<T> syncPermissionOverrides()
+    {
+        if (parent == null)
+            throw new IllegalStateException("Cannot sync overrides without parent category! Use setParent(category) first!");
+        clearPermissionOverrides();
+        Member selfMember = getGuild().getSelfMember();
+        boolean canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
+        //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
+        // That is why we explicitly exclude it here!
+        // This is by far the most complex and weird permission logic in the entire API...
+        long botPerms = PermissionUtil.getEffectivePermission(selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+
+        parent.getRolePermissionOverrides().forEach(override -> {
+            long allow = override.getAllowedRaw();
+            long deny = override.getDeniedRaw();
+            if (!canSetRoles)
+            {
+                allow &= botPerms;
+                deny &= botPerms;
+            }
+            addRolePermissionOverride(override.getIdLong(), allow, deny);
+        });
+
+        parent.getMemberPermissionOverrides().forEach(override -> {
+            long allow = override.getAllowedRaw();
+            long deny = override.getDeniedRaw();
+            if (!canSetRoles)
+            {
+                allow &= botPerms;
+                deny &= botPerms;
+            }
+            addMemberPermissionOverride(override.getIdLong(), allow, deny);
+        });
+        return this;
+    }
+
     private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny)
     {
         Checks.notNegative(allow, "Granted permissions value");
         Checks.notNegative(deny, "Denied permissions value");
         Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
         Checks.check(deny <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
+        Member selfMember = getGuild().getSelfMember();
+        boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
+        if (!canSetRoles && parent != null) // You can also set MANAGE_ROLES if you have it on the category (apparently?)
+            canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
+        if (!canSetRoles)
+        {
+            // Prevent permission escalation
+            //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
+            // That is why we explicitly exclude it here!
+            // This is by far the most complex and weird permission logic in the entire API...
+            long botPerms = PermissionUtil.getEffectivePermission(selfMember) & ~Permission.MANAGE_PERMISSIONS.getRawValue();
+
+            EnumSet<Permission> missingPerms = Permission.getPermissions((allow | deny) & ~botPerms);
+            if (!missingPerms.isEmpty())
+                throw new InsufficientPermissionException(guild, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+        }
 
         overrides.put(targetId, new PermOverrideData(type, targetId, allow, deny));
         return this;
@@ -252,6 +340,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                     object.put("nsfw", nsfw);
                 if (slowmode != null)
                     object.put("rate_limit_per_user", slowmode);
+                if (news != null)
+                    object.put("type", news ? 5 : 0);
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +29,12 @@ import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -187,6 +189,7 @@ public class PermissionOverrideActionImpl
     {
         Checks.notNegative(allowBits, "Granted permissions value");
         Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        checkPermissions(getCurrentAllow() ^ allowBits);
         this.allow = allowBits;
         this.deny &= ~allowBits;
         allowSet = denySet = true;
@@ -200,10 +203,28 @@ public class PermissionOverrideActionImpl
     {
         Checks.notNegative(denyBits, "Denied permissions value");
         Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
+        checkPermissions(getCurrentDeny() ^ denyBits);
         this.deny = denyBits;
         this.allow &= ~denyBits;
         allowSet = denySet = true;
         return this;
+    }
+
+    protected void checkPermissions(long changed)
+    {
+        Member selfMember = getGuild().getSelfMember();
+        if (changed != 0 && !selfMember.hasPermission(Permission.ADMINISTRATOR))
+        {
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
+            if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+            {
+                // This implies we can only set permissions the bot also has in the channel
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember);
+                EnumSet<Permission> missing = Permission.getPermissions(changed & ~botPerms);
+                if (!missing.isEmpty())
+                    throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+            }
+        }
     }
 
     @Nonnull

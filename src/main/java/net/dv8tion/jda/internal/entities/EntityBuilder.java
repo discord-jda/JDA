@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -181,6 +181,8 @@ public class EntityBuilder
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
         final long afkChannelId = guildJson.getUnsignedLong("afk_channel_id", 0L);
         final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
+        final long rulesChannelId = guildJson.getUnsignedLong("rules_channel_id", 0L);
+        final long communityUpdatesChannelId = guildJson.getUnsignedLong("public_updates_channel_id", 0L);
         final int boostCount = guildJson.getInt("premium_subscription_count", 0);
         final int boostTier = guildJson.getInt("premium_tier", 0);
         final int maxMembers = guildJson.getInt("max_members", 0);
@@ -267,7 +269,9 @@ public class EntityBuilder
         createGuildEmotePass(guildObj, emotesArray);
 
         guildObj.setAfkChannel(guildObj.getVoiceChannelById(afkChannelId))
-                .setSystemChannel(guildObj.getTextChannelById(systemChannelId));
+                .setSystemChannel(guildObj.getTextChannelById(systemChannelId))
+                .setRulesChannel(guildObj.getTextChannelById(rulesChannelId))
+                .setCommunityUpdatesChannel(guildObj.getTextChannelById(communityUpdatesChannelId));
 
         return guildObj;
     }
@@ -1408,6 +1412,9 @@ public class EntityBuilder
 
         long allow = override.getLong("allow_new");
         long deny = override.getLong("deny_new");
+        // Don't cache empty @everyone overrides, they ruin our sync check
+        if (id == chan.getGuild().getIdLong() && (allow | deny) == 0L)
+            return null;
 
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
         if (permOverride == null)

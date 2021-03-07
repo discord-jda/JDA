@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,8 @@ public class GuildImpl implements Guild
     private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
+    private TextChannel rulesChannel;
+    private TextChannel communityUpdatesChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
@@ -326,6 +328,18 @@ public class GuildImpl implements Guild
     public TextChannel getSystemChannel()
     {
         return systemChannel;
+    }
+
+    @Override
+    public TextChannel getRulesChannel()
+    {
+        return rulesChannel;
+    }
+
+    @Override
+    public TextChannel getCommunityUpdatesChannel()
+    {
+        return communityUpdatesChannel;
     }
 
     @Nonnull
@@ -1570,6 +1584,18 @@ public class GuildImpl implements Guild
     public GuildImpl setSystemChannel(TextChannel systemChannel)
     {
         this.systemChannel = systemChannel;
+        return this;
+    }
+
+    public GuildImpl setRulesChannel(TextChannel rulesChannel)
+    {
+        this.rulesChannel = rulesChannel;
+        return this;
+    }
+
+    public GuildImpl setCommunityUpdatesChannel(TextChannel communityUpdatesChannel)
+    {
+        this.communityUpdatesChannel = communityUpdatesChannel;
         return this;
     }
 
