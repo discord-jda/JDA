@@ -163,28 +163,25 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public boolean isSynced()
     {
-        if (getParent() == null)
+        AbstractChannelImpl<?, ?> parent = (AbstractChannelImpl<?, ?>) getParent(); // We accept the unchecked cast here
+        if (parent == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
-
-        // Unchecked cast can be ignored as getParent() always return a Category and it is already checked for null.
-        AbstractChannelImpl<Category, CategoryImpl> parent = (AbstractChannelImpl<Category, CategoryImpl>)getParent();
-
-        for(PermissionOverride check : getPermissionOverrides())
+        TLongObjectMap<PermissionOverride> parentOverrides = parent.getOverrideMap();
+        if (parentOverrides.size() != overrides.size())
+            return false;
+        // Check that each override matches with the parent override
+        for (PermissionOverride override : parentOverrides.valueCollection())
         {
-            long selfAllowed = check.getAllowedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
-            long selfDenied = check.getDeniedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
-
-            PermissionOverride other = parent.overrides.get(check.getIdLong());
-            if(other == null)
+            PermissionOverride ourOverride = overrides.get(override.getIdLong());
+            if (ourOverride == null) // this means we don't have the parent override => not synced
                 return false;
-
-            long otherAllowed = other.getAllowedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
-            long otherDenied = other.getDeniedRaw() & Permission.ALL_CHANNEL_PERMISSIONS;
-
-            if(selfAllowed != otherAllowed || selfDenied != otherDenied)
+            // Permissions are different => not synced
+            if (ourOverride.getAllowedRaw() != override.getAllowedRaw() || ourOverride.getDeniedRaw() != override.getDeniedRaw())
                 return false;
         }
-        return overrides.size() == parent.overrides.size();
+
+        // All overrides exist and are the same as the parent => synced
+        return true;
     }
 
     @Nonnull

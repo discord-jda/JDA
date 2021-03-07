@@ -1391,6 +1391,9 @@ public class EntityBuilder
 
         long allow = override.getLong("allow_new");
         long deny = override.getLong("deny_new");
+        // Don't cache empty @everyone overrides, they ruin our sync check
+        if (id == chan.getGuild().getIdLong() && (allow | deny) == 0L)
+            return null;
 
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
         if (permOverride == null)
