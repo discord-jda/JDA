@@ -127,8 +127,6 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     {
         if (permissions != null)
         {
-            Checks.notNegative(permissions, "Raw Permissions");
-            Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
             for (Permission p : Permission.getPermissions(permissions))
                 checkPermission(p);
         }
