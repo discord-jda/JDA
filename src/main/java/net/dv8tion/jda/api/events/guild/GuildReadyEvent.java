@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.events.ReadyEvent;
 
 import javax.annotation.Nonnull;
 
@@ -29,6 +30,12 @@ import javax.annotation.Nonnull;
  * setup and full reconnects (indicated by {@link net.dv8tion.jda.api.events.ReconnectedEvent ReconnectedEvent}).
  *
  * <p>Can be used to initialize any services that depend on this guild.
+ *
+ * <p>When a guild fails to ready up due to Discord outages you will not receive this event.
+ * Guilds that fail to ready up will either timeout or get marked as unavailable.
+ * <br>You can use {@link ReadyEvent#getGuildUnavailableCount()} and {@link JDA#getUnavailableGuilds()} to check for unavailable guilds.
+ * {@link GuildTimeoutEvent} will be fired for guilds that don't ready up and also don't get marked as unavailable by Discord.
+ * Guilds that timeout will be marked as unavailable by the timeout event, they will <b>not</b> fire a {@link GuildUnavailableEvent} as that event is only indicating that a guild becomes unavailable <b>after</b> ready happened.
  */
 public class GuildReadyEvent extends GenericGuildEvent
 {
