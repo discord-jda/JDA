@@ -1400,6 +1400,11 @@ public class EntityBuilder
 
     public WebhookImpl createWebhook(DataObject object)
     {
+        return createWebhook(object, false);
+    }
+
+    public WebhookImpl createWebhook(DataObject object, boolean allowMissingChannel)
+    {
         final long id = object.getLong("id");
         final long guildId = object.getLong("guild_id");
         final long channelId = object.getLong("channel_id");
@@ -1407,7 +1412,7 @@ public class EntityBuilder
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
         TextChannel channel = getJDA().getTextChannelById(channelId);
-        if (channel == null)
+        if (channel == null && !allowMissingChannel)
             throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
@@ -1437,9 +1442,9 @@ public class EntityBuilder
             }
         }
         
-        WebhookImpl webhook = new WebhookImpl(channel, id, type)
+        WebhookImpl webhook = new WebhookImpl(channel, getJDA(), id, type)
                 .setToken(token)
-                .setOwner(owner == null ? null : channel.getGuild().getMember(owner))
+                .setOwner(owner == null || channel == null ? null : channel.getGuild().getMember(owner))
                 .setUser(defaultUser);
 
         if (!object.isNull("source_channel"))

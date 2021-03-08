@@ -189,7 +189,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> follow(@Nonnull String targetChannelId);
+    RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId);
 
     /**
      * Subscribes to the crossposted messages in this channel.
@@ -217,7 +217,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> follow(long targetChannelId)
+    default RestAction<Webhook.WebhookReference> follow(long targetChannelId)
     {
         return follow(Long.toUnsignedString(targetChannelId));
     }
@@ -252,7 +252,7 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> follow(@Nonnull TextChannel targetChannel)
+    default RestAction<Webhook.WebhookReference> follow(@Nonnull TextChannel targetChannel)
     {
         Checks.notNull(targetChannel, "Target Channel");
         Member selfMember = targetChannel.getGuild().getSelfMember();

@@ -18,7 +18,10 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.WebhookManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -230,6 +233,68 @@ public interface Webhook extends ISnowflake, IFakeable
      */
     @Nonnull
     WebhookManager getManager();
+
+    /**
+     * Partial Webhook which can be {@link #resolve() resolved} to a {@link Webhook}.
+     *
+     * @see #resolve()
+     */
+    class WebhookReference implements ISnowflake
+    {
+        private final JDA api;
+        private final long webhookId, channelId;
+
+        public WebhookReference(JDA api, long webhookId, long channelId)
+        {
+            this.api = api;
+            this.webhookId = webhookId;
+            this.channelId = channelId;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return webhookId;
+        }
+
+        /**
+         * The ID for the channel this webhook belongs to
+         *
+         * @return The ID for the channel this webhook belongs to
+         */
+        @Nonnull
+        public String getChannelId()
+        {
+            return Long.toUnsignedString(channelId);
+        }
+
+        /**
+         * The ID for the channel this webhook belongs to
+         *
+         * @return The ID for the channel this webhook belongs to
+         */
+        public long getChannelIdLong()
+        {
+            return channelId;
+        }
+
+        /**
+         * Resolves this reference to a {@link Webhook} instance.
+         * <br>The resulting instance may not provide a {@link #getChannel()} and {@link #getGuild()} due to API limitation.
+         *
+         * <p>The resulting webhook can also not be executed because the API does not provide a token.
+         *
+         * @return {@link RestAction} - Type: {@link Webhook}
+         */
+        @Nonnull
+        @CheckReturnValue
+        public RestAction<Webhook> resolve()
+        {
+            Route.CompiledRoute route = Route.Webhooks.GET_WEBHOOK.compile(getId());
+            return new RestActionImpl<>(api, route,
+                (response, request) -> request.getJDA().getEntityBuilder().createWebhook(response.getObject(), true));
+        }
+    }
 
     /**
      * Partial Channel which references the source channel for a follower webhook.

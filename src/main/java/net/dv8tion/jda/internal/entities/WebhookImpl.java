@@ -45,6 +45,7 @@ public class WebhookImpl implements Webhook
     private final TextChannel channel;
     private final long id;
     private final WebhookType type;
+    private final JDA api;
 
     private Member owner;
     private User user;
@@ -54,7 +55,13 @@ public class WebhookImpl implements Webhook
 
     public WebhookImpl(TextChannel channel, long id, WebhookType type)
     {
+        this(channel, channel.getJDA(), id, type);
+    }
+
+    public WebhookImpl(TextChannel channel, JDA api, long id, WebhookType type)
+    {
         this.channel = channel;
+        this.api = api;
         this.id = id;
         this.type = type;
     }
@@ -70,20 +77,22 @@ public class WebhookImpl implements Webhook
     @Override
     public JDA getJDA()
     {
-        return channel.getJDA();
+        return api;
     }
 
     @Nonnull
     @Override
     public Guild getGuild()
     {
-        return channel.getGuild();
+        return getChannel().getGuild();
     }
 
     @Nonnull
     @Override
     public TextChannel getChannel()
     {
+        if (channel == null)
+            throw new IllegalStateException("Cannot provide channel for this Webhook instance");
         return channel;
     }
 
