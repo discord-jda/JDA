@@ -25,6 +25,8 @@ import java.time.OffsetDateTime;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.User User} started typing. (Similar to the typing indicator in the Discord client)
  *
+ * <h2>Requirements</h2>
+ *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_TYPING GUILD_MESSAGE_TYPING} intent to be enabled to fire
  * for guild channels, and {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_TYPING DIRECT_MESSAGE_TYPING} to fire for private channels.
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
@@ -34,14 +36,16 @@ import java.time.OffsetDateTime;
  */
 public class UserTypingEvent extends GenericUserEvent
 {
+    private final Member member;
     private final MessageChannel channel;
     private final OffsetDateTime timestamp;
 
-    public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp)
+    public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp, @Nullable Member member)
     {
         super(api, responseNumber, user);
         this.channel = channel;
         this.timestamp = timestamp;
+        this.member = member;
     }
 
     /**
@@ -123,7 +127,7 @@ public class UserTypingEvent extends GenericUserEvent
     @Nullable
     public Guild getGuild()
     {
-        return isFromType(ChannelType.TEXT) ? getTextChannel().getGuild() : null;
+        return isFromType(ChannelType.TEXT) ? member.getGuild() : null;
     }
 
     /**
@@ -134,6 +138,6 @@ public class UserTypingEvent extends GenericUserEvent
     @Nullable
     public Member getMember()
     {
-        return isFromType(ChannelType.TEXT) ? getGuild().getMember(getUser()) : null;
+        return member;
     }
 }
