@@ -80,7 +80,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * <br>For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
      * this returns all Members with the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ} Permission.
      * <br>For {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
-     * this returns all Members that joined that VoiceChannel. (Requires at least {@link net.dv8tion.jda.api.utils.MemberCachePolicy#VOICE MemberCachePolcy.VOICE} and {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE})
+     * this returns all Members that joined that VoiceChannel. (Requires at least {@link net.dv8tion.jda.api.utils.MemberCachePolicy#VOICE MemberCachePolicy.VOICE} and {@link net.dv8tion.jda.api.utils.cache.CacheFlag#VOICE_STATE CacheFlag.VOICE_STATE})
      * <br>For {@link net.dv8tion.jda.api.entities.Category Categories},
      * this returns all Members who are in its child channels.
      *
