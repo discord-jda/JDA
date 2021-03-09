@@ -335,6 +335,9 @@ public interface Guild extends ISnowflake
      * Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
+     *     <br>If this guild does not have a vanity invite</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
      *     <br>The vanity url cannot be fetched due to a permission discrepancy</li>
      * </ul>
@@ -388,6 +391,32 @@ public interface Guild extends ISnowflake
     {
         return getVanityCode() == null ? null : "https://discord.gg/" + getVanityCode();
     }
+
+    /**
+     * Retrieves the Vanity Invite meta data for this guild.
+     * <br>This allows you to inspect how many times the vanity invite has been used.
+     * You can use {@link #getVanityUrl()} if you only care about the invite.
+     *
+     * <p>This action requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
+     *     <br>If this guild does not have a vanity invite</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The vanity invite cannot be fetched due to a permission discrepancy</li>
+     * </ul>
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
+     *
+     * @return {@link RestAction} - Type: {@link VanityInvite}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<VanityInvite> retrieveVanityInvite();
 
     /**
      * The description for this guild.
