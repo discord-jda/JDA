@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberLeaveEvent;
@@ -26,7 +25,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.GuildVoiceStateImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
@@ -70,19 +68,6 @@ public class GuildMemberRemoveHandler extends SocketHandler
         if (member == null)
         {
 //            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);
-            // Remove user from voice channel if applicable
-            guild.getVoiceChannelsView().forEachUnordered((channel) -> {
-                VoiceChannelImpl impl = (VoiceChannelImpl) channel;
-                Member connected = impl.getConnectedMembersMap().remove(userId);
-                if (connected != null) // user left channel!
-                {
-                    getJDA().handleEvent(
-                        new GuildVoiceLeaveEvent(
-                            getJDA(), responseNumber,
-                            connected, channel));
-                }
-            });
-
             // Fire cache independent event, we can still inform the library user about the member removal
             getJDA().handleEvent(
                 new GuildMemberRemoveEvent(
@@ -91,11 +76,11 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return null;
         }
 
-        GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
-        if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
+        GuildVoiceStateImpl voiceState = member.getVoiceState();
+        if (voiceState != null && voiceState.getChannel() != null)//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
             VoiceChannel channel = voiceState.getChannel();
-            ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(userId);
+            voiceState.setConnectedChannel(null);
             getJDA().handleEvent(
                 new GuildVoiceLeaveEvent(
                     getJDA(), responseNumber,

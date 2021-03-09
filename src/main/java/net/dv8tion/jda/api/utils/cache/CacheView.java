@@ -140,7 +140,6 @@ public interface CacheView<T> extends Iterable<T>
      *
      * @see    #acceptStream(Consumer)
      */
-    @Nullable
     default <R> R applyStream(@Nonnull Function<? super Stream<T>, ? extends R> action)
     {
         Checks.notNull(action, "Action");

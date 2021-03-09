@@ -29,6 +29,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private final JDA api;
     private Guild guild;
     private Member member;
+    private VoiceChannelImpl connectedChannel;
 
     private String sessionId;
     private boolean selfMuted = false;
@@ -109,11 +110,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public VoiceChannel getChannel()
     {
-        return getGuild().getVoiceChannelCache().applyStream(stream ->
-            stream.map(VoiceChannelImpl.class::cast)
-                .filter(vc -> vc.getConnectedMembersMap().containsKey(member.getIdLong()))
-                .findFirst().orElse(null)
-        );
+        return connectedChannel;
     }
 
     @Nonnull
@@ -206,6 +203,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl setStream(boolean stream)
     {
         this.stream = stream;
+        return this;
+    }
+
+    public GuildVoiceStateImpl setConnectedChannel(VoiceChannelImpl channel)
+    {
+        this.connectedChannel = channel;
         return this;
     }
 }
