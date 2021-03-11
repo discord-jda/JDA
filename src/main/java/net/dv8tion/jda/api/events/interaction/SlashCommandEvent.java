@@ -108,6 +108,13 @@ public class SlashCommandEvent extends GenericInteractionEvent
 
     @Nonnull
     @CheckReturnValue
+    public CommandReplyAction acknowledge(boolean ephemeral)
+    {
+        return acknowledge().setEphemeral(ephemeral);
+    }
+
+    @Nonnull
+    @CheckReturnValue
     public CommandReplyAction reply(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
