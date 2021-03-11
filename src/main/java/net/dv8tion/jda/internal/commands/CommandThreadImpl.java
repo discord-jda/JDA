@@ -17,21 +17,40 @@
 package net.dv8tion.jda.internal.commands;
 
 import net.dv8tion.jda.api.commands.CommandThread;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class CommandThreadImpl implements CommandThread
 {
     private final SlashCommandEvent event;
+    private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
+    private boolean isReady;
 
     public CommandThreadImpl(SlashCommandEvent event)
     {
         this.event = event;
+    }
+
+    public synchronized void ready()
+    {
+        this.isReady = true;
+        readyCallbacks.forEach(TriggerRestAction::run);
+    }
+
+    private synchronized <T extends TriggerRestAction<R>, R> T onReady(T runnable)
+    {
+        if (isReady)
+            runnable.run();
+        else
+            readyCallbacks.add(runnable);
+        return runnable;
     }
 
     @Override
@@ -41,31 +60,25 @@ public class CommandThreadImpl implements CommandThread
     }
 
     @Override
-    public Message getOriginalMessage()
-    {
-        return null; // TODO: Handle this
-    }
-
-    @Override
     public InteractionWebhookAction sendMessage(String content)
     {
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken());
+        Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken());
         route = route.withQueryParams("wait", "true");
-        return new WebhookMessageActionImpl(getJDA(), route).setContent(content);
+        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content);
     }
 
     @Override
-    public InteractionWebhookAction editMessage(String content)
+    public InteractionWebhookAction editOriginal(String content)
     {
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), "@original");
+        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), "@original");
         route = route.withQueryParams("wait", "true");
-        return new WebhookMessageActionImpl(getJDA(), route).setContent(content);
+        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content);
     }
 
     @Override
-    public RestAction<Void> deleteMessage()
+    public RestAction<Void> deleteOriginal()
     {
-        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), "@original");
-        return new RestActionImpl<>(getJDA(), route);
+        Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), "@original");
+        return onReady(new TriggerRestAction<>(getJDA(), route));
     }
 }

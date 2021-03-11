@@ -69,8 +69,10 @@ public class Route
         public static final Route EDIT_GUILD_COMMAND =   new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
         public static final Route DELETE_GUILD_COMMAND = new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
 
-        public static final Route CALLBACK = new Route(POST, "interactions/{interaction_id}/{interaction_token}/callback");
-        public static final Route CALLBACK_UPDATE = new Route(PATCH, "webhooks/{application_id}/{interaction_token}/messages/@original");
+        public static final Route CALLBACK =        new Route(POST,   "interactions/{interaction_id}/{interaction_token}/callback");
+        public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}/messages");
+        public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
+        public static final Route DELETE_FOLLOWUP = new Route(DELETE, "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
     }
 
     public static class Self

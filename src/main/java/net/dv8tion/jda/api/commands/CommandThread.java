@@ -17,13 +17,11 @@
 package net.dv8tion.jda.api.commands;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 // this is used for followup responses on commands
 public interface CommandThread
@@ -52,11 +50,9 @@ public interface CommandThread
         return getEvent().getInteractionToken();
     }
 
-    // TODO: We gotta make a special message implementation that uses webhook endpoints instead of channel endpoints
-    @Nullable
-    Message getOriginalMessage();
-
-    InteractionWebhookAction sendMessage(String content);
-    InteractionWebhookAction editMessage(String content); // doesn't work with ephemeral messages
-    RestAction<Void> deleteMessage(); // doesn't work with ephemeral messages
+    InteractionWebhookAction sendMessage(String content); // TODO: Other send overloads
+    // TODO: Edit followup messages
+    InteractionWebhookAction editOriginal(String content); // doesn't work with ephemeral messages
+    // TODO: Delete followup messages
+    RestAction<Void> deleteOriginal(); // doesn't work with ephemeral messages
 }

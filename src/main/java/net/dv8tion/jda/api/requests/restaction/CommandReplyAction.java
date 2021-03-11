@@ -37,10 +37,6 @@ public interface CommandReplyAction extends RestAction<CommandThread>
 {
     @Nonnull
     @CheckReturnValue
-    CommandReplyAction setKeepMessage(boolean keep);
-
-    @Nonnull
-    @CheckReturnValue
     default CommandReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
@@ -155,14 +151,14 @@ public interface CommandReplyAction extends RestAction<CommandThread>
     { // TODO: Write better docs
 //        /**  */ Unused (this is only for HTTP webhooks)
 //        PONG(1),
-        /** ACK a command without sending a message, eating the user's input */
-        ACKNOWLEDGE(2),
-        /** Respond with a message, eating the user's input */
-        CHANNEL_MESSAGE(3),
+//        /** ACK a command without sending a message, eating the user's input */
+//        ACKNOWLEDGE(2),
+//        /** Respond with a message, eating the user's input */
+//        CHANNEL_MESSAGE(3),
         /** Respond with a message, showing the user's input */
         CHANNEL_MESSAGE_WITH_SOURCE(4),
         /** ACK a command without sending a message, showing the user's input */
-        ACKNOWLEDGE_WITH_SOURCE(5),
+        DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE(5),
         ;
         private final int raw;
 

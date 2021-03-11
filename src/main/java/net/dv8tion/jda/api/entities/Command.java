@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.JDAImpl;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,6 +102,33 @@ public class Command
     public int hashCode()
     {
         return Long.hashCode(id);
+    }
+
+    public enum OptionType
+    {
+        UNKNOWN(-1), SUB_COMMAND(1), SUB_COMMAND_GROUP(2), STRING(3), INTEGER(4), BOOLEAN(5), USER(6), CHANNEL(7), ROLE(8);
+        private final int raw;
+
+        OptionType(int raw)
+        {
+            this.raw = raw;
+        }
+
+        public int getKey()
+        {
+            return raw;
+        }
+
+        @Nonnull
+        public static OptionType fromKey(int key)
+        {
+            for (OptionType type : values())
+            {
+                if (type.raw == key)
+                    return type;
+            }
+            return UNKNOWN;
+        }
     }
 
     public static class Choice

@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.commands.CommandThreadImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -46,18 +47,17 @@ import java.util.function.BooleanSupplier;
 
 public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implements CommandReplyAction
 {
-    private final CommandThread thread;
+    private final CommandThreadImpl thread;
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
     private int flags;
 
     private String content = "";
-    private boolean keepMessage;
     private boolean tts;
     private EnumSet<Message.MentionType> allowedMentions = MessageAction.getDefaultMentions(); // TODO: Use this
     private TLongSet mentionedUsers, mentionedRoles;
 
-    public CommandReplyActionImpl(JDA api, Route.CompiledRoute route, CommandThread thread)
+    public CommandReplyActionImpl(JDA api, Route.CompiledRoute route, CommandThreadImpl thread)
     {
         super(api, route);
         this.thread = thread;
@@ -65,7 +65,7 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
 
     public CommandReplyActionImpl applyMessage(Message message)
     {
-        return this;
+        return this; // TODO: Handle this
     }
 
     private DataObject getJSON()
@@ -73,10 +73,9 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
         DataObject json = DataObject.empty();
         if (isEmpty())
         {
-            if (keepMessage)
-                json.put("type", ResponseType.ACKNOWLEDGE_WITH_SOURCE.getRaw());
-            else
-                json.put("type", ResponseType.ACKNOWLEDGE.getRaw());
+            json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
+            if (flags != 0)
+                json.put("data", DataObject.empty().put("flags", flags));
         }
         else
         {
@@ -89,10 +88,7 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
                 payload.put("embeds", DataArray.fromCollection(embeds));
             json.put("data", payload);
 
-            if (keepMessage)
-                json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
-            else
-                json.put("type", ResponseType.CHANNEL_MESSAGE.getRaw());
+            json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
         }
         return json;
     }
@@ -125,6 +121,7 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
     @Override
     protected void handleSuccess(Response response, Request<CommandThread> request)
     {
+        thread.ready();
         request.onSuccess(thread);
     }
 
@@ -150,14 +147,6 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
             name = "SPOILER_" + name;
 
         files.put(name, data);
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public CommandReplyActionImpl setKeepMessage(boolean keepMessage)
-    {
-        this.keepMessage = keepMessage;
         return this;
     }
 

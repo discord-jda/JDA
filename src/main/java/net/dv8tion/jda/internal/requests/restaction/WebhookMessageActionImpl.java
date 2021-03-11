@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -37,7 +36,7 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 
-public class WebhookMessageActionImpl extends RestActionImpl<Message> implements InteractionWebhookAction
+public class WebhookMessageActionImpl extends TriggerRestAction<Message> implements InteractionWebhookAction, Runnable
 {
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
@@ -155,6 +154,8 @@ public class WebhookMessageActionImpl extends RestActionImpl<Message> implements
     @Override
     protected void handleSuccess(Response response, Request<Message> request)
     {
+        // TODO: Create new message object that uses the webhook endpoints to edit/delete
+        // TODO: This could be a simple decorator or proxy implementation
         Message message = request.getJDA().getEntityBuilder().createMessage(response.getObject());
         request.onSuccess(message);
     }

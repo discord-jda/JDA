@@ -16,8 +16,10 @@
 
 package net.dv8tion.jda.api.events.interaction;
 
+import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.commands.CommandThread;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -33,6 +35,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,17 +44,17 @@ public class SlashCommandEvent extends GenericInteractionEvent
     private final String name;
     private final long commandId;
     private final List<OptionData> options;
+    private final CommandThreadImpl thread;
 
     public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull String token, long interactionId,
-                             @Nullable Guild guild, @Nullable Member member, @Nullable User user, @Nonnull MessageChannel channel,
-                             @Nonnull String name, long commandId, @Nonnull List<DataObject> options)
+                             @Nullable Guild guild, @Nullable Member member, @Nonnull User user, @Nonnull MessageChannel channel,
+                             @Nonnull String name, long commandId, @Nonnull List<OptionData> options)
     {
         super(api, responseNumber, token, interactionId, guild, member, user, channel);
         this.name = name;
         this.commandId = commandId;
-        this.options = options.stream()
-                .map(OptionData::new)
-                .collect(Collectors.toList());
+        this.options = Collections.unmodifiableList(options);
+        this.thread = new CommandThreadImpl(this);
     }
 
     @Nonnull
@@ -90,10 +93,17 @@ public class SlashCommandEvent extends GenericInteractionEvent
 
     @Nonnull
     @CheckReturnValue
+    public CommandThread getThread()
+    {
+        return thread;
+    }
+
+    @Nonnull
+    @CheckReturnValue
     public CommandReplyAction acknowledge()
     {
         Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getInteractionId(), getInteractionToken());
-        return new CommandReplyActionImpl(api, route, new CommandThreadImpl(this));
+        return new CommandReplyActionImpl(api, route, this.thread);
     }
 
     @Nonnull
@@ -163,10 +173,19 @@ public class SlashCommandEvent extends GenericInteractionEvent
     public static class OptionData // TODO: Move this somewhere else, not sure yet
     {
         private final DataObject data;
+        private final Command.OptionType type;
+        private final TLongObjectMap<Object> resolved;
 
-        private OptionData(DataObject data)
+        public OptionData(DataObject data, TLongObjectMap<Object> resolved)
         {
             this.data = data;
+            this.type = Command.OptionType.fromKey(data.getInt("type", -1));;
+            this.resolved = resolved;
+        }
+
+        public Command.OptionType getType()
+        {
+            return type;
         }
 
         public String getName()
@@ -189,7 +208,39 @@ public class SlashCommandEvent extends GenericInteractionEvent
             return data.getLong("value");
         }
 
-        // TODO: Role/user/channel when it comes around - currently they are just ids... which is impossible to figure out
+        @Nullable
+        public Member getAsMember()
+        {
+            if (type != Command.OptionType.USER)
+                throw new IllegalStateException("Cannot resolve Member for option " + getName() + " of type " + type);
+            Object object = resolved.get(getAsLong());
+            if (object instanceof Member)
+                return (Member) object;
+            return null; // Unresolved
+        }
+
+        @Nullable
+        public User getAsUser()
+        {
+            if (type != Command.OptionType.USER)
+                throw new IllegalStateException("Cannot resolve User for option " + getName() + " of type " + type);
+            Object object = resolved.get(getAsLong());
+            if (object instanceof Member)
+                return ((Member) object).getUser();
+            if (object instanceof User)
+                return (User) object;
+            return null; // Unresolved
+        }
+
+        @Nullable
+        public Role getAsRole()
+        {
+            if (type != Command.OptionType.ROLE)
+                throw new IllegalStateException("Cannot resolve Role for option " + getName() + " of type " + type);
+            return (Role) resolved.get(getAsLong());
+        }
+
+        // TODO: Handle channels (new type?)
         // TODO: How to handle subcommands? What does it look like?
 
         public List<OptionData> getOptions() // this is for subcommands, i think
@@ -197,7 +248,7 @@ public class SlashCommandEvent extends GenericInteractionEvent
             return data.optArray("options")
                     .orElseGet(DataArray::empty)
                     .stream(DataArray::getObject)
-                    .map(OptionData::new)
+                    .map(d -> new OptionData(d, resolved))
                     .collect(Collectors.toList());
         }
 
@@ -207,7 +258,7 @@ public class SlashCommandEvent extends GenericInteractionEvent
             return data.optArray("options")
                 .orElseGet(DataArray::empty)
                 .stream(DataArray::getObject)
-                .map(OptionData::new)
+                .map(d -> new OptionData(d, resolved))
                 .filter(option -> option.getName().equals(name))
                 .collect(Collectors.toList());
         }

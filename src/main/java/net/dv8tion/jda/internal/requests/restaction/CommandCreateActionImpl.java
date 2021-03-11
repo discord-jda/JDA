@@ -16,6 +16,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Command;
+import net.dv8tion.jda.api.entities.Command.OptionType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -95,7 +96,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull CommandCreateAction.OptionType type, @Nonnull Consumer<? super OptionBuilder> builder)
+    public CommandCreateAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type, @Nonnull Consumer<? super OptionBuilder> builder)
     {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");

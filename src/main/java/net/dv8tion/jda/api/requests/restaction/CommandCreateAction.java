@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Command;
+import net.dv8tion.jda.api.entities.Command.OptionType;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -75,23 +76,6 @@ public interface CommandCreateAction extends RestAction<Command>
         default OptionBuilder addOption(String name, String description, OptionType type)
         {
             return addOption(name, description, type, Helpers.emptyConsumer());
-        }
-    }
-
-    enum OptionType
-    {
-        SUB_COMMAND(1), SUB_COMMAND_GROUP(2), STRING(3), INTEGER(4), BOOLEAN(5), USER(6), CHANNEL(7), ROLE(8);
-
-        private final int key;
-
-        OptionType(int key)
-        {
-            this.key = key;
-        }
-
-        public int getKey()
-        {
-            return key;
         }
     }
 }
