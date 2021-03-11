@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class SlashCommandEvent extends GenericInteractionEvent
@@ -87,6 +88,22 @@ public class SlashCommandEvent extends GenericInteractionEvent
         return options.stream()
                 .filter(opt -> opt.getName().equals(name))
                 .collect(Collectors.toList());
+    }
+
+    @Nonnull
+    public List<OptionData> getOptionsByType(@Nonnull Command.OptionType type)
+    {
+        Checks.notNull(type, "Type");
+        return options.stream()
+                .filter(it -> it.getType() == type)
+                .collect(Collectors.toList());
+    }
+
+    @Nullable
+    public OptionData getOption(@Nonnull String name)
+    {
+        List<OptionData> options = getOptionsByName(name);
+        return options.isEmpty() ? null : options.get(0);
     }
 
     // You can only reply ONCE so maybe we should throw when trying again?
@@ -250,6 +267,7 @@ public class SlashCommandEvent extends GenericInteractionEvent
         // TODO: Handle channels (new type?)
         // TODO: How to handle subcommands? What does it look like?
 
+        @Nonnull
         public List<OptionData> getOptions() // this is for subcommands, i think
         {
             return data.optArray("options")
@@ -259,27 +277,43 @@ public class SlashCommandEvent extends GenericInteractionEvent
                     .collect(Collectors.toList());
         }
 
+        @Nonnull
         public List<OptionData> getOptionsByName(@Nonnull String name)
         {
             Checks.notNull(name, "Name");
-            return data.optArray("options")
-                .orElseGet(DataArray::empty)
-                .stream(DataArray::getObject)
-                .map(d -> new OptionData(d, resolved))
+            return getOptions()
+                .stream()
                 .filter(option -> option.getName().equals(name))
                 .collect(Collectors.toList());
+        }
+
+        @Nonnull
+        public List<OptionData> getOptionsByType(@Nonnull Command.OptionType type)
+        {
+            Checks.notNull(type, "Type");
+            return getOptions()
+                .stream()
+                .filter(it -> it.getType() == type)
+                .collect(Collectors.toList());
+        }
+
+        @Nullable
+        public OptionData getOption(@Nonnull String name)
+        {
+            List<OptionData> options = getOptionsByName(name);
+            return options.isEmpty() ? null : options.get(0);
         }
 
         @Override
         public String toString()
         {
-            return "Option(" + getName() + "=" + getAsString() + ")";
+            return "Option[" + getType() + "](" + getName() + "=" + getAsString() + ")";
         }
 
         @Override
         public int hashCode()
         {
-            return data.hashCode();
+            return Objects.hash(getType(), getName());
         }
 
         @Override
@@ -289,7 +323,8 @@ public class SlashCommandEvent extends GenericInteractionEvent
                 return true;
             if (!(obj instanceof OptionData))
                 return false;
-            return data.equals(((OptionData) obj).data);
+            OptionData data = (OptionData) obj;
+            return getType() == data.getType() && getName().equals(data.getName());
         }
     }
 }
