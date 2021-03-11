@@ -20,38 +20,70 @@ import net.dv8tion.jda.api.commands.CommandThread;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.utils.JDALogger;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class CommandThreadImpl implements CommandThread
 {
+    public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
     private final SlashCommandEvent event;
     private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
+    private final Future<?> timeoutHandle;
+    private final ReentrantLock mutex = new ReentrantLock();
+    private Exception exception;
     private boolean isReady;
     private boolean ephemeral;
 
     public CommandThreadImpl(SlashCommandEvent event)
     {
         this.event = event;
+        // 10 second timeout for our failure
+        this.timeoutHandle = event.getJDA().getGatewayPool().schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
     }
 
-    public synchronized void ready()
+    public void ready()
     {
-        this.isReady = true;
-        readyCallbacks.forEach(TriggerRestAction::run);
+        MiscUtil.locked(mutex, () -> {
+            timeoutHandle.cancel(false);
+            isReady = true;
+            readyCallbacks.forEach(TriggerRestAction::run);
+        });
     }
 
-    private synchronized <T extends TriggerRestAction<R>, R> T onReady(T runnable)
+    public void fail(Exception exception)
     {
-        if (isReady)
-            runnable.run();
-        else
-            readyCallbacks.add(runnable);
-        return runnable;
+        MiscUtil.locked(mutex, () -> {
+            if (!isReady && !readyCallbacks.isEmpty() && this.exception == null)
+            {
+                this.exception = exception;
+                if (exception instanceof TimeoutException)
+                    JDALogger.getLog(CommandThread.class).warn("Up to {} Interaction Followup Messages Timed out for command with name \"{}\"! Did you forget to acknowledge the interaction?", readyCallbacks.size(), event.getName());
+                readyCallbacks.forEach(callback -> callback.fail(exception));
+            }
+        });
+    }
+
+    private <T extends TriggerRestAction<R>, R> T onReady(T runnable)
+    {
+        return MiscUtil.locked(mutex, () -> {
+            if (isReady)
+                runnable.run();
+            else if (exception != null)
+                runnable.fail(exception);
+            else
+                readyCallbacks.add(runnable);
+            return runnable;
+        });
     }
 
     @Override

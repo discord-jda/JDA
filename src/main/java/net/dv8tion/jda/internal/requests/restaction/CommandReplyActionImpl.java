@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.commands.CommandThread;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.exceptions.InteractionFailureException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
@@ -123,6 +124,14 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
     {
         thread.ready();
         request.onSuccess(thread);
+    }
+
+    @Override
+    public void handleResponse(Response response, Request<CommandThread> request)
+    {
+        if (!response.isOk())
+            thread.fail(new InteractionFailureException());
+        super.handleResponse(response, request);
     }
 
     @Nonnull

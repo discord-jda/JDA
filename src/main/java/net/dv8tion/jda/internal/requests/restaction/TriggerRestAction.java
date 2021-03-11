@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -38,6 +39,7 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
     private final ReentrantLock mutex = new ReentrantLock();
     private final List<Runnable> callbacks = new LinkedList<>();
     private volatile boolean isReady;
+    private volatile Throwable exception;
 
     public TriggerRestAction(JDA api, Route.CompiledRoute route)
     {
@@ -77,10 +79,18 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
         });
     }
 
+    public void fail(Throwable throwable)
+    {
+        MiscUtil.locked(mutex, () -> {
+            exception = throwable;
+            callbacks.forEach(Runnable::run);
+        });
+    }
+
     public void onReady(Runnable callback)
     {
         MiscUtil.locked(mutex, () -> {
-            if (isReady)
+            if (isReady || exception != null)
                 callback.run();
             else
                 callbacks.add(callback);
@@ -92,8 +102,19 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
     {
         if (isReady)
             super.queue(success, failure);
-        else
-            onReady(() -> super.queue(success, failure));
+        else onReady(() -> {
+            if (this.exception != null)
+            {
+                if (failure != null)
+                    failure.accept(this.exception);
+                else
+                    RestAction.getDefaultFailure().accept(this.exception);
+            }
+            else
+            {
+                super.queue(success, failure);
+            }
+        });
     }
 
     @Nonnull
@@ -103,7 +124,14 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
         if (isReady)
             return super.submit(shouldQueue);
         CompletableFuture<T> future = new CompletableFuture<>();
+
         onReady(() -> {
+            if (exception != null)
+            {
+                future.completeExceptionally(exception);
+                return;
+            }
+
             CompletableFuture<T> handle = super.submit(shouldQueue);
             handle.whenComplete((success, error) -> {
                 if (error != null)
