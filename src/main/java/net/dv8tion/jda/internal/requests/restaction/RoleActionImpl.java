@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,8 +127,6 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     {
         if (permissions != null)
         {
-            Checks.notNegative(permissions, "Raw Permissions");
-            Checks.check(permissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
             for (Permission p : Permission.getPermissions(permissions))
                 checkPermission(p);
         }

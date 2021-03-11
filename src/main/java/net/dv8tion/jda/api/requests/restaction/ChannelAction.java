@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -90,7 +91,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> setName(@Nonnull String name);
 
     /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel
+     * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel.
+     *
+     * You can use {@link #syncPermissionOverrides()} to sync the channel with the category.
      *
      * @param  category
      *         The parent for the new GuildChannel
@@ -102,6 +105,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         or not from this Guild
      *
      * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    #syncPermissionOverrides()
      */
     @Nonnull
     @CheckReturnValue
@@ -186,8 +191,30 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> setSlowmode(int slowmode);
 
     /**
+     * Sets the news flag for the new TextChannel.
+     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
+     *
+     * @param  news
+     *         The news flag for the new GuildChannel
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a TextChannel
+     * @throws java.lang.IllegalStateException
+     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setNews(boolean news);
+
+    /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
+     *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
      *
      * <p>Example:
      * <pre>{@code
@@ -204,6 +231,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @param  deny
      *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      * @throws java.lang.IllegalArgumentException
      *         If the specified target is null or not within the same guild.
      *
@@ -225,6 +255,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     *
      * <p>Example:
      * <pre>{@code
      * Role role = guild.getPublicRole();
@@ -242,6 +274,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override.
      *         Use {@link net.dv8tion.jda.api.Permission#getRawValue()} to retrieve these Permissions.
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the specified target is null
@@ -271,6 +306,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Adds a new Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     *
      * <p>Example:
      * <pre>{@code
      * long userId = user.getIdLong();
@@ -285,6 +322,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
      * @param  deny
      *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -304,6 +345,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * Adds a new Role {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      * for the new GuildChannel.
      *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     *
      * <p>Example:
      * <pre>{@code
      * long roleId = role.getIdLong();
@@ -318,6 +361,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *         The granted {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
      * @param  deny
      *         The denied {@link net.dv8tion.jda.api.Permission Permissions} for the override or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -335,6 +382,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
 
     /**
      * Adds a new Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the new GuildChannel.
+     *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
      *
      * <p>Example:
      * <pre>{@code
@@ -355,6 +404,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @throws java.lang.IllegalArgumentException
      *         If one of the provided Permission values is invalid
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -368,6 +420,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
 
     /**
      * Adds a new Role {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for the new GuildChannel.
+     *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
      *
      * <p>Example:
      * <pre>{@code
@@ -388,6 +442,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @throws java.lang.IllegalArgumentException
      *         If one of the provided Permission values is invalid
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If any permission is set in allow/deny that the currently logged in account is missing,
+     *         unless {@link Permission#MANAGE_PERMISSIONS} or {@link Permission#MANAGE_ROLES} is granted to it within the context of the parent category.
      *
      * @return The current ChannelAction, for chaining convenience
      *
@@ -398,6 +455,82 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @CheckReturnValue
     ChannelAction<T> addRolePermissionOverride(long roleId, long allow, long deny);
+
+    /**
+     * Removes any existing override with the provided id.
+     * <br>If no override with the provided id exists, this method does nothing.
+     *
+     * @param  id
+     *         The member or role id of the override
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> removePermissionOverride(long id);
+
+    /**
+     * Removes any existing override with the provided id.
+     * <br>If no override with the provided id exists, this method does nothing.
+     *
+     * @param  id
+     *         The member or role id of the override
+     *
+     * @throws IllegalArgumentException
+     *         If the provided string is not a valid snowflake or null
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<T> removePermissionOverride(@Nonnull String id)
+    {
+        return removePermissionOverride(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Removes any existing override with the provided role/member.
+     * <br>If no override for the provided role/member exists, this method does nothing.
+     *
+     * @param  holder
+     *         The member or role of the override
+     *
+     * @throws IllegalArgumentException
+     *         If the provided permission holder is null
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<T> removePermissionOverride(@Nonnull IPermissionHolder holder)
+    {
+        Checks.notNull(holder, "PermissionHolder");
+        return removePermissionOverride(holder.getIdLong());
+    }
+
+    /**
+     * Removes all currently configured permission overrides
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> clearPermissionOverrides();
+
+    /**
+     * Syncs the permission overrides of the channel with the category.
+     *
+     * <p>If setting permission overwrites, only permissions your bot has in the guild can be allowed/denied.
+     * In order to properly sync permissions the currently logged in account must have all allowed/denied permissions or {@link Permission#MANAGE_ROLES} in the parent category.
+     *
+     * @throws IllegalArgumentException
+     *         If no parent has been configured. You have to use {@link #setParent(Category)} before calling this method.
+     *
+     * @return The current ChannelAction, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> syncPermissionOverrides();
 
     /**
      * Sets the bitrate for the new VoiceChannel

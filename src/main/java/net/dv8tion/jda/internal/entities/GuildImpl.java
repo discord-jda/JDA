@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,6 @@ import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -103,6 +102,8 @@ public class GuildImpl implements Guild
     private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
+    private TextChannel rulesChannel;
+    private TextChannel communityUpdatesChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
@@ -242,6 +243,17 @@ public class GuildImpl implements Guild
         return vanityCode;
     }
 
+    @Override
+    @Nonnull
+    public RestAction<VanityInvite> retrieveVanityInvite()
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        JDAImpl api = getJDA();
+        Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
+        return new RestActionImpl<>(api, route,
+            (response, request) -> new VanityInvite(vanityCode, response.getObject().getInt("uses")));
+    }
+
     @Nullable
     @Override
     public String getDescription()
@@ -329,6 +341,18 @@ public class GuildImpl implements Guild
         return systemChannel;
     }
 
+    @Override
+    public TextChannel getRulesChannel()
+    {
+        return rulesChannel;
+    }
+
+    @Override
+    public TextChannel getCommunityUpdatesChannel()
+    {
+        return communityUpdatesChannel;
+    }
+
     @Nonnull
     @Override
     public RestAction<List<Webhook>> retrieveWebhooks()
@@ -350,7 +374,7 @@ public class GuildImpl implements Guild
                 {
                     webhooks.add(builder.createWebhook(array.getObject(i)));
                 }
-                catch (UncheckedIOException | NullPointerException e)
+                catch (Exception e)
                 {
                     JDAImpl.LOG.error("Error creating webhook from json", e);
                 }
@@ -1571,6 +1595,18 @@ public class GuildImpl implements Guild
     public GuildImpl setSystemChannel(TextChannel systemChannel)
     {
         this.systemChannel = systemChannel;
+        return this;
+    }
+
+    public GuildImpl setRulesChannel(TextChannel rulesChannel)
+    {
+        this.rulesChannel = rulesChannel;
+        return this;
+    }
+
+    public GuildImpl setCommunityUpdatesChannel(TextChannel communityUpdatesChannel)
+    {
+        this.communityUpdatesChannel = communityUpdatesChannel;
         return this;
     }
 

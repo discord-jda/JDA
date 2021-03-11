@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 import net.dv8tion.jda.api.events.message.guild.react.GenericGuildMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
 import net.dv8tion.jda.api.events.message.priv.react.GenericPrivateMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.user.UserTypingEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
@@ -53,6 +54,7 @@ import java.util.EnumSet;
  *     <li><b>GUILD_MEMBERS</b> - This is a <b>privileged</b> gateway intent that is used to update user information and join/leaves (including kicks). This is required to cache all members of a guild (including chunking)</li>
  *     <li><b>GUILD_BANS</b> - This will only track guild bans and unbans</li>
  *     <li><b>GUILD_EMOJIS</b> - This will only track guild emote create/modify/delete. Most bots don't need this since they just use the emote id anyway.</li>
+ *     <li><b>GUILD_WEBHOOKS</b> - This will only track guild webhook create/update/delete. Most bots don't need this since related events don't contain any useful information about webhook changes.</li>
  *     <li><b>GUILD_INVITES</b> - This will only track invite create/delete. Most bots don't make use of invites since they are added through OAuth2 authorization by administrators.</li>
  *     <li><b>GUILD_VOICE_STATES</b> - Required to properly get information of members in voice channels and cache them. <u>You cannot connect to a voice channel without this intent</u>.</li>
  *     <li><b>GUILD_PRESENCES</b> - This is a <b>privileged</b> gateway intent this is only used to track activity and online-status of a user.</li>
@@ -98,10 +100,10 @@ public enum GatewayIntent
 //     * Integration events. (unused)
 //     */
 //    GUILD_INTEGRATIONS(4),
-//    /**
-//     * Webhook events. (unused)
-//     */
-//    GUILD_WEBHOOKS(5),
+    /**
+     * Webhook events.
+     */
+    GUILD_WEBHOOKS(5),
     /**
      * Invite events.
      */
@@ -159,6 +161,7 @@ public enum GatewayIntent
      * <ul>
      *     <li>GUILD_MEMBERS (because its privileged)</li>
      *     <li>GUILD_PRESENCES (because its privileged)</li>
+     *     <li>GUILD_WEBHOOKS because its not useful for most bots</li>
      *     <li>GUILD_MESSAGE_TYPING because its not useful for most bots</li>
      *     <li>DIRECT_MESSAGE_TYPING because its not useful for most bots</li>
      * </ul>
@@ -168,7 +171,7 @@ public enum GatewayIntent
      * You can further configure intents by using {@link net.dv8tion.jda.api.JDABuilder#enableIntents(GatewayIntent, GatewayIntent...) enableIntents(intents)}
      * and {@link net.dv8tion.jda.api.JDABuilder#disableIntents(GatewayIntent, GatewayIntent...) disableIntents(intents)}.
      */
-    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
+    public static final int DEFAULT = ALL_INTENTS & ~getRaw(GUILD_MEMBERS, GUILD_PRESENCES, GUILD_WEBHOOKS, GUILD_MESSAGE_TYPING, DIRECT_MESSAGE_TYPING);
 
     private final int rawValue;
     private final int offset;
@@ -369,6 +372,9 @@ public enum GatewayIntent
                 intents.add(DIRECT_MESSAGE_REACTIONS);
             else if (GenericPrivateMessageEvent.class.isAssignableFrom(event))
                 intents.add(DIRECT_MESSAGES);
+
+            else if (GenericMessageReactionEvent.class.isAssignableFrom(event))
+                Collections.addAll(intents, GUILD_MESSAGE_REACTIONS, DIRECT_MESSAGE_REACTIONS);
 
             else if (GenericMessageEvent.class.isAssignableFrom(event))
                 Collections.addAll(intents, GUILD_MESSAGES, DIRECT_MESSAGES);

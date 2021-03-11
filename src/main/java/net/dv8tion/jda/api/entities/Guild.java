@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.PaginationAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -311,21 +312,8 @@ public interface Guild extends ISnowflake
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
-     * <b>Possible known features:</b>
-     * <ul>
-     *     <li>ANIMATED_ICON - Guild can have an animated icon</li>
-     *     <li>BANNER - Guild can have a banner</li>
-     *     <li>COMMERCE - Guild can sell software through a store channel</li>
-     *     <li>DISCOVERABLE - Guild shows up in discovery tab</li>
-     *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
-     *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
-     *     <li>NEWS - Guild can create news channels</li>
-     *     <li>PARTNERED - Guild is "partnered"</li>
-     *     <li>PUBLIC - Guild is public</li>
-     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
-     *     <li>VERIFIED - Guild is "verified"</li>
-     *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
-     * </ul>
+     * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
+     *
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
      */
@@ -372,8 +360,11 @@ public interface Guild extends ISnowflake
      * Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
+     *     <br>If this guild does not have a vanity invite</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *     <br>The vanity url cannot be fetched due to a permission discrepancy</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -427,6 +418,32 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * Retrieves the Vanity Invite meta data for this guild.
+     * <br>This allows you to inspect how many times the vanity invite has been used.
+     * You can use {@link #getVanityUrl()} if you only care about the invite.
+     *
+     * <p>This action requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
+     *     <br>If this guild does not have a vanity invite</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The vanity invite cannot be fetched due to a permission discrepancy</li>
+     * </ul>
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
+     *
+     * @return {@link RestAction} - Type: {@link VanityInvite}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<VanityInvite> retrieveVanityInvite();
+
+    /**
      * The description for this guild.
      * <br>This is displayed in the server browser below the guild name for verified guilds.
      *
@@ -441,6 +458,9 @@ public interface Guild extends ISnowflake
 
     /**
      * The preferred locale for this guild.
+     * <br>If the guild doesn't have the COMMUNITY feature, this returns the default.
+     *
+     * <br>Default: {@link Locale#US}
      *
      * @return The preferred {@link Locale} for this guild
      */
@@ -608,6 +628,28 @@ public interface Guild extends ISnowflake
      */
     @Nullable
     TextChannel getSystemChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that lists the rules of the guild.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the rules channel
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getRulesChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that receives community updates.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the community updates channel
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getCommunityUpdatesChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
@@ -838,8 +880,8 @@ public interface Guild extends ISnowflake
      *         If the provided arguments are null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
-     * 
-     * @see    #getMemberByTag(String) 
+     *
+     * @see    #getMemberByTag(String)
      */
     @Nullable
     default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator)
@@ -921,7 +963,7 @@ public interface Guild extends ISnowflake
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same effective name as the one provided.
-     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}}.
+     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
      *
      * <p>This will only check cached members!
@@ -1601,6 +1643,119 @@ public interface Guild extends ISnowflake
     default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
     {
         return getRoleCache().getElementsByName(name, ignoreCase);
+    }
+
+    /**
+     * Looks up a role which is the integration role for a bot.
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @param  userId
+     *         The user id of the bot
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getRoleByBot(long userId)
+    {
+        return getRoleCache().applyStream(stream ->
+            stream.filter(role -> role.getTags().getBotIdLong() == userId)
+                  .findFirst()
+                  .orElse(null)
+        );
+    }
+
+    /**
+     * Looks up a role which is the integration role for a bot.
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @param  userId
+     *         The user id of the bot
+     *
+     * @throws IllegalArgumentException
+     *         If the userId is null or not a valid snowflake
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getRoleByBot(@Nonnull String userId)
+    {
+        return getRoleByBot(MiscUtil.parseSnowflake(userId));
+    }
+
+    /**
+     * Looks up a role which is the integration role for a bot.
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @param  user
+     *         The bot user
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getRoleByBot(@Nonnull User user)
+    {
+        Checks.notNull(user, "User");
+        return getRoleByBot(user.getIdLong());
+    }
+
+    /**
+     * Looks up the role which is the integration role for the currently connected bot (self-user).
+     * <br>These roles are created when the bot requested a list of permission in the authorization URL.
+     *
+     * <p>To check whether a role is a bot role you can use {@code role.getTags().isBot()} and you can use
+     * {@link Role.RoleTags#getBotIdLong()} to check which bot it applies to.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @return The bot role, or null if no role matches
+     */
+    @Nullable
+    default Role getBotRole()
+    {
+        return getRoleByBot(getJDA().getSelfUser());
+    }
+
+    /**
+     * Looks up the role which is the booster role of this guild.
+     * <br>These roles are created when the first user boosts this guild.
+     *
+     * <p>To check whether a role is a booster role you can use {@code role.getTags().isBoost()}.
+     *
+     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ROLE_TAGS CacheFlag.ROLE_TAGS} to be enabled.
+     * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
+     *
+     * @return The boost role, or null if no role matches
+     */
+    @Nullable
+    default Role getBoostRole()
+    {
+        return getRoleCache().applyStream(stream ->
+            stream.filter(role -> role.getTags().isBoost())
+                  .findFirst()
+                  .orElse(null)
+        );
     }
 
     /**
@@ -2805,7 +2960,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>If includePresence is {@code true} and the GUILD_PRESENCES intent is disabled</li>
      *             <li>If the input contains null</li>
-     *             <li>If the input is more than 100 IDs</li>
+     *             <li>If the input is more than 100 users</li>
      *         </ul>
      *
      * @return {@link Task} handle for the request

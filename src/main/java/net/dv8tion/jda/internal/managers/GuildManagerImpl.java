@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     protected String name;
     protected String region;
     protected Icon icon, splash, banner;
-    protected String afkChannel, systemChannel;
+    protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel;
     protected String description, vanityCode;
     protected int afkTimeout;
     protected int mfaLevel;
@@ -86,6 +86,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             this.afkChannel = null;
         if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL)
             this.systemChannel = null;
+        if ((fields & RULES_CHANNEL) == RULES_CHANNEL)
+            this.rulesChannel = null;
+        if ((fields & COMMUNITY_UPDATES_CHANNEL) == COMMUNITY_UPDATES_CHANNEL)
+            this.communityUpdatesChannel = null;
         if ((fields & DESCRIPTION) == DESCRIPTION)
             this.description = null;
         if ((fields & BANNER) == BANNER)
@@ -185,6 +189,28 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         Checks.check(systemChannel == null || systemChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
         this.systemChannel = systemChannel == null ? null : systemChannel.getId();
         set |= SYSTEM_CHANNEL;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildManagerImpl setRulesChannel(TextChannel rulesChannel)
+    {
+        Checks.check(rulesChannel == null || rulesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        this.rulesChannel = rulesChannel == null ? null : rulesChannel.getId();
+        set |= RULES_CHANNEL;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildManagerImpl setCommunityUpdatesChannel(TextChannel communityUpdatesChannel)
+    {
+        Checks.check(communityUpdatesChannel == null || communityUpdatesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        this.communityUpdatesChannel = communityUpdatesChannel == null ? null : communityUpdatesChannel.getId();
+        set |= COMMUNITY_UPDATES_CHANNEL;
         return this;
     }
 
@@ -295,6 +321,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("afk_channel_id", afkChannel);
         if (shouldUpdate(SYSTEM_CHANNEL))
             body.put("system_channel_id", systemChannel);
+        if (shouldUpdate(RULES_CHANNEL))
+            body.put("rules_channel_id", rulesChannel);
+        if (shouldUpdate(COMMUNITY_UPDATES_CHANNEL))
+            body.put("public_updates_channel_id", communityUpdatesChannel);
         if (shouldUpdate(VERIFICATION_LEVEL))
             body.put("verification_level", verificationLevel);
         if (shouldUpdate(NOTIFICATION_LEVEL))
