@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.interaction;
 
+import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 
+@Incubating
 public class GenericInteractionEvent extends Event
 {
     private final String token;
