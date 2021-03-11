@@ -28,6 +28,9 @@ public interface CommandThread
 {
     SlashCommandEvent getEvent();
 
+    // Whether we should treat messages as ephemeral by default
+    CommandThread setEphemeral(boolean ephemeral);
+
     default JDA getJDA()
     {
         return getEvent().getJDA();

@@ -32,6 +32,7 @@ public class CommandThreadImpl implements CommandThread
     private final SlashCommandEvent event;
     private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
     private boolean isReady;
+    private boolean ephemeral;
 
     public CommandThreadImpl(SlashCommandEvent event)
     {
@@ -60,11 +61,18 @@ public class CommandThreadImpl implements CommandThread
     }
 
     @Override
+    public CommandThread setEphemeral(boolean ephemeral)
+    {
+        this.ephemeral = ephemeral;
+        return this;
+    }
+
+    @Override
     public InteractionWebhookAction sendMessage(String content)
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken());
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content);
+        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content).setEphemeral(ephemeral);
     }
 
     @Override
@@ -72,7 +80,7 @@ public class CommandThreadImpl implements CommandThread
     {
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), "@original");
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content);
+        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content).setEphemeral(ephemeral);
     }
 
     @Override
