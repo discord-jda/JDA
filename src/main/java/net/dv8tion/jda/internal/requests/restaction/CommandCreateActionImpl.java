@@ -31,11 +31,13 @@ import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
@@ -131,7 +133,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         private final OptionType type;
         private final String name;
         private final String description;
-        private final List<Object> choices = new ArrayList<>();
+        private final Map<String, Object> choices = new HashMap<>();
         private final List<Option> options = new ArrayList<>();
         private boolean required, isDefault; // TODO: we can do some validation here, maybe?
 
@@ -157,16 +159,16 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         }
 
         @Override
-        public Option addChoices(String... choices)
+        public OptionBuilder addChoice(String name, String value)
         {
-            Collections.addAll(this.choices, choices);
+            this.choices.put(name, value);
             return this;
         }
 
         @Override
-        public Option addChoices(int... choices)
+        public OptionBuilder addChoice(String name, int value)
         {
-            Collections.addAll(this.choices, choices);
+            this.choices.put(name, value);
             return this;
         }
 
@@ -193,7 +195,17 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
             json.put("type", type.getKey());
             json.put("required", required);
             json.put("default", isDefault);
-            json.put("choices", choices);
+            if (!choices.isEmpty())
+            {
+                json.put("choices", DataArray.fromCollection(choices.entrySet()
+                    .stream()
+                    .map(entry ->
+                        DataObject.empty()
+                            .put("name", entry.getKey())
+                            .put("value", entry.getValue()))
+                    .collect(Collectors.toList())
+                ));
+            }
             if (!options.isEmpty())
                 json.put("options", DataArray.fromCollection(options));
             return json;
