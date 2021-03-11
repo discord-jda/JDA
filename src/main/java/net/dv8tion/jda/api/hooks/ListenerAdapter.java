@@ -188,6 +188,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserTyping(@Nonnull UserTypingEvent event) {}
     public void onUserActivityStart(@Nonnull UserActivityStartEvent event) {}
     public void onUserActivityEnd(@Nonnull UserActivityEndEvent event) {}
+    public void onUserUpdateActivities(@Nonnull UserUpdateActivitiesEvent event) {}
 
     //Self Events. Fires only in relation to the currently logged in account.
     public void onSelfUpdateAvatar(@Nonnull SelfUpdateAvatarEvent event) {}

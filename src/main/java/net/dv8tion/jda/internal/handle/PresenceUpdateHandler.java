@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.ClientType;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
+import net.dv8tion.jda.api.events.user.update.UserUpdateActivitiesEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateActivityOrderEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateOnlineStatusEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -192,11 +193,11 @@ public class PresenceUpdateHandler extends SocketHandler
         {
             member.setActivities(newActivities);
             getJDA().getEntityBuilder().updateMemberCache(member);
-            oldActivities = new ArrayList<>(oldActivities); // create modifiable copy
+            List<Activity> stoppedActivities = new ArrayList<>(oldActivities); // create modifiable copy
             List<Activity> startedActivities = new ArrayList<>();
             for (Activity activity : newActivities)
             {
-                if (!oldActivities.remove(activity))
+                if (!stoppedActivities.remove(activity))
                     startedActivities.add(activity);
             }
 
@@ -208,13 +209,18 @@ public class PresenceUpdateHandler extends SocketHandler
                         member, activity));
             }
 
-            for (Activity activity : oldActivities)
+            for (Activity activity : stoppedActivities)
             {
                 getJDA().handleEvent(
                     new UserActivityEndEvent(
                         getJDA(), responseNumber,
                         member, activity));
             }
+
+            getJDA().handleEvent(
+                new UserUpdateActivitiesEvent(
+                    getJDA(), responseNumber,
+                    member, oldActivities));
         }
     }
 
