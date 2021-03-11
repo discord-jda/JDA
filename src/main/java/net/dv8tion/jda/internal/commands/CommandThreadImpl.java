@@ -63,12 +63,15 @@ public class CommandThreadImpl implements CommandThread
     public void fail(Exception exception)
     {
         MiscUtil.locked(mutex, () -> {
-            if (!isReady && !readyCallbacks.isEmpty() && this.exception == null)
+            if (!isReady && this.exception == null)
             {
                 this.exception = exception;
-                if (exception instanceof TimeoutException)
-                    JDALogger.getLog(CommandThread.class).warn("Up to {} Interaction Followup Messages Timed out for command with name \"{}\"! Did you forget to acknowledge the interaction?", readyCallbacks.size(), event.getName());
-                readyCallbacks.forEach(callback -> callback.fail(exception));
+                if (!readyCallbacks.isEmpty()) // only log this if we even tried any responses
+                {
+                    if (exception instanceof TimeoutException)
+                        JDALogger.getLog(CommandThread.class).warn("Up to {} Interaction Followup Messages Timed out for command with name \"{}\"! Did you forget to acknowledge the interaction?", readyCallbacks.size(), event.getName());
+                    readyCallbacks.forEach(callback -> callback.fail(exception));
+                }
             }
         });
     }
