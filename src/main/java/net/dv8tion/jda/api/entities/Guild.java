@@ -39,13 +39,9 @@ import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
-import net.dv8tion.jda.api.utils.data.DataArray;
-import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
 
@@ -57,7 +53,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -77,26 +72,14 @@ public interface Guild extends ISnowflake
     /** Template for {@link #getBannerUrl()}. */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.png";
 
-    default RestAction<List<Command>> retrieveCommands()
-    {
-        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getSelfMember().getId(), getId());
-        return new RestActionImpl<>(getJDA(), route,
-            (response, request) ->
-                response.getArray()
-                    .stream(DataArray::getObject)
-                    .map(json -> new Command((JDAImpl) getJDA(), json))
-                    .collect(Collectors.toList()));
-    }
+    // TODO: Docs
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Command>> retrieveCommands();
 
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description)
-    {
-        Checks.notNull(name, "Name");
-        Checks.notNull(description, "Description");
-
-        return new CommandCreateActionImpl(this).setName(name).setDescription(description);
-    }
+    CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description);
 
     // TODO: Bulk creating commands, deleting commands, editing commands
 

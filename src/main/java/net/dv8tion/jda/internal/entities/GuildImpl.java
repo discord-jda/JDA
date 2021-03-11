@@ -27,10 +27,7 @@ import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.MemberAction;
-import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
@@ -46,10 +43,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
@@ -120,6 +114,26 @@ public class GuildImpl implements Guild
     {
         this.id = id;
         this.api = api;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<Command>> retrieveCommands()
+    {
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getSelfMember().getId(), getId());
+        return new RestActionImpl<>(getJDA(), route,
+                (response, request) ->
+                        response.getArray()
+                                .stream(DataArray::getObject)
+                                .map(json -> new Command((JDAImpl) getJDA(), json))
+                                .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description)
+    {
+        return new CommandCreateActionImpl(this).setName(name).setDescription(description);
     }
 
     @Nonnull

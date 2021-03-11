@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -482,6 +483,16 @@ public interface JDA
      */
     @Nonnull
     List<Object> getRegisteredListeners();
+
+    // TODO: Docs
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Command>> retrieveCommands();
+
+    @Nonnull
+    @CheckReturnValue
+    CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description);
+    // TODO: Bulk creating commands, deleting commands, editing commands
 
     /**
      * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} with the specified name
