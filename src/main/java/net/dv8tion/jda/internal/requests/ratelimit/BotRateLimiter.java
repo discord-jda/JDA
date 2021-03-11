@@ -266,7 +266,7 @@ public class BotRateLimiter extends RateLimiter
                     // Handle hard rate limit, pretty much just log that it happened
                     else
                     {
-                        boolean firstHit = retryAfter < 6000 || hitRatelimit.add(baseRoute);
+                        boolean firstHit = retryAfter < 60000 || hitRatelimit.add(baseRoute);
                         // Update the bucket to the new information
                         bucket.remaining = 0;
                         bucket.reset = getNow() + retryAfter;
