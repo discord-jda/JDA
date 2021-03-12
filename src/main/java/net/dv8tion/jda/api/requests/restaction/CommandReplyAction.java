@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.commands.CommandThread;
+import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
@@ -30,7 +30,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public interface CommandReplyAction extends RestAction<CommandThread>, AllowedMentions<CommandReplyAction>
+public interface CommandReplyAction extends RestAction<CommandHook>, AllowedMentions<CommandReplyAction>
 {
     @Nonnull
     @CheckReturnValue

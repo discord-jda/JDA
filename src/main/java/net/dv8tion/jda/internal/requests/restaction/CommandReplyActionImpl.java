@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.commands.CommandThread;
+import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -27,7 +27,7 @@ import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.commands.CommandThreadImpl;
+import net.dv8tion.jda.internal.commands.CommandHookImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -45,9 +45,9 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implements CommandReplyAction
+public class CommandReplyActionImpl extends RestActionImpl<CommandHook> implements CommandReplyAction
 {
-    private final CommandThreadImpl thread;
+    private final CommandHookImpl hook;
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
     private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
@@ -56,10 +56,10 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
     private String content = "";
     private boolean tts;
 
-    public CommandReplyActionImpl(JDA api, Route.CompiledRoute route, CommandThreadImpl thread)
+    public CommandReplyActionImpl(JDA api, Route.CompiledRoute route, CommandHookImpl hook)
     {
         super(api, route);
-        this.thread = thread;
+        this.hook = hook;
     }
 
     public CommandReplyActionImpl applyMessage(Message message)
@@ -122,17 +122,17 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<CommandThread> request)
+    protected void handleSuccess(Response response, Request<CommandHook> request)
     {
-        thread.ready();
-        request.onSuccess(thread);
+        hook.ready();
+        request.onSuccess(hook);
     }
 
     @Override
-    public void handleResponse(Response response, Request<CommandThread> request)
+    public void handleResponse(Response response, Request<CommandHook> request)
     {
         if (!response.isOk())
-            thread.fail(new InteractionFailureException());
+            hook.fail(new InteractionFailureException());
         super.handleResponse(response, request);
     }
 

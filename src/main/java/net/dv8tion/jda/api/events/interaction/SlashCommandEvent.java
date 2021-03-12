@@ -19,12 +19,12 @@ package net.dv8tion.jda.api.events.interaction;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.commands.CommandThread;
+import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.commands.CommandThreadImpl;
+import net.dv8tion.jda.internal.commands.CommandHookImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandReplyActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -42,7 +42,7 @@ public class SlashCommandEvent extends GenericInteractionEvent
     private final String name;
     private final long commandId;
     private final List<OptionData> options;
-    private final CommandThreadImpl thread;
+    private final CommandHookImpl hook;
 
     public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull String token, long interactionId,
                              @Nullable Guild guild, @Nullable Member member, @Nonnull User user, @Nonnull MessageChannel channel,
@@ -52,7 +52,7 @@ public class SlashCommandEvent extends GenericInteractionEvent
         this.name = name;
         this.commandId = commandId;
         this.options = Collections.unmodifiableList(options);
-        this.thread = new CommandThreadImpl(this);
+        this.hook = new CommandHookImpl(this);
     }
 
     @Nonnull
@@ -115,9 +115,9 @@ public class SlashCommandEvent extends GenericInteractionEvent
 
     @Nonnull
     @CheckReturnValue
-    public CommandThread getThread()
+    public CommandHook getHook()
     {
-        return thread;
+        return hook;
     }
 
     @Nonnull
@@ -125,7 +125,7 @@ public class SlashCommandEvent extends GenericInteractionEvent
     public CommandReplyAction acknowledge()
     {
         Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getInteractionId(), getInteractionToken());
-        return new CommandReplyActionImpl(api, route, this.thread);
+        return new CommandReplyActionImpl(api, route, this.hook);
     }
 
     @Nonnull

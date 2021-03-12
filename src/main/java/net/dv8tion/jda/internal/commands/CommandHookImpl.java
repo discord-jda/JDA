@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.internal.commands;
 
-import net.dv8tion.jda.api.commands.CommandThread;
+import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class CommandThreadImpl implements CommandThread
+public class CommandHookImpl implements CommandHook
 {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
     private final SlashCommandEvent event;
@@ -44,7 +44,7 @@ public class CommandThreadImpl implements CommandThread
     private boolean isReady;
     private boolean ephemeral;
 
-    public CommandThreadImpl(SlashCommandEvent event)
+    public CommandHookImpl(SlashCommandEvent event)
     {
         this.event = event;
         // 10 second timeout for our failure
@@ -69,7 +69,7 @@ public class CommandThreadImpl implements CommandThread
                 if (!readyCallbacks.isEmpty()) // only log this if we even tried any responses
                 {
                     if (exception instanceof TimeoutException)
-                        JDALogger.getLog(CommandThread.class).warn("Up to {} Interaction Followup Messages Timed out for command with name \"{}\"! Did you forget to acknowledge the interaction?", readyCallbacks.size(), event.getName());
+                        JDALogger.getLog(CommandHook.class).warn("Up to {} Interaction Followup Messages Timed out for command with name \"{}\"! Did you forget to acknowledge the interaction?", readyCallbacks.size(), event.getName());
                     readyCallbacks.forEach(callback -> callback.fail(exception));
                 }
             }
@@ -96,7 +96,7 @@ public class CommandThreadImpl implements CommandThread
     }
 
     @Override
-    public CommandThread setEphemeral(boolean ephemeral)
+    public CommandHook setEphemeral(boolean ephemeral)
     {
         this.ephemeral = ephemeral;
         return this;

@@ -24,12 +24,12 @@ import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import javax.annotation.Nonnull;
 
 // this is used for followup responses on commands
-public interface CommandThread
+public interface CommandHook
 {
     SlashCommandEvent getEvent();
 
     // Whether we should treat messages as ephemeral by default
-    CommandThread setEphemeral(boolean ephemeral);
+    CommandHook setEphemeral(boolean ephemeral);
 
     default JDA getJDA()
     {
