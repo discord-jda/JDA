@@ -81,7 +81,23 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description);
 
-    // TODO: Bulk creating commands, deleting commands, editing commands
+// Not yet supported, soon(tm)
+//    @Nonnull
+//    @CheckReturnValue
+//    CommandUpdateAction updateCommands();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> deleteCommand(@Nonnull String commandId);
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> deleteCommand(long commandId)
+    {
+        return deleteCommand(Long.toUnsignedString(commandId));
+    }
+
+    // TODO: editing commands
 
     /**
      * Retrieves the available regions for this Guild

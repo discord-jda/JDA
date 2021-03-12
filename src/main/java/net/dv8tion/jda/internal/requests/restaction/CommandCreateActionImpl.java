@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
+    private final Guild guild;
     private String name;
     private String description;
     private final List<Option> options = new ArrayList<>();
@@ -49,11 +50,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     public CommandCreateActionImpl(JDAImpl api)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
+        this.guild = null;
     }
 
     public CommandCreateActionImpl(Guild guild)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
+        this.guild = guild;
     }
 
     @Nonnull
@@ -131,7 +134,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     protected void handleSuccess(Response response, Request<Command> request)
     {
         DataObject json = response.getObject();
-        request.onSuccess(new Command(api, json));
+        request.onSuccess(new Command(api, guild, json));
     }
 
     private static class Option implements OptionBuilder, SerializableData

@@ -120,12 +120,12 @@ public class GuildImpl implements Guild
     @Override
     public RestAction<List<Command>> retrieveCommands()
     {
-        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getSelfMember().getId(), getId());
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
         return new RestActionImpl<>(getJDA(), route,
                 (response, request) ->
                         response.getArray()
                                 .stream(DataArray::getObject)
-                                .map(json -> new Command((JDAImpl) getJDA(), json))
+                                .map(json -> new Command(getJDA(), this, json))
                                 .collect(Collectors.toList()));
     }
 
@@ -134,6 +134,22 @@ public class GuildImpl implements Guild
     public CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description)
     {
         return new CommandCreateActionImpl(this).setName(name).setDescription(description);
+    }
+
+    @Nonnull
+    public CommandUpdateAction updateCommands()
+    {
+        Route.CompiledRoute route = Route.Interactions.UPDATE_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        return new CommandUpdateActionImpl(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteCommand(@Nonnull String commandId)
+    {
+        Checks.isSnowflake(commandId);
+        Route.CompiledRoute route = Route.Interactions.DELETE_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull

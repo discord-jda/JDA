@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -58,6 +59,7 @@ import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.CommandUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
@@ -69,7 +71,6 @@ import net.dv8tion.jda.internal.utils.config.MetaConfig;
 import net.dv8tion.jda.internal.utils.config.SessionConfig;
 import net.dv8tion.jda.internal.utils.config.ThreadingConfig;
 import okhttp3.OkHttpClient;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
 
@@ -804,7 +805,7 @@ public class JDAImpl implements JDA
         return eventManager.getRegisteredListeners();
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public RestAction<List<Command>> retrieveCommands()
     {
@@ -813,7 +814,7 @@ public class JDAImpl implements JDA
             (response, request) ->
                 response.getArray()
                         .stream(DataArray::getObject)
-                        .map(json -> new Command(this, json))
+                        .map(json -> new Command(this, null, json))
                         .collect(Collectors.toList()));
     }
 
@@ -822,6 +823,22 @@ public class JDAImpl implements JDA
     public CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description)
     {
         return new CommandCreateActionImpl(this).setName(name).setDescription(description);
+    }
+
+    @Nonnull
+    public CommandUpdateAction updateCommands()
+    {
+        Route.CompiledRoute route = Route.Interactions.UPDATE_COMMANDS.compile(getSelfUser().getApplicationId());
+        return new CommandUpdateActionImpl(this, route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteCommand(@Nonnull String commandId)
+    {
+        Checks.isSnowflake(commandId);
+        Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
+        return new RestActionImpl<>(this, route);
     }
 
     @Nonnull

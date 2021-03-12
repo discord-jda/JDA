@@ -17,11 +17,15 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
@@ -32,14 +36,15 @@ public class Command
     private final JDAImpl api;
     private final String name, description;
     private final List<Option> options;
-    private final long id;
+    private final long id, guildId;
 
-    public Command(JDAImpl api, DataObject json)
+    public Command(JDAImpl api, Guild guild, DataObject json)
     {
         this.api = api;
         this.name = json.getString("name");
         this.description = json.getString("description");
         this.id = json.getUnsignedLong("id");
+        this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.options = parseOptions(json);
     }
 
@@ -50,6 +55,18 @@ public class Command
                .map(Option::new)
                .collect(Collectors.toList())
         ).orElse(Collections.emptyList());
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> delete()
+    {
+        Route.CompiledRoute route;
+        if (guildId != 0L)
+            route = Route.Interactions.DELETE_GUILD_COMMAND.compile(Long.toUnsignedString(guildId), getId());
+        else
+            route = Route.Interactions.DELETE_COMMAND.compile(getId());
+        return new RestActionImpl<>(api, route);
     }
 
     public JDA getJDA()
@@ -106,17 +123,29 @@ public class Command
 
     public enum OptionType
     {
-        UNKNOWN(-1), SUB_COMMAND(1), SUB_COMMAND_GROUP(2), STRING(3), INTEGER(4), BOOLEAN(5), USER(6), CHANNEL(7), ROLE(8);
+        UNKNOWN(-1), SUB_COMMAND(1), SUB_COMMAND_GROUP(2), STRING(3, true), INTEGER(4, false), BOOLEAN(5), USER(6), CHANNEL(7), ROLE(8);
         private final int raw;
+        private final boolean supportsChoices;
 
         OptionType(int raw)
         {
+            this(raw, false);
+        }
+
+        OptionType(int raw, boolean supportsChoices)
+        {
             this.raw = raw;
+            this.supportsChoices = supportsChoices;
         }
 
         public int getKey()
         {
             return raw;
+        }
+
+        public boolean canSupportChoices()
+        {
+            return supportsChoices;
         }
 
         @Nonnull
