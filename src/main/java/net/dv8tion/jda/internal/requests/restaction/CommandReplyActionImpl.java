@@ -16,7 +16,6 @@
 
 package net.dv8tion.jda.internal.requests.restaction;
 
-import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.commands.CommandThread;
 import net.dv8tion.jda.api.entities.IMentionable;
@@ -26,7 +25,6 @@ import net.dv8tion.jda.api.exceptions.InteractionFailureException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -34,6 +32,7 @@ import net.dv8tion.jda.internal.commands.CommandThreadImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -41,6 +40,7 @@ import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -51,12 +51,11 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
     private final CommandThreadImpl thread;
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
+    private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
     private int flags;
 
     private String content = "";
     private boolean tts;
-    private EnumSet<Message.MentionType> allowedMentions = MessageAction.getDefaultMentions(); // TODO: Use this
-    private TLongSet mentionedUsers, mentionedRoles;
 
     public CommandReplyActionImpl(JDA api, Route.CompiledRoute route, CommandThreadImpl thread)
     {
@@ -66,7 +65,11 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
 
     public CommandReplyActionImpl applyMessage(Message message)
     {
-        return this; // TODO: Handle this
+        this.content = message.getContentRaw();
+        this.tts = message.isTTS();
+        this.embeds.addAll(message.getEmbeds());
+        this.allowedMentions.applyMessage(message);
+        return this;
     }
 
     private DataObject getJSON()
@@ -81,7 +84,7 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
         else
         {
             DataObject payload = DataObject.empty();
-            // TODO Allowed Mentions
+            payload.put("allowed_mentions", allowedMentions);
             payload.put("content", content);
             payload.put("tts", tts);
             payload.put("flags", flags);
@@ -179,13 +182,6 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
 
     @Nonnull
     @Override
-    public CommandReplyActionImpl reset()
-    {
-        return this;
-    }
-
-    @Nonnull
-    @Override
     public CommandReplyAction setCheck(BooleanSupplier checks)
     {
         return (CommandReplyAction) super.setCheck(checks);
@@ -223,53 +219,46 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
 
     @Nonnull
     @Override
-    public CommandReplyActionImpl setAllowedMentions(Collection<Message.MentionType> allowedMentions)
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public CommandReplyAction mentionRepliedUser(boolean mention)
     {
-        this.allowedMentions = allowedMentions == null ? MessageAction.getDefaultMentions() : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
-        return this;
-    }
-
-
-    //TODO: Implement this nonsense
-    @Nonnull
-    @Override
-    public CommandReplyActionImpl mention(@Nonnull IMentionable... mentions)
-    {
+        allowedMentions.mentionRepliedUser(mention);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandReplyAction mention(@Nonnull Collection<? extends IMentionable> mentions)
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public CommandReplyAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
+        this.allowedMentions.allowedMentions(allowedMentions);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandReplyActionImpl mentionUsers(@Nonnull String... userIds)
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public CommandReplyAction mention(@Nonnull IMentionable... mentions)
     {
+        allowedMentions.mention(mentions);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandReplyAction mentionUsers(@Nonnull long... userIds)
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public CommandReplyAction mentionUsers(@Nonnull String... userIds)
     {
+        allowedMentions.mentionUsers(userIds);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandReplyActionImpl mentionRoles(@Nonnull String... roleIds)
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public CommandReplyAction mentionRoles(@Nonnull String... roleIds)
     {
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public CommandReplyAction mentionRoles(@Nonnull long... roleIds)
-    {
+        allowedMentions.mentionRoles(roleIds);
         return this;
     }
 }

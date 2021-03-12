@@ -25,13 +25,12 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -51,45 +50,17 @@ import java.util.function.Consumer;
 public class MessageActionImpl extends RestActionImpl<Message> implements MessageAction
 {
     private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
-    protected static EnumSet<Message.MentionType> defaultMentions = EnumSet.allOf(Message.MentionType.class);
-    protected static boolean defaultMentionRepliedUser = true;
     protected static boolean defaultFailOnInvalidReply = false;
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
+    protected final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
-    protected boolean mentionRepliedUser = defaultMentionRepliedUser;
     protected boolean failOnInvalidReply = defaultFailOnInvalidReply;
-    protected EnumSet<Message.MentionType> allowedMentions;
-    protected Set<String> mentionableUsers = new HashSet<>();
-    protected Set<String> mentionableRoles = new HashSet<>();
     protected long messageReference;
-
-    public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
-        MessageActionImpl.defaultMentions = allowedMentions == null
-                ? EnumSet.allOf(Message.MentionType.class) // Default to all mentions enabled
-                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
-    }
-
-    @Nonnull
-    public static EnumSet<Message.MentionType> getDefaultMentions()
-    {
-        return defaultMentions.clone();
-    }
-
-    public static void setDefaultMentionRepliedUser(boolean mention)
-    {
-        defaultMentionRepliedUser = mention;
-    }
-
-    public static boolean isDefaultMentionRepliedUser()
-    {
-        return defaultMentionRepliedUser;
-    }
 
     public static void setDefaultFailOnInvalidReply(boolean fail)
     {
@@ -106,7 +77,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         super(api, route);
         this.content = new StringBuilder();
         this.channel = channel;
-        this.allowedMentions = defaultMentions;
     }
 
     public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder)
@@ -116,7 +86,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             "Cannot build a Message with more than %d characters. Please limit your input.", Message.MAX_CONTENT_LENGTH);
         this.content = contentBuilder;
         this.channel = channel;
-        this.allowedMentions = defaultMentions;
     }
 
     @Nonnull
@@ -173,40 +142,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             embed(embeds.get(0));
         files.clear();
 
+        allowedMentions.applyMessage(message);
         String content = message.getContentRaw();
-
-        // Insert allowed mentions
-        if (message instanceof DataMessage)
-        {
-            DataMessage data = (DataMessage) message;
-            String[] mentionedRoles = data.getMentionedRolesWhitelist();
-            String[] mentionedUsers = data.getMentionedUsersWhitelist();
-            EnumSet<Message.MentionType> allowedMentions = data.getAllowedMentions();
-            if (allowedMentions != null)
-                allowedMentions(allowedMentions);
-            mentionRoles(mentionedRoles);
-            mentionUsers(mentionedUsers);
-        }
-        else
-        {
-            // Only ping everyone if the message also did
-            if (message.mentionsEveryone())
-            {
-                EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
-                if (content.contains("@everyone"))
-                    parse.add(Message.MentionType.EVERYONE);
-                if (content.contains("@here"))
-                    parse.add(Message.MentionType.HERE);
-                allowedMentions = parse;
-            }
-            else
-            {
-                allowedMentions = EnumSet.noneOf(Message.MentionType.class);
-            }
-
-            this.mention(message.getMentionedUsers())
-                .mention(message.getMentionedRoles());
-        }
         return content(content).tts(message.isTTS());
     }
 
@@ -215,14 +152,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public MessageActionImpl referenceById(long messageId)
     {
         messageReference = messageId;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public MessageAction mentionRepliedUser(boolean mention)
-    {
-        mentionRepliedUser = mention;
         return this;
     }
 
@@ -402,44 +331,46 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public MessageAction mentionRepliedUser(boolean mention)
+    {
+        allowedMentions.mentionRepliedUser(mention);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        this.allowedMentions = allowedMentions == null
-                ? EnumSet.allOf(Message.MentionType.class)
-                : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
+        this.allowedMentions.allowedMentions(allowedMentions);
         return this;
     }
 
     @Nonnull
     @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public MessageAction mention(@Nonnull IMentionable... mentions)
     {
-        Checks.noneNull(mentions, "Mentionables");
-        for (IMentionable mentionable : mentions)
-        {
-            if (mentionable instanceof User || mentionable instanceof Member)
-                mentionableUsers.add(mentionable.getId());
-            else if (mentionable instanceof Role)
-                mentionableRoles.add(mentionable.getId());
-        }
+        this.allowedMentions.mention(mentions);
         return this;
     }
 
     @Nonnull
     @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public MessageAction mentionUsers(@Nonnull String... userIds)
     {
-        Checks.noneNull(userIds, "User Id");
-        Collections.addAll(mentionableUsers, userIds);
+        this.allowedMentions.mentionUsers(userIds);
         return this;
     }
 
     @Nonnull
     @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public MessageAction mentionRoles(@Nonnull String... roleIds)
     {
-        Checks.noneNull(roleIds, "Role Id");
-        Collections.addAll(mentionableRoles, roleIds);
+        this.allowedMentions.mentionRoles(roleIds);
         return this;
     }
 
@@ -537,39 +468,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 .put("fail_if_not_exists", failOnInvalidReply));
         }
         obj.put("tts", tts);
-        if ((messageReference != 0L && !mentionRepliedUser) || allowedMentions != null || !mentionableUsers.isEmpty() || !mentionableRoles.isEmpty())
-            obj.put("allowed_mentions", getAllowedMentionsObj());
+        obj.put("allowed_mentions", allowedMentions);
         return obj;
-    }
-
-    protected DataObject getAllowedMentionsObj()
-    {
-        DataObject allowedMentionsObj = DataObject.empty();
-        DataArray parsable = DataArray.empty();
-        if (allowedMentions != null)
-        {
-            // Add parsing options
-            allowedMentions.stream()
-                    .map(Message.MentionType::getParseKey)
-                    .filter(Objects::nonNull)
-                    .distinct()
-                    .forEach(parsable::add);
-        }
-        if (!mentionableUsers.isEmpty())
-        {
-            // Whitelist certain users
-            parsable.remove(Message.MentionType.USER.getParseKey());
-            allowedMentionsObj.put("users", DataArray.fromCollection(mentionableUsers));
-        }
-        if (!mentionableRoles.isEmpty())
-        {
-            // Whitelist certain roles
-            parsable.remove(Message.MentionType.ROLE.getParseKey());
-            allowedMentionsObj.put("roles", DataArray.fromCollection(mentionableRoles));
-        }
-        if (messageReference != 0L)
-            allowedMentionsObj.put("replied_user", mentionRepliedUser);
-        return allowedMentionsObj.put("parse", parsable);
     }
 
     protected void checkFileAmount()

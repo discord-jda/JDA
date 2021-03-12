@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.Request;
@@ -26,6 +27,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
@@ -41,6 +43,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
+    private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
 
     private boolean ephemeral, tts;
     private String username, avatarUrl;
@@ -50,8 +53,16 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
         super(api, route);
     }
 
+    public WebhookMessageActionImpl applyMessage(Message message)
+    {
+        this.tts = message.isTTS();
+        this.embeds.addAll(message.getEmbeds());
+        this.allowedMentions.applyMessage(message);
+        return setContent(message.getContentRaw());
+    }
+
     @Override
-    public InteractionWebhookAction setEphemeral(boolean ephemeral)
+    public WebhookMessageActionImpl setEphemeral(boolean ephemeral)
     {
         this.ephemeral = ephemeral;
         return this;
@@ -59,7 +70,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
 
     @Nonnull
     @Override
-    public InteractionWebhookAction setContent(@Nullable String content)
+    public WebhookMessageActionImpl setContent(@Nullable String content)
     {
         this.content.setLength(0);
         if (content != null)
@@ -69,7 +80,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
 
     @Nonnull
     @Override
-    public InteractionWebhookAction setTTS(boolean tts)
+    public WebhookMessageActionImpl setTTS(boolean tts)
     {
         this.tts = tts;
         return this;
@@ -77,7 +88,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
 
     @Nonnull
     @Override
-    public InteractionWebhookAction setUsername(@Nullable String name)
+    public WebhookMessageActionImpl setUsername(@Nullable String name)
     {
         Checks.check(name == null || name.length() < 128, "Name must not be longer than 128 chars!");
         this.username = name;
@@ -86,7 +97,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
 
     @Nonnull
     @Override
-    public InteractionWebhookAction setAvatarUrl(@Nullable String iconUrl)
+    public WebhookMessageActionImpl setAvatarUrl(@Nullable String iconUrl)
     {
         if (iconUrl != null && iconUrl.isEmpty())
             iconUrl = null;
@@ -96,7 +107,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
 
     @Nonnull
     @Override
-    public InteractionWebhookAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageActionImpl addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "Message Embeds");
         this.embeds.addAll(embeds);
@@ -105,7 +116,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
 
     @Nonnull
     @Override
-    public InteractionWebhookAction addFile(@Nonnull String name, @Nonnull InputStream data)
+    public WebhookMessageActionImpl addFile(@Nonnull String name, @Nonnull InputStream data)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -127,7 +138,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
             json.put("flags", 64);
         if (!embeds.isEmpty())
             json.put("embeds", DataArray.fromCollection(embeds));
-        // TODO: Allowed Mentions
+        json.put("allowed_mentions", allowedMentions);
         return json;
     }
 
@@ -158,5 +169,50 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
         // TODO: This could be a simple decorator or proxy implementation
         Message message = request.getJDA().getEntityBuilder().createMessage(response.getObject());
         request.onSuccess(message);
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public InteractionWebhookAction mentionRepliedUser(boolean mention)
+    {
+        allowedMentions.mentionRepliedUser(mention);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public InteractionWebhookAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    {
+        this.allowedMentions.allowedMentions(allowedMentions);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public InteractionWebhookAction mention(@Nonnull IMentionable... mentions)
+    {
+        allowedMentions.mention(mentions);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public InteractionWebhookAction mentionUsers(@Nonnull String... userIds)
+    {
+        allowedMentions.mentionUsers(userIds);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public InteractionWebhookAction mentionRoles(@Nonnull String... roleIds)
+    {
+        allowedMentions.mentionRoles(roleIds);
+        return this;
     }
 }

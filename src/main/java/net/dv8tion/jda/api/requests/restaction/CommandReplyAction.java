@@ -17,10 +17,9 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.commands.CommandThread;
-import net.dv8tion.jda.api.entities.IMentionable;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -33,7 +32,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public interface CommandReplyAction extends RestAction<CommandThread>
+public interface CommandReplyAction extends RestAction<CommandThread>, AllowedMentions<CommandReplyAction>
 {
     @Nonnull
     @CheckReturnValue
@@ -104,31 +103,7 @@ public interface CommandReplyAction extends RestAction<CommandThread>
     CommandReplyAction setTTS(final boolean isTTS);
 
     @Nonnull
-    CommandReplyAction reset();
-
-    @Nonnull
     CommandReplyAction setContent(@Nullable final String content);
-
-    @Nonnull
-    CommandReplyAction setAllowedMentions(@Nullable Collection<Message.MentionType> allowedMentions);
-
-    @Nonnull
-    CommandReplyAction mention(@Nonnull IMentionable... mentions);
-
-    @Nonnull
-    CommandReplyAction mention(@Nonnull Collection<? extends IMentionable> mentions);
-
-    @Nonnull
-    CommandReplyAction mentionUsers(@Nonnull String... userIds);
-
-    @Nonnull
-    CommandReplyAction mentionUsers(@Nonnull long... userIds);
-
-    @Nonnull
-    CommandReplyAction mentionRoles(@Nonnull String... roleIds);
-
-    @Nonnull
-    CommandReplyAction mentionRoles(@Nonnull long... roleIds);
 
     enum Flag
     {
