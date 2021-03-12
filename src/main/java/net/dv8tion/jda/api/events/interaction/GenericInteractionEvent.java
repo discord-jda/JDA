@@ -82,7 +82,7 @@ public class GenericInteractionEvent extends Event
         return user;
     }
 
-    @Nonnull
+    @Nullable
     public MessageChannel getChannel()
     {
         return channel;

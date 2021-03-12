@@ -89,7 +89,7 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
                 payload.put("embeds", DataArray.fromCollection(embeds));
             json.put("data", payload);
 
-            json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
+            json.put("type", ResponseType.CHANNEL_MESSAGE_WITH_SOURCE.getRaw()); // This type seemingly makes no difference right now, idk why it exists
         }
         return json;
     }

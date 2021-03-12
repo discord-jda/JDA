@@ -20,14 +20,13 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.PrivateChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.EntityBuilder;
-import net.dv8tion.jda.internal.entities.GuildImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
+import net.dv8tion.jda.internal.entities.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -47,10 +46,24 @@ public class InteractionCreateHandler extends SocketHandler
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
 
-        // TODO: What about private channels?
+        EntityBuilder entityBuilder = api.getEntityBuilder();
+
+        boolean isGuild = guildId != 0L;
         GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
         long channelId = content.getUnsignedLong("channel_id");
-        MessageChannel channel = guild.getTextChannelById(channelId); // TODO: Direct messages
+        MessageChannel channel = api.getTextChannelById(channelId);
+        User user = null;
+        if (!isGuild)
+        {
+            channel = api.getPrivateChannelById(channelId);
+            if (channel == null)
+                channel = new PrivateChannelImpl(channelId, user = entityBuilder.createUser(content.getObject("user")));
+            else
+                user = ((PrivateChannel) channel).getUser();
+        }
+        if (channel == null || (isGuild && guild == null))
+            return null;
+
         long interactionId = content.getUnsignedLong("id");
         int type = content.getInt("type");
         String commandToken = content.getString("token");
@@ -60,9 +73,12 @@ public class InteractionCreateHandler extends SocketHandler
         String commandName = data.getString("name");
         DataArray options = data.optArray("options").orElseGet(DataArray::empty);
 
-        EntityBuilder entityBuilder = api.getEntityBuilder();
-        Member member = entityBuilder.createMember(guild, content.getObject("member"));
-        entityBuilder.updateMemberCache((MemberImpl) member);
+        Member member = isGuild ? entityBuilder.createMember(guild, content.getObject("member")) : null;
+        if (member != null)
+        {
+            entityBuilder.updateMemberCache((MemberImpl) member);
+            user = member.getUser();
+        }
 
         // Resolve all necessary option values to actual types
         DataObject resolveJson = data.optObject("resolved").orElseGet(DataObject::empty);
@@ -70,28 +86,31 @@ public class InteractionCreateHandler extends SocketHandler
         resolveJson.optObject("users").ifPresent(users ->
             users.keys().forEach(userId -> {
                 DataObject userJson = users.getObject(userId);
-                UserImpl user = entityBuilder.createUser(userJson);
-                resolved.put(user.getIdLong(), user);
+                UserImpl userArg = entityBuilder.createUser(userJson);
+                resolved.put(userArg.getIdLong(), userArg);
             })
         );
-        resolveJson.optObject("members").ifPresent(members ->
-            members.keys().forEach(memberId -> {
-                DataObject userJson = resolveJson.getObject("users").getObject(memberId);
-                DataObject memberJson = members.getObject(memberId);
-                memberJson.put("user", userJson);
-                MemberImpl optionMember = entityBuilder.createMember(guild, memberJson);
-                entityBuilder.updateMemberCache(optionMember);
-                resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
-            })
-        );
-        resolveJson.optObject("roles").ifPresent(roles ->
-            roles.keys()
-                 .stream()
-                 .map(guild::getRoleById)
-                 .filter(Objects::nonNull)
-                 .forEach(role -> resolved.put(role.getIdLong(), role))
-        );
-        resolveJson.optObject("channels").ifPresent(channels -> {}); // TODO
+        if (isGuild) // Technically these can function in DMs too ...
+        {
+            resolveJson.optObject("members").ifPresent(members ->
+                members.keys().forEach(memberId -> {
+                    DataObject userJson = resolveJson.getObject("users").getObject(memberId);
+                    DataObject memberJson = members.getObject(memberId);
+                    memberJson.put("user", userJson);
+                    MemberImpl optionMember = entityBuilder.createMember(guild, memberJson);
+                    entityBuilder.updateMemberCache(optionMember);
+                    resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
+                })
+            );
+            resolveJson.optObject("roles").ifPresent(roles ->
+                roles.keys()
+                     .stream()
+                     .map(guild::getRoleById)// TODO: What if its not from this guild?
+                     .filter(Objects::nonNull)
+                     .forEach(role -> resolved.put(role.getIdLong(), role))
+            );
+            resolveJson.optObject("channels").ifPresent(channels -> {}); // TODO
+        }
 
         // Create option POJO including resolved entities
         List<SlashCommandEvent.OptionData> optionList = options.stream(DataArray::getObject)
@@ -101,7 +120,7 @@ public class InteractionCreateHandler extends SocketHandler
         api.handleEvent(
             new SlashCommandEvent(api, responseNumber,
                 commandToken, interactionId, guild, member,
-                member.getUser(), channel, commandName, commandId,
+                user, channel, commandName, commandId,
                 optionList));
         return null;
     }

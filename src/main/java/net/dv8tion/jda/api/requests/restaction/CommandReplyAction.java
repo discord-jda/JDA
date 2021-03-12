@@ -47,7 +47,7 @@ public interface CommandReplyAction extends RestAction<CommandThread>
     @CheckReturnValue
     CommandReplyAction addEmbeds(@Nonnull Collection<MessageEmbed> embeds);
 
-    // doesn't support embeds or attackments
+    // doesn't support embeds or attachments
     @Nonnull
     @CheckReturnValue
     CommandReplyAction setEphemeral(boolean ephemeral);

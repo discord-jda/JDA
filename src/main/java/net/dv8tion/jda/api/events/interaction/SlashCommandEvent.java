@@ -106,6 +106,14 @@ public class SlashCommandEvent extends GenericInteractionEvent
         return options.isEmpty() ? null : options.get(0);
     }
 
+    @Nonnull
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public MessageChannel getChannel() // slash commands always happen in channels but interactions don't
+    {
+        return super.getChannel();
+    }
+
     // You can only reply ONCE so maybe we should throw when trying again?
 
     @Nonnull
