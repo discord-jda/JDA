@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends RestAction<Message>
+public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends RestAction<Message>, AllowedMentions<WebhookMessageAction<T>>
 {
     @Nonnull
     @CheckReturnValue
@@ -94,6 +95,4 @@ public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends
         Checks.notNull(file, "File");
         return addFile(file.getName(), file);
     }
-
-    // TODO: Mentions?
 }

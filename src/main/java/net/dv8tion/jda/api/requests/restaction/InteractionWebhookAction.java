@@ -16,9 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.utils.AllowedMentions;
-
-public interface InteractionWebhookAction extends WebhookMessageAction<InteractionWebhookAction>, AllowedMentions<InteractionWebhookAction>
+public interface InteractionWebhookAction extends WebhookMessageAction<InteractionWebhookAction>
 {
     InteractionWebhookAction setEphemeral(boolean ephemeral);
 }
