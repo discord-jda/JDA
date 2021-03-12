@@ -42,6 +42,9 @@ public class InteractionCreateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        int type = content.getInt("type");
+        if (type != 2)
+            return null;
         long guildId = content.getUnsignedLong("guild_id", 0);
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
@@ -65,7 +68,6 @@ public class InteractionCreateHandler extends SocketHandler
             return null;
 
         long interactionId = content.getUnsignedLong("id");
-        int type = content.getInt("type");
         String commandToken = content.getString("token");
 
         DataObject data = content.getObject("data");
