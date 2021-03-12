@@ -204,9 +204,9 @@ public interface CommandUpdateAction extends RestAction<Void>
             super(Command.OptionType.SUB_COMMAND_GROUP, name, description);
         }
 
-        public SubcommandGroupData addOption(OptionData data)
+        public SubcommandGroupData addSubcommand(SubcommandData data)
         {
-            Checks.notNull(data, "Option");
+            Checks.notNull(data, "Subcommand");
             options.add(data);
             return this;
         }
