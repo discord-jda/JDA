@@ -67,7 +67,7 @@ public class Route
 
         public static final Route GET_GUILD_COMMANDS =    new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands");
         public static final Route CREATE_GUILD_COMMAND =  new Route(POST, "applications/{application_id}/guilds/{guild_id}/commands");
-        public static final Route UPDATE_GUILD_COMMANDS = new Route(PUT,  "applications/{application_id}/guilds/{guild_id}commands");
+        public static final Route UPDATE_GUILD_COMMANDS = new Route(PUT,  "applications/{application_id}/guilds/{guild_id}/commands");
         public static final Route EDIT_GUILD_COMMAND =    new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
         public static final Route DELETE_GUILD_COMMAND =  new Route(GET,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
 

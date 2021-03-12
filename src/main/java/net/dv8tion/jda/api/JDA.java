@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -493,10 +494,9 @@ public interface JDA
     @CheckReturnValue
     CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description);
 
-// Not yet supported, soon(tm)
-//    @Nonnull
-//    @CheckReturnValue
-//    CommandUpdateAction updateCommands();
+    @Nonnull
+    @CheckReturnValue
+    CommandUpdateAction updateCommands();
 
     @Nonnull
     @CheckReturnValue

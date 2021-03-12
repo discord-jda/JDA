@@ -81,10 +81,9 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description);
 
-// Not yet supported, soon(tm)
-//    @Nonnull
-//    @CheckReturnValue
-//    CommandUpdateAction updateCommands();
+    @Nonnull
+    @CheckReturnValue
+    CommandUpdateAction updateCommands();
 
     @Nonnull
     @CheckReturnValue
