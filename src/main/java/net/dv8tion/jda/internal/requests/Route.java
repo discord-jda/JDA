@@ -21,6 +21,8 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Set;
 
 import static net.dv8tion.jda.internal.requests.Method.*;
 
@@ -288,7 +290,7 @@ public class Route
         return custom(GET, route);
     }
 
-    private static final String majorParameters = "guild_id:channel_id:webhook_id";
+    private static final String majorParameters = "guild_id:channel_id:webhook_id:interaction_token";
     private final String route;
     private final Method method;
     private final int paramCount;
@@ -327,22 +329,25 @@ public class Route
         }
 
         //Compile the route for interfacing with discord.
-
-        StringBuilder majorParameter = new StringBuilder(majorParameters);
+        Set<String> major = new HashSet<>();
         StringBuilder compiledRoute = new StringBuilder(route);
         for (int i = 0; i < paramCount; i++)
         {
             int paramStart = compiledRoute.indexOf("{");
             int paramEnd = compiledRoute.indexOf("}");
             String paramName = compiledRoute.substring(paramStart+1, paramEnd);
-            int majorParamIndex = majorParameter.indexOf(paramName);
-            if (majorParamIndex > -1)
-                majorParameter.replace(majorParamIndex, majorParamIndex + paramName.length(), params[i]);
+            if (majorParameters.contains(paramName))
+            {
+                if (params[i].length() > 30) // probably a long interaction_token, hash it to keep logs clean (not useful anyway)
+                    major.add(paramName + "=" + Integer.toUnsignedString(params[i].hashCode()));
+                else
+                    major.add(paramName + "=" + params[i]);
+            }
 
             compiledRoute.replace(paramStart, paramEnd + 1, params[i]);
         }
 
-        return new CompiledRoute(this, compiledRoute.toString(), majorParameter.toString());
+        return new CompiledRoute(this, compiledRoute.toString(), major.isEmpty() ? "n/a" : String.join(":", major));
     }
 
     @Override
