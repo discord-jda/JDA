@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.commands.CommandThread;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.commands.CommandThreadImpl;
@@ -33,8 +32,6 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -174,33 +171,34 @@ public class SlashCommandEvent extends GenericInteractionEvent
         return reply(message);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    public CommandReplyAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
-        return acknowledge().addFile(file, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    public CommandReplyAction reply(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return acknowledge().addFile(file, name, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    public CommandReplyAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return acknowledge().addFile(data, name, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    public CommandReplyAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return acknowledge().addFile(data, name, options);
-    }
+// Currently not supported, sad face
+//    @Nonnull
+//    @CheckReturnValue
+//    public CommandReplyAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
+//    {
+//        return acknowledge().addFile(file, options);
+//    }
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    public CommandReplyAction reply(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+//    {
+//        return acknowledge().addFile(file, name, options);
+//    }
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    public CommandReplyAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+//    {
+//        return acknowledge().addFile(data, name, options);
+//    }
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    public CommandReplyAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+//    {
+//        return acknowledge().addFile(data, name, options);
+//    }
 
     public static class OptionData // TODO: Move this somewhere else, not sure yet
     {

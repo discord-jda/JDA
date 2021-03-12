@@ -25,7 +25,6 @@ import net.dv8tion.jda.api.exceptions.InteractionFailureException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
-import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.commands.CommandThreadImpl;
@@ -148,19 +147,19 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandThread> implem
         return this;
     }
 
-    @Nonnull
-    @Override
-    public CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "Data");
-        Checks.notEmpty(name, "Name");
-        Checks.noneNull(options, "Options");
-        if (options.length > 0)
-            name = "SPOILER_" + name;
-
-        files.put(name, data);
-        return this;
-    }
+//    @Nonnull
+//    @Override
+//    public CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+//    {
+//        Checks.notNull(data, "Data");
+//        Checks.notEmpty(name, "Name");
+//        Checks.noneNull(options, "Options");
+//        if (options.length > 0)
+//            name = "SPOILER_" + name;
+//
+//        files.put(name, data);
+//        return this;
+//    }
 
     @Nonnull
     @Override

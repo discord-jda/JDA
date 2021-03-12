@@ -20,13 +20,11 @@ import net.dv8tion.jda.api.commands.CommandThread;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
-import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
@@ -51,41 +49,42 @@ public interface CommandReplyAction extends RestAction<CommandThread>, AllowedMe
     @CheckReturnValue
     CommandReplyAction setEphemeral(boolean ephemeral);
 
-    @Nonnull
-    @CheckReturnValue
-    default CommandReplyAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(file, "File");
-        return addFile(file, file.getName(), options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default CommandReplyAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        try
-        {
-            Checks.notNull(file, "File");
-            Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
-            return addFile(new FileInputStream(file), name, options);
-        }
-        catch (FileNotFoundException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default CommandReplyAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "Data");
-        return addFile(new ByteArrayInputStream(data), name, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+// Currently not supported, sad face
+//    @Nonnull
+//    @CheckReturnValue
+//    default CommandReplyAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+//    {
+//        Checks.notNull(file, "File");
+//        return addFile(file, file.getName(), options);
+//    }
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    default CommandReplyAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+//    {
+//        try
+//        {
+//            Checks.notNull(file, "File");
+//            Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
+//            return addFile(new FileInputStream(file), name, options);
+//        }
+//        catch (FileNotFoundException e)
+//        {
+//            throw new IllegalArgumentException(e);
+//        }
+//    }
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    default CommandReplyAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+//    {
+//        Checks.notNull(data, "Data");
+//        return addFile(new ByteArrayInputStream(data), name, options);
+//    }
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @Override
