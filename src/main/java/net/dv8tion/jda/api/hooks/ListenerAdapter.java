@@ -19,6 +19,10 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
+import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
+import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
+import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
@@ -181,8 +185,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onException(@Nonnull ExceptionEvent event) {}
 
     //Interaction Events
-    public void onGenericInteraction(@Nonnull GenericInteractionEvent event) {}
     public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
+
+    //Application Events
+    public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
+    public void onApplicationCommandDelete(@Nonnull ApplicationCommandDeleteEvent event) {}
+    public void onApplicationCommandCreate(@Nonnull ApplicationCommandCreateEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -364,6 +372,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
+    public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
+    public void onGenericInteraction(@Nonnull GenericInteractionEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericGuildMessage(@Nonnull GenericGuildMessageEvent event) {}
