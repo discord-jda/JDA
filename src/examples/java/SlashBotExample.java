@@ -74,19 +74,15 @@ public class SlashBotExample extends ListenerAdapter
         // Only accept commands from guilds
         if (event.getGuild() == null)
             return;
-        Member member;
-        User user;
         switch (event.getName())
         {
         case "ban":
-            member = event.getOption("user").getAsMember(); // the "user" option is required so it doesn't need a null-check here
-            user = event.getOption("user").getAsUser();
+            Member member = event.getOption("user").getAsMember(); // the "user" option is required so it doesn't need a null-check here
+            User user = event.getOption("user").getAsUser();
             ban(event, user, member);
             break;
-        case "kick":
-            member = event.getOption("user").getAsMember(); // the "user" option is required so it doesn't need a null-check here
-            user = event.getOption("user").getAsUser();
-            kick(event, user, member);
+        case "say":
+            say(event, event.getOption("content").getAsString()); // content is required so no null-check here
             break;
         case "leave":
             leave(event);
@@ -130,40 +126,9 @@ public class SlashBotExample extends ListenerAdapter
             .queue();
     }
 
-    public void kick(SlashCommandEvent event, User user, Member member)
+    public void say(SlashCommandEvent event, String content)
     {
-        if (member == null)
-        {
-            event.reply("The provided user is not a member of this server.").setEphemeral(true).queue();
-            return;
-        }
-
-        event.acknowledge(true).queue(); // Let the user know we received the command before doing anything else
-        CommandHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
-        hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
-        if (!event.getMember().hasPermission(Permission.KICK_MEMBERS))
-        {
-            hook.sendMessage("You do not have the required permissions to kick users from this server.").queue();
-            return;
-        }
-
-        Member selfMember = event.getGuild().getSelfMember();
-        if (!selfMember.hasPermission(Permission.KICK_MEMBERS))
-        {
-            hook.sendMessage("I don't have the required permissions to kick users from this server.").queue();
-            return;
-        }
-
-        if (!selfMember.canInteract(member))
-        {
-            hook.sendMessage("This user is too powerful for me to kick.").queue();
-            return;
-        }
-
-        // Kick the user and send a success response
-        member.kick()
-            .flatMap(v -> hook.sendMessage("Kicked user " + user.getAsTag()))
-            .queue();
+        event.reply(content).queue(); // This requires no permissions!
     }
 
     public void leave(SlashCommandEvent event)
