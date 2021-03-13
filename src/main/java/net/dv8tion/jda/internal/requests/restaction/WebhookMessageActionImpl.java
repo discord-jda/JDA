@@ -149,7 +149,7 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
         if (files.isEmpty())
             return getRequestBody(json);
 
-        MultipartBody.Builder body = new MultipartBody.Builder();
+        MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
         int i = 0;
         for (Map.Entry<String, InputStream> file : files.entrySet())
         {
