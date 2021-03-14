@@ -137,7 +137,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         request.onSuccess(new Command(api, guild, json));
     }
 
-    private static class Option implements OptionBuilder, SerializableData
+    protected static class Option implements OptionBuilder, SerializableData
     {
         private final OptionType type;
         private final String name;
@@ -146,7 +146,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         private final List<Option> options = new ArrayList<>();
         private boolean required, isDefault; // TODO: we can do some validation here, maybe?
 
-        private Option(OptionType type, String name, String description)
+        protected Option(OptionType type, String name, String description)
         {
             this.type = type;
             this.name = name;

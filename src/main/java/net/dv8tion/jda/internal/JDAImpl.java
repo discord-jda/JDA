@@ -41,6 +41,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.*;
@@ -59,6 +60,7 @@ import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.CommandUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -826,10 +828,18 @@ public class JDAImpl implements JDA
     }
 
     @Nonnull
+    @Override
     public CommandUpdateAction updateCommands()
     {
         Route.CompiledRoute route = Route.Interactions.UPDATE_COMMANDS.compile(getSelfUser().getApplicationId());
         return new CommandUpdateActionImpl(this, route);
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction editCommandById(String id)
+    {
+        return new CommandEditActionImpl(this, id);
     }
 
     @Nonnull

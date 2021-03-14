@@ -18,12 +18,14 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -31,9 +33,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Command
+public class Command implements ISnowflake
 {
     private final JDAImpl api;
+    private final Guild guild;
     private final String name, description;
     private final List<Option> options;
     private final long id, guildId;
@@ -41,6 +44,7 @@ public class Command
     public Command(JDAImpl api, Guild guild, DataObject json)
     {
         this.api = api;
+        this.guild = guild;
         this.name = json.getString("name");
         this.description = json.getString("description");
         this.id = json.getUnsignedLong("id");
@@ -69,34 +73,41 @@ public class Command
         return new RestActionImpl<>(api, route);
     }
 
+    @Nonnull
+    @CheckReturnValue
+    public CommandEditAction editCommand()
+    {
+        return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
+    }
+
+    @Nonnull
     public JDA getJDA()
     {
         return api;
     }
 
+    @Nonnull
     public String getName()
     {
         return name;
     }
 
+    @Nonnull
     public String getDescription()
     {
         return description;
     }
 
+    @Nonnull
     public List<Option> getOptions()
     {
         return options;
     }
 
+    @Override
     public long getIdLong()
     {
         return id;
-    }
-
-    public String getId()
-    {
-        return Long.toUnsignedString(id);
     }
 
     @Override
@@ -181,6 +192,7 @@ public class Command
             }
         }
 
+        @Nonnull
         public String getName()
         {
             return name;
@@ -191,6 +203,7 @@ public class Command
             return intValue;
         }
 
+        @Nonnull
         public String getAsString()
         {
             return stringValue;
@@ -216,11 +229,13 @@ public class Command
                 .orElse(Collections.emptyList());
         }
 
+        @Nonnull
         public String getName()
         {
             return name;
         }
 
+        @Nonnull
         public String getDescription()
         {
             return description;
@@ -231,11 +246,13 @@ public class Command
             return type;
         }
 
+        @Nonnull
         public List<Choice> getChoices()
         {
             return choices;
         }
 
+        @Nonnull
         public List<Option> getOptions()
         {
             return options;

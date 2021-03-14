@@ -87,6 +87,10 @@ public interface Guild extends ISnowflake
 
     @Nonnull
     @CheckReturnValue
+    CommandEditAction editCommandById(String id);
+
+    @Nonnull
+    @CheckReturnValue
     RestAction<Void> deleteCommand(@Nonnull String commandId);
 
     @Nonnull
@@ -96,7 +100,6 @@ public interface Guild extends ISnowflake
         return deleteCommand(Long.toUnsignedString(commandId));
     }
 
-    // TODO: editing commands
 
     /**
      * Retrieves the available regions for this Guild
