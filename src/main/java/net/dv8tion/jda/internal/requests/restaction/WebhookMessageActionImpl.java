@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -116,10 +117,13 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl addFile(@Nonnull String name, @Nonnull InputStream data)
+    public WebhookMessageActionImpl addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
+        Checks.notNull(options, "AttachmentOption");
+        if (options.length > 0 && options[0] == AttachmentOption.SPOILER)
+            name = "SPOILER_" + name;
         files.put(name, data);
         return this;
     }

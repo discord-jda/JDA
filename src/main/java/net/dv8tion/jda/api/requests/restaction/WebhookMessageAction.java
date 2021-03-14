@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -61,11 +62,11 @@ public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    T addFile(@Nonnull String name, @Nonnull InputStream data);
+    T addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @CheckReturnValue
-    default T addFile(@Nonnull String name, @Nonnull byte[] data)
+    default T addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -74,7 +75,7 @@ public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default T addFile(@Nonnull String name, @Nonnull File data)
+    default T addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
     {
         Checks.notEmpty(name, "Name");
         Checks.notNull(data, "File");
@@ -90,7 +91,7 @@ public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default T addFile(@Nonnull File file)
+    default T addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file.getName(), file);

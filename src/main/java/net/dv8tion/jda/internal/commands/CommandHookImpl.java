@@ -17,15 +17,21 @@
 package net.dv8tion.jda.internal.commands;
 
 import net.dv8tion.jda.api.commands.CommandHook;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
+import javax.annotation.Nonnull;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -44,7 +50,7 @@ public class CommandHookImpl implements CommandHook
     private boolean isReady;
     private boolean ephemeral;
 
-    public CommandHookImpl(SlashCommandEvent event)
+    public CommandHookImpl(@Nonnull SlashCommandEvent event)
     {
         this.event = event;
         // 10 second timeout for our failure
@@ -89,12 +95,14 @@ public class CommandHookImpl implements CommandHook
         });
     }
 
+    @Nonnull
     @Override
     public SlashCommandEvent getEvent()
     {
         return event;
     }
 
+    @Nonnull
     @Override
     public CommandHook setEphemeral(boolean ephemeral)
     {
@@ -102,26 +110,80 @@ public class CommandHookImpl implements CommandHook
         return this;
     }
 
-    @Override
-    public InteractionWebhookAction sendMessage(String content)
+    @Nonnull
+    private WebhookMessageActionImpl sendRequest()
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken());
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content).setEphemeral(ephemeral);
+        return onReady(new WebhookMessageActionImpl(getJDA(), route));
     }
 
-    @Override
-    public InteractionWebhookAction editOriginal(String content)
+    @Nonnull
+    private WebhookMessageActionImpl editRequest(String messageId)
     {
-        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), "@original");
+        if (!"@original".equals(messageId))
+            Checks.isSnowflake(messageId);
+        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setContent(content).setEphemeral(ephemeral);
+        return onReady(new WebhookMessageActionImpl(getJDA(), route));
     }
 
+    @Nonnull
     @Override
-    public RestAction<Void> deleteOriginal()
+    public InteractionWebhookAction sendMessage(@Nonnull String content)
     {
-        Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), "@original");
+        return sendRequest().setContent(content).setEphemeral(ephemeral);
+    }
+
+    @Nonnull
+    @Override
+    public InteractionWebhookAction sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    {
+        return sendRequest().addEmbeds(embed, embeds).setEphemeral(ephemeral);
+    }
+
+    @Nonnull
+    @Override
+    public InteractionWebhookAction sendMessage(@Nonnull Message message)
+    {
+        return sendRequest().applyMessage(message);
+    }
+
+    @Nonnull
+    @Override
+    public InteractionWebhookAction sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return sendRequest().addFile(name, data, options);
+    }
+
+    @Nonnull
+    @Override
+    public InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull String content)
+    {
+        return editRequest(messageId).setContent(content);
+    }
+
+    @Nonnull
+    @Override
+    public InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    {
+        return editRequest(messageId).addEmbeds(embed, embeds);
+    }
+
+    @Nonnull
+    @Override
+    public InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull Message message)
+    {
+        return editRequest(messageId).applyMessage(message);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
+    {
+        if (!"@original".equals(messageId))
+            Checks.isSnowflake(messageId);
+        Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), messageId);
         return onReady(new TriggerRestAction<>(getJDA(), route));
     }
 }
