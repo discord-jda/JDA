@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class SlashCommandEvent extends GenericInteractionEvent
+public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
 {
     private final String name;
     private final long commandId;
@@ -48,7 +48,7 @@ public class SlashCommandEvent extends GenericInteractionEvent
                              @Nullable Guild guild, @Nullable Member member, @Nonnull User user, @Nonnull MessageChannel channel,
                              @Nonnull String name, long commandId, @Nonnull List<OptionData> options)
     {
-        super(api, responseNumber, token, interactionId, guild, member, user, channel);
+        super(api, responseNumber, InteractionType.SLASH_COMMAND.getKey(), token, interactionId, guild, member, user, channel);
         this.name = name;
         this.commandId = commandId;
         this.options = Collections.unmodifiableList(options);
@@ -103,15 +103,8 @@ public class SlashCommandEvent extends GenericInteractionEvent
         return options.isEmpty() ? null : options.get(0);
     }
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel() // slash commands always happen in channels but interactions don't
-    {
-        return super.getChannel();
-    }
-
-    // You can only reply ONCE so maybe we should throw when trying again?
+    // TODO: You can only reply ONCE so maybe we should throw when trying again?
+    // TODO: Maybe some way to check if we already replied once?
 
     @Nonnull
     @CheckReturnValue

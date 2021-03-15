@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.events.interaction;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.InteractionType;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 import org.jetbrains.annotations.NotNull;
@@ -29,24 +29,34 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 
 @Incubating
-public class GenericInteractionEvent extends Event
+public class GenericInteractionCreateEvent extends Event
 {
+    private final int type;
     private final String token;
     private final long interactionId;
     private final Guild guild;
     private final Member member;
     private final User user;
-    private final MessageChannel channel;
 
-    public GenericInteractionEvent(@NotNull JDA api, long responseNumber, @Nonnull String token, long interactionId, @Nullable Guild guild, @Nullable Member member, @Nullable User user, @Nonnull MessageChannel channel)
+    public GenericInteractionCreateEvent(@NotNull JDA api, long responseNumber, int type, @Nonnull String token, long interactionId, @Nullable Guild guild, @Nullable Member member, @Nullable User user)
     {
         super(api, responseNumber);
+        this.type = type;
         this.token = token;
         this.interactionId = interactionId;
         this.guild = guild;
         this.member = member;
         this.user = user;
-        this.channel = channel;
+    }
+
+    public InteractionType getType()
+    {
+        return InteractionType.fromKey(type);
+    }
+
+    public int getTypeRaw()
+    {
+        return type;
     }
 
     public String getInteractionToken()
@@ -80,11 +90,5 @@ public class GenericInteractionEvent extends Event
     public User getUser()
     {
         return user;
-    }
-
-    @Nullable
-    public MessageChannel getChannel()
-    {
-        return channel;
     }
 }
