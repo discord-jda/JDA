@@ -131,7 +131,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description)
+    public CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
         return new CommandCreateActionImpl(this).setName(name).setDescription(description);
     }
@@ -146,8 +146,9 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(String id)
+    public CommandEditAction editCommandById(@Nonnull String id)
     {
+        Checks.isSnowflake(id);
         return new CommandEditActionImpl(this, id);
     }
 

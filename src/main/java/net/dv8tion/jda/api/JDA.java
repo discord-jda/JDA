@@ -489,7 +489,7 @@ public interface JDA
 
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction createCommand(@Nonnull String name, @Nonnull String description);
+    CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description);
 
     @Nonnull
     @CheckReturnValue
@@ -497,7 +497,7 @@ public interface JDA
 
     @Nonnull
     @CheckReturnValue
-    CommandEditAction editCommandById(String id);
+    CommandEditAction editCommandById(@Nonnull String id);
 
     @Nonnull
     @CheckReturnValue
