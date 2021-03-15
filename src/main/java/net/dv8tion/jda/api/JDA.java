@@ -501,13 +501,13 @@ public interface JDA
 
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteCommand(@Nonnull String commandId);
+    RestAction<Void> deleteCommandById(@Nonnull String commandId);
 
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteCommand(long commandId)
+    default RestAction<Void> deleteCommandById(long commandId)
     {
-        return deleteCommand(Long.toUnsignedString(commandId));
+        return deleteCommandById(Long.toUnsignedString(commandId));
     }
 
     // TODO: editing commands

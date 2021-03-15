@@ -153,7 +153,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteCommand(@Nonnull String commandId)
+    public RestAction<Void> deleteCommandById(@Nonnull String commandId)
     {
         Checks.isSnowflake(commandId);
         Route.CompiledRoute route = Route.Interactions.DELETE_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);

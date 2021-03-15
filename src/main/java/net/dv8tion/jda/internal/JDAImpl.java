@@ -844,7 +844,7 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteCommand(@Nonnull String commandId)
+    public RestAction<Void> deleteCommandById(@Nonnull String commandId)
     {
         Checks.isSnowflake(commandId);
         Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
