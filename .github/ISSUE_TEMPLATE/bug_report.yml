@@ -49,11 +49,14 @@ body:
       ```java
       JDA jda = JDABuilder.createDefault("secret").build();
       ```
-- type: input
+- type: textarea
   attributes:
     label: "Exception or Error"
     description: |-
       Share any Exception or Error you encountered.  
-      It's recommended to use https://hastebin.de or a similar service to share larger errors.  
+      Make sure to put it into a code block for better formatting.
       Leave this blank or put "N/A" if you don't have an Exception or Error.
-    placeholder: "https://hastebin.de/error.log"
+    placeholder: |-
+      ```
+      java.lang.NullPointerException: null
+      ```
