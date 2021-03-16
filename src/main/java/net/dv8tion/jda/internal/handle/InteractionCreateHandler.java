@@ -18,10 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -111,7 +108,15 @@ public class InteractionCreateHandler extends SocketHandler
                      .filter(Objects::nonNull)
                      .forEach(role -> resolved.put(role.getIdLong(), role))
             );
-            resolveJson.optObject("channels").ifPresent(channels -> {}); // TODO
+            resolveJson.optObject("channels").ifPresent(channels -> {
+                channels.keys().forEach(id -> {
+                    ISnowflake channelObj = api.getGuildChannelById(id);
+                    if (channelObj == null)
+                        channelObj = api.getPrivateChannelById(id);
+                    if (channelObj != null)
+                        resolved.put(channelObj.getIdLong(), channelObj);
+                });
+            }); // TODO: Handle sharding, private channels, and channels the bot isn't in somehow
         }
 
         // Create option POJO including resolved entities

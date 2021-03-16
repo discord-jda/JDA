@@ -263,7 +263,47 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
             return (Role) resolved.get(getAsLong());
         }
 
-        // TODO: Handle channels (new type?)
+        @Nullable
+        public GuildChannel getAsGuildChannel()
+        {
+            if (type != Command.OptionType.CHANNEL)
+                throw new IllegalStateException("Cannot resolve GuildChannel for option " + getName() + " of type " + type);
+            Object value = resolved.get(getAsLong());
+            return value instanceof GuildChannel ? (GuildChannel) value : null;
+        }
+
+        @Nullable
+        public PrivateChannel getAsPrivateChannel()
+        {
+            if (type != Command.OptionType.CHANNEL)
+                throw new IllegalStateException("Cannot resolve PrivateChannel for option " + getName() + " of type " + type);
+            Object value = resolved.get(getAsLong());
+            return value instanceof PrivateChannel ? (PrivateChannel) value : null;
+        }
+
+        @Nullable
+        public MessageChannel getAsMessageChannel()
+        {
+            if (type != Command.OptionType.CHANNEL)
+                throw new IllegalStateException("Cannot resolve MessageChannel for option " + getName() + " of type " + type);
+            Object value = resolved.get(getAsLong());
+            return value instanceof MessageChannel ? (MessageChannel) value : null;
+        }
+
+        @Nonnull
+        public ChannelType getChannelType()
+        {
+            if (type != Command.OptionType.CHANNEL)
+                throw new IllegalStateException("Cannot resolve ChannelType for option " + getName() + " of type " + type);
+            Object value = resolved.get(getAsLong());
+            if (value instanceof GuildChannel)
+                return ((GuildChannel) value).getType();
+            if (value instanceof PrivateChannel)
+                return ChannelType.PRIVATE;
+            return ChannelType.UNKNOWN;
+        }
+
+        // TODO: Handle unknown channels (new type?)
         // TODO: How to handle subcommands? What does it look like?
 
         @Nonnull
