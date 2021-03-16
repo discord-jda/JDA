@@ -79,6 +79,17 @@ public interface Guild extends ISnowflake
 
     @Nonnull
     @CheckReturnValue
+    RestAction<Command> retrieveCommandById(@Nonnull String id);
+
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Command> retrieveCommandById(long id)
+    {
+        return retrieveCommandById(Long.toUnsignedString(id));
+    }
+
+    @Nonnull
+    @CheckReturnValue
     CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description);
 
     @Nonnull

@@ -822,6 +822,15 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public RestAction<Command> retrieveCommandById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
+        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+    }
+
+    @Nonnull
+    @Override
     public CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
         return new CommandCreateActionImpl(this).setName(name).setDescription(description);
