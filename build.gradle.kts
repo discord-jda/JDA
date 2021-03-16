@@ -67,7 +67,7 @@ dependencies {
     api("org.slf4j:slf4j-api:1.7.25")
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.10")
+    api("com.neovisionaries:nv-websocket-client:2.14")
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
