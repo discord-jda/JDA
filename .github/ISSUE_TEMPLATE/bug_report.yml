@@ -32,18 +32,18 @@ body:
     label: "Code Example for Reproduction Steps"
     description: |-
       Please add the code you use to reproduce this problem.  
-      Make sure to remove or replace any sesnitive data like your Bot's token.
-      Leave this empty or put "N/A" if you don't have a reproduceable setup.
+      Make sure to remove or replace any sensitive data like your Bot's token.
+      Leave this empty or put "N/A" if you don't have a reproducible setup.
     placeholder: |-
       ```java
-      public String myBreakingMethod(){ retuen "It breaks"; }
+      public String myBreakingMethod(){ return "It breaks"; }
       ```
 - type: textarea
   attributes:
-    label: "Code for JDABuilder or DefaultShardManagerBuilder User"
+    label: "Code for JDABuilder or DefaultShardManagerBuilder used"
     description: |-
       Please provide the code used to create your JDA or ShardManager instance.  
-      Make sure to remove or replace any sesnitive data like your Bot's token.
+      Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if this isn't affected by the JDABuilder/DefaultShardManagerBuilder setup.
     placeholder: |-
       ```java
