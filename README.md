@@ -632,7 +632,7 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.9**
+   * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
    * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
