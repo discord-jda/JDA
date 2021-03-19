@@ -16,7 +16,6 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -77,7 +76,7 @@ import java.util.function.Function;
  * @see TextChannel
  * @see PrivateChannel
  */
-public interface MessageChannel extends ISnowflake, Formattable
+public interface MessageChannel extends AbstractChannel, Formattable
 {
     /**
      * The id for the most recent message sent
@@ -278,35 +277,6 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    #getLatestMessageId()
      */
     boolean hasLatestMessage();
-
-    /**
-     * This method is a shortcut method to return the following information in the following situation:
-     * If the MessageChannel is instance of..
-     * <ul>
-     *     <li><b>TextChannel</b> - Returns {@link TextChannel#getName()}</li>
-     *     <li><b>PrivateChannel</b> Returns {@link PrivateChannel#getUser()}{@link net.dv8tion.jda.api.entities.User#getName() .getName()}</li>
-     * </ul>
-     *
-     * @return Never-null "name" of the MessageChannel. Different implementations determine what the name.
-     */
-    @Nonnull
-    String getName();
-
-    /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} of this MessageChannel.
-     *
-     * @return The ChannelType for this channel
-     */
-    @Nonnull
-    ChannelType getType();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this MessageChannel
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Sends a plain text message to this channel.
