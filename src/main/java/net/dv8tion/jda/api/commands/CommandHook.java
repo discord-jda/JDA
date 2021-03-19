@@ -76,15 +76,16 @@ public interface CommandHook
 
     @Nonnull
     @CheckReturnValue
-    InteractionWebhookAction sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
-
-    @Nonnull
-    @CheckReturnValue
     default InteractionWebhookAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return sendMessage(String.format(format, args));
     }
+
+
+    @Nonnull
+    @CheckReturnValue
+    InteractionWebhookAction sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @CheckReturnValue
@@ -105,7 +106,7 @@ public interface CommandHook
 
         try
         {
-            return sendFile(new FileInputStream(file), name, options);
+            return editOriginal(new FileInputStream(file), name, options);
         }
         catch (FileNotFoundException ex)
         {
@@ -120,7 +121,7 @@ public interface CommandHook
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
 
-        return sendFile(new ByteArrayInputStream(data), name, options);
+        return editOriginal(new ByteArrayInputStream(data), name, options);
     }
 
 
@@ -172,6 +173,77 @@ public interface CommandHook
         return editMessageFormatById(Long.toUnsignedString(messageId), format, args);
     }
 
+
+    @Nonnull
+    @CheckReturnValue
+    InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(file, "File");
+        return editMessageById(messageId, file, file.getName(), options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(file, "File");
+        Checks.check(file.exists() && file.canRead(),
+                "Provided file doesn't exist or cannot be read!");
+        Checks.notNull(name, "Name");
+
+        try
+        {
+            return editMessageById(messageId, new FileInputStream(file), name, options);
+        }
+        catch (FileNotFoundException ex)
+        {
+            throw new IllegalArgumentException(ex);
+        }
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(data, "Data");
+        Checks.notNull(name, "Name");
+
+        return editMessageById(messageId, new ByteArrayInputStream(data), name, options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById(Long.toUnsignedString(messageId), data, name, options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById(Long.toUnsignedString(messageId), file, options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById(Long.toUnsignedString(messageId), file, name, options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById(Long.toUnsignedString(messageId), data, name, options);
+    }
+
+
     @Nonnull
     @CheckReturnValue
     default InteractionWebhookAction editOriginal(@Nonnull String content)
@@ -199,6 +271,35 @@ public interface CommandHook
     {
         Checks.notNull(format, "Format String");
         return editOriginal(String.format(format, args));
+    }
+
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById("@original", data, name, options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById("@original", file, options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById("@original", file, name, options);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default InteractionWebhookAction editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return editMessageById("@original", data, name, options);
     }
 
     @Nonnull

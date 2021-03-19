@@ -179,6 +179,13 @@ public class CommandHookImpl implements CommandHook
 
     @Nonnull
     @Override
+    public InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        return editRequest(messageId).addFile(name, data, options);
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> deleteMessageById(@Nonnull String messageId)
     {
         if (!"@original".equals(messageId))
