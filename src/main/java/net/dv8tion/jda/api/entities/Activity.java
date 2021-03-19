@@ -334,9 +334,8 @@ public interface Activity
         /**
          * Used to indicate that the {@link Activity Activity} should display as a custom status
          * in the official client.
-         * <br>This Activity type is <b>read only</b> for bots.
          *
-         * @incubating This feature is currently not officially documented and might change
+         * @incubating This Activity type is <b>read-only</b> for bots
          */
         @Incubating
         CUSTOM_STATUS(4),
