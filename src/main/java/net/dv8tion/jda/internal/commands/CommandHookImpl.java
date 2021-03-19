@@ -115,7 +115,7 @@ public class CommandHookImpl implements CommandHook
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken());
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route));
+        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setEphemeral(ephemeral);
     }
 
     @Nonnull
@@ -132,14 +132,14 @@ public class CommandHookImpl implements CommandHook
     @Override
     public InteractionWebhookAction sendMessage(@Nonnull String content)
     {
-        return sendRequest().setContent(content).setEphemeral(ephemeral);
+        return sendRequest().setContent(content);
     }
 
     @Nonnull
     @Override
     public InteractionWebhookAction sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
-        return sendRequest().addEmbeds(embed, embeds).setEphemeral(ephemeral);
+        return sendRequest().addEmbeds(embed, embeds);
     }
 
     @Nonnull
