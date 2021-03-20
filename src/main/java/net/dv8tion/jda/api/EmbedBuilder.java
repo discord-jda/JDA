@@ -184,9 +184,9 @@ public class EmbedBuilder
         }
         if (title != null)
             length += title.length();
-        if (author != null)
+        if (author != null && author.getName() != null)
             length += author.getName().length();
-        if (footer != null)
+        if (footer != null && footer.getText() != null)
             length += footer.getText().length();
         return length;
     }
