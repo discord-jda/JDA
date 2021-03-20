@@ -35,7 +35,6 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
@@ -68,7 +67,6 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -87,8 +85,7 @@ public class GuildImpl implements Guild
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
-    private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile GuildManager manager;
+    private GuildManager manager;
 
     private Member owner;
     private String name;
@@ -671,17 +668,9 @@ public class GuildImpl implements Guild
     @Override
     public GuildManager getManager()
     {
-        GuildManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new GuildManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new GuildManagerImpl(this);
+        return manager;
     }
 
     @Nonnull
