@@ -181,6 +181,9 @@ public interface Emote extends IMentionable, IFakeable
      * properties of the emote like name and role restrictions.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
+     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
+     * This getter is not thread-safe and would require guards by the user.
+     *
      * @throws IllegalStateException
      *         if this emote is created from a message or the bot does not have access to the emote
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
