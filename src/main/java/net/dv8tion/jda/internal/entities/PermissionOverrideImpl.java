@@ -158,7 +158,7 @@ public class PermissionOverrideImpl implements PermissionOverride
         if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
         if (manager == null)
-            return manager = new PermissionOverrideActionImpl(this);
+            return manager = new PermissionOverrideActionImpl(this).setOverride(false);
         return manager;
     }
 
