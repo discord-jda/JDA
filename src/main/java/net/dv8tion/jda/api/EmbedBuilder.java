@@ -180,7 +180,7 @@ public class EmbedBuilder
         int length = description.length();
         synchronized (fields)
         {
-            length = fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
+            length += fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
         }
         if (title != null)
             length += title.length();
