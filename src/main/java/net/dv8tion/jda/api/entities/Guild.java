@@ -977,6 +977,8 @@ public interface Guild extends ISnowflake
      *         If a provided {@link net.dv8tion.jda.api.entities.Role Role} is from a different guild or null.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
+     *
+     * @see    #findMembersWithRoles(Role...)
      */
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Role... roles)
@@ -999,6 +1001,8 @@ public interface Guild extends ISnowflake
      *         If a provided {@link net.dv8tion.jda.api.entities.Role Role} is from a different guild or null.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
+     *
+     * @see    #findMembersWithRoles(Collection)
      */
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles)
@@ -2458,6 +2462,71 @@ public interface Guild extends ISnowflake
         reference.onSuccess(it -> future.complete(list))
                  .onError(future::completeExceptionally);
         return task;
+    }
+
+    /**
+     * Retrieves and collects members of this guild into a list.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  roles
+     *         Collection of all roles the members must have
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} - Type: {@link List} of {@link Member}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles)
+    {
+        Checks.noneNull(roles, "Roles");
+        for (Role role : roles)
+            Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
+
+        if (isLoaded() || roles.isEmpty() || roles.contains(getPublicRole())) // Member#getRoles never contains the public role
+        {
+            CompletableFuture<List<Member>> future = CompletableFuture.completedFuture(getMembersWithRoles(roles));
+            return new GatewayTask<>(future, () -> {});
+        }
+
+        return findMembers(member -> member.getRoles().containsAll(roles));
+    }
+
+    /**
+     * Retrieves and collects members of this guild into a list.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  roles
+     *         All roles the members must have
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} - Type: {@link List} of {@link Member}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> findMembersWithRoles(@Nonnull Role... roles)
+    {
+        Checks.noneNull(roles, "Roles");
+        return findMembersWithRoles(Arrays.asList(roles));
     }
 
     /**
