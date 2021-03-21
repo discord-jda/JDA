@@ -89,6 +89,8 @@ import javax.annotation.Nonnull;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -390,8 +392,19 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
 
-    private static final MethodHandles.Lookup lookup = MethodHandles.publicLookup();
+    private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
+    private static final Set<Class<?>> unresolved;
+    static
+    {
+        unresolved = ConcurrentHashMap.newKeySet();
+        Collections.addAll(unresolved,
+            Object.class, // Objects aren't events
+            Event.class, // onEvent is final and would never be found
+            UpdateEvent.class, // onGenericUpdate has already been called
+            GenericEvent.class // onGenericEvent has already been called
+        );
+    }
 
     @Override
     public final void onEvent(@Nonnull GenericEvent event)
@@ -408,9 +421,27 @@ public abstract class ListenerAdapter implements EventListener
 
         for (Class<?> clazz : ClassWalker.range(event.getClass(), GenericEvent.class))
         {
+            if (unresolved.contains(clazz))
+                continue;
             MethodHandle mh = methods.computeIfAbsent(clazz, ListenerAdapter::findMethod);
-            if (mh != null)
-                invoke(mh, event);
+            if (mh == null)
+            {
+                unresolved.add(clazz);
+                continue;
+            }
+
+            try
+            {
+                mh.invoke(this, event);
+            }
+            catch (Throwable throwable)
+            {
+                if (throwable instanceof RuntimeException)
+                    throw (RuntimeException) throwable;
+                if (throwable instanceof Error)
+                    throw (Error) throwable;
+                throw new IllegalStateException(throwable);
+            }
         }
     }
 
@@ -425,21 +456,5 @@ public abstract class ListenerAdapter implements EventListener
         }
         catch (NoSuchMethodException | IllegalAccessException ignored) {} // this means this is probably a custom event!
         return null;
-    }
-
-    private void invoke(MethodHandle handle, Object event)
-    {
-        try
-        {
-            handle.invoke(this, event);
-        }
-        catch (Throwable throwable)
-        {
-            if (throwable instanceof RuntimeException)
-                throw (RuntimeException) throwable;
-            if (throwable instanceof Error)
-                throw (Error) throwable;
-            throw new IllegalStateException(throwable);
-        }
     }
 }
