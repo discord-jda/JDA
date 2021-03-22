@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,8 +196,6 @@ public interface RoleAction extends AuditableRestAction<Role>
      *         The raw {@link net.dv8tion.jda.api.Permission Permissions} value for the new role.
      *         To retrieve this use {@link net.dv8tion.jda.api.Permission#getRawValue()}
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided permission value is invalid
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not hold one of the specified permissions
      *

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,6 +146,9 @@ public interface SelfUser extends User
      * for the currently logged in account.
      * <br>This can be used to atomically set account fields (like avatar/username)
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
+     * This getter is not thread-safe and would require guards by the user.
      *
      * @return An AccountManager instance for the current account
      */

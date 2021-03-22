@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -35,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
@@ -48,8 +46,7 @@ public class EmoteImpl implements ListedEmote
     private final JDAImpl api;
     private final Set<Role> roles;
 
-    private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile EmoteManager manager = null;
+    private EmoteManager manager;
 
     private GuildImpl guild;
     private boolean managed = false;
@@ -59,11 +56,6 @@ public class EmoteImpl implements ListedEmote
     private User user;
 
     public EmoteImpl(long id, GuildImpl guild)
-    {
-        this(id, guild, false);
-    }
-
-    public EmoteImpl(long id, GuildImpl guild, boolean fake)
     {
         this.id = id;
         this.api = guild.getJDA();
@@ -163,17 +155,9 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteManager getManager()
     {
-        EmoteManager m = manager;
-        if (m == null)
-        {
-            m = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new EmoteManagerImpl(this);
-                return manager;
-            });
-        }
-        return m;
+        if (manager == null)
+            return manager = new EmoteManagerImpl(this);
+        return manager;
     }
 
     @Override

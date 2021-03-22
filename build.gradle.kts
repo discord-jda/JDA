@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ dependencies {
     api("org.slf4j:slf4j-api:1.7.25")
 
     //Web Connection Support
-    api("com.neovisionaries:nv-websocket-client:2.10")
+    api("com.neovisionaries:nv-websocket-client:2.14")
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support

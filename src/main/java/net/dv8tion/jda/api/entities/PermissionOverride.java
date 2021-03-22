@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -175,6 +175,9 @@ public interface PermissionOverride extends ISnowflake
      * Returns the {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction PermissionOverrideAction} to modify this PermissionOverride.
      * <br>In the PermissionOverrideAction you can modify the permissions of the override.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
+     * This getter is not thread-safe and would require guards by the user.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}

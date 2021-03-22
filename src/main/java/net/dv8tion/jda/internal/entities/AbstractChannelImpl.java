@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
@@ -54,8 +53,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
-    protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile ChannelManager manager;
+    protected ChannelManager manager;
 
     protected GuildImpl guild;
     protected long parentId;
@@ -160,21 +158,37 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
                 .collect(Collectors.toList()));
     }
 
+    @Override
+    public boolean isSynced()
+    {
+        AbstractChannelImpl<?, ?> parent = (AbstractChannelImpl<?, ?>) getParent(); // We accept the unchecked cast here
+        if (parent == null)
+            return true; // Channels without a parent category are always considered synced. Also the case for categories.
+        TLongObjectMap<PermissionOverride> parentOverrides = parent.getOverrideMap();
+        if (parentOverrides.size() != overrides.size())
+            return false;
+        // Check that each override matches with the parent override
+        for (PermissionOverride override : parentOverrides.valueCollection())
+        {
+            PermissionOverride ourOverride = overrides.get(override.getIdLong());
+            if (ourOverride == null) // this means we don't have the parent override => not synced
+                return false;
+            // Permissions are different => not synced
+            if (ourOverride.getAllowedRaw() != override.getAllowedRaw() || ourOverride.getDeniedRaw() != override.getDeniedRaw())
+                return false;
+        }
+
+        // All overrides exist and are the same as the parent => synced
+        return true;
+    }
+
     @Nonnull
     @Override
     public ChannelManager getManager()
     {
-        ChannelManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new ChannelManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new ChannelManagerImpl(this);
+        return manager;
     }
 
     @Nonnull

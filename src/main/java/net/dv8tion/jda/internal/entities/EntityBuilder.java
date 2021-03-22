@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
+import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
@@ -143,7 +144,7 @@ public class EntityBuilder
                     continue;
                 }
                 final long emoteId = object.getLong("id");
-                emoteMap.put(emoteId, createEmote(guildObj, object, false));
+                emoteMap.put(emoteId, createEmote(guildObj, object));
             }
         }
     }
@@ -180,6 +181,8 @@ public class EntityBuilder
         final long ownerId = guildJson.getUnsignedLong("owner_id", 0L);
         final long afkChannelId = guildJson.getUnsignedLong("afk_channel_id", 0L);
         final long systemChannelId = guildJson.getUnsignedLong("system_channel_id", 0L);
+        final long rulesChannelId = guildJson.getUnsignedLong("rules_channel_id", 0L);
+        final long communityUpdatesChannelId = guildJson.getUnsignedLong("public_updates_channel_id", 0L);
         final int boostCount = guildJson.getInt("premium_subscription_count", 0);
         final int boostTier = guildJson.getInt("premium_tier", 0);
         final int maxMembers = guildJson.getInt("max_members", 0);
@@ -266,7 +269,9 @@ public class EntityBuilder
         createGuildEmotePass(guildObj, emotesArray);
 
         guildObj.setAfkChannel(guildObj.getVoiceChannelById(afkChannelId))
-                .setSystemChannel(guildObj.getTextChannelById(systemChannelId));
+                .setSystemChannel(guildObj.getTextChannelById(systemChannelId))
+                .setRulesChannel(guildObj.getTextChannelById(rulesChannelId))
+                .setCommunityUpdatesChannel(guildObj.getTextChannelById(communityUpdatesChannelId));
 
         return guildObj;
     }
@@ -464,6 +469,8 @@ public class EntityBuilder
                 epoch = Instant.from(date).toEpochMilli();
             }
             member.setBoostDate(epoch);
+            if (!memberJson.isNull("pending"))
+                member.setPending(memberJson.getBoolean("pending"));
             Set<Role> roles = member.getRoleSet();
             for (int i = 0; i < roleArray.length(); i++)
             {
@@ -574,6 +581,20 @@ public class EntityBuilder
             TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
             long joinEpoch = Instant.from(joinedAt).toEpochMilli();
             member.setJoinDate(joinEpoch);
+        }
+
+        if (!content.isNull("pending"))
+        {
+            boolean pending = content.getBoolean("pending");
+            boolean oldPending = member.isPending();
+            if (pending != oldPending)
+            {
+                member.setPending(pending);
+                getJDA().handleEvent(
+                    new GuildMemberUpdatePendingEvent(
+                        getJDA(), responseNumber,
+                        member, oldPending));
+            }
         }
 
         updateUser((UserImpl) member.getUser(), content.getObject("user"));
@@ -760,14 +781,14 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
-    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json, boolean fake)
+    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json)
     {
         DataArray emoteRoles = json.optArray("roles").orElseGet(DataArray::empty);
         final long emoteId = json.getLong("id");
         final User user = json.isNull("user") ? null : createUser(json.getObject("user"));
         EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
         if (emoteObj == null)
-            emoteObj = new EmoteImpl(emoteId, guildObj, fake);
+            emoteObj = new EmoteImpl(emoteId, guildObj);
         Set<Role> roleSet = emoteObj.getRoleSet();
 
         roleSet.clear();
@@ -1040,7 +1061,8 @@ public class EntityBuilder
             .setManaged(roleJson.getBoolean("managed"))
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
-            .setMentionable(roleJson.getBoolean("mentionable"));
+            .setMentionable(roleJson.getBoolean("mentionable"))
+            .setTags(roleJson.optObject("tags").orElseGet(DataObject::empty));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.ROLE, id);
         return role;
@@ -1139,10 +1161,18 @@ public class EntityBuilder
 
         MessageType type = MessageType.fromId(jsonObject.getInt("type"));
         ReceivedMessage message;
+        Message referencedMessage = null;
+        if (!jsonObject.isNull("referenced_message"))
+        {
+            referencedMessage = createMessage(jsonObject.getObject("referenced_message"), chan, false);
+            if (type == MessageType.DEFAULT)
+                type = MessageType.INLINE_REPLY;
+        }
         switch (type)
         {
+            case INLINE_REPLY:
             case DEFAULT:
-                message = new ReceivedMessage(id, chan, type, fromWebhook,
+                message = new ReceivedMessage(id, chan, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
                 break;
@@ -1155,14 +1185,7 @@ public class EntityBuilder
                 break;
         }
 
-        if (!message.isFromGuild())
-            return message;
-
-        GuildImpl guild = (GuildImpl) message.getGuild();
-
-        // Don't do more computations when members are loaded already
-        if (guild.isLoaded())
-            return message;
+        GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
 
         // Load users/members from message object through mentions
         List<User> mentionedUsersList = new ArrayList<>();
@@ -1172,14 +1195,17 @@ public class EntityBuilder
         for (int i = 0; i < userMentions.length(); i++)
         {
             DataObject mentionJson = userMentions.getObject(i);
-            if (mentionJson.isNull("member"))
+            if (guild == null || mentionJson.isNull("member"))
             {
                 // Can't load user without member context so fake them if possible
                 User mentionedUser = createUser(mentionJson);
                 mentionedUsersList.add(mentionedUser);
-                Member mentionedMember = guild.getMember(mentionedUser);
-                if (mentionedMember != null)
-                    mentionedMembersList.add(mentionedMember);
+                if (guild != null)
+                {
+                    Member mentionedMember = guild.getMember(mentionedUser);
+                    if (mentionedMember != null)
+                        mentionedMembersList.add(mentionedMember);
+                }
                 continue;
             }
 
@@ -1192,8 +1218,7 @@ public class EntityBuilder
             mentionedUsersList.add(mentionedMember.getUser());
         }
 
-        if (!mentionedUsersList.isEmpty())
-            message.setMentions(mentionedUsersList, mentionedMembersList);
+        message.setMentions(mentionedUsersList, mentionedMembersList);
         return message;
     }
 
@@ -1387,6 +1412,9 @@ public class EntityBuilder
 
         long allow = override.getLong("allow_new");
         long deny = override.getLong("deny_new");
+        // Don't cache empty @everyone overrides, they ruin our sync check
+        if (id == chan.getGuild().getIdLong() && (allow | deny) == 0L)
+            return null;
 
         PermissionOverrideImpl permOverride = (PermissionOverrideImpl) chan.getOverrideMap().get(id);
         if (permOverride == null)
@@ -1406,8 +1434,8 @@ public class EntityBuilder
     public WebhookImpl createWebhook(DataObject object, boolean allowMissingChannel)
     {
         final long id = object.getLong("id");
-        final long guildId = object.getLong("guild_id");
-        final long channelId = object.getLong("channel_id");
+        final long guildId = object.getUnsignedLong("guild_id");
+        final long channelId = object.getUnsignedLong("channel_id");
         final String token = object.getString("token", null);
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 

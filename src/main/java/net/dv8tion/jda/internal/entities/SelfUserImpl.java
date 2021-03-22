@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,14 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.SelfUser;
 import net.dv8tion.jda.api.managers.AccountManager;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AccountManagerImpl;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
-    protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile AccountManager manager;
+    protected AccountManager manager;
 
     private boolean verified;
     private boolean mfaEnabled;
@@ -90,17 +87,9 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     @Override
     public AccountManager getManager()
     {
-        AccountManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new AccountManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new AccountManagerImpl(this);
+        return manager;
     }
 
     public SelfUserImpl setVerified(boolean verified)
