@@ -41,14 +41,23 @@ public class WebhookImpl implements Webhook
     private final long id;
     private final WebhookType type;
     private WebhookManager manager;
+    private final JDA api;
 
     private Member owner;
-    private User user;
+    private User user, ownerUser;
     private String token;
+    private ChannelReference sourceChannel;
+    private GuildReference sourceGuild;
 
     public WebhookImpl(TextChannel channel, long id, WebhookType type)
     {
+        this(channel, channel.getJDA(), id, type);
+    }
+
+    public WebhookImpl(TextChannel channel, JDA api, long id, WebhookType type)
+    {
         this.channel = channel;
+        this.api = api;
         this.id = id;
         this.type = type;
     }
@@ -60,31 +69,49 @@ public class WebhookImpl implements Webhook
         return type;
     }
 
+    @Override
+    public boolean isPartial()
+    {
+        return channel == null;
+    }
+
     @Nonnull
     @Override
     public JDA getJDA()
     {
-        return channel.getJDA();
+        return api;
     }
 
     @Nonnull
     @Override
     public Guild getGuild()
     {
-        return channel.getGuild();
+        if (channel == null)
+            throw new IllegalStateException("Cannot provide guild for this Webhook instance because it does not belong to this shard");
+        return getChannel().getGuild();
     }
 
     @Nonnull
     @Override
     public TextChannel getChannel()
     {
+        if (channel == null)
+            throw new IllegalStateException("Cannot provide channel for this Webhook instance because it does not belong to this shard");
         return channel;
     }
 
     @Override
     public Member getOwner()
     {
+        if (owner == null && channel != null && ownerUser != null)
+            return getGuild().getMember(ownerUser); // maybe it exists later?
         return owner;
+    }
+
+    @Override
+    public User getOwnerAsUser()
+    {
+        return ownerUser;
     }
 
     @Nonnull
@@ -112,6 +139,18 @@ public class WebhookImpl implements Webhook
     public String getUrl()
     {
         return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
+    }
+
+    @Override
+    public ChannelReference getSourceChannel()
+    {
+        return sourceChannel;
+    }
+
+    @Override
+    public GuildReference getSourceGuild()
+    {
+        return sourceGuild;
     }
 
     @Nonnull
@@ -161,9 +200,10 @@ public class WebhookImpl implements Webhook
 
     /* -- Impl Setters -- */
 
-    public WebhookImpl setOwner(Member member)
+    public WebhookImpl setOwner(Member member, User user)
     {
         this.owner = member;
+        this.ownerUser = user;
         return this;
     }
 
@@ -176,6 +216,18 @@ public class WebhookImpl implements Webhook
     public WebhookImpl setUser(User user)
     {
         this.user = user;
+        return this;
+    }
+
+    public WebhookImpl setSourceGuild(GuildReference reference)
+    {
+        this.sourceGuild = reference;
+        return this;
+    }
+
+    public WebhookImpl setSourceChannel(ChannelReference reference)
+    {
+        this.sourceChannel = reference;
         return this;
     }
 
