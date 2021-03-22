@@ -144,7 +144,7 @@ public class EntityBuilder
                     continue;
                 }
                 final long emoteId = object.getLong("id");
-                emoteMap.put(emoteId, createEmote(guildObj, object, false));
+                emoteMap.put(emoteId, createEmote(guildObj, object));
             }
         }
     }
@@ -781,14 +781,14 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
-    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json, boolean fake)
+    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json)
     {
         DataArray emoteRoles = json.optArray("roles").orElseGet(DataArray::empty);
         final long emoteId = json.getLong("id");
         final User user = json.isNull("user") ? null : createUser(json.getObject("user"));
         EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
         if (emoteObj == null)
-            emoteObj = new EmoteImpl(emoteId, guildObj, fake);
+            emoteObj = new EmoteImpl(emoteId, guildObj);
         Set<Role> roleSet = emoteObj.getRoleSet();
 
         roleSet.clear();

@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
@@ -54,8 +53,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
-    protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile ChannelManager manager;
+    protected ChannelManager manager;
 
     protected GuildImpl guild;
     protected long parentId;
@@ -188,17 +186,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public ChannelManager getManager()
     {
-        ChannelManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new ChannelManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new ChannelManagerImpl(this);
+        return manager;
     }
 
     @Nonnull

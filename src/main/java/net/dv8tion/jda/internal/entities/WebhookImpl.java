@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
@@ -30,7 +29,6 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * The implementation for {@link net.dv8tion.jda.api.entities.Webhook Webhook}
@@ -39,12 +37,10 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class WebhookImpl implements Webhook
 {
-    protected volatile WebhookManager manager = null;
-
-    private final ReentrantLock mngLock = new ReentrantLock();
     private final TextChannel channel;
     private final long id;
     private final WebhookType type;
+    private WebhookManager manager;
 
     private Member owner;
     private User user;
@@ -145,17 +141,9 @@ public class WebhookImpl implements Webhook
     @Override
     public WebhookManager getManager()
     {
-        WebhookManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new WebhookManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new WebhookManagerImpl(this);
+        return manager;
     }
 
     @Override
