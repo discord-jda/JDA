@@ -43,7 +43,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class TemplateImpl implements Template
 {
@@ -58,8 +57,7 @@ public class TemplateImpl implements Template
     private final Template.Guild guild;
     private final boolean synced;
 
-    protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile TemplateManager manager;
+    protected TemplateManager manager;
 
     public TemplateImpl(final JDAImpl api, final String code, final String name, final String description,
                         final int uses, final User creator, final OffsetDateTime createdAt, final OffsetDateTime updatedAt,
@@ -174,17 +172,9 @@ public class TemplateImpl implements Template
     @Override
     public TemplateManager getManager()
     {
-        TemplateManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new TemplateManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new TemplateManagerImpl(this);
+        return manager;
     }
 
     private void checkInteraction()
