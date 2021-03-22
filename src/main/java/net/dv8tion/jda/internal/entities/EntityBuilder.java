@@ -1441,10 +1441,11 @@ public class EntityBuilder
                 owner = createUser(json);
             }
         }
-        
+
+        Member ownerMember = owner == null || channel == null ? null : channel.getGuild().getMember(owner);
         WebhookImpl webhook = new WebhookImpl(channel, getJDA(), id, type)
                 .setToken(token)
-                .setOwner(owner == null || channel == null ? null : channel.getGuild().getMember(owner))
+                .setOwner(ownerMember, owner)
                 .setUser(defaultUser);
 
         if (!object.isNull("source_channel"))

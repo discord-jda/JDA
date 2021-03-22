@@ -48,7 +48,7 @@ public class WebhookImpl implements Webhook
     private final JDA api;
 
     private Member owner;
-    private User user;
+    private User user, ownerUser;
     private String token;
     private ChannelReference sourceChannel;
     private GuildReference sourceGuild;
@@ -73,6 +73,12 @@ public class WebhookImpl implements Webhook
         return type;
     }
 
+    @Override
+    public boolean isPartial()
+    {
+        return channel == null;
+    }
+
     @Nonnull
     @Override
     public JDA getJDA()
@@ -84,6 +90,8 @@ public class WebhookImpl implements Webhook
     @Override
     public Guild getGuild()
     {
+        if (channel == null)
+            throw new IllegalStateException("Cannot provide guild for this Webhook instance because it does not belong to this shard");
         return getChannel().getGuild();
     }
 
@@ -92,14 +100,22 @@ public class WebhookImpl implements Webhook
     public TextChannel getChannel()
     {
         if (channel == null)
-            throw new IllegalStateException("Cannot provide channel for this Webhook instance");
+            throw new IllegalStateException("Cannot provide channel for this Webhook instance because it does not belong to this shard");
         return channel;
     }
 
     @Override
     public Member getOwner()
     {
+        if (owner == null && channel != null && ownerUser != null)
+            return getGuild().getMember(ownerUser); // maybe it exists later?
         return owner;
+    }
+
+    @Override
+    public User getOwnerAsUser()
+    {
+        return ownerUser;
     }
 
     @Nonnull
@@ -196,9 +212,10 @@ public class WebhookImpl implements Webhook
 
     /* -- Impl Setters -- */
 
-    public WebhookImpl setOwner(Member member)
+    public WebhookImpl setOwner(Member member, User user)
     {
         this.owner = member;
+        this.ownerUser = user;
         return this;
     }
 

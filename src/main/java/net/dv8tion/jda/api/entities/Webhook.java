@@ -56,9 +56,20 @@ public interface Webhook extends ISnowflake, IFakeable
     WebhookType getType();
 
     /**
+     * Whether this webhook cannot provide {@link #getChannel()} and {@link #getGuild()}.
+     * <br>This means that the webhook is not local to this shard's cache and cannot provide full channel/guild references.
+     *
+     * @return True, if {@link #getChannel()} and {@link #getGuild()} would throw
+     */
+    boolean isPartial();
+
+    /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} instance
      * for this Webhook.
      * <br>This is a shortcut for <code>{@link #getChannel()}.getGuild()</code>.
+     *
+     * @throws IllegalStateException
+     *         If this webhooks {@link #isPartial() is partial}
      *
      * @return The current Guild of this Webhook
      */
@@ -69,6 +80,9 @@ public interface Webhook extends ISnowflake, IFakeable
      * The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} instance
      * this Webhook is attached to.
      *
+     * @throws IllegalStateException
+     *         If this webhooks {@link #isPartial() is partial}
+     *
      * @return The current TextChannel of this Webhook
      */
     @Nonnull
@@ -76,12 +90,23 @@ public interface Webhook extends ISnowflake, IFakeable
 
     /**
      * The owner of this Webhook. This will be null for some Webhooks, such as those retrieved from Audit Logs.
+     * <br>This requires the member to be cached. You can use {@link #getOwnerAsUser()} to get a reference to the user instead.
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} instance
      *         representing the owner of this Webhook.
      */
     @Nullable
     Member getOwner();
+
+    /**
+     * The owner of this Webhook. This will be null for some Webhooks, such as those retrieved from Audit Logs.
+     * <br>This can be non-null even when {@link #getOwner()} is null. {@link #getOwner()} requires the webhook to be local to this shard and in cache.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.User User} instance
+     *         representing the owner of this Webhook.
+     */
+    @Nullable
+    User getOwnerAsUser();
 
     /**
      * The default User for this Webhook.
