@@ -25,7 +25,6 @@ plugins {
     `java-library`
     `maven-publish`
 
-    id("com.jfrog.bintray") version "1.8.1"
     id("com.github.ben-manes.versions") version "0.19.0"
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
