@@ -70,7 +70,7 @@ public class CommandUpdateActionImpl extends RestActionImpl<Void> implements Com
 
     @Nonnull
     @Override
-    public CommandUpdateAction addCommands(@Nonnull Collection<CommandData> commands)
+    public CommandUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
     {
         Checks.noneNull(commands, "Command");
         this.commands.addAll(commands);

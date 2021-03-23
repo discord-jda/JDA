@@ -724,6 +724,7 @@ public class DataObject implements SerializableData
         }
     }
 
+    @Nonnull
     public String toPrettyString()
     {
         DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);

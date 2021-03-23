@@ -26,12 +26,10 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 public interface CommandUpdateAction extends RestAction<Void>
 {
@@ -62,7 +60,7 @@ public interface CommandUpdateAction extends RestAction<Void>
 
     @Nonnull
     @CheckReturnValue
-    CommandUpdateAction addCommands(@Nonnull Collection<CommandData> commands);
+    CommandUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands);
 
     @Nonnull
     @CheckReturnValue
@@ -72,33 +70,37 @@ public interface CommandUpdateAction extends RestAction<Void>
         return addCommands(Arrays.asList(commands));
     }
 
-    //TODO: Checks! Checks! Checks!
     class CommandData implements SerializableData
     {
         private final DataArray options = DataArray.empty();
         private final String name, description;
 
-        public CommandData(String name, String description)
+        public CommandData(@Nonnull String name, @Nonnull String description)
         {
+            Checks.notNull(name, "Name");
+            Checks.notNull(description, "Description");
             this.name = name;
             this.description = description;
         }
 
-        public CommandData addOption(OptionData data)
+        @Nonnull
+        public CommandData addOption(@Nonnull OptionData data)
         {
             Checks.notNull(data, "Option");
             options.add(data);
             return this;
         }
 
-        public CommandData addSubcommand(SubcommandData data)
+        @Nonnull
+        public CommandData addSubcommand(@Nonnull SubcommandData data)
         {
             Checks.notNull(data, "Subcommand");
             options.add(data);
             return this;
         }
 
-        public CommandData addSubcommandGroup(SubcommandGroupData data)
+        @Nonnull
+        public CommandData addSubcommandGroup(@Nonnull SubcommandGroupData data)
         {
             Checks.notNull(data, "SubcommandGroup");
             options.add(data);
@@ -114,6 +116,88 @@ public interface CommandUpdateAction extends RestAction<Void>
                     .put("description", description)
                     .put("options", options);
         }
+
+        @Nonnull
+        public static CommandData load(@Nonnull DataObject object)
+        {
+            Checks.notNull(object, "DataObject");
+            String name = object.getString("name");
+            String description = object.getString("description");
+            DataArray options = object.optArray("options").orElseGet(DataArray::empty);
+            CommandData command = new CommandData(name, description);
+            options.stream(DataArray::getObject).forEach(opt -> {
+                Command.OptionType type = Command.OptionType.fromKey(opt.getInt("type"));
+                String optionName = opt.getString("name");
+                String optionDescription = opt.getString("description");
+                switch (type)
+                {
+                case SUB_COMMAND:
+                    SubcommandData sub = loadSubcommand(opt, optionName, optionDescription);
+                    command.addSubcommand(sub);
+                    break;
+                case SUB_COMMAND_GROUP:
+                    SubcommandGroupData group = new SubcommandGroupData(optionName, optionDescription);
+                    opt.optArray("options").ifPresent(arr ->
+                        arr.stream(DataArray::getObject).forEach(o ->
+                            group.addSubcommand(loadSubcommand(o, o.getString("name"), o.getString("description")
+                    ))));
+                    command.addSubcommandGroup(group);
+                    break;
+                default:
+                    OptionData option = loadOption(opt, type, optionName, optionDescription);
+                    command.addOption(option);
+                }
+            });
+            return command;
+        }
+
+        @Nonnull
+        public static List<CommandData> loadAll(@Nonnull DataArray array)
+        {
+            Checks.notNull(array, "DataArray");
+            return array.stream(DataArray::getObject)
+                 .map(CommandData::load)
+                 .collect(Collectors.toList());
+        }
+
+        @Nonnull
+        public static List<CommandData> loadAll(@Nonnull Collection<? extends DataObject> collection)
+        {
+            Checks.noneNull(collection, "CommandData");
+            return loadAll(DataArray.fromCollection(collection));
+        }
+
+        @Nonnull
+        private static SubcommandData loadSubcommand(DataObject opt, String optionName, String optionDescription)
+        {
+            SubcommandData sub = new SubcommandData(optionName, optionDescription);
+            opt.optArray("options").ifPresent(arr -> {
+                arr.stream(DataArray::getObject).forEach(o -> {
+                    sub.addOption(loadOption(o,
+                        Command.OptionType.fromKey(o.getInt("type")),
+                        o.getString("name"),
+                        o.getString("description")));
+                });
+            });
+            return sub;
+        }
+
+        @Nonnull
+        private static OptionData loadOption(DataObject opt, Command.OptionType type, String optionName, String optionDescription)
+        {
+            OptionData option = new OptionData(type, optionName, optionDescription);
+            option.setRequired(opt.getBoolean("required"));
+            opt.optObject("choices").ifPresent(choices ->
+                choices.keys().forEach(choiceName -> {
+                    Object value = choices.get(choiceName);
+                    if (value instanceof Number)
+                        option.addChoice(choiceName, ((Number) value).intValue());
+                    else
+                        option.addChoice(choiceName, value.toString());
+                })
+            );
+            return option;
+        }
     }
 
     class OptionData implements SerializableData
@@ -123,8 +207,11 @@ public interface CommandUpdateAction extends RestAction<Void>
         private boolean isRequired;
         private Map<String, Object> choices;
 
-        public OptionData(Command.OptionType type, String name, String description)
+        public OptionData(@Nonnull Command.OptionType type, @Nonnull String name, @Nonnull String description)
         {
+            Checks.notNull(type, "Type");
+            Checks.notNull(name, "Name");
+            Checks.notNull(description, "Description");
             this.type = type;
             this.name = name;
             this.description = description;
@@ -132,21 +219,25 @@ public interface CommandUpdateAction extends RestAction<Void>
                 choices = new HashMap<>();
         }
 
+        @Nonnull
         public OptionData setRequired(boolean required)
         {
             this.isRequired = required;
             return this;
         }
 
-        public OptionData addChoice(String name, int value)
+        @Nonnull
+        public OptionData addChoice(@Nonnull String name, int value)
         {
+            Checks.notNull(name, "Name");
             if (type != Command.OptionType.INTEGER)
                 throw new IllegalArgumentException("Cannot add int choice for OptionType." + type);
             choices.put(name, value);
             return this;
         }
 
-        public OptionData addChoice(String name, String value)
+        @Nonnull
+        public OptionData addChoice(@Nonnull String name, @Nonnull String value)
         {
             Checks.notNull(name, "Name");
             Checks.notNull(value, "Value");
@@ -163,8 +254,9 @@ public interface CommandUpdateAction extends RestAction<Void>
             DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
-                .put("description", description)
-                .put("required", isRequired);
+                .put("description", description);
+            if (type != Command.OptionType.SUB_COMMAND && type != Command.OptionType.SUB_COMMAND_GROUP)
+                json.put("required", isRequired);
             if (choices != null && !choices.isEmpty())
                 json.put("choices", choices);
             return json;
@@ -175,12 +267,13 @@ public interface CommandUpdateAction extends RestAction<Void>
     {
         private final DataArray options = DataArray.empty();
 
-        public SubcommandData(String name, String description)
+        public SubcommandData(@Nonnull String name, @Nonnull String description)
         {
             super(Command.OptionType.SUB_COMMAND, name, description);
         }
 
-        public SubcommandData addOption(OptionData data)
+        @Nonnull
+        public SubcommandData addOption(@Nonnull OptionData data)
         {
             Checks.notNull(data, "Option");
             options.add(data);
