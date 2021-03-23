@@ -187,13 +187,13 @@ public interface CommandUpdateAction extends RestAction<Void>
         {
             OptionData option = new OptionData(type, optionName, optionDescription);
             option.setRequired(opt.getBoolean("required"));
-            opt.optObject("choices").ifPresent(choices ->
-                choices.keys().forEach(choiceName -> {
-                    Object value = choices.get(choiceName);
+            opt.optArray("choices").ifPresent(choices ->
+                choices.stream(DataArray::getObject).forEach(o -> {
+                    Object value = o.get("value");
                     if (value instanceof Number)
-                        option.addChoice(choiceName, ((Number) value).intValue());
+                        option.addChoice(o.getString("name"), ((Number) value).intValue());
                     else
-                        option.addChoice(choiceName, value.toString());
+                        option.addChoice(o.getString("name"), value.toString());
                 })
             );
             return option;
@@ -258,7 +258,12 @@ public interface CommandUpdateAction extends RestAction<Void>
             if (type != Command.OptionType.SUB_COMMAND && type != Command.OptionType.SUB_COMMAND_GROUP)
                 json.put("required", isRequired);
             if (choices != null && !choices.isEmpty())
-                json.put("choices", choices);
+            {
+                json.put("choices", DataArray.fromCollection(choices.entrySet()
+                    .stream()
+                    .map(entry -> DataObject.empty().put("name", entry.getKey()).put("value", entry.getValue()))
+                    .collect(Collectors.toList())));
+            }
             return json;
         }
     }
