@@ -19,7 +19,6 @@
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.tools.ant.filters.ReplaceTokens
-import java.util.Date
 
 plugins {
     signing
@@ -54,7 +53,9 @@ configure<SourceSetContainer> {
 
 
 repositories {
-    jcenter()
+    mavenLocal()
+    mavenCentral()
+    maven("https://m2.dv8tion.net/releases")
 }
 
 dependencies {
@@ -72,7 +73,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
-    api("club.minnced:opus-java:1.0.4@pom") {
+    api("club.minnced:opus-java:1.1.0@pom") {
         isTransitive = true
     }
 
