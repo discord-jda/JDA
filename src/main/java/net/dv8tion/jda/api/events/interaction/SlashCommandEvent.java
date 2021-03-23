@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.commands.CommandHookImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -39,17 +38,20 @@ import java.util.stream.Collectors;
 
 public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
 {
-    private final String name;
+    private final String name, subcommandName, subcommandGroup;
     private final long commandId;
     private final List<OptionData> options;
     private final CommandHookImpl hook;
 
     public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull String token, long interactionId,
                              @Nullable Guild guild, @Nullable Member member, @Nonnull User user, @Nonnull MessageChannel channel,
-                             @Nonnull String name, long commandId, @Nonnull List<OptionData> options)
+                             @Nonnull String name, @Nullable String subcommandName, @Nullable String subcommandGroup,
+                             long commandId, @Nonnull List<OptionData> options)
     {
         super(api, responseNumber, InteractionType.SLASH_COMMAND.getKey(), token, interactionId, guild, member, user, channel);
         this.name = name;
+        this.subcommandGroup = subcommandGroup;
+        this.subcommandName = subcommandName;
         this.commandId = commandId;
         this.options = Collections.unmodifiableList(options);
         this.hook = new CommandHookImpl(this);
@@ -59,6 +61,18 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
     public String getName()
     {
         return name;
+    }
+
+    @Nullable
+    public String getSubcommandName()
+    {
+        return subcommandName;
+    }
+
+    @Nullable
+    public String getSubcommandGroup()
+    {
+        return subcommandGroup;
     }
 
     public long getCommandIdLong()
@@ -297,46 +311,6 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         {
             AbstractChannel channel = getChannel();
             return channel == null ? ChannelType.UNKNOWN : channel.getType();
-        }
-
-        // TODO: Handle unknown channels (new type?)
-        // TODO: How to handle subcommands? What does it look like?
-
-        @Nonnull
-        public List<OptionData> getOptions() // this is for subcommands, i think
-        {
-            return data.optArray("options")
-                    .orElseGet(DataArray::empty)
-                    .stream(DataArray::getObject)
-                    .map(d -> new OptionData(d, resolved))
-                    .collect(Collectors.toList());
-        }
-
-        @Nonnull
-        public List<OptionData> getOptionsByName(@Nonnull String name)
-        {
-            Checks.notNull(name, "Name");
-            return getOptions()
-                .stream()
-                .filter(option -> option.getName().equals(name))
-                .collect(Collectors.toList());
-        }
-
-        @Nonnull
-        public List<OptionData> getOptionsByType(@Nonnull Command.OptionType type)
-        {
-            Checks.notNull(type, "Type");
-            return getOptions()
-                .stream()
-                .filter(it -> it.getType() == type)
-                .collect(Collectors.toList());
-        }
-
-        @Nullable
-        public OptionData getOption(@Nonnull String name)
-        {
-            List<OptionData> options = getOptionsByName(name);
-            return options.isEmpty() ? null : options.get(0);
         }
 
         @Override

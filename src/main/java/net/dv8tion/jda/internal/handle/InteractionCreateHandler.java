@@ -120,6 +120,23 @@ public class InteractionCreateHandler extends SocketHandler
         }
 
         // Create option POJO including resolved entities
+        String subcommandName = null;
+        String subcommandGroup = null;
+        if (options.length() == 1)
+        {
+            DataObject option = options.getObject(0);
+            switch (option.getInt("type"))
+            {
+            case 2: // SUBCOMMAND_GROUP
+                subcommandGroup = option.getString("name");
+                options = option.getArray("options");
+                option = options.getObject(0);
+            case 1: // SUBCOMMAND
+                subcommandName = option.getString("name");
+                options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
+                break;
+            }
+        }
         List<SlashCommandEvent.OptionData> optionList = options.stream(DataArray::getObject)
                .map(json -> new SlashCommandEvent.OptionData(json, resolved))
                .collect(Collectors.toList());
@@ -127,8 +144,8 @@ public class InteractionCreateHandler extends SocketHandler
         api.handleEvent(
             new SlashCommandEvent(api, responseNumber,
                 commandToken, interactionId, guild, member,
-                user, channel, commandName, commandId,
-                optionList));
+                user, channel, commandName, subcommandName, subcommandGroup,
+                commandId, optionList));
         return null;
     }
 }
