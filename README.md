@@ -1,5 +1,5 @@
-[version]: https://api.bintray.com/packages/dv8fromtheworld/maven/JDA/images/download.svg
-[download]: https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
+[version]: https://shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fm2.dv8tion.net%2Freleases%2Fnet%2Fdv8tion%2FJDA%2Fmaven-metadata.xml&color=informational&label=Download
+[download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
 [jenkins]: https://ci.dv8tion.net/job/JDA
@@ -405,11 +405,10 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 ```
 ```xml
 <repository>
-    <id>jcenter</id>
-    <name>jcenter-bintray</name>
-    <url>https://jcenter.bintray.com</url>
+    <id>dv8tion</id>
+    <name>m2-dv8tion</name>
+    <url>https://m2.dv8tion.net/releases</url>
 </repository>
-
 ```
 
 **Maven without Audio**
@@ -434,7 +433,10 @@ dependencies {
 }
 
 repositories {
-    jcenter()
+    maven {
+      name 'm2-dv8tion'
+      url 'https://m2.dv8tion.net/releases'
+    }
 }
 ```
 
@@ -447,7 +449,7 @@ dependencies {
 }
 ```
 
-The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
+The builds are distributed using a custom S3 instance.
 
 If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
 This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
@@ -634,31 +636,24 @@ All dependencies are managed automatically by Gradle.
  * NV Websocket Client
    * Version: **2.9**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
    * Version: **3.13.0**
    * [Github](https://github.com/square/okhttp)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
    * Version: **4.1**
    * [Website](https://commons.apache.org/proper/commons-collections)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
    * Version: **2.10.1**
    * [Github](https://github.com/FasterXML/jackson)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/net.sf.trove4j%3Atrove4j/view)
  * slf4j-api
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
  * opus-java (optional)
-   * Version: **1.0.4**
+   * Version: **1.1.0**
    * [GitHub](https://github.com/discord-java/opus-java)
-   * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
 ## Related Projects
 
