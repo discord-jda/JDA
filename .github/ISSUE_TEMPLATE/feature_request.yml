@@ -31,7 +31,5 @@ body:
   attributes:
     label: "Example Use-Case"
     description: "Provide some code or describe a possible use-case for this feature."
-    placeholder: |-
-      ```java
-      public void newAwesomeMethod(){}
-      ```
+    placeholder: "public void newAwesomeMethod(){}"
+    render: java
