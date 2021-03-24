@@ -34,10 +34,7 @@ body:
       Please add the code you use to reproduce this problem.  
       Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if you don't have a reproducible setup.
-    value: |-
-      ```java
-      
-      ```
+    render: java
 - type: textarea
   attributes:
     label: "Code for JDABuilder or DefaultShardManagerBuilder used"
@@ -45,10 +42,7 @@ body:
       Please provide the code used to create your JDA or ShardManager instance.  
       Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if this isn't affected by the JDABuilder/DefaultShardManagerBuilder setup.
-    value: |-
-      ```java
-      
-      ```
+    render: java
 - type: textarea
   attributes:
     label: "Exception or Error"
@@ -56,7 +50,4 @@ body:
       Share any Exception or Error you encountered.  
       Make sure to put it into a code block for better formatting.
       Leave this blank or put "N/A" if you don't have an Exception or Error.
-    value: |-
-      ```
-      
-      ```
+    render: yesyes # Unknown code-names = no highlighting.
