@@ -35,6 +35,10 @@ body:
       Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if you don't have a reproducible setup.
     render: java
+    placeholder: |-
+      public void causeError() {
+          throw new Exception("Error!");
+      }
 - type: textarea
   attributes:
     label: "Code for JDABuilder or DefaultShardManagerBuilder used"
@@ -43,6 +47,7 @@ body:
       Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if this isn't affected by the JDABuilder/DefaultShardManagerBuilder setup.
     render: java
+    placeholder: "JDA jda = JDABuilder.createDefault("token").build();"
 - type: textarea
   attributes:
     label: "Exception or Error"
@@ -51,3 +56,4 @@ body:
       Make sure to put it into a code block for better formatting.
       Leave this blank or put "N/A" if you don't have an Exception or Error.
     render: yesyes # Unknown code-names = no highlighting.
+    placeholder: "java.lang.NullPointerException: null"
