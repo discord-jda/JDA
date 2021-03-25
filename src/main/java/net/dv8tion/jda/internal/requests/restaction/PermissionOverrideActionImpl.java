@@ -195,6 +195,13 @@ public class PermissionOverrideActionImpl
 
     @Nonnull
     @Override
+    public PermissionOverrideAction grant(long allowBits)
+    {
+        return setAllow(getCurrentAllow() | allowBits);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setDeny(long denyBits)
     {
@@ -203,6 +210,20 @@ public class PermissionOverrideActionImpl
         this.allow &= ~denyBits;
         allowSet = denySet = true;
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public PermissionOverrideAction deny(long denyBits)
+    {
+        return setDeny(getCurrentDeny() | denyBits);
+    }
+
+    @Nonnull
+    @Override
+    public PermissionOverrideAction clear(long inheritedBits)
+    {
+        return setAllow(getCurrentAllow() & ~inheritedBits).setDeny(getCurrentDeny() & ~inheritedBits);
     }
 
     protected void checkPermissions(long changed)

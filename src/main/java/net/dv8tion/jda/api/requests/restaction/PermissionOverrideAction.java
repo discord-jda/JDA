@@ -322,10 +322,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction grant(long allowBits)
-    {
-        return setAllow(getAllow() | allowBits);
-    }
+    PermissionOverrideAction grant(long allowBits);
 
     /**
      * Grants the specified permissions.
@@ -346,7 +343,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction grant(@Nonnull Collection<Permission> permissions)
     {
-        return setAllow(getAllow() | Permission.getRaw(permissions));
+        return grant(Permission.getRaw(permissions));
     }
 
     /**
@@ -368,7 +365,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction grant(@Nonnull Permission... permissions)
     {
-        return setAllow(getAllow() | Permission.getRaw(permissions));
+        return grant(Permission.getRaw(permissions));
     }
 
 
@@ -474,10 +471,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction deny(long denyBits)
-    {
-        return setDeny(getDeny() | denyBits);
-    }
+    PermissionOverrideAction deny(long denyBits);
 
     /**
      * Denies the specified permissions.
@@ -498,7 +492,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction deny(@Nonnull Collection<Permission> permissions)
     {
-        return setDeny(getDeny() | Permission.getRaw(permissions));
+        return deny(Permission.getRaw(permissions));
     }
 
     /**
@@ -520,7 +514,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction deny(@Nonnull Permission... permissions)
     {
-        return setDeny(getDeny() | Permission.getRaw(permissions));
+        return deny(Permission.getRaw(permissions));
     }
 
     /**
@@ -539,10 +533,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction clear(long inheritedBits)
-    {
-        return setDeny(getDeny() & ~inheritedBits).setAllow(getAllow() & ~inheritedBits);
-    }
+    PermissionOverrideAction clear(long inheritedBits);
 
     /**
      * Clears the provided {@link net.dv8tion.jda.api.Permission Permissions} bits
