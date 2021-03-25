@@ -118,7 +118,7 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetAllow()
     {
-        allow = getCurrentAllow();
+        allow = getOriginalAllow();
         allowSet = false;
         return this;
     }
@@ -127,7 +127,7 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetDeny()
     {
-        deny = getCurrentDeny();
+        deny = getOriginalDeny();
         denySet = false;
         return this;
     }
@@ -186,7 +186,7 @@ public class PermissionOverrideActionImpl
     @CheckReturnValue
     public PermissionOverrideActionImpl setAllow(long allowBits)
     {
-        checkPermissions(getCurrentAllow() ^ allowBits);
+        checkPermissions(getOriginalAllow() ^ allowBits);
         this.allow = allowBits;
         this.deny &= ~allowBits;
         allowSet = denySet = true;
@@ -205,7 +205,7 @@ public class PermissionOverrideActionImpl
     @CheckReturnValue
     public PermissionOverrideActionImpl setDeny(long denyBits)
     {
-        checkPermissions(getCurrentDeny() ^ denyBits);
+        checkPermissions(getOriginalDeny() ^ denyBits);
         this.deny = denyBits;
         this.allow &= ~denyBits;
         allowSet = denySet = true;
@@ -253,18 +253,28 @@ public class PermissionOverrideActionImpl
 
     private long getCurrentAllow()
     {
-        if (isOverride)
-            return 0;
-        PermissionOverride override = channel.getOverrideMap().get(id);
-        return override == null ? 0 : override.getAllowedRaw();
+        if (allowSet)
+            return allow;
+        return isOverride ? 0 : getOriginalAllow();
     }
 
     private long getCurrentDeny()
     {
-        if (isOverride)
-            return 0;
+        if (denySet)
+            return deny;
+        return isOverride ? 0 : getOriginalDeny();
+    }
+
+    private long getOriginalDeny()
+    {
         PermissionOverride override = channel.getOverrideMap().get(id);
         return override == null ? 0 : override.getDeniedRaw();
+    }
+
+    private long getOriginalAllow()
+    {
+        PermissionOverride override = channel.getOverrideMap().get(id);
+        return override == null ? 0 : override.getAllowedRaw();
     }
 
     @Override
@@ -272,8 +282,8 @@ public class PermissionOverrideActionImpl
     {
         DataObject object = DataObject.empty();
         object.put("type", isRole() ? "role" : "member");
-        object.put("allow", allowSet ? allow : getCurrentAllow());
-        object.put("deny", denySet ? deny : getCurrentDeny());
+        object.put("allow", getCurrentAllow());
+        object.put("deny", getCurrentDeny());
         reset();
         return getRequestBody(object);
     }
