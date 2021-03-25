@@ -89,9 +89,25 @@ public enum MessageType
     CHANNEL_FOLLOW_ADD(12),
 
     /**
+     * System message related to discovery qualifications.
+     */
+    GUILD_DISCOVERY_DISQUALIFIED(14),
+
+    /**
+     * System message related to discovery qualifications.
+     */
+    GUILD_DISCOVERY_REQUALIFIED(15),
+
+    /**
      * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
      */
     INLINE_REPLY(19),
+
+    /**
+     * This message was created by an interaction. Usually in combination with Slash Commands.
+     * <br>Mos commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
+     */
+    APPLICATION_COMMAND(20),
 
     /**
      * Unknown MessageType.
