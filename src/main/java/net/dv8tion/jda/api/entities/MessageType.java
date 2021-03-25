@@ -105,7 +105,7 @@ public enum MessageType
 
     /**
      * This message was created by an interaction. Usually in combination with Slash Commands.
-     * <br>Mos commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
+     * <br>Most commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
      */
     APPLICATION_COMMAND(20),
 
