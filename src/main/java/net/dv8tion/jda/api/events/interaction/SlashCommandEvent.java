@@ -75,6 +75,17 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         return subcommandGroup;
     }
 
+    @Nonnull
+    public String getCommandPath()
+    {
+        StringBuilder builder = new StringBuilder();
+        if (subcommandGroup != null)
+            builder.append(subcommandGroup).append('/');
+        if (subcommandName != null)
+            builder.append(subcommandName).append('/');
+        return builder.append(name).toString();
+    }
+
     public long getCommandIdLong()
     {
         return commandId;

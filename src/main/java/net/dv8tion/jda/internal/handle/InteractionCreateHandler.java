@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.*;
+import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,12 @@ public class InteractionCreateHandler extends SocketHandler
         int type = content.getInt("type");
         if (type != 2)
             return null;
+        if (content.getInt("version", 1) != 1)
+        {
+            WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", content.getInt("version", 1));
+            return null;
+        }
+
         long guildId = content.getUnsignedLong("guild_id", 0);
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
