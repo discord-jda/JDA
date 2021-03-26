@@ -292,7 +292,7 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         }
 
         @Nullable
-        public AbstractChannel getChannel()
+        public AbstractChannel getAsChannel()
         {
             if (type != Command.OptionType.CHANNEL)
                 throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
@@ -302,28 +302,28 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         @Nullable
         public GuildChannel getAsGuildChannel()
         {
-            AbstractChannel value = getChannel();
+            AbstractChannel value = getAsChannel();
             return value instanceof GuildChannel ? (GuildChannel) value : null;
         }
 
         @Nullable
         public PrivateChannel getAsPrivateChannel()
         {
-            AbstractChannel value = getChannel();
+            AbstractChannel value = getAsChannel();
             return value instanceof PrivateChannel ? (PrivateChannel) value : null;
         }
 
         @Nullable
         public MessageChannel getAsMessageChannel()
         {
-            AbstractChannel value = getChannel();
+            AbstractChannel value = getAsChannel();
             return value instanceof MessageChannel ? (MessageChannel) value : null;
         }
 
         @Nonnull
         public ChannelType getChannelType()
         {
-            AbstractChannel channel = getChannel();
+            AbstractChannel channel = getAsChannel();
             return channel == null ? ChannelType.UNKNOWN : channel.getType();
         }
 
