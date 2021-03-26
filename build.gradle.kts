@@ -15,20 +15,16 @@
  */
 
 //to build everything:             "gradlew build"
-//to build and upload everything:  "gradlew bintrayUpload"
+//to build and upload everything:  "gradlew publish"
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.jfrog.bintray.gradle.BintrayExtension
-import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
 import org.apache.tools.ant.filters.ReplaceTokens
-import java.util.Date
 
 plugins {
     signing
     `java-library`
     `maven-publish`
 
-    id("com.jfrog.bintray") version "1.8.1"
     id("com.github.ben-manes.versions") version "0.19.0"
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
@@ -38,6 +34,8 @@ val versionObj = Version(major = "4", minor = "2", revision = "0")
 project.group = "net.dv8tion"
 project.version = "$versionObj"
 val archivesBaseName = "JDA"
+
+val s3PublishingUrl = "s3://m2.dv8tion.net/releases"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -52,8 +50,11 @@ configure<SourceSetContainer> {
     }
 }
 
+
 repositories {
-    jcenter()
+    mavenLocal()
+    mavenCentral()
+    maven("https://m2.dv8tion.net/releases")
 }
 
 dependencies {
@@ -71,7 +72,7 @@ dependencies {
     api("com.squareup.okhttp3:okhttp:3.13.0")
 
     //Opus library support
-    api("club.minnced:opus-java:1.0.4@pom") {
+    api("club.minnced:opus-java:1.1.0@pom") {
         isTransitive = true
     }
 
@@ -96,7 +97,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
 }
 
-val bintrayUpload: BintrayUploadTask by tasks
 val compileJava: JavaCompile by tasks
 val shadowJar: ShadowJar by tasks
 val javadoc: Javadoc by tasks
@@ -251,16 +251,6 @@ build.apply {
     shadowJar.mustRunAfter(sourcesJar)
 }
 
-bintrayUpload.apply {
-    dependsOn(clean)
-    dependsOn(build)
-    build.mustRunAfter(clean)
-
-    onlyIf { getProjectProperty("bintrayUsername").isNotEmpty() }
-    onlyIf { getProjectProperty("bintrayApiKey").isNotEmpty() }
-    onlyIf { System.getenv("BUILD_NUMBER") != null }
-}
-
 test.apply {
     useJUnitPlatform()
     failFast = true
@@ -268,7 +258,7 @@ test.apply {
 
 publishing {
     publications {
-        register("BintrayRelease", MavenPublication::class) {
+        create<MavenPublication>("S3Release") {
             from(components["java"])
 
             artifactId = archivesBaseName
@@ -277,25 +267,29 @@ publishing {
 
             artifact(javadocJar)
             artifact(sourcesJar)
+
+            repositories {
+                maven {
+                    url = uri(s3PublishingUrl)
+                    credentials(AwsCredentials::class) {
+                        accessKey = getProjectProperty("awsAccessKey")
+                        secretKey = getProjectProperty("awsSecretKey")
+                    }
+                }
+            }
         }
     }
 }
 
-bintray {
-    user = getProjectProperty("bintrayUsername")
-    key = getProjectProperty("bintrayApiKey")
-    setPublications("BintrayRelease")
-    pkg(delegateClosureOf<BintrayExtension.PackageConfig> {
-        repo = "maven"
-        name = "JDA"
-        setLicenses("Apache-2.0")
-        vcsUrl = "https://github.com/DV8FromTheWorld/JDA.git"
-        publish = true
-        version(delegateClosureOf<BintrayExtension.VersionConfig> {
-            name = project.version as String
-            released = Date().toString()
-        })
-    })
+val publishS3ReleasePublicationToMavenRepository: Task by tasks
+publishS3ReleasePublicationToMavenRepository.apply {
+    onlyIf { getProjectProperty("awsAccessKey").isNotEmpty() }
+    onlyIf { getProjectProperty("awsSecretKey").isNotEmpty() }
+    onlyIf { System.getenv("BUILD_NUMBER") != null }
+
+    dependsOn(clean)
+    dependsOn(build)
+    build.mustRunAfter(clean)
 }
 
 fun getProjectProperty(propertyName: String): String {
