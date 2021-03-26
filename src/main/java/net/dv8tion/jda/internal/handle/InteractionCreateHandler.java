@@ -135,11 +135,13 @@ public class InteractionCreateHandler extends SocketHandler
             switch (option.getInt("type"))
             {
             case 2: // SUBCOMMAND_GROUP
-                subcommandGroup = option.getString("name");
+                subcommandGroup = commandName;
+                commandName = option.getString("name");
                 options = option.getArray("options");
                 option = options.getObject(0);
             case 1: // SUBCOMMAND
-                subcommandName = option.getString("name");
+                subcommandName = commandName;
+                commandName = option.getString("name");
                 options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
                 break;
             }
