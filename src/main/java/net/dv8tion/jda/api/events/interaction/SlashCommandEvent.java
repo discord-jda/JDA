@@ -57,6 +57,9 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         this.hook = new CommandHookImpl(this);
     }
 
+    // Pattern: /foo   bar   baz  user: Minn#6688
+    //           name  group sub  option
+
     @Nonnull
     public String getName()
     {
@@ -76,14 +79,14 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
     }
 
     @Nonnull
-    public String getCommandPath()
+    public String getCommandPath() // foo/bar/baz
     {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(name);
         if (subcommandGroup != null)
-            builder.append(subcommandGroup).append('/');
+            builder.append('/').append(subcommandGroup);
         if (subcommandName != null)
-            builder.append(subcommandName).append('/');
-        return builder.append(name).toString();
+            builder.append('/').append(subcommandName);
+        return builder.toString();
     }
 
     public long getCommandIdLong()
