@@ -48,8 +48,7 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
     ChannelType getType();
 
     /**
-     * The human readable name of the  GuildChannel.
-     * <br>If no name has been set, this returns null.
+     * The human readable name of the GuildChannel.
      *
      * @return The name of this GuildChannel
      */
