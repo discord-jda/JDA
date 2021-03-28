@@ -47,6 +47,8 @@ import java.util.List;
  *
  * <p>This also requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ACTIVITY CacheFlag.ACTIVITY} to be enabled.
  * You can enable the cache flag with {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) enableCache(CacheFlag.ACTIVITY)}.
+ *
+ * @since  4.2.1
  */
 public class UserUpdateActivitiesEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
 {

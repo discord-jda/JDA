@@ -982,6 +982,8 @@ public interface Message extends ISnowflake, Formattable
      *         The content of the reply message
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1003,6 +1005,8 @@ public interface Message extends ISnowflake, Formattable
      *         The content of the reply message
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1024,6 +1028,8 @@ public interface Message extends ISnowflake, Formattable
      *         The content of the reply message
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1047,6 +1053,8 @@ public interface Message extends ISnowflake, Formattable
      *         The arguments for your format
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1070,6 +1078,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1095,6 +1105,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1120,6 +1132,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1145,6 +1159,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1984,6 +2000,8 @@ public interface Message extends ISnowflake, Formattable
      *         or if this message is from another user and we don't have {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -2563,6 +2581,8 @@ public interface Message extends ISnowflake, Formattable
          * based on {@link #getFileName()}.
          *
          * @return True if this attachment is marked as spoiler
+         *
+         * @since  4.2.1
          */
         public boolean isSpoiler()
         {

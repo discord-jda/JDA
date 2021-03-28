@@ -256,6 +256,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -280,6 +282,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -307,6 +311,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -326,6 +332,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         True, to mention the author if the referenced message
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -341,6 +349,8 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         True, to throw a exception if the referenced message does not exist
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue

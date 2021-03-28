@@ -282,6 +282,8 @@ public interface RestAction<T>
      *
      * @see    #and(RestAction, BiFunction)
      * @see    #zip(RestAction, RestAction[])
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @SafeVarargs
@@ -313,6 +315,8 @@ public interface RestAction<T>
      *
      * @see    #and(RestAction, BiFunction)
      * @see    #zip(RestAction, RestAction[])
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -344,6 +348,8 @@ public interface RestAction<T>
      *
      * @see    #and(RestAction, BiFunction)
      * @see    #zip(RestAction, RestAction[])
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -406,6 +412,8 @@ public interface RestAction<T>
      * @return The current checks, or null if none were set
      *
      * @see    #setCheck(BooleanSupplier)
+     *
+     * @since  4.2.1
      */
     @Nullable
     default BooleanSupplier getCheck()
@@ -425,6 +433,8 @@ public interface RestAction<T>
      * @return The current RestAction for chaining convenience
      *
      * @see    #setCheck(BooleanSupplier)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -713,6 +723,8 @@ public interface RestAction<T>
      * You should use {@link Result#onFailure(Consumer)}, {@link Result#getFailure()}, or {@link Result#expect(Predicate)}!
      *
      * @return RestAction - Type: {@link Result}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1002,6 +1014,8 @@ public interface RestAction<T>
      *         If null is provided or you tried to combine an action with itself
      *
      * @return Combined RestAction
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1027,6 +1041,8 @@ public interface RestAction<T>
      *         If null is provided or you tried to combine an action with itself
      *
      * @return Combined RestAction with empty result
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1053,6 +1069,8 @@ public interface RestAction<T>
      *
      * @see    #allOf(RestAction, RestAction[])
      * @see    #and(RestAction, BiFunction)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue

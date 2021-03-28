@@ -29,6 +29,8 @@ import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
  * Encodes an object into a binary ETF representation.
  *
  * @see #pack(Object)
+ *
+ * @since  4.2.1
  */
 public class ExTermEncoder
 {

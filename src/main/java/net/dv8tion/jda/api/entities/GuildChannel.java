@@ -187,6 +187,8 @@ public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
      * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this CacheFlag by default.
      *
      * @return True, if this channel is synced with its parent category
+     *
+     * @since  4.2.1
      */
     boolean isSynced();
 

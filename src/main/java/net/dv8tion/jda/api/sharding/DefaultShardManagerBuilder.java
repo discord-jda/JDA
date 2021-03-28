@@ -531,6 +531,8 @@ public class  DefaultShardManagerBuilder
      *         If null is provided
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public DefaultShardManagerBuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)

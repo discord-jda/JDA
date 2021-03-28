@@ -28,6 +28,8 @@ import javax.annotation.Nonnull;
  * <p>Can be used to detect when a TextChannel becomes a news channel.
  *
  * <p>Identifier: {@code news}
+ *
+ * @since  4.2.1
  */
 @SuppressWarnings("ConstantConditions")
 public class TextChannelUpdateNewsEvent extends GenericTextChannelUpdateEvent<Boolean>

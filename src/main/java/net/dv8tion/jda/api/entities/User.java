@@ -92,6 +92,8 @@ public interface User extends IMentionable, IFakeable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(long)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     static User fromId(long id)
@@ -112,6 +114,8 @@ public interface User extends IMentionable, IFakeable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(String)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     static User fromId(@Nonnull String id)

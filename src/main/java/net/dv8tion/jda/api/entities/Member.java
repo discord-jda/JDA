@@ -311,6 +311,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * @incubating Discord is still trying to figure this out
      *
      * @return True, if this member hasn't passed the guild's Membership Screening requirements
+     *
+     * @since  4.2.1
      */
     @Incubating
     boolean isPending();

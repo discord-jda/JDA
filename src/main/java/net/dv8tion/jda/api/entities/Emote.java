@@ -138,6 +138,8 @@ public interface Emote extends IMentionable, IFakeable
      * as long as the BoostTier stays above the required level.
      * 
      * @return True, if this emote is available
+     *
+     * @since  4.2.1
      */
     boolean isAvailable();
 

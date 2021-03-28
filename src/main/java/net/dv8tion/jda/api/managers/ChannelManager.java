@@ -486,6 +486,8 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
      * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
