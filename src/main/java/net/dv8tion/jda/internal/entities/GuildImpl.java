@@ -134,7 +134,7 @@ public class GuildImpl implements Guild
     public RestAction<Command> retrieveCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), id);
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
         return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
     }
 
