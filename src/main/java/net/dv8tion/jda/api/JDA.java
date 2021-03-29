@@ -45,10 +45,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
@@ -1951,6 +1949,40 @@ public interface JDA
     @Nonnull
     @CheckReturnValue
     RestAction<ApplicationInfo> retrieveApplicationInfo();
+
+    /**
+     * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
+     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     *
+     * @param  scopes
+     *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The current JDA instance
+     */
+    @Nonnull
+    default JDA setRequiredScopes(@Nonnull String... scopes)
+    {
+        Checks.noneNull(scopes, "Scopes");
+        return setRequiredScopes(Arrays.asList(scopes));
+    }
+
+    /**
+     * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
+     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     *
+     * @param  scopes
+     *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The current JDA instance
+     */
+    @Nonnull
+    JDA setRequiredScopes(@Nonnull Collection<String> scopes);
 
     /**
      * Creates an authorization invite url for the currently logged in Bot-Account.

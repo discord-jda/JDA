@@ -124,7 +124,7 @@ public class JDAImpl implements JDA
     protected String gatewayUrl;
     protected ChunkingFilter chunkingFilter;
 
-    protected String clientId = null;
+    protected String clientId = null,  requiredScopes = "bot";
     protected ShardManager shardManager = null;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
@@ -902,6 +902,22 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public JDA setRequiredScopes(@Nonnull Collection<String> scopes)
+    {
+        Checks.noneNull(scopes, "Scopes");
+        this.requiredScopes = String.join("+", scopes);
+        if (!requiredScopes.contains("bot"))
+        {
+            if (requiredScopes.isEmpty())
+                requiredScopes = "bot";
+            else
+                requiredScopes += "+bot";
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public String getInviteUrl(Permission... permissions)
     {
         StringBuilder builder = buildBaseInviteUrl();
@@ -923,9 +939,15 @@ public class JDAImpl implements JDA
     private StringBuilder buildBaseInviteUrl()
     {
         if (clientId == null)
-            retrieveApplicationInfo().complete();
-        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?scope=bot&client_id=");
+        {
+            if (selfUser != null)
+                clientId = selfUser.getApplicationId(); // populated by READY event
+            else
+                retrieveApplicationInfo().complete();
+        }
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
         builder.append(clientId);
+        builder.append("&scope=").append(requiredScopes);
         return builder;
     }
 
