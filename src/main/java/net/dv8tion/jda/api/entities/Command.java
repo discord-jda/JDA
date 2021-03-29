@@ -134,7 +134,7 @@ public class Command implements ISnowflake
 
     public enum OptionType
     {
-        UNKNOWN(-1), SUB_COMMAND(1), SUB_COMMAND_GROUP(2), STRING(3, true), INTEGER(4, false), BOOLEAN(5), USER(6), CHANNEL(7), ROLE(8);
+        UNKNOWN(-1), SUB_COMMAND(1), SUB_COMMAND_GROUP(2), STRING(3, true), INTEGER(4, true), BOOLEAN(5), USER(6), CHANNEL(7), ROLE(8);
         private final int raw;
         private final boolean supportsChoices;
 
