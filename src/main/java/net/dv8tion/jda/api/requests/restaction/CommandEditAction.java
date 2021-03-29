@@ -51,6 +51,10 @@ public interface CommandEditAction extends RestAction<Command>
 
     @Nonnull
     @CheckReturnValue
+    CommandEditAction apply(@Nonnull CommandUpdateAction.CommandData commandData);
+
+    @Nonnull
+    @CheckReturnValue
     CommandEditAction setName(@Nullable String name);
 
     @Nonnull

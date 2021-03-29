@@ -833,7 +833,7 @@ public class JDAImpl implements JDA
     @Override
     public CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
-        return new CommandCreateActionImpl(this).setName(name).setDescription(description);
+        return new CommandCreateActionImpl(this, name, description);
     }
 
     @Nonnull

@@ -177,6 +177,20 @@ public class Command implements ISnowflake
         private final long intValue;
         private final String stringValue;
 
+        public Choice(String name, long value)
+        {
+            this.name = name;
+            this.intValue = value;
+            this.stringValue = Long.toString(value);
+        }
+
+        public Choice(String name, String value)
+        {
+            this.name = name;
+            this.intValue = 0;
+            this.stringValue = value;
+        }
+
         public Choice(DataObject json)
         {
             this.name = json.getString("name");

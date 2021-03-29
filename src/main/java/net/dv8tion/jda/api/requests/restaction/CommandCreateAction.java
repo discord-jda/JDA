@@ -70,7 +70,7 @@ public interface CommandCreateAction extends RestAction<Command>
         OptionBuilder setRequired(boolean required); // note: required options must come first
         OptionBuilder setDefault(boolean isDefault); // there can only be one default (maybe make this special) | default may not be set by a SUB_COMMAND or SUB_COMMAND_GROUP
         OptionBuilder addChoice(String name, String value);
-        OptionBuilder addChoice(String name, int value);
+        OptionBuilder addChoice(String name, long value);
 
         OptionBuilder addOption(String name, String description, OptionType type, Consumer<? super OptionBuilder> builder);
         default OptionBuilder addOption(String name, String description, OptionType type)

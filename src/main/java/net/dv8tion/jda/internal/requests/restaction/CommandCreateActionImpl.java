@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -43,20 +44,20 @@ import java.util.stream.Collectors;
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
     private final Guild guild;
-    private String name;
-    private String description;
-    private final List<Option> options = new ArrayList<>();
+    private CommandUpdateAction.CommandData data;
 
-    public CommandCreateActionImpl(JDAImpl api)
+    public CommandCreateActionImpl(JDAImpl api, String name, String description)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
+        this.data = new CommandUpdateAction.CommandData(name, description);
     }
 
-    public CommandCreateActionImpl(Guild guild)
+    public CommandCreateActionImpl(Guild guild, String name, String description)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
+        this.data = new CommandUpdateAction.CommandData(name, description);
     }
 
     @Nonnull
@@ -91,8 +92,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setName(@Nonnull String name)
     {
-        Checks.notEmpty(name, "Name");
-        this.name = name;
+        data.setName(name);
         return this;
     }
 
@@ -100,8 +100,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
-        Checks.notEmpty(description, "Description");
-        this.description = description;
+        data.setDescription(description);
         return this;
     }
 
@@ -115,19 +114,26 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         Checks.notNull(builder, "Builder");
         Option option = new Option(type, name, description);
         builder.accept(option);
-        this.options.add(option);
+        DataObject json = option.toData();
+        switch (option.type)
+        {
+        case SUB_COMMAND:
+            data.addSubcommand(CommandUpdateAction.SubcommandData.load(json));
+            break;
+        case SUB_COMMAND_GROUP:
+            data.addSubcommandGroup(CommandUpdateAction.SubcommandGroupData.load(json));
+            break;
+        default:
+            data.addOption(CommandUpdateAction.OptionData.load(json));
+            break;
+        }
         return this;
     }
 
     @Override
     public RequestBody finalizeData()
     {
-        DataObject json = DataObject.empty();
-        json.put("name", name);
-        json.put("description", description);
-        if (!options.isEmpty())
-            json.put("options", DataArray.fromCollection(options));
-        return getRequestBody(json);
+        return getRequestBody(data.toData());
     }
 
     @Override
@@ -175,7 +181,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         }
 
         @Override
-        public OptionBuilder addChoice(String name, int value)
+        public OptionBuilder addChoice(String name, long value)
         {
             this.choices.put(name, value);
             return this;

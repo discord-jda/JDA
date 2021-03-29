@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
-import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -32,17 +32,17 @@ import okhttp3.RequestBody;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public class CommandEditActionImpl extends RestActionImpl<Command> implements CommandEditAction
 {
+    private static final String UNDEFINED = "undefined";
+    private static final int NAME_SET = 1, DESCRIPTION_SET = 2, OPTIONS_SET = 4;
     private final Guild guild;
-    private String name, description;
-    private List<CommandCreateActionImpl.Option> options = null;
+    private int mask = 0;
+    private CommandUpdateAction.CommandData data = new CommandUpdateAction.CommandData(UNDEFINED, UNDEFINED);
 
     public CommandEditActionImpl(JDA api, String id)
     {
@@ -72,6 +72,16 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
+    public CommandEditAction apply(@Nonnull CommandUpdateAction.CommandData commandData)
+    {
+        Checks.notNull(commandData, "Command Data");
+        this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET;
+        this.data = commandData;
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandEditAction addCheck(@Nonnull BooleanSupplier checks)
     {
         return (CommandEditAction) super.addCheck(checks);
@@ -88,13 +98,13 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction setName(@Nullable String name)
     {
-        if (name != null)
+        if (name == null)
         {
-            Checks.notEmpty(name, "Name");
-            Checks.check(name.length() <= 32, "Name must not be longer than 32 characters.");
+            mask &= ~NAME_SET;
+            return this;
         }
-
-        this.name = name;
+        data.setName(name);
+        mask |= NAME_SET;
         return this;
     }
 
@@ -102,13 +112,13 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction setDescription(@Nullable String description)
     {
-        if (description != null)
+        if (description == null)
         {
-            Checks.notEmpty(description, "Description");
-            Checks.check(description.length() <= 100, "Description must not be longer than 100 characters");
+            mask &= ~DESCRIPTION_SET;
+            return this;
         }
-
-        this.description = description;
+        data.setDescription(description);
+        mask |= DESCRIPTION_SET;
         return this;
     }
 
@@ -116,7 +126,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction clearOptions()
     {
-        options = new ArrayList<>();
+        mask &= ~OPTIONS_SET;
         return this;
     }
 
@@ -131,22 +141,40 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
         CommandCreateActionImpl.Option optionBuilder = new CommandCreateActionImpl.Option(type, name, description);
         builder.accept(optionBuilder);
-        if (options == null)
-            options = new ArrayList<>();
-        options.add(optionBuilder);
+        mask |= OPTIONS_SET;
+        DataObject json = optionBuilder.toData();
+        switch (type)
+        {
+        case SUB_COMMAND:
+            data.addSubcommand(CommandUpdateAction.SubcommandData.load(json));
+            break;
+        case SUB_COMMAND_GROUP:
+            data.addSubcommandGroup(CommandUpdateAction.SubcommandGroupData.load(json));
+            break;
+        default:
+            data.addOption(CommandUpdateAction.OptionData.load(json));
+            break;
+        }
         return this;
+    }
+
+    private boolean isUnchanged(int flag)
+    {
+        return (mask & flag) != flag;
     }
 
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject json = DataObject.empty();
-        if (name != null)
-            json.put("name", name);
-        if (description != null)
-            json.put("description", description);
-        if (options != null)
-            json.put("options", DataArray.fromCollection(options));
+        DataObject json = data.toData();
+        if (isUnchanged(NAME_SET))
+            json.remove("name");
+        if (isUnchanged(DESCRIPTION_SET))
+            json.remove("description");
+        if (isUnchanged(OPTIONS_SET))
+            json.remove("options");
+        mask = 0;
+        data = new CommandUpdateAction.CommandData(UNDEFINED, UNDEFINED);
         return getRequestBody(json);
     }
 
