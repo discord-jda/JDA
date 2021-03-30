@@ -50,11 +50,22 @@ public class CommandHookImpl implements CommandHook
     private boolean isReady;
     private boolean ephemeral;
 
+    //This is used to give a proper error when an interaction is ack'd twice
+    // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
+    private volatile boolean isAck;
+
     public CommandHookImpl(@Nonnull SlashCommandEvent event)
     {
         this.event = event;
         // 10 second timeout for our failure
         this.timeoutHandle = event.getJDA().getGatewayPool().schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
+    }
+
+    public synchronized boolean ack()
+    {
+        boolean wasAck = isAck;
+        this.isAck = true;
+        return wasAck;
     }
 
     public void ready()

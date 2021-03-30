@@ -22,8 +22,10 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.exceptions.InteractionFailureException;
+import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -42,8 +44,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 public class CommandReplyActionImpl extends RestActionImpl<CommandHook> implements CommandReplyAction
 {
@@ -98,7 +102,7 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandHook> implemen
 
     private boolean isEmpty()
     {
-        return Helpers.isEmpty(content) && embeds.isEmpty();
+        return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty();
     }
 
     @Override
@@ -259,5 +263,57 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandHook> implemen
     {
         allowedMentions.mentionRoles(roleIds);
         return this;
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Here we intercept calls to queue/submit/complete to prevent double ack/reply scenarios with a better error message than discord provides //
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // This is an exception factory method that only returns an exception if we would have to throw it or fail in another way.
+    private IllegalStateException tryAck() // note that hook.ack() is already synchronized so this is actually thread-safe!
+    {
+        // true => we already called this before => this will never succeed!
+        return hook.ack() ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction (or slash command) once!")
+                          : null; // null indicates we were successful, no exception means we can't fail :)
+    }
+
+    @Override
+    public void queue(Consumer<? super CommandHook> success, Consumer<? super Throwable> failure)
+    {
+        IllegalStateException exception = tryAck();
+        if (exception != null)
+        {
+            if (failure != null)
+                failure.accept(exception); // if the failure callback throws that will just bubble up, which is acceptable
+            else
+                RestAction.getDefaultFailure().accept(exception);
+            return;
+        }
+
+        super.queue(success, failure);
+    }
+
+    @Nonnull
+    @Override
+    public CompletableFuture<CommandHook> submit(boolean shouldQueue)
+    {
+        IllegalStateException exception = tryAck();
+        if (exception != null)
+        {
+            CompletableFuture<CommandHook> future = new CompletableFuture<>();
+            future.completeExceptionally(exception);
+            return future;
+        }
+
+        return super.submit(shouldQueue);
+    }
+
+    @Override
+    public CommandHook complete(boolean shouldQueue) throws RateLimitedException
+    {
+        IllegalStateException exception = tryAck();
+        if (exception != null)
+            throw exception;
+        return super.complete(shouldQueue);
     }
 }
