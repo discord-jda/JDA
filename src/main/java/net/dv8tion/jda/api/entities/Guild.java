@@ -5315,7 +5315,7 @@ public interface Guild extends ISnowflake
         }
 
         /**
-         * The maximum size for files that can be uploaded to this Guild.
+         * The maximum size in bytes for files that can be uploaded to this Guild.
          *
          * @return The maximum file size of this Guild
          *
