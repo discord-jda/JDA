@@ -247,7 +247,7 @@ public interface CommandUpdateAction extends RestAction<Void>
             this.name = name;
             this.description = description;
             if (type.canSupportChoices())
-                choices = new HashMap<>();
+                choices = new LinkedHashMap<>();
         }
 
         @Nonnull
