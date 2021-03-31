@@ -521,10 +521,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
-     *         If the provided member is not currently connected to a voice channel.
+     *         If the member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -561,10 +559,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
-     *         If the provided member is not currently connected to a voice channel.
+     *         If the member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -600,10 +596,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         The new nickname of the {@link net.dv8tion.jda.api.entities.Member Member}, provide {@code null} or an
      *         empty String to reset the nickname
      *
-     * @throws IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.api.entities.Member Member}
-     *         is not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *         Or if the provided member is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If attempting to set nickname for self and the logged in account has neither {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE}
