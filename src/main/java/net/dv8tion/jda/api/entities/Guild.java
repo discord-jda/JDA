@@ -3415,6 +3415,8 @@ public interface Guild extends ISnowflake
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided reason is longer than 512 characters
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -3452,6 +3454,8 @@ public interface Guild extends ISnowflake
      *         <br>See {@link Member#canInteract(Member)}
      * @throws java.lang.IllegalArgumentException
      *         If the user for the provided id cannot be kicked from this Guild or the provided {@code userId} is blank/null.
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided reason is longer than 512 characters
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
@@ -3569,6 +3573,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided reason is longer than 512 characters.</li>
      *             <li>If the provided user is null</li>
      *         </ul>
      *
@@ -3615,6 +3620,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided reason is longer than 512 characters.</li>
      *             <li>If the provided userId is null</li>
      *         </ul>
      *
@@ -3661,6 +3667,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
+     *             <li>If the provided reason is longer than 512 characters.</li>
      *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *

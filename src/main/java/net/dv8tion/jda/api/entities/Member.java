@@ -361,7 +361,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -409,7 +408,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided member is {@code null}</li>
+     *             <li>If the provided reason is longer than 512 characters.</li>
      *         </ul>
      *
      *
@@ -440,8 +439,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not a Member of this Guild or is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
@@ -479,13 +476,13 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not a Member of this Guild or is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided reason is longer than 512 characters
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild

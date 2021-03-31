@@ -1113,7 +1113,10 @@ public class GuildImpl implements Guild
     {
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
         if (!Helpers.isBlank(reason))
+        {
+            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
             route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+        }
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -1152,7 +1155,10 @@ public class GuildImpl implements Guild
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
         if (!Helpers.isBlank(reason))
+        {
+            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
             route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+        }
         if (delDays > 0)
             route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
