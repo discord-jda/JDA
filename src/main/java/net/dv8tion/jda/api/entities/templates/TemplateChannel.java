@@ -1,11 +1,16 @@
 package net.dv8tion.jda.api.entities.templates;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * POJO for the roles information provided by a template.
@@ -20,6 +25,7 @@ public class TemplateChannel implements ISnowflake
     private final String topic;
     private final int rawPosition;
     private final long parentId;
+    private final List<TemplateChannel.PermissionOverride> permissionOverrides;
 
     // text only properties
     private final boolean nsfw;
@@ -30,7 +36,7 @@ public class TemplateChannel implements ISnowflake
     private final int userLimit;
 
     public TemplateChannel(final long id, final ChannelType channelType, final String name, final String topic, final int rawPosition, final long parentId,
-                           final boolean nsfw, final int slowmode, final int bitrate, final int userLimit)
+                           List<TemplateChannel.PermissionOverride> permissionOverrides, final boolean nsfw, final int slowmode, final int bitrate, final int userLimit)
     {
         this.id = id;
         this.channelType = channelType;
@@ -38,6 +44,7 @@ public class TemplateChannel implements ISnowflake
         this.topic = topic;
         this.rawPosition = rawPosition;
         this.parentId = parentId;
+        this.permissionOverrides = permissionOverrides;
 
         this.nsfw = nsfw;
         this.slowmode = slowmode;
@@ -186,5 +193,129 @@ public class TemplateChannel implements ISnowflake
     public int getUserLimit()
     {
         return this.channelType == ChannelType.VOICE ? this.userLimit : -1;
+    }
+
+    /**
+     * Gets all of the {@link net.dv8tion.jda.api.entities.templates.TemplateChannel.PermissionOverride PermissionOverrides} that are part
+     * of this {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel}.
+     * <br><b>This will only contain {@link net.dv8tion.jda.api.entities.templates.TemplateRole Role} overrides.</b>
+     *
+     * @return Immutable list of all {@link net.dv8tion.jda.api.entities.templates.TemplateChannel.PermissionOverride PermissionOverrides}
+     *         for this {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel}.
+     */
+    @Nonnull
+    public List<TemplateChannel.PermissionOverride> getPermissionOverrides()
+    {
+        return Collections.unmodifiableList(permissionOverrides);
+    }
+
+    /**
+     * Represents the specific {@link net.dv8tion.jda.api.entities.templates.TemplateRole Role}
+     * permission overrides that can be set for channels.
+     *
+     * @see TemplateChannel#getPermissionOverrides()
+     */
+    public static class PermissionOverride implements ISnowflake {
+        private final long id;
+        private final long allow;
+        private final long deny;
+
+        public PermissionOverride(final long id, final long allow, final long deny)
+        {
+            this.id = id;
+            this.allow = allow;
+            this.deny = deny;
+        }
+
+        /**
+         * This is the raw binary representation (as a base 10 long) of the permissions <b>allowed</b> by this override.
+         * <br>The long relates to the offsets used by each {@link net.dv8tion.jda.api.Permission Permission}.
+         *
+         * @return Never-negative long containing the binary representation of the allowed permissions of this override.
+         */
+        public long getAllowedRaw()
+        {
+            return allow;
+        }
+
+        /**
+         * This is the raw binary representation (as a base 10 long) of the permissions <b>not affected</b> by this override.
+         * <br>The long relates to the offsets used by each {@link net.dv8tion.jda.api.Permission Permission}.
+         *
+         * @return Never-negative long containing the binary representation of the unaffected permissions of this override.
+         */
+        public long getInheritRaw()
+        {
+            return ~(allow | deny);
+        }
+
+        /**
+         * This is the raw binary representation (as a base 10 long) of the permissions <b>denied</b> by this override.
+         * <br>The long relates to the offsets used by each {@link net.dv8tion.jda.api.Permission Permission}.
+         *
+         * @return Never-negative long containing the binary representation of the denied permissions of this override.
+         */
+        public long getDeniedRaw()
+        {
+            return deny;
+        }
+
+        /**
+         * EnumSet of all {@link net.dv8tion.jda.api.Permission Permissions} that are specifically allowed by this override.
+         * <br><u>Changes to the returned set do not affect this entity directly.</u>
+         *
+         * @return Possibly-empty set of allowed {@link net.dv8tion.jda.api.Permission Permissions}.
+         */
+        @Nonnull
+        public EnumSet<Permission> getAllowed()
+        {
+            return Permission.getPermissions(allow);
+        }
+
+        /**
+         * EnumSet of all {@link net.dv8tion.jda.api.Permission Permission} that are unaffected by this override.
+         * <br><u>Changes to the returned set do not affect this entity directly.</u>
+         *
+         * @return Possibly-empty set of unaffected {@link net.dv8tion.jda.api.Permission Permissions}.
+         */
+        @Nonnull
+        public EnumSet<Permission> getInherit()
+        {
+            return Permission.getPermissions(getInheritRaw());
+        }
+
+        /**
+         * EnumSet of all {@link net.dv8tion.jda.api.Permission Permissions} that are denied by this override.
+         * <br><u>Changes to the returned set do not affect this entity directly.</u>
+         *
+         * @return Possibly-empty set of denied {@link net.dv8tion.jda.api.Permission Permissions}.
+         */
+        @Nonnull
+        public EnumSet<Permission> getDenied()
+        {
+            return Permission.getPermissions(deny);
+        }
+
+        /**
+         * The ids of roles are their position as stored by Discord so this will not look like a typical snowflake.
+         *
+         * @return The id for the role this override is for
+         */
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        /**
+         * As the ids of roles are their position, the date of creation cannot be calculated.
+         *
+         * @return {@code null}
+         */
+        @Override
+        public OffsetDateTime getTimeCreated()
+        {
+            return null;
+        }
     }
 }

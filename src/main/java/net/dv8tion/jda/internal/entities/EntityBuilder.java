@@ -1619,8 +1619,8 @@ public class EntityBuilder
         final Timeout afkTimeout = Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
         final DataArray roleArray = guildObject.getArray("roles");
         final DataArray channelsArray = guildObject.getArray("channels");
-        final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L); // TODO actually implement this
-        final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L); // TODO actually implement this
+        final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L);
+        final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L);
 
         final List<TemplateRole> roles = new ArrayList<>();
         for (int i = 0; i < roleArray.length(); i++)
@@ -1652,7 +1652,19 @@ public class EntityBuilder
             final int bitrate = obj.getInt("bitrate");
             final int userLimit = obj.getInt("user_limit");
 
-            channels.add(new TemplateChannel(channelId, channelType, channelName, topic, rawPosition, parentId, nsfw, slowmode, bitrate, userLimit));
+            final List<TemplateChannel.PermissionOverride> permissionOverrides = new ArrayList<>();
+            DataArray overrides = obj.getArray("permission_overwrites");
+
+            for (int j = 0; j < overrides.length(); j++)
+            {
+                DataObject overrideObj = overrides.getObject(j);
+                final long overrideId = overrideObj.getLong("id");
+                final long allow = overrideObj.getLong("allow");
+                final long deny = overrideObj.getLong("deny");
+                permissionOverrides.add(new TemplateChannel.PermissionOverride(overrideId, allow, deny));
+            }
+            channels.add(new TemplateChannel(channelId, channelType, channelName, topic, rawPosition, parentId, permissionOverrides, nsfw,
+                    slowmode, bitrate, userLimit));
         }
 
         final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
