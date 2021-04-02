@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -62,10 +63,22 @@ public class TypingStartHandler extends SocketHandler
 
         final long userId = content.getLong("user_id");
         User user;
+        MemberImpl member = null;
         if (channel instanceof PrivateChannel)
             user = ((PrivateChannel) channel).getUser();
         else
             user = getJDA().getUsersView().get(userId);
+        if (!content.isNull("member"))
+        {
+            Guild guild = api.getGuildById(content.getUnsignedLong("guild_id"));
+            if (guild == null)
+                return null; // Ignore event for unknown guild
+            // Try to load member for the typing event
+            EntityBuilder entityBuilder = getJDA().getEntityBuilder();
+            member = entityBuilder.createMember((GuildImpl) guild, content.getObject("member"));
+            entityBuilder.updateMemberCache(member);
+            user = member.getUser();
+        }
 
         MemberImpl member = null;
         if (!content.isNull("member"))
@@ -84,7 +97,7 @@ public class TypingStartHandler extends SocketHandler
         getJDA().handleEvent(
             new UserTypingEvent(
                 getJDA(), responseNumber,
-                user, member, channel, timestamp));
+                user, channel, timestamp, member));
         return null;
     }
 }

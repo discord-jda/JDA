@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,8 @@ public interface User extends IMentionable, IFakeable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(long)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     static User fromId(long id)
@@ -112,6 +114,8 @@ public interface User extends IMentionable, IFakeable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(String)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     static User fromId(@Nonnull String id)
@@ -197,7 +201,7 @@ public interface User extends IMentionable, IFakeable
     }
 
     /**
-     * The URL for the user's avatar image
+     * The URL for the user's avatar image.
      * If they do not have an avatar set, this will return the URL of their
      * default avatar
      *
@@ -332,7 +336,7 @@ public interface User extends IMentionable, IFakeable
     enum UserFlag
     {
         STAFF(             0, "Discord Employee"),
-        PARTNER(           1, "Discord Partner"),
+        PARTNER(           1, "Partnered Server Owner"),
         HYPESQUAD(         2, "HypeSquad Events"),
         BUG_HUNTER_LEVEL_1(3, "Bug Hunter Level 1"),
 
@@ -346,7 +350,7 @@ public interface User extends IMentionable, IFakeable
         SYSTEM(            12, "System User"),
         BUG_HUNTER_LEVEL_2(14, "Bug Hunter Level 2"),
         VERIFIED_BOT(      16, "Verified Bot"),
-        VERIFIED_DEVELOPER(17, "Verified Bot Developer"),
+        VERIFIED_DEVELOPER(17, "Early Verified Bot Developer"),
         
         UNKNOWN(-1, "Unknown");
 

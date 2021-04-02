@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,6 +182,7 @@ public class Route
         public static final Route SEND_TYPING =          new Route(POST,   "channels/{channel_id}/typing");
         public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions");
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}");
+        public static final Route FOLLOW_CHANNEL =       new Route(POST,   "channels/{channel_id}/followers");
 
         // Client Only
         public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");

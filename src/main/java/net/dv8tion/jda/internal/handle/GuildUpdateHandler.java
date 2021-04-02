@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,10 @@ public class GuildUpdateHandler extends SocketHandler
                 ? null : guild.getVoiceChannelsView().get(content.getLong("afk_channel_id"));
         TextChannel systemChannel = content.isNull("system_channel_id")
                 ? null : guild.getTextChannelsView().get(content.getLong("system_channel_id"));
+        TextChannel rulesChannel = content.isNull("rules_channel_id")
+                ? null : guild.getTextChannelsView().get(content.getLong("rules_channel_id"));
+        TextChannel communityUpdatesChannel = content.isNull("public_updates_channel_id")
+                ? null : guild.getTextChannelsView().get(content.getLong("public_updates_channel_id"));
         Set<String> features;
         if (!content.isNull("features"))
         {
@@ -291,6 +295,24 @@ public class GuildUpdateHandler extends SocketHandler
                     new GuildUpdateSystemChannelEvent(
                             getJDA(), responseNumber,
                             guild, oldSystemChannel));
+        }
+        if (!Objects.equals(rulesChannel, guild.getRulesChannel()))
+        {
+            TextChannel oldRulesChannel = guild.getRulesChannel();
+            guild.setRulesChannel(rulesChannel);
+            getJDA().handleEvent(
+                    new GuildUpdateRulesChannelEvent(
+                            getJDA(), responseNumber,
+                            guild, oldRulesChannel));
+        }
+        if (!Objects.equals(communityUpdatesChannel, guild.getCommunityUpdatesChannel()))
+        {
+            TextChannel oldCommunityUpdatesChannel = guild.getCommunityUpdatesChannel();
+            guild.setCommunityUpdatesChannel(communityUpdatesChannel);
+            getJDA().handleEvent(
+                    new GuildUpdateCommunityUpdatesChannelEvent(
+                            getJDA(), responseNumber,
+                            guild, oldCommunityUpdatesChannel));
         }
         return null;
     }

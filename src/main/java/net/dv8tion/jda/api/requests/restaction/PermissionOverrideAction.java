@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -233,9 +233,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *         The <b>positive</b> bits representing the granted
      *         permissions for the new PermissionOverride
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided bits are negative
-     *         or higher than {@link net.dv8tion.jda.api.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
@@ -260,6 +260,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @throws java.lang.IllegalArgumentException
      *         If the any of the specified Permissions is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
@@ -288,6 +291,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @throws java.lang.IllegalArgumentException
      *         If the any of the specified Permissions is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
@@ -308,14 +314,15 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  allowBits
      *         The permissions to grant, in addition to already allowed permissions
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
+     *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction grant(long allowBits)
-    {
-        return setAllow(getAllow() | allowBits);
-    }
+    PermissionOverrideAction grant(long allowBits);
 
     /**
      * Grants the specified permissions.
@@ -324,6 +331,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  permissions
      *         The permissions to grant, in addition to already allowed permissions
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      * @throws IllegalArgumentException
      *         If any provided argument is null
      *
@@ -333,7 +343,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction grant(@Nonnull Collection<Permission> permissions)
     {
-        return setAllow(getAllow() | Permission.getRaw(permissions));
+        return grant(Permission.getRaw(permissions));
     }
 
     /**
@@ -343,6 +353,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  permissions
      *         The permissions to grant, in addition to already allowed permissions
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      * @throws IllegalArgumentException
      *         If any provided argument is null
      *
@@ -352,7 +365,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction grant(@Nonnull Permission... permissions)
     {
-        return setAllow(getAllow() | Permission.getRaw(permissions));
+        return grant(Permission.getRaw(permissions));
     }
 
 
@@ -369,9 +382,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *         The <b>positive</b> bits representing the denied
      *         permissions for the new PermissionOverride
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided bits are negative
-     *         or higher than {@link net.dv8tion.jda.api.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
@@ -396,6 +409,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @throws java.lang.IllegalArgumentException
      *         If the any of the specified Permissions is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
@@ -422,6 +438,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *         permissions for the new PermissionOverride.
      *         <br>If the provided value is {@code null} the permissions are reset to the default of none
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      * @throws java.lang.IllegalArgumentException
      *         If the any of the specified Permissions is {@code null}
      *
@@ -444,14 +463,15 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  denyBits
      *         The permissions to deny, in addition to already denied permissions
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
+     *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction deny(long denyBits)
-    {
-        return setDeny(getDeny() | denyBits);
-    }
+    PermissionOverrideAction deny(long denyBits);
 
     /**
      * Denies the specified permissions.
@@ -460,6 +480,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  permissions
      *         The permissions to deny, in addition to already denied permissions
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      * @throws IllegalArgumentException
      *         If any provided argument is null
      *
@@ -469,7 +492,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction deny(@Nonnull Collection<Permission> permissions)
     {
-        return setDeny(getDeny() | Permission.getRaw(permissions));
+        return deny(Permission.getRaw(permissions));
     }
 
     /**
@@ -479,6 +502,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  permissions
      *         The permissions to deny, in addition to already denied permissions
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      * @throws IllegalArgumentException
      *         If any provided argument is null
      *
@@ -488,7 +514,7 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @CheckReturnValue
     default PermissionOverrideAction deny(@Nonnull Permission... permissions)
     {
-        return setDeny(getDeny() | Permission.getRaw(permissions));
+        return deny(Permission.getRaw(permissions));
     }
 
     /**
@@ -499,14 +525,15 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  inheritedBits
      *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
+     *
      * @return The current PermissionOverrideAction - for chaining convenience
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction clear(long inheritedBits)
-    {
-        return setDeny(getDeny() & ~inheritedBits).setAllow(getAllow() & ~inheritedBits);
-    }
+    PermissionOverrideAction clear(long inheritedBits);
 
     /**
      * Clears the provided {@link net.dv8tion.jda.api.Permission Permissions} bits
@@ -516,6 +543,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  permissions
      *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      * @throws IllegalArgumentException
      *         If any provided argument is null
      *
@@ -536,6 +566,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      * @param  permissions
      *         The permissions to clear from the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
      *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      * @throws IllegalArgumentException
      *         If any provided argument is null
      *
@@ -560,9 +593,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *         An unsigned bitwise representation
      *         of denied Permissions
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If any of the provided bits are negative
-     *         or higher than {@link net.dv8tion.jda.api.Permission#ALL_PERMISSIONS Permission.ALL_PERMISSIONS}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *
@@ -590,6 +623,9 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
      *
      * @throws java.lang.IllegalArgumentException
      *         If the any of the specified Permissions is {@code null}
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
+     *         on the channel and tries to set permissions it does not have in the channel
      *
      * @return The current PermissionOverrideAction - for chaining convenience
      *

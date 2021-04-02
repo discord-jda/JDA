@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
@@ -32,7 +31,6 @@ import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class PermissionOverrideImpl implements PermissionOverride
 {
@@ -41,8 +39,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final JDAImpl api;
     private GuildChannel channel;
 
-    protected final ReentrantLock mngLock = new ReentrantLock();
-    protected volatile PermissionOverrideAction manager;
+    protected PermissionOverrideAction manager;
 
     private long allow;
     private long deny;
@@ -160,17 +157,9 @@ public class PermissionOverrideImpl implements PermissionOverride
             throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
         if (!selfMember.hasPermission(channel, Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS);
-        PermissionOverrideAction mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new PermissionOverrideActionImpl(this).setOverride(false);
-                return manager;
-            });
-        }
-        return mng.reset();
+        if (manager == null)
+            return manager = new PermissionOverrideActionImpl(this).setOverride(false);
+        return manager;
     }
 
     @Nonnull

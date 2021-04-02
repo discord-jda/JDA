@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,10 @@ import javax.annotation.Nonnull;
  * Indicates that the reactions for a {@link net.dv8tion.jda.api.entities.Message Message} were cleared by a moderator in a guild.
  *
  * <p>Can be used to detect when the reaction of a message are cleared by a moderator.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  */
 public class GuildMessageReactionRemoveAllEvent extends GenericGuildMessageEvent
 {

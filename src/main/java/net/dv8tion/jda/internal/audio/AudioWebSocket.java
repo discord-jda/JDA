@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,6 +122,10 @@ class AudioWebSocket extends WebSocketAdapter
         {
             WebSocketFactory socketFactory = new WebSocketFactory(getJDA().getWebSocketFactory());
             IOUtil.setServerName(socketFactory, wssEndpoint);
+            if (socketFactory.getSocketTimeout() > 0)
+                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
+            else
+                socketFactory.setSocketTimeout(10000);
             socket = socketFactory.createSocket(wssEndpoint);
             socket.setDirectTextMessage(true);
             socket.addListener(this);
@@ -162,7 +166,12 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
             JDAImpl api = getJDA();
-            if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
+            if (status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL && (!api.getClient().isSession() || !api.getClient().isConnected()))
+            {
+                LOG.debug("Connection was closed due to session invalidate!");
+                status = ConnectionStatus.ERROR_CANNOT_RESUME;
+            }
+            else if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 //Get guild from JDA, don't use [guild] field to make sure that we don't have
                 // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.

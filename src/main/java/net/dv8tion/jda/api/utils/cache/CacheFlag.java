@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.utils.cache;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import javax.annotation.Nullable;
@@ -58,6 +59,10 @@ public enum CacheFlag
      * Enables cache for {@link GuildChannel#getMemberPermissionOverrides()}
      */
     MEMBER_OVERRIDES(null),
+    /**
+     * Enables cache for {@link Role#getTags()}
+     */
+    ROLE_TAGS(null),
     ;
     private final GatewayIntent requiredIntent;
 

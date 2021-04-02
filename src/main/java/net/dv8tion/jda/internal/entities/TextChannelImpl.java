@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,6 +115,21 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be 2-100 characters in length!");
 
         return new WebhookActionImpl(getJDA(), this, name);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
+    {
+        Checks.notNull(targetChannelId, "Target Channel ID");
+        if (!isNews())
+            throw new IllegalStateException("Can only follow news channels!");
+        Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
+        DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
+        return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
+            DataObject json = response.getObject();
+            return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
+        });
     }
 
     @Nonnull
