@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.awt.*;
+import java.time.OffsetDateTime;
 import java.util.EnumSet;
 
 /**
@@ -32,10 +33,26 @@ public class TemplateRole implements ISnowflake
         this.rawPermissions = rawPermissions;
     }
 
+    /**
+     * The ids of roles are their position as stored by Discord so this will not look like a typical snowflake.
+     *
+     * @return The id of the role as stored by Discord
+     */
     @Override
     public long getIdLong()
     {
         return this.id;
+    }
+
+    /**
+     * As the ids of roles are their position, the date of creation cannot be calculated.
+     *
+     * @return {@code null}
+     */
+    @Override
+    public OffsetDateTime getTimeCreated()
+    {
+        return null;
     }
 
     /**

@@ -1618,7 +1618,7 @@ public class EntityBuilder
         final Locale locale = Locale.forLanguageTag(guildObject.getString("preferred_locale", "en"));
         final Timeout afkTimeout = Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
         final DataArray roleArray = guildObject.getArray("roles");
-        final DataArray channelsArray = guildObject.getArray("channels"); // TODO actually implement this
+        final DataArray channelsArray = guildObject.getArray("channels");
         final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L); // TODO actually implement this
         final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L); // TODO actually implement this
 
@@ -1638,7 +1638,21 @@ public class EntityBuilder
         final List<TemplateChannel> channels = new ArrayList<>();
         for (int i = 0; i < channelsArray.length(); i++)
         {
+            DataObject obj = channelsArray.getObject(i);
+            final long channelId = obj.getLong("id");
+            final ChannelType channelType = ChannelType.fromId(obj.getInt("type"));
+            final String channelName = obj.getString("name");
+            final String topic = obj.getString("topic", null);
+            final int rawPosition = obj.getInt("position");
+            final long parentId = obj.getLong("parent_id", -1);
 
+            final boolean nsfw = obj.getBoolean("nsfw");
+            final int slowmode = obj.getInt("rate_limit_per_user");
+
+            final int bitrate = obj.getInt("bitrate");
+            final int userLimit = obj.getInt("user_limit");
+
+            channels.add(new TemplateChannel(channelId, channelType, channelName, topic, rawPosition, parentId, nsfw, slowmode, bitrate, userLimit));
         }
 
         final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
