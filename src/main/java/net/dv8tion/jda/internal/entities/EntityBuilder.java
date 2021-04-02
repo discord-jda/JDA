@@ -1088,17 +1088,15 @@ public class EntityBuilder
         final long authorId = author.getLong("id");
         MemberImpl member = null;
 
-        if (channel == null && jsonObject.isNull("guild_id"))
+        if (channel == null && jsonObject.isNull("guild_id") && authorId != getJDA().getSelfUser().getIdLong())
         {
-            if (authorId == getJDA().getSelfUser().getIdLong())
-                throw new IllegalArgumentException(MISSING_CHANNEL);
             DataObject channelDate = DataObject.empty()
                     .put("id", jsonObject.getUnsignedLong("channel_id"))
                     .put("recipient", author);
             channel = createPrivateChannel(channelDate, modifyCache);
         }
         else if (channel == null)
-            throw new IllegalStateException("Cannot create message for missing channel! JSON: " + jsonObject);
+            throw new IllegalStateException(MISSING_CHANNEL);
 
         if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
