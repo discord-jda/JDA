@@ -1090,6 +1090,8 @@ public class EntityBuilder
 
         if (channel == null && jsonObject.isNull("guild_id"))
         {
+            if (authorId == getJDA().getSelfUser().getIdLong())
+                throw new IllegalArgumentException(MISSING_CHANNEL);
             DataObject channelDate = DataObject.empty()
                     .put("id", jsonObject.getUnsignedLong("channel_id"))
                     .put("recipient", author);
