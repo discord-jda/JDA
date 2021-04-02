@@ -121,6 +121,12 @@ public class ErrorResponseException extends RuntimeException
         return response;
     }
 
+    /**
+     * The {@link SchemaError SchemaErrors} for this error response.
+     * <br>These errors provide more context of what part in the body caused the error, and more explanation for the error itself.
+     *
+     * @return Possibly-empty list of {@link SchemaError SchemaError}
+     */
     @Nonnull
     public List<SchemaError> getSchemaErrors()
     {
@@ -335,6 +341,10 @@ public class ErrorResponseException extends RuntimeException
         return new ErrorHandler(orElse).ignore(ignored);
     }
 
+    /**
+     * An error for a {@link SchemaError}.
+     * <br>This provides the machine parsable error code name and the human readable message.
+     */
     public static class ErrorCode
     {
         private final String code;
@@ -346,12 +356,22 @@ public class ErrorResponseException extends RuntimeException
             this.message = message;
         }
 
+        /**
+         * The machine parsable error code
+         *
+         * @return The error code
+         */
         @Nonnull
         public String getCode()
         {
             return code;
         }
 
+        /**
+         * The human readable explanation message for this error
+         *
+         * @return The message
+         */
         @Nonnull
         public String getMessage()
         {
@@ -365,6 +385,10 @@ public class ErrorResponseException extends RuntimeException
         }
     }
 
+    /**
+     * Schema error which supplies more context to a ErrorResponse.
+     * <br>This provides a list of {@link ErrorCode ErrorCodes} and a {@link #getLocation() location} for the errors.
+     */
     public static class SchemaError
     {
         private final String location;
@@ -376,12 +400,25 @@ public class ErrorResponseException extends RuntimeException
             this.errors = codes;
         }
 
+        /**
+         * The JSON-path for the error.
+         * <br>This path describes the location of the error, within the request json body.
+         *
+         * <p><b>Example:</b> {@code embed.fields[3].name}
+         *
+         * @return The JSON-path location
+         */
         @Nonnull
         public String getLocation()
         {
             return location;
         }
 
+        /**
+         * The list of {@link ErrorCode ErrorCodes} associated with this schema error.
+         *
+         * @return The error codes
+         */
         @Nonnull
         public List<ErrorCode> getErrors()
         {
