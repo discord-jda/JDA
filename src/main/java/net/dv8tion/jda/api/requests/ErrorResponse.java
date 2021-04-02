@@ -67,6 +67,7 @@ public enum ErrorResponse
     MAX_MESSAGE_PINS(               30003, "Maximum number of pinned messages reached (50)"),
     MAX_USERS_PER_DM(               30004, "Maximum number of recipients reached. (10)"),
     MAX_ROLES_PER_GUILD(            30005, "Maximum number of guild roles reached (250)"),
+    MAX_WEBHOOKS(                   30007, "Maximum number of webhooks reached (10)"),
     TOO_MANY_REACTIONS(             30010, "Maximum number of reactions reached (20)"),
     MAX_CHANNELS(                   30013, "Maximum number of guild channels reached (500)"),
     MAX_INVITES(                    30016, "Maximum number of invites reached (1000)"),

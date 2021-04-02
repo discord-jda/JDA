@@ -205,6 +205,8 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @return The current ChannelAction, for chaining convenience
      *
      * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue

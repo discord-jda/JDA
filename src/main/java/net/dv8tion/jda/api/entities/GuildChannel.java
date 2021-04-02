@@ -162,6 +162,8 @@ public interface GuildChannel extends AbstractChannel, Comparable<GuildChannel>
      * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this CacheFlag by default.
      *
      * @return True, if this channel is synced with its parent category
+     *
+     * @since  4.2.1
      */
     boolean isSynced();
 
@@ -244,6 +246,9 @@ public interface GuildChannel extends AbstractChannel, Comparable<GuildChannel>
      * Returns the {@link ChannelManager ChannelManager} for this GuildChannel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
      * You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
+     *
+     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
+     * This getter is not thread-safe and would require guards by the user.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}

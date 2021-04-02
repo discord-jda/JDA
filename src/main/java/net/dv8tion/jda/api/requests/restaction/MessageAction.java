@@ -256,6 +256,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -280,6 +282,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -307,6 +311,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         If the provided message is from a {@link MessageBuilder}
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -315,6 +321,23 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
         Checks.notNull(message, "Message");
         return referenceById(message.getIdLong());
     }
+
+    /**
+     * Whether to mention the used, when replying to a message.
+     * <br>This only matters in combination with {@link #reference(Message)} and {@link #referenceById(long)}!
+     *
+     * <p>This is true by default but can be configured using {@link #setDefaultMentionRepliedUser(boolean)}!
+     *
+     * @param  mention
+     *         True, to mention the author if the referenced message
+     *
+     * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction mentionRepliedUser(boolean mention);
 
     /**
      * Whether to throw a exception if the referenced message does not exist, when replying to a message.
@@ -326,6 +349,8 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         True, to throw a exception if the referenced message does not exist
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue

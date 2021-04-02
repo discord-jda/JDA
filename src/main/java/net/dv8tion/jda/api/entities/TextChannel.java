@@ -85,6 +85,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      * <br>These channels can be used to crosspost messages to other guilds by using a follower type webhook.
      *
      * @return True, if this is considered a news channel
+     *
+     * @since  4.2.1
      */
     boolean isNews();
 
@@ -140,6 +142,9 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
      *     <br>The {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL VIEW_CHANNEL} permission was removed</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_WEBHOOKS MAX_WEBHOOKS}
+     *     <br>If the channel already has reached the maximum capacity for webhooks</li>
      * </ul>
      *
      * @param  name
@@ -157,6 +162,114 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
     @Nonnull
     @CheckReturnValue
     WebhookAction createWebhook(@Nonnull String name);
+
+    /**
+     * Subscribes to the crossposted messages in this channel.
+     * <br>This will create a {@link Webhook} of type {@link WebhookType#FOLLOWER FOLLOWER} in the target channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the target channel doesn't exist or is not visible to the currently logged in account</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b></li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_WEBHOOKS MAX_WEBHOOKS}
+     *     <br>If the target channel already has reached the maximum capacity for webhooks</li>
+     * </ul>
+     *
+     * @param  targetChannelId
+     *         The target channel id
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws IllegalStateException
+     *         If this is not a news channels (See {@link #isNews()})
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId);
+
+    /**
+     * Subscribes to the crossposted messages in this channel.
+     * <br>This will create a {@link Webhook} of type {@link WebhookType#FOLLOWER FOLLOWER} in the target channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the target channel doesn't exist or not visible to the currently logged in account</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b></li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_WEBHOOKS MAX_WEBHOOKS}
+     *     <br>If the target channel already has reached the maximum capacity for webhooks</li>
+     * </ul>
+     *
+     * @param  targetChannelId
+     *         The target channel id
+     *
+     * @throws IllegalStateException
+     *         If this is not a news channels (See {@link #isNews()})
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Webhook.WebhookReference> follow(long targetChannelId)
+    {
+        return follow(Long.toUnsignedString(targetChannelId));
+    }
+
+    /**
+     * Subscribes to the crossposted messages in this channel.
+     * <br>This will create a {@link Webhook} of type {@link WebhookType#FOLLOWER FOLLOWER} in the target channel.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the target channel doesn't exist or not visible to the currently logged in account</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b></li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_WEBHOOKS MAX_WEBHOOKS}
+     *     <br>If the target channel already has reached the maximum capacity for webhooks</li>
+     * </ul>
+     *
+     * @param  targetChannel
+     *         The target channel
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_WEBHOOKS} in the <b>target channel</b>.
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws IllegalStateException
+     *         If this is not a news channels (See {@link #isNews()})
+     *
+     * @return {@link RestAction}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Webhook.WebhookReference> follow(@Nonnull TextChannel targetChannel)
+    {
+        Checks.notNull(targetChannel, "Target Channel");
+        Member selfMember = targetChannel.getGuild().getSelfMember();
+        if (!selfMember.hasAccess(targetChannel))
+            throw new MissingAccessException(targetChannel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasPermission(targetChannel, Permission.MANAGE_WEBHOOKS))
+            throw new InsufficientPermissionException(targetChannel, Permission.MANAGE_WEBHOOKS);
+        return follow(targetChannel.getId());
+    }
 
     /**
      * Bulk deletes a list of messages.
@@ -812,6 +925,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -863,6 +978,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue

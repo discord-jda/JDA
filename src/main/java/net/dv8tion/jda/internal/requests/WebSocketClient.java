@@ -366,6 +366,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
             IOUtil.setServerName(socketFactory, url);
+            if (socketFactory.getSocketTimeout() > 0)
+                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
+            else
+                socketFactory.setSocketTimeout(10000);
             socket = socketFactory.createSocket(url);
             socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")

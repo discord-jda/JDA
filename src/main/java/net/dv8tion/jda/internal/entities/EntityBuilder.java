@@ -144,7 +144,7 @@ public class EntityBuilder
                     continue;
                 }
                 final long emoteId = object.getLong("id");
-                emoteMap.put(emoteId, createEmote(guildObj, object, false));
+                emoteMap.put(emoteId, createEmote(guildObj, object));
             }
         }
     }
@@ -779,14 +779,14 @@ public class EntityBuilder
             largeImageKey, largeImageText, smallImageKey, smallImageText);
     }
 
-    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json, boolean fake)
+    public EmoteImpl createEmote(GuildImpl guildObj, DataObject json)
     {
         DataArray emoteRoles = json.optArray("roles").orElseGet(DataArray::empty);
         final long emoteId = json.getLong("id");
         final User user = json.isNull("user") ? null : createUser(json.getObject("user"));
         EmoteImpl emoteObj = (EmoteImpl) guildObj.getEmoteById(emoteId);
         if (emoteObj == null)
-            emoteObj = new EmoteImpl(emoteId, guildObj, fake);
+            emoteObj = new EmoteImpl(emoteId, guildObj);
         Set<Role> roleSet = emoteObj.getRoleSet();
 
         roleSet.clear();
@@ -1426,6 +1426,11 @@ public class EntityBuilder
 
     public WebhookImpl createWebhook(DataObject object)
     {
+        return createWebhook(object, false);
+    }
+
+    public WebhookImpl createWebhook(DataObject object, boolean allowMissingChannel)
+    {
         final long id = object.getLong("id");
         final long guildId = object.getUnsignedLong("guild_id");
         final long channelId = object.getUnsignedLong("channel_id");
@@ -1433,7 +1438,7 @@ public class EntityBuilder
         final WebhookType type = WebhookType.fromKey(object.getInt("type", -1));
 
         TextChannel channel = getJDA().getTextChannelById(channelId);
-        if (channel == null)
+        if (channel == null && !allowMissingChannel)
             throw new NullPointerException(String.format("Tried to create Webhook for an un-cached TextChannel! WebhookId: %s ChannelId: %s GuildId: %s",
                     id, channelId, guildId));
 
@@ -1462,11 +1467,25 @@ public class EntityBuilder
                 owner = createUser(json);
             }
         }
-        
-        return new WebhookImpl(channel, id, type)
+
+        Member ownerMember = owner == null || channel == null ? null : channel.getGuild().getMember(owner);
+        WebhookImpl webhook = new WebhookImpl(channel, getJDA(), id, type)
                 .setToken(token)
-                .setOwner(owner == null ? null : channel.getGuild().getMember(owner))
+                .setOwner(ownerMember, owner)
                 .setUser(defaultUser);
+
+        if (!object.isNull("source_channel"))
+        {
+            DataObject source = object.getObject("source_channel");
+            webhook.setSourceChannel(new Webhook.ChannelReference(source.getUnsignedLong("id"), source.getString("name")));
+        }
+        if (!object.isNull("source_guild"))
+        {
+            DataObject source = object.getObject("source_guild");
+            webhook.setSourceGuild(new Webhook.GuildReference(source.getUnsignedLong("id"), source.getString("name")));
+        }
+
+        return webhook;
     }
 
     public Invite createInvite(DataObject object)

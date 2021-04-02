@@ -208,6 +208,7 @@ public class Route
         public static final Route SEND_TYPING =          new Route(POST,   "channels/{channel_id}/typing");
         public static final Route GET_PERMISSIONS =      new Route(GET,    "channels/{channel_id}/permissions");
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}");
+        public static final Route FOLLOW_CHANNEL =       new Route(POST,   "channels/{channel_id}/followers");
 
         // Client Only
         public static final Route GET_RECIPIENTS =   new Route(GET,    "channels/{channel_id}/recipients");

@@ -31,6 +31,8 @@ public enum GatewayEncoding
      * Erlang External Term Format (binary). This is an optimized format which encodes all payloads
      * in a binary stream.
      *
+     * @since 4.2.1
+     *
      * @see <a href="https://erlang.org/doc/apps/erts/erl_ext_dist.html" target="_blank">Erlang -- External Term Format</a>
      */
     ETF

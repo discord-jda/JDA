@@ -122,6 +122,10 @@ class AudioWebSocket extends WebSocketAdapter
         {
             WebSocketFactory socketFactory = new WebSocketFactory(getJDA().getWebSocketFactory());
             IOUtil.setServerName(socketFactory, wssEndpoint);
+            if (socketFactory.getSocketTimeout() > 0)
+                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
+            else
+                socketFactory.setSocketTimeout(10000);
             socket = socketFactory.createSocket(wssEndpoint);
             socket.setDirectTextMessage(true);
             socket.addListener(this);

@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -45,7 +44,6 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Objects;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class RoleImpl implements Role
 {
@@ -53,8 +51,7 @@ public class RoleImpl implements Role
     private final JDAImpl api;
     private Guild guild;
 
-    private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile RoleManager manager;
+    private RoleManager manager;
 
     private RoleTagsImpl tags;
     private String name;
@@ -298,17 +295,9 @@ public class RoleImpl implements Role
     @Override
     public RoleManager getManager()
     {
-        RoleManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new RoleManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new RoleManagerImpl(this);
+        return manager;
     }
 
     @Nonnull

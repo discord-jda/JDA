@@ -555,6 +555,8 @@ public class JDABuilder
      *         If null is provided
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public JDABuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
@@ -1181,7 +1183,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since 4.2.1
+     * @since  4.2.1
      */
     @Nonnull
     public JDABuilder setAudioPool(@Nullable ScheduledExecutorService pool)
@@ -1203,7 +1205,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since 4.2.1
+     * @since  4.2.1
      */
     @Nonnull
     public JDABuilder setAudioPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)
