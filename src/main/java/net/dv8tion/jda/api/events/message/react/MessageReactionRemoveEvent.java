@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,14 @@ import javax.annotation.Nullable;
  * Indicates that a user removed the reaction on a message
  * 
  * <p>Can be used to detect when a reaction is removed from a message
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires at least one of the following intents (Will not fire at all if neither is enabled):
+ * <ul>
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} to work in guild text channels</li>
+ *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
+ * </ul>
  */
 public class MessageReactionRemoveEvent extends GenericMessageReactionEvent
 {

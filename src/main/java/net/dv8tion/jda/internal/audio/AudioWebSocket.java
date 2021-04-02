@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,6 +122,10 @@ class AudioWebSocket extends WebSocketAdapter
         {
             WebSocketFactory socketFactory = new WebSocketFactory(getJDA().getWebSocketFactory());
             IOUtil.setServerName(socketFactory, wssEndpoint);
+            if (socketFactory.getSocketTimeout() > 0)
+                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
+            else
+                socketFactory.setSocketTimeout(10000);
             socket = socketFactory.createSocket(wssEndpoint);
             socket.setDirectTextMessage(true);
             socket.addListener(this);

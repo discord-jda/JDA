@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package net.dv8tion.jda.api.utils.data.etf;
 /**
  * Tags used for encoding and decoding for external terms.
  * <br>This list in incomplete as not all tags are used by this library.
+ *
+ * @since  4.2.1
  */
 public class ExTermTag
 {

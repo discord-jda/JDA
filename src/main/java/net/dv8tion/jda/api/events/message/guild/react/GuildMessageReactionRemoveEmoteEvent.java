@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,10 @@ import javax.annotation.Nonnull;
  * Indicates that all reactions for a specific emoji/emote were removed by a moderator.
  *
  * <p>Can be used to detect which emoji/emote was removed.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  *
  * @since  4.2.0
  */

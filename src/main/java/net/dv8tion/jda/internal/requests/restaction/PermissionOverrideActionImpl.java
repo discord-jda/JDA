@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +28,12 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -117,7 +118,7 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetAllow()
     {
-        allow = getCurrentAllow();
+        allow = getOriginalAllow();
         allowSet = false;
         return this;
     }
@@ -126,7 +127,7 @@ public class PermissionOverrideActionImpl
     @Override
     public PermissionOverrideAction resetDeny()
     {
-        deny = getCurrentDeny();
+        deny = getOriginalDeny();
         denySet = false;
         return this;
     }
@@ -185,8 +186,7 @@ public class PermissionOverrideActionImpl
     @CheckReturnValue
     public PermissionOverrideActionImpl setAllow(long allowBits)
     {
-        Checks.notNegative(allowBits, "Granted permissions value");
-        Checks.check(allowBits <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
+        checkPermissions(getOriginalAllow() ^ allowBits);
         this.allow = allowBits;
         this.deny &= ~allowBits;
         allowSet = denySet = true;
@@ -195,15 +195,52 @@ public class PermissionOverrideActionImpl
 
     @Nonnull
     @Override
+    public PermissionOverrideAction grant(long allowBits)
+    {
+        return setAllow(getCurrentAllow() | allowBits);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setDeny(long denyBits)
     {
-        Checks.notNegative(denyBits, "Denied permissions value");
-        Checks.check(denyBits <= Permission.ALL_PERMISSIONS, "Specified deny value may not be greater than a full permission set");
+        checkPermissions(getOriginalDeny() ^ denyBits);
         this.deny = denyBits;
         this.allow &= ~denyBits;
         allowSet = denySet = true;
         return this;
+    }
+
+    @Nonnull
+    @Override
+    public PermissionOverrideAction deny(long denyBits)
+    {
+        return setDeny(getCurrentDeny() | denyBits);
+    }
+
+    @Nonnull
+    @Override
+    public PermissionOverrideAction clear(long inheritedBits)
+    {
+        return setAllow(getCurrentAllow() & ~inheritedBits).setDeny(getCurrentDeny() & ~inheritedBits);
+    }
+
+    protected void checkPermissions(long changed)
+    {
+        Member selfMember = getGuild().getSelfMember();
+        if (changed != 0 && !selfMember.hasPermission(Permission.ADMINISTRATOR))
+        {
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
+            if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0)
+            {
+                // This implies we can only set permissions the bot also has in the channel
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember);
+                EnumSet<Permission> missing = Permission.getPermissions(changed & ~botPerms);
+                if (!missing.isEmpty())
+                    throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+            }
+        }
     }
 
     @Nonnull
@@ -216,18 +253,28 @@ public class PermissionOverrideActionImpl
 
     private long getCurrentAllow()
     {
-        if (isOverride)
-            return 0;
-        PermissionOverride override = channel.getOverrideMap().get(id);
-        return override == null ? 0 : override.getAllowedRaw();
+        if (allowSet)
+            return allow;
+        return isOverride ? 0 : getOriginalAllow();
     }
 
     private long getCurrentDeny()
     {
-        if (isOverride)
-            return 0;
+        if (denySet)
+            return deny;
+        return isOverride ? 0 : getOriginalDeny();
+    }
+
+    private long getOriginalDeny()
+    {
         PermissionOverride override = channel.getOverrideMap().get(id);
         return override == null ? 0 : override.getDeniedRaw();
+    }
+
+    private long getOriginalAllow()
+    {
+        PermissionOverride override = channel.getOverrideMap().get(id);
+        return override == null ? 0 : override.getAllowedRaw();
     }
 
     @Override
@@ -235,8 +282,8 @@ public class PermissionOverrideActionImpl
     {
         DataObject object = DataObject.empty();
         object.put("type", isRole() ? "role" : "member");
-        object.put("allow", allowSet ? allow : getCurrentAllow());
-        object.put("deny", denySet ? deny : getCurrentDeny());
+        object.put("allow", getCurrentAllow());
+        object.put("deny", getCurrentDeny());
         reset();
         return getRequestBody(object);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,14 @@ public interface Message extends ISnowflake, Formattable
      * @see MessageAction#append(CharSequence) MessageAction.append(...)
      */
     int MAX_CONTENT_LENGTH = 2000;
+    
+   /**
+    * The maximum amount of reactions that can be added to one message ({@value})
+    * 
+    * @see Message#addReaction(String)
+    * @see Message#addReaction(net.dv8tion.jda.api.entities.Emote)
+    */
+    int MAX_REACTIONS = 20;
 
     /**
      * Pattern used to find instant invites in strings.
@@ -965,6 +973,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessage(CharSequence)} and {@link MessageAction#reference(Message)}.
      *
@@ -972,6 +982,8 @@ public interface Message extends ISnowflake, Formattable
      *         The content of the reply message
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -984,6 +996,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessage(MessageEmbed)} and {@link MessageAction#reference(Message)}.
      *
@@ -991,6 +1005,8 @@ public interface Message extends ISnowflake, Formattable
      *         The content of the reply message
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1003,6 +1019,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessage(content).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessage(Message)} and {@link MessageAction#reference(Message)}.
      *
@@ -1010,6 +1028,8 @@ public interface Message extends ISnowflake, Formattable
      *         The content of the reply message
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1022,6 +1042,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendMessageFormat(content, args).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendMessageFormat(String, Object...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1031,6 +1053,8 @@ public interface Message extends ISnowflake, Formattable
      *         The arguments for your format
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1043,6 +1067,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(file, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(File, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1052,6 +1078,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1064,6 +1092,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(File, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1075,6 +1105,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1087,6 +1119,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(InputStream, String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1098,6 +1132,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1110,6 +1146,8 @@ public interface Message extends ISnowflake, Formattable
      * Replies and references this message.
      * <br>This is identical to {@code message.getChannel().sendFile(data, name, options).reference(message)}.
      * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
      * <p>For further info, see {@link MessageChannel#sendFile(byte[], String, net.dv8tion.jda.api.utils.AttachmentOption...)} and {@link MessageAction#reference(Message)}.
      *
@@ -1121,6 +1159,8 @@ public interface Message extends ISnowflake, Formattable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -1960,6 +2000,8 @@ public interface Message extends ISnowflake, Formattable
      *         or if this message is from another user and we don't have {@link Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -2539,6 +2581,8 @@ public interface Message extends ISnowflake, Formattable
          * based on {@link #getFileName()}.
          *
          * @return True if this attachment is marked as spoiler
+         *
+         * @since  4.2.1
          */
         public boolean isSpoiler()
         {
