@@ -46,7 +46,6 @@ public class UserTypingEvent extends GenericUserEvent
         this.member = member;
         this.channel = channel;
         this.timestamp = timestamp;
-        this.member = member;
     }
 
     /**

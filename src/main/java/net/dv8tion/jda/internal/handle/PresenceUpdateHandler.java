@@ -103,12 +103,13 @@ public class PresenceUpdateHandler extends SocketHandler
         //Create member from presence if not offline
         if (member == null)
         {
-            if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
-            {
-                log.trace("Ignoring incomplete PRESENCE_UPDATE for member with id {} in guild with id {}", userId, guildId);
-                return null;
-            }
-            member = createMember(content, guildId, guild, jsonUser);
+            return null;
+//            if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
+//            {
+//                log.trace("Ignoring incomplete PRESENCE_UPDATE for member with id {} in guild with id {}", userId, guildId);
+//                return null;
+//            }
+//            member = createMember(content, guildId, guild, jsonUser);
         }
 
         if (getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS) && !content.isNull("client_status"))
