@@ -56,6 +56,7 @@ public class MessageUpdateHandler extends SocketHandler
                 MessageType type = MessageType.fromId(content.getInt("type"));
                 switch (type)
                 {
+                    case INLINE_REPLY:
                     case DEFAULT:
                         return handleMessage(content);
                     default:
