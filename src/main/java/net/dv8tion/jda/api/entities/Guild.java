@@ -2253,6 +2253,10 @@ public interface Guild extends ISnowflake
     @Nonnull
     AudioManager getAudioManager();
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> requestToSpeak();
+
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Guild
      *

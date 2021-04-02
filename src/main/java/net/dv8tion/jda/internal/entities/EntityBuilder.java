@@ -284,6 +284,7 @@ public class EntityBuilder
         case TEXT:
             createTextChannel(guildObj, channelData, guildObj.getIdLong());
             break;
+        case STAGE:
         case VOICE:
             createVoiceChannel(guildObj, channelData, guildObj.getIdLong());
             break;
@@ -947,7 +948,10 @@ public class EntityBuilder
                 UnlockHook vlock = guildVoiceView.writeLock();
                 UnlockHook jlock = voiceView.writeLock())
             {
-                channel = new VoiceChannelImpl(id, guild);
+                if (json.getInt("type") == ChannelType.STAGE.getId())
+                    channel = new StageChannelImpl(id, guild);
+                else
+                    channel = new VoiceChannelImpl(id, guild);
                 guildVoiceView.getMap().put(id, channel);
                 playbackCache = voiceView.getMap().put(id, channel) == null;
             }

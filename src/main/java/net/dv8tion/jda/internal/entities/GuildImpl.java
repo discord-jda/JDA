@@ -747,6 +747,21 @@ public class GuildImpl implements Guild
     }
 
     @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> requestToSpeak()
+    {
+        VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
+        if (!(connectedChannel instanceof StageChannel))
+            return new CompletedRestAction<>(getJDA(), null);
+        Route.CompiledRoute route = Route.Guilds.REQUEST_TO_SPEAK.compile(getId());
+        DataObject body = DataObject.empty()
+                .putNull("request_to_speak_timestamp")
+                .put("channel_id", connectedChannel.getId())
+                .put("suppress", false);
+        return new RestActionImpl<>(getJDA(), route, body);
+    }
+
+    @Nonnull
     @Override
     public JDAImpl getJDA()
     {

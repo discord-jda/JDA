@@ -317,8 +317,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @CheckReturnValue
     public ChannelManagerImpl setTopic(String topic)
     {
-        if (getType() != ChannelType.TEXT)
-            throw new IllegalStateException("Can only set topic on text channels");
+        if (getType() != ChannelType.TEXT && getType() != ChannelType.STAGE)
+            throw new IllegalStateException("Can only set topic on text channels and stage channels");
         Checks.check(topic == null || topic.length() <= 1024, "Topic must be less or equal to 1024 characters in length");
         this.topic = topic;
         set |= TOPIC;

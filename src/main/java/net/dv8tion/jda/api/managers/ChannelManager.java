@@ -365,17 +365,18 @@ public interface ChannelManager extends Manager<ChannelManager>
     ChannelManager setPosition(int position);
 
     /**
-     * Sets the <b><u>topic</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     * Sets the <b><u>topic</u></b> of the selected
+     * {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} or {@link StageChannel StageChannel}.
      *
      * <p>A channel topic <b>must not</b> be more than {@code 1024} characters long!
-     * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}</b>
+     * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} and {@link StageChannel StageChannels}</b>
      *
      * @param  topic
-     *         The new topic for the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel},
+     *         The new topic for the selected channel,
      *         {@code null} or empty String to reset
      *
      * @throws UnsupportedOperationException
-     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}
+     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT} nor {@link ChannelType#STAGE STAGE}
      * @throws IllegalArgumentException
      *         If the provided topic is greater than {@code 1024} in length
      *

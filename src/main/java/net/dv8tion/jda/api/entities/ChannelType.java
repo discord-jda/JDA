@@ -48,6 +48,10 @@ public enum ChannelType
      */
     STORE(6, 0, true),
     /**
+     * A {@link StageChannel StageChannel}, Guild-Only.
+     */
+    STAGE(13, 1, true),
+    /**
      * Unknown Discord channel type. Should never happen and would only possibly happen if Discord implemented a new
      * channel type and JDA had yet to implement support for it.
      */
