@@ -40,10 +40,9 @@ import java.util.Locale;
  * Representation of a Discord Guild Template
  * <br>This class is immutable.
  *
- * @since  4.2.1
+ * @since  4.3.0
  *
  * @see    #resolve(JDA, String)
- *
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveTemplates() Guild.retrieveTemplates()
  */
 public interface Template
