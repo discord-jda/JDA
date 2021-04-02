@@ -19,14 +19,15 @@ package net.dv8tion.jda.api.exceptions;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.api.requests.RestAction RestAction}
@@ -40,6 +41,7 @@ public class ErrorResponseException extends RuntimeException
     private final Response response;
     private final String meaning;
     private final int code;
+    private final List<SchemaError> schemaErrors;
 
     /**
      * Creates a new ErrorResponseException instance
@@ -50,9 +52,10 @@ public class ErrorResponseException extends RuntimeException
      * @param response
      *        The Discord Response causing the ErrorResponse
      */
-    private ErrorResponseException(ErrorResponse errorResponse, Response response, int code, String meaning)
+    private ErrorResponseException(ErrorResponse errorResponse, Response response, int code, String meaning, List<SchemaError> schemaErrors)
     {
-        super(code + ": " + meaning);
+        super(code + ": " + meaning + (schemaErrors.isEmpty() ? ""
+            : "\n" + schemaErrors.stream().map(SchemaError::toString).collect(Collectors.joining("\n"))));
 
         this.response = response;
         if (response != null && response.getException() != null)
@@ -60,6 +63,7 @@ public class ErrorResponseException extends RuntimeException
         this.errorResponse = errorResponse;
         this.code = code;
         this.meaning = meaning;
+        this.schemaErrors = schemaErrors;
     }
 
     /**
@@ -117,12 +121,19 @@ public class ErrorResponseException extends RuntimeException
         return response;
     }
 
+    @Nonnull
+    public List<SchemaError> getSchemaErrors()
+    {
+        return schemaErrors;
+    }
+
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
         // TODO: Handle schema errors?
         Optional<DataObject> optObj = response.optObject();
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
+        List<SchemaError> schemaErrors = new ArrayList<>();
         if (response.isError() && response.getException() != null)
         {
             // this generally means that an exception occurred trying to
@@ -148,6 +159,8 @@ public class ErrorResponseException extends RuntimeException
                 code = response.code;
                 meaning = obj.toString();
             }
+
+            obj.optObject("errors").ifPresent(schema -> parseSchema(schemaErrors, "", schema));
         }
         else
         {
@@ -156,7 +169,46 @@ public class ErrorResponseException extends RuntimeException
             meaning = response.getString();
         }
 
-        return new ErrorResponseException(errorResponse, response, code, meaning);
+        return new ErrorResponseException(errorResponse, response, code, meaning, schemaErrors);
+    }
+
+    private static void parseSchema(List<SchemaError> schemaErrors, String currentLocation, DataObject errors)
+    {
+        // check what kind of errors we are dealing with
+        for (String name : errors.keys())
+        {
+            DataObject schemaError = errors.getObject(name);
+            if (!schemaError.isNull("_errors"))
+            {
+                // We are dealing with an Object Error
+                schemaErrors.add(parseSchemaError(currentLocation + name, schemaError));
+            }
+            else if (schemaError.keys().stream().allMatch(Helpers::isNumeric))
+            {
+                // We have an Array Error
+                for (String index : schemaError.keys())
+                {
+                    DataObject properties = schemaError.getObject(index);
+                    String location = String.format("%s%s[%s].", currentLocation, name, index);
+                    parseSchema(schemaErrors, location, properties);
+                }
+            }
+            else
+            {
+                // We have a nested schema error, use recursion!
+                String location = String.format("%s%s.", currentLocation, name);
+                parseSchema(schemaErrors, location, schemaError);
+            }
+        }
+    }
+
+    private static SchemaError parseSchemaError(String location, DataObject obj)
+    {
+        List<ErrorCode> codes = obj.getArray("_errors")
+                .stream(DataArray::getObject)
+                .map(json -> new ErrorCode(json.getString("code"), json.getString("message")))
+                .collect(Collectors.toList());
+        return new SchemaError(location, codes);
     }
 
     /**
@@ -281,5 +333,65 @@ public class ErrorResponseException extends RuntimeException
         // Make an enum set copy (for performance, memory efficiency, and thread-safety)
         final EnumSet<ErrorResponse> ignored = EnumSet.copyOf(set);
         return new ErrorHandler(orElse).ignore(ignored);
+    }
+
+    public static class ErrorCode
+    {
+        private final String code;
+        private final String message;
+
+        ErrorCode(String code, String message)
+        {
+            this.code = code;
+            this.message = message;
+        }
+
+        @Nonnull
+        public String getCode()
+        {
+            return code;
+        }
+
+        @Nonnull
+        public String getMessage()
+        {
+            return message;
+        }
+
+        @Override
+        public String toString()
+        {
+            return code + ": " + message;
+        }
+    }
+
+    public static class SchemaError
+    {
+        private final String location;
+        private final List<ErrorCode> errors;
+
+        private SchemaError(String location, List<ErrorCode> codes)
+        {
+            this.location = location;
+            this.errors = codes;
+        }
+
+        @Nonnull
+        public String getLocation()
+        {
+            return location;
+        }
+
+        @Nonnull
+        public List<ErrorCode> getErrors()
+        {
+            return errors;
+        }
+
+        @Override
+        public String toString()
+        {
+            return location + "\n\t- " + errors.stream().map(Object::toString).collect(Collectors.joining("\n\t- "));
+        }
     }
 }
