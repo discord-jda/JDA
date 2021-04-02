@@ -41,7 +41,7 @@ public class MemberImpl implements Member
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
-    private final GuildVoiceState voiceState;
+    private final GuildVoiceStateImpl voiceState;
     private final Map<ClientType, OnlineStatus> clientStatus;
 
     private GuildImpl guild;
@@ -115,7 +115,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public GuildVoiceState getVoiceState()
+    public GuildVoiceStateImpl getVoiceState()
     {
         return voiceState;
     }

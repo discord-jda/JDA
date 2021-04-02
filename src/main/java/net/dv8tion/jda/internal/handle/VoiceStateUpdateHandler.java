@@ -82,7 +82,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         MemberImpl member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson);
         if (member == null) return;
 
-        GuildVoiceStateImpl vState = (GuildVoiceStateImpl) member.getVoiceState();
+        GuildVoiceStateImpl vState = member.getVoiceState();
         if (vState == null)
             return;
         vState.setSessionId(sessionId); //Cant really see a reason for an event for this
@@ -137,11 +137,10 @@ public class VoiceStateUpdateHandler extends SocketHandler
         {
             VoiceChannelImpl oldChannel = (VoiceChannelImpl) vState.getChannel();
             vState.setConnectedChannel(channel);
+            getJDA().getEntityBuilder().updateMemberCache(member);
 
             if (oldChannel == null)
             {
-                channel.getConnectedMembersMap().put(userId, member);
-                getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
                     new GuildVoiceJoinEvent(
                         getJDA(), responseNumber,
@@ -149,10 +148,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else if (channel == null)
             {
-                oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
-                getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
                     new GuildVoiceLeaveEvent(
                         getJDA(), responseNumber,
@@ -178,9 +175,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
                     //If we are not already connected this will be removed by VOICE_SERVER_UPDATE
                 }
 
-                channel.getConnectedMembersMap().put(userId, member);
-                oldChannel.getConnectedMembersMap().remove(userId);
-                getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
                     new GuildVoiceMoveEvent(
                         getJDA(), responseNumber,

@@ -405,13 +405,12 @@ public class EntityBuilder
                 getJDA().getUsersView().remove(user.getIdLong());
             }
 
-            GuildVoiceStateImpl voiceState = (GuildVoiceStateImpl) member.getVoiceState();
+            GuildVoiceStateImpl voiceState = member.getVoiceState();
             if (voiceState != null)
             {
                 VoiceChannelImpl connectedChannel = (VoiceChannelImpl) voiceState.getChannel();
                 if (connectedChannel != null)
-                    connectedChannel.getConnectedMembersMap().remove(member.getIdLong());
-                voiceState.setConnectedChannel(null);
+                    voiceState.setConnectedChannel(null);
             }
 
             return false;
@@ -517,9 +516,9 @@ public class EntityBuilder
 
         final long channelId = voiceStateJson.getLong("channel_id");
         VoiceChannelImpl voiceChannel = (VoiceChannelImpl) guild.getVoiceChannelsView().get(channelId);
-        if (voiceChannel != null)
-            voiceChannel.getConnectedMembersMap().put(member.getIdLong(), member);
-        else
+//        if (voiceChannel != null)
+//            voiceChannel.getConnectedMembers().add(member.getIdLong());
+        if (voiceChannel == null)
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                       channelId, guild.getId(), user.getId());
 

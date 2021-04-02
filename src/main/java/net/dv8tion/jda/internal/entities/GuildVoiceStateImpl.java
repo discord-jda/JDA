@@ -29,8 +29,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private final JDA api;
     private Guild guild;
     private Member member;
+    private VoiceChannelImpl connectedChannel;
 
-    private VoiceChannel connectedChannel;
     private String sessionId;
     private boolean selfMuted = false;
     private boolean selfDeafened = false;
@@ -164,12 +164,6 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     // -- Setters --
 
-    public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
-    {
-        this.connectedChannel = connectedChannel;
-        return this;
-    }
-
     public GuildVoiceStateImpl setSessionId(String sessionId)
     {
         this.sessionId = sessionId;
@@ -209,6 +203,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl setStream(boolean stream)
     {
         this.stream = stream;
+        return this;
+    }
+
+    public GuildVoiceStateImpl setConnectedChannel(VoiceChannelImpl channel)
+    {
+        this.connectedChannel = channel;
         return this;
     }
 }

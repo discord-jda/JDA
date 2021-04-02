@@ -16,20 +16,18 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceChannelImpl> implements VoiceChannel
 {
-    private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();
     private int userLimit;
     private int bitrate;
 
@@ -68,7 +66,13 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     @Override
     public List<Member> getMembers()
     {
-        return Collections.unmodifiableList(new ArrayList<>(getConnectedMembersMap().valueCollection()));
+        if (!getGuild().getJDA().isCacheFlagSet(CacheFlag.VOICE_STATE))
+            return Collections.emptyList();
+        return Collections.unmodifiableList(
+            getGuild().getMemberCache().applyStream(stream ->
+                stream.filter(m -> equals(m.getVoiceState() != null ? m.getVoiceState().getChannel() : null))
+                      .collect(Collectors.toList()))
+        );
     }
 
     @Override
@@ -132,17 +136,5 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     {
         this.bitrate = bitrate;
         return this;
-    }
-
-    // -- Map Getters --
-
-    public TLongObjectMap<Member> getConnectedMembersMap()
-    {
-        connectedMembers.transformValues((member) -> {
-            // Load real member instance from cache to provided up-to-date cache information
-            Member real = getGuild().getMemberById(member.getIdLong());
-            return real != null ? real : member;
-        });
-        return connectedMembers;
     }
 }
