@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -101,6 +102,9 @@ public interface IPermissionHolder extends ISnowflake
      * @param  permissions
      *         Permissions to check for.
      *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      */
     boolean hasPermission(@Nonnull Permission... permissions);
@@ -111,6 +115,9 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @param  permissions
      *         Permissions to check for.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      *
@@ -125,6 +132,9 @@ public interface IPermissionHolder extends ISnowflake
      *         The {@link GuildChannel GuildChannel} in which to check.
      * @param  permissions
      *         Permissions to check for.
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      *
@@ -141,7 +151,65 @@ public interface IPermissionHolder extends ISnowflake
      * @param  permissions
      *         Permissions to check for.
      *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
     boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions);
+
+    /**
+     * Checks whether or not this PermissionHolder has {@link Permission#VIEW_CHANNEL VIEW_CHANNEL}
+     * and {@link Permission#VOICE_CONNECT VOICE_CONNECT} permissions in the {@link GuildChannel}.
+     *
+     * @param  channel
+     *         The channel to check access for
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return True, if the PermissionHolder has access
+     */
+    default boolean hasAccess(@Nonnull GuildChannel channel)
+    {
+        Checks.notNull(channel, "Channel");
+        return channel.getType() == ChannelType.VOICE
+                ? hasPermission(channel, Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL)
+                : hasPermission(channel, Permission.VIEW_CHANNEL);
+    }
+
+    /**
+     * Whether the permissions of this PermissionHolder are good enough to sync the target channel with the sync source.
+     * <br>This checks what permissions would be changed by the overrides of the sync source and whether the permission holder is able to set them on the target channel.
+     *
+     * <p>If the permission holder had {@link Permission#MANAGE_PERMISSIONS} in an override on the target channel or {@link Permission#ADMINISTRATOR} on one of its roles, then it can set any permission on the target channel.
+     * Otherwise, the permission holder can only set permissions it also has in the channel.
+     *
+     * @param  targetChannel
+     *         The target channel to check
+     * @param  syncSource
+     *         The sync source, for example the parent category (see {@link GuildChannel#getParent()})
+     *
+     * @throws IllegalArgumentException
+     *         If either of the channels is null or not from the same guild as this permission holder
+     *
+     * @return True, if the channels can be synced
+     */
+    boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource);
+
+    /**
+     * Whether the permissions of this PermissionHolder are good enough to sync the target channel with any other channel.
+     * <br>This checks whether the permission holder has <em>local administrator</em>.
+     *
+     * <p>If the permission holder had {@link Permission#MANAGE_PERMISSIONS} in an override on the target channel or {@link Permission#ADMINISTRATOR} on one of its roles, then it can set any permission on the target channel.
+     *
+     * @param  channel
+     *         The target channel to check
+     *
+     * @throws IllegalArgumentException
+     *         If the channel is null or not from the same guild as this permission holder
+     *
+     * @return True, if the channel can be synced
+     */
+    boolean canSync(@Nonnull GuildChannel channel);
 }

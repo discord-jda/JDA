@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.Webhook;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,6 +28,10 @@ import javax.annotation.Nullable;
  * Indicates that a Message is received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
  * 
  * <p>Can be used to retrieve the affected TextChannel and Message.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled.
  */
 public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
 {
@@ -51,12 +56,12 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
 
     /**
      * The Author of the Message received as {@link net.dv8tion.jda.api.entities.User User} object.
-     * <br>This will be never-null but might be a fake User if Message was sent via Webhook
+     * <br>This will be never-null but might be a fake User if Message was sent via Webhook.
+     * See {@link Webhook#getDefaultUser()}.
      *
      * @return The Author of the Message.
      *
      * @see    #isWebhookMessage()
-     * @see    net.dv8tion.jda.api.entities.User#isFake()
      */
     @Nonnull
     public User getAuthor()

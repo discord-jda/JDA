@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -58,7 +58,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private final AudioConnection audioConnection;
     private final ConnectionListener listener;
-    private final ScheduledThreadPoolExecutor keepAlivePool;
+    private final ScheduledExecutorService keepAlivePool;
     private final Guild guild;
     private final String sessionId;
     private final String token;
@@ -120,18 +120,13 @@ class AudioWebSocket extends WebSocketAdapter
 
         try
         {
-            WebSocketFactory socketFactory = getJDA().getWebSocketFactory();
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (socketFactory)
-            {
-                String host = IOUtil.getHost(wssEndpoint);
-                // null if the host is undefined, unlikely but we should handle it
-                if (host != null)
-                    socketFactory.setServerName(host);
-                else // practically should never happen
-                    socketFactory.setServerNames(null);
-                socket = socketFactory.createSocket(wssEndpoint);
-            }
+            WebSocketFactory socketFactory = new WebSocketFactory(getJDA().getWebSocketFactory());
+            IOUtil.setServerName(socketFactory, wssEndpoint);
+            if (socketFactory.getSocketTimeout() > 0)
+                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
+            else
+                socketFactory.setSocketTimeout(10000);
+            socket = socketFactory.createSocket(wssEndpoint);
             socket.setDirectTextMessage(true);
             socket.addListener(this);
             changeStatus(ConnectionStatus.CONNECTING_AWAITING_WEBSOCKET_CONNECT);
@@ -171,7 +166,12 @@ class AudioWebSocket extends WebSocketAdapter
 
             //Verify that it is actually a lost of connection and not due the connected channel being deleted.
             JDAImpl api = getJDA();
-            if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
+            if (status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL && (!api.getClient().isSession() || !api.getClient().isConnected()))
+            {
+                LOG.debug("Connection was closed due to session invalidate!");
+                status = ConnectionStatus.ERROR_CANNOT_RESUME;
+            }
+            else if (status == ConnectionStatus.ERROR_LOST_CONNECTION || status == ConnectionStatus.DISCONNECTED_KICKED_FROM_CHANNEL)
             {
                 //Get guild from JDA, don't use [guild] field to make sure that we don't have
                 // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
@@ -693,11 +693,7 @@ class AudioWebSocket extends WebSocketAdapter
 
     private User getUser(final long userId)
     {
-        JDAImpl api = getJDA();
-        User user = api.getUserById(userId);
-        if (user != null)
-            return user;
-        return api.getFakeUserMap().get(userId);
+        return getJDA().getUserById(userId);
     }
 
     @Override

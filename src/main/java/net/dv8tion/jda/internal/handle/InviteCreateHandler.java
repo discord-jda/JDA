@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class InviteCreateHandler extends SocketHandler
         Optional<DataObject> inviterJson = content.optObject("inviter");
         boolean expanded = maxUses != -1;
 
-        User inviter = inviterJson.map(json -> getJDA().getEntityBuilder().createFakeUser(json)).orElse(null);
+        User inviter = inviterJson.map(json -> getJDA().getEntityBuilder().createUser(json)).orElse(null);
         InviteImpl.ChannelImpl channel = new InviteImpl.ChannelImpl(realChannel);
         InviteImpl.GuildImpl guild = new InviteImpl.GuildImpl(realGuild);
 

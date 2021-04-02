@@ -1,5 +1,5 @@
-[version]: https://api.bintray.com/packages/dv8fromtheworld/maven/JDA/images/download.svg
-[download]: https://bintray.com/dv8fromtheworld/maven/JDA/_latestVersion
+[version]: https://shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fm2.dv8tion.net%2Freleases%2Fnet%2Fdv8tion%2FJDA%2Fmaven-metadata.xml&color=informational&label=Download
+[download]: #download
 [discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
 [jenkins]: https://ci.dv8tion.net/job/JDA
@@ -319,27 +319,16 @@ public static void main(String[] args) throws Exception
 
 ## Entity Lifetimes
 
-An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities
-that Discord provides.
-Instances of these entities are created and deleted by JDA when Discord instructs it. This means
-the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
+An **Entity** is the term used to describe types such as **GuildChannel**/**Message**/**User** and other entities that Discord provides.
+Instances of these entities are created and deleted by JDA when Discord instructs it. This means the lifetime depends on signals provided by the Discord API which are used to create/update/delete entities.
 This is done through Gateway Events known as "dispatches" that are handled by the JDA WebSocket handlers.
 When Discord instructs JDA to delete entities, they are simply removed from the JDA cache and lose their references.
-Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless. Discord
-may instruct to delete these entities randomly for cache synchronization with the API.
+Once that happens, nothing in JDA interacts or updates the instances of those entities, and they become useless.
+Discord may instruct to delete these entities randomly for cache synchronization with the API.
 
 **It is not recommended to store _any_ of these entities for a longer period of time!**
 Instead of keeping (e.g.) a `User` instance in some field, an ID should be used. With the ID of a user,
 you can use `getUserById(id)` to get and keep the user reference in a local variable (see below).
-
-### Fake Entities
-
-Some entities in JDA are marked through an interface called `IFakeable`. These entities can exist outside
-of the JDA cache and are inaccessible through the common `get...ById(id)` methods.
-Fake entities are essentially instances that are not directly referenced by the JDA cache and are only
-temporarily created for a specific usage. It may be used for the author of a message that has left the guild
-when requesting the history of a `MessageChannel` or for `Emote` instances used in a `Message` that are not part
-of any of the guilds available to the bot.
 
 ### Entity Updates
 
@@ -416,11 +405,10 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 ```
 ```xml
 <repository>
-    <id>jcenter</id>
-    <name>jcenter-bintray</name>
-    <url>https://jcenter.bintray.com</url>
+    <id>dv8tion</id>
+    <name>m2-dv8tion</name>
+    <url>https://m2.dv8tion.net/releases</url>
 </repository>
-
 ```
 
 **Maven without Audio**
@@ -445,7 +433,11 @@ dependencies {
 }
 
 repositories {
-    jcenter()
+    mavenCentral() // for transitive dependencies
+    maven {
+      name 'm2-dv8tion'
+      url 'https://m2.dv8tion.net/releases'
+    }
 }
 ```
 
@@ -458,7 +450,7 @@ dependencies {
 }
 ```
 
-The builds are distributed using JCenter through Bintray [JDA JCenter Bintray](https://bintray.com/dv8fromtheworld/maven/JDA/)
+The builds are distributed using a custom S3 instance.
 
 If you do not need any opus de-/encoding done by JDA (voice receive/send with PCM) you can exclude `opus-java` entirely.
 This can be done if you only send audio with an `AudioSendHandler` which only sends opus (`isOpus() = true`). (See [lavaplayer](https://github.com/sedmelluq/lavaplayer))
@@ -643,33 +635,26 @@ version was by looking at the [release page](https://github.com/DV8FromTheWorld/
 This project requires **Java 8+**.<br>
 All dependencies are managed automatically by Gradle.
  * NV Websocket Client
-   * Version: **2.9**
+   * Version: **2.14**
    * [Github](https://github.com/TakahikoKawasaki/nv-websocket-client)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.neovisionaries%3Anv-websocket-client/view)
  * OkHttp
    * Version: **3.13.0**
    * [Github](https://github.com/square/okhttp)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.squareup.okhttp3:okhttp)
  * Apache Commons Collections4
    * Version: **4.1**
    * [Website](https://commons.apache.org/proper/commons-collections)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.apache.commons%3Acommons-collections4/view)
  * jackson
    * Version: **2.10.1**
    * [Github](https://github.com/FasterXML/jackson)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/com.fasterxml.jackson.core%3Ajackson-databind/view)
  * Trove4j
    * Version: **3.0.3**
    * [BitBucket](https://bitbucket.org/trove4j/trove)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/net.sf.trove4j%3Atrove4j/view)
  * slf4j-api
    * Version: **1.7.25**
    * [Website](https://www.slf4j.org/)
-   * [JCenter Repository](https://bintray.com/bintray/jcenter/org.slf4j%3Aslf4j-api/view)
  * opus-java (optional)
-   * Version: **1.0.4**
+   * Version: **1.1.0**
    * [GitHub](https://github.com/discord-java/opus-java)
-   * [JCenter Repository](https://bintray.com/minndevelopment/maven/opus-java)
 
 ## Related Projects
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,6 +87,27 @@ public enum MessageType
      * Specialized message used to announce when a crosspost webhook is added to a channel
      */
     CHANNEL_FOLLOW_ADD(12),
+
+    /**
+     * System message related to discovery qualifications.
+     */
+    GUILD_DISCOVERY_DISQUALIFIED(14),
+
+    /**
+     * System message related to discovery qualifications.
+     */
+    GUILD_DISCOVERY_REQUALIFIED(15),
+
+    /**
+     * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
+     */
+    INLINE_REPLY(19),
+
+    /**
+     * This message was created by an interaction. Usually in combination with Slash Commands.
+     * <br>Most commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
+     */
+    APPLICATION_COMMAND(20),
 
     /**
      * Unknown MessageType.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import com.neovisionaries.ws.client.WebSocketFactory;
 import okhttp3.*;
 import okio.Okio;
 import org.slf4j.Logger;
@@ -54,6 +55,14 @@ public class IOUtil
     public static String getHost(String uri)
     {
         return URI.create(uri).getHost();
+    }
+
+    public static void setServerName(WebSocketFactory factory, String url)
+    {
+        String host = getHost(url);
+        // null if the host is undefined, unlikely but we should handle it
+        if (host != null)
+            factory.setServerName(host);
     }
 
     public static OkHttpClient.Builder newHttpClientBuilder()

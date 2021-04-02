@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public class ChannelCreateHandler extends SocketHandler
                 jda.handleEvent(
                     new PrivateChannelCreateEvent(
                         jda, responseNumber,
-                        builder.createPrivateChannel(content)));
+                        builder.createPrivateChannel(content, true)));
                 break;
             }
             case GROUP:

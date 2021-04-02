@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,12 +67,14 @@ public enum ErrorResponse
     MAX_MESSAGE_PINS(               30003, "Maximum number of pinned messages reached (50)"),
     MAX_USERS_PER_DM(               30004, "Maximum number of recipients reached. (10)"),
     MAX_ROLES_PER_GUILD(            30005, "Maximum number of guild roles reached (250)"),
+    MAX_WEBHOOKS(                   30007, "Maximum number of webhooks reached (10)"),
     TOO_MANY_REACTIONS(             30010, "Maximum number of reactions reached (20)"),
     MAX_CHANNELS(                   30013, "Maximum number of guild channels reached (500)"),
     MAX_INVITES(                    30016, "Maximum number of invites reached (1000)"),
     UNAUTHORIZED(                   40001, "Unauthorized"),
     REQUEST_ENTITY_TOO_LARGE(       40005, "Request entity too large"),
     USER_NOT_CONNECTED(             40032, "Target user is not connected to voice."),
+    ALREADY_CROSSPOSTED(            40033, "This message has already been crossposted."),
     MISSING_ACCESS(                 50001, "Missing Access"),
     INVALID_ACCOUNT_TYPE(           50002, "Invalid Account Type"),
     INVALID_DM_ACTION(              50003, "Cannot execute action on a DM channel"),

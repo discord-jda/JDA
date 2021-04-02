@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -158,18 +159,32 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     @Override
     public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
     {
-        ChannelAction<TextChannel> action = getGuild().createTextChannel(name).setParent(this);
-        applyPermission(action);
-        return action;
+        ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
+        return trySync(action);
     }
 
     @Nonnull
     @Override
     public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
     {
-        ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name).setParent(this);
-        applyPermission(action);
-        return action;
+        ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
+        return trySync(action);
+    }
+
+    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
+    {
+        Member selfMember = getGuild().getSelfMember();
+        if (!selfMember.canSync(this))
+        {
+            long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
+            for (PermissionOverride override : getPermissionOverrides())
+            {
+                long perms = override.getDeniedRaw() | override.getAllowedRaw();
+                if ((perms & ~botPerms) != 0)
+                    return action;
+            }
+        }
+        return action.syncPermissionOverrides();
     }
 
     @Nonnull
@@ -190,17 +205,5 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
     public String toString()
     {
         return "GC:" + getName() + '(' + id + ')';
-    }
-
-    private void applyPermission(ChannelAction a)
-    {
-        overrides.forEachValue(override ->
-        {
-            if (override.isMemberOverride())
-                a.addPermissionOverride(override.getMember(), override.getAllowedRaw(), override.getDeniedRaw());
-            else
-                a.addPermissionOverride(override.getRole(), override.getAllowedRaw(), override.getDeniedRaw());
-            return true;
-        });
     }
 }

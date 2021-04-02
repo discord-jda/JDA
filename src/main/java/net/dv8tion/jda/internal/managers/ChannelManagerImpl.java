@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,24 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.AbstractChannelImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.PermOverrideData;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
+import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
+import java.util.EnumSet;
 
 public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements ChannelManager
 {
-    protected final SnowflakeReference<GuildChannel> channel;
+    protected GuildChannel channel;
 
     protected String name;
     protected String parent;
@@ -48,6 +50,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     protected int slowmode;
     protected int userlimit;
     protected int bitrate;
+    protected boolean news;
 
     protected final Object lock = new Object();
     protected final TLongObjectHashMap<PermOverrideData> overridesAdd;
@@ -66,7 +69,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
         JDA jda = channel.getJDA();
         ChannelType type = channel.getType();
-        this.channel = new SnowflakeReference<>(channel, (channelId) -> jda.getGuildChannelById(type, channelId));
+        this.channel = channel;
         if (isPermissionChecksEnabled())
             checkPermissions();
         this.overridesAdd = new TLongObjectHashMap<>();
@@ -77,7 +80,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @Override
     public GuildChannel getChannel()
     {
-        return channel.resolve();
+        GuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        if (realChannel != null)
+            channel = realChannel;
+        return channel;
     }
 
     @Nonnull
@@ -92,6 +98,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             this.parent = null;
         if ((fields & TOPIC) == TOPIC)
             this.topic = null;
+        if ((fields & NEWS) == NEWS)
+            this.news = false;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -121,6 +129,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         this.name = null;
         this.parent = null;
         this.topic = null;
+        this.news = false;
         withLock(lock, (lock) ->
         {
             this.overridesRem.clear();
@@ -164,8 +173,25 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+        Member selfMember = getGuild().getSelfMember();
+        if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
+        {
+            if (!selfMember.hasPermission(channel, Permission.MANAGE_ROLES))
+                throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
+
+            // Check on channel level to make sure we are actually able to set all the permissions!
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
+            if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) // This implies we can only set permissions the bot also has in the channel!
+            {
+                //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
+                // That is why we explicitly exclude it here!
+                // This is by far the most complex and weird permission logic in the entire API...
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
+                EnumSet<Permission> missing = Permission.getPermissions((allow | deny) & ~botPerms);
+                if (!missing.isEmpty())
+                    throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+            }
+        }
         final long id = getId(permHolder);
         final int type = permHolder instanceof Role ? PermOverrideData.ROLE_TYPE : PermOverrideData.MEMBER_TYPE;
         withLock(lock, (lock) ->
@@ -204,11 +230,22 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         Checks.notNull(syncSource, "SyncSource");
         Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
 
-        if(syncSource.equals(getChannel()))
+        if (syncSource.equals(getChannel()))
             return this;
 
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+        if (isPermissionChecksEnabled())
+        {
+            Member selfMember = getGuild().getSelfMember();
+            if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
+                throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
+
+            if (!selfMember.canSync(channel, syncSource))
+                throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS,
+                    "Cannot sync channel with parent due to permission escalation issues. " +
+                    "One of the overrides would set MANAGE_PERMISSIONS or a permission that the bot does not have. " +
+                    "This is not possible without explicitly having MANAGE_PERMISSIONS on this channel or ADMINISTRATOR on a role.");
+        }
+
 
         withLock(lock, (lock) ->
         {
@@ -342,6 +379,20 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         return this;
     }
 
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl setNews(boolean news)
+    {
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set channel as news on text channels");
+        if (news && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
+        this.news = news;
+        set |= NEWS;
+        return this;
+    }
+
     @Override
     protected RequestBody finalizeData()
     {
@@ -362,6 +413,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             frame.put("bitrate", bitrate);
         if (shouldUpdate(PARENT))
             frame.put("parent_id", parent);
+        if (shouldUpdate(NEWS))
+            frame.put("type", news ? 5 : 0);
         withLock(lock, (lock) ->
         {
             if (shouldUpdate(PERMISSION))
@@ -376,8 +429,13 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     protected boolean checkPermissions()
     {
         final Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_CHANNEL);
+        GuildChannel channel = getChannel();
+        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasAccess(channel))
+            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
         return super.checkPermissions();
     }
 

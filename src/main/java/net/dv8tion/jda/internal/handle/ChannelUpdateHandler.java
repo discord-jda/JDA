@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,9 @@ public class ChannelUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        ChannelType type = ChannelType.fromId(content.getInt("type"));
+        int rawType = content.getInt("type");
+        boolean news = rawType == 5;
+        ChannelType type = ChannelType.fromId(rawType);
         if (type == ChannelType.GROUP)
         {
             WebSocketClient.LOG.warn("Ignoring CHANNEL_UPDATE for a group which we don't support");
@@ -167,6 +169,15 @@ public class ChannelUpdateHandler extends SocketHandler
                             new TextChannelUpdateSlowmodeEvent(
                                     getJDA(), responseNumber,
                                     textChannel, oldSlowmode));
+                }
+
+                if (news != textChannel.isNews())
+                {
+                    textChannel.setNews(news);
+                    getJDA().handleEvent(
+                        new TextChannelUpdateNewsEvent(
+                            getJDA(), responseNumber,
+                            textChannel));
                 }
 
                 applyPermissions(textChannel, permOverwrites);
@@ -336,10 +347,12 @@ public class ChannelUpdateHandler extends SocketHandler
             changed.add(holder);
     }
 
+    // True => override status changed (created/deleted/updated)
+    // False => nothing changed, ignore
     private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, AbstractChannelImpl<?,?> channel)
     {
-        final long allow = override.getLong("allow");
-        final long deny = override.getLong("deny");
+        final long allow = override.getLong("allow_new");
+        final long deny = override.getLong("deny_new");
         final String type = override.getString("type");
         final boolean isRole = type.equals("role");
         if (!isRole)
@@ -355,13 +368,25 @@ public class ChannelUpdateHandler extends SocketHandler
             }
         }
 
-        if (currentOverride != null)
+        if (currentOverride != null) // Permissions were updated?
         {
             long oldAllow = currentOverride.getAllowedRaw();
             long oldDeny = currentOverride.getDeniedRaw();
             PermissionOverrideImpl impl = (PermissionOverrideImpl) currentOverride;
             if (oldAllow == allow && oldDeny == deny)
                 return false;
+
+            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L)
+            {
+                // We delete empty overrides for the @everyone role because that's what the client also does, otherwise our sync checks don't work!
+                channel.getOverrideMap().remove(overrideId);
+                api.handleEvent(
+                    new PermissionOverrideDeleteEvent(
+                        api, responseNumber,
+                        channel, currentOverride));
+                return true;
+            }
+
             impl.setAllow(allow);
             impl.setDeny(deny);
             api.handleEvent(
@@ -369,8 +394,11 @@ public class ChannelUpdateHandler extends SocketHandler
                     api, responseNumber,
                     channel, currentOverride, oldAllow, oldDeny));
         }
-        else
+        else // New override?
         {
+            // Empty @everyone overrides should be treated as not existing at all
+            if (overrideId == channel.getGuild().getIdLong() && (allow | deny) == 0L)
+                return false;
             PermissionOverrideImpl impl;
             currentOverride = impl = new PermissionOverrideImpl(channel, overrideId, isRole);
             impl.setAllow(allow);

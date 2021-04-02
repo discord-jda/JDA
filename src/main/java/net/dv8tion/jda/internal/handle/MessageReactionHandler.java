@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionAddEv
 import net.dv8tion.jda.api.events.message.priv.react.PrivateMessageReactionRemoveEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
@@ -31,8 +32,10 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MessageReactionHandler extends SocketHandler
 {
@@ -81,8 +84,20 @@ public class MessageReactionHandler extends SocketHandler
             Optional<DataObject> memberJson = content.optObject("member");
             if (memberJson.isPresent()) // Check if we can load a member here
             {
+                DataObject json = memberJson.get();
                 if (member == null || !member.hasTimeJoined()) // do we need to load a member?
-                    member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson.get());
+                    member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, json);
+                else // otherwise update the cache
+                {
+                    List<Role> roles = json.getArray("roles")
+                            .stream(DataArray::getUnsignedLong)
+                            .map(guild::getRoleById)
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList());
+                    getJDA().getEntityBuilder().updateMember((GuildImpl) guild, member, json, roles);
+                }
+                // update internal references
+                getJDA().getEntityBuilder().updateMemberCache(member);
             }
             if (member == null && add && guild.isLoaded())
             {
@@ -94,8 +109,6 @@ public class MessageReactionHandler extends SocketHandler
         User user = getJDA().getUserById(userId);
         if (user == null && member != null)
             user = member.getUser(); // this happens when we have guild subscriptions disabled
-        if (user == null)
-            user = getJDA().getFakeUserMap().get(userId);
         if (user == null)
         {
             if (add && guild != null)
@@ -109,13 +122,7 @@ public class MessageReactionHandler extends SocketHandler
 
         MessageChannel channel = getJDA().getTextChannelById(channelId);
         if (channel == null)
-        {
             channel = getJDA().getPrivateChannelById(channelId);
-        }
-        if (channel == null)
-        {
-            channel = getJDA().getFakePrivateChannelMap().get(channelId);
-        }
         if (channel == null)
         {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -170,7 +177,7 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new PrivateMessageReactionAddEvent(
                         jda, responseNumber,
-                        user, reaction, userId));
+                        reaction, userId));
                 break;
             case GROUP:
                 WebSocketClient.LOG.debug("Received a reaction add for a group which should not be possible");
@@ -198,7 +205,7 @@ public class MessageReactionHandler extends SocketHandler
                 jda.handleEvent(
                     new PrivateMessageReactionRemoveEvent(
                         jda, responseNumber,
-                        user, reaction, userId));
+                        reaction, userId));
                 break;
             case GROUP:
                 WebSocketClient.LOG.debug("Received a reaction remove for a group which should not be possible");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
@@ -37,12 +36,12 @@ import javax.annotation.Nullable;
 
 public class GuildManagerImpl extends ManagerBase<GuildManager> implements GuildManager
 {
-    protected final SnowflakeReference<Guild> guild;
+    protected Guild guild;
 
     protected String name;
     protected String region;
     protected Icon icon, splash, banner;
-    protected String afkChannel, systemChannel;
+    protected String afkChannel, systemChannel, rulesChannel, communityUpdatesChannel;
     protected String description, vanityCode;
     protected int afkTimeout;
     protected int mfaLevel;
@@ -54,7 +53,7 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_GUILD.compile(guild.getId()));
         JDA api = guild.getJDA();
-        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.guild = guild;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
@@ -63,7 +62,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @Override
     public Guild getGuild()
     {
-        return guild.resolve();
+        Guild realGuild = api.getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Nonnull
@@ -84,6 +86,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             this.afkChannel = null;
         if ((fields & SYSTEM_CHANNEL) == SYSTEM_CHANNEL)
             this.systemChannel = null;
+        if ((fields & RULES_CHANNEL) == RULES_CHANNEL)
+            this.rulesChannel = null;
+        if ((fields & COMMUNITY_UPDATES_CHANNEL) == COMMUNITY_UPDATES_CHANNEL)
+            this.communityUpdatesChannel = null;
         if ((fields & DESCRIPTION) == DESCRIPTION)
             this.description = null;
         if ((fields & BANNER) == BANNER)
@@ -183,6 +189,28 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
         Checks.check(systemChannel == null || systemChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
         this.systemChannel = systemChannel == null ? null : systemChannel.getId();
         set |= SYSTEM_CHANNEL;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildManagerImpl setRulesChannel(TextChannel rulesChannel)
+    {
+        Checks.check(rulesChannel == null || rulesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        this.rulesChannel = rulesChannel == null ? null : rulesChannel.getId();
+        set |= RULES_CHANNEL;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public GuildManagerImpl setCommunityUpdatesChannel(TextChannel communityUpdatesChannel)
+    {
+        Checks.check(communityUpdatesChannel == null || communityUpdatesChannel.getGuild().equals(getGuild()), "Channel must be from the same guild");
+        this.communityUpdatesChannel = communityUpdatesChannel == null ? null : communityUpdatesChannel.getId();
+        set |= COMMUNITY_UPDATES_CHANNEL;
         return this;
     }
 
@@ -293,6 +321,10 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
             body.put("afk_channel_id", afkChannel);
         if (shouldUpdate(SYSTEM_CHANNEL))
             body.put("system_channel_id", systemChannel);
+        if (shouldUpdate(RULES_CHANNEL))
+            body.put("rules_channel_id", rulesChannel);
+        if (shouldUpdate(COMMUNITY_UPDATES_CHANNEL))
+            body.put("public_updates_channel_id", communityUpdatesChannel);
         if (shouldUpdate(VERIFICATION_LEVEL))
             body.put("verification_level", verificationLevel);
         if (shouldUpdate(NOTIFICATION_LEVEL))

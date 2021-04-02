@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,7 @@ package net.dv8tion.jda.internal.requests;
 import com.neovisionaries.ws.client.*;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDAInfo;
-import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.Guild;
@@ -65,6 +62,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -86,9 +84,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Compression compression;
     protected final int gatewayIntents;
     protected final MemberChunkManager chunkManager;
+    protected final GatewayEncoding encoding;
 
     public WebSocket socket;
-    protected String sessionId = null;
+    protected volatile String sessionId = null;
     protected final Object readLock = new Object();
     protected Decompressor decompressor;
 
@@ -106,7 +105,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected final TLongObjectMap<ConnectionRequest> queuedAudioConnections = MiscUtil.newLongMap();
     protected final Queue<DataObject> chunkSyncQueue = new ConcurrentLinkedQueue<>();
-    protected final Queue<String> ratelimitQueue = new ConcurrentLinkedQueue<>();
+    protected final Queue<DataObject> ratelimitQueue = new ConcurrentLinkedQueue<>();
 
     protected volatile long ratelimitResetTime;
     protected final AtomicInteger messagesSent = new AtomicInteger(0);
@@ -123,7 +122,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected volatile ConnectNode connectNode;
 
-    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents)
+    public WebSocketClient(JDAImpl api, Compression compression, int gatewayIntents, GatewayEncoding encoding)
     {
         this.api = api;
         this.executor = api.getGatewayPool();
@@ -131,6 +130,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.compression = compression;
         this.gatewayIntents = gatewayIntents;
         this.chunkManager = new MemberChunkManager(this);
+        this.encoding = encoding;
         this.shouldReconnect = api.isAutoReconnect();
         this.connectNode = new StartingNode();
         setupHandlers();
@@ -220,12 +220,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return !initiating;
     }
 
+    public boolean isSession()
+    {
+        return sessionId != null;
+    }
+
     public void handle(List<DataObject> events)
     {
         events.forEach(this::onDispatch);
     }
 
-    public void send(String message)
+    public void send(DataObject message)
     {
         locked("Interrupted while trying to add request to queue", () -> ratelimitQueue.add(message));
     }
@@ -241,7 +246,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         locked("Interrupted while trying to add chunk request", () -> chunkSyncQueue.add(request));
     }
 
-    protected boolean send(String message, boolean skipQueue)
+    protected boolean send(DataObject message, boolean skipQueue)
     {
         if (!connected)
             return false;
@@ -259,7 +264,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (this.messagesSent.get() <= 115 || (skipQueue && this.messagesSent.get() <= 119))   //technically we could go to 120, but we aren't going to chance it
         {
             LOG.trace("<- {}", message);
-            socket.sendText(message);
+            if (encoding == GatewayEncoding.ETF)
+                socket.sendBinary(message.toETF());
+            else
+                socket.sendText(message.toString());
             this.messagesSent.getAndIncrement();
             return true;
         }
@@ -337,7 +345,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             throw new RejectedExecutionException("JDA is shutdown!");
         initiating = true;
 
-        String url = api.getGatewayUrl() + "?encoding=json&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
+        String url = api.getGatewayUrl()
+                + "?encoding=" + encoding.name().toLowerCase()
+                + "&v=" + JDAInfo.DISCORD_GATEWAY_VERSION;
         if (compression != Compression.NONE)
         {
             url += "&compress=" + compression.getKey();
@@ -354,18 +364,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            WebSocketFactory socketFactory = api.getWebSocketFactory();
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (socketFactory)
-            {
-                String host = IOUtil.getHost(url);
-                // null if the host is undefined, unlikely but we should handle it
-                if (host != null)
-                    socketFactory.setServerName(host);
-                else // practically should never happen
-                    socketFactory.setServerNames(null);
-                socket = socketFactory.createSocket(url);
-            }
+            WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
+            IOUtil.setServerName(socketFactory, url);
+            if (socketFactory.getSocketTimeout() > 0)
+                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
+            else
+                socketFactory.setSocketTimeout(10000);
+            socket = socketFactory.createSocket(url);
             socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
                   .addListener(this)
@@ -415,6 +420,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onDisconnected(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
+        sentAuthInfo = false;
+        connected = false;
         // Use a new thread to avoid issues with sleep interruption
         if (Thread.currentThread().isInterrupted())
         {
@@ -431,10 +438,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void handleDisconnect(WebSocket websocket, WebSocketFrame serverCloseFrame, WebSocketFrame clientCloseFrame, boolean closedByServer)
     {
-        sentAuthInfo = false;
-        connected = false;
         api.setStatus(JDA.Status.DISCONNECTED);
-
         CloseCode closeCode = null;
         int rawCloseCode = 1005;
         //When we get 1000 from remote close we will try to resume
@@ -666,11 +670,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void sendKeepAlive()
     {
-        String keepAlivePacket =
+        DataObject keepAlivePacket =
                 DataObject.empty()
                     .put("op", WebSocketCode.HEARTBEAT)
                     .put("d", api.getResponseTotal()
-                ).toString();
+                );
 
         if (missedHeartbeats >= 2)
         {
@@ -718,7 +722,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     .add(shardInfo.getShardId())
                     .add(shardInfo.getShardTotal()));
         }
-        send(identify.toString(), true);
+        send(identify, true);
         handleIdentifyRateLimit = true;
         identifyTime = System.currentTimeMillis();
         sentAuthInfo = true;
@@ -734,7 +738,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 .put("session_id", sessionId)
                 .put("token", getToken())
                 .put("seq", api.getResponseTotal()));
-        send(resume.toString(), true);
+        send(resume, true);
         //sentAuthInfo = true; set on RESUMED response as this could fail
         api.setStatus(JDA.Status.AWAITING_LOGIN_CONFIRMATION);
     }
@@ -753,8 +757,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         api.getGuildsView().clear();
         api.getUsersView().clear();
         api.getPrivateChannelsView().clear();
-        api.getFakeUserMap().clear();
-        api.getFakePrivateChannelMap().clear();
         api.getEventCache().clear();
         api.getGuildSetupController().clearCache();
         chunkManager.clear();
@@ -982,26 +984,30 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws DataFormatException
     {
-        DataObject json;
+        DataObject message;
         // Only acquire lock for decompression and unlock for event handling
         synchronized (readLock)
         {
-            json = handleBinary(binary);
+            message = handleBinary(binary);
         }
-        if (json != null)
-            handleEvent(json);
+        if (message != null)
+            handleEvent(message);
     }
 
     protected DataObject handleBinary(byte[] binary) throws DataFormatException
     {
         if (decompressor == null)
+        {
+            if (encoding == GatewayEncoding.ETF)
+                return DataObject.fromETF(binary);
             throw new IllegalStateException("Cannot decompress binary message due to unknown compression algorithm: " + compression);
+        }
         // Scoping allows us to print the json that possibly failed parsing
-        byte[] jsonData;
+        byte[] data;
         try
         {
-            jsonData = decompressor.decompress(binary);
-            if (jsonData == null)
+            data = decompressor.decompress(binary);
+            if (data == null)
                 return null;
         }
         catch (DataFormatException e)
@@ -1012,14 +1018,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
         try
         {
-            return DataObject.fromJson(jsonData);
+            if (encoding == GatewayEncoding.ETF)
+                return DataObject.fromETF(data);
+            else
+                return DataObject.fromJson(data);
         }
         catch (ParsingException e)
         {
             String jsonString = "malformed";
             try
             {
-                jsonString = new String(jsonData, StandardCharsets.UTF_8);
+                jsonString = new String(data, StandardCharsets.UTF_8);
             }
             catch (Exception ignored) {}
             // Print the string that could not be parsed and re-throw the exception
@@ -1079,7 +1088,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            queueLock.lockInterruptibly();
+            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
             task.run();
         }
         catch (InterruptedException e)
@@ -1096,7 +1106,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         try
         {
-            queueLock.lockInterruptibly();
+            if (!queueLock.tryLock() && !queueLock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in reasonable timeframe! (10 seconds)");
             return task.get();
         }
         catch (InterruptedException e)
@@ -1240,15 +1251,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             return null;
 
         long now = System.currentTimeMillis();
-        TLongObjectIterator<ConnectionRequest> it =  queuedAudioConnections.iterator();
-        while (it.hasNext())
+        AtomicReference<ConnectionRequest> request = new AtomicReference<>();
+        queuedAudioConnections.retainEntries((guildId, audioRequest) -> // we use this because it locks the mutex
         {
-            it.advance();
-            ConnectionRequest audioRequest = it.value();
             if (audioRequest.getNextAttemptEpoch() < now)
             {
                 // Check if the guild is ready
-                long guildId = audioRequest.getGuildIdLong();
                 Guild guild = api.getGuildById(guildId);
                 if (guild == null)
                 {
@@ -1258,37 +1266,37 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     {
                         // The guild is not tracked anymore -> we can't connect the audio channel
                         LOG.debug("Removing audio connection request because the guild has been removed. {}", audioRequest);
-                        it.remove();
+                        return false;
                     }
-                    continue;
+                    return true;
                 }
 
                 ConnectionListener listener = guild.getAudioManager().getConnectionListener();
                 if (audioRequest.getStage() != ConnectionStage.DISCONNECT)
                 {
+                    // Check if we can connect to the target channel
                     VoiceChannel channel = guild.getVoiceChannelById(audioRequest.getChannelId());
                     if (channel == null)
                     {
-                        it.remove();
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_CHANNEL_DELETED);
-                        continue;
+                        return false;
                     }
 
                     if (!guild.getSelfMember().hasPermission(channel, Permission.VOICE_CONNECT))
                     {
-                        it.remove();
                         if (listener != null)
                             listener.onStatusChange(ConnectionStatus.DISCONNECTED_LOST_PERMISSION);
-                        continue;
+                        return false;
                     }
                 }
-
-                return audioRequest;
+                // This will take the first result
+                request.compareAndSet(null, audioRequest);
             }
-        }
+            return true;
+        });
 
-        return null;
+        return request.get();
     }
 
     public Map<String, SocketHandler> getHandlers()

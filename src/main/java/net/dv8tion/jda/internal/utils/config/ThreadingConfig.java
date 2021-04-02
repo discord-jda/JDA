@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,19 @@ import java.util.function.Supplier;
 
 public class ThreadingConfig
 {
+    private final Object audioLock = new Object();
+
     private ScheduledExecutorService rateLimitPool;
     private ScheduledExecutorService gatewayPool;
     private ExecutorService callbackPool;
     private ExecutorService eventPool;
+    private ScheduledExecutorService audioPool;
 
     private boolean shutdownRateLimitPool;
     private boolean shutdownGatewayPool;
     private boolean shutdownCallbackPool;
     private boolean shutdownEventPool;
+    private boolean shutdownAudioPool;
 
     public ThreadingConfig()
     {
@@ -42,6 +46,7 @@ public class ThreadingConfig
         this.shutdownRateLimitPool = true;
         this.shutdownGatewayPool = true;
         this.shutdownCallbackPool = false;
+        this.shutdownAudioPool = true;
     }
 
     public void setRateLimitPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
@@ -68,6 +73,12 @@ public class ThreadingConfig
         this.shutdownEventPool = shutdown;
     }
 
+    public void setAudioPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
+    {
+        this.audioPool = executor;
+        this.shutdownAudioPool = shutdown;
+    }
+
     public void init(@Nonnull Supplier<String> identifier)
     {
         if (this.rateLimitPool == null)
@@ -84,6 +95,8 @@ public class ThreadingConfig
             gatewayPool.shutdown();
         if (shutdownEventPool && eventPool != null)
             eventPool.shutdown();
+        if (shutdownAudioPool && audioPool != null)
+            audioPool.shutdown();
         if (shutdownRateLimitPool)
         {
             if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
@@ -115,6 +128,8 @@ public class ThreadingConfig
             rateLimitPool.shutdownNow();
         if (shutdownEventPool && eventPool != null)
             eventPool.shutdownNow();
+        if (shutdownAudioPool && audioPool != null)
+            audioPool.shutdownNow();
     }
 
     @Nonnull
@@ -141,6 +156,22 @@ public class ThreadingConfig
         return eventPool;
     }
 
+    @Nullable
+    public ScheduledExecutorService getAudioPool(@Nonnull Supplier<String> identifier)
+    {
+        ScheduledExecutorService pool = audioPool;
+        if (pool == null)
+        {
+            synchronized (audioLock)
+            {
+                pool = audioPool;
+                if (pool == null)
+                    pool = audioPool = ThreadingConfig.newScheduler(1, identifier, "AudioLifeCycle");
+            }
+        }
+        return pool;
+    }
+
     public boolean isShutdownRateLimitPool()
     {
         return shutdownRateLimitPool;
@@ -159,6 +190,11 @@ public class ThreadingConfig
     public boolean isShutdownEventPool()
     {
         return shutdownEventPool;
+    }
+
+    public boolean isShutdownAudioPool()
+    {
+        return shutdownAudioPool;
     }
 
     @Nonnull

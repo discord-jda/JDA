@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MessageBulkDeleteHandler extends SocketHandler
 {
@@ -64,16 +66,14 @@ public class MessageBulkDeleteHandler extends SocketHandler
             }
 
             if (getJDA().getGuildSetupController().isLocked(channel.getGuild().getIdLong()))
-            {
                 return channel.getGuild().getIdLong();
-            }
 
-            LinkedList<String> msgIds = new LinkedList<>();
-            content.getArray("ids").forEach(id -> msgIds.add((String) id));
+            DataArray array = content.getArray("ids");
+            List<String> messages = array.stream(DataArray::getString).collect(Collectors.toList());
             getJDA().handleEvent(
-                    new MessageBulkDeleteEvent(
-                            getJDA(), responseNumber,
-                            channel, msgIds));
+                new MessageBulkDeleteEvent(
+                    getJDA(), responseNumber,
+                    channel, messages));
         }
         return null;
     }

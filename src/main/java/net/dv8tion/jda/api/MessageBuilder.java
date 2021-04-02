@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Route;
@@ -27,7 +28,6 @@ import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
@@ -392,7 +392,7 @@ public class MessageBuilder implements Appendable
     /**
      * Checks if the message contains any contend. This includes text as well as embeds.
      * 
-     * @return weather the message contains content
+     * @return whether the message contains content
      */
     public boolean isEmpty() {
         return builder.length() == 0 && embed == null;
@@ -1119,9 +1119,14 @@ public class MessageBuilder implements Appendable
      *         If this is a PrivateChannel and both users (sender and receiver) are bots
      *
      * @return {@link MessageAction MessageAction}
+     *
+     * @deprecated Use {@link MessageChannel#sendMessage(Message) channel.sendMessage(builder.build())} instead
      */
     @Nonnull
-    @CheckReturnValue
+    @Deprecated
+    @DeprecatedSince("4.2.1")
+    @ForRemoval(deadline="4.3.0")
+    @ReplaceWith("channel.sendMessage(builder.build())")
     public MessageAction sendTo(@Nonnull MessageChannel channel)
     {
         Checks.notNull(channel, "Target Channel");
@@ -1130,8 +1135,8 @@ public class MessageBuilder implements Appendable
             case TEXT:
                 final TextChannel text = (TextChannel) channel;
                 final Member self = text.getGuild().getSelfMember();
-                if (!self.hasPermission(text, Permission.MESSAGE_READ))
-                    throw new InsufficientPermissionException(text, Permission.MESSAGE_READ);
+                if (!self.hasAccess(text))
+                    throw new MissingAccessException(text, Permission.VIEW_CHANNEL);
                 if (!self.hasPermission(text, Permission.MESSAGE_WRITE))
                     throw new InsufficientPermissionException(text, Permission.MESSAGE_WRITE);
                 break;
@@ -1283,7 +1288,7 @@ public class MessageBuilder implements Appendable
          * @param  chars
          *         the chars to split on
          * @param  remove
-         *         weather to remove the chars when splitting on them
+         *         whether to remove the chars when splitting on them
          *
          * @return a new {@link SplitPolicy}
          */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public class MarkdownSanitizer
     private static final int ESCAPED_QUOTE_BLOCK = Integer.MIN_VALUE | QUOTE_BLOCK;
 
     private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
-    private static final Pattern quote = Pattern.compile("> +\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
+    private static final Pattern quote = Pattern.compile("> +.*", Pattern.DOTALL | Pattern.MULTILINE);
     private static final Pattern quoteBlock = Pattern.compile(">>>\\s+\\S.*", Pattern.DOTALL | Pattern.MULTILINE);
 
     private static final TIntObjectMap<String> tokens;
@@ -504,16 +504,14 @@ public class MarkdownSanitizer
         // Special handling for quote
         if (!isIgnored(QUOTE) && quote.matcher(sequence).matches())
         {
-            int end = sequence.indexOf('\n');
-            if (end < 0)
-                end = sequence.length();
-            StringBuilder builder = new StringBuilder(compute(sequence.substring(2, end)));
+            int start = sequence.indexOf('>');
+            if (start < 0)
+                start = 0;
+            StringBuilder builder = new StringBuilder(compute(sequence.substring(start + 2)));
             if (strategy == SanitizationStrategy.ESCAPE)
                 builder.insert(0, "\\> ");
             if (newline)
                 builder.insert(0, '\n');
-            if (end < sequence.length())
-                builder.append(compute(sequence.substring(end)));
             return builder.toString();
 
         }

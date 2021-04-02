@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -251,8 +251,8 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
 
     /**
      * Sorts the {@link #getCurrentOrder() current order} based on
-     * the specified {@link java.util.Comparator Comparator}.
-     * <br>Using {@link java.util.ArrayList#sort(java.util.Comparator) ArrayList.sort(comparator)}
+     * the specified {@link java.util.Comparator Comparator} by using
+     * {@link java.util.ArrayList#sort(java.util.Comparator) ArrayList.sort(comparator)}
      *
      * @param  comparator
      *         Comparator used to sort the current order

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,22 @@ package net.dv8tion.jda.api.events.message.priv.react;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added to a Message in a PrivateChannel.
  *
  * <p>Can be used to detect when a reaction is added in a private channel.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled.
  */
 public class PrivateMessageReactionAddEvent extends GenericPrivateMessageReactionEvent
 {
-    public PrivateMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nullable User user, @Nonnull MessageReaction reaction, long userId)
+    public PrivateMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
     {
-        super(api, responseNumber, user, reaction, userId);
+        super(api, responseNumber, reaction, userId);
     }
 }

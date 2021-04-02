@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ public class AudioEchoExample extends ListenerAdapter
             GatewayIntent.GUILD_VOICE_STATES
         );
 
-        // Start the JDA session with light mode (minimal cache)
-        JDABuilder.createLight(token, intents)           // Use provided token from command line arguments
+        // Start the JDA session with default mode (voice member cache)
+        JDABuilder.createDefault(token, intents)         // Use provided token from command line arguments
              .addEventListeners(new AudioEchoExample())  // Start listening with this listener
              .setActivity(Activity.listening("to jams")) // Inform users that we are jammin' it out
              .setStatus(OnlineStatus.DO_NOT_DISTURB)     // Please don't disturb us while we're jammin'

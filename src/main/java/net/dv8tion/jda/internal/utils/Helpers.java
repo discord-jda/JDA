@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,5 +158,17 @@ public final class Helpers
             t = t.getCause();
         t.initCause(cause);
         return throwable;
+    }
+
+    public static boolean hasCause(Throwable throwable, Class<? extends Throwable> cause)
+    {
+        Throwable cursor = throwable;
+        while (cursor != null)
+        {
+            if (cause.isInstance(cursor))
+                return true;
+            cursor = cursor.getCause();
+        }
+        return false;
     }
 }

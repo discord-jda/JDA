@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     private String topic;
     private long lastMessageId;
     private boolean nsfw;
+    private boolean news;
     private int slowmode;
 
     public TextChannelImpl(long id, GuildImpl guild)
@@ -118,6 +119,21 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
+    {
+        Checks.notNull(targetChannelId, "Target Channel ID");
+        if (!isNews())
+            throw new IllegalStateException("Can only follow news channels!");
+        Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
+        DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
+        return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
+            DataObject json = response.getObject();
+            return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
+        });
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
@@ -148,8 +164,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         Checks.isSnowflake(id, "Webhook ID");
 
-        if (!getGuild().getSelfMember().hasPermission(this, Permission.MANAGE_WEBHOOKS))
-            throw new InsufficientPermissionException(this, Permission.MANAGE_WEBHOOKS);
+        checkPermission(Permission.MANAGE_WEBHOOKS);
 
         Route.CompiledRoute route = Route.Webhooks.DELETE_WEBHOOK.compile(id);
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -270,6 +285,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public boolean isNSFW()
     {
         return nsfw;
+    }
+
+    @Override
+    public boolean isNews()
+    {
+        return news && getGuild().getFeatures().contains("NEWS");
     }
 
     @Override
@@ -623,6 +644,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public TextChannelImpl setSlowmode(int slowmode)
     {
         this.slowmode = slowmode;
+        return this;
+    }
+
+    public TextChannelImpl setNews(boolean news)
+    {
+        this.news = news;
         return this;
     }
 

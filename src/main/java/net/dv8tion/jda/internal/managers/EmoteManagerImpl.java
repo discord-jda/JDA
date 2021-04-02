@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,6 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
      *
      * @param  emote
      *         The target {@link net.dv8tion.jda.internal.entities.EmoteImpl EmoteImpl} to modify
-     *
-     * @throws java.lang.IllegalStateException
-     *         If the specified Emote is {@link net.dv8tion.jda.api.entities.Emote#isFake() fake} or {@link net.dv8tion.jda.api.entities.Emote#isManaged() managed}.
      */
     public EmoteManagerImpl(EmoteImpl emote)
     {
@@ -63,7 +60,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     {
         Guild g = emote.getGuild();
         if (g == null)
-            throw new IllegalStateException("Cannot modify a fake emote");
+            throw new IllegalStateException("Cannot modify an emote without shared guild");
         return g;
     }
 

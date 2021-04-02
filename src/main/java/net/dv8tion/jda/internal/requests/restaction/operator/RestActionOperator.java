@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
         this.action = action;
     }
 
-    protected <E> void doSuccess(Consumer<? super E> callback, E value)
+    protected static <E> void doSuccess(Consumer<? super E> callback, E value)
     {
         if (callback == null)
             RestAction.getDefaultSuccess().accept(value);
@@ -44,7 +44,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
             callback.accept(value);
     }
 
-    protected void doFailure(Consumer<? super Throwable> callback, Throwable throwable)
+    protected static void doFailure(Consumer<? super Throwable> callback, Throwable throwable)
     {
         if (callback == null)
             RestAction.getDefaultFailure().accept(throwable);
@@ -68,6 +68,13 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
         this.check = checks;
         action.setCheck(checks);
         return this;
+    }
+
+    @Nullable
+    @Override
+    public BooleanSupplier getCheck()
+    {
+        return action.getCheck();
     }
 
     @Nonnull

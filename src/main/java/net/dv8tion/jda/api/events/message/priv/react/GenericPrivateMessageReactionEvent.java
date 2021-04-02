@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,18 +29,20 @@ import javax.annotation.Nullable;
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed.
  *
  * <p>Can be used to detect when a message reaction is added or removed from a message.
+ *
+ * <h2>Requirements</h2>
+ *
+ * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled.
  */
 public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
 {
     protected final long userId;
-    protected final User issuer;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable User user, @Nonnull MessageReaction reaction, long userId)
+    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.userId = userId;
-        this.issuer = user;
         this.reaction = reaction;
     }
 
@@ -74,7 +76,9 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
     @Nullable
     public User getUser()
     {
-        return issuer;
+        return userId == getJDA().getSelfUser().getIdLong()
+                ? getJDA().getSelfUser()
+                : getChannel().getUser();
     }
 
     /**

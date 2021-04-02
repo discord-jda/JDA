@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,9 @@
 package net.dv8tion.jda.api.events.message.guild.react;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
+import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
 
 import javax.annotation.Nonnull;
 
@@ -29,21 +28,21 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect which emoji/emote was removed.
  *
+ * <h2>Requirements</h2>
+ *
+ * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
+ *
  * @since  4.2.0
  */
-public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildEvent
+public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEvent
 {
-    private final TextChannel channel;
     private final MessageReaction reaction;
-    private final long messageId;
 
-    public GuildMessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull TextChannel channel, @Nonnull MessageReaction reaction, long messageId)
+    public GuildMessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull MessageReaction reaction, long messageId)
     {
-        super(api, responseNumber, guild);
+        super(api, responseNumber, messageId, channel);
 
-        this.channel = channel;
         this.reaction = reaction;
-        this.messageId = messageId;
     }
 
     /**

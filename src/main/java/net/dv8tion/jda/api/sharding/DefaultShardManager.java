@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -274,11 +274,6 @@ public class DefaultShardManager implements ShardManager
                 this.queue.remove(shardId);
             }
         }
-        catch (final InterruptedException e)
-        {
-            LOG.error("Interrupted Startup", e);
-            throw new IllegalStateException(e);
-        }
         catch (final Exception e)
         {
             if (jda != null)
@@ -305,16 +300,13 @@ public class DefaultShardManager implements ShardManager
         Checks.notNegative(shardId, "shardId");
         Checks.check(shardId < getShardsTotal(), "shardId must be lower than shardsTotal");
 
-        try (UnlockHook hook = this.shards.writeLock())
+        JDA jda = this.shards.remove(shardId);
+        if (jda != null)
         {
-            final JDA jda = this.shards.getMap().remove(shardId);
-            if (jda != null)
-            {
-                if (shardingConfig.isUseShutdownNow())
-                    jda.shutdownNow();
-                else
-                    jda.shutdown();
-            }
+            if (shardingConfig.isUseShutdownNow())
+                jda.shutdownNow();
+            else
+                jda.shutdown();
         }
 
         enqueueShard(shardId);
@@ -351,13 +343,17 @@ public class DefaultShardManager implements ShardManager
         if (this.shards != null)
         {
             executor.execute(() -> {
-                this.shards.forEach(jda ->
+                synchronized (queue) // this makes sure we also get shards that were starting when shutdown is called
                 {
-                    if (shardingConfig.isUseShutdownNow())
-                        jda.shutdownNow();
-                    else
-                        jda.shutdown();
-                });
+                    this.shards.forEach(jda ->
+                    {
+                        if (shardingConfig.isUseShutdownNow())
+                            jda.shutdownNow();
+                        else
+                            jda.shutdown();
+                    });
+                    queue.clear();
+                }
                 this.executor.shutdown();
             });
         }
@@ -370,16 +366,13 @@ public class DefaultShardManager implements ShardManager
     @Override
     public void shutdown(final int shardId)
     {
-        try (UnlockHook hook = this.shards.writeLock())
+        final JDA jda = this.shards.remove(shardId);
+        if (jda != null)
         {
-            final JDA jda = this.shards.getMap().remove(shardId);
-            if (jda != null)
-            {
-                if (shardingConfig.isUseShutdownNow())
-                    jda.shutdownNow();
-                else
-                    jda.shutdown();
-            }
+            if (shardingConfig.isUseShutdownNow())
+                jda.shutdownNow();
+            else
+                jda.shutdown();
         }
     }
 
@@ -402,11 +395,13 @@ public class DefaultShardManager implements ShardManager
 
     protected void runQueueWorker()
     {
+        if (shutdown.get())
+            throw new RejectedExecutionException("ShardManager is already shutdown!");
         if (worker != null)
             return;
         worker = executor.submit(() ->
         {
-            while (!queue.isEmpty())
+            while (!queue.isEmpty() && !Thread.currentThread().isInterrupted())
                 processQueue();
             this.gatewayURL = null;
             synchronized (queue)
@@ -444,10 +439,12 @@ public class DefaultShardManager implements ShardManager
             if (api == null)
                 api = this.buildInstance(shardId);
         }
-        catch (InterruptedException e)
+        catch (CompletionException e)
         {
-            //caused by shutdown
-            LOG.debug("Queue has been interrupted", e);
+            if (e.getCause() instanceof InterruptedException)
+                LOG.debug("The worker thread was interrupted");
+            else
+                LOG.error("Caught an exception in queue processing thread", e);
             return;
         }
         catch (LoginException e)
@@ -474,7 +471,7 @@ public class DefaultShardManager implements ShardManager
         }
     }
 
-    protected JDAImpl buildInstance(final int shardId) throws LoginException, InterruptedException
+    protected JDAImpl buildInstance(final int shardId) throws LoginException
     {
         OkHttpClient httpClient = sessionConfig.getHttpClient();
         if (httpClient == null)
@@ -501,6 +498,10 @@ public class DefaultShardManager implements ShardManager
         ExecutorService eventPool = eventPair.executor;
         boolean shutdownEventPool = eventPair.automaticShutdown;
 
+        ExecutorPair<ScheduledExecutorService> audioPair = resolveExecutor(threadingConfig.getAudioPoolProvider(), shardId);
+        ScheduledExecutorService audioPool = audioPair.executor;
+        boolean shutdownAudioPool = audioPair.automaticShutdown;
+
         AuthorizationConfig authConfig = new AuthorizationConfig(token);
         SessionConfig sessionConfig = this.sessionConfig.toSessionConfig(httpClient);
         ThreadingConfig threadingConfig = new ThreadingConfig();
@@ -508,6 +509,7 @@ public class DefaultShardManager implements ShardManager
         threadingConfig.setGatewayPool(gatewayPool, shutdownGatewayPool);
         threadingConfig.setCallbackPool(callbackPool, shutdownCallbackPool);
         threadingConfig.setEventPool(eventPool, shutdownEventPool);
+        threadingConfig.setAudioPool(audioPool, shutdownAudioPool);
         MetaConfig metaConfig = new MetaConfig(this.metaConfig.getMaxBufferSize(), this.metaConfig.getContextMap(shardId), this.metaConfig.getCacheFlags(), this.sessionConfig.getFlags());
         final JDAImpl jda = new JDAImpl(authConfig, sessionConfig, threadingConfig, metaConfig);
         jda.setMemberCachePolicy(shardingConfig.getMemberCachePolicy());
@@ -562,16 +564,11 @@ public class DefaultShardManager implements ShardManager
                     }
                 }
             }
-            catch (RuntimeException e)
+            catch (CompletionException e)
             {
-                if (e.getCause() instanceof InterruptedException)
-                    throw (InterruptedException) e.getCause();
-                //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-                Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
-                if (ex instanceof LoginException)
-                    throw new LoginException(ex.getMessage());
-                else
-                    throw e;
+                if (e.getCause() instanceof LoginException)
+                    throw (LoginException) e.getCause(); // complete() can't throw this because its a checked-exception so we have to unwrap it first
+                throw e;
             }
         }
 
@@ -592,7 +589,7 @@ public class DefaultShardManager implements ShardManager
         jda.setSelfUser(selfUser);
         jda.setStatus(JDA.Status.INITIALIZED); //This is already set by JDA internally, but this is to make sure the listeners catch it.
 
-        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents());
+        final int shardTotal = jda.login(this.gatewayURL, shardInfo, this.metaConfig.getCompression(), false, shardingConfig.getIntents(), this.metaConfig.getEncoding());
         if (getShardsTotal() == -1)
             shardingConfig.setShardsTotal(shardTotal);
 

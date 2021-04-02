@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,16 +41,8 @@ public class PermOverrideData implements SerializableData
 
     public PermOverrideData(PermissionOverride override)
     {
-        if (override.isMemberOverride())
-        {
-            this.id = override.getMember().getUser().getIdLong();
-            this.type = MEMBER_TYPE;
-        }
-        else
-        {
-            this.id = override.getRole().getIdLong();
-            this.type = ROLE_TYPE;
-        }
+        this.id = override.getIdLong();
+        this.type = override.isMemberOverride() ? MEMBER_TYPE : ROLE_TYPE;
         this.allow = override.getAllowedRaw();
         this.deny = override.getDeniedRaw();
     }
@@ -65,5 +57,23 @@ public class PermOverrideData implements SerializableData
         o.put("allow", allow);
         o.put("deny",  deny);
         return o;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(id);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof PermOverrideData))
+            return false;
+
+        PermOverrideData other = (PermOverrideData) obj;
+        return other.id == this.id;
     }
 }

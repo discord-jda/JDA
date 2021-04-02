@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
@@ -72,15 +72,15 @@ import org.slf4j.MDC;
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
     public static final Logger LOG = JDALogger.getLog(JDA.class);
-
-    protected final Object audioLifeCycleLock = new Object();
-    protected ScheduledThreadPoolExecutor audioLifeCyclePool;
 
     protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User.class, User::getName);
     protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild.class, Guild::getName);
@@ -89,9 +89,6 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, MessageChannel::getName);
-
-    protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
-    protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
 
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
 
@@ -243,15 +240,15 @@ public class JDAImpl implements JDA
 
     public int login() throws LoginException
     {
-        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS);
+        return login(null, null, Compression.ZLIB, true, GatewayIntent.ALL_INTENTS, GatewayEncoding.JSON);
     }
 
-    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
+    public int login(ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
     {
-        return login(null, shardInfo, compression, validateToken, intents);
+        return login(null, shardInfo, compression, validateToken, intents, encoding);
     }
 
-    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents) throws LoginException
+    public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
     {
         this.shardInfo = shardInfo;
         threadConfig.init(this::getIdentifierString);
@@ -285,7 +282,7 @@ public class JDAImpl implements JDA
             LOG.info("Login Successful!");
         }
 
-        client = new WebSocketClient(this, compression, intents);
+        client = new WebSocketClient(this, compression, intents, encoding);
         // remove our MDC metadata when we exit our code
         if (previousContext != null)
             previousContext.forEach(MDC::put);
@@ -350,32 +347,18 @@ public class JDAImpl implements JDA
                 else if (response.code == 401)
                     request.onSuccess(null);
                 else
-                    request.onFailure(new LoginException("When verifying the authenticity of the provided token, Discord returned an unknown response:\n" +
-                            response.toString()));
+                    request.onFailure(response);
             }
         }.priority();
 
-        try
+        DataObject userResponse = login.complete();
+        if (userResponse != null)
         {
-            DataObject userResponse = login.complete();
-            if (userResponse != null)
-            {
-                getEntityBuilder().createSelfUser(userResponse);
-                return;
-            }
-            shutdownNow();
-            throw new LoginException("The provided token is invalid!");
+            getEntityBuilder().createSelfUser(userResponse);
+            return;
         }
-        catch (RuntimeException | Error e)
-        {
-            shutdownNow();
-            //We check if the LoginException is masked inside of a ExecutionException which is masked inside of the RuntimeException
-            Throwable ex = e.getCause() instanceof ExecutionException ? e.getCause().getCause() : null;
-            if (ex instanceof LoginException)
-                throw new LoginException(ex.getMessage());
-            else
-                throw e;
-        }
+        shutdownNow();
+        throw new LoginException("The provided token is invalid!");
     }
 
     public AuthorizationConfig getAuthorizationConfig()
@@ -558,7 +541,7 @@ public class JDAImpl implements JDA
                 () -> {
                     Route.CompiledRoute route = Route.Users.GET_USER.compile(Long.toUnsignedString(id));
                     return new RestActionImpl<>(this, route,
-                            (response, request) -> getEntityBuilder().createFakeUser(response.getObject()));
+                            (response, request) -> getEntityBuilder().createUser(response.getObject()));
                 });
     }
 
@@ -717,8 +700,6 @@ public class JDAImpl implements JDA
         // stop accepting new requests
         if (requester.stop()) // returns true if no more requests will be executed
             shutdownRequester(); // in that case shutdown entirely
-        if (audioLifeCyclePool != null)
-            audioLifeCyclePool.shutdownNow();
         threadConfig.shutdown();
 
         if (shutdownHook != null)
@@ -742,17 +723,10 @@ public class JDAImpl implements JDA
 
     private void closeAudioConnections()
     {
-        List<AudioManagerImpl> managers;
-        AbstractCacheView<AudioManager> view = getAudioManagersView();
-        try (UnlockHook hook = view.writeLock())
-        {
-            managers = view.stream()
-               .map(AudioManagerImpl.class::cast)
-               .collect(Collectors.toList());
-            view.clear();
-        }
-
-        managers.forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
+        getAudioManagerCache()
+            .stream()
+            .map(AudioManagerImpl.class::cast)
+            .forEach(m -> m.closeAudioConnection(ConnectionStatus.SHUTTING_DOWN));
     }
 
     @Override
@@ -983,16 +957,6 @@ public class JDAImpl implements JDA
         return audioManagers;
     }
 
-    public TLongObjectMap<User> getFakeUserMap()
-    {
-        return fakeUsers;
-    }
-
-    public TLongObjectMap<PrivateChannel> getFakePrivateChannelMap()
-    {
-        return fakePrivateChannels;
-    }
-
     public void setSelfUser(SelfUser selfUser)
     {
         try (UnlockHook hook = userCache.writeLock())
@@ -1022,26 +986,18 @@ public class JDAImpl implements JDA
 
     public String getGatewayUrl()
     {
+        if (gatewayUrl == null)
+            return gatewayUrl = getGateway();
         return gatewayUrl;
     }
 
     public void resetGatewayUrl()
     {
-        this.gatewayUrl = getGateway();
+        this.gatewayUrl = null;
     }
 
-    public ScheduledThreadPoolExecutor getAudioLifeCyclePool()
+    public ScheduledExecutorService getAudioLifeCyclePool()
     {
-        ScheduledThreadPoolExecutor pool = audioLifeCyclePool;
-        if (pool == null)
-        {
-            synchronized (audioLifeCycleLock)
-            {
-                pool = audioLifeCyclePool;
-                if (pool == null)
-                    pool = audioLifeCyclePool = ThreadingConfig.newScheduler(1, this::getIdentifierString, "AudioLifeCycle");
-            }
-        }
-        return pool;
+        return threadConfig.getAudioPool(this::getIdentifierString);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,7 +218,7 @@ public interface Invite
     Guild getGuild();
 
     /**
-     * The user who created this invite. This may be a fake user. For not expanded invites this may be null.
+     * The user who created this invite. For not expanded invites this may be null.
      *
      * @return The user who created this invite
      */

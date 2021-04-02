@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.utils.LockIterator;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnlockHook;
@@ -107,7 +108,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
     public LockIterator<T> lockedIterator()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-        readLock.lock();
+        MiscUtil.tryLock(readLock);
         try
         {
             Iterator<T> directIterator = elements.valueCollection().iterator();

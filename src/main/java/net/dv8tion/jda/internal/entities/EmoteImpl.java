@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,16 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ListedEmote;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.EmoteManagerImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.utils.cache.SnowflakeReference;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
@@ -37,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
@@ -47,31 +43,24 @@ import java.util.concurrent.locks.ReentrantLock;
 public class EmoteImpl implements ListedEmote
 {
     private final long id;
-    private final SnowflakeReference<Guild> guild;
     private final JDAImpl api;
     private final Set<Role> roles;
-    private final boolean fake;
 
-    private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile EmoteManager manager = null;
+    private EmoteManager manager;
 
+    private GuildImpl guild;
     private boolean managed = false;
+    private boolean available = true;
     private boolean animated = false;
     private String name;
     private User user;
 
     public EmoteImpl(long id, GuildImpl guild)
     {
-        this(id, guild, false);
-    }
-
-    public EmoteImpl(long id, GuildImpl guild, boolean fake)
-    {
         this.id = id;
         this.api = guild.getJDA();
-        this.guild = new SnowflakeReference<>(guild, api::getGuildById);
+        this.guild = guild;
         this.roles = ConcurrentHashMap.newKeySet();
-        this.fake = fake;
     }
 
     public EmoteImpl(long id, JDAImpl api)
@@ -80,13 +69,17 @@ public class EmoteImpl implements ListedEmote
         this.api = api;
         this.guild = null;
         this.roles = null;
-        this.fake = true;
     }
 
     @Override
     public GuildImpl getGuild()
     {
-        return guild == null ? null : (GuildImpl) guild.resolve();
+        if (guild == null)
+            return null;
+        GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
+        if (realGuild != null)
+            guild = realGuild;
+        return guild;
     }
 
     @Nonnull
@@ -94,7 +87,7 @@ public class EmoteImpl implements ListedEmote
     public List<Role> getRoles()
     {
         if (!canProvideRoles())
-            throw new IllegalStateException("Unable to return roles because this emote is fake. (We do not know the origin Guild of this emote)");
+            throw new IllegalStateException("Unable to return roles because this emote is from a message. (We do not know the origin Guild of this emote)");
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
@@ -118,9 +111,16 @@ public class EmoteImpl implements ListedEmote
     }
 
     @Override
+    public boolean isAvailable()
+    {
+        return available;
+    }
+
+    @Override
+    @Deprecated
     public boolean isFake()
     {
-        return fake;
+        return false;
     }
 
     @Override
@@ -155,17 +155,9 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteManager getManager()
     {
-        EmoteManager m = manager;
-        if (m == null)
-        {
-            m = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new EmoteManagerImpl(this);
-                return manager;
-            });
-        }
-        return m;
+        if (manager == null)
+            return manager = new EmoteManagerImpl(this);
+        return manager;
     }
 
     @Override
@@ -179,7 +171,7 @@ public class EmoteImpl implements ListedEmote
     public AuditableRestAction<Void> delete()
     {
         if (getGuild() == null)
-            throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is fake)!");
+            throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is from a message)!");
         if (managed)
             throw new UnsupportedOperationException("You cannot delete a managed emote!");
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
@@ -206,6 +198,12 @@ public class EmoteImpl implements ListedEmote
     public EmoteImpl setManaged(boolean val)
     {
         this.managed = val;
+        return this;
+    }
+
+    public EmoteImpl setAvailable(boolean available)
+    {
+        this.available = available;
         return this;
     }
 
@@ -252,7 +250,6 @@ public class EmoteImpl implements ListedEmote
     @Override
     public EmoteImpl clone()
     {
-        if (isFake()) return null;
         EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public interface GuildVoiceState
 
     /**
      * Returns whether the {@link net.dv8tion.jda.api.entities.Member Member} is muted, either
-     * by choice {@link #isSelfMuted()} or deafened by an admin {@link #isGuildMuted()}
+     * by choice {@link #isSelfMuted()} or muted by an admin {@link #isGuildMuted()}
      *
      * @return the Member's mute status
      */

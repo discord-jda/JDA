@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Formatter;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Supplier;
 
@@ -121,12 +123,8 @@ public class MiscUtil
     {
         try
         {
-            lock.lockInterruptibly();
+            tryLock(lock);
             return task.get();
-        }
-        catch (InterruptedException e)
-        {
-            throw new IllegalStateException(e);
         }
         finally
         {
@@ -139,17 +137,35 @@ public class MiscUtil
     {
         try
         {
-            lock.lockInterruptibly();
+            tryLock(lock);
             task.run();
-        }
-        catch (InterruptedException e)
-        {
-            throw new IllegalStateException(e);
         }
         finally
         {
             if (lock.isHeldByCurrentThread())
                 lock.unlock();
+        }
+    }
+
+    /**
+     * Tries to acquire the provided lock in a 10 second timeframe.
+     *
+     * @param  lock
+     *         The lock to acquire
+     *
+     * @throws IllegalStateException
+     *         If the lock could not be acquired
+     */
+    public static void tryLock(Lock lock)
+    {
+        try
+        {
+            if (!lock.tryLock() && !lock.tryLock(10, TimeUnit.SECONDS))
+                throw new IllegalStateException("Could not acquire lock in a reasonable timeframe! (10 seconds)");
+        }
+        catch (InterruptedException e)
+        {
+            throw new IllegalStateException("Unable to acquire lock while thread is interrupted!");
         }
     }
 

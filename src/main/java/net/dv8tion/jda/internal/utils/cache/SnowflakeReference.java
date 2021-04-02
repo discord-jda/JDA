@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,15 @@
 
 package net.dv8tion.jda.internal.utils.cache;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.ISnowflake;
 
 import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.function.LongFunction;
 
+@ForRemoval
+@Deprecated
 public class SnowflakeReference<T extends ISnowflake> implements ISnowflake
 {
     private final LongFunction<T> fallbackProvider;

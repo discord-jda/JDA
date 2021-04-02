@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class SystemMessage extends ReceivedMessage
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, int flags)
     {
-        super(id, channel, type, fromWebhook, mentionsEveryone, mentionedUsers, mentionedRoles,
+        super(id, channel, type, null, fromWebhook, mentionsEveryone, mentionedUsers, mentionedRoles,
             tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, flags);
     }
 
@@ -50,27 +50,6 @@ public class SystemMessage extends ReceivedMessage
     public RestAction<Void> unpin()
     {
         throw new UnsupportedOperationException("Cannot unpin message of this Message Type. MessageType: " + getType());
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
-    {
-        throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
-    {
-        throw new UnsupportedOperationException("Cannot add reactions to message of this Message Type. MessageType: " + getType());
-    }
-
-    @Nonnull
-    @Override
-    public RestAction<Void> clearReactions()
-    {
-        throw new UnsupportedOperationException("Cannot clear reactions for message of this Message Type. MessageType: " + getType());
     }
 
     @Nonnull
