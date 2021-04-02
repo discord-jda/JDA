@@ -30,7 +30,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -59,7 +58,7 @@ public class PresenceUpdateHandler extends SocketHandler
         }
 
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked or not cached.
-        final long guildId = content.getLong("guild_id");
+        final long guildId = content.getUnsignedLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
@@ -72,25 +71,10 @@ public class PresenceUpdateHandler extends SocketHandler
         }
 
         DataObject jsonUser = content.getObject("user");
-        final long userId = jsonUser.getLong("id");
-        UserImpl user = (UserImpl) getJDA().getUsersView().get(userId);
-
-        // The user is not yet known to us, maybe due to lazy loading. Try creating it.
-        if (user == null)
-        {
-//            // If this presence update doesn't have a user or the status is offline we ignore it
-//            if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
-//                return null;
-//            // We should have somewhat enough information to create this member, so lets do it!
-//            user = (UserImpl) createMember(content, guildId, guild, jsonUser).getUser();
-            return null; // We can't create a member here anymore since v8 removed all the member data from this event
-        }
-
-        if (jsonUser.hasKey("username"))
-        {
-            // username implies this is an update to a user - fire events and update properties
-            getJDA().getEntityBuilder().updateUser(user, jsonUser);
-        }
+        final long userId = jsonUser.getUnsignedLong("id");
+        MemberImpl member = (MemberImpl) guild.getMemberById(userId);
+        if (member == null)
+            return null; // TODO: Add independent presence cache for non-offline presences
 
         //Now that we've update the User's info, lets see if we need to set the specific Presence information.
         // This is stored in the Member objects.
@@ -98,19 +82,6 @@ public class PresenceUpdateHandler extends SocketHandler
         final DataArray activityArray = !getJDA().isCacheFlagSet(CacheFlag.ACTIVITY) || content.isNull("activities") ? null : content.getArray("activities");
         List<Activity> newActivities = new ArrayList<>();
         boolean parsedActivity = parseActivities(userId, activityArray, newActivities);
-
-        MemberImpl member = (MemberImpl) guild.getMember(user);
-        //Create member from presence if not offline
-        if (member == null)
-        {
-            return null;
-//            if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
-//            {
-//                log.trace("Ignoring incomplete PRESENCE_UPDATE for member with id {} in guild with id {}", userId, guildId);
-//                return null;
-//            }
-//            member = createMember(content, guildId, guild, jsonUser);
-        }
 
         if (getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS) && !content.isNull("client_status"))
             handleClientStatus(content, member);
@@ -154,25 +125,6 @@ public class PresenceUpdateHandler extends SocketHandler
                 EntityBuilder.LOG.warn("Encountered exception trying to parse a presence! UserID: {} Message: {} Enable debug for details", userId, ex.getMessage());
         }
         return parsedActivity;
-    }
-
-    private MemberImpl createMember(DataObject content, long guildId, GuildImpl guild, DataObject jsonUser)
-    {
-        DataObject memberJson = DataObject.empty();
-
-        String nick = content.opt("nick").map(Object::toString).orElse(null);
-        DataArray roles = content.optArray("roles").orElse(null);
-        String onlineStatus = content.getString("status");
-        // unfortunately this information is missing
-        String joinDate = content.getString("joined_at", null);
-
-        memberJson.put("user", jsonUser)
-                  .put("status", onlineStatus)
-                  .put("roles", roles)
-                  .put("nick", nick)
-                  .put("joined_at", joinDate);
-        log.trace("Creating member from PRESENCE_UPDATE for userId: {} and guildId: {}", jsonUser.getUnsignedLong("id"), guild.getId());
-        return getJDA().getEntityBuilder().createMember(guild, memberJson);
     }
 
     private void handleActivities(List<Activity> newActivities, MemberImpl member)
