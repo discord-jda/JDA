@@ -1619,8 +1619,8 @@ public class EntityBuilder
         final Timeout afkTimeout = Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
         final DataArray roleArray = guildObject.getArray("roles");
         final DataArray channelsArray = guildObject.getArray("channels");
-        final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L);
-        final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L);
+        final long afkChannelId = guildObject.getLong("afk_channel_id", -1L);
+        final long systemChannelId = guildObject.getLong("system_channel_id", -1L);
 
         final List<TemplateRole> roles = new ArrayList<>();
         for (int i = 0; i < roleArray.length(); i++)
@@ -1667,8 +1667,13 @@ public class EntityBuilder
                     slowmode, bitrate, userLimit));
         }
 
+        TemplateChannel afkChannel = channels.stream().filter(templateChannel -> templateChannel.getIdLong() == afkChannelId)
+                .findFirst().orElse(null);
+        TemplateChannel systemChannel = channels.stream().filter(templateChannel -> templateChannel.getIdLong() == systemChannelId)
+                .findFirst().orElse(null);
+
         final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
-                afkTimeout, roles, channels);
+                afkTimeout, afkChannel, systemChannel, roles, channels);
 
         final boolean synced = !object.getBoolean("is_dirty", false);
 

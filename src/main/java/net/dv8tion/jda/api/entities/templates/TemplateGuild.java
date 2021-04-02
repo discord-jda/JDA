@@ -27,12 +27,14 @@ public class TemplateGuild implements ISnowflake
     private final ExplicitContentLevel explicitContentLevel;
     private final Locale locale;
     private final Timeout afkTimeout;
+    private final TemplateChannel afkChannel;
+    private final TemplateChannel systemChannel;
     private final List<TemplateRole> roles;
     private final List<TemplateChannel> channels;
 
     public TemplateGuild(final long id, final String name, final String description, final String region, final String iconId, final VerificationLevel verificationLevel,
                          final NotificationLevel notificationLevel, final ExplicitContentLevel explicitContentLevel, final Locale locale, final Timeout afkTimeout,
-                         final List<TemplateRole> roles, final List<TemplateChannel> channels)
+                         final TemplateChannel afkChannel, final TemplateChannel systemChannel, final List<TemplateRole> roles, final List<TemplateChannel> channels)
     {
         this.id = id;
         this.name = name;
@@ -44,6 +46,8 @@ public class TemplateGuild implements ISnowflake
         this.explicitContentLevel = explicitContentLevel;
         this.locale = locale;
         this.afkTimeout = afkTimeout;
+        this.afkChannel = afkChannel;
+        this.systemChannel = systemChannel;
         this.roles = roles;
         this.channels = channels;
     }
@@ -185,9 +189,36 @@ public class TemplateGuild implements ISnowflake
     }
 
     /**
-     * Gets all {@link TemplateRole Roles} in this {@link TemplateGuild Guild}.
+     * Provides the {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that has been set as the channel
+     * which {@link net.dv8tion.jda.api.entities.Member Members} will be moved to after they have been inactive in a
+     * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} for longer than {@link #getAfkTimeout()}.
+     * <br>If no channel has been set as the AFK channel, this returns {@code null}.
      *
-     * @return An immutable List of {@link TemplateRole Roles}.
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that is the AFK Channel.
+     */
+    @Nullable
+    public TemplateChannel getAfkChannel()
+    {
+        return this.afkChannel;
+    }
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that has been set as the channel
+     * which newly joined {@link net.dv8tion.jda.api.entities.Member Members} will be announced in.
+     * <br>If no channel has been set as the system channel, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel} that is the system Channel.
+     */
+    @Nullable
+    public TemplateChannel getSystemChannel()
+    {
+        return this.systemChannel;
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.templates.TemplateRole Roles} in this {@link net.dv8tion.jda.api.entities.templates.TemplateGuild Guild}.
+     *
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.templates.TemplateRole Roles}.
      */
     @Nonnull
     public List<TemplateRole> getRoles()
@@ -196,9 +227,9 @@ public class TemplateGuild implements ISnowflake
     }
 
     /**
-     * Gets all {@link TemplateChannel Channels} in this {@link TemplateGuild Guild}.
+     * Gets all {@link net.dv8tion.jda.api.entities.templates.TemplateChannel Channels} in this {@link net.dv8tion.jda.api.entities.templates.TemplateGuild Guild}.
      *
-     * @return An immutable List of {@link TemplateChannel Channels}.
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.templates.TemplateChannel Channels}.
      */
     @Nonnull
     public List<TemplateChannel> getChannels()
