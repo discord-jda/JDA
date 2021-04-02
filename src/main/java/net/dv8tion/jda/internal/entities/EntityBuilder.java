@@ -38,6 +38,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -645,12 +646,25 @@ public class EntityBuilder
     {
         if (member == null)
             throw new NullPointerException("Provided member was null!");
+        OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
+        if (onlineStatus == OnlineStatus.OFFLINE)
+            return; // don't cache offline member presences!
+        MemberPresenceImpl presence = member.getPresence();
+        if (presence == null)
+        {
+            presence = new MemberPresenceImpl();
+            CacheView.SimpleCacheView<MemberPresenceImpl> view = member.getGuild().getPresenceView();
+            try (UnlockHook lock = view.writeLock())
+            {
+                view.getMap().put(member.getIdLong(), presence);
+            }
+        }
+
         boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.ACTIVITY);
         boolean cacheStatus = getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS);
 
         DataArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getArray("activities");
         DataObject clientStatusJson = !cacheStatus || presenceJson.isNull("client_status") ? null : presenceJson.getObject("client_status");
-        OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         List<Activity> activities = new ArrayList<>();
         boolean parsedActivity = false;
 
@@ -665,8 +679,7 @@ public class EntityBuilder
                 }
                 catch (Exception ex)
                 {
-                    String userId;
-                    userId = member.getUser().getId();
+                    String userId = member.getId();
                     if (LOG.isDebugEnabled())
                         LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, activityArray, ex);
                     else
@@ -675,15 +688,15 @@ public class EntityBuilder
             }
         }
         if (cacheGame && parsedActivity)
-            member.setActivities(activities);
-        member.setOnlineStatus(onlineStatus);
+            presence.setActivities(activities);
+        presence.setOnlineStatus(onlineStatus);
         if (clientStatusJson != null)
         {
             for (String key : clientStatusJson.keys())
             {
                 ClientType type = ClientType.fromKey(key);
                 OnlineStatus status = OnlineStatus.fromKey(clientStatusJson.getString(key));
-                member.setOnlineStatus(type, status);
+                presence.setOnlineStatus(type, status);
             }
         }
     }

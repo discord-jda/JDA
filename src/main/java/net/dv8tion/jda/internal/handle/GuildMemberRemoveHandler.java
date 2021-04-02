@@ -63,6 +63,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
 
         // Update the memberCount
         guild.onMemberRemove();
+        guild.getPresenceView().remove(userId);
 
         User user = api.getEntityBuilder().createUser(content.getObject("user"));
         MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);

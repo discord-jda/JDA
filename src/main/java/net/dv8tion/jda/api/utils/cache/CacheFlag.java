@@ -58,13 +58,27 @@ public enum CacheFlag
     /**
      * Enables cache for {@link GuildChannel#getMemberPermissionOverrides()}
      */
-    MEMBER_OVERRIDES(null),
+    MEMBER_OVERRIDES,
     /**
      * Enables cache for {@link Role#getTags()}
      */
-    ROLE_TAGS(null),
+    ROLE_TAGS,
+    /**
+     * Enables cache for {@link Member#getOnlineStatus()}
+     * <br>This is enabled implicitly by {@link #ACTIVITY} and {@link #CLIENT_STATUS}.
+     *
+     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
+     *
+     * @since 4.3.0
+     */
+    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES)
     ;
     private final GatewayIntent requiredIntent;
+
+    CacheFlag()
+    {
+        this(null);
+    }
 
     CacheFlag(GatewayIntent requiredIntent)
     {
@@ -80,5 +94,15 @@ public enum CacheFlag
     public GatewayIntent getRequiredIntent()
     {
         return requiredIntent;
+    }
+
+    /**
+     * Whether this cache flag is for presence information of a member.
+     *
+     * @return True, if this is for presences
+     */
+    public boolean isPresence()
+    {
+        return requiredIntent == GatewayIntent.GUILD_PRESENCES;
     }
 }

@@ -57,6 +57,7 @@ import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -413,6 +414,13 @@ public class JDAImpl implements JDA
     public EnumSet<GatewayIntent> getGatewayIntents()
     {
         return GatewayIntent.getIntents(client.getGatewayIntents());
+    }
+
+    @Nonnull
+    @Override
+    public EnumSet<CacheFlag> getCacheFlags()
+    {
+        return Helpers.copyEnumSet(CacheFlag.class, metaConfig.getCacheFlags());
     }
 
     @Override
