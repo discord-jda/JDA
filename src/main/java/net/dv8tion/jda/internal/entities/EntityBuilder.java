@@ -22,7 +22,6 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogChange;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
@@ -32,6 +31,10 @@ import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
 import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
 import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.templates.Template;
+import net.dv8tion.jda.api.entities.templates.TemplateChannel;
+import net.dv8tion.jda.api.entities.templates.TemplateGuild;
+import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
@@ -1610,16 +1613,16 @@ public class EntityBuilder
         final String region = guildObject.getString("region", null);
         final String guildIconId = guildObject.getString("icon_hash", null);
         final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
-        final NotificationLevel notificationLevel = Guild.NotificationLevel.fromKey(guildObject.getInt("default_message_notifications", 0));
-        final ExplicitContentLevel explicitContentLevel = Guild.ExplicitContentLevel.fromKey(guildObject.getInt("explicit_content_filter", 0));
+        final NotificationLevel notificationLevel = NotificationLevel.fromKey(guildObject.getInt("default_message_notifications", 0));
+        final ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.fromKey(guildObject.getInt("explicit_content_filter", 0));
         final Locale locale = Locale.forLanguageTag(guildObject.getString("preferred_locale", "en"));
-        final Timeout afkTimeout = Guild.Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
+        final Timeout afkTimeout = Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
         final DataArray roleArray = guildObject.getArray("roles");
         final DataArray channelsArray = guildObject.getArray("channels"); // TODO actually implement this
         final long afkChannelId = guildObject.getUnsignedLong("afk_channel_id", 0L); // TODO actually implement this
         final long systemChannelId = guildObject.getUnsignedLong("system_channel_id", 0L); // TODO actually implement this
 
-        final List<Template.Role> roles = new ArrayList<>();
+        final List<TemplateRole> roles = new ArrayList<>();
         for (int i = 0; i < roleArray.length(); i++)
         {
                DataObject obj = roleArray.getObject(i);
@@ -1629,15 +1632,21 @@ public class EntityBuilder
                final boolean hoisted = obj.getBoolean("hoist");
                final boolean mentionable = obj.getBoolean("mentionable");
                final long rawPermissions = obj.getLong("permissions");
-               roles.add(new TemplateImpl.RoleImpl(roleId, roleName, roleColor == 0 ? Role.DEFAULT_COLOR_RAW : roleColor, hoisted, mentionable, rawPermissions));
+               roles.add(new TemplateRole(roleId, roleName, roleColor == 0 ? Role.DEFAULT_COLOR_RAW : roleColor, hoisted, mentionable, rawPermissions));
         }
 
-        final Template.Guild guild = new TemplateImpl.GuildImpl(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
-                afkTimeout, roles);
+        final List<TemplateChannel> channels = new ArrayList<>();
+        for (int i = 0; i < channelsArray.length(); i++)
+        {
+
+        }
+
+        final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
+                afkTimeout, roles, channels);
 
         final boolean synced = !object.getBoolean("is_dirty", false);
 
-        return new TemplateImpl(getJDA(), code, name, description,
+        return new Template(getJDA(), code, name, description,
                 uses, creator, createdAt, updatedAt,
                 guild, synced);
     }

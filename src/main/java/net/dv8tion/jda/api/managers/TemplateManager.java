@@ -16,13 +16,33 @@
 
 package net.dv8tion.jda.api.managers;
 
+import net.dv8tion.jda.api.entities.templates.Template;
+
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Manager providing functionality to update one or more fields for a {@link net.dv8tion.jda.api.entities.templates.Template Template}.
+ *
+ * <p><b>Example</b>
+ * <pre>{@code
+ * manager.setName("backup")
+ *        .setDescription("backup for our server")
+ *        .queue();
+ * manager.reset(TemplateManager.DESCRIPTION | TemplateManager.NAME)
+ *        .setName("server template")
+ *        .setDescription(null)
+ *        .queue();
+ * }</pre>
+ *
+ * @see net.dv8tion.jda.api.entities.templates.Template#getManager()
+ */
 public interface TemplateManager extends Manager<TemplateManager>
 {
+    /** Used to reset the name field */
     long NAME = 0x1;
+    /** Used to reset the description field */
     long DESCRIPTION = 0x2;
 
     /**
@@ -65,10 +85,10 @@ public interface TemplateManager extends Manager<TemplateManager>
     TemplateManager reset(long... fields);
 
     /**
-     * Sets the name of this {@link net.dv8tion.jda.api.entities.Template Template}.
+     * Sets the name of this {@link Template Template}.
      *
      * @param  name
-     *         The new name for this {@link net.dv8tion.jda.api.entities.Template Template}
+     *         The new name for this {@link Template Template}
      *
      * @throws IllegalArgumentException
      *         If the provided name is {@code null} or not between 1-100 characters long
@@ -80,10 +100,10 @@ public interface TemplateManager extends Manager<TemplateManager>
     TemplateManager setName(@Nonnull String name);
 
     /**
-     * Sets the description of this {@link net.dv8tion.jda.api.entities.Template Template}.
+     * Sets the description of this {@link Template Template}.
      *
      * @param  description
-     *         The new description for this {@link net.dv8tion.jda.api.entities.Template Template}
+     *         The new description for this {@link Template Template}
      *
      * @throws IllegalArgumentException
      *         If the provided description is not between 0-120 characters long

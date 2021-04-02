@@ -19,11 +19,10 @@ package net.dv8tion.jda.internal.managers;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Template;
+import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.TemplateManager;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.entities.TemplateImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
 import okhttp3.RequestBody;
@@ -44,9 +43,9 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
      * Creates a new TemplateManager instance
      *
      * @param template
-     *        {@link net.dv8tion.jda.api.entities.Template Template} that should be modified
+     *        {@link Template Template} that should be modified
      */
-    public TemplateManagerImpl(TemplateImpl template)
+    public TemplateManagerImpl(Template template)
     {
         super(template.getJDA(), Route.Templates.MODIFY_TEMPLATE.compile(template.getGuild().getId(), template.getCode()));
         this.template = template;
@@ -114,7 +113,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject body = DataObject.empty().put("name", template.getName());
+        DataObject body = DataObject.empty();
         if (shouldUpdate(NAME))
             body.put("name", name);
         if (shouldUpdate(DESCRIPTION))
@@ -130,7 +129,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
         final Guild guild = api.getGuildById(template.getGuild().getIdLong());
 
         if (guild == null)
-            throw new IllegalStateException("Cannot modify a template without shared guild");
+            return true;
         if (!guild.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
             throw new InsufficientPermissionException(guild, Permission.MANAGE_SERVER);
         return super.checkPermissions();

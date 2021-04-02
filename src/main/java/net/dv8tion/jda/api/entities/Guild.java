@@ -21,6 +21,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -2282,14 +2283,14 @@ public interface Guild extends ISnowflake
     RestAction<List<Invite>> retrieveInvites();
 
     /**
-     * Retrieves all {@link net.dv8tion.jda.api.entities.Template Templates} for this guild.
+     * Retrieves all {@link Template Templates} for this guild.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Template Template}{@literal >}
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link Template Template}{@literal >}
      *         <br>The list of Template objects
      */
     @Nonnull
@@ -2297,7 +2298,7 @@ public interface Guild extends ISnowflake
     RestAction<List<Template>> retrieveTemplates();
 
     /**
-     * Used to create a new {@link net.dv8tion.jda.api.entities.Template Template} for this Guild.
+     * Used to create a new {@link Template Template} for this Guild.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
@@ -2318,7 +2319,7 @@ public interface Guild extends ISnowflake
      *         If the provided name is {@code null} or not between 1-100 characters long, or
      *         if the provided description is not between 0-120 characters long
      *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Template Template}
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link Template Template}
      *         <br>The created Template object
      */
     @Nonnull
