@@ -988,6 +988,7 @@ public class EntityBuilder
     {
         final long channelId = json.getUnsignedLong("id");
         PrivateChannel channel = api.getPrivateChannelById(channelId);
+        api.usedPrivateChannel(channelId);
         if (channel != null)
             return channel;
 

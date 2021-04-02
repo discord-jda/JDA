@@ -126,6 +126,7 @@ public class MessageUpdateHandler extends SocketHandler
             }
             case PRIVATE:
             {
+                getJDA().usedPrivateChannel(message.getChannel().getIdLong());
                 getJDA().handleEvent(
                         new PrivateMessageUpdateEvent(
                                 getJDA(), responseNumber,
