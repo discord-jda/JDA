@@ -82,7 +82,7 @@ public interface MemberCachePolicy
      * @deprecated This is no longer possible due to breaking changes by discord. Presence updates, which are used to detect when people come online, no longer have enough information to cache a member
      */
     @Deprecated
-    @ForRemoval(deadline = "4.3.0")
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("MemberCachePolicy.ALL")
     MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
     /**

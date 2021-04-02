@@ -30,7 +30,7 @@ import javax.annotation.Nonnull;
  *
  * @deprecated This event is no longer supported by discord
  */
-@ForRemoval(deadline="4.3.0")
+@ForRemoval(deadline="4.4.0")
 @Deprecated
 public class PrivateChannelCreateEvent extends Event
 {
