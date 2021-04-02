@@ -274,7 +274,7 @@ public abstract class ListenerAdapter implements EventListener
      * @deprecated This event is no longer supported by discord
      */
     @Deprecated
-    @ForRemoval(deadline = "4.3.0")
+    @ForRemoval(deadline = "4.4.0")
     public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
     public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
