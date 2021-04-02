@@ -12,7 +12,7 @@ import java.util.EnumSet;
 import java.util.List;
 
 /**
- * POJO for the roles information provided by a template.
+ * POJO for the channels information provided by a template.
  *
  * @see TemplateGuild#getChannels()
  */
