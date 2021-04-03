@@ -1097,6 +1097,10 @@ public class EntityBuilder
     }
     public Message createMessage(DataObject jsonObject, @Nullable MessageChannel channel, boolean modifyCache)
     {
+        long channelId = jsonObject.getUnsignedLong("channel_id");
+        if (channel != null && channelId != channel.getIdLong())
+            channel = null;
+
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
@@ -1105,7 +1109,7 @@ public class EntityBuilder
         if (channel == null && jsonObject.isNull("guild_id") && authorId != getJDA().getSelfUser().getIdLong())
         {
             DataObject channelDate = DataObject.empty()
-                    .put("id", jsonObject.getUnsignedLong("channel_id"))
+                    .put("id", channelId)
                     .put("recipient", author);
             channel = createPrivateChannel(channelDate, modifyCache);
         }
@@ -1188,23 +1192,39 @@ public class EntityBuilder
         ReceivedMessage message;
         Message referencedMessage = null;
         if (!jsonObject.isNull("referenced_message"))
-            referencedMessage = createMessage(jsonObject.getObject("referenced_message"), channel, false);
-
-        switch (type)
         {
-            case INLINE_REPLY:
-            case DEFAULT:
-                message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
+            DataObject referenceJson = jsonObject.getObject("referenced_message");
+            try
+            {
+                referencedMessage = createMessage(referenceJson, channel, false);
+            }
+            catch (IllegalArgumentException ex)
+            {
+                // We can just discard the message for some trivial cases
+                if (UNKNOWN_MESSAGE_TYPE.equals(ex.getMessage()))
+                    LOG.debug("Received referenced message with unknown type. Type: {}", referenceJson.getInt("type", -1));
+                else if (MISSING_CHANNEL.equals(ex.getMessage()))
+                    LOG.debug("Received referenced message with unknown channel. channel_id: {} Type: {}",
+                        referenceJson.getUnsignedLong("channel_id", 0), referenceJson.getInt("type", -1));
+                else
+                    throw ex;
+            }
+        }
+
+        if (type == MessageType.UNKNOWN)
+            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+        if (!type.isSystem())
+        {
+            message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
-                break;
-            case UNKNOWN:
-                throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
-            default:
-                message = new SystemMessage(id, channel, type, fromWebhook,
+        }
+        else
+        {
+            message = new SystemMessage(id, channel, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
-                break;
+            return message; // We don't need to parse mentions for system messages, they are always empty anyway
         }
 
         GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
