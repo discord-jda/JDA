@@ -1711,6 +1711,7 @@ public class GuildImpl implements Guild
         return memberCache;
     }
 
+    @Nullable
     public CacheView.SimpleCacheView<MemberPresenceImpl> getPresenceView()
     {
         return memberPresences;

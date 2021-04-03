@@ -652,8 +652,10 @@ public class EntityBuilder
         MemberPresenceImpl presence = member.getPresence();
         if (presence == null)
         {
-            presence = new MemberPresenceImpl();
             CacheView.SimpleCacheView<MemberPresenceImpl> view = member.getGuild().getPresenceView();
+            if (view == null)
+                return;
+            presence = new MemberPresenceImpl();
             try (UnlockHook lock = view.writeLock())
             {
                 view.getMap().put(member.getIdLong(), presence);

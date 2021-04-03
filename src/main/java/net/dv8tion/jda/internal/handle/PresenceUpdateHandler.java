@@ -76,22 +76,24 @@ public class PresenceUpdateHandler extends SocketHandler
             return null;
         }
 
+        CacheView.SimpleCacheView<MemberPresenceImpl> presences = guild.getPresenceView();
+        if (presences == null)
+            return null; // technically this should be impossible
         DataObject jsonUser = content.getObject("user");
         final long userId = jsonUser.getUnsignedLong("id");
         MemberImpl member = (MemberImpl) guild.getMemberById(userId);
-        MemberPresenceImpl presence = guild.getPresenceView().get(userId);
+        MemberPresenceImpl presence = presences.get(userId);
         OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
         if (status == OnlineStatus.OFFLINE)
-            guild.getPresenceView().remove(userId);
+            presences.remove(userId);
         if (presence == null)
         {
             presence = new MemberPresenceImpl();
             if (status != OnlineStatus.OFFLINE)
             {
-                CacheView.SimpleCacheView<MemberPresenceImpl> view = guild.getPresenceView();
-                try (UnlockHook lock = view.writeLock())
+                try (UnlockHook lock = presences.writeLock())
                 {
-                    view.getMap().put(userId, presence);
+                    presences.getMap().put(userId, presence);
                 }
             }
         }
