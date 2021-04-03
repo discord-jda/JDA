@@ -32,8 +32,8 @@ public enum AccountType
      *
      * @deprecated This will be removed in a future version
      */
-    @ForRemoval
     @Deprecated
+    @ForRemoval(deadline="4.3.0")
     @DeprecatedSince("4.2.0")
     CLIENT
 }
