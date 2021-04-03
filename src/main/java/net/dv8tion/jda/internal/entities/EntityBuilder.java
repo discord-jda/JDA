@@ -1283,7 +1283,7 @@ public class EntityBuilder
         final String url = jsonObject.getString("url");
         final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
-        final String contentType = jsonObject.getString("content-type", null);
+        final String contentType = jsonObject.getString("content_type", null);
         final long id = jsonObject.getLong("id");
         return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, getJDA());
     }
