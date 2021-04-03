@@ -99,6 +99,16 @@ public enum MessageType
     GUILD_DISCOVERY_REQUALIFIED(15),
 
     /**
+     * System message related to discovery qualifications.
+     */
+    GUILD_DISCOVERY_GRACE_PERIOD_INITIAL_WARNING(16),
+
+    /**
+     * System message related to discovery qualifications.
+     */
+    GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17),
+
+    /**
      * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
      */
     INLINE_REPLY(19),
