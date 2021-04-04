@@ -287,7 +287,8 @@ public class JDABuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .disableCache(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY)
+                   .disableCache(CacheFlag.fromRequired(GatewayIntent.GUILD_PRESENCES))
+                   .disableCache(CacheFlag.fromRequired(GatewayIntent.GUILD_MEMBERS))
                    .setLargeThreshold(250);
     }
 

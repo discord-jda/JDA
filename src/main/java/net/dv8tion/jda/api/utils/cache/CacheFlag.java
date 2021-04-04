@@ -22,7 +22,9 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 /**
  * Flags used to enable cache services for JDA.
@@ -104,5 +106,21 @@ public enum CacheFlag
     public boolean isPresence()
     {
         return requiredIntent == GatewayIntent.GUILD_PRESENCES;
+    }
+
+    /**
+     * Collects all cache flags that require the specified intent.
+     *
+     * @param  requiredIntent
+     *         The required intent or null if no intent is required
+     *
+     * @return {@link EnumSet} of the cache flags that require the provided intent
+     */
+    @Nonnull
+    public static EnumSet<CacheFlag> fromRequired(@Nullable GatewayIntent requiredIntent)
+    {
+        EnumSet<CacheFlag> flags = EnumSet.allOf(CacheFlag.class);
+        flags.removeIf(flag -> flag.requiredIntent == requiredIntent);
+        return flags;
     }
 }
