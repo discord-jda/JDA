@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.JDALogger;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -135,44 +136,50 @@ public class ErrorResponseException extends RuntimeException
 
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
-        // TODO: Handle schema errors?
-        Optional<DataObject> optObj = response.optObject();
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
         List<SchemaError> schemaErrors = new ArrayList<>();
-        if (response.isError() && response.getException() != null)
+        try
         {
-            // this generally means that an exception occurred trying to
-            //make an http request. e.g.:
-            //SocketTimeoutException/ UnknownHostException
-            code = response.code;
-            meaning = response.getException().getClass().getName();
-        }
-        else if (optObj.isPresent())
-        {
-            DataObject obj = optObj.get();
-            if (!obj.isNull("code") || !obj.isNull("message"))
+            Optional<DataObject> optObj = response.optObject();
+            if (response.isError() && response.getException() != null)
             {
-                if (!obj.isNull("code"))
-                    code = obj.getInt("code");
-                if (!obj.isNull("message"))
-                    meaning = obj.getString("message");
+                // this generally means that an exception occurred trying to
+                //make an http request. e.g.:
+                //SocketTimeoutException/ UnknownHostException
+                code = response.code;
+                meaning = response.getException().getClass().getName();
+            }
+            else if (optObj.isPresent())
+            {
+                DataObject obj = optObj.get();
+                if (!obj.isNull("code") || !obj.isNull("message"))
+                {
+                    if (!obj.isNull("code"))
+                        code = obj.getInt("code");
+                    if (!obj.isNull("message"))
+                        meaning = obj.getString("message");
+                }
+                else
+                {
+                    // This means that neither code or message is provided
+                    //In that case we simply put the raw response in place!
+                    code = response.code;
+                    meaning = obj.toString();
+                }
+
+                obj.optObject("errors").ifPresent(schema -> parseSchema(schemaErrors, "", schema));
             }
             else
             {
-                // This means that neither code or message is provided
-                //In that case we simply put the raw response in place!
+                // error response body is not JSON
                 code = response.code;
-                meaning = obj.toString();
+                meaning = response.getString();
             }
-
-            obj.optObject("errors").ifPresent(schema -> parseSchema(schemaErrors, "", schema));
         }
-        else
+        catch (Exception e)
         {
-            // error response body is not JSON
-            code = response.code;
-            meaning = response.getString();
+            JDALogger.getLog(ErrorResponseException.class).error("Failed to parse parts of error response. Body: {}", response.getString(), e);
         }
 
         return new ErrorResponseException(errorResponse, response, code, meaning, schemaErrors);
