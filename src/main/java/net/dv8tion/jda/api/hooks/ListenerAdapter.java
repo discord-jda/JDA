@@ -275,7 +275,11 @@ public abstract class ListenerAdapter implements EventListener
      */
     @Deprecated
     @ForRemoval(deadline = "4.4.0")
+    @DeprecatedSince("4.3.0")
     public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
+    @Deprecated
+    @ForRemoval(deadline = "4.4.0")
+    @DeprecatedSince("4.3.0")
     public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
     //Guild Events

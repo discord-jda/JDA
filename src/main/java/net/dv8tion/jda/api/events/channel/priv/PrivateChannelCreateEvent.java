@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.api.events.channel.priv;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.PrivateChannel;
@@ -30,8 +31,9 @@ import javax.annotation.Nonnull;
  *
  * @deprecated This event is no longer supported by discord
  */
-@ForRemoval(deadline="4.4.0")
 @Deprecated
+@ForRemoval(deadline="4.4.0")
+@DeprecatedSince("4.3.0")
 public class PrivateChannelCreateEvent extends Event
 {
     private final PrivateChannel channel;
