@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.utils;
 
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
@@ -74,16 +72,14 @@ public interface MemberCachePolicy
     MemberCachePolicy OWNER = Member::isOwner;
     /**
      * Cache online/idle/dnd users.
-     * <br>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} to be enabled.
+     * <br>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GatewayIntent.GUILD_PRESENCES} and {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ONLINE_STATUS CacheFlag.ONLINE_STATUS} to be enabled.
+     *
+     * <p>This cannot cache online members immediately when they come online, due to discord limitations.
+     * Discord only sends presence information without member details so the member will be cached once they become active.
      *
      * <p>Not recommended without {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent enabled.
      * The api will only send the guild member leave events when this intent is enabled. Without those events the members will stay in cache indefinitely.
-     *
-     * @deprecated This is no longer possible due to breaking changes by discord. Presence updates, which are used to detect when people come online, no longer have enough information to cache a member
      */
-    @Deprecated
-    @ForRemoval(deadline = "4.4.0")
-    @ReplaceWith("MemberCachePolicy.ALL")
     MemberCachePolicy ONLINE = (member) -> member.getOnlineStatus() != OnlineStatus.OFFLINE && member.getOnlineStatus() != OnlineStatus.UNKNOWN;
     /**
      * Cache members who are connected to a voice channel.
