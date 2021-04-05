@@ -56,6 +56,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1147,12 +1148,37 @@ public interface Guild extends ISnowflake
                 return getTextChannelById(id);
             case VOICE:
                 return getVoiceChannelById(id);
+            case STAGE:
+                return getStageChannelById(id);
             case STORE:
                 return getStoreChannelById(id);
             case CATEGORY:
                 return getCategoryById(id);
         }
         return null;
+    }
+
+    @Nonnull
+    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getVoiceChannelsByName(name, ignoreCase)
+                .stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Nullable
+    default StageChannel getStageChannelById(@Nonnull String id)
+    {
+        return getStageChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Nullable
+    default StageChannel getStageChannelById(long id)
+    {
+        VoiceChannel channel = getVoiceChannelById(id);
+        return channel instanceof StageChannel ? (StageChannel) channel : null;
     }
 
     /**
@@ -4612,6 +4638,70 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, @Nullable Category parent);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel VoiceChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the StageChannel to create
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new StageChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
+    {
+        return createStageChannel(name, null);
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel VoiceChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the StageChannel to create
+     * @param  parent
+     *         The optional parent category for this channel, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         or the provided parent is not in the same guild.
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new StageChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<StageChannel> createStageChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Category Category} in this Guild.

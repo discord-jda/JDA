@@ -140,8 +140,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
     {
-        if (type != ChannelType.TEXT)
-            throw new UnsupportedOperationException("Can only set the topic for a TextChannel!");
+        if (type != ChannelType.TEXT && type != ChannelType.STAGE)
+            throw new UnsupportedOperationException("Can only set the topic for a TextChannel or StageChannel!");
         if (topic != null && topic.length() > 1024)
             throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
         this.topic = topic;
@@ -330,14 +330,15 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                     object.put("user_limit", userlimit);
                 break;
             case TEXT:
-                if (topic != null && !topic.isEmpty())
-                    object.put("topic", topic);
                 if (nsfw != null)
                     object.put("nsfw", nsfw);
                 if (slowmode != null)
                     object.put("rate_limit_per_user", slowmode);
                 if (news != null)
                     object.put("type", news ? 5 : 0);
+            case STAGE:
+                if (topic != null && !topic.isEmpty())
+                    object.put("topic", topic);
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());
@@ -352,6 +353,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         GuildChannel channel;
         switch (type)
         {
+            case STAGE:
             case VOICE:
                 channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
                 break;

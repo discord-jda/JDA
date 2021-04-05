@@ -1395,6 +1395,28 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent)
+    {
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
+
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+
+        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        return new ChannelActionImpl<>(StageChannel.class, name, this, ChannelType.STAGE).setParent(parent);
+    }
+
+    @Nonnull
+    @Override
     public ChannelAction<Category> createCategory(@Nonnull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);

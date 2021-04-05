@@ -58,6 +58,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 /**
  * The core of JDA. Acts as a registry system of JDA. All parts of the the API can be accessed starting from this class.
@@ -1164,12 +1165,37 @@ public interface JDA
             return getTextChannelById(id);
         case VOICE:
             return getVoiceChannelById(id);
+        case STAGE:
+            return getStageChannelById(id);
         case STORE:
             return getStoreChannelById(id);
         case CATEGORY:
             return getCategoryById(id);
         }
         return null;
+    }
+
+    @Nonnull
+    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getVoiceChannelsByName(name, ignoreCase)
+                .stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    @Nullable
+    default StageChannel getStageChannelById(@Nonnull String id)
+    {
+        return getStageChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    @Nullable
+    default StageChannel getStageChannelById(long id)
+    {
+        VoiceChannel channel = getVoiceChannelById(id);
+        return channel instanceof StageChannel ? (StageChannel) channel : null;
     }
 
     /**
