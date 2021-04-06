@@ -16,7 +16,63 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-public interface InteractionWebhookAction extends WebhookMessageAction<InteractionWebhookAction>
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.utils.AttachmentOption;
+
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.InputStream;
+import java.util.Collection;
+
+public interface InteractionWebhookAction extends WebhookMessageAction
 {
+    @Nonnull
+    @CheckReturnValue
     InteractionWebhookAction setEphemeral(boolean ephemeral);
+
+    @Nonnull
+    @Override
+    InteractionWebhookAction setContent(@Nullable String content);
+
+    @Nonnull
+    @Override
+    InteractionWebhookAction setTTS(boolean tts);
+
+    @Nonnull
+    @Override
+    InteractionWebhookAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+
+    @Nonnull
+    @Override
+    default InteractionWebhookAction addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    InteractionWebhookAction addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
+
+    @Nonnull
+    @Override
+    default InteractionWebhookAction addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    default InteractionWebhookAction addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
+    {
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    default InteractionWebhookAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    {
+        return null;
+    }
 }

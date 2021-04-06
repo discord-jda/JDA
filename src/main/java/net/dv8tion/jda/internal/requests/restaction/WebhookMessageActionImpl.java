@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -39,7 +40,9 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 
-public class WebhookMessageActionImpl extends TriggerRestAction<Message> implements InteractionWebhookAction, Runnable
+public class WebhookMessageActionImpl
+    extends TriggerRestAction<Message>
+    implements InteractionWebhookAction, WebhookMessageAction
 {
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
@@ -54,14 +57,17 @@ public class WebhookMessageActionImpl extends TriggerRestAction<Message> impleme
         super(api, route);
     }
 
-    public WebhookMessageActionImpl applyMessage(Message message)
+    @Nonnull
+    public WebhookMessageActionImpl applyMessage(@Nonnull Message message)
     {
+        Checks.notNull(message, "Message");
         this.tts = message.isTTS();
         this.embeds.addAll(message.getEmbeds());
         this.allowedMentions.applyMessage(message);
         return setContent(message.getContentRaw());
     }
 
+    @Nonnull
     @Override
     public WebhookMessageActionImpl setEphemeral(boolean ephemeral)
     {

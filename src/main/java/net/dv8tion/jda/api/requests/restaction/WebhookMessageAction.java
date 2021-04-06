@@ -31,28 +31,31 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends RestAction<Message>, AllowedMentions<WebhookMessageAction<T>>
+public interface WebhookMessageAction extends RestAction<Message>, AllowedMentions<WebhookMessageAction>
 {
     @Nonnull
     @CheckReturnValue
-    T setContent(@Nullable String content);
-    @Nonnull
-    @CheckReturnValue
-    T setTTS(boolean tts);
-    @Nonnull
-    @CheckReturnValue
-    T setUsername(@Nullable String name);
-    @Nonnull
-    @CheckReturnValue
-    T setAvatarUrl(@Nullable String iconUrl);
+    WebhookMessageAction setUsername(@Nullable String name);
 
     @Nonnull
     @CheckReturnValue
-    T addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
+    WebhookMessageAction setAvatarUrl(@Nullable String iconUrl);
 
     @Nonnull
     @CheckReturnValue
-    default T addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    WebhookMessageAction setContent(@Nullable String content);
+
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageAction setTTS(boolean tts);
+
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
+
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageAction addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
         ArrayList<MessageEmbed> embeds = new ArrayList<>();
         embeds.add(embed);
@@ -62,11 +65,11 @@ public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    T addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
+    WebhookMessageAction addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @CheckReturnValue
-    default T addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -75,7 +78,7 @@ public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default T addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
     {
         Checks.notEmpty(name, "Name");
         Checks.notNull(data, "File");
@@ -91,9 +94,13 @@ public interface WebhookMessageAction<T extends WebhookMessageAction<T>> extends
 
     @Nonnull
     @CheckReturnValue
-    default T addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file.getName(), file);
     }
+
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageAction applyMessage(@Nonnull Message message);
 }

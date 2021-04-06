@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.commands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
@@ -27,10 +28,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
 
 // this is used for followup responses on commands
-public interface CommandHook
+public interface CommandHook extends WebhookClient<InteractionWebhookAction>
 {
     @Nonnull
     SlashCommandEvent getEvent();
@@ -61,188 +63,6 @@ public interface CommandHook
     {
         return getEvent().getInteractionToken();
     }
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction sendMessage(@Nonnull String content);
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction sendMessage(@Nonnull Message message);
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
-    {
-        Checks.notNull(format, "Format String");
-        return sendMessage(String.format(format, args));
-    }
-
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(file, "File");
-        return sendFile(file, file.getName(), options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction sendFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(file, "File");
-        Checks.check(file.exists() && file.canRead(),
-                "Provided file doesn't exist or cannot be read!");
-        Checks.notNull(name, "Name");
-
-        try
-        {
-            return editOriginal(new FileInputStream(file), name, options);
-        }
-        catch (FileNotFoundException ex)
-        {
-            throw new IllegalArgumentException(ex);
-        }
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction sendFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "Data");
-        Checks.notNull(name, "Name");
-
-        return editOriginal(new ByteArrayInputStream(data), name, options);
-    }
-
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull String content);
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(long messageId, @Nonnull String content)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), content);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(long messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), embed, embeds);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull Message message);
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(long messageId, Message message)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), message);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
-    {
-        Checks.notNull(format, "Format String");
-        return editMessageById(messageId, String.format(format, args));
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
-    {
-        return editMessageFormatById(Long.toUnsignedString(messageId), format, args);
-    }
-
-
-    @Nonnull
-    @CheckReturnValue
-    InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(file, "File");
-        return editMessageById(messageId, file, file.getName(), options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(file, "File");
-        Checks.check(file.exists() && file.canRead(),
-                "Provided file doesn't exist or cannot be read!");
-        Checks.notNull(name, "Name");
-
-        try
-        {
-            return editMessageById(messageId, new FileInputStream(file), name, options);
-        }
-        catch (FileNotFoundException ex)
-        {
-            throw new IllegalArgumentException(ex);
-        }
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        Checks.notNull(data, "Data");
-        Checks.notNull(name, "Name");
-
-        return editMessageById(messageId, new ByteArrayInputStream(data), name, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), data, name, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), file, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), file, name, options);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    default InteractionWebhookAction editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), data, name, options);
-    }
-
 
     @Nonnull
     @CheckReturnValue
@@ -302,16 +122,6 @@ public interface CommandHook
         return editMessageById("@original", data, name, options);
     }
 
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> deleteMessageById(@Nonnull String messageId);
-
-    @Nonnull
-    @CheckReturnValue
-    default RestAction<Void> deleteMessageById(long messageId)
-    {
-        return deleteMessageById(Long.toUnsignedString(messageId));
-    }
 
     @Nonnull
     @CheckReturnValue
