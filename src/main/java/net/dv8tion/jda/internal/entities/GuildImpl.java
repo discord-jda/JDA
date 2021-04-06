@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,10 +35,7 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.api.utils.cache.MemberCacheView;
-import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -68,7 +65,6 @@ import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -86,9 +82,9 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
+    private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
-    private final ReentrantLock mngLock = new ReentrantLock();
-    private volatile GuildManager manager;
+    private GuildManager manager;
 
     private Member owner;
     private String name;
@@ -102,6 +98,8 @@ public class GuildImpl implements Guild
     private Set<String> features;
     private VoiceChannel afkChannel;
     private TextChannel systemChannel;
+    private TextChannel rulesChannel;
+    private TextChannel communityUpdatesChannel;
     private Role publicRole;
     private VerificationLevel verificationLevel = VerificationLevel.UNKNOWN;
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
@@ -118,6 +116,10 @@ public class GuildImpl implements Guild
     {
         this.id = id;
         this.api = api;
+        if (api.getCacheFlags().stream().anyMatch(CacheFlag::isPresence))
+            memberPresences = new CacheView.SimpleCacheView<>(MemberPresenceImpl.class, null);
+        else
+            memberPresences = null;
     }
 
     @Nonnull
@@ -241,6 +243,17 @@ public class GuildImpl implements Guild
         return vanityCode;
     }
 
+    @Override
+    @Nonnull
+    public RestAction<VanityInvite> retrieveVanityInvite()
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        JDAImpl api = getJDA();
+        Route.CompiledRoute route = Route.Guilds.GET_VANITY_URL.compile(getId());
+        return new RestActionImpl<>(api, route,
+            (response, request) -> new VanityInvite(vanityCode, response.getObject().getInt("uses")));
+    }
+
     @Nullable
     @Override
     public String getDescription()
@@ -326,6 +339,18 @@ public class GuildImpl implements Guild
     public TextChannel getSystemChannel()
     {
         return systemChannel;
+    }
+
+    @Override
+    public TextChannel getRulesChannel()
+    {
+        return rulesChannel;
+    }
+
+    @Override
+    public TextChannel getCommunityUpdatesChannel()
+    {
+        return communityUpdatesChannel;
     }
 
     @Nonnull
@@ -534,7 +559,7 @@ public class GuildImpl implements Guild
             for (int i = 0; i < emotes.length(); i++)
             {
                 DataObject emote = emotes.getObject(i);
-                list.add(builder.createEmote(GuildImpl.this, emote, true));
+                list.add(builder.createEmote(GuildImpl.this, emote));
             }
 
             return Collections.unmodifiableList(list);
@@ -563,7 +588,7 @@ public class GuildImpl implements Guild
             return new AuditableRestActionImpl<>(jda, route, (response, request) ->
             {
                 EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-                return builder.createEmote(GuildImpl.this, response.getObject(), true);
+                return builder.createEmote(GuildImpl.this, response.getObject());
             });
         });
     }
@@ -646,17 +671,9 @@ public class GuildImpl implements Guild
     @Override
     public GuildManager getManager()
     {
-        GuildManager mng = manager;
-        if (mng == null)
-        {
-            mng = MiscUtil.locked(mngLock, () ->
-            {
-                if (manager == null)
-                    manager = new GuildManagerImpl(this);
-                return manager;
-            });
-        }
-        return mng;
+        if (manager == null)
+            return manager = new GuildManagerImpl(this);
+        return manager;
     }
 
     @Nonnull
@@ -860,6 +877,10 @@ public class GuildImpl implements Guild
         MemberChunkManager chunkManager = getJDA().getClient().getChunkManager();
         boolean includePresences = getJDA().isIntent(GatewayIntent.GUILD_PRESENCES);
         CompletableFuture<Void> handler = chunkManager.chunkGuild(this, includePresences, (last, list) -> list.forEach(callback));
+        handler.exceptionally(ex -> {
+            WebSocketClient.LOG.error("Encountered exception trying to handle member chunk response", ex);
+            return null;
+        });
         return new GatewayTask<>(handler, () -> handler.cancel(false));
     }
 
@@ -1133,12 +1154,13 @@ public class GuildImpl implements Guild
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
+        DataObject params = DataObject.empty();
         if (!Helpers.isBlank(reason))
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+            params.put("reason", reason);
         if (delDays > 0)
-            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
+            params.put("delete_message_days", delDays);
 
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<>(getJDA(), route, params);
     }
 
     @Nonnull
@@ -1400,7 +1422,7 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
             DataObject obj = response.getObject();
-            return jda.getEntityBuilder().createEmote(this, obj, true);
+            return jda.getEntityBuilder().createEmote(this, obj);
         });
     }
 
@@ -1573,6 +1595,18 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setRulesChannel(TextChannel rulesChannel)
+    {
+        this.rulesChannel = rulesChannel;
+        return this;
+    }
+
+    public GuildImpl setCommunityUpdatesChannel(TextChannel communityUpdatesChannel)
+    {
+        this.communityUpdatesChannel = communityUpdatesChannel;
+        return this;
+    }
+
     public GuildImpl setPublicRole(Role publicRole)
     {
         this.publicRole = publicRole;
@@ -1675,6 +1709,12 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    @Nullable
+    public CacheView.SimpleCacheView<MemberPresenceImpl> getPresenceView()
+    {
+        return memberPresences;
     }
 
     // -- Member Tracking --

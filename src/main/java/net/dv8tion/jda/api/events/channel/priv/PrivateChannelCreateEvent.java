@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.events.channel.priv;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -26,7 +28,12 @@ import javax.annotation.Nonnull;
  * Indicates that a {@link net.dv8tion.jda.api.entities.PrivateChannel Private Channel} was created.
  *
  * <p>Can be used to retrieve the created private channel and its {@link net.dv8tion.jda.api.entities.User User}.
+ *
+ * @deprecated This event is no longer supported by discord
  */
+@Deprecated
+@ForRemoval(deadline="4.4.0")
+@DeprecatedSince("4.3.0")
 public class PrivateChannelCreateEvent extends Event
 {
     private final PrivateChannel channel;

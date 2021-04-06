@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_REGION GUILD_REGION}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_SPLASH GUILD_SPLASH}</li>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_SYSTEM_CHANNEL GUILD_SYSTEM_CHANNEL}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_RULES_CHANNEL GUILD_RULES_CHANNEL}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#GUILD_COMMUNITY_UPDATES_CHANNEL GUILD_COMMUNITY_UPDATES_CHANNEL}</li>
      * </ul>
      */
     GUILD_UPDATE(1, TargetType.GUILD),

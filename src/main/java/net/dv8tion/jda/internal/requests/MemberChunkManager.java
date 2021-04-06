@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -210,8 +210,17 @@ public class MemberChunkManager
 
         public void handleChunk(boolean last, DataObject chunk)
         {
-            if (!isCancelled())
-                handler.accept(last, toMembers(chunk));
+            try
+            {
+                if (!isDone())
+                    handler.accept(last, toMembers(chunk));
+            }
+            catch (Throwable ex)
+            {
+                completeExceptionally(ex);
+                if (ex instanceof Error)
+                    throw (Error) ex;
+            }
         }
 
         @Override

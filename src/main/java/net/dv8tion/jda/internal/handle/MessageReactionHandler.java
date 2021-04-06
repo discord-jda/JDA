@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,6 +174,7 @@ public class MessageReactionHandler extends SocketHandler
                         Objects.requireNonNull(member), reaction));
                 break;
             case PRIVATE:
+                jda.usedPrivateChannel(reaction.getChannel().getIdLong());
                 jda.handleEvent(
                     new PrivateMessageReactionAddEvent(
                         jda, responseNumber,
@@ -202,6 +203,7 @@ public class MessageReactionHandler extends SocketHandler
                         member, reaction, userId));
                 break;
             case PRIVATE:
+                jda.usedPrivateChannel(reaction.getChannel().getIdLong());
                 jda.handleEvent(
                     new PrivateMessageReactionRemoveEvent(
                         jda, responseNumber,

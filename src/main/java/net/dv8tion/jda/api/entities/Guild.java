@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -287,21 +287,8 @@ public interface Guild extends ISnowflake
     /**
      * The Features of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <p>
-     * <b>Possible known features:</b>
-     * <ul>
-     *     <li>ANIMATED_ICON - Guild can have an animated icon</li>
-     *     <li>BANNER - Guild can have a banner</li>
-     *     <li>COMMERCE - Guild can sell software through a store channel</li>
-     *     <li>DISCOVERABLE - Guild shows up in discovery tab</li>
-     *     <li>INVITE_SPLASH - Guild has custom invite splash. See {@link #getSplashId()} and {@link #getSplashUrl()}</li>
-     *     <li>MORE_EMOJI - Guild is able to use more than 50 emoji</li>
-     *     <li>NEWS - Guild can create news channels</li>
-     *     <li>PARTNERED - Guild is "partnered"</li>
-     *     <li>PUBLIC - Guild is public</li>
-     *     <li>VANITY_URL - Guild a vanity URL (custom invite link). See {@link #getVanityUrl()}</li>
-     *     <li>VERIFIED - Guild is "verified"</li>
-     *     <li>VIP_REGIONS - Guild has VIP voice regions</li>
-     * </ul>
+     * <a target="_blank" href="https://discord.com/developers/docs/resources/guild#guild-object-guild-features"><b>List of Features</b></a>
+     *
      *
      * @return Never-null, unmodifiable Set containing all of the Guild's features.
      */
@@ -348,8 +335,11 @@ public interface Guild extends ISnowflake
      * Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
      * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
+     *     <br>If this guild does not have a vanity invite</li>
+     *
      *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
-     *     <br>The ban list cannot be fetched due to a permission discrepancy</li>
+     *     <br>The vanity url cannot be fetched due to a permission discrepancy</li>
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -403,6 +393,34 @@ public interface Guild extends ISnowflake
     }
 
     /**
+     * Retrieves the Vanity Invite meta data for this guild.
+     * <br>This allows you to inspect how many times the vanity invite has been used.
+     * You can use {@link #getVanityUrl()} if you only care about the invite.
+     *
+     * <p>This action requires the {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#INVITE_CODE_INVALID INVITE_CODE_INVALID}
+     *     <br>If this guild does not have a vanity invite</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The vanity invite cannot be fetched due to a permission discrepancy</li>
+     * </ul>
+     *
+     * @throws InsufficientPermissionException
+     *         If the currently logged in account does not have {@link Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
+     *
+     * @return {@link RestAction} - Type: {@link VanityInvite}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<VanityInvite> retrieveVanityInvite();
+
+    /**
      * The description for this guild.
      * <br>This is displayed in the server browser below the guild name for verified guilds.
      *
@@ -417,8 +435,13 @@ public interface Guild extends ISnowflake
 
     /**
      * The preferred locale for this guild.
+     * <br>If the guild doesn't have the COMMUNITY feature, this returns the default.
+     *
+     * <br>Default: {@link Locale#US}
      *
      * @return The preferred {@link Locale} for this guild
+     *
+     * @since  4.2.1
      */
     @Nonnull
     Locale getLocale();
@@ -584,6 +607,28 @@ public interface Guild extends ISnowflake
      */
     @Nullable
     TextChannel getSystemChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that lists the rules of the guild.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the rules channel
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getRulesChannel();
+
+    /**
+     * Provides the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that receives community updates.
+     * <br>If this guild doesn't have the COMMUNITY {@link #getFeatures() feature}, this returns {@code null}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} that is the community updates channel
+     *
+     * @see    #getFeatures()
+     */
+    @Nullable
+    TextChannel getCommunityUpdatesChannel();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this Guild.
@@ -814,8 +859,8 @@ public interface Guild extends ISnowflake
      *         If the provided arguments are null or not in the described format
      *
      * @return The {@link net.dv8tion.jda.api.entities.Member} for the discord tag or null if no member has the provided tag
-     * 
-     * @see    #getMemberByTag(String) 
+     *
+     * @see    #getMemberByTag(String)
      */
     @Nullable
     default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator)
@@ -897,7 +942,7 @@ public interface Guild extends ISnowflake
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Member Members} who have the same effective name as the one provided.
-     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}}.
+     * <br>This compares against {@link net.dv8tion.jda.api.entities.Member#getEffectiveName()}.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.Member Members} with the provided name, then this returns an empty list.
      *
      * <p>This will only check cached members!
@@ -936,6 +981,8 @@ public interface Guild extends ISnowflake
      *         If a provided {@link net.dv8tion.jda.api.entities.Role Role} is from a different guild or null.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
+     *
+     * @see    #findMembersWithRoles(Role...)
      */
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Role... roles)
@@ -958,6 +1005,8 @@ public interface Guild extends ISnowflake
      *         If a provided {@link net.dv8tion.jda.api.entities.Role Role} is from a different guild or null.
      *
      * @return Possibly-empty immutable list of Members with all provided Roles.
+     *
+     * @see    #findMembersWithRoles(Collection)
      */
     @Nonnull
     default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles)
@@ -2090,6 +2139,9 @@ public interface Guild extends ISnowflake
      * all properties and settings of the Guild.
      * <br>You modify multiple fields in one request by chaining setters before calling {@link net.dv8tion.jda.api.requests.RestAction#queue() RestAction.queue()}.
      *
+     * <p>This is a lazy idempotent getter. The manager is retained after the first call.
+     * This getter is not thread-safe and would require guards by the user.
+     *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      *
@@ -2417,6 +2469,75 @@ public interface Guild extends ISnowflake
         reference.onSuccess(it -> future.complete(list))
                  .onError(future::completeExceptionally);
         return task;
+    }
+
+    /**
+     * Retrieves and collects members of this guild into a list.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  roles
+     *         Collection of all roles the members must have
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} - Type: {@link List} of {@link Member}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles)
+    {
+        Checks.noneNull(roles, "Roles");
+        for (Role role : roles)
+            Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
+
+        if (isLoaded() || roles.isEmpty() || roles.contains(getPublicRole())) // Member#getRoles never contains the public role
+        {
+            CompletableFuture<List<Member>> future = CompletableFuture.completedFuture(getMembersWithRoles(roles));
+            return new GatewayTask<>(future, () -> {});
+        }
+
+        return findMembers(member -> member.getRoles().containsAll(roles));
+    }
+
+    /**
+     * Retrieves and collects members of this guild into a list.
+     * <br>This will use the configured {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * to decide which members to retain in cache.
+     *
+     * <p><b>This requires the privileged GatewayIntent.GUILD_MEMBERS to be enabled!</b>
+     *
+     * <p><b>You MUST NOT use blocking operations such as {@link Task#get()}!</b>
+     * The response handling happens on the event thread by default.
+     *
+     * @param  roles
+     *         All roles the members must have
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws IllegalStateException
+     *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
+     *
+     * @return {@link Task} - Type: {@link List} of {@link Member}
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    default Task<List<Member>> findMembersWithRoles(@Nonnull Role... roles)
+    {
+        Checks.noneNull(roles, "Roles");
+        return findMembersWithRoles(Arrays.asList(roles));
     }
 
     /**
@@ -2894,7 +3015,7 @@ public interface Guild extends ISnowflake
      *         <ul>
      *             <li>If includePresence is {@code true} and the GUILD_PRESENCES intent is disabled</li>
      *             <li>If the input contains null</li>
-     *             <li>If the input is more than 100 IDs</li>
+     *             <li>If the input is more than 100 users</li>
      *         </ul>
      *
      * @return {@link Task} handle for the request

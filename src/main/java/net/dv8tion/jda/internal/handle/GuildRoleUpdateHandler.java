@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         if (color == 0)
             color = Role.DEFAULT_COLOR_RAW;
         int position = rolejson.getInt("position");
-        long permissions = rolejson.getLong("permissions_new");
+        long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
 

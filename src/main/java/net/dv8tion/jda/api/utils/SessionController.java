@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import javax.annotation.Nonnull;
  * <b>Using {@link net.dv8tion.jda.api.JDABuilder JDABuilder}</b>
  * <br>
  * <pre><code>
- * JDABuilder builder = new JDABuilder(AccountType.BOT).setToken(BOT_TOKEN);
+ * JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN);
  * builder.setSessionController(new SessionControllerAdapter() {
  *     {@literal @Override}
  *     public void appendSession(SessionConnectNode node) {
@@ -60,15 +60,14 @@ import javax.annotation.Nonnull;
  * });
  * builder.addEventListeners(myListener);
  * for (int i = 0; i {@literal <} 10; i++) {
- *     builder.useSharding(i, 10).buildAsync();
+ *     builder.useSharding(i, 10).build();
  * }
  * </code></pre>
  *
  * <p><b>Using {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager}</b>
  * <br>
  * <pre><code>
- * DefaultShardManagerBuilder builder = new DefaultShardManagerBuilder();
- * builder.setToken(BOT_TOKEN);
+ * DefaultShardManagerBuilder builder = DefaultShardManagerBuilder.createDefault(BOT_TOKEN);
  * builder.setSessionController(new SessionControllerAdapter() {
  *     {@literal @Override}
  *     public {@literal Pair<String, Integer>} getGatewayBot(JDA api) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ import javax.annotation.Nonnull;
  * <p>Can be used to detect when a TextChannel becomes a news channel.
  *
  * <p>Identifier: {@code news}
+ *
+ * @since  4.2.1
  */
 @SuppressWarnings("ConstantConditions")
 public class TextChannelUpdateNewsEvent extends GenericTextChannelUpdateEvent<Boolean>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -366,6 +366,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             WebSocketFactory socketFactory = new WebSocketFactory(api.getWebSocketFactory());
             IOUtil.setServerName(socketFactory, url);
+            if (socketFactory.getSocketTimeout() > 0)
+                socketFactory.setSocketTimeout(Math.max(1000, socketFactory.getSocketTimeout()));
+            else
+                socketFactory.setSocketTimeout(10000);
             socket = socketFactory.createSocket(url);
             socket.setDirectTextMessage(true);
             socket.addHeader("Accept-Encoding", "gzip")
@@ -395,8 +399,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.info("Connected to WebSocket");
             // Log which intents are used on debug level since most people won't know how to use the binary output anyway
-            if (api.useIntents())
-                LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
+            LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
         }
         else
         {
@@ -703,10 +706,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("properties", connectionProperties)
             .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
             .put("large_threshold", api.getLargeThreshold());
-        //We only provide intents if they are not the default (all) for backwards compatibility
-        // Discord has additional enforcements put in place even if you specify to subscribe to all intents
-        if (api.useIntents())
-            payload.put("intents", gatewayIntents);
+        payload.put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()
                 .put("op", WebSocketCode.IDENTIFY)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDABuilder;
@@ -101,14 +102,21 @@ public class  DefaultShardManagerBuilder
      * {@link #setToken(String) setToken(String)}
      * before calling {@link #build() build()}.
      *
+     * @throws UnsupportedOperationException
+     *         Always.
+     *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
      * the gateway intents. Use {@link #create(Collection)} instead.
      */
     @Deprecated
+    @ForRemoval(deadline="4.3.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
-    public DefaultShardManagerBuilder() {}
+    public DefaultShardManagerBuilder()
+    {
+        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
+    }
 
     /**
      * Creates a DefaultShardManagerBuilder with the given token.
@@ -121,16 +129,20 @@ public class  DefaultShardManagerBuilder
      * @param token
      *        The login token
      *
+     * @throws UnsupportedOperationException
+     *         Always.
+     *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
      * the gateway intents. Use {@link #create(String, Collection)} instead.
      */
     @Deprecated
+    @ForRemoval(deadline="4.3.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
     public DefaultShardManagerBuilder(@Nonnull String token)
     {
-        this.setToken(token);
+        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
     }
 
     private DefaultShardManagerBuilder(@Nullable String token, int intents)
@@ -175,6 +187,9 @@ public class  DefaultShardManagerBuilder
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -215,6 +230,9 @@ public class  DefaultShardManagerBuilder
      *     <li>This disables {@link CacheFlag#ACTIVITY} and {@link CacheFlag#CLIENT_STATUS}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -245,7 +263,7 @@ public class  DefaultShardManagerBuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .disableCache(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY)
+                   .disableCache(CacheFlag.getPrivileged())
                    .setLargeThreshold(250);
     }
 
@@ -285,6 +303,9 @@ public class  DefaultShardManagerBuilder
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
      *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
+     *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
      * be cached when a voice state is available.
@@ -321,6 +342,9 @@ public class  DefaultShardManagerBuilder
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
      *     <li>This disables all existing {@link CacheFlag CacheFlags}</li>
      * </ul>
+     *
+     * <p>You can omit intents in this method to use {@link GatewayIntent#DEFAULT} and enable additional intents with
+     * {@link #enableIntents(Collection)}.
      *
      * <p>If you don't enable certain intents, the cache will be disabled.
      * For instance, if the {@link GatewayIntent#GUILD_MEMBERS GUILD_MEMBERS} intent is disabled, then members will only
@@ -519,6 +543,8 @@ public class  DefaultShardManagerBuilder
      *         If null is provided
      *
      * @return The DefaultShardManagerBuilder instance. Useful for chaining.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public DefaultShardManagerBuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
@@ -1168,7 +1194,7 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for our session.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.api.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.api.entities.Activity Activity} object using
+     * <p><b>Hint:</b> You can create an {@link net.dv8tion.jda.api.entities.Activity Activity} object using
      * {@link net.dv8tion.jda.api.entities.Activity#playing(String) Activity.playing(String)} or
      * {@link net.dv8tion.jda.api.entities.Activity#streaming(String, String)} Activity.streaming(String, String)}.
      *
@@ -1189,7 +1215,7 @@ public class  DefaultShardManagerBuilder
      * Sets the {@link net.dv8tion.jda.api.entities.Activity Activity} for our session.
      * <br>This value can be changed at any time in the {@link net.dv8tion.jda.api.managers.Presence Presence} from a JDA instance.
      *
-     * <p><b>Hint:</b> You can create a {@link net.dv8tion.jda.api.entities.Activity Activity} object using
+     * <p><b>Hint:</b> You can create an {@link net.dv8tion.jda.api.entities.Activity Activity} object using
      * {@link net.dv8tion.jda.api.entities.Activity#playing(String) Activity.playing(String)} or
      * {@link net.dv8tion.jda.api.entities.Activity#streaming(String, String) Activity.streaming(String, String)}.
      *

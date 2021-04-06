@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,16 @@ package net.dv8tion.jda.api.exceptions;
 import net.dv8tion.jda.api.requests.ErrorResponse;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
+import net.dv8tion.jda.internal.utils.JDALogger;
 
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.api.requests.RestAction RestAction}
@@ -40,6 +42,7 @@ public class ErrorResponseException extends RuntimeException
     private final Response response;
     private final String meaning;
     private final int code;
+    private final List<SchemaError> schemaErrors;
 
     /**
      * Creates a new ErrorResponseException instance
@@ -50,9 +53,10 @@ public class ErrorResponseException extends RuntimeException
      * @param response
      *        The Discord Response causing the ErrorResponse
      */
-    private ErrorResponseException(ErrorResponse errorResponse, Response response, int code, String meaning)
+    private ErrorResponseException(ErrorResponse errorResponse, Response response, int code, String meaning, List<SchemaError> schemaErrors)
     {
-        super(code + ": " + meaning);
+        super(code + ": " + meaning + (schemaErrors.isEmpty() ? ""
+            : "\n" + schemaErrors.stream().map(SchemaError::toString).collect(Collectors.joining("\n"))));
 
         this.response = response;
         if (response != null && response.getException() != null)
@@ -60,6 +64,7 @@ public class ErrorResponseException extends RuntimeException
         this.errorResponse = errorResponse;
         this.code = code;
         this.meaning = meaning;
+        this.schemaErrors = schemaErrors;
     }
 
     /**
@@ -117,45 +122,106 @@ public class ErrorResponseException extends RuntimeException
         return response;
     }
 
+    /**
+     * The {@link SchemaError SchemaErrors} for this error response.
+     * <br>These errors provide more context of what part in the body caused the error, and more explanation for the error itself.
+     *
+     * @return Possibly-empty list of {@link SchemaError SchemaError}
+     */
+    @Nonnull
+    public List<SchemaError> getSchemaErrors()
+    {
+        return schemaErrors;
+    }
+
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
-        Optional<DataObject> optObj = response.optObject();
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
-        if (response.isError() && response.getException() != null)
+        List<SchemaError> schemaErrors = new ArrayList<>();
+        try
         {
-            // this generally means that an exception occurred trying to
-            //make an http request. e.g.:
-            //SocketTimeoutException/ UnknownHostException
-            code = response.code;
-            meaning = response.getException().getClass().getName();
-        }
-        else if (optObj.isPresent())
-        {
-            DataObject obj = optObj.get();
-            if (!obj.isNull("code") || !obj.isNull("message"))
+            Optional<DataObject> optObj = response.optObject();
+            if (response.isError() && response.getException() != null)
             {
-                if (!obj.isNull("code"))
-                    code = obj.getInt("code");
-                if (!obj.isNull("message"))
-                    meaning = obj.getString("message");
+                // this generally means that an exception occurred trying to
+                //make an http request. e.g.:
+                //SocketTimeoutException/ UnknownHostException
+                code = response.code;
+                meaning = response.getException().getClass().getName();
+            }
+            else if (optObj.isPresent())
+            {
+                DataObject obj = optObj.get();
+                if (!obj.isNull("code") || !obj.isNull("message"))
+                {
+                    if (!obj.isNull("code"))
+                        code = obj.getInt("code");
+                    if (!obj.isNull("message"))
+                        meaning = obj.getString("message");
+                }
+                else
+                {
+                    // This means that neither code or message is provided
+                    //In that case we simply put the raw response in place!
+                    code = response.code;
+                    meaning = obj.toString();
+                }
+
+                obj.optObject("errors").ifPresent(schema -> parseSchema(schemaErrors, "", schema));
             }
             else
             {
-                // This means that neither code or message is provided
-                //In that case we simply put the raw response in place!
+                // error response body is not JSON
                 code = response.code;
-                meaning = obj.toString();
+                meaning = response.getString();
             }
         }
-        else
+        catch (Exception e)
         {
-            // error response body is not JSON
-            code = response.code;
-            meaning = response.getString();
+            JDALogger.getLog(ErrorResponseException.class).error("Failed to parse parts of error response. Body: {}", response.getString(), e);
         }
 
-        return new ErrorResponseException(errorResponse, response, code, meaning);
+        return new ErrorResponseException(errorResponse, response, code, meaning, schemaErrors);
+    }
+
+    private static void parseSchema(List<SchemaError> schemaErrors, String currentLocation, DataObject errors)
+    {
+        // check what kind of errors we are dealing with
+        for (String name : errors.keys())
+        {
+            DataObject schemaError = errors.getObject(name);
+            if (!schemaError.isNull("_errors"))
+            {
+                // We are dealing with an Object Error
+                schemaErrors.add(parseSchemaError(currentLocation + name, schemaError));
+            }
+            else if (schemaError.keys().stream().allMatch(Helpers::isNumeric))
+            {
+                // We have an Array Error
+                for (String index : schemaError.keys())
+                {
+                    DataObject properties = schemaError.getObject(index);
+                    String location = String.format("%s%s[%s].", currentLocation, name, index);
+                    parseSchema(schemaErrors, location, properties);
+                }
+            }
+            else
+            {
+                // We have a nested schema error, use recursion!
+                String location = String.format("%s%s.", currentLocation, name);
+                parseSchema(schemaErrors, location, schemaError);
+            }
+        }
+    }
+
+    private static SchemaError parseSchemaError(String location, DataObject obj)
+    {
+        List<ErrorCode> codes = obj.getArray("_errors")
+                .stream(DataArray::getObject)
+                .map(json -> new ErrorCode(json.getString("code"), json.getString("message")))
+                .collect(Collectors.toList());
+        return new SchemaError(location, codes);
     }
 
     /**
@@ -280,5 +346,96 @@ public class ErrorResponseException extends RuntimeException
         // Make an enum set copy (for performance, memory efficiency, and thread-safety)
         final EnumSet<ErrorResponse> ignored = EnumSet.copyOf(set);
         return new ErrorHandler(orElse).ignore(ignored);
+    }
+
+    /**
+     * An error for a {@link SchemaError}.
+     * <br>This provides the machine parsable error code name and the human readable message.
+     */
+    public static class ErrorCode
+    {
+        private final String code;
+        private final String message;
+
+        ErrorCode(String code, String message)
+        {
+            this.code = code;
+            this.message = message;
+        }
+
+        /**
+         * The machine parsable error code
+         *
+         * @return The error code
+         */
+        @Nonnull
+        public String getCode()
+        {
+            return code;
+        }
+
+        /**
+         * The human readable explanation message for this error
+         *
+         * @return The message
+         */
+        @Nonnull
+        public String getMessage()
+        {
+            return message;
+        }
+
+        @Override
+        public String toString()
+        {
+            return code + ": " + message;
+        }
+    }
+
+    /**
+     * Schema error which supplies more context to a ErrorResponse.
+     * <br>This provides a list of {@link ErrorCode ErrorCodes} and a {@link #getLocation() location} for the errors.
+     */
+    public static class SchemaError
+    {
+        private final String location;
+        private final List<ErrorCode> errors;
+
+        private SchemaError(String location, List<ErrorCode> codes)
+        {
+            this.location = location;
+            this.errors = codes;
+        }
+
+        /**
+         * The JSON-path for the error.
+         * <br>This path describes the location of the error, within the request json body.
+         *
+         * <p><b>Example:</b> {@code embed.fields[3].name}
+         *
+         * @return The JSON-path location
+         */
+        @Nonnull
+        public String getLocation()
+        {
+            return location;
+        }
+
+        /**
+         * The list of {@link ErrorCode ErrorCodes} associated with this schema error.
+         *
+         * @return The error codes
+         */
+        @Nonnull
+        public List<ErrorCode> getErrors()
+        {
+            return errors;
+        }
+
+        @Override
+        public String toString()
+        {
+            return location + "\n\t- " + errors.stream().map(Object::toString).collect(Collectors.joining("\n\t- "));
+        }
     }
 }

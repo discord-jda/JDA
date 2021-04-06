@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,8 @@ public interface User extends IMentionable, IFakeable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(long)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     static User fromId(long id)
@@ -112,6 +114,8 @@ public interface User extends IMentionable, IFakeable
      * @return A user instance
      *
      * @see    JDA#retrieveUserById(String)
+     *
+     * @since  4.2.1
      */
     @Nonnull
     static User fromId(@Nonnull String id)
@@ -197,7 +201,7 @@ public interface User extends IMentionable, IFakeable
     }
 
     /**
-     * The URL for the user's avatar image
+     * The URL for the user's avatar image.
      * If they do not have an avatar set, this will return the URL of their
      * default avatar
      *

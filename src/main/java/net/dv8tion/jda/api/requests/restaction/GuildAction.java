@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -302,19 +302,11 @@ public interface GuildAction extends RestAction<Void>
          * @param  rawPermissions
          *         Raw permission value
          *
-         * @throws java.lang.IllegalArgumentException
-         *         If the provided permissions are negative or exceed the maximum permissions
-         *
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
         public RoleData setPermissionsRaw(@Nullable Long rawPermissions)
         {
-            if (rawPermissions != null)
-            {
-                Checks.notNegative(rawPermissions, "Raw Permissions");
-                Checks.check(rawPermissions <= Permission.ALL_PERMISSIONS, "Provided permissions may not be greater than a full permission set!");
-            }
             this.permissions = rawPermissions;
             return this;
         }
@@ -665,11 +657,7 @@ public interface GuildAction extends RestAction<Void>
          *         The permissions to deny in the override
          *
          * @throws java.lang.IllegalArgumentException
-         *         <ul>
-         *             <li>If the provided role is {@code null}</li>
-         *             <li>If the provided allow value is negative or exceeds maximum permissions</li>
-         *             <li>If the provided deny value is negative or exceeds maximum permissions</li>
-         *         </ul>
+         *         If the provided role is {@code null}
          *
          * @return This ChannelData instance for chaining convenience
          */
@@ -677,10 +665,6 @@ public interface GuildAction extends RestAction<Void>
         public ChannelData addPermissionOverride(@Nonnull GuildActionImpl.RoleData role, long allow, long deny)
         {
             Checks.notNull(role, "Role");
-            Checks.notNegative(allow, "Granted permissions value");
-            Checks.notNegative(deny, "Denied permissions value");
-            Checks.check(allow <= Permission.ALL_PERMISSIONS, "Specified allow value may not be greater than a full permission set");
-            Checks.check(deny <= Permission.ALL_PERMISSIONS,  "Specified deny value may not be greater than a full permission set");
             this.overrides.add(new PermOverrideData(PermOverrideData.ROLE_TYPE, role.id, allow, deny));
             return this;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import java.util.regex.Pattern;
  * @see    #watching(String)
  * @see    #listening(String)
  * @see    #streaming(String, String)
+ * @see    #competing(String)
  */
 public interface Activity
 {
@@ -215,6 +216,8 @@ public interface Activity
      *         If the specified name is null, empty, blank or longer than 128 characters
      * 
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#COMPETING}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     static Activity competing(@Nonnull String name)
@@ -336,6 +339,8 @@ public interface Activity
         /**
          * Used to indicate that the {@link Activity Activity} should display
          * as {@code Competing in...} in the official client.
+         *
+         * @since  4.2.1
          */
         COMPETING(5);
 

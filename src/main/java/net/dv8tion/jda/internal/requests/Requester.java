@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -285,7 +285,7 @@ public class Requester
     {
         builder.header("user-agent", USER_AGENT)
                .header("accept-encoding", "gzip")
-               .header("x-ratelimit-precision", "millisecond");
+               .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization

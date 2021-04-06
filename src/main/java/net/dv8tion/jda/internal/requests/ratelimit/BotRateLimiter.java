@@ -1,5 +1,5 @@
 /*
- * Copyright 2015-2020 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -250,7 +250,10 @@ public class BotRateLimiter extends RateLimiter
                 if (response.code() == 429)
                 {
                     String retryAfterHeader = headers.get(RETRY_AFTER_HEADER);
-                    long retryAfter = parseLong(retryAfterHeader);
+                    String resetAfterHeader = headers.get(RESET_AFTER_HEADER);
+                    long retryAfter = parseLong(retryAfterHeader) * 1000; // seconds precision
+                    if (resetAfterHeader != null) // if available, use better precision
+                        retryAfter = parseDouble(resetAfterHeader); // milliseconds precision
                     // Handle global rate limit if necessary
                     if (global)
                     {
@@ -260,17 +263,18 @@ public class BotRateLimiter extends RateLimiter
                     // Handle cloudflare rate limits, this applies to all routes and uses seconds for retry-after
                     else if (cloudflare)
                     {
-                        requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter * 1000);
-                        log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter);
+                        requester.getJDA().getSessionController().setGlobalRatelimit(now + retryAfter);
+                        log.error("Encountered cloudflare rate limit! Retry-After: {} s", retryAfter / 1000);
                     }
                     // Handle hard rate limit, pretty much just log that it happened
                     else
                     {
-                        boolean firstHit = hitRatelimit.add(baseRoute);
+                        boolean firstHit = hitRatelimit.add(baseRoute) && retryAfter < 60000;
                         // Update the bucket to the new information
                         bucket.remaining = 0;
                         bucket.reset = getNow() + retryAfter;
                         // don't log warning if we hit the rate limit for the first time, likely due to initialization of the bucket
+                        // unless its a long retry-after delay (more than a minute)
                         if (firstHit)
                             log.debug("Encountered 429 on route {} with bucket {} Retry-After: {} ms", baseRoute, bucket.bucketId, retryAfter);
                         else
@@ -377,6 +381,11 @@ public class BotRateLimiter extends RateLimiter
             requests.addFirst(request);
         }
 
+        private boolean isGlobalRateLimit()
+        {
+            return requester.getJDA().getSessionController().getGlobalRatelimit() > getNow();
+        }
+
         public long getRateLimit()
         {
             long now = getNow();
@@ -440,7 +449,11 @@ public class BotRateLimiter extends RateLimiter
                 if (rateLimit > 0L)
                 {
                     // We need to backoff since we ran out of remaining uses or hit the global rate limit
-                    log.debug("Backing off {} ms for bucket {}", rateLimit, bucketId);
+                    Request request = requests.peekFirst(); // this *should* not be null
+                    String baseRoute = request != null ? request.getRoute().getBaseRoute().toString() : "N/A";
+                    if (!isGlobalRateLimit() && rateLimit >= 1000 * 60 * 30) // 30 minutes
+                        log.warn("Encountered long {} minutes Rate-Limit on route {}", TimeUnit.MILLISECONDS.toMinutes(rateLimit), baseRoute);
+                    log.debug("Backing off {} ms for bucket {} on route {}", rateLimit, bucketId, baseRoute);
                     break;
                 }
 
