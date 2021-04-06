@@ -75,6 +75,8 @@ public enum CacheFlag
      */
     ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES)
     ;
+
+    private static final EnumSet<CacheFlag> privileged = EnumSet.of(ACTIVITY, CLIENT_STATUS, ONLINE_STATUS);
     private final GatewayIntent requiredIntent;
 
     CacheFlag()
@@ -109,18 +111,13 @@ public enum CacheFlag
     }
 
     /**
-     * Collects all cache flags that require the specified intent.
+     * Collects all cache flags that require privileged intents
      *
-     * @param  requiredIntent
-     *         The required intent or null if no intent is required
-     *
-     * @return {@link EnumSet} of the cache flags that require the provided intent
+     * @return {@link EnumSet} of the cache flags that require the privileged intents
      */
     @Nonnull
-    public static EnumSet<CacheFlag> fromRequired(@Nullable GatewayIntent requiredIntent)
+    public static EnumSet<CacheFlag> getPrivileged()
     {
-        EnumSet<CacheFlag> flags = EnumSet.allOf(CacheFlag.class);
-        flags.removeIf(flag -> flag.requiredIntent == requiredIntent);
-        return flags;
+        return EnumSet.copyOf(privileged);
     }
 }
