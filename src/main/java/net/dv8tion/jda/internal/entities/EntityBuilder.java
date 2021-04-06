@@ -1388,7 +1388,9 @@ public class EntityBuilder
         final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
         final Set<String> tags;
         if (content.isNull("tags"))
+        {
             tags = Collections.emptySet();
+        }
         else
         {
             final String[] split = content.getString("tags").split(", ");

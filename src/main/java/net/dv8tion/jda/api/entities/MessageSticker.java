@@ -83,6 +83,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the ID of the pack the sticker is from
      */
+    @Nonnull
     public String getPackId()
     {
         return Long.toUnsignedString(getPackIdLong());
@@ -100,6 +101,7 @@ public class MessageSticker implements ISnowflake
 
     /**
      * The Discord hash-id of the sticker.
+     * <br><b>The URL for fetching sticker assets is currently private.
      *
      * @return the Discord hash-id of the sticker
      */
@@ -111,6 +113,7 @@ public class MessageSticker implements ISnowflake
 
     /**
      * The preview asset hash of the sticker.
+     * <br><b>The URL for fetching sticker assets is currently private.
      *
      * @return the Discord hash-id of the preview image of the sticker or {@code null} if the sticker has no preview image
      */
@@ -143,7 +146,7 @@ public class MessageSticker implements ISnowflake
     }
 
     /**
-     * Set of tags of the sticker.
+     * Set of tags of the sticker. Tags can be used instead of the name of the sticker as aliases.
      *
      * @return Possibly-empty unmodifiable Set of tags of the sticker
      */
