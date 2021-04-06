@@ -29,6 +29,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
+import java.util.regex.Matcher;
 
 public interface WebhookClient<T extends WebhookMessageAction>
 {
@@ -226,6 +227,18 @@ public interface WebhookClient<T extends WebhookMessageAction>
     }
 
     @Nonnull
+    static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String url)
+    {
+        Checks.notNull(url, "URL");
+        Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
+        if (!matcher.matches())
+            throw new IllegalArgumentException("Provided invalid webhook URL");
+        String id = matcher.group(1);
+        String token = matcher.group(2);
+        return createClient(api, id, token);
+    }
+
+    @Nonnull
     static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
     {
         Checks.notNull(api, "JDA");
@@ -236,7 +249,9 @@ public interface WebhookClient<T extends WebhookMessageAction>
             public WebhookMessageAction sendRequest()
             {
                 Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(webhookId, webhookToken);
-                return new WebhookMessageActionImpl(api, route);
+                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
+                action.run();
+                return action;
             }
 
             @Override
@@ -244,7 +259,9 @@ public interface WebhookClient<T extends WebhookMessageAction>
             {
                 Checks.isSnowflake(messageId);
                 Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhookId, webhookToken, messageId);
-                return new WebhookMessageActionImpl(api, route);
+                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
+                action.run();
+                return action;
             }
         };
     }

@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.regex.Pattern;
 
 /**
  * An object representing Webhooks in Discord
@@ -39,6 +40,8 @@ import javax.annotation.Nullable;
  */
 public interface Webhook extends ISnowflake, WebhookClient<WebhookMessageAction>, IFakeable
 {
+    Pattern WEBHOOK_URL = Pattern.compile("https?://(?:[^\\s.]+\\.)discord(?:app)\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([^\\s/]+)", Pattern.CASE_INSENSITIVE);
+
     /**
      * The JDA instance of this Webhook.
      *
