@@ -48,7 +48,7 @@ public interface InteractionWebhookAction extends WebhookMessageAction
     @Override
     default InteractionWebhookAction addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
-        return null;
+        return (InteractionWebhookAction) WebhookMessageAction.super.addEmbeds(embed, other);
     }
 
     @Nonnull
@@ -59,20 +59,20 @@ public interface InteractionWebhookAction extends WebhookMessageAction
     @Override
     default InteractionWebhookAction addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
     {
-        return null;
+        return (InteractionWebhookAction) WebhookMessageAction.super.addFile(name, data, options);
     }
 
     @Nonnull
     @Override
     default InteractionWebhookAction addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
     {
-        return null;
+        return (InteractionWebhookAction) WebhookMessageAction.super.addFile(name, data, options);
     }
 
     @Nonnull
     @Override
     default InteractionWebhookAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
-        return null;
+        return (InteractionWebhookAction) WebhookMessageAction.super.addFile(file, options);
     }
 }

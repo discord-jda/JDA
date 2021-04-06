@@ -249,6 +249,7 @@ public interface WebhookClient<T extends WebhookMessageAction>
             public WebhookMessageAction sendRequest()
             {
                 Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(webhookId, webhookToken);
+                route = route.withQueryParams("wait", "true");
                 WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
                 action.run();
                 return action;
@@ -259,6 +260,7 @@ public interface WebhookClient<T extends WebhookMessageAction>
             {
                 Checks.isSnowflake(messageId);
                 Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhookId, webhookToken, messageId);
+                route = route.withQueryParams("wait", "true");
                 WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
                 action.run();
                 return action;
