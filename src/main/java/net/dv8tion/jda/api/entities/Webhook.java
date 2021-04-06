@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  */
 public interface Webhook extends ISnowflake, WebhookClient<WebhookMessageAction>, IFakeable
 {
-    Pattern WEBHOOK_URL = Pattern.compile("https?://(?:[^\\s.]+\\.)?discord(?:app)\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([^\\s/]+)", Pattern.CASE_INSENSITIVE);
+    Pattern WEBHOOK_URL = Pattern.compile("https?://(?:[^\\s.]+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([^\\s/]+)", Pattern.CASE_INSENSITIVE);
 
     /**
      * The JDA instance of this Webhook.
