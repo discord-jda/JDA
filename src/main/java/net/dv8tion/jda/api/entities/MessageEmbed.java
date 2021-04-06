@@ -974,14 +974,13 @@ public class MessageEmbed implements SerializableData
                     this.value = EmbedBuilder.ZERO_WIDTH_SPACE;
                 else
                     this.value = value;
-                this.inline = inline;
             }
             else
             {
                 this.name = name;
                 this.value = value;
-                this.inline = inline;
             }
+            this.inline = inline;
         }
         
         public Field(String name, String value, boolean inline)
