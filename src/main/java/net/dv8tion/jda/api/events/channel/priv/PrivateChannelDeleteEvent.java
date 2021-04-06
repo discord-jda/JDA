@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.events.channel.priv;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -27,6 +29,9 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the issuing {@link net.dv8tion.jda.api.entities.User User}.
  */
+@Deprecated
+@ForRemoval(deadline = "4.4.0")
+@DeprecatedSince("4.3.0")
 public class PrivateChannelDeleteEvent extends Event
 {
     protected final PrivateChannel channel;

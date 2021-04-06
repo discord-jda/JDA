@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.GuildAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
@@ -213,6 +214,14 @@ public interface JDA
      */
     @Nonnull
     EnumSet<GatewayIntent> getGatewayIntents();
+
+    /**
+     * The {@link CacheFlag cache flags} that have been enabled for this JDA session.
+     *
+     * @return Copy of the EnumSet of cache flags for this session
+     */
+    @Nonnull
+    EnumSet<CacheFlag> getCacheFlags();
 
     /**
      * Attempts to remove the user with the provided id from the cache.
