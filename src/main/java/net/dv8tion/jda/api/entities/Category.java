@@ -160,7 +160,7 @@ public interface Category extends GuildChannel
     ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel VoiceChannel} with this Category as parent.
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with this Category as parent.
      * For this to be successful, the logged in account has to have the
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission in the {@link net.dv8tion.jda.api.entities.Guild Guild}.
      *
