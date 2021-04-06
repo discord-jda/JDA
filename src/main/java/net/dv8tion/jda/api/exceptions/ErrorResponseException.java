@@ -203,7 +203,10 @@ public class ErrorResponseException extends RuntimeException
                 {
                     DataObject properties = schemaError.getObject(index);
                     String location = String.format("%s%s[%s].", currentLocation, name, index);
-                    parseSchema(schemaErrors, location, properties);
+                    if (properties.hasKey("_errors"))
+                        schemaErrors.add(parseSchemaError(location.substring(0, location.length()-1), properties));
+                    else
+                        parseSchema(schemaErrors, location, properties);
                 }
             }
             else
