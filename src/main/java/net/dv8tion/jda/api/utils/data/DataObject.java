@@ -194,6 +194,8 @@ public class DataObject implements SerializableData
      *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
      *
      * @return A DataObject instance for the provided payload
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public static DataObject fromETF(@Nonnull byte[] data)
@@ -701,6 +703,8 @@ public class DataObject implements SerializableData
      * Serializes this object as ETF MAP term.
      *
      * @return byte array containing the encoded ETF term
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public byte[] toETF()

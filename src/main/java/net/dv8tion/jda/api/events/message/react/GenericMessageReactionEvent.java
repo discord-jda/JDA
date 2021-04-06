@@ -141,6 +141,8 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * <br>If a user is known, this will return {@link #getUser()}.
      *
      * @return {@link RestAction} - Type: {@link User}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -164,6 +166,8 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *         If this event is not from a guild
      *
      * @return {@link RestAction} - Type: {@link Member}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -182,6 +186,8 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * @return {@link RestAction} - Type: {@link Message}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue

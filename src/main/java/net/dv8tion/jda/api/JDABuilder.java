@@ -17,6 +17,7 @@ package net.dv8tion.jda.api;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
@@ -102,6 +103,9 @@ public class JDABuilder
      * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
      * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
      *
+     * @throws UnsupportedOperationException
+     *         Always.
+     *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
      * the gateway intents. Refer to {@link #create(String, Collection)}, {@link #createDefault(String, Collection)}, and {@link #createLight(String, Collection)} instead.
@@ -109,15 +113,22 @@ public class JDABuilder
      * @see #JDABuilder(String)
      */
     @Deprecated
+    @ForRemoval(deadline="4.3.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("JDABuilder.create(GatewayIntent...)")
-    public JDABuilder() {}
+    public JDABuilder()
+    {
+        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
+    }
 
     /**
      * Creates a JDABuilder with the predefined token.
      *
      * @param token
      *        The bot token to use
+     *
+     * @throws UnsupportedOperationException
+     *         Always.
      *
      * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
      * state which events your bot needs. For this reason we have changed to new factory methods that require setting
@@ -126,11 +137,12 @@ public class JDABuilder
      * @see   #setToken(String)
      */
     @Deprecated
+    @ForRemoval(deadline="4.3.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("JDABuilder.create(String, GatewayIntent...)")
     public JDABuilder(@Nullable String token)
     {
-        this.token = token;
+        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
     }
 
     /**
@@ -142,18 +154,19 @@ public class JDABuilder
      * @param  accountType
      *         The {@link net.dv8tion.jda.api.AccountType AccountType}.
      *
-     * @throws IllegalArgumentException
-     *         If the given AccountType is {@code null}
+     * @throws UnsupportedOperationException
+     *         Always.
      *
      * @deprecated This will be removed in a future version, replace with {@link #create(String, Collection)}.
      *             We no longer support login with {@link AccountType#CLIENT}.
      */
     @Deprecated
+    @ForRemoval(deadline="4.3.0")
     @ReplaceWith("JDABuilder.create(String)")
     @DeprecatedSince("4.2.0")
     public JDABuilder(@Nonnull AccountType accountType)
     {
-        Checks.check(accountType == AccountType.BOT, "Client accounts are no longer supported!");
+        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
     }
 
     private JDABuilder(@Nullable String token, int intents)
@@ -274,7 +287,7 @@ public class JDABuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .disableCache(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY)
+                   .disableCache(CacheFlag.getPrivileged())
                    .setLargeThreshold(250);
     }
 
@@ -555,6 +568,8 @@ public class JDABuilder
      *         If null is provided
      *
      * @return The JDABuilder instance. Useful for chaining.
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public JDABuilder setGatewayEncoding(@Nonnull GatewayEncoding encoding)
@@ -1181,7 +1196,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since 4.2.1
+     * @since  4.2.1
      */
     @Nonnull
     public JDABuilder setAudioPool(@Nullable ScheduledExecutorService pool)
@@ -1203,7 +1218,7 @@ public class JDABuilder
      *
      * @return The JDABuilder instance. Useful for chaining.
      *
-     * @since 4.2.1
+     * @since  4.2.1
      */
     @Nonnull
     public JDABuilder setAudioPool(@Nullable ScheduledExecutorService pool, boolean automaticShutdown)

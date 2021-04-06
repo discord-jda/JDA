@@ -413,6 +413,8 @@ public interface Guild extends ISnowflake
      *         If the currently logged in account does not have {@link Permission#MANAGE_SERVER Permission.MANAGE_SERVER}
      *
      * @return {@link RestAction} - Type: {@link VanityInvite}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -438,6 +440,8 @@ public interface Guild extends ISnowflake
      * <br>Default: {@link Locale#US}
      *
      * @return The preferred {@link Locale} for this guild
+     *
+     * @since  4.2.1
      */
     @Nonnull
     Locale getLocale();
@@ -2486,6 +2490,8 @@ public interface Guild extends ISnowflake
      *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -2523,6 +2529,8 @@ public interface Guild extends ISnowflake
      *         If the {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} is not enabled
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue

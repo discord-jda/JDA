@@ -184,6 +184,8 @@ public class DataArray implements Iterable<Object>
      *         If the provided ETF payload is incorrectly formatted or an I/O error occurred
      *
      * @return A DataArray instance for the provided payload
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public static DataArray fromETF(@Nonnull byte[] data)
@@ -661,6 +663,8 @@ public class DataArray implements Iterable<Object>
      * Serializes this object as ETF LIST term.
      *
      * @return byte array containing the encoded ETF term
+     *
+     * @since  4.2.1
      */
     @Nonnull
     public byte[] toETF()

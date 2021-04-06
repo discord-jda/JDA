@@ -285,12 +285,16 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * See {@link net.dv8tion.jda.api.JDABuilder#enableCache(CacheFlag, CacheFlag...) JDABuilder.enableCache(...)}.
      *
      * @return {@link RoleTags}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     RoleTags getTags();
 
     /**
      * Tags associated with this role.
+     *
+     * @since  4.2.1
      */
     interface RoleTags
     {

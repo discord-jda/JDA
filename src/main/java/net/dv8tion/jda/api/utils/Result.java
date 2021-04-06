@@ -34,6 +34,8 @@ import java.util.function.Supplier;
  *
  * @param <T>
  *        The success type
+ *
+ * @since  4.2.1
  */
 public class Result<T>
 {

@@ -41,6 +41,8 @@ import javax.annotation.Nonnull;
  * need to have the old member cached to compare against.
  *
  * @incubating Discord is still trying to figure this out
+ *
+ * @since  4.2.1
  */
 @Incubating
 public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent<Boolean>

@@ -85,6 +85,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      * <br>These channels can be used to crosspost messages to other guilds by using a follower type webhook.
      *
      * @return True, if this is considered a news channel
+     *
+     * @since  4.2.1
      */
     boolean isNews();
 
@@ -186,6 +188,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         If this is not a news channels (See {@link #isNews()})
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -214,6 +218,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         If this is not a news channels (See {@link #isNews()})
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -249,6 +255,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         If this is not a news channels (See {@link #isNews()})
      *
      * @return {@link RestAction}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -917,6 +925,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -968,6 +978,8 @@ public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
+     *
+     * @since  4.2.1
      */
     @Nonnull
     @CheckReturnValue
