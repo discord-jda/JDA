@@ -1099,7 +1099,11 @@ public class EntityBuilder
     {
         long channelId = jsonObject.getUnsignedLong("channel_id");
         if (channel != null && channelId != channel.getIdLong())
-            channel = null;
+        {
+            channel = api.getTextChannelById(channelId);
+            if (channel == null)
+                channel = api.getPrivateChannelById(channelId);
+        }
 
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
