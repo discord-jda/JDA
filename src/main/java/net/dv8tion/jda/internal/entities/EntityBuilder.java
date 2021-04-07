@@ -1116,7 +1116,7 @@ public class EntityBuilder
             channel = createPrivateChannel(channelDate, modifyCache);
         }
         else if (channel == null)
-            throw new IllegalStateException(MISSING_CHANNEL);
+            throw new IllegalArgumentException(MISSING_CHANNEL);
 
         if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
