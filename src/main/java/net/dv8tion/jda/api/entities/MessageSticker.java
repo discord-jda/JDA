@@ -36,7 +36,7 @@ public class MessageSticker implements ISnowflake
     private final Set<String> tags;
 
     /** Template for {@link #getStickerUrl()} ()} */
-    public static final String STICKER_URL = "https://cdn.discordapp.com/stickers/%s/%s.%s";
+    public static final String ASSET_URL = "https://cdn.discordapp.com/stickers/%s/%s.%s";
 
     public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final String previewAsset, final StickerFormat formatType, final Set<String> tags)
     {
@@ -124,14 +124,14 @@ public class MessageSticker implements ISnowflake
     }
 
     /**
-     * The url of the sticker image.
+     * The url of the sticker asset.
      *
      * @return the url of the sticker
      */
     @Nonnull
-    public String getStickerUrl()
+    public String getAssetUrl()
     {
-        return String.format(STICKER_URL, id, asset, formatType.getExtension());
+        return String.format(ASSET_URL, id, asset, formatType.getExtension());
     }
 
     /**
