@@ -36,7 +36,7 @@ public class MessageSticker implements ISnowflake
     private final Set<String> tags;
 
     /** Template for {@link #getStickerUrl()} ()} */
-    public static final String STICKER_URL = "https://cdn.discordapp.com/stickers/%s/%s.png";
+    public static final String STICKER_URL = "https://cdn.discordapp.com/stickers/%s/%s.%s";
 
     public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final String previewAsset, final StickerFormat formatType, final Set<String> tags)
     {
@@ -100,25 +100,25 @@ public class MessageSticker implements ISnowflake
     }
 
     /**
-     * The Discord hash-id of the sticker.
+     * The Discord hash-id of the sticker. This represents the actual asset file in the CDN for the sticker.
      * <br><b>The URL for fetching sticker assets is currently private.
      *
      * @return the Discord hash-id of the sticker
      */
     @Nonnull
-    public String getAsset()
+    public String getAssetHash()
     {
         return asset;
     }
 
     /**
-     * The preview asset hash of the sticker.
+     * The Discord hash-id of the preview of the sticker. This represents the actual preview asset file in the CDN for the sticker.
      * <br><b>The URL for fetching sticker assets is currently private.
      *
      * @return the Discord hash-id of the preview image of the sticker or {@code null} if the sticker has no preview image
      */
     @Nullable
-    public String getPreviewAsset()
+    public String getPreviewAssetHash()
     {
         return previewAsset;
     }
@@ -131,7 +131,7 @@ public class MessageSticker implements ISnowflake
     @Nonnull
     public String getStickerUrl()
     {
-        return String.format(STICKER_URL, id, asset);
+        return String.format(STICKER_URL, id, asset, formatType.getExtension());
     }
 
     /**
@@ -161,25 +161,35 @@ public class MessageSticker implements ISnowflake
         /**
          * The PNG format.
          */
-        PNG(1),
+        PNG(1, "png"),
         /**
          * The APNG format.
          */
-        APNG(2),
+        APNG(2, "apng"),
         /**
          * The LOTTIE format.
+         * <br>Lottie isn't a standard renderable image. It is a JSON with data that can be rendered using the lottie library.
+         *
+         * @see <a href="https://airbnb.io/lottie/">Lottie website</a>
          */
-        LOTTIE(3),
+        LOTTIE(3, "json"),
         /**
          * Represents any unknown or unsupported {@link net.dv8tion.jda.api.entities.MessageSticker MessageSticker} format types.
          */
-        UNKNOWN(-1);
+        UNKNOWN(-1, null);
 
         private final int id;
+        private final String extension;
 
-        StickerFormat(final int id)
+        StickerFormat(final int id, final String extension)
         {
             this.id = id;
+            this.extension = extension;
+        }
+
+        public String getExtension()
+        {
+            return extension;
         }
 
         @Nonnull
