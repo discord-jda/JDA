@@ -73,6 +73,7 @@ public class CommandUpdateActionImpl extends RestActionImpl<Void> implements Com
     public CommandUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
     {
         Checks.noneNull(commands, "Command");
+        Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");
         this.commands.addAll(commands);
         return this;
     }

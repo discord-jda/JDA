@@ -142,6 +142,11 @@ public class GuildImpl implements Guild
     @Override
     public CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
+        Checks.notEmpty(name, "Name");
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(name, 32, "Name");
+        Checks.notLonger(description, 100, "Description");
+        Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
         return new CommandCreateActionImpl(this, name, description);
     }
 

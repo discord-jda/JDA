@@ -97,7 +97,11 @@ public class WebhookMessageActionImpl
     @Override
     public WebhookMessageActionImpl setUsername(@Nullable String name)
     {
-        Checks.check(name == null || name.length() < 128, "Name must not be longer than 128 chars!");
+        if (name != null)
+        {
+            Checks.notEmpty(name, "Name");
+            Checks.notLonger(name, 128, "Name");
+        }
         this.username = name;
         return this;
     }
@@ -117,6 +121,7 @@ public class WebhookMessageActionImpl
     public WebhookMessageActionImpl addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "Message Embeds");
+        Checks.check(this.embeds.size() + embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
         this.embeds.addAll(embeds);
         return this;
     }
@@ -128,6 +133,8 @@ public class WebhookMessageActionImpl
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
         Checks.notNull(options, "AttachmentOption");
+        // Yes < 10 not <= 10 since we add one after this
+        Checks.check(files.size() < 10, "Cannot have more than 10 files in a message!");
         if (options.length > 0 && options[0] == AttachmentOption.SPOILER)
             name = "SPOILER_" + name;
         files.put(name, data);

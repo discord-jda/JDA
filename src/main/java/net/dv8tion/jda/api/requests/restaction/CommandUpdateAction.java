@@ -80,6 +80,9 @@ public interface CommandUpdateAction extends RestAction<Void>
         {
             Checks.notEmpty(name, "Name");
             Checks.notEmpty(description, "Description");
+            Checks.notLonger(name, 32, "Name");
+            Checks.notLonger(description, 100, "Description");
+            Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
             this.name = name;
             this.description = description;
         }
@@ -89,6 +92,8 @@ public interface CommandUpdateAction extends RestAction<Void>
         public T setName(@Nonnull String name)
         {
             Checks.notEmpty(name, "Name");
+            Checks.notLonger(name, 32, "Name");
+            Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
             this.name = name;
             return (T) this;
         }
@@ -98,6 +103,7 @@ public interface CommandUpdateAction extends RestAction<Void>
         public T setDescription(@Nonnull String description)
         {
             Checks.notEmpty(description, "Description");
+            Checks.notLonger(description, 100, "Description");
             this.description = description;
             return (T) this;
         }
@@ -136,6 +142,10 @@ public interface CommandUpdateAction extends RestAction<Void>
 
     class CommandData extends BaseCommand<CommandData> implements SerializableData
     {
+        private boolean allowSubcommands = true;
+        private boolean allowGroups = true;
+        private boolean allowOption = true;
+
         public CommandData(@Nonnull String name, @Nonnull String description)
         {
             super(name, description);
@@ -169,6 +179,23 @@ public interface CommandUpdateAction extends RestAction<Void>
         public CommandData addOption(@Nonnull OptionData data)
         {
             Checks.notNull(data, "Option");
+            switch (data.getType())
+            {
+            case SUB_COMMAND:
+                if (!allowSubcommands)
+                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+                allowOption = allowGroups = false;
+                break;
+            case SUB_COMMAND_GROUP:
+                if (!allowGroups)
+                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+                allowOption = allowSubcommands = false;
+                break;
+            default:
+                if (!allowOption)
+                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+                allowSubcommands = allowGroups = false;
+            }
             options.add(data);
             return this;
         }
@@ -177,6 +204,9 @@ public interface CommandUpdateAction extends RestAction<Void>
         public CommandData addSubcommand(@Nonnull SubcommandData data)
         {
             Checks.notNull(data, "Subcommand");
+            if (!allowSubcommands)
+                throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+            allowOption = allowGroups = false;
             options.add(data);
             return this;
         }
@@ -185,6 +215,9 @@ public interface CommandUpdateAction extends RestAction<Void>
         public CommandData addSubcommandGroup(@Nonnull SubcommandGroupData data)
         {
             Checks.notNull(data, "SubcommandGroup");
+            if (!allowGroups)
+                throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+            allowSubcommands = allowOption = false;
             options.add(data);
             return this;
         }
@@ -241,8 +274,11 @@ public interface CommandUpdateAction extends RestAction<Void>
         public OptionData(@Nonnull Command.OptionType type, @Nonnull String name, @Nonnull String description)
         {
             Checks.notNull(type, "Type");
-            Checks.notNull(name, "Name");
-            Checks.notNull(description, "Description");
+            Checks.notEmpty(name, "Name");
+            Checks.notEmpty(description, "Description");
+            Checks.notLonger(name, 32, "Name");
+            Checks.notLonger(description, 100, "Description");
+            Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
             this.type = type;
             this.name = name;
             this.description = description;
@@ -297,7 +333,8 @@ public interface CommandUpdateAction extends RestAction<Void>
         @Nonnull
         public OptionData addChoice(@Nonnull String name, int value)
         {
-            Checks.notNull(name, "Name");
+            Checks.notEmpty(name, "Name");
+            Checks.notLonger(name, 100, "Name");
             if (type != Command.OptionType.INTEGER)
                 throw new IllegalArgumentException("Cannot add int choice for OptionType." + type);
             choices.put(name, value);
@@ -307,8 +344,9 @@ public interface CommandUpdateAction extends RestAction<Void>
         @Nonnull
         public OptionData addChoice(@Nonnull String name, @Nonnull String value)
         {
-            Checks.notNull(name, "Name");
-            Checks.notNull(value, "Value");
+            Checks.notEmpty(name, "Name");
+            Checks.notEmpty(value, "Value");
+            Checks.notLonger(name, 100, "Name");
             if (type != Command.OptionType.STRING)
                 throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
             choices.put(name, value);

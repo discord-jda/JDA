@@ -92,6 +92,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setName(@Nonnull String name)
     {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 32, "Name");
+        Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
         data.setName(name);
         return this;
     }
@@ -100,6 +103,8 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
         return this;
     }
@@ -110,6 +115,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");
+        Checks.notLonger(name, 32, "Name");
+        Checks.notLonger(description, 100, "Description");
+        Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
         Checks.notNull(type, "Type");
         Checks.notNull(builder, "Builder");
         Option option = new Option(type, name, description);
@@ -176,6 +184,10 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         @Override
         public OptionBuilder addChoice(String name, String value)
         {
+            Checks.notEmpty(name, "Name");
+            Checks.notLonger(name, 100, "Name");
+            Checks.notEmpty(value, "Value");
+            Checks.notLonger(value, 100, "Value");
             this.choices.put(name, value);
             return this;
         }
@@ -183,6 +195,8 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         @Override
         public OptionBuilder addChoice(String name, long value)
         {
+            Checks.notEmpty(name, "Name");
+            Checks.notLonger(name, 100, "Name");
             this.choices.put(name, value);
             return this;
         }
@@ -191,9 +205,24 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         public Option addOption(String name, String description, OptionType type, Consumer<? super OptionBuilder> builder)
         {
             Checks.notEmpty(name, "Name");
+            Checks.notLonger(name, 32, "Name");
             Checks.notEmpty(description, "Description");
+            Checks.notLonger(description, 100, "Description");
             Checks.notNull(type, "Type");
             Checks.notNull(builder, "Builder");
+            switch (this.type)
+            {
+            case SUB_COMMAND:
+                Checks.check(type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP,
+                        "You cannot add subcommands or subcommand groups to a subcommand!");
+                break;
+            case SUB_COMMAND_GROUP:
+                Checks.check(type == OptionType.SUB_COMMAND,
+                        "You can only add subcommands to a subcommand group!");
+                break;
+            default:
+                throw new IllegalArgumentException("You cannot add an option to another option! Use subcommands instead.");
+            }
             Option option = new Option(type, name, description);
             builder.accept(option);
             this.options.add(option);

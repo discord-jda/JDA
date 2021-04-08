@@ -128,6 +128,11 @@ public final class Helpers
         return true;
     }
 
+    public static int codePointLength(final String string)
+    {
+        return string.codePointCount(0, string.length());
+    }
+
     // ## CollectionUtils ##
 
     public static boolean deepEquals(Collection<?> first, Collection<?> second)

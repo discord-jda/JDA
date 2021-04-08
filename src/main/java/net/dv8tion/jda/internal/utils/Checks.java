@@ -19,9 +19,13 @@ package net.dv8tion.jda.internal.utils;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 public class Checks
 {
+    public static final Pattern ALPHANUMBERIC_WITH_DASH = Pattern.compile("[\\w-]+");
+    public static final Pattern ALPHANUMBERIC = Pattern.compile("[\\w]+");
+
     @Contract("null -> fail")
     public static void isSnowflake(final String snowflake)
     {
@@ -139,6 +143,18 @@ public class Checks
     {
         notNull(argument, name);
         argument.forEach(it -> noWhitespace(it, name));
+    }
+
+    public static void notLonger(final String input, final int length, final String name)
+    {
+        notNull(input, name);
+        check(Helpers.codePointLength(input) <= length, "%s may not be longer than %d characters!", name, length);
+    }
+
+    public static void matches(final String input, final Pattern pattern, final String name)
+    {
+        notNull(input, name);
+        check(pattern.matcher(input).matches(), "%s must match regex ^%s$", name, pattern.pattern());
     }
 
     public static void positive(final int n, final String name)
