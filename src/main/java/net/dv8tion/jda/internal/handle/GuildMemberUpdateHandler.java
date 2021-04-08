@@ -60,7 +60,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         else
         {
             List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
-            getJDA().getEntityBuilder().updateMember(guild, member, content, newRoles);
+            getJDA().getEntityBuilder().updateMember(member, content, newRoles);
         }
 
         getJDA().getEntityBuilder().updateMemberCache(member);
