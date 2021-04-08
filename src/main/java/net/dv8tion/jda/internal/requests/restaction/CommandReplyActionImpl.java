@@ -22,7 +22,6 @@ import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.exceptions.InteractionFailureException;
-import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -306,14 +305,5 @@ public class CommandReplyActionImpl extends RestActionImpl<CommandHook> implemen
         }
 
         return super.submit(shouldQueue);
-    }
-
-    @Override
-    public CommandHook complete(boolean shouldQueue) throws RateLimitedException
-    {
-        IllegalStateException exception = tryAck();
-        if (exception != null)
-            throw exception;
-        return super.complete(shouldQueue);
     }
 }
