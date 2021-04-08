@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -439,6 +440,48 @@ public interface MessageChannel extends ISnowflake, Formattable
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         return new MessageActionImpl(getJDA(), route, this).embed(embed);
+    }
+
+    /**
+     * Sends a specified {@link EmbedBuilder EmbedBuilder} as a {@link net.dv8tion.jda.api.entities.Message Message}
+     * to this channel.
+     * <br>This will fail if this channel is an instance of {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and
+     * the currently logged in account does not have permissions to send a message to this channel.
+     * <br>To determine if you are able to send a message in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} use
+     * {@link net.dv8tion.jda.api.entities.Member#hasPermission(GuildChannel, net.dv8tion.jda.api.Permission...)
+     *  guild.getSelfMember().hasPermission(channel, Permission.MESSAGE_WRITE)}.
+     *
+     * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
+     *
+     * @param  embed
+     *         the {@link EmbedBuilder EmbedBuilder} to send
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does
+     *         not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
+     *         </ul>
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided embed is {@code null} or if the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
+     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
+     *         and both the currently logged in account and the target user are bots.
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The newly created Message after it has been sent to Discord.
+     *
+     * @see    net.dv8tion.jda.api.MessageBuilder
+     * @see    net.dv8tion.jda.api.EmbedBuilder
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction sendMessage(@Nonnull EmbedBuilder embed)
+    {
+        return sendMessage(embed.build());
     }
 
     /**

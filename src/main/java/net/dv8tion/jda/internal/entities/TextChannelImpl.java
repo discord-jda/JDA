@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -358,6 +359,16 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     @Nonnull
     @Override
     public MessageAction sendMessage(@Nonnull MessageEmbed embed)
+    {
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        // this is checked because you cannot send an empty message
+        checkPermission(Permission.MESSAGE_EMBED_LINKS);
+        return TextChannel.super.sendMessage(embed);
+    }
+
+    @Nonnull
+    public MessageAction sendMessage(@Nonnull EmbedBuilder embed)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
