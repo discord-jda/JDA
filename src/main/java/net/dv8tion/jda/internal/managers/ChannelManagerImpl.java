@@ -281,8 +281,6 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         name = name.trim();
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
-        if (getType() == ChannelType.TEXT)
-            Checks.noWhitespace(name, "Name");
         this.name = name;
         set |= NAME;
         return this;
