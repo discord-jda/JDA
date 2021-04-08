@@ -129,8 +129,8 @@ public class GuildManagerImpl extends ManagerBase<GuildManager> implements Guild
     @CheckReturnValue
     public GuildManagerImpl setName(@Nonnull String name)
     {
-        Checks.notNull(name, "Name");
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         this.name = name;
         set |= NAME;
         return this;

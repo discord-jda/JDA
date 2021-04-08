@@ -82,7 +82,7 @@ public interface CommandUpdateAction extends RestAction<Void>
             Checks.notEmpty(description, "Description");
             Checks.notLonger(name, 32, "Name");
             Checks.notLonger(description, 100, "Description");
-            Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
             this.name = name;
             this.description = description;
         }
@@ -93,7 +93,7 @@ public interface CommandUpdateAction extends RestAction<Void>
         {
             Checks.notEmpty(name, "Name");
             Checks.notLonger(name, 32, "Name");
-            Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
             this.name = name;
             return (T) this;
         }
@@ -278,7 +278,7 @@ public interface CommandUpdateAction extends RestAction<Void>
             Checks.notEmpty(description, "Description");
             Checks.notLonger(name, 32, "Name");
             Checks.notLonger(description, 100, "Description");
-            Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
             this.type = type;
             this.name = name;
             this.description = description;

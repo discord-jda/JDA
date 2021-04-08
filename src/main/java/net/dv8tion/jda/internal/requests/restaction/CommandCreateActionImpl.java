@@ -94,7 +94,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         data.setName(name);
         return this;
     }
@@ -117,7 +117,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         Checks.notEmpty(description, "Description");
         Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         Checks.notNull(type, "Type");
         Checks.notNull(builder, "Builder");
         Option option = new Option(type, name, description);

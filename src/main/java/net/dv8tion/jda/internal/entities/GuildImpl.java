@@ -146,7 +146,7 @@ public class GuildImpl implements Guild
         Checks.notEmpty(description, "Description");
         Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         return new CommandCreateActionImpl(this, name, description);
     }
 
@@ -1408,8 +1408,8 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
     }
 
@@ -1430,8 +1430,8 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
     }
 
@@ -1442,8 +1442,8 @@ public class GuildImpl implements Guild
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
-
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(Category.class, name, this, ChannelType.CATEGORY);
     }
 

@@ -138,7 +138,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         Checks.notEmpty(description, "Description");
         Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMBERIC_WITH_DASH, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         Checks.notNull(type, "Type");
         Checks.notNull(builder, "Consumer");
 

@@ -23,8 +23,8 @@ import java.util.regex.Pattern;
 
 public class Checks
 {
-    public static final Pattern ALPHANUMBERIC_WITH_DASH = Pattern.compile("[\\w-]+");
-    public static final Pattern ALPHANUMBERIC = Pattern.compile("[\\w]+");
+    public static final Pattern ALPHANUMERIC_WITH_DASH = Pattern.compile("[\\w-]+");
+    public static final Pattern ALPHANUMERIC = Pattern.compile("[\\w]+");
 
     @Contract("null -> fail")
     public static void isSnowflake(final String snowflake)
