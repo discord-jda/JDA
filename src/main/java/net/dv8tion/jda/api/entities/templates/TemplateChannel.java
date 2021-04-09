@@ -214,7 +214,8 @@ public class TemplateChannel implements ISnowflake
      *
      * @see TemplateChannel#getPermissionOverrides()
      */
-    public static class PermissionOverride implements ISnowflake {
+    public static class PermissionOverride implements ISnowflake
+    {
         private final long id;
         private final long allow;
         private final long deny;
