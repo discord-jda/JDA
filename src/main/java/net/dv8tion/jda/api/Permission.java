@@ -55,7 +55,7 @@ public enum Permission
     USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
     // Voice Permissions
-    VOICE_STREAM(      9, true, true, "Stream"),
+    VOICE_STREAM(      9, true, true, "Video"),
     VOICE_CONNECT(    20, true, true, "Connect"),
     VOICE_SPEAK(      21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
