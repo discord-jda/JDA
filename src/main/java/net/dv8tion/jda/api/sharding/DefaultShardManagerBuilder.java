@@ -2316,15 +2316,17 @@ public class  DefaultShardManagerBuilder
      * <p>Note that this method is async and as such will <b>not</b> block until all shards are started.
      *
      * @param  login
-     *         Whether the login process will be started
+     *         Whether the login process will be started. If this is false, then you will need to manually call
+     *         {@link net.dv8tion.jda.api.sharding.ShardManager#login()} to start it.
      *
      * @throws  LoginException
      *          If the provided token is invalid.
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
      *
-     * @return A {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance that has started the login process. It is unknown as
-     *         to whether or not loading has finished when this returns.
+     * @return A {@link net.dv8tion.jda.api.sharding.ShardManager ShardManager} instance. If {@code login} is set to
+     * true, then the instance will have started the login process. It is unknown as to whether or not loading has
+     * finished when this returns.
      */
     @Nonnull
     public ShardManager build(boolean login) throws LoginException, IllegalArgumentException
