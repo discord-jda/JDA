@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -347,6 +348,8 @@ public interface User extends IMentionable, IFakeable
 
         EARLY_SUPPORTER(    9, "Early Supporter"),
         TEAM_USER(         10, "Team User"),
+        @Deprecated
+        @DeprecatedSince("4.2.0")
         SYSTEM(            12, "System User"),
         BUG_HUNTER_LEVEL_2(14, "Bug Hunter Level 2"),
         VERIFIED_BOT(      16, "Verified Bot"),
