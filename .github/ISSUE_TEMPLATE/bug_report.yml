@@ -1,6 +1,5 @@
 name: Bug Report
 description: Found a Bug that needs to be fixed?
-issue_body: false
 body:
 - type: markdown
   attributes:
