@@ -1,6 +1,5 @@
 name: Feature Request
 description: Request a new feature
-issue_body: false
 body:
 - type: markdown
   attributes:
