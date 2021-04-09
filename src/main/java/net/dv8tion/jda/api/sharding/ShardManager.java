@@ -36,6 +36,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -1500,4 +1501,13 @@ public interface ShardManager
      *         If {@link #shutdown()} has already been invoked
      */
     void start(int shardId);
+
+    /**
+     * Initializes and starts all shards. This should only be called once.
+     *
+     * @throws LoginException
+     *         If the provided token is invalid.
+     */
+    void login() throws LoginException;
+
 }
