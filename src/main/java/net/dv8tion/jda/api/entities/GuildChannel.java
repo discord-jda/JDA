@@ -37,7 +37,7 @@ import java.util.List;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends ISnowflake, Comparable<GuildChannel>
+public interface GuildChannel extends ISnowflake, IMentionable, Comparable<GuildChannel>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this GuildChannel
