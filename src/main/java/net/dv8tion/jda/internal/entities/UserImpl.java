@@ -42,6 +42,7 @@ public class UserImpl extends UserById implements User
     protected String avatarId;
     protected long privateChannel = 0L;
     protected boolean bot;
+    protected boolean system;
     protected boolean fake = false;
     protected int flags;
 
@@ -128,6 +129,12 @@ public class UserImpl extends UserById implements User
         return bot;
     }
 
+    @Override
+    public boolean isSystem()
+    {
+        return system;
+    }
+
     @Nonnull
     @Override
     public JDAImpl getJDA()
@@ -191,6 +198,12 @@ public class UserImpl extends UserById implements User
     public UserImpl setBot(boolean bot)
     {
         this.bot = bot;
+        return this;
+    }
+
+    public UserImpl setSystem(boolean system)
+    {
+        this.system = system;
         return this;
     }
 

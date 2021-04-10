@@ -118,7 +118,8 @@ public class EntityBuilder
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
-                .setBot(self.getBoolean("bot"));
+                .setBot(self.getBoolean("bot"))
+                .setSystem(self.getBoolean("system", false));
 
         return selfUser;
     }
@@ -323,6 +324,7 @@ public class EntityBuilder
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
+                   .setSystem(user.getBoolean("system", false))
                    .setFlags(user.getInt("public_flags", 0));
         }
         else

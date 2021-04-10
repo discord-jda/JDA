@@ -300,6 +300,17 @@ public interface User extends IMentionable, IFakeable
     boolean isBot();
 
     /**
+     * Returns whether or not the given user is a System account, which includes the urgent message account
+     * and the community updates bot.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return If the User's account is marked as System
+     */
+    boolean isSystem();
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this User
      *
      * @throws UnsupportedOperationException

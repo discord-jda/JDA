@@ -148,6 +148,13 @@ public class UserById implements User
         return false;
     }
 
+    @Override
+    public boolean isSystem()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nonnull
     @Override
     public JDA getJDA()
