@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.events.interaction;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
@@ -57,29 +56,84 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         this.hook = new CommandHookImpl(this);
     }
 
-    // Pattern: /foo   bar   baz  user: Minn#6688
-    //           name  group sub  option
-
+    /**
+     * The command name.
+     * <br>This can be useful for abstractions.
+     *
+     * <p>Note that commands can have these following structures:
+     * <ul>
+     *     <li>{@code /name subcommandGroup subcommandName}</li>
+     *     <li>{@code /name subcommandName}</li>
+     *     <li>{@code /name}</li>
+     * </ul>
+     *
+     * You can use {@link #getCommandPath()} to simplify your checks.
+     *
+     * @return The command name
+     */
     @Nonnull
     public String getName()
     {
         return name;
     }
 
+    /**
+     * The subcommand name.
+     * <br>This can be useful for abstractions.
+     *
+     * <p>Note that commands can have these following structures:
+     * <ul>
+     *     <li>{@code /name subcommandGroup subcommandName}</li>
+     *     <li>{@code /name subcommandName}</li>
+     *     <li>{@code /name}</li>
+     * </ul>
+     *
+     * You can use {@link #getCommandPath()} to simplify your checks.
+     *
+     * @return The subcommand name, or null if this is not a subcommand
+     */
     @Nullable
     public String getSubcommandName()
     {
         return subcommandName;
     }
 
+    /**
+     * The subcommand group name.
+     * <br>This can be useful for abstractions.
+     *
+     * <p>Note that commands can have these following structures:
+     * <ul>
+     *     <li>{@code /name subcommandGroup subcommandName}</li>
+     *     <li>{@code /name subcommandName}</li>
+     *     <li>{@code /name}</li>
+     * </ul>
+     *
+     * You can use {@link #getCommandPath()} to simplify your checks.
+     *
+     * @return The subcommand group name, or null if this is not a subcommand group
+     */
     @Nullable
     public String getSubcommandGroup()
     {
         return subcommandGroup;
     }
 
+    /**
+     * Combination of {@link #getName()}, {@link #getSubcommandGroup()}, and {@link #getSubcommandName()}.
+     * <br>This will format the command into a path such as {@code mod/mute} where {@code mod} would be the {@link #getName()} and {@code mute} the {@link #getSubcommandName()}.
+     *
+     * <p>Examples:
+     * <ul>
+     *     <li>{@code /mod ban -> "mod/ban"}</li>
+     *     <li>{@code /admin config owner -> "admin/config/owner"}</li>
+     *     <li>{@code /ban -> "ban"}</li>
+     * </ul>
+     *
+     * @return The command path
+     */
     @Nonnull
-    public String getCommandPath() // foo/bar/baz
+    public String getCommandPath()
     {
         StringBuilder builder = new StringBuilder(name);
         if (subcommandGroup != null)
@@ -89,23 +143,53 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         return builder.toString();
     }
 
+    /**
+     * The command id
+     *
+     * @return The command id
+     */
     public long getCommandIdLong()
     {
         return commandId;
     }
 
+    /**
+     * The command id
+     * <br>This is not the same as {@link #getName()}!
+     *
+     * @return The command id
+     */
     @Nonnull
     public String getCommandId()
     {
         return Long.toUnsignedString(commandId);
     }
 
+    /**
+     * The list of {@link OptionData} for this command.
+     * <br>Each option has a name and value.
+     *
+     * @return The options passed for this command
+     */
     @Nonnull
     public List<OptionData> getOptions()
     {
         return options;
     }
 
+    /**
+     * Gets all options for the specified name.
+     *
+     * @param  name
+     *         The option name
+     *
+     * @throws IllegalArgumentException
+     *         If the provided name is null
+     *
+     * @return The list of options
+     *
+     * @see   #getOption(String)
+     */
     @Nonnull
     public List<OptionData> getOptionsByName(@Nonnull String name)
     {
@@ -115,6 +199,17 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets all options for the specified type.
+     *
+     * @param  type
+     *         The option type
+     *
+     * @throws IllegalArgumentException
+     *         If the provided type is null
+     *
+     * @return The list of options
+     */
     @Nonnull
     public List<OptionData> getOptionsByType(@Nonnull Command.OptionType type)
     {
@@ -124,6 +219,17 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Finds the first option with the specified name.
+     *
+     * @param  name
+     *         The option name
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null
+     *
+     * @return The option with the provided name, or null if that option is not provided
+     */
     @Nullable
     public OptionData getOption(@Nonnull String name)
     {
@@ -195,10 +301,8 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
     @CheckReturnValue
     public CommandReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args)
     {
-        Message message = new MessageBuilder()
-                .appendFormat(format, args)
-                .build();
-        return reply(message);
+        Checks.notNull(format, "Format String");
+        return reply(String.format(format, args));
     }
 
 // Currently not supported, sad face
@@ -234,40 +338,100 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
     {
         private final DataObject data;
         private final Command.OptionType type;
+        private final String name;
         private final TLongObjectMap<Object> resolved;
 
         public OptionData(DataObject data, TLongObjectMap<Object> resolved)
         {
             this.data = data;
             this.type = Command.OptionType.fromKey(data.getInt("type", -1));;
+            this.name = data.getString("name");
             this.resolved = resolved;
         }
 
+        /**
+         * The {@link net.dv8tion.jda.api.entities.Command.OptionType OptionType} of this option.
+         *
+         * @return The {@link net.dv8tion.jda.api.entities.Command.OptionType OptionType}
+         */
+        @Nonnull
         public Command.OptionType getType()
         {
             return type;
         }
 
+        /**
+         * The name of this option.
+         *
+         * @return The option name
+         */
+        @Nonnull
         public String getName()
         {
-            return data.getString("name");
+            return name;
         }
 
+        /**
+         * The String representation of this option value.
+         * <br>This will automatically convert the value to a string if the type is not {@link net.dv8tion.jda.api.entities.Command.OptionType#STRING OptionType.STRING}.
+         *
+         * @return The String representation of this option value
+         */
+        @Nonnull
         public String getAsString()
         {
             return data.getString("value");
         }
 
+        /**
+         * The boolean value.
+         *
+         * @throws IllegalStateException
+         *         If this option is not of type {@link net.dv8tion.jda.api.entities.Command.OptionType#BOOLEAN BOOLEAN}
+         *
+         * @return The boolean value
+         */
         public boolean getAsBoolean()
         {
+            if (type != Command.OptionType.BOOLEAN)
+                throw new IllegalStateException("Cannot convert option of type " + type + " to boolean");
             return data.getBoolean("value");
         }
 
+        /**
+         * The long value for this option.
+         * <br>This will be the ID of any resolved entity such as {@link Role} or {@link Member}.
+         *
+         * @throws IllegalStateException
+         *         If this option {@link #getType() type} cannot be converted to a long
+         * @throws NumberFormatException
+         *         If this option is of type {@link net.dv8tion.jda.api.entities.Command.OptionType#STRING STRING} and could not be parsed to a valid long value
+         *
+         * @return The long value
+         */
         public long getAsLong()
         {
-            return data.getLong("value");
+            switch (type)
+            {
+            default: throw new IllegalStateException("Cannot convert option of type " + type + " to long");
+            case STRING:
+            case CHANNEL:
+            case ROLE:
+            case USER:
+            case INTEGER:
+                return data.getLong("value");
+            }
         }
 
+        /**
+         * The resolved {@link Member} for this option value.
+         * <br>Note that {@link net.dv8tion.jda.api.entities.Command.OptionType#USER OptionType.USER} can also accept users that are not members of a guild, in which case this will be null!
+         *
+         * @throws IllegalStateException
+         *         If this option is not of type {@link net.dv8tion.jda.api.entities.Command.OptionType#USER USER}
+         *
+         * @return The resolved {@link Member}, or null
+         */
         @Nullable
         public Member getAsMember()
         {
@@ -279,7 +443,15 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
             return null; // Unresolved
         }
 
-        @Nullable
+        /**
+         * The resolved {@link User} for this option value.
+         *
+         * @throws IllegalStateException
+         *         If this option is not of type {@link net.dv8tion.jda.api.entities.Command.OptionType#USER USER}
+         *
+         * @return The resolved {@link User}
+         */
+        @Nonnull
         public User getAsUser()
         {
             if (type != Command.OptionType.USER)
@@ -289,39 +461,71 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
                 return ((Member) object).getUser();
             if (object instanceof User)
                 return (User) object;
-            return null; // Unresolved
+            throw new IllegalStateException("Could not resolve user!");
         }
 
-        @Nullable
+        /**
+         * The resolved {@link Role} for this option value.
+         *
+         * @throws IllegalStateException
+         *         If this option is not of type {@link net.dv8tion.jda.api.entities.Command.OptionType#ROLE ROLE}
+         *
+         * @return The resolved {@link Role}
+         */
+        @Nonnull
         public Role getAsRole()
         {
             if (type != Command.OptionType.ROLE)
                 throw new IllegalStateException("Cannot resolve Role for option " + getName() + " of type " + type);
-            return (Role) resolved.get(getAsLong());
+            Object role = resolved.get(getAsLong());
+            if (role instanceof Role)
+                return (Role) role;
+            throw new IllegalStateException("Could not resolve role!");
         }
 
         @Nullable
-        public AbstractChannel getAsChannel()
+        private AbstractChannel getAsChannel()
         {
             if (type != Command.OptionType.CHANNEL)
                 throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
             return (AbstractChannel) resolved.get(getAsLong()); // TODO: Handle uncached channels correctly
         }
 
-        @Nullable
+        /**
+         * The resolved {@link GuildChannel} for this option value.
+         * <br>Note that {@link net.dv8tion.jda.api.entities.Command.OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
+         *
+         * @throws IllegalStateException
+         *         If this option is not of type {@link net.dv8tion.jda.api.entities.Command.OptionType#CHANNEL CHANNEL}
+         *         or could not be resolved for unexpected reasons
+         *
+         * @return The resolved {@link GuildChannel}
+         */
+        @Nonnull
         public GuildChannel getAsGuildChannel()
         {
             AbstractChannel value = getAsChannel();
-            return value instanceof GuildChannel ? (GuildChannel) value : null;
+            if (value instanceof GuildChannel)
+                return (GuildChannel) value;
+            throw new IllegalStateException("Could not resolve GuildChannel!");
         }
 
-        @Nullable
-        public PrivateChannel getAsPrivateChannel()
-        {
-            AbstractChannel value = getAsChannel();
-            return value instanceof PrivateChannel ? (PrivateChannel) value : null;
-        }
+//        @Nullable
+//        public PrivateChannel getAsPrivateChannel()
+//        {
+//            AbstractChannel value = getAsChannel();
+//            return value instanceof PrivateChannel ? (PrivateChannel) value : null;
+//        }
 
+        /**
+         * The resolved {@link MessageChannel} for this option value.
+         * <br>Note that {@link net.dv8tion.jda.api.entities.Command.OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
+         *
+         * @throws IllegalStateException
+         *         If this option is not of type {@link net.dv8tion.jda.api.entities.Command.OptionType#CHANNEL CHANNEL}
+         *
+         * @return The resolved {@link MessageChannel}, or null if this was not a message channel
+         */
         @Nullable
         public MessageChannel getAsMessageChannel()
         {
@@ -329,6 +533,14 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
             return value instanceof MessageChannel ? (MessageChannel) value : null;
         }
 
+        /**
+         * The {@link ChannelType} for the resolved channel.
+         *
+         * @throws IllegalStateException
+         *         If this option is not of type {@link net.dv8tion.jda.api.entities.Command.OptionType#CHANNEL CHANNEL}
+         *
+         * @return The {@link ChannelType}
+         */
         @Nonnull
         public ChannelType getChannelType()
         {

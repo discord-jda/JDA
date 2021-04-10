@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -467,7 +468,7 @@ public class DataObject implements SerializableData
      */
     public long getLong(@Nonnull String key)
     {
-        Long value = get(Long.class, key, Long::parseLong, Number::longValue);
+        Long value = get(Long.class, key, MiscUtil::parseLong, Number::longValue);
         if (value == null)
             throw valueError(key, "long");
         return value;

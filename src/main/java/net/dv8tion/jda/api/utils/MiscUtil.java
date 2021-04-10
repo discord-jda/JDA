@@ -102,15 +102,20 @@ public class MiscUtil
         return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
     }
 
+    public static long parseLong(String input)
+    {
+        if (input.startsWith("-"))
+            return Long.parseLong(input);
+        else
+            return Long.parseUnsignedLong(input);
+    }
+
     public static long parseSnowflake(String input)
     {
         Checks.notEmpty(input, "ID");
         try
         {
-            if (!input.startsWith("-")) // if not negative -> parse unsigned
-                return Long.parseUnsignedLong(input);
-            else // if negative -> parse normal
-                return Long.parseLong(input);
+            return parseLong(input);
         }
         catch (NumberFormatException ex)
         {
