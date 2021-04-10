@@ -131,8 +131,17 @@ public class SlashCommandEvent extends GenericChannelInteractionCreateEvent
         return options.isEmpty() ? null : options.get(0);
     }
 
-    // TODO: You can only reply ONCE so maybe we should throw when trying again?
-    // TODO: Maybe some way to check if we already replied once?
+    /**
+     * Whether this interaction has already been acknowledged.
+     * <br>Both {@link #acknowledge()} and {@link #reply(String)} acknowledge an interaction.
+     * Each interaction can only be acknowledged once.
+     *
+     * @return True, if this interaction has already been acknowledged
+     */
+    public boolean isAcknowledged()
+    {
+        return hook.isAck();
+    }
 
     @Nonnull
     @CheckReturnValue

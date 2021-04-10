@@ -66,6 +66,11 @@ public class CommandHookImpl extends AbstractWebhookClient<InteractionWebhookAct
         return wasAck;
     }
 
+    public synchronized boolean isAck()
+    {
+        return isAck;
+    }
+
     public void ready()
     {
         MiscUtil.locked(mutex, () -> {
