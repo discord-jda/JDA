@@ -203,7 +203,7 @@ public interface GuildManager extends Manager<GuildManager>
      *         or {@code null} to reset
      *
      * @throws java.lang.IllegalStateException
-     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code INVITE_SPLASH}
+     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} do not include {@code INVITE_SPLASH}
      *
      * @return GuildManager for chaining convenience
      */
@@ -358,7 +358,7 @@ public interface GuildManager extends Manager<GuildManager>
      *         or {@code null} to reset
      *
      * @throws java.lang.IllegalStateException
-     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code BANNER}
+     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} do not include {@code BANNER}
      *
      * @return GuildManager for chaining convenience
      */
@@ -374,7 +374,7 @@ public interface GuildManager extends Manager<GuildManager>
      *         or {@code null} to reset
      *
      * @throws java.lang.IllegalStateException
-     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code VANITY_URL}
+     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} do not include {@code VANITY_URL}
      *
      * @return GuildManager for chaining convenience
      */
@@ -390,7 +390,7 @@ public interface GuildManager extends Manager<GuildManager>
      *         or {@code null} to reset
      *
      * @throws java.lang.IllegalStateException
-     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} does not include {@code VERIFIED}
+     *         If the guild's {@link net.dv8tion.jda.api.entities.Guild#getFeatures() features} do not include {@code VERIFIED}
      *
      * @return GuildManager for chaining convenience
      */
