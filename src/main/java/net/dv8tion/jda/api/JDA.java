@@ -672,7 +672,8 @@ public interface JDA
         Checks.notNull(username, "Username");
         Checks.notNull(discriminator, "Discriminator");
         Checks.check(discriminator.length() == 4 && Helpers.isNumeric(discriminator), "Invalid format for discriminator!");
-        Checks.check(username.length() >= 2 && username.length() <= 32, "Username must be between 2 and 32 characters in length!");
+        int codePointLength = username.codePointCount(0, username.length());
+        Checks.check(codePointLength >= 2 && codePointLength <= 32, "Username must be between 2 and 32 codepoints in length!");
         return getUserCache().applyStream(stream ->
             stream.filter(it -> it.getDiscriminator().equals(discriminator))
                   .filter(it -> it.getName().equals(username))
