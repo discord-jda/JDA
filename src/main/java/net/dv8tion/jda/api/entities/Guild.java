@@ -2283,6 +2283,10 @@ public interface Guild extends ISnowflake
     @CheckReturnValue
     RestAction<Void> requestToSpeak();
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> cancelRequestToSpeak();
+
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Guild
      *
