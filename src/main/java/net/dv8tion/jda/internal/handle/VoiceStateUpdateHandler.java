@@ -145,7 +145,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         {
             OffsetDateTime oldRequestToSpeak = vState.getRequestToSpeakTimestamp();
             vState.setRequestToSpeak(requestToSpeakTime);
-            // TODO: Event
+            getJDA().handleEvent(new GuildVoiceRequestToSpeakEvent(getJDA(), responseNumber, member, oldRequestToSpeak, requestToSpeakTime));
         }
 
         if (!Objects.equals(channel, vState.getChannel()))
