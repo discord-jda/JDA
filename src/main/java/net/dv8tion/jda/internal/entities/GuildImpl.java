@@ -752,14 +752,16 @@ public class GuildImpl implements Guild
     {
         VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
         if (!(connectedChannel instanceof StageChannel))
-            return new CompletedRestAction<>(getJDA(), null);
+            return new CompletedRestAction<>(api, null);
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
         DataObject body = DataObject.empty()
-                .put("request_to_speak_timestamp", OffsetDateTime.now().toString())
                 .put("channel_id", connectedChannel.getId());
+        // Stage moderators can bypass the request queue by just unsuppressing
         if (getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
-            body.put("suppress", false);
-        return new RestActionImpl<>(getJDA(), route, body);
+            body.putNull("request_to_speak_timestamp").put("suppress", false);
+        else
+            body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+        return new RestActionImpl<>(api, route, body);
     }
 
     @Nonnull
@@ -768,13 +770,13 @@ public class GuildImpl implements Guild
     {
         VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
         if (!(connectedChannel instanceof StageChannel))
-            return new CompletedRestAction<>(getJDA(), null);
+            return new CompletedRestAction<>(api, null);
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
         DataObject body = DataObject.empty()
                 .putNull("request_to_speak_timestamp")
                 .put("suppress", true)
                 .put("channel_id", connectedChannel.getId());
-        return new RestActionImpl<>(getJDA(), route, body);
+        return new RestActionImpl<>(api, route, body);
     }
 
     @Nonnull
