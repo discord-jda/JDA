@@ -755,9 +755,10 @@ public class GuildImpl implements Guild
             return new CompletedRestAction<>(getJDA(), null);
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
         DataObject body = DataObject.empty()
-                .putNull("request_to_speak_timestamp")
-                .put("channel_id", connectedChannel.getId())
-                .put("suppress", false);
+                .put("request_to_speak_timestamp", OffsetDateTime.now().toString())
+                .put("channel_id", connectedChannel.getId());
+        if (getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+            body.put("suppress", false);
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
