@@ -119,7 +119,7 @@ public class EntityBuilder
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
                 .setBot(self.getBoolean("bot"))
-                .setSystem(self.getBoolean("system"));
+                .setSystem(false);
 
         return selfUser;
     }
