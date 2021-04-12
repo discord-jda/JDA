@@ -17,9 +17,12 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
 
 /**
  * Represents the voice state of a {@link net.dv8tion.jda.api.entities.Member Member} in a
@@ -83,12 +86,15 @@ public interface GuildVoiceState
 
     /**
      * Returns true if this {@link net.dv8tion.jda.api.entities.Member Member} is unable to speak because the
-     * channel is actively suppressing audio communication. This occurs only in
+     * channel is actively suppressing audio communication. This occurs in
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} where the Member either doesn't have
      * {@link net.dv8tion.jda.api.Permission#VOICE_SPEAK Permission#VOICE_SPEAK} or if the channel is the
      * designated AFK channel.
+     * <br>This is also used by {@link StageChannel StageChannels} for listeners without speaker approval.
      *
      * @return True, if this {@link net.dv8tion.jda.api.entities.Member Member's} audio is being suppressed.
+     *
+     * @see    #getRequestToSpeakTimestamp()
      */
     boolean isSuppressed();
 
@@ -145,4 +151,21 @@ public interface GuildVoiceState
      */
     @Nullable
     String getSessionId();
+
+    /**
+     * The time at which the user requested to speak.
+     * <br>This is used for {@link StageChannel StageChannels} and can only be approved by members with {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS} on the channel.
+     *
+     * @return The request to speak timestamp, or null if this user didn't request to speak
+     */
+    @Nullable
+    OffsetDateTime getRequestToSpeakTimestamp();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> approveSpeaker();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> declineSpeaker();
 }

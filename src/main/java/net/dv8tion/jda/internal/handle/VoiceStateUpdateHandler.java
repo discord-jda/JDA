@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.VoiceChannelImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 
+import java.time.OffsetDateTime;
 import java.util.Objects;
 
 public class VoiceStateUpdateHandler extends SocketHandler
@@ -60,6 +61,14 @@ public class VoiceStateUpdateHandler extends SocketHandler
         boolean guildDeafened = content.getBoolean("deaf");
         boolean suppressed = content.getBoolean("suppress");
         boolean stream = content.getBoolean("self_stream");
+        String requestToSpeak = content.getString("request_to_speak_timestamp", null);
+        OffsetDateTime requestToSpeakTime = null;
+        long requestToSpeakTimestamp = 0L;
+        if (requestToSpeak != null)
+        {
+            requestToSpeakTime = OffsetDateTime.parse(requestToSpeak);
+            requestToSpeakTimestamp = requestToSpeakTime.toInstant().toEpochMilli();
+        }
 
         Guild guild = getJDA().getGuildById(guildId);
         if (guild == null)
@@ -132,6 +141,12 @@ public class VoiceStateUpdateHandler extends SocketHandler
             getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
         if (wasDeaf != vState.isDeafened())
             getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
+        if (requestToSpeakTimestamp != vState.getRequestToSpeak())
+        {
+            OffsetDateTime oldRequestToSpeak = vState.getRequestToSpeakTimestamp();
+            vState.setRequestToSpeak(requestToSpeakTime);
+            // TODO: Event
+        }
 
         if (!Objects.equals(channel, vState.getChannel()))
         {

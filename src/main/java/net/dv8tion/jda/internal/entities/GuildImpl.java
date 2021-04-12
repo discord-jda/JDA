@@ -753,7 +753,7 @@ public class GuildImpl implements Guild
         VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
         if (!(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(getJDA(), null);
-        Route.CompiledRoute route = Route.Guilds.REQUEST_TO_SPEAK.compile(getId());
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
         DataObject body = DataObject.empty()
                 .putNull("request_to_speak_timestamp")
                 .put("channel_id", connectedChannel.getId())

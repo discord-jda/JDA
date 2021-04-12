@@ -524,6 +524,11 @@ public class EntityBuilder
             LOG.error("Received a GuildVoiceState with a channel ID for a non-existent channel! ChannelId: {} GuildId: {} UserId: {}",
                       channelId, guild.getId(), user.getId());
 
+        String requestToSpeak = voiceStateJson.getString("request_to_speak_timestamp", null);
+        OffsetDateTime timestamp = null;
+        if (requestToSpeak != null)
+            timestamp = OffsetDateTime.parse(requestToSpeak);
+
         // VoiceState is considered volatile so we don't expect anything to actually exist
         voiceState.setSelfMuted(voiceStateJson.getBoolean("self_mute"))
                   .setSelfDeafened(voiceStateJson.getBoolean("self_deaf"))
@@ -532,6 +537,7 @@ public class EntityBuilder
                   .setSuppressed(voiceStateJson.getBoolean("suppress"))
                   .setSessionId(voiceStateJson.getString("session_id"))
                   .setStream(voiceStateJson.getBoolean("self_stream"))
+                  .setRequestToSpeak(timestamp)
                   .setConnectedChannel(voiceChannel);
     }
 

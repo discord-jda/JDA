@@ -17,12 +17,21 @@
 package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
@@ -32,6 +41,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     private VoiceChannel connectedChannel;
     private String sessionId;
+    private long requestToSpeak;
     private boolean selfMuted = false;
     private boolean selfDeafened = false;
     private boolean guildMuted = false;
@@ -69,6 +79,45 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public String getSessionId()
     {
         return sessionId;
+    }
+
+    public long getRequestToSpeak()
+    {
+        return requestToSpeak;
+    }
+
+    @Override
+    public OffsetDateTime getRequestToSpeakTimestamp()
+    {
+        return requestToSpeak == 0 ? null : Helpers.toOffset(requestToSpeak);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> approveSpeaker()
+    {
+        return update(false);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> declineSpeaker()
+    {
+        return update(true);
+    }
+
+    private RestAction<Void> update(boolean suppress)
+    {
+        if (requestToSpeak == 0L || connectedChannel == null)
+            return new CompletedRestAction<>(api, null);
+        if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+            throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
+
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), member.getId());
+        DataObject body = DataObject.empty()
+                .put("channel_id", connectedChannel.getId())
+                .put("suppress", suppress);
+        return new RestActionImpl<>(getJDA(), route, body);
     }
 
     @Override
@@ -209,6 +258,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl setStream(boolean stream)
     {
         this.stream = stream;
+        return this;
+    }
+
+    public GuildVoiceStateImpl setRequestToSpeak(OffsetDateTime timestamp)
+    {
+        this.requestToSpeak = timestamp == null ? 0L : timestamp.toInstant().toEpochMilli();
         return this;
     }
 }
