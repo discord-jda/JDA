@@ -1,6 +1,6 @@
 [version]: https://shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Fm2.dv8tion.net%2Freleases%2Fnet%2Fdv8tion%2FJDA%2Fmaven-metadata.xml&color=informational&label=Download
 [download]: #download
-[discord-invite]: https://discord.gg/0hMr4ce0tIl3SLv5
+[discord-invite]: https://discord.gg/jda
 [migration]: https://github.com/DV8FromTheWorld/JDA/wiki/0\)-Migrating-to-V4
 [jenkins]: https://ci.dv8tion.net/job/JDA
 [license]: https://github.com/DV8FromTheWorld/JDA/tree/master/LICENSE
