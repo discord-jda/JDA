@@ -306,7 +306,7 @@ public interface User extends IMentionable, IFakeable
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
      *
-     * @return If the User's account is marked as System
+     * @return Whether the User's account is marked as System
      */
     boolean isSystem();
 
