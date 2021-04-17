@@ -70,13 +70,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
-        return "<#" + id + '>';
-    }
-
-    @Nonnull
-    @Override
     public RestAction<List<Webhook>> retrieveWebhooks()
     {
         checkPermission(Permission.MANAGE_WEBHOOKS);
