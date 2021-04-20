@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
@@ -274,6 +277,10 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return immutable list of mentioned TextChannels
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getMentionedTextChannels()")
+    @DeprecatedSince("4.3.0")
     @Nonnull
     List<TextChannel> getMentionedChannels();
 
@@ -304,8 +311,264 @@ public interface Message extends ISnowflake, Formattable
      *
      * @see    #getMentionedChannels()
      */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getMentionedTextChannelsBag()")
+    @DeprecatedSince("4.3.0")
     @Nonnull
     Bag<TextChannel> getMentionedChannelsBag();
+
+    /**
+     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <br>This may contain {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
+     * {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}, {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
+     * and {@link net.dv8tion.jda.api.entities.Category Categories}
+     * <b>from the current or other {@link net.dv8tion.jda.api.entities.Guild Guilds}.</b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
+     * @return immutable list of mentioned GuildChannels
+     *
+     * @since 4.3.0
+     *
+     * @see #getMentionedTextChannels()
+     * @see #getMentionedVoiceChannels()
+     * @see #getMentionedStoreChannels()
+     * @see #getMentionedCategories()
+     */
+    @Nonnull
+    List<GuildChannel> getMentionedGuildChannels();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned GuildChannels.
+     * <br>This can be used to retrieve the amount of times a GuildChannel was mentioned in this message.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<GuildChannel> mentions = msg.getMentionedGuildChannels(); // distinct list, in order of appearance
+     *     Bag<GuildChannel> count = msg.getMentionedGuildChannelsBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (TextChannel channel : mentions)
+     *     {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(count.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned GuildChannels
+     *
+     * @since 4.3.0
+     *
+     * @see #getMentionedTextChannels()
+     * @see #getMentionedTextChannelsBag()
+     * @see #getMentionedVoiceChannelsBag()
+     * @see #getMentionedStoreChannelsBag()
+     * @see #getMentionedCategoriesBag()
+     */
+    @Nonnull
+    Bag<GuildChannel> getMentionedGuildChannelsBag();
+
+    /**
+     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
+     * @return immutable list of mentioned TextChannels
+     *
+     * @since 4.3.0
+     */
+    @Nonnull
+    List<TextChannel> getMentionedTextChannels();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned TextChannels.
+     * <br>This can be used to retrieve the amount of times a TextChannel was mentioned in this message.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<TextChannel> mentions = msg.getMentionedTextChannels(); // distinct list, in order of appearance
+     *     Bag<TextChannel> count = msg.getMentionedTextChannelsBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (TextChannel channel : mentions)
+     *     {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(count.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned TextChannels
+     *
+     * @since 4.3.0
+     *
+     * @see    #getMentionedTextChannels()
+     */
+    @Nonnull
+    Bag<TextChannel> getMentionedTextChannelsBag();
+
+    /**
+     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <p><b>This may include VoiceChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
+     * @return immutable list of mentioned VoiceChannels
+     *
+     * @since 4.3.0
+     */
+    @Nonnull
+    List<VoiceChannel> getMentionedVoiceChannels();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned VoiceChannels.
+     * <br>This can be used to retrieve the amount of times a VoiceChannel was mentioned in this message.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<VoiceChannel> mentions = msg.getMentionedVoiceChannels(); // distinct list, in order of appearance
+     *     Bag<VoiceChannel> count = msg.getMentionedVoiceChannelsBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (TextChannel channel : mentions)
+     *     {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(count.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned VoiceChannels
+     *
+     * @since 4.3.0
+     *
+     * @see    #getMentionedVoiceChannels()
+     */
+    @Nonnull
+    Bag<VoiceChannel> getMentionedVoiceChannelsBag();
+
+    /**
+     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <p><b>This may include StoreChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
+     * @return immutable list of mentioned StoreChannels
+     *
+     * @since 4.3.0
+     */
+    @Nonnull
+    List<StoreChannel> getMentionedStoreChannels();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned StoreChannels.
+     * <br>This can be used to retrieve the amount of times a StoreChannel was mentioned in this message.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<StoreChannel> mentions = msg.getMentionedStoreChannels(); // distinct list, in order of appearance
+     *     Bag<StoreChannel> count = msg.getMentionedStoreChannelsBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (TextChannel channel : mentions)
+     *     {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(count.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned StoreChannels
+     *
+     * @since 4.3.0
+     *
+     * @see    #getMentionedStoreChannels()
+     */
+    @Nonnull
+    Bag<StoreChannel> getMentionedStoreChannelsBag();
+
+    /**
+     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Category Categories}.
+     * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
+     *
+     * <p><b>This may include Categories from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
+     * @return immutable list of mentioned Categories
+     *
+     * @since 4.3.0
+     */
+    @Nonnull
+    List<Category> getMentionedCategories();
+
+    /**
+     * A {@link org.apache.commons.collections4.Bag Bag} of mentioned Categories.
+     * <br>This can be used to retrieve the amount of times a Category was mentioned in this message.
+     *
+     * <h2>Example</h2>
+     * <pre>{@code
+     * public void sendCount(Message msg)
+     * {
+     *     List<Category> mentions = msg.getMentionedCategories(); // distinct list, in order of appearance
+     *     Bag<Category> count = msg.getMentionedCategoriesBag();
+     *     StringBuilder content = new StringBuilder();
+     *     for (TextChannel channel : mentions)
+     *     {
+     *         content.append("#")
+     *                .append(channel.getName())
+     *                .append(": ")
+     *                .append(count.getCount(channel))
+     *                .append("\n");
+     *     }
+     *     msg.getChannel().sendMessage(content.toString()).queue();
+     * }
+     * }</pre>
+     *
+     * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned Categories
+     *
+     * @since 4.3.0
+     *
+     * @see    #getMentionedCategories()
+     */
+    @Nonnull
+    Bag<Category> getMentionedCategoriesBag();
 
     /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.
@@ -2056,7 +2319,7 @@ public interface Message extends ISnowflake, Formattable
          */
         ROLE("<@&(\\d+)>", "roles"),
         /**
-         * Represents a mention for a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
+         * Represents a mention for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
          * <br>The first and only group matches the id of the mention.
          */
         CHANNEL("<#(\\d+)>", null),

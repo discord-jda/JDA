@@ -78,7 +78,10 @@ public class ReceivedMessage extends AbstractMessage
     protected List<Member> memberMentions = null;
     protected List<Emote> emoteMentions = null;
     protected List<Role> roleMentions = null;
-    protected List<TextChannel> channelMentions = null;
+    protected List<TextChannel> textChannelMentions = null;
+    protected List<VoiceChannel> voiceChannelMentions = null;
+    protected List<StoreChannel> storeChannelMentions = null;
+    protected List<Category> categoryMentions = null;
     protected List<String> invites = null;
 
     public ReceivedMessage(
@@ -330,20 +333,121 @@ public class ReceivedMessage extends AbstractMessage
         return getJDA().getTextChannelById(channelId);
     }
 
+    private VoiceChannel matchVoiceChannel(Matcher matcher)
+    {
+        long channelId = MiscUtil.parseSnowflake(matcher.group(1));
+        return getJDA().getVoiceChannelById(channelId);
+    }
+
+    private StoreChannel matchStoreChannel(Matcher matcher)
+    {
+        long channelId = MiscUtil.parseSnowflake(matcher.group(1));
+        return getJDA().getStoreChannelById(channelId);
+    }
+
+    private Category matchCategory(Matcher matcher)
+    {
+        long channelId = MiscUtil.parseSnowflake(matcher.group(1));
+        return getJDA().getCategoryById(channelId);
+    }
+
+
     @Nonnull
     @Override
     public synchronized List<TextChannel> getMentionedChannels()
     {
-        if (channelMentions == null)
-            channelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchTextChannel));
-        return channelMentions;
+        return getMentionedTextChannels();
     }
 
     @Nonnull
     @Override
     public Bag<TextChannel> getMentionedChannelsBag()
     {
+        return getMentionedTextChannelsBag();
+    }
+
+    @Nonnull
+    @Override
+    public List<GuildChannel> getMentionedGuildChannels()
+    {
+        List<GuildChannel> channels = new ArrayList<>();
+        channels.addAll(getMentionedTextChannels());
+        channels.addAll(getMentionedVoiceChannels());
+        channels.addAll(getMentionedStoreChannels());
+        channels.addAll(getMentionedCategories());
+        Collections.sort(channels);
+        return Collections.unmodifiableList(channels);
+    }
+
+    @Nonnull
+    @Override
+    public Bag<GuildChannel> getMentionedGuildChannelsBag()
+    {
+        return new HashBag<>(getMentionedGuildChannels());
+    }
+
+    @Nonnull
+    @Override
+    public synchronized List<TextChannel> getMentionedTextChannels()
+    {
+        if (textChannelMentions == null)
+            textChannelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchTextChannel));
+        return textChannelMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<TextChannel> getMentionedTextChannelsBag()
+    {
         return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchTextChannel);
+    }
+
+    @Nonnull
+    @Override
+    public synchronized List<VoiceChannel> getMentionedVoiceChannels()
+    {
+        if (voiceChannelMentions == null)
+            voiceChannelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchVoiceChannel));
+        return voiceChannelMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<VoiceChannel> getMentionedVoiceChannelsBag()
+    {
+        return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchVoiceChannel);
+    }
+
+    @Nonnull
+    @Override
+    public synchronized List<StoreChannel> getMentionedStoreChannels()
+    {
+        if (storeChannelMentions == null)
+            storeChannelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchStoreChannel));
+        return storeChannelMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<StoreChannel> getMentionedStoreChannelsBag()
+    {
+        return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchStoreChannel);
+    }
+
+    @Nonnull
+    @Override
+    public synchronized List<Category> getMentionedCategories()
+    {
+        if (categoryMentions == null)
+            categoryMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchCategory));
+        return categoryMentions;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<Category> getMentionedCategoriesBag()
+    {
+        return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchCategory);
     }
 
     private Role matchRole(Matcher matcher)
@@ -424,7 +528,7 @@ public class ReceivedMessage extends AbstractMessage
                 default: continue;
                 case CHANNEL:
                     if (!channel)
-                        mentions.addAll(getMentionedChannels());
+                        mentions.addAll(getMentionedGuildChannels());
                     channel = true;
                     break;
                 case USER:
@@ -483,9 +587,9 @@ public class ReceivedMessage extends AbstractMessage
                 }
                 case CHANNEL:
                 {
-                    if (mentionable instanceof TextChannel)
+                    if (mentionable instanceof GuildChannel)
                     {
-                        if (getMentionedChannels().contains(mentionable))
+                        if (getMentionedGuildChannels().contains(mentionable))
                             return true;
                     }
                     break;
@@ -612,9 +716,21 @@ public class ReceivedMessage extends AbstractMessage
             {
                 tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
             }
-            for (TextChannel mentionedChannel : getMentionedChannels())
+            for (TextChannel mentionedChannel : getMentionedTextChannels())
             {
                 tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
+            }
+            for (VoiceChannel mentionedChannel : getMentionedVoiceChannels())
+            {
+                tmp = tmp.replace(mentionedChannel.getAsMention(), mentionedChannel.getName());
+            }
+            for (StoreChannel mentionedChannel : getMentionedStoreChannels())
+            {
+                tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
+            }
+            for (Category mentionedCategory : getMentionedCategories())
+            {
+                tmp = tmp.replace(mentionedCategory.getAsMention(), '#' + mentionedCategory.getName());
             }
             for (Role mentionedRole : getMentionedRoles())
             {

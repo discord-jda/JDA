@@ -130,6 +130,46 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public Bag<GuildChannel> getMentionedGuildChannelsBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<TextChannel> getMentionedTextChannelsBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<VoiceChannel> getMentionedVoiceChannelsBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<StoreChannel> getMentionedStoreChannelsBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public Bag<Category> getMentionedCategoriesBag()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public Bag<Role> getMentionedRolesBag()
     {
         unsupported();
@@ -147,6 +187,46 @@ public abstract class AbstractMessage implements Message
     @Nonnull
     @Override
     public List<TextChannel> getMentionedChannels()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public List<GuildChannel> getMentionedGuildChannels()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public List<TextChannel> getMentionedTextChannels()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public List<VoiceChannel> getMentionedVoiceChannels()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public List<StoreChannel> getMentionedStoreChannels()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public List<Category> getMentionedCategories()
     {
         unsupported();
         return null;
