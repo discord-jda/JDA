@@ -187,11 +187,22 @@ public class MessageSticker implements ISnowflake
             this.extension = extension;
         }
 
+        /**
+         * The file extension used for the sticker asset.
+         *
+         * @return The file extension for this format, or null if this is UNKNOWN
+         */
+        @Nullable
         public String getExtension()
         {
             return extension;
         }
 
+        /**
+         * Resolves the specified format identifier to the StickerFormat enum constant.
+         *
+         * @return The representative StickerFormat or UNKNOWN if it can't be resolved
+         */
         @Nonnull
         public static MessageSticker.StickerFormat fromId(int id)
         {
