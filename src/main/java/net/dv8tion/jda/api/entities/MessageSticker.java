@@ -101,7 +101,7 @@ public class MessageSticker implements ISnowflake
 
     /**
      * The Discord hash-id of the sticker. This represents the actual asset file in the CDN for the sticker.
-     * <br><b>The URL for fetching sticker assets is currently private.
+     * <br><b>The URL for fetching sticker assets is currently private.</b>
      *
      * @return the Discord hash-id of the sticker
      */
@@ -113,7 +113,7 @@ public class MessageSticker implements ISnowflake
 
     /**
      * The Discord hash-id of the preview of the sticker. This represents the actual preview asset file in the CDN for the sticker.
-     * <br><b>The URL for fetching sticker assets is currently private.
+     * <br><b>The URL for fetching sticker assets is currently private.</b>
      *
      * @return the Discord hash-id of the preview image of the sticker or {@code null} if the sticker has no preview image
      */
@@ -200,6 +200,9 @@ public class MessageSticker implements ISnowflake
 
         /**
          * Resolves the specified format identifier to the StickerFormat enum constant.
+         *
+         * @param  id
+         *         The id for this format
          *
          * @return The representative StickerFormat or UNKNOWN if it can't be resolved
          */
