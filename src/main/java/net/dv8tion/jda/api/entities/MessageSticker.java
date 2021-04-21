@@ -111,20 +111,23 @@ public class MessageSticker implements ISnowflake
         return asset;
     }
 
-    /**
-     * The Discord hash-id of the preview of the sticker. This represents the actual preview asset file in the CDN for the sticker.
-     * <br><b>The URL for fetching sticker assets is currently private.</b>
-     *
-     * @return the Discord hash-id of the preview image of the sticker or {@code null} if the sticker has no preview image
-     */
-    @Nullable
-    public String getPreviewAssetHash()
-    {
-        return previewAsset;
-    }
+//    *
+//     * The Discord hash-id of the preview of the sticker. This represents the actual preview asset file in the CDN for the sticker.
+//     * <br><b>The URL for fetching sticker assets is currently private.</b>
+//     *
+//     * @return the Discord hash-id of the preview image of the sticker or {@code null} if the sticker has no preview image
+//
+//    @Nullable
+//    public String getPreviewAssetHash()
+//    {
+//        return previewAsset;
+//    }
 
     /**
      * The url of the sticker asset.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the {@link StickerFormat StickerFormat} is {@link StickerFormat#UNKNOWN UNKNOWN}
      *
      * @return the url of the sticker
      */
@@ -190,11 +193,16 @@ public class MessageSticker implements ISnowflake
         /**
          * The file extension used for the sticker asset.
          *
-         * @return The file extension for this format, or null if this is UNKNOWN
+         * @throws java.lang.IllegalStateException
+         *         If the {@link StickerFormat StickerFormat} is {@link StickerFormat#UNKNOWN UNKNOWN}
+         *
+         * @return The file extension for this format
          */
-        @Nullable
+        @Nonnull
         public String getExtension()
         {
+            if (this == UNKNOWN)
+                throw new IllegalStateException("Can only get extension of a known format");
             return extension;
         }
 
