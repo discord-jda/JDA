@@ -127,7 +127,7 @@ public class MessageSticker implements ISnowflake
      * The url of the sticker asset.
      *
      * @throws java.lang.IllegalStateException
-     *         If the {@link StickerFormat StickerFormat} is {@link StickerFormat#UNKNOWN UNKNOWN}
+     *         If the {@link StickerFormat StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
      *
      * @return the url of the sticker
      */
