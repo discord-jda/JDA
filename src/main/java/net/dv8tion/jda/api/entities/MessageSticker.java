@@ -16,7 +16,6 @@
 package net.dv8tion.jda.api.entities;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -110,18 +109,6 @@ public class MessageSticker implements ISnowflake
     {
         return asset;
     }
-
-//    *
-//     * The Discord hash-id of the preview of the sticker. This represents the actual preview asset file in the CDN for the sticker.
-//     * <br><b>The URL for fetching sticker assets is currently private.</b>
-//     *
-//     * @return the Discord hash-id of the preview image of the sticker or {@code null} if the sticker has no preview image
-//
-//    @Nullable
-//    public String getPreviewAssetHash()
-//    {
-//        return previewAsset;
-//    }
 
     /**
      * The url of the sticker asset.
