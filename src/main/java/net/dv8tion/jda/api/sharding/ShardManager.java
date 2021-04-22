@@ -209,7 +209,7 @@ public interface ShardManager
 
     /**
      * The average time in milliseconds between all shards that discord took to respond to our last heartbeat.
-     * This roughly represents the WebSocket ping of this session. If there is no shard running, this will return {@code -1}.
+     * This roughly represents the WebSocket ping of this session. If there are no shards running, this will return {@code -1}.
      *
      * <p><b>{@link net.dv8tion.jda.api.requests.RestAction RestAction} request times do not
      * correlate to this value!</b>
