@@ -1135,6 +1135,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(tmpChannel, id, obj));
+        final List<MessageSticker>     stickers    = map(jsonObject, "stickers",    this::createSticker);
 
         MessageActivity activity = null;
 
@@ -1209,13 +1210,13 @@ public class EntityBuilder
         {
             message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
         }
         else
         {
             message = new SystemMessage(id, channel, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
             return message; // We don't need to parse mentions for system messages, they are always empty anyway
         }
 
@@ -1429,6 +1430,29 @@ public class EntityBuilder
     {
         return new MessageEmbed(url, title, description, type, timestamp,
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
+    }
+
+    public MessageSticker createSticker(DataObject content)
+    {
+        final long id = content.getLong("id");
+        final String name = content.getString("name");
+        final String description = content.getString("description");
+        final long packId = content.getLong("pack_id");
+        final String asset = content.getString("asset");
+        final String previewAsset = content.getString("preview_asset", null);
+        final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
+        final Set<String> tags;
+        if (content.isNull("tags"))
+        {
+            tags = Collections.emptySet();
+        }
+        else
+        {
+            final String[] split = content.getString("tags").split(", ");
+            final Set<String> tmp = new HashSet<>(Arrays.asList(split));
+            tags = Collections.unmodifiableSet(tmp);
+        }
+        return new MessageSticker(id, name, description, packId, asset, previewAsset, format, tags);
     }
 
     @Nullable

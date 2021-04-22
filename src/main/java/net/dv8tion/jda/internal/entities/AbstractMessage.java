@@ -362,6 +362,14 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public List<MessageSticker> getStickers()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
         unsupported();

@@ -66,6 +66,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
+    protected final List<MessageSticker> stickers;
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
     protected final int flags;
@@ -85,7 +86,7 @@ public class ReceivedMessage extends AbstractMessage
         long id, MessageChannel channel, MessageType type, Message referencedMessage,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, int flags)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -103,6 +104,7 @@ public class ReceivedMessage extends AbstractMessage
         this.reactions = Collections.unmodifiableList(reactions);
         this.attachments = Collections.unmodifiableList(attachments);
         this.embeds = Collections.unmodifiableList(embeds);
+        this.stickers = Collections.unmodifiableList(stickers);
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
         this.flags = flags;
@@ -754,6 +756,13 @@ public class ReceivedMessage extends AbstractMessage
     public List<MessageReaction> getReactions()
     {
         return reactions;
+    }
+
+    @Nonnull
+    @Override
+    public List<MessageSticker> getStickers()
+    {
+        return this.stickers;
     }
 
     @Override
