@@ -1640,7 +1640,8 @@ public class EntityBuilder
         {
             DataObject obj = channelsArray.getObject(i);
             final long channelId = obj.getLong("id");
-            final ChannelType channelType = ChannelType.fromId(obj.getInt("type"));
+            final int type = obj.getInt("type");
+            final ChannelType channelType = ChannelType.fromId(type);
             final String channelName = obj.getString("name");
             final String topic = obj.getString("topic", null);
             final int rawPosition = obj.getInt("position");
@@ -1663,7 +1664,7 @@ public class EntityBuilder
                 final long deny = overrideObj.getLong("deny");
                 permissionOverrides.add(new TemplateChannel.PermissionOverride(overrideId, allow, deny));
             }
-            channels.add(new TemplateChannel(channelId, channelType, channelName, topic, rawPosition, parentId, permissionOverrides, nsfw,
+            channels.add(new TemplateChannel(channelId, channelType, channelName, topic, rawPosition, parentId, type == 5, permissionOverrides, nsfw,
                     slowmode, bitrate, userLimit));
         }
 

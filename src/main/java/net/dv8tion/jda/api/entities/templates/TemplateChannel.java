@@ -24,6 +24,7 @@ public class TemplateChannel implements ISnowflake
     private final String topic;
     private final int rawPosition;
     private final long parentId;
+    private final boolean isNews;
     private final List<TemplateChannel.PermissionOverride> permissionOverrides;
 
     // text only properties
@@ -35,7 +36,8 @@ public class TemplateChannel implements ISnowflake
     private final int userLimit;
 
     public TemplateChannel(final long id, final ChannelType channelType, final String name, final String topic, final int rawPosition, final long parentId,
-                           List<TemplateChannel.PermissionOverride> permissionOverrides, final boolean nsfw, final int slowmode, final int bitrate, final int userLimit)
+                           final boolean news, final List<TemplateChannel.PermissionOverride> permissionOverrides, final boolean nsfw, final int slowmode,
+                           final int bitrate, final int userLimit)
     {
         this.id = id;
         this.channelType = channelType;
@@ -43,7 +45,8 @@ public class TemplateChannel implements ISnowflake
         this.topic = topic;
         this.rawPosition = rawPosition;
         this.parentId = parentId;
-        this.permissionOverrides = permissionOverrides;
+        this.isNews = news;
+        this.permissionOverrides = Collections.unmodifiableList(permissionOverrides);
 
         this.nsfw = nsfw;
         this.slowmode = slowmode;
@@ -66,12 +69,13 @@ public class TemplateChannel implements ISnowflake
     /**
      * As the ids of channels are their position, the date of creation cannot be calculated.
      *
-     * @return {@code null}
+     * @throws java.lang.UnsupportedOperationException
+     *         The date of creation cannot be calculated.
      */
     @Override
     public OffsetDateTime getTimeCreated()
     {
-        return null;
+        throw new UnsupportedOperationException("The date of creation cannot be calculated");
     }
 
     /**
@@ -195,6 +199,17 @@ public class TemplateChannel implements ISnowflake
     }
 
     /**
+     * Whether or not this channel is considered an Announcement-/News-Channel.
+     * <br>These channels can be used to crosspost messages to other guilds by using a follower type webhook.
+     *
+     * @return True, if this is considered a news channel
+     */
+    public boolean isNews()
+    {
+        return isNews;
+    }
+
+    /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.templates.TemplateChannel.PermissionOverride PermissionOverrides} that are part
      * of this {@link net.dv8tion.jda.api.entities.templates.TemplateChannel TemplateChannel}.
      * <br><b>This will only contain {@link net.dv8tion.jda.api.entities.templates.TemplateRole Role} overrides.</b>
@@ -205,7 +220,7 @@ public class TemplateChannel implements ISnowflake
     @Nonnull
     public List<TemplateChannel.PermissionOverride> getPermissionOverrides()
     {
-        return Collections.unmodifiableList(permissionOverrides);
+        return this.permissionOverrides;
     }
 
     /**
@@ -310,12 +325,13 @@ public class TemplateChannel implements ISnowflake
         /**
          * As the ids of roles are their position, the date of creation cannot be calculated.
          *
-         * @return {@code null}
+         * @throws java.lang.UnsupportedOperationException
+         *         The date of creation cannot be calculated.
          */
         @Override
         public OffsetDateTime getTimeCreated()
         {
-            return null;
+            throw new UnsupportedOperationException("The date of creation cannot be calculated");
         }
     }
 }

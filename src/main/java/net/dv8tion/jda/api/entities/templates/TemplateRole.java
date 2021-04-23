@@ -47,12 +47,13 @@ public class TemplateRole implements ISnowflake
     /**
      * As the ids of roles are their position, the date of creation cannot be calculated.
      *
-     * @return {@code null}
+     * @throws java.lang.UnsupportedOperationException
+     *         The date of creation cannot be calculated.
      */
     @Override
     public OffsetDateTime getTimeCreated()
     {
-        return null;
+        throw new UnsupportedOperationException("The date of creation cannot be calculated");
     }
 
     /**

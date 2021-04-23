@@ -48,8 +48,8 @@ public class TemplateGuild implements ISnowflake
         this.afkTimeout = afkTimeout;
         this.afkChannel = afkChannel;
         this.systemChannel = systemChannel;
-        this.roles = roles;
-        this.channels = channels;
+        this.roles = Collections.unmodifiableList(roles);
+        this.channels = Collections.unmodifiableList(channels);
     }
 
     @Override
@@ -223,7 +223,7 @@ public class TemplateGuild implements ISnowflake
     @Nonnull
     public List<TemplateRole> getRoles()
     {
-        return Collections.unmodifiableList(this.roles);
+        return this.roles;
     }
 
     /**
@@ -234,6 +234,6 @@ public class TemplateGuild implements ISnowflake
     @Nonnull
     public List<TemplateChannel> getChannels()
     {
-        return Collections.unmodifiableList(this.channels);
+        return this.channels;
     }
 }

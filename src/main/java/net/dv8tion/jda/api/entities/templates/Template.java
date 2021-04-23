@@ -87,6 +87,13 @@ public class Template
      * @param  code
      *         A valid template code
      *
+     * @throws java.lang.IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided code is null or empty</li>
+     *             <li>If the provided code contains a whitespace</li>
+     *             <li>If the provided JDA object is null</li>
+     *         </ul>
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.templates.Template Template}
      *         <br>The Template object
      */
@@ -260,7 +267,7 @@ public class Template
      * This getter is not thread-safe and would require guards by the user.
      *
      * @throws IllegalStateException
-     *         if the account is not in the template's guild
+     *         If the account is not in the template's guild
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER}
      *
@@ -269,6 +276,7 @@ public class Template
     @Nonnull
     public TemplateManager getManager()
     {
+        checkInteraction();
         if (manager == null)
             return manager = new TemplateManagerImpl(this);
         return manager;
