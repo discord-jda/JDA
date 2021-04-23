@@ -93,7 +93,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     public TemplateManagerImpl setName(@Nonnull String name)
     {
         Checks.notNull(name, "Name");
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 1-100 characters long");
+        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
         this.name = name;
         set |= NAME;
         return this;

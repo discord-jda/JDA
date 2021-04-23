@@ -91,7 +91,7 @@ public interface TemplateManager extends Manager<TemplateManager>
      *         The new name for this {@link Template Template}
      *
      * @throws IllegalArgumentException
-     *         If the provided name is {@code null} or not between 1-100 characters long
+     *         If the provided name is {@code null} or not between 2-100 characters long
      *
      * @return TemplateManager for chaining convenience
      */

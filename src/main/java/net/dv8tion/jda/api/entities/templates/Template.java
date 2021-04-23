@@ -93,7 +93,8 @@ public class Template
     @Nonnull
     public static RestAction<Template> resolve(final JDA api, final String code)
     {
-        Checks.notNull(code, "code");
+        Checks.notEmpty(code, "code");
+        Checks.noWhitespace(code, "code");
         Checks.notNull(api, "api");
 
         Route.CompiledRoute route = Route.Templates.GET_TEMPLATE.compile(code);
