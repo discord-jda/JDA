@@ -2290,18 +2290,20 @@ public interface Message extends ISnowflake, Formattable
         private final String url;
         private final String proxyUrl;
         private final String fileName;
+        private final String contentType;
         private final int size;
         private final int height;
         private final int width;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.fileName = fileName;
+            this.contentType = contentType;
             this.size = size;
             this.height = height;
             this.width = width;
@@ -2370,6 +2372,18 @@ public interface Message extends ISnowflake, Formattable
         {
             int index = fileName.lastIndexOf('.') + 1;
             return index == 0 || index == fileName.length() ? null : fileName.substring(index);
+        }
+
+        /**
+         * The Content-Type of this file.
+         * <br>This is the  <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">Media type</a> of the file that would be used in an HTTP request or similar.
+         *
+         * @return The content-type, or null if this isn't provided
+         */
+        @Nullable
+        public String getContentType()
+        {
+            return contentType;
         }
 
         /**
