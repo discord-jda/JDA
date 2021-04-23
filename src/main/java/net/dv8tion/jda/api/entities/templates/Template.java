@@ -117,9 +117,9 @@ public class Template
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * @throws IllegalStateException
-     *         if the account is not in the template's guild
+     *         If the account is not in the template's guild
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the template's guild
+     *         If the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the template's guild
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.templates.Template Template}
      *         <br>The synced Template object
@@ -140,9 +140,9 @@ public class Template
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * @throws IllegalStateException
-     *         if the account is not in the template's guild
+     *         If the account is not in the template's guild
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the template's guild
+     *         If the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in the template's guild
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
      */
