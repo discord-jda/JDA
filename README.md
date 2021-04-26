@@ -429,6 +429,7 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 **Gradle**
 ```gradle
 dependencies {
+    //Change 'compile' to 'implementation' in Gradle 7.0+
     compile 'net.dv8tion:JDA:VERSION'
 }
 
@@ -444,6 +445,7 @@ repositories {
 **Gradle without Audio**
 ```gradle
 dependencies {
+    //Change 'compile' to 'implementation' in Gradle 7.0+
     compile ('net.dv8tion:JDA:VERSION') {
         exclude module: 'opus-java'
     }
