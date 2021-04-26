@@ -37,7 +37,7 @@ import java.util.List;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends AbstractChannel, Comparable<GuildChannel>
+public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<GuildChannel>
 {
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.

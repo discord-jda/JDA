@@ -256,6 +256,9 @@ public interface Message extends ISnowflake, Formattable
      * }
      * }</pre>
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned users
      *
      * @see    #getMentionedUsers()
@@ -299,6 +302,9 @@ public interface Message extends ISnowflake, Formattable
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
      * }</pre>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels
      *
@@ -345,6 +351,9 @@ public interface Message extends ISnowflake, Formattable
      *     msg.getChannel().sendMessage(content.toString()).queue();
      * }
      * }</pre>
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned roles
      *
@@ -445,12 +454,18 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Indicates if this Message mentions everyone using @everyone or @here.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return True, if message is mentioning everyone
      */
     boolean mentionsEveryone();
 
     /**
      * Returns whether or not this Message has been edited before.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return True if this message has been edited.
      */
@@ -460,6 +475,9 @@ public interface Message extends ISnowflake, Formattable
      * Provides the {@link java.time.OffsetDateTime OffsetDateTime} defining when this Message was last
      * edited. If this Message has not been edited ({@link #isEdited()} is {@code false}), then this method
      * will return {@code null}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return Time of the most recent edit, or {@code null} if the Message has never been edited.
      */
@@ -547,6 +565,9 @@ public interface Message extends ISnowflake, Formattable
      * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used 
      * for formatting are escaped to prevent possible formatting.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return The textual content from {@link #getContentDisplay()} with all text formatting characters removed or escaped.
      */
     @Nonnull
@@ -561,6 +582,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>You can use the codes to retrieve/validate invites via
      * {@link net.dv8tion.jda.api.entities.Invite#resolve(JDA, String) Invite.resolve(JDA, String)}
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return Immutable list of invite codes
      */
@@ -629,6 +653,9 @@ public interface Message extends ISnowflake, Formattable
      * Indicates if this Message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} instead of a
      * {@link net.dv8tion.jda.api.entities.User User}.
      * <br>Useful if you want to ignore non-users.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return True if this message was sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook}.
      */
@@ -726,6 +753,9 @@ public interface Message extends ISnowflake, Formattable
      * An immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments} that are attached to this message.
      * <br>Most likely this will only ever be 1 {@link net.dv8tion.jda.api.entities.Message.Attachment Attachment} at most.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return Immutable list of {@link net.dv8tion.jda.api.entities.Message.Attachment Attachments}.
      */
     @Nonnull
@@ -734,6 +764,9 @@ public interface Message extends ISnowflake, Formattable
     /**
      * An immutable list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that are part of this
      * Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return Immutable list of all given MessageEmbeds.
      */
@@ -778,6 +811,9 @@ public interface Message extends ISnowflake, Formattable
      * }
      * }</pre>
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return {@link org.apache.commons.collections4.Bag Bag} of used emotes
      *
      * @see    #getEmotes()
@@ -788,10 +824,24 @@ public interface Message extends ISnowflake, Formattable
     /**
      * All {@link net.dv8tion.jda.api.entities.MessageReaction MessageReactions} that are on this Message.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return Immutable list of all MessageReactions on this message.
      */
     @Nonnull
     List<MessageReaction> getReactions();
+
+    /**
+     * All {@link net.dv8tion.jda.api.entities.MessageSticker MessageStickers} that are in this Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
+     * @return Immutable list of all MessageStickers in this message.
+     */
+    @Nonnull
+    List<MessageSticker> getStickers();
 
     /**
      * Defines whether or not this Message triggers TTS (Text-To-Speech).
@@ -1229,6 +1279,9 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Whether or not this Message has been pinned in its parent channel.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *
      * @return True - if this message has been pinned.
      */
     boolean isPinned();
@@ -1351,6 +1404,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to add as a reaction to this Message.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1422,6 +1477,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emoji to add as a reaction to this Message.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1462,6 +1519,8 @@ public interface Message extends ISnowflake, Formattable
      *         The clear-reactions request was attempted after the Message had been deleted.</li>
      * </ul>
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
@@ -1509,6 +1568,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emoji to remove reactions for
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
@@ -1546,6 +1607,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link Emote} to remove reactions for
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws InsufficientPermissionException
      *         If the currently logged in account does not have {@link Permission#MESSAGE_MANAGE} in the channel
      * @throws IllegalArgumentException
@@ -1591,6 +1654,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote Emote} to remove as a reaction from this Message.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -1646,6 +1711,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}.
@@ -1710,6 +1777,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emoji to add as a reaction to this Message.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
@@ -1763,6 +1832,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  user
      *         The {@link net.dv8tion.jda.api.entities.User User} to remove the reaction for.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      *         and the logged in account does not have
@@ -1810,6 +1881,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  emote
      *         The {@link net.dv8tion.jda.api.entities.Emote emote} to retrieve users for.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
@@ -1851,6 +1924,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode emote to retrieve users for.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
@@ -1876,6 +1951,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  unicode
      *         The unicode value of the reaction emoji.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode value is null or empty.
      *
@@ -1898,6 +1975,8 @@ public interface Message extends ISnowflake, Formattable
      * @param  id
      *         The string id of the reaction emote.
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws java.lang.IllegalArgumentException
      *         If the provided id is not a valid snowflake.
      *
@@ -1919,6 +1998,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * @param  id
      *         The long id of the reaction emote.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
@@ -1992,6 +2074,8 @@ public interface Message extends ISnowflake, Formattable
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @throws IllegalStateException
      *         If the channel is not a text or news channel. See {@link TextChannel#isNews()}.
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -2022,6 +2106,9 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * Returns an EnumSet of all {@link Message.MessageFlag MessageFlags} present for this Message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      * @return Never-Null EnumSet of present {@link Message.MessageFlag MessageFlags}
      * @see    Message.MessageFlag
      */
@@ -2034,6 +2121,9 @@ public interface Message extends ISnowflake, Formattable
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that
      * inform about events that occur. Messages can either be {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT default messages}
      * or special messages like {@link net.dv8tion.jda.api.entities.MessageType#GUILD_MEMBER_JOIN welcome messages}.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this message.
      */
@@ -2200,18 +2290,20 @@ public interface Message extends ISnowflake, Formattable
         private final String url;
         private final String proxyUrl;
         private final String fileName;
+        private final String contentType;
         private final int size;
         private final int height;
         private final int width;
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, JDAImpl jda)
         {
             this.id = id;
             this.url = url;
             this.proxyUrl = proxyUrl;
             this.fileName = fileName;
+            this.contentType = contentType;
             this.size = size;
             this.height = height;
             this.width = width;
@@ -2280,6 +2372,18 @@ public interface Message extends ISnowflake, Formattable
         {
             int index = fileName.lastIndexOf('.') + 1;
             return index == 0 || index == fileName.length() ? null : fileName.substring(index);
+        }
+
+        /**
+         * The Content-Type of this file.
+         * <br>This is the  <a href="https://en.wikipedia.org/wiki/Media_type" target="_blank">Media type</a> of the file that would be used in an HTTP request or similar.
+         *
+         * @return The content-type, or null if this isn't provided
+         */
+        @Nullable
+        public String getContentType()
+        {
+            return contentType;
         }
 
         /**

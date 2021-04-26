@@ -118,7 +118,8 @@ public class EntityBuilder
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
-                .setBot(self.getBoolean("bot"));
+                .setBot(self.getBoolean("bot"))
+                .setSystem(false);
 
         return selfUser;
     }
@@ -323,6 +324,7 @@ public class EntityBuilder
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
+                   .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0));
         }
         else
@@ -981,11 +983,6 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(DataObject json)
     {
-        return createPrivateChannel(json, false);
-    }
-
-    public PrivateChannel createPrivateChannel(DataObject json, boolean modifyCache)
-    {
         final long channelId = json.getUnsignedLong("id");
         PrivateChannel channel = api.getPrivateChannelById(channelId);
         api.usedPrivateChannel(channelId);
@@ -1003,31 +1000,24 @@ public class EntityBuilder
             user = createUser(recipient);
         }
 
-        return createPrivateChannel(json, user, modifyCache);
+        return createPrivateChannel(json, user);
     }
 
     public PrivateChannel createPrivateChannel(DataObject json, UserImpl user)
-    {
-        return createPrivateChannel(json, user, false);
-    }
-
-    public PrivateChannel createPrivateChannel(DataObject json, UserImpl user, boolean modifyCache)
     {
         final long channelId = json.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
                 .setLastMessageId(json.getLong("last_message_id", 0));
         user.setPrivateChannel(priv);
 
-        if (modifyCache)
+        // only add channels to cache when they come from an event, otherwise we would never remove the channel
+        SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
+        try (UnlockHook hook = privateView.writeLock())
         {
-            // only add channels to cache when they come from an event, otherwise we would never remove the channel
-            SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
-            try (UnlockHook hook = privateView.writeLock())
-            {
-                privateView.getMap().put(channelId, priv);
-            }
-            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
+            privateView.getMap().put(channelId, priv);
         }
+        api.usedPrivateChannel(channelId);
+        getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
         return priv;
     }
 
@@ -1112,10 +1102,10 @@ public class EntityBuilder
 
         if (channel == null && jsonObject.isNull("guild_id") && authorId != getJDA().getSelfUser().getIdLong())
         {
-            DataObject channelDate = DataObject.empty()
+            DataObject channelData = DataObject.empty()
                     .put("id", channelId)
                     .put("recipient", author);
-            channel = createPrivateChannel(channelDate, modifyCache);
+            channel = createPrivateChannel(channelData);
         }
         else if (channel == null)
             throw new IllegalArgumentException(MISSING_CHANNEL);
@@ -1147,6 +1137,7 @@ public class EntityBuilder
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
         final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(tmpChannel, id, obj));
+        final List<MessageSticker>     stickers    = map(jsonObject, "stickers",    this::createSticker);
 
         MessageActivity activity = null;
 
@@ -1221,13 +1212,13 @@ public class EntityBuilder
         {
             message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
         }
         else
         {
             message = new SystemMessage(id, channel, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
             return message; // We don't need to parse mentions for system messages, they are always empty anyway
         }
 
@@ -1329,8 +1320,9 @@ public class EntityBuilder
         final String url = jsonObject.getString("url");
         final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
+        final String contentType = jsonObject.getString("content_type", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)
@@ -1441,6 +1433,29 @@ public class EntityBuilder
     {
         return new MessageEmbed(url, title, description, type, timestamp,
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
+    }
+
+    public MessageSticker createSticker(DataObject content)
+    {
+        final long id = content.getLong("id");
+        final String name = content.getString("name");
+        final String description = content.getString("description");
+        final long packId = content.getLong("pack_id");
+        final String asset = content.getString("asset");
+        final String previewAsset = content.getString("preview_asset", null);
+        final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
+        final Set<String> tags;
+        if (content.isNull("tags"))
+        {
+            tags = Collections.emptySet();
+        }
+        else
+        {
+            final String[] split = content.getString("tags").split(", ");
+            final Set<String> tmp = new HashSet<>(Arrays.asList(split));
+            tags = Collections.unmodifiableSet(tmp);
+        }
+        return new MessageSticker(id, name, description, packId, asset, previewAsset, format, tags);
     }
 
     @Nullable
