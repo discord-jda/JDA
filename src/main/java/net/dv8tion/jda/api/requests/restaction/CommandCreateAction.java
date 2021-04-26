@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.Command;
-import net.dv8tion.jda.api.entities.Command.OptionType;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Helpers;
 

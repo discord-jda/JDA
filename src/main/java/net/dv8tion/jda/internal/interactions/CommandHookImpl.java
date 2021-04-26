@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.commands;
+package net.dv8tion.jda.internal.interactions;
 
-import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.commands.CommandHook;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;

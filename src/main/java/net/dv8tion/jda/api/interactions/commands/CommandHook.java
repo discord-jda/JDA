@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.commands;
+package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;

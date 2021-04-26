@@ -17,20 +17,20 @@
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.interactions.commands.CommandHook;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction.CommandData;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction.OptionData;
 
 import javax.security.auth.login.LoginException;
 import java.util.EnumSet;
 
-import static net.dv8tion.jda.api.entities.Command.OptionType.*;
+import static net.dv8tion.jda.api.interactions.commands.OptionType.*;
 
 public class SlashBotExample extends ListenerAdapter
 {

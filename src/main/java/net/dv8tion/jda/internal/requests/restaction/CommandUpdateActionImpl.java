@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -33,7 +34,7 @@ import java.util.function.BooleanSupplier;
 
 public class CommandUpdateActionImpl extends RestActionImpl<Void> implements CommandUpdateAction
 {
-    private final List<CommandUpdateAction.CommandData> commands = new ArrayList<>();
+    private final List<CommandData> commands = new ArrayList<>();
 
     public CommandUpdateActionImpl(JDA api, Route.CompiledRoute route)
     {

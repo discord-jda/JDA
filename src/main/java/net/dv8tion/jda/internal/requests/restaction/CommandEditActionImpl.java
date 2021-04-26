@@ -17,13 +17,17 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -42,7 +46,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private static final int NAME_SET = 1, DESCRIPTION_SET = 2, OPTIONS_SET = 4;
     private final Guild guild;
     private int mask = 0;
-    private CommandUpdateAction.CommandData data = new CommandUpdateAction.CommandData(UNDEFINED, UNDEFINED);
+    private CommandData data = new CommandData(UNDEFINED, UNDEFINED);
 
     public CommandEditActionImpl(JDA api, String id)
     {
@@ -72,7 +76,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction apply(@Nonnull CommandUpdateAction.CommandData commandData)
+    public CommandEditAction apply(@Nonnull CommandData commandData)
     {
         Checks.notNull(commandData, "Command Data");
         this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET;
@@ -132,7 +136,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull Command.OptionType type, @Nonnull Consumer<? super CommandCreateAction.OptionBuilder> builder)
+    public CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type, @Nonnull Consumer<? super CommandCreateAction.OptionBuilder> builder)
     {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");
@@ -149,13 +153,13 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         switch (type)
         {
         case SUB_COMMAND:
-            data.addSubcommand(CommandUpdateAction.SubcommandData.load(json));
+            data.addSubcommand(SubcommandData.load(json));
             break;
         case SUB_COMMAND_GROUP:
-            data.addSubcommandGroup(CommandUpdateAction.SubcommandGroupData.load(json));
+            data.addSubcommandGroup(SubcommandGroupData.load(json));
             break;
         default:
-            data.addOption(CommandUpdateAction.OptionData.load(json));
+            data.addOption(OptionData.load(json));
             break;
         }
         return this;
@@ -177,7 +181,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         if (isUnchanged(OPTIONS_SET))
             json.remove("options");
         mask = 0;
-        data = new CommandUpdateAction.CommandData(UNDEFINED, UNDEFINED);
+        data = new CommandData(UNDEFINED, UNDEFINED);
         return getRequestBody(json);
     }
 

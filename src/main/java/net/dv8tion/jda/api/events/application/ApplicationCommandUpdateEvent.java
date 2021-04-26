@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.events.application;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Command;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.Command;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

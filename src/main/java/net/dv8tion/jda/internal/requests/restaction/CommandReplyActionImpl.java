@@ -17,18 +17,18 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.commands.CommandHook;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.exceptions.InteractionFailureException;
+import net.dv8tion.jda.api.interactions.commands.CommandHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandReplyAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.commands.CommandHookImpl;
+import net.dv8tion.jda.internal.interactions.CommandHookImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;

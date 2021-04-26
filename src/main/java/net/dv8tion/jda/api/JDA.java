@@ -21,6 +21,8 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
@@ -507,7 +509,14 @@ public interface JDA
 
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description);
+    CommandCreateAction upsertCommand(@Nonnull CommandData command);
+
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
+    {
+        return upsertCommand(new CommandData(name, description));
+    }
 
     @Nonnull
     @CheckReturnValue

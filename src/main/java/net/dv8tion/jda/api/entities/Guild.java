@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -90,7 +92,14 @@ public interface Guild extends ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description);
+    CommandCreateAction upsertCommand(@Nonnull CommandData command);
+
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
+    {
+        return upsertCommand(new CommandData(name, description));
+    }
 
     @Nonnull
     @CheckReturnValue

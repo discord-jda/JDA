@@ -23,6 +23,8 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -140,14 +142,10 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
+    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(name, 32, "Name");
-        Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        return new CommandCreateActionImpl(this, name, description);
+        Checks.notNull(command, "CommandData");
+        return new CommandCreateActionImpl(this, command);
     }
 
     @Nonnull

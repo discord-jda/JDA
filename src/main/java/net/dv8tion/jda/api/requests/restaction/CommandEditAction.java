@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.Command;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -51,7 +53,7 @@ public interface CommandEditAction extends RestAction<Command>
 
     @Nonnull
     @CheckReturnValue
-    CommandEditAction apply(@Nonnull CommandUpdateAction.CommandData commandData);
+    CommandEditAction apply(@Nonnull CommandData commandData);
 
     @Nonnull
     @CheckReturnValue
@@ -67,11 +69,11 @@ public interface CommandEditAction extends RestAction<Command>
 
     @Nonnull
     @CheckReturnValue
-    CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull Command.OptionType type, @Nonnull Consumer<? super CommandCreateAction.OptionBuilder> builder);
+    CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type, @Nonnull Consumer<? super CommandCreateAction.OptionBuilder> builder);
 
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull Command.OptionType type)
+    default CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type)
     {
         return addOption(name, description, type, Helpers.emptyConsumer());
     }

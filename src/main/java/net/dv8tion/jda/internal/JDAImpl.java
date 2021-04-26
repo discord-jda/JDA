@@ -34,6 +34,8 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -864,9 +866,10 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
+    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
     {
-        return new CommandCreateActionImpl(this, name, description);
+        Checks.notNull(command, "CommandData");
+        return new CommandCreateActionImpl(this, command);
     }
 
     @Nonnull

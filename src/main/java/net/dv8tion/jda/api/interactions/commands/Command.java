@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -130,45 +132,6 @@ public class Command implements ISnowflake
     public int hashCode()
     {
         return Long.hashCode(id);
-    }
-
-    public enum OptionType
-    {
-        UNKNOWN(-1), SUB_COMMAND(1), SUB_COMMAND_GROUP(2), STRING(3, true), INTEGER(4, true), BOOLEAN(5), USER(6), CHANNEL(7), ROLE(8);
-        private final int raw;
-        private final boolean supportsChoices;
-
-        OptionType(int raw)
-        {
-            this(raw, false);
-        }
-
-        OptionType(int raw, boolean supportsChoices)
-        {
-            this.raw = raw;
-            this.supportsChoices = supportsChoices;
-        }
-
-        public int getKey()
-        {
-            return raw;
-        }
-
-        public boolean canSupportChoices()
-        {
-            return supportsChoices;
-        }
-
-        @Nonnull
-        public static OptionType fromKey(int key)
-        {
-            for (OptionType type : values())
-            {
-                if (type.raw == key)
-                    return type;
-            }
-            return UNKNOWN;
-        }
     }
 
     public static class Choice

@@ -15,13 +15,16 @@
  */
 package net.dv8tion.jda.internal.requests.restaction;
 
-import net.dv8tion.jda.api.entities.Command;
-import net.dv8tion.jda.api.entities.Command.OptionType;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -44,20 +47,20 @@ import java.util.stream.Collectors;
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
     private final Guild guild;
-    private CommandUpdateAction.CommandData data;
+    private CommandData data;
 
-    public CommandCreateActionImpl(JDAImpl api, String name, String description)
+    public CommandCreateActionImpl(JDAImpl api, CommandData command)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
-        this.data = new CommandUpdateAction.CommandData(name, description);
+        this.data = command;
     }
 
-    public CommandCreateActionImpl(Guild guild, String name, String description)
+    public CommandCreateActionImpl(Guild guild, CommandData command)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
-        this.data = new CommandUpdateAction.CommandData(name, description);
+        this.data = command;
     }
 
     @Nonnull
@@ -126,13 +129,13 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         switch (option.type)
         {
         case SUB_COMMAND:
-            data.addSubcommand(CommandUpdateAction.SubcommandData.load(json));
+            data.addSubcommand(SubcommandData.load(json));
             break;
         case SUB_COMMAND_GROUP:
-            data.addSubcommandGroup(CommandUpdateAction.SubcommandGroupData.load(json));
+            data.addSubcommandGroup(SubcommandGroupData.load(json));
             break;
         default:
-            data.addOption(CommandUpdateAction.OptionData.load(json));
+            data.addOption(OptionData.load(json));
             break;
         }
         return this;
