@@ -21,7 +21,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.interactions.commands.CommandHook;
+import net.dv8tion.jda.api.interactions.commands.InteractionHook;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -94,8 +95,8 @@ public class SlashBotExample extends ListenerAdapter
 
     public void ban(SlashCommandEvent event, User user, Member member)
     {
-        event.acknowledge(true).queue(); // Let the user know we received the command before doing anything else
-        CommandHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
+        event.defer(true).queue(); // Let the user know we received the command before doing anything else
+        InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
         hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
         if (!event.getMember().hasPermission(Permission.BAN_MEMBERS))
         {
@@ -117,7 +118,7 @@ public class SlashBotExample extends ListenerAdapter
         }
 
         int delDays = 0;
-        SlashCommandEvent.OptionData option = event.getOption("delDays");
+        OptionMapping option = event.getOption("delDays");
         if (option != null) // null = not provided
             delDays = (int) Math.max(0, Math.min(7, option.getAsLong()));
         // Ban the user and send a success response

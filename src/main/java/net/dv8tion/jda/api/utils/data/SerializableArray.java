@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.exceptions;
+package net.dv8tion.jda.api.utils.data;
 
-import net.dv8tion.jda.api.requests.restaction.ReplyAction;
-
-import java.util.concurrent.CancellationException;
+import javax.annotation.Nonnull;
 
 /**
- * Exception caused by the failure of {@link ReplyAction CommandReplyAction}.
- *
- * <p>This is used to signal that a {@link net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction InteractionWebhookAction}
- * was cancelled due to a cascading failure from the initial command acknowledgement.
+ * Allows custom serialization for JSON payloads of an object.
  */
-public class InteractionFailureException extends CancellationException
+public interface SerializableArray
 {
-    public InteractionFailureException()
-    {
-        super("Cascading failure caused by interaction callback failure");
-    }
+    /**
+     * Serialized {@link net.dv8tion.jda.api.utils.data.DataArray} for this object.
+     *
+     * @return {@link net.dv8tion.jda.api.utils.data.DataArray}
+     */
+    @Nonnull
+    DataArray toDataArray();
 }

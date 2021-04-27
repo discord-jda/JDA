@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -99,6 +101,25 @@ public interface WebhookMessageAction extends RestAction<Message>, AllowedMentio
         Checks.notNull(file, "File");
         return addFile(file.getName(), file);
     }
+
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageAction addActionRow(@Nonnull Component... components)
+    {
+        return addActionRows(ActionRow.of(components));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        return addActionRows(rows.toArray(new ActionRow[0]));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageAction addActionRows(@Nonnull ActionRow... rows);
 
     @Nonnull
     @CheckReturnValue

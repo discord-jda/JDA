@@ -37,6 +37,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -1206,13 +1207,24 @@ public class EntityBuilder
             }
         }
 
+        List<ActionRow> components = Collections.emptyList();
+        Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
+        if (componentsArrayOpt.isPresent())
+        {
+            DataArray array = componentsArrayOpt.get();
+            components = array.stream(DataArray::getObject)
+                    .map(o -> o.getArray("components"))
+                    .map(ActionRow::load)
+                    .collect(Collectors.toList());
+        }
+
         if (type == MessageType.UNKNOWN)
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         if (!type.isSystem())
         {
             message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags);
         }
         else
         {

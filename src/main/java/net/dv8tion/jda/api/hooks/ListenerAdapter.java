@@ -69,7 +69,6 @@ import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
-import net.dv8tion.jda.api.events.interaction.GenericChannelInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.*;
@@ -389,7 +388,6 @@ public abstract class ListenerAdapter implements EventListener
 
     //Generic Events
     public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
-    public void onGenericChannelInteractionCreate(@Nonnull GenericChannelInteractionCreateEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}

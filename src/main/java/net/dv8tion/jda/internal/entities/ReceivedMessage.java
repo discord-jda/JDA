@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -67,6 +68,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
     protected final List<MessageSticker> stickers;
+    protected final List<ActionRow> components;
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
     protected final int flags;
@@ -86,7 +88,7 @@ public class ReceivedMessage extends AbstractMessage
         long id, MessageChannel channel, MessageType type, Message referencedMessage,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -105,6 +107,7 @@ public class ReceivedMessage extends AbstractMessage
         this.attachments = Collections.unmodifiableList(attachments);
         this.embeds = Collections.unmodifiableList(embeds);
         this.stickers = Collections.unmodifiableList(stickers);
+        this.components = Collections.unmodifiableList(components);
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
         this.flags = flags;
@@ -722,6 +725,12 @@ public class ReceivedMessage extends AbstractMessage
     public List<MessageEmbed> getEmbeds()
     {
         return embeds;
+    }
+
+    @Override
+    public List<ActionRow> getActionRows()
+    {
+        return components;
     }
 
     private Emote matchEmote(Matcher m)

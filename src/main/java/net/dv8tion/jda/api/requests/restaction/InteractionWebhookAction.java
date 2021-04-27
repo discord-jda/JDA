@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 
 import javax.annotation.CheckReturnValue;
@@ -75,4 +77,22 @@ public interface InteractionWebhookAction extends WebhookMessageAction
     {
         return (InteractionWebhookAction) WebhookMessageAction.super.addFile(file, options);
     }
+
+    @Nonnull
+    @Override
+    default InteractionWebhookAction addActionRow(@Nonnull Component... components)
+    {
+        return (InteractionWebhookAction) WebhookMessageAction.super.addActionRow(components);
+    }
+
+    @Nonnull
+    @Override
+    default InteractionWebhookAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    {
+        return (InteractionWebhookAction) WebhookMessageAction.super.addActionRows(rows);
+    }
+
+    @Nonnull
+    @Override
+    InteractionWebhookAction addActionRows(@Nonnull ActionRow... rows);
 }

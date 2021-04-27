@@ -653,8 +653,8 @@ public class DataObject implements SerializableData
     {
         if (value instanceof SerializableData)
             data.put(key, ((SerializableData) value).toData().data);
-        else if (value instanceof DataArray)
-            data.put(key, ((DataArray) value).data);
+        else if (value instanceof SerializableArray)
+            data.put(key, ((SerializableArray) value).toDataArray().data);
         else
             data.put(key, value);
         return this;

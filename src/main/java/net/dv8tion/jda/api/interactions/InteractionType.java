@@ -14,22 +14,40 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.exceptions;
+package net.dv8tion.jda.api.interactions;
 
-import net.dv8tion.jda.api.requests.restaction.ReplyAction;
-
-import java.util.concurrent.CancellationException;
-
-/**
- * Exception caused by the failure of {@link ReplyAction CommandReplyAction}.
- *
- * <p>This is used to signal that a {@link net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction InteractionWebhookAction}
- * was cancelled due to a cascading failure from the initial command acknowledgement.
- */
-public class InteractionFailureException extends CancellationException
+public enum InteractionType
 {
-    public InteractionFailureException()
+    UNKNOWN(-1),
+    PING(1),
+    SLASH_COMMAND(2),
+    COMPONENT(3),
+    ;
+
+    private final int key;
+
+    InteractionType(int key)
     {
-        super("Cascading failure caused by interaction callback failure");
+        this.key = key;
+    }
+
+    public int getKey()
+    {
+        return key;
+    }
+
+    public static InteractionType fromKey(int key)
+    {
+        switch (key)
+        {
+        case 1:
+            return PING;
+        case 2:
+            return SLASH_COMMAND;
+        case 3:
+            return COMPONENT;
+        default:
+            return UNKNOWN;
+        }
     }
 }

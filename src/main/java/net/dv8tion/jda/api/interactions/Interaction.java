@@ -17,23 +17,31 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.InteractionHook;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.ReplyAction;
+import net.dv8tion.jda.internal.requests.restaction.ReplyActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface Interaction extends ISnowflake
 {
+    int getTypeRaw();
+
     @Nonnull
-    Type getType();
+    default InteractionType getType()
+    {
+        return InteractionType.fromKey(getTypeRaw());
+    }
 
     @Nonnull
     String getToken();
 
     @Nullable
     Guild getGuild();
-
-    @Nullable
-    AbstractChannel getChannel();
 
     @Nonnull
     default ChannelType getChannelType()
@@ -48,33 +56,107 @@ public interface Interaction extends ISnowflake
     @Nullable
     Member getMember();
 
-    enum Type
+    @Nullable
+    AbstractChannel getChannel();
+
+    /**
+     * Whether this interaction has already been acknowledged.
+     * <br>Both {@link #defer()}, {@link #acknowledge()} and {@link #reply(String)} acknowledge an interaction.
+     * Each interaction can only be acknowledged once.
+     *
+     * @return True, if this interaction has already been acknowledged
+     */
+    boolean isAcknowledged();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<InteractionHook> acknowledge(); // for slash commands this is just a defer()
+
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction defer()
     {
-        UNKNOWN(-1),
-        PING(1),
-        SLASH_COMMAND(2),
-        BUTTON(3)
-        ;
-        private final int key;
+        return ((ReplyActionImpl) acknowledge()).deferred();
+    }
 
-        Type(int type)
-        {
-            this.key = type;
-        }
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction defer(boolean ephemeral)
+    {
+        return defer().setEphemeral(ephemeral);
+    }
 
-        public int getKey()
-        {
-            return key;
-        }
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction reply(@Nonnull Message message)
+    {
+        Checks.notNull(message, "Message");
+        ReplyActionImpl action = (ReplyActionImpl) defer();
+        return action.applyMessage(message);
+    }
 
-        public static Type fromKey(int key)
-        {
-            for (Type type : values())
-            {
-                if (type.key == key)
-                    return type;
-            }
-            return UNKNOWN;
-        }
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction reply(@Nonnull String content)
+    {
+        Checks.notNull(content, "Content");
+        return defer().setContent(content);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction reply(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    {
+        Checks.notNull(embed, "MessageEmbed");
+        Checks.noneNull(embeds, "MessageEmbed");
+        return defer().addEmbeds(embed).addEmbeds(embeds);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args)
+    {
+        Checks.notNull(format, "Format String");
+        return reply(String.format(format, args));
+    }
+
+    default GuildChannel getGuildChannel()
+    {
+        AbstractChannel channel = getChannel();
+        if (channel instanceof GuildChannel)
+            return (GuildChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to GuildChannel");
+    }
+
+    default MessageChannel getMessageChannel()
+    {
+        AbstractChannel channel = getChannel();
+        if (channel instanceof MessageChannel)
+            return (MessageChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to MessageChannel");
+    }
+
+    default TextChannel getTextChannel()
+    {
+        AbstractChannel channel = getChannel();
+        if (channel instanceof TextChannel)
+            return (TextChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to TextChannel");
+    }
+
+    default VoiceChannel getVoiceChannel()
+    {
+        AbstractChannel channel = getChannel();
+        if (channel instanceof VoiceChannel)
+            return (VoiceChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to VoiceChannel");
+    }
+
+    default PrivateChannel getPrivateChannel()
+    {
+        AbstractChannel channel = getChannel();
+        if (channel instanceof PrivateChannel)
+            return (PrivateChannel) channel;
+        throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");
     }
 }

@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -32,37 +32,17 @@ import java.io.File;
 import java.io.InputStream;
 
 // this is used for followup responses on commands
-public interface CommandHook extends WebhookClient<InteractionWebhookAction>
+public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
 {
     @Nonnull
-    SlashCommandEvent getEvent();
+    Interaction getInteraction();
 
     // Whether we should treat messages as ephemeral by default
     @Nonnull
-    CommandHook setEphemeral(boolean ephemeral);
+    InteractionHook setEphemeral(boolean ephemeral);
 
     @Nonnull
-    default JDA getJDA()
-    {
-        return getEvent().getJDA();
-    }
-
-    default long getInteractionIdLong()
-    {
-        return getEvent().getInteractionIdLong();
-    }
-
-    @Nonnull
-    default String getInteractionId()
-    {
-        return Long.toUnsignedString(getInteractionIdLong());
-    }
-
-    @Nonnull
-    default String getInteractionToken()
-    {
-        return getEvent().getInteractionToken();
-    }
+    JDA getJDA();
 
     @Nonnull
     @CheckReturnValue

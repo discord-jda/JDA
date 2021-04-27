@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.interactions.button.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -772,6 +774,19 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     List<MessageEmbed> getEmbeds();
+
+    List<ActionRow> getActionRows(); // TODO: Figure out a better naming/api
+
+    @Nullable
+    default Button getButtonById(@Nonnull String id)
+    {
+        Checks.notNull(id, "Button ID");
+        return getActionRows().stream()
+                .map(ActionRow::getButtons)
+                .flatMap(List::stream)
+                .filter(it -> it.getId().equals(id))
+                .findFirst().orElse(null);
+    }
 
     /**
      * All {@link net.dv8tion.jda.api.entities.Emote Emotes} used in this Message.

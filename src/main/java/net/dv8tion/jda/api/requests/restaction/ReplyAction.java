@@ -17,7 +17,9 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.commands.CommandHook;
+import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.interactions.Component;
+import net.dv8tion.jda.api.interactions.commands.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -30,11 +32,11 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public interface CommandReplyAction extends RestAction<CommandHook>, AllowedMentions<CommandReplyAction>
+public interface ReplyAction extends RestAction<InteractionHook>, AllowedMentions<ReplyAction>
 {
     @Nonnull
     @CheckReturnValue
-    default CommandReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
+    default ReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return addEmbeds(Arrays.asList(embeds));
@@ -42,12 +44,31 @@ public interface CommandReplyAction extends RestAction<CommandHook>, AllowedMent
 
     @Nonnull
     @CheckReturnValue
-    CommandReplyAction addEmbeds(@Nonnull Collection<MessageEmbed> embeds);
+    ReplyAction addEmbeds(@Nonnull Collection<MessageEmbed> embeds);
+
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction addActionRow(@Nonnull Component... components)
+    {
+        return addActionRows(ActionRow.of(components));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        return addActionRows(rows.toArray(new ActionRow[0]));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    ReplyAction addActionRows(@Nonnull ActionRow... rows);
 
     // doesn't support embeds or attachments
     @Nonnull
     @CheckReturnValue
-    CommandReplyAction setEphemeral(boolean ephemeral);
+    ReplyAction setEphemeral(boolean ephemeral);
 
 // Currently not supported, sad face
 //    @Nonnull
@@ -88,21 +109,21 @@ public interface CommandReplyAction extends RestAction<CommandHook>, AllowedMent
 
     @Nonnull
     @Override
-    CommandReplyAction setCheck(@Nullable BooleanSupplier checks);
+    ReplyAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
-    CommandReplyAction timeout(long timeout, @Nonnull TimeUnit unit);
+    ReplyAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
-    CommandReplyAction deadline(long timestamp);
+    ReplyAction deadline(long timestamp);
 
     @Nonnull
-    CommandReplyAction setTTS(final boolean isTTS);
+    ReplyAction setTTS(final boolean isTTS);
 
     @Nonnull
-    CommandReplyAction setContent(@Nullable final String content);
+    ReplyAction setContent(@Nullable final String content);
 
     enum Flag
     {

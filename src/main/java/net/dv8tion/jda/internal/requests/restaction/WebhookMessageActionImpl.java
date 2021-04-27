@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
@@ -48,6 +49,7 @@ public class WebhookMessageActionImpl
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
     private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
+    private final List<ActionRow> components = new ArrayList<>();
 
     private boolean ephemeral, tts;
     private String username, avatarUrl;
@@ -141,6 +143,16 @@ public class WebhookMessageActionImpl
         return this;
     }
 
+    @Nonnull
+    @Override
+    public WebhookMessageActionImpl addActionRows(@Nonnull ActionRow... rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        Checks.check(rows.length + components.size() <= 5, "Can only have 5 action rows per message!");
+        Collections.addAll(components, rows);
+        return this;
+    }
+
     private DataObject getJSON()
     {
         DataObject json = DataObject.empty();
@@ -155,6 +167,8 @@ public class WebhookMessageActionImpl
             json.put("flags", 64);
         if (!embeds.isEmpty())
             json.put("embeds", DataArray.fromCollection(embeds));
+        if (!components.isEmpty())
+            json.put("components", DataArray.fromCollection(components));
         json.put("allowed_mentions", allowedMentions);
         return json;
     }

@@ -14,34 +14,25 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.entities;
+package net.dv8tion.jda.api.interactions;
 
-public enum InteractionType
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
+
+import javax.annotation.Nonnull;
+
+public interface ComponentInteraction extends Interaction
 {
-    UNKNOWN(-1), PING(1), SLASH_COMMAND(2);
+    @Nonnull
+    String getComponentId();
 
-    private final int key;
+    @Nonnull
+    Message getMessage();
 
-    InteractionType(int key)
-    {
-        this.key = key;
-    }
+//    @Nonnull
+//    Component.Type getComponentType();
 
-    public int getKey()
-    {
-        return key;
-    }
-
-    public static InteractionType fromKey(int key)
-    {
-        switch (key)
-        {
-        case 1:
-            return PING;
-        case 2:
-            return SLASH_COMMAND;
-        default:
-            return UNKNOWN;
-        }
-    }
+    @Nonnull
+    @Override
+    MessageChannel getChannel();
 }
