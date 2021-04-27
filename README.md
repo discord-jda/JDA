@@ -446,7 +446,7 @@ repositories {
 ```gradle
 dependencies {
     //Change 'implementation' to 'compile' in old Gradle versions
-    implementation ('net.dv8tion:JDA:VERSION') {
+    implementation("net.dv8tion:JDA:VERSION") {
         exclude module: 'opus-java'
     }
 }
