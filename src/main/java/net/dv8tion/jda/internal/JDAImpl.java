@@ -57,7 +57,6 @@ import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.AbstractCacheView;
@@ -90,7 +89,6 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, MessageChannel::getName);
-    protected final LinkedList<Long> privateChannelLRU = new LinkedList<>();
 
     protected final AbstractCacheView<AudioManager> audioManagers = new CacheView.SimpleCacheView<>(AudioManager.class, m -> m.getGuild().getName());
 
@@ -172,6 +170,11 @@ public class JDAImpl implements JDA
         return (client.getGatewayIntents() & raw) == raw;
     }
 
+    public boolean useIntents()
+    {
+        return client.getGatewayIntents() != -1;
+    }
+
     public int getLargeThreshold()
     {
         return sessionConfig.getLargeThreshold();
@@ -233,20 +236,6 @@ public class JDAImpl implements JDA
     public VoiceDispatchInterceptor getVoiceInterceptor()
     {
         return sessionConfig.getVoiceDispatchInterceptor();
-    }
-
-    public void usedPrivateChannel(long id)
-    {
-        synchronized (privateChannelLRU)
-        {
-            privateChannelLRU.remove(id); // We could probably make a special LRU cache view too, might not be worth it though
-            privateChannelLRU.addFirst(id);
-            if (privateChannelLRU.size() > 10) // This could probably be a config option
-            {
-                long removed = privateChannelLRU.removeLast();
-                privateChannelCache.remove(removed);
-            }
-        }
     }
 
     public int login() throws LoginException
@@ -424,13 +413,6 @@ public class JDAImpl implements JDA
     public EnumSet<GatewayIntent> getGatewayIntents()
     {
         return GatewayIntent.getIntents(client.getGatewayIntents());
-    }
-
-    @Nonnull
-    @Override
-    public EnumSet<CacheFlag> getCacheFlags()
-    {
-        return Helpers.copyEnumSet(CacheFlag.class, metaConfig.getCacheFlags());
     }
 
     @Override
@@ -640,21 +622,6 @@ public class JDAImpl implements JDA
     public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
         return privateChannelCache;
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(@Nonnull String id)
-    {
-        return getPrivateChannelById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(long id)
-    {
-        PrivateChannel channel = JDA.super.getPrivateChannelById(id);
-        if (channel != null)
-            usedPrivateChannel(id);
-        return channel;
     }
 
     @Nonnull

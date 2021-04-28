@@ -22,9 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.EnumSet;
 
 /**
  * Flags used to enable cache services for JDA.
@@ -60,29 +58,13 @@ public enum CacheFlag
     /**
      * Enables cache for {@link GuildChannel#getMemberPermissionOverrides()}
      */
-    MEMBER_OVERRIDES,
+    MEMBER_OVERRIDES(null),
     /**
      * Enables cache for {@link Role#getTags()}
      */
-    ROLE_TAGS,
-    /**
-     * Enables cache for {@link Member#getOnlineStatus()}
-     * <br>This is enabled implicitly by {@link #ACTIVITY} and {@link #CLIENT_STATUS}.
-     *
-     * <p>Requires {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_PRESENCES GUILD_PRESENCES} intent to be enabled.
-     *
-     * @since 4.3.0
-     */
-    ONLINE_STATUS(GatewayIntent.GUILD_PRESENCES)
+    ROLE_TAGS(null),
     ;
-
-    private static final EnumSet<CacheFlag> privileged = EnumSet.of(ACTIVITY, CLIENT_STATUS, ONLINE_STATUS);
     private final GatewayIntent requiredIntent;
-
-    CacheFlag()
-    {
-        this(null);
-    }
 
     CacheFlag(GatewayIntent requiredIntent)
     {
@@ -98,26 +80,5 @@ public enum CacheFlag
     public GatewayIntent getRequiredIntent()
     {
         return requiredIntent;
-    }
-
-    /**
-     * Whether this cache flag is for presence information of a member.
-     *
-     * @return True, if this is for presences
-     */
-    public boolean isPresence()
-    {
-        return requiredIntent == GatewayIntent.GUILD_PRESENCES;
-    }
-
-    /**
-     * Collects all cache flags that require privileged intents
-     *
-     * @return {@link EnumSet} of the cache flags that require the privileged intents
-     */
-    @Nonnull
-    public static EnumSet<CacheFlag> getPrivileged()
-    {
-        return EnumSet.copyOf(privileged);
     }
 }

@@ -20,14 +20,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.managers.Presence;
-import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.WebSocketCode;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
 
 /**
  * The Presence associated with the provided JDA instance
@@ -108,15 +106,23 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(OnlineStatus status, Activity activity, boolean idle)
     {
+        DataObject gameObj = getGameJson(activity);
+
         Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
 
+        DataObject object = DataObject.empty();
+
+        object.put("game", gameObj);
+        object.put("afk", idle);
+        object.put("status", status.getKey());
+        object.put("since", System.currentTimeMillis());
+        update(object);
         this.idle = idle;
         this.status = status;
-        this.activity = activity;
-        update();
+        this.activity = gameObj == null ? null : activity;
     }
 
     @Override
@@ -173,9 +179,7 @@ public class PresenceImpl implements Presence
         return DataObject.empty()
               .put("afk", idle)
               .put("since", System.currentTimeMillis())
-              .put("activities", DataArray.fromCollection(activity == null // this is done so that nested DataObject is converted to a Map
-                      ? Collections.emptyList()
-                      : Collections.singletonList(activity)))
+              .put("game", activity)
               .put("status", getStatus().getKey());
     }
 
@@ -196,9 +200,8 @@ public class PresenceImpl implements Presence
     /* -- Terminal -- */
 
 
-    protected void update()
+    protected void update(DataObject data)
     {
-        DataObject data = getFullPresence();
         JDA.Status status = api.getStatus();
         if (status == JDA.Status.RECONNECT_QUEUED || status == JDA.Status.SHUTDOWN || status == JDA.Status.SHUTTING_DOWN)
             return;

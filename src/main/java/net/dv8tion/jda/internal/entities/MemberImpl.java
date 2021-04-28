@@ -22,10 +22,8 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
-import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 
 import javax.annotation.Nonnull;
@@ -44,11 +42,14 @@ public class MemberImpl implements Member
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
+    private final Map<ClientType, OnlineStatus> clientStatus;
 
     private GuildImpl guild;
     private User user;
     private String nickname;
     private long joinDate, boostDate;
+    private List<Activity> activities = null;
+    private OnlineStatus onlineStatus = OnlineStatus.OFFLINE;
     private boolean pending = false;
 
     public MemberImpl(GuildImpl guild, User user)
@@ -58,13 +59,9 @@ public class MemberImpl implements Member
         this.user = user;
         this.joinDate = 0;
         boolean cacheState = api.isCacheFlagSet(CacheFlag.VOICE_STATE) || user.equals(api.getSelfUser());
+        boolean cacheOnline = api.isCacheFlagSet(CacheFlag.CLIENT_STATUS);
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
-    }
-
-    public MemberPresenceImpl getPresence()
-    {
-        CacheView.SimpleCacheView<MemberPresenceImpl> presences = guild.getPresenceView();
-        return presences == null ? null : presences.get(getIdLong());
+        this.clientStatus = cacheOnline ? Collections.synchronizedMap(new EnumMap<>(ClientType.class)) : null;
     }
 
     @Nonnull
@@ -127,16 +124,14 @@ public class MemberImpl implements Member
     @Override
     public List<Activity> getActivities()
     {
-        MemberPresenceImpl presence = getPresence();
-        return presence == null ? Collections.emptyList() : presence.getActivities();
+        return activities == null || activities.isEmpty() ? Collections.emptyList() : activities;
     }
 
     @Nonnull
     @Override
     public OnlineStatus getOnlineStatus()
     {
-        MemberPresenceImpl presence = getPresence();
-        return presence == null ? OnlineStatus.OFFLINE : presence.getOnlineStatus();
+        return onlineStatus;
     }
 
     @Nonnull
@@ -144,10 +139,9 @@ public class MemberImpl implements Member
     public OnlineStatus getOnlineStatus(@Nonnull ClientType type)
     {
         Checks.notNull(type, "Type");
-        MemberPresenceImpl presence = getPresence();
-        if (presence == null)
+        if (this.clientStatus == null || this.clientStatus.isEmpty())
             return OnlineStatus.OFFLINE;
-        OnlineStatus status = presence.getClientStatus().get(type);
+        OnlineStatus status = this.clientStatus.get(type);
         return status == null ? OnlineStatus.OFFLINE : status;
     }
 
@@ -155,8 +149,9 @@ public class MemberImpl implements Member
     @Override
     public EnumSet<ClientType> getActiveClients()
     {
-        MemberPresenceImpl presence = getPresence();
-        return presence == null ? EnumSet.noneOf(ClientType.class) : Helpers.copyEnumSet(ClientType.class, presence.getClientStatus().keySet());
+        if (clientStatus == null || clientStatus.isEmpty())
+            return EnumSet.noneOf(ClientType.class);
+        return EnumSet.copyOf(clientStatus.keySet());
     }
 
     @Override
@@ -368,6 +363,29 @@ public class MemberImpl implements Member
     public MemberImpl setBoostDate(long boostDate)
     {
         this.boostDate = boostDate;
+        return this;
+    }
+
+    public MemberImpl setActivities(List<Activity> activities)
+    {
+        this.activities = Collections.unmodifiableList(activities);
+        return this;
+    }
+
+    public MemberImpl setOnlineStatus(ClientType type, OnlineStatus status)
+    {
+        if (this.clientStatus == null || type == ClientType.UNKNOWN || type == null)
+            return this;
+        if (status == null || status == OnlineStatus.UNKNOWN || status == OnlineStatus.OFFLINE)
+            this.clientStatus.remove(type);
+        else
+            this.clientStatus.put(type, status);
+        return this;
+    }
+
+    public MemberImpl setOnlineStatus(OnlineStatus onlineStatus)
+    {
+        this.onlineStatus = onlineStatus;
         return this;
     }
 

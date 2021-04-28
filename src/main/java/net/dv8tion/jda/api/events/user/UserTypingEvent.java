@@ -43,9 +43,9 @@ public class UserTypingEvent extends GenericUserEvent
     public UserTypingEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user, @Nonnull MessageChannel channel, @Nonnull OffsetDateTime timestamp, @Nullable Member member)
     {
         super(api, responseNumber, user);
-        this.member = member;
         this.channel = channel;
         this.timestamp = timestamp;
+        this.member = member;
     }
 
     /**

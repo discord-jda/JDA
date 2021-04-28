@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
+import net.dv8tion.jda.api.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.store.StoreChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.api.events.channel.voice.VoiceChannelDeleteEvent;
@@ -132,10 +133,17 @@ public class ChannelDeleteHandler extends SocketHandler
                 if (channel == null)
                 {
 //                    getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, () -> handle(responseNumber, allContent));
-                    WebSocketClient.LOG.debug("CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: {}", content);
+                    WebSocketClient.LOG.debug(
+                            "CHANNEL_DELETE attempted to delete a private channel that is not yet cached. JSON: {}",
+                            content
+                    );
                     return null;
                 }
 
+                getJDA().handleEvent(
+                    new PrivateChannelDeleteEvent(
+                        getJDA(), responseNumber,
+                        channel));
                 break;
             }
             case GROUP:

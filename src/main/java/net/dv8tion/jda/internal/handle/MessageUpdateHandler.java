@@ -54,10 +54,14 @@ public class MessageUpdateHandler extends SocketHandler
             if (content.hasKey("type"))
             {
                 MessageType type = MessageType.fromId(content.getInt("type"));
-                if (!type.isSystem())
-                    return handleMessage(content);
-                WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
-                return null;
+                switch (type)
+                {
+                    case DEFAULT:
+                        return handleMessage(content);
+                    default:
+                        WebSocketClient.LOG.debug("JDA received a message update for an unexpected message type. Type: {} JSON: {}", type, content);
+                        return null;
+                }
             }
             else if (!content.isNull("embeds"))
             {
@@ -65,6 +69,11 @@ public class MessageUpdateHandler extends SocketHandler
                 handleMessageEmbed(content);
                 return null;
             }
+        }
+        else if (content.hasKey("call"))
+        {
+            handleCallMessage(content);
+            return null;
         }
         else if (!content.isNull("embeds"))
             return handleMessageEmbed(content);
@@ -116,7 +125,6 @@ public class MessageUpdateHandler extends SocketHandler
             }
             case PRIVATE:
             {
-                getJDA().usedPrivateChannel(message.getChannel().getIdLong());
                 getJDA().handleEvent(
                         new PrivateMessageUpdateEvent(
                                 getJDA(), responseNumber,
@@ -192,5 +200,16 @@ public class MessageUpdateHandler extends SocketHandler
                         getJDA(), responseNumber,
                         messageId, channel, embeds));
         return null;
+    }
+
+    public void handleCallMessage(DataObject content)
+    {
+        WebSocketClient.LOG.debug("Received a MESSAGE_UPDATE of type CALL: {}", content);
+        //Called when someone joins call for first time.
+        //  It is not called when they leave or rejoin. That is all dictated by VOICE_STATE_UPDATE.
+        //  Probably can ignore the above due to VOICE_STATE_UPDATE
+        // Could have a mapping of all users who were participants at one point or another during the call
+        //  in comparison to the currently participants.
+        // and when the call is ended. Ending defined by ended_timestamp != null
     }
 }

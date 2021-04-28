@@ -35,7 +35,9 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.cache.*;
+import net.dv8tion.jda.api.utils.cache.MemberCacheView;
+import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -82,7 +84,6 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
-    private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
     private GuildManager manager;
 
@@ -116,10 +117,6 @@ public class GuildImpl implements Guild
     {
         this.id = id;
         this.api = api;
-        if (api.getCacheFlags().stream().anyMatch(CacheFlag::isPresence))
-            memberPresences = new CacheView.SimpleCacheView<>(MemberPresenceImpl.class, null);
-        else
-            memberPresences = null;
     }
 
     @Nonnull
@@ -1154,13 +1151,12 @@ public class GuildImpl implements Guild
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
-        DataObject params = DataObject.empty();
         if (!Helpers.isBlank(reason))
-            params.put("reason", reason);
+            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
         if (delDays > 0)
-            params.put("delete_message_days", delDays);
+            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
 
-        return new AuditableRestActionImpl<>(getJDA(), route, params);
+        return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
@@ -1709,12 +1705,6 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
-    }
-
-    @Nullable
-    public CacheView.SimpleCacheView<MemberPresenceImpl> getPresenceView()
-    {
-        return memberPresences;
     }
 
     // -- Member Tracking --
