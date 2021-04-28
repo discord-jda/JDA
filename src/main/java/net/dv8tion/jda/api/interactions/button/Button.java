@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.interactions.button;
 
 import net.dv8tion.jda.api.interactions.Component;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -34,18 +36,27 @@ public interface Button extends Component
     @Nullable
     String getUrl();
 
+    @Nullable
+    Emoji getEmoji();
+
     boolean isDisabled();
 
     @Nonnull
-    default Button disable()
+    default Button asDisabled()
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), true);
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), true, getEmoji());
     }
 
     @Nonnull
-    default Button enable()
+    default Button asEnabled()
     {
-        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), false);
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), false, getEmoji());
+    }
+
+    @Nonnull
+    default Button withEmoji(@Nullable Emoji emoji)
+    {
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
     }
 
     @Nonnull
@@ -53,7 +64,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.PRIMARY, false);
+        return new ButtonImpl(id, label, Style.PRIMARY, false, null);
     }
 
     @Nonnull
@@ -61,7 +72,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.SECONDARY, false);
+        return new ButtonImpl(id, label, Style.SECONDARY, false, null);
     }
 
 
@@ -70,7 +81,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.SUCCESS, false);
+        return new ButtonImpl(id, label, Style.SUCCESS, false, null);
     }
 
 
@@ -79,7 +90,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.DANGER, false);
+        return new ButtonImpl(id, label, Style.DANGER, false, null);
     }
 
 
@@ -88,7 +99,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(url, "URL");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(null, label, Style.LINK, url, false);
+        return new ButtonImpl(null, label, Style.LINK, url, false, null);
     }
 
     enum Style
@@ -122,6 +133,45 @@ public interface Button extends Component
                     return style;
             }
             return UNKNOWN;
+        }
+    }
+
+    class Emoji implements SerializableData
+    {
+        private final String name;
+        private final long id;
+        private final boolean animated;
+
+        public Emoji(String name, long id, boolean animated)
+        {
+            this.name = name;
+            this.id = id;
+            this.animated = animated;
+        }
+
+        @Nonnull
+        public static Emoji ofUnicode(@Nonnull String name)
+        {
+            return new Emoji(name, 0, false);
+        }
+
+        @Nonnull
+        public static Emoji ofEmote(@Nonnull String name, long id, boolean animated)
+        {
+            return new Emoji(name, id, animated);
+        }
+
+        @Nonnull
+        @Override
+        public DataObject toData()
+        {
+            DataObject json = DataObject.empty().put("name", name);
+            if (id != 0)
+            {
+                json.put("id", id)
+                    .put("animated", animated);
+            }
+            return json;
         }
     }
 

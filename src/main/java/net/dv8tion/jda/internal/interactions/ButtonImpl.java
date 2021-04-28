@@ -29,6 +29,7 @@ public class ButtonImpl implements Button
     private final Style style;
     private final String url;
     private final boolean disabled;
+    private final Emoji emoji;
 
     public ButtonImpl(DataObject data)
     {
@@ -37,22 +38,27 @@ public class ButtonImpl implements Button
             data.getString("label"),
             Style.fromKey(data.getInt("style")),
             data.getString("url", null),
-            data.getBoolean("disabled")
-        );
+            data.getBoolean("disabled"),
+            data.optObject("emoji").map(emoji ->
+                new Emoji(emoji.getString("name"),
+                    emoji.getUnsignedLong("id", 0),
+                    emoji.getBoolean("animated"))
+            ).orElse(null));
     }
 
-    public ButtonImpl(String id, String label, Style style, boolean disabled)
+    public ButtonImpl(String id, String label, Style style, boolean disabled, Emoji emoji)
     {
-        this(id, label, style, null, disabled);
+        this(id, label, style, null, disabled, emoji);
     }
 
-    public ButtonImpl(String id, String label, Style style, String url, boolean disabled)
+    public ButtonImpl(String id, String label, Style style, String url, boolean disabled, Emoji emoji)
     {
         this.id = id;
         this.label = label;
         this.style = style;
-        this.url = url;
+        this.url = url;  // max length 512
         this.disabled = disabled;
+        this.emoji = emoji;
     }
 
     @Nullable
@@ -83,6 +89,13 @@ public class ButtonImpl implements Button
         return url;
     }
 
+    @Nullable
+    @Override
+    public Emoji getEmoji()
+    {
+        return emoji;
+    }
+
     @Override
     public boolean isDisabled()
     {
@@ -98,6 +111,8 @@ public class ButtonImpl implements Button
         json.put("label", label);
         json.put("style", style.getKey());
         json.put("disabled", disabled);
+        if (emoji != null)
+            json.put("emoji", emoji);
         if (url != null)
             json.put("url", url);
         else
