@@ -114,6 +114,8 @@ public class EntityBuilder
                 userView.getMap().put(selfUser.getIdLong(), selfUser);
         }
 
+        if (!self.isNull("application_id"))
+            selfUser.setApplicationId(self.getUnsignedLong("application_id"));
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
