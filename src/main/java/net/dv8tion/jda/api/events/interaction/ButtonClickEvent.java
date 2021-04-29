@@ -19,10 +19,14 @@ package net.dv8tion.jda.api.events.interaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.interactions.button.Button;
 import net.dv8tion.jda.api.interactions.button.ButtonInteraction;
+import net.dv8tion.jda.api.interactions.commands.InteractionHook;
+import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class ButtonClickEvent extends GenericInteractionCreateEvent implements ButtonInteraction
 {
@@ -44,6 +48,13 @@ public class ButtonClickEvent extends GenericInteractionCreateEvent implements B
 
     @Nonnull
     @Override
+    public RestAction<InteractionHook> acknowledge()
+    {
+        return interaction.acknowledge();
+    }
+
+    @Nonnull
+    @Override
     public ButtonInteraction getInteraction()
     {
         return interaction;
@@ -56,14 +67,27 @@ public class ButtonClickEvent extends GenericInteractionCreateEvent implements B
         return interaction.getComponentId();
     }
 
-    @Nonnull
+    @Nullable
     @Override
     public Message getMessage()
     {
         return interaction.getMessage();
     }
 
+    @Override
+    public long getMessageIdLong()
+    {
+        return interaction.getMessageIdLong();
+    }
+
     @Nonnull
+    @Override
+    public Component.Type getComponentType()
+    {
+        return interaction.getComponentType();
+    }
+
+    @Nullable
     @Override
     public Button getButton()
     {

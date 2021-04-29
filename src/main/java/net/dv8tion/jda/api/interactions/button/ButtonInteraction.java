@@ -16,14 +16,20 @@
 
 package net.dv8tion.jda.api.interactions.button;
 
+import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.interactions.ComponentInteraction;
 
-import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface ButtonInteraction extends ComponentInteraction
 {
-    // TODO: You can reply to these... god dammit
+    @Nullable
+    @Override
+    default Component getComponent()
+    {
+        return getButton();
+    }
 
-    @Nonnull
+    @Nullable // null for ephemeral messages
     Button getButton();
 }

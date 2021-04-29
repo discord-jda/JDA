@@ -18,10 +18,15 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.interactions.button.Button;
 import net.dv8tion.jda.api.interactions.button.ButtonInteraction;
+import net.dv8tion.jda.api.interactions.commands.InteractionHook;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.requests.restaction.ReplyActionImpl;
 
 import javax.annotation.Nonnull;
 
@@ -29,15 +34,20 @@ public class ButtonInteractionImpl extends InteractionImpl implements ButtonInte
 {
     private final String customId;
     private final Message message;
+    private final long messageId;
     private final Button button;
 
     public ButtonInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
-
-        message = jda.getEntityBuilder().createMessage(data.getObject("message"));
         customId = data.getObject("data").getString("custom_id");
-        button = message.getButtonById(customId);
+
+        // message might be just id and flags for ephemeral messages in which case our "message" is null
+        DataObject messageJson = data.getObject("message");
+        messageId = messageJson.getUnsignedLong("id");
+
+        message = messageJson.isNull("type") ? null : jda.getEntityBuilder().createMessage(messageJson);
+        button = message != null ? this.message.getButtonById(customId) : null;
     }
 
     @Nonnull
@@ -50,16 +60,36 @@ public class ButtonInteractionImpl extends InteractionImpl implements ButtonInte
 
     @Nonnull
     @Override
+    public RestAction<InteractionHook> acknowledge()
+    {
+        Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getId(), token);
+        return new ReplyActionImpl(getUser().getJDA(), route, this.hook);
+    }
+
+    @Nonnull
+    @Override
     public String getComponentId()
     {
         return customId;
     }
 
-    @Nonnull
     @Override
     public Message getMessage()
     {
         return message;
+    }
+
+    @Override
+    public long getMessageIdLong()
+    {
+        return messageId;
+    }
+
+    @Nonnull
+    @Override
+    public Component.Type getComponentType()
+    {
+        return Component.Type.BUTTON;
     }
 
     @Nonnull

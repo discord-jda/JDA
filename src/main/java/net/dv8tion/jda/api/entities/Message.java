@@ -784,7 +784,7 @@ public interface Message extends ISnowflake, Formattable
         return getActionRows().stream()
                 .map(ActionRow::getButtons)
                 .flatMap(List::stream)
-                .filter(it -> it.getId().equals(id))
+                .filter(it -> id.equals(it.getId()))
                 .findFirst().orElse(null);
     }
 

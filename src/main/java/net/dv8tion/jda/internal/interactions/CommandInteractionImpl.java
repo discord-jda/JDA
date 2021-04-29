@@ -21,7 +21,6 @@ import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -30,7 +29,6 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import net.dv8tion.jda.internal.requests.restaction.ReplyActionImpl;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -136,13 +134,6 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
 
     @Nonnull
     @Override
-    public InteractionHook getHook()
-    {
-        return hook;
-    }
-
-    @Nonnull
-    @Override
     public String getName()
     {
         return name;
@@ -171,12 +162,5 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     public List<OptionMapping> getOptions()
     {
         return options;
-    }
-
-    @Nonnull
-    @Override
-    public ReplyActionImpl acknowledge()
-    {
-        return super.acknowledge().deferred();
     }
 }

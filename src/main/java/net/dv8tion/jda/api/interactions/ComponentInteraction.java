@@ -18,21 +18,40 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.interactions.commands.InteractionHook;
+import net.dv8tion.jda.api.requests.RestAction;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface ComponentInteraction extends Interaction
 {
     @Nonnull
     String getComponentId();
 
-    @Nonnull
+    @Nullable
+    Component getComponent();
+
+    @Nullable
     Message getMessage();
 
-//    @Nonnull
-//    Component.Type getComponentType();
+    long getMessageIdLong();
+
+    @Nonnull
+    default String getMessageId()
+    {
+        return Long.toUnsignedString(getMessageIdLong());
+    }
+
+    @Nonnull
+    Component.Type getComponentType();
 
     @Nonnull
     @Override
     MessageChannel getChannel();
+
+    @Nonnull
+    @CheckReturnValue // TODO: Support response type 7 (UPDATE_MESSAGE)
+    RestAction<InteractionHook> acknowledge();
 }

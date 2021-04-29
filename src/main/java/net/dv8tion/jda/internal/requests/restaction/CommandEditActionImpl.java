@@ -19,14 +19,12 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -38,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 public class CommandEditActionImpl extends RestActionImpl<Command> implements CommandEditAction
 {
@@ -130,38 +127,35 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction clearOptions()
     {
+        data = new CommandData(data.getName(), data.getDescription());
         mask &= ~OPTIONS_SET;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type, @Nonnull Consumer<? super CommandCreateAction.OptionBuilder> builder)
+    public CommandEditAction addOption(@Nonnull OptionData option)
     {
-        Checks.notEmpty(name, "Name");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(name, 32, "Name");
-        Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.notNull(type, "Type");
-        Checks.notNull(builder, "Consumer");
-
-        CommandCreateActionImpl.Option optionBuilder = new CommandCreateActionImpl.Option(type, name, description);
-        builder.accept(optionBuilder);
+        data.addOption(option);
         mask |= OPTIONS_SET;
-        DataObject json = optionBuilder.toData();
-        switch (type)
-        {
-        case SUB_COMMAND:
-            data.addSubcommand(SubcommandData.load(json));
-            break;
-        case SUB_COMMAND_GROUP:
-            data.addSubcommandGroup(SubcommandGroupData.load(json));
-            break;
-        default:
-            data.addOption(OptionData.load(json));
-            break;
-        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction addSubcommand(@Nonnull SubcommandData subcommand)
+    {
+        data.addSubcommand(subcommand);
+        mask |= OPTIONS_SET;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction addSubcommandGroup(@Nonnull SubcommandGroupData group)
+    {
+        data.addSubcommandGroup(group);
+        mask |= OPTIONS_SET;
         return this;
     }
 

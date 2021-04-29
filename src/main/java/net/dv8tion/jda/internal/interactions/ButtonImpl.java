@@ -61,6 +61,13 @@ public class ButtonImpl implements Button
         this.emoji = emoji;
     }
 
+    @Nonnull
+    @Override
+    public Type getType()
+    {
+        return Type.BUTTON;
+    }
+
     @Nullable
     @Override
     public String getId()

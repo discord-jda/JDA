@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.ReplyAction;
 import net.dv8tion.jda.internal.requests.restaction.ReplyActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -59,6 +58,9 @@ public interface Interaction extends ISnowflake
     @Nullable
     AbstractChannel getChannel();
 
+    @Nonnull
+    InteractionHook getHook();
+
     /**
      * Whether this interaction has already been acknowledged.
      * <br>Both {@link #defer()}, {@link #acknowledge()} and {@link #reply(String)} acknowledge an interaction.
@@ -70,14 +72,7 @@ public interface Interaction extends ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    RestAction<InteractionHook> acknowledge(); // for slash commands this is just a defer()
-
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction defer()
-    {
-        return ((ReplyActionImpl) acknowledge()).deferred();
-    }
+    ReplyAction defer();
 
     @Nonnull
     @CheckReturnValue

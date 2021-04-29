@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.commands.InteractionHook;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -121,6 +122,13 @@ public class InteractionImpl implements Interaction
 
     @Nonnull
     @Override
+    public InteractionHook getHook()
+    {
+        return hook;
+    }
+
+    @Nonnull
+    @Override
     public User getUser()
     {
         return user;
@@ -141,9 +149,9 @@ public class InteractionImpl implements Interaction
 
     @Nonnull
     @Override
-    public ReplyActionImpl acknowledge()
+    public ReplyActionImpl defer()
     {
         Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getId(), token);
-        return new ReplyActionImpl(getUser().getJDA(), route, this.hook);
+        return new ReplyActionImpl(getUser().getJDA(), route, this.hook).deferred();
     }
 }

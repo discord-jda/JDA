@@ -27,9 +27,6 @@ import java.util.stream.Collectors;
 
 public interface CommandInteraction extends Interaction
 {
-    @Nonnull
-    InteractionHook getHook();
-
     /**
      * The command name.
      * <br>This can be useful for abstractions.

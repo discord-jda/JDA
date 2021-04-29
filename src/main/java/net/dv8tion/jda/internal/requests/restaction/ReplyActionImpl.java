@@ -90,7 +90,7 @@ public class ReplyActionImpl extends RestActionImpl<InteractionHook> implements 
         if (isEmpty())
         {
             if (!defer)
-                return json.put("type", 6);
+                return json.put("type", 6); // this will likely become its own action type, we need to add more abstraction ...
             json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
             if (flags != 0)
                 json.put("data", DataObject.empty().put("flags", flags));

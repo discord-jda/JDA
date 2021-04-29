@@ -19,11 +19,9 @@ package net.dv8tion.jda.api.events.interaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -78,14 +76,6 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
     public List<OptionMapping> getOptions()
     {
         return commandInteraction.getOptions();
-    }
-
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public InteractionHook getHook()
-    {
-        return commandInteraction.getHook();
     }
 
 // Currently not supported, sad face

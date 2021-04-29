@@ -142,18 +142,16 @@ public interface ReplyAction extends RestAction<InteractionHook>, AllowedMention
         }
     }
 
-    enum ResponseType
-    { // TODO: Write better docs
-//        /**  */ Unused (this is only for HTTP webhooks)
-//        PONG(1),
-//        /** ACK a command without sending a message, eating the user's input */
-//        ACKNOWLEDGE(2),
-//        /** Respond with a message, eating the user's input */
-//        CHANNEL_MESSAGE(3),
+    enum ResponseType // TODO: Write better docs
+    {
         /** Respond with a message, showing the user's input */
         CHANNEL_MESSAGE_WITH_SOURCE(4),
         /** ACK a command without sending a message, showing the user's input */
         DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE(5),
+        /** Defer the update of the message for a component interaction */
+        DEFERRED_MESSAGE_UPDATE(6),
+        /** Update the message for a component interaction */
+        MESSAGE_UPDATE(7), // TODO: Support this
         ;
         private final int raw;
 
