@@ -80,6 +80,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StageChannel> stageChannelCache = new SortedSnowflakeCacheViewImpl<>(StageChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
+    private final SnowflakeCacheViewImpl<GuildThread> guildThreadsCache = new SnowflakeCacheViewImpl<>(GuildThread.class, GuildThread::getName);;
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
@@ -1994,6 +1995,8 @@ public class GuildImpl implements Guild
     {
         return roleCache;
     }
+
+    public SnowflakeCacheViewImpl<GuildThread> getGuildThreadsView() { return guildThreadsCache; }
 
     public SnowflakeCacheViewImpl<Emote> getEmotesView()
     {
