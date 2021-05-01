@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.audio.factory.IAudioSendFactory;
 import net.dv8tion.jda.api.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.GuildThread;
 import net.dv8tion.jda.api.events.GatewayPingEvent;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.StatusChangeEvent;
@@ -89,6 +90,7 @@ public class JDAImpl implements JDA
     protected final SnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SnowflakeCacheViewImpl<>(StoreChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName);
     protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName);
+    protected final SnowflakeCacheViewImpl<GuildThread> guildThreadsCache = new SnowflakeCacheViewImpl<>(GuildThread.class, GuildThread::getName);
     protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(PrivateChannel.class, MessageChannel::getName);
     protected final LinkedList<Long> privateChannelLRU = new LinkedList<>();
 
@@ -979,6 +981,8 @@ public class JDAImpl implements JDA
     {
         return voiceChannelCache;
     }
+
+    public SnowflakeCacheViewImpl<GuildThread> getGuildThreadsView() { return guildThreadsCache; }
 
     public SnowflakeCacheViewImpl<PrivateChannel> getPrivateChannelsView()
     {

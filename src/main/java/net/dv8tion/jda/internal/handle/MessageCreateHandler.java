@@ -114,6 +114,11 @@ public class MessageCreateHandler extends SocketHandler
             case GROUP:
                 WebSocketClient.LOG.error("Received a MESSAGE_CREATE for a group channel which should not be possible");
                 return null;
+            case GUILD_PRIVATE_THREAD:
+            case GUILD_PUBLIC_THREAD:
+            case GUILD_NEWS_THREAD:
+                //TODO | Implement
+                break;
             default:
                 WebSocketClient.LOG.warn("Received a MESSAGE_CREATE with a unknown MessageChannel ChannelType. JSON: {}", content);
                 return null;

@@ -28,6 +28,7 @@ import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
+import net.dv8tion.jda.api.entities.GuildThread;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
@@ -176,6 +177,7 @@ public class EntityBuilder
         final String locale = guildJson.getString("preferred_locale", "en");
         final DataArray roleArray = guildJson.getArray("roles");
         final DataArray channelArray = guildJson.getArray("channels");
+        final DataArray threadArray = guildJson.getArray("threads");
         final DataArray emotesArray = guildJson.getArray("emojis");
         final DataArray voiceStateArray = guildJson.getArray("voice_states");
         final Optional<DataArray> featuresArray = guildJson.optArray("features");
@@ -248,6 +250,14 @@ public class EntityBuilder
             createGuildChannel(guildObj, channelJson);
         }
 
+        //TODO probably don't duplicate this array.
+        System.out.println(threadArray);
+        for (int i = 0; i < threadArray.length(); i++)
+        {
+            DataObject threadJson = threadArray.getObject(i);
+            createGuildChannel(guildObj, threadJson);
+        }
+
         TLongObjectMap<DataObject> voiceStates = convertToUserMap((o) -> o.getUnsignedLong("user_id", 0L), voiceStateArray);
         TLongObjectMap<DataObject> presences = presencesArray.map(o1 -> convertToUserMap(o2 -> o2.getObject("user").getUnsignedLong("id"), o1)).orElseGet(TLongObjectHashMap::new);
         try (UnlockHook h1 = guildObj.getMembersView().writeLock();
@@ -294,6 +304,11 @@ public class EntityBuilder
             break;
         case STORE:
             createStoreChannel(guildObj, channelData, guildObj.getIdLong());
+            break;
+        case GUILD_NEWS_THREAD:
+        case GUILD_PUBLIC_THREAD:
+        case GUILD_PRIVATE_THREAD:
+            createThread(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
             LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
@@ -500,9 +515,7 @@ public class EntityBuilder
         // Load joined_at if necessary
         if (!memberJson.isNull("joined_at") && !member.hasTimeJoined())
         {
-            String joinedAtRaw = memberJson.getString("joined_at");
-            TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
-            long joinEpoch = Instant.from(joinedAt).toEpochMilli();
+            long joinEpoch = timestampToLong(memberJson.getString("joined_at"));
             member.setJoinDate(joinEpoch);
         }
 
@@ -580,9 +593,7 @@ public class EntityBuilder
 
         if (!content.isNull("joined_at") && !member.hasTimeJoined())
         {
-            String joinedAtRaw = content.getString("joined_at");
-            TemporalAccessor joinedAt = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(joinedAtRaw);
-            long joinEpoch = Instant.from(joinedAt).toEpochMilli();
+            long joinEpoch = timestampToLong(content.getString("joined_at"));
             member.setJoinDate(joinEpoch);
         }
 
@@ -822,6 +833,87 @@ public class EntityBuilder
                 .setAnimated(json.getBoolean("animated"))
                 .setManaged(json.getBoolean("managed"))
                 .setAvailable(json.getBoolean("available", true));
+    }
+
+    public GuildThread createThread(DataObject json, long guildId) { return createThread(null, json, guildId); }
+
+    public GuildThread createThread(GuildImpl guild, DataObject json, long guildId)
+    {
+        boolean playbackCache = false;
+        final long id = json.getLong("id");
+        final ChannelType channelType = ChannelType.fromId(json.getInt("type"));
+
+        GuildThreadImpl thread = (GuildThreadImpl) getJDA().getGuildThreadsView().get(id);
+        if (thread == null)
+        {
+            if (guild == null)
+                guild = (GuildImpl) getJDA().getGuildsView().get(guildId);
+            SnowflakeCacheViewImpl<GuildThread> guildThreadsView = guild.getGuildThreadsView();
+            SnowflakeCacheViewImpl<GuildThread> threadsView = getJDA().getGuildThreadsView();
+
+            try (
+                UnlockHook glock = guildThreadsView.writeLock();
+                UnlockHook jlock = threadsView.writeLock()
+            )
+            {
+                thread = new GuildThreadImpl(id, guild, channelType);
+                guildThreadsView.getMap().put(id, thread);
+                playbackCache = threadsView.getMap().put(id, thread) == null;
+            }
+        }
+
+        final String name = json.getString("name");
+        final long parentId = json.getLong("parent_id");
+        final long lastMessageId = json.getLong("last_message_id", 0);
+        final long ownerId = json.getLong("owner_id");
+        final int memberCount = json.getInt("member_count");
+        final int messageCount = json.getInt("message_count");
+
+        final DataObject threadMetadata = json.getObject("thread_metadata");
+        final boolean isArchived = threadMetadata.getBoolean("archived");
+        final long archivingMemberId = threadMetadata.getLong("archiver_id", 0);
+        final long archiveTimestamp = timestampToLong(threadMetadata.getString("archive_timestamp"));
+        final GuildThread.AutoArchiveDuration autoArchiveDuration = GuildThread.AutoArchiveDuration.fromKey(threadMetadata.getInt("auto_archive_duration"));
+
+        final Optional<DataObject> selfMemberOpt = json.optObject("member");
+        final Optional<DataArray> membersArrayOpt = json.optArray("members"); //TODO | Actually use this if it exists.
+
+        GuildThreadMember selfThreadMember = null;
+//        if (selfMemberOpt.isPresent())
+//        {
+//            DataObject selfMemberJson = selfMemberOpt.get();
+//            selfThreadMember = createThreadMember(thread, selfMemberJson);
+//        }
+
+        thread
+            .setParentChannelId(parentId)
+            .setLastMessageId(lastMessageId)
+            .setName(name)
+            .setSelfThreadMember(selfThreadMember)
+            .setOwnerId(ownerId)
+            .setMemberCount(memberCount)
+            .setMessageCount(messageCount)
+            .setIsArchived(isArchived)
+            .setArchivingMemberId(archivingMemberId)
+            .setArchiveTimestamp(archiveTimestamp)
+            .setAutoArchiveDuration(autoArchiveDuration);
+
+        if (playbackCache)
+            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
+
+        return thread;
+    }
+
+    public GuildThreadMember createThreadMember(GuildThreadImpl thread, DataObject json)
+    {
+        System.out.println(json);
+        long userId = json.getLong("user_id");
+        long flags = json.getLong("flags");
+        long joinEpoch = timestampToLong(json.getString("joined_at"));
+
+        return  new GuildThreadMemberImpl(thread, userId)
+            .setFlags(flags)
+            .setJoinDate(joinEpoch);
     }
 
     public Category createCategory(DataObject json, long guildId)
@@ -1081,6 +1173,8 @@ public class EntityBuilder
 
         MessageChannel chan = getJDA().getTextChannelById(channelId);
         if (chan == null)
+            chan = getJDA().getGuildThreadsView().get(channelId);
+        if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
         if (chan == null && !jsonObject.isNull("guild_id"))
             throw new IllegalArgumentException(MISSING_CHANNEL);
@@ -1143,30 +1237,35 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        switch (channel.getType())
+        ChannelType channelType = channel.getType();
+        if (channelType == ChannelType.PRIVATE) {
+            if (authorId == getJDA().getSelfUser().getIdLong())
+                user = getJDA().getSelfUser();
+            else
+                user = ((PrivateChannel) channel).getUser();
+        }
+        else if (channelType == ChannelType.GROUP)
         {
-            case PRIVATE:
-                if (authorId == getJDA().getSelfUser().getIdLong())
-                    user = getJDA().getSelfUser();
+            throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
+        }
+        else if (channelType.isGuild())
+        {
+            //TODO | When we make GuildThreads not a superclass of GuildChannel this is gonna break.
+            Guild guild = ((GuildChannel) channel).getGuild();
+            if (member == null)
+                member = (MemberImpl) guild.getMemberById(authorId);
+            user = member != null ? member.getUser() : null;
+            if (user == null)
+            {
+                if (fromWebhook || !modifyCache)
+                    user = createUser(author);
                 else
-                    user = ((PrivateChannel) channel).getUser();
-                break;
-            case GROUP:
-                throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
-            case TEXT:
-                Guild guild = ((TextChannel) channel).getGuild();
-                if (member == null)
-                    member = (MemberImpl) guild.getMemberById(authorId);
-                user = member != null ? member.getUser() : null;
-                if (user == null)
-                {
-                    if (fromWebhook || !modifyCache)
-                        user = createUser(author);
-                    else
-                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
-                }
-                break;
-            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
+                    throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
@@ -1742,5 +1841,11 @@ public class EntityBuilder
         }
 
         return mappedObjects;
+    }
+
+    private long timestampToLong(String rawTimestamp)
+    {
+        TemporalAccessor timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.parse(rawTimestamp);
+        return Instant.from(timestamp).toEpochMilli();
     }
 }

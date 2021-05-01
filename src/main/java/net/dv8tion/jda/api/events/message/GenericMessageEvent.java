@@ -131,7 +131,13 @@ public abstract class GenericMessageEvent extends Event
     @Nonnull
     public Guild getGuild()
     {
-        return getTextChannel().getGuild();
+        if (!(channel instanceof GuildChannel))
+        {
+            throw new IllegalStateException("This message was not sent in a guild");
+        }
+
+        //TODO | This will break when GuildThread doesn't extend GuildChannel
+        return ((GuildChannel) channel).getGuild();
     }
 
     /**

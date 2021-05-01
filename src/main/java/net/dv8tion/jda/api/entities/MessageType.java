@@ -30,11 +30,13 @@ public enum MessageType
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been added to the Group.
+     * Also used to indicate that a member has been added to a TODO {Thread}.
      */
     RECIPIENT_ADD(1),
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been removed from the Group.
+     * Also used to indicate that a member has been removed from a TODO {Thread}.
      */
     RECIPIENT_REMOVE(2),
 
@@ -45,6 +47,7 @@ public enum MessageType
 
     /**
      * Specialized message used for Groups as a System-Message showing that the name of the Group was changed.
+     * Also used to indicate when a TODO {Thread} was renamed.
      */
     CHANNEL_NAME_CHANGE(4),
 
@@ -109,6 +112,11 @@ public enum MessageType
     GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17),
 
     /**
+     * TODO docs | https://discord.com/developers/docs/topics/threads#new-message-types
+     */
+    THREAD_CREATED(18),
+
+    /**
      * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
      */
     INLINE_REPLY(19, false),
@@ -118,6 +126,11 @@ public enum MessageType
      * <br>Most commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
      */
     APPLICATION_COMMAND(20),
+
+    /**
+     * TODO docs | THREAD_STARTER_MESSAGE
+     */
+    THREAD_STARTER_MESSAGE(21),
 
     /**
      * Unknown MessageType.
