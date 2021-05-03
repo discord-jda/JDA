@@ -337,6 +337,7 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Nonnull
     @Override
     public List<ActionRow> getActionRows()
     {

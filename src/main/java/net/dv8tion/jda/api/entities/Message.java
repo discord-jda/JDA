@@ -42,6 +42,7 @@ import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -520,10 +521,10 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
      * jump to the specified message.
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     * 
+     *
      * @return A String representing the jump-to URL for the message
      */
     @Nonnull
@@ -563,8 +564,8 @@ public interface Message extends ISnowflake, Formattable
     String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters 
-     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used 
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters
+     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used
      * for formatting are escaped to prevent possible formatting.
      *
      * @throws java.lang.UnsupportedOperationException
@@ -775,17 +776,39 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     List<MessageEmbed> getEmbeds();
 
+    @Nonnull
     List<ActionRow> getActionRows(); // TODO: Figure out a better naming/api
+
+    @Nonnull
+    default List<Button> getButtons()
+    {
+        return getActionRows().stream()
+                .filter(Button.class::isInstance)
+                .map(Button.class::cast)
+                .collect(Collectors.toList());
+    }
 
     @Nullable
     default Button getButtonById(@Nonnull String id)
     {
         Checks.notNull(id, "Button ID");
-        return getActionRows().stream()
-                .map(ActionRow::getButtons)
-                .flatMap(List::stream)
+        return getButtons().stream()
                 .filter(it -> id.equals(it.getId()))
                 .findFirst().orElse(null);
+    }
+
+    @Nonnull
+    default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
+    {
+        Checks.notNull(label, "Label");
+        Predicate<Button> filter;
+        if (ignoreCase)
+            filter = b -> label.equalsIgnoreCase(b.getLabel());
+        else
+            filter = b -> label.equals(b.getLabel());
+        return getButtons().stream()
+                .filter(filter)
+                .collect(Collectors.toList());
     }
 
     /**

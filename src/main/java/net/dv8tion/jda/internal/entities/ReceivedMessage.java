@@ -727,6 +727,7 @@ public class ReceivedMessage extends AbstractMessage
         return embeds;
     }
 
+    @Nonnull
     @Override
     public List<ActionRow> getActionRows()
     {

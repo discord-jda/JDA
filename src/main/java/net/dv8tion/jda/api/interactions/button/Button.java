@@ -74,7 +74,6 @@ public interface Button extends Component
         return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null);
     }
 
-
     @Nonnull
     static Button success(@Nonnull String id, @Nonnull String label)
     {
@@ -82,7 +81,6 @@ public interface Button extends Component
         Checks.notEmpty(label, "Label");
         return new ButtonImpl(id, label, ButtonStyle.SUCCESS, false, null);
     }
-
 
     @Nonnull
     static Button danger(@Nonnull String id, @Nonnull String label)
@@ -92,12 +90,22 @@ public interface Button extends Component
         return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null);
     }
 
-
     @Nonnull
     static Button link(@Nonnull String url, @Nonnull String label)
     {
         Checks.notEmpty(url, "URL");
         Checks.notEmpty(label, "Label");
         return new ButtonImpl(null, label, ButtonStyle.LINK, url, false, null);
+    }
+
+    @Nonnull
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label)
+    {
+        Checks.notNull(style, "Style");
+        Checks.notEmpty(idOrUrl, "Id or URL");
+        Checks.notNull(label, "Label");
+        if (style == ButtonStyle.LINK)
+            return link(idOrUrl, label);
+        return new ButtonImpl(idOrUrl, label, style, false, null);
     }
 }
