@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.restaction.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -110,8 +110,8 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
 
     @Nonnull
     @Override
-    public ReplyAction defer()
+    public ReplyAction deferReply()
     {
-        return interaction.defer();
+        return interaction.deferReply();
     }
 }

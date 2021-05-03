@@ -21,10 +21,12 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -56,6 +58,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected final StringBuilder content;
     protected final MessageChannel channel;
     protected final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
+    protected List<ActionRow> components;
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
@@ -322,6 +325,18 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    public MessageActionImpl setActionRows(@Nonnull ActionRow... rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        if (components == null)
+            components = new ArrayList<>();
+        Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
+        Collections.addAll(components, rows);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public MessageActionImpl override(final boolean bool)
     {
@@ -450,6 +465,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.putNull("nonce");
             else
                 obj.put("nonce", nonce);
+            if (components == null)
+                obj.putNull("components");
+            else
+                obj.put("components", DataArray.fromCollection(components));
         }
         else
         {
@@ -459,6 +478,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("content", content.toString());
             if (nonce != null)
                 obj.put("nonce", nonce);
+            if (components != null)
+                obj.put("components", DataArray.fromCollection(components));
         }
         if (messageReference != 0)
         {

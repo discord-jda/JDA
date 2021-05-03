@@ -95,7 +95,7 @@ public class SlashBotExample extends ListenerAdapter
 
     public void ban(SlashCommandEvent event, User user, Member member)
     {
-        event.defer(true).queue(); // Let the user know we received the command before doing anything else
+        event.deferReply(true).queue(); // Let the user know we received the command before doing anything else
         InteractionHook hook = event.getHook(); // This is a special webhook that allows you to send messages without having permissions in the channel and also allows ephemeral messages
         hook.setEphemeral(true); // All messages here will now be ephemeral implicitly
         if (!event.getMember().hasPermission(Permission.BAN_MEMBERS))

@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.requests.restaction;
+package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.interactions.Component;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -32,8 +30,20 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public interface ReplyAction extends RestAction<InteractionHook>, AllowedMentions<ReplyAction>
+public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction>
 {
+    @Nonnull
+    @Override
+    ReplyAction setCheck(@Nullable BooleanSupplier checks);
+
+    @Nonnull
+    @Override
+    ReplyAction timeout(long timeout, @Nonnull TimeUnit unit);
+
+    @Nonnull
+    @Override
+    ReplyAction deadline(long timestamp);
+
     @Nonnull
     @CheckReturnValue
     default ReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
@@ -65,12 +75,18 @@ public interface ReplyAction extends RestAction<InteractionHook>, AllowedMention
     @CheckReturnValue
     ReplyAction addActionRows(@Nonnull ActionRow... rows);
 
+    @Nonnull
+    ReplyAction setContent(@Nullable final String content);
+
+    @Nonnull
+    ReplyAction setTTS(final boolean isTTS);
+
     // doesn't support embeds or attachments
     @Nonnull
     @CheckReturnValue
     ReplyAction setEphemeral(boolean ephemeral);
 
-// Currently not supported, sad face
+    // Currently not supported, sad face
 //    @Nonnull
 //    @CheckReturnValue
 //    default CommandReplyAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
@@ -107,24 +123,6 @@ public interface ReplyAction extends RestAction<InteractionHook>, AllowedMention
 //    @CheckReturnValue
 //    CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
-    @Nonnull
-    @Override
-    ReplyAction setCheck(@Nullable BooleanSupplier checks);
-
-    @Nonnull
-    @Override
-    ReplyAction timeout(long timeout, @Nonnull TimeUnit unit);
-
-    @Nonnull
-    @Override
-    ReplyAction deadline(long timestamp);
-
-    @Nonnull
-    ReplyAction setTTS(final boolean isTTS);
-
-    @Nonnull
-    ReplyAction setContent(@Nullable final String content);
-
     enum Flag
     {
         EPHEMERAL(6);
@@ -134,30 +132,6 @@ public interface ReplyAction extends RestAction<InteractionHook>, AllowedMention
         Flag(int offset)
         {
             this.raw = 1 << offset;
-        }
-
-        public int getRaw()
-        {
-            return raw;
-        }
-    }
-
-    enum ResponseType // TODO: Write better docs
-    {
-        /** Respond with a message, showing the user's input */
-        CHANNEL_MESSAGE_WITH_SOURCE(4),
-        /** ACK a command without sending a message, showing the user's input */
-        DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE(5),
-        /** Defer the update of the message for a component interaction */
-        DEFERRED_MESSAGE_UPDATE(6),
-        /** Update the message for a component interaction */
-        MESSAGE_UPDATE(7), // TODO: Support this
-        ;
-        private final int raw;
-
-        ResponseType(int raw)
-        {
-            this.raw = raw;
         }
 
         public int getRaw()

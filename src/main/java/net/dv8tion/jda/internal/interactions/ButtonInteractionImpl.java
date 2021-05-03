@@ -21,12 +21,10 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.interactions.button.Button;
 import net.dv8tion.jda.api.interactions.button.ButtonInteraction;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.ReplyActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateActionImpl;
 
 import javax.annotation.Nonnull;
 
@@ -60,10 +58,9 @@ public class ButtonInteractionImpl extends InteractionImpl implements ButtonInte
 
     @Nonnull
     @Override
-    public RestAction<InteractionHook> acknowledge()
+    public UpdateAction deferEdit()
     {
-        Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getId(), token);
-        return new ReplyActionImpl(getUser().getJDA(), route, this.hook);
+        return new UpdateActionImpl(this.hook);
     }
 
     @Nonnull

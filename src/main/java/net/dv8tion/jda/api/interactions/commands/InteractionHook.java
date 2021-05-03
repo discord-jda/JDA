@@ -44,6 +44,7 @@ public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
     @Nonnull
     JDA getJDA();
 
+    // TODO: These should be specific update actions similar to ComponentInteraction#editMessage
     @Nonnull
     @CheckReturnValue
     default InteractionWebhookAction editOriginal(@Nonnull String content)

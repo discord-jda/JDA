@@ -23,8 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.ReplyActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -149,9 +148,8 @@ public class InteractionImpl implements Interaction
 
     @Nonnull
     @Override
-    public ReplyActionImpl defer()
+    public ReplyActionImpl deferReply()
     {
-        Route.CompiledRoute route = Route.Interactions.CALLBACK.compile(getId(), token);
-        return new ReplyActionImpl(getUser().getJDA(), route, this.hook).deferred();
+        return new ReplyActionImpl(this.hook);
     }
 }

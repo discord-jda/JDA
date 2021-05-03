@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
@@ -38,7 +37,7 @@ import java.util.regex.Pattern;
  * @see    Guild#retrieveWebhooks()
  * @see    JDA#retrieveWebhookById(String)
  */
-public interface Webhook extends ISnowflake, WebhookClient<WebhookMessageAction>, IFakeable
+public interface Webhook extends ISnowflake, IFakeable
 {
     Pattern WEBHOOK_URL = Pattern.compile("https?://(?:[^\\s.]+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(\\d+)/([^\\s/]+)", Pattern.CASE_INSENSITIVE);
 

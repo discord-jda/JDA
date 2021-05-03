@@ -46,6 +46,8 @@ public class InteractionCreateHandler extends SocketHandler
         long guildId = content.getUnsignedLong("guild_id", 0);
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
+        if (guildId != 0 && api.getGuildById(guildId) == null)
+            return null; // discard event if its not from a guild we are currently in
 
         switch (type)
         {

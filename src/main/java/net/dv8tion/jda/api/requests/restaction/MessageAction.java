@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -686,6 +687,19 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     @Nonnull
     @CheckReturnValue
     MessageAction clearFiles(@Nonnull Consumer<InputStream> finalizer);
+
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        return setActionRows(rows.toArray(new ActionRow[0]));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    MessageAction setActionRows(@Nonnull ActionRow... rows);
 
     /**
      * Whether all fields should be considered when editing a message

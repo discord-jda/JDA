@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.interactions.button.Button;
 import net.dv8tion.jda.api.interactions.button.ButtonInteraction;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,9 +47,9 @@ public class ButtonClickEvent extends GenericInteractionCreateEvent implements B
 
     @Nonnull
     @Override
-    public RestAction<InteractionHook> acknowledge()
+    public UpdateAction deferEdit()
     {
-        return interaction.acknowledge();
+        return interaction.deferEdit();
     }
 
     @Nonnull

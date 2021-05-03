@@ -138,7 +138,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<InteractionWebhoo
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setEphemeral(ephemeral);
+        return onReady(new WebhookMessageActionImpl(getJDA(), interaction.getMessageChannel(), route)).setEphemeral(ephemeral);
     }
 
     @Nonnull
@@ -149,7 +149,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<InteractionWebhoo
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route));
+        return onReady(new WebhookMessageActionImpl(getJDA(), interaction.getMessageChannel(), route));
     }
 
     @Nonnull

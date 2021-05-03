@@ -16,22 +16,16 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
-import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
-import java.util.regex.Matcher;
 
-public interface WebhookClient<T extends WebhookMessageAction>
+public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this type parameter really needed? It only hides the setEphemeral method
 {
     @Nonnull
     @CheckReturnValue
@@ -95,6 +89,7 @@ public interface WebhookClient<T extends WebhookMessageAction>
         return sendFile(new ByteArrayInputStream(data), name, options);
     }
 
+    // TODO: These should be specific update actions similar to ComponentInteraction#editMessage
 
     @Nonnull
     @CheckReturnValue
@@ -226,45 +221,45 @@ public interface WebhookClient<T extends WebhookMessageAction>
         return deleteMessageById(Long.toUnsignedString(messageId));
     }
 
-    @Nonnull
-    static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String url)
-    {
-        Checks.notNull(url, "URL");
-        Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
-        if (!matcher.matches())
-            throw new IllegalArgumentException("Provided invalid webhook URL");
-        String id = matcher.group(1);
-        String token = matcher.group(2);
-        return createClient(api, id, token);
-    }
-
-    @Nonnull
-    static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
-    {
-        Checks.notNull(api, "JDA");
-        Checks.notBlank(webhookToken, "Token");
-        return new AbstractWebhookClient<WebhookMessageAction>(MiscUtil.parseSnowflake(webhookId), webhookToken, api)
-        {
-            @Override
-            public WebhookMessageAction sendRequest()
-            {
-                Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(webhookId, webhookToken);
-                route = route.withQueryParams("wait", "true");
-                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
-                action.run();
-                return action;
-            }
-
-            @Override
-            public WebhookMessageAction editRequest(String messageId)
-            {
-                Checks.isSnowflake(messageId);
-                Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhookId, webhookToken, messageId);
-                route = route.withQueryParams("wait", "true");
-                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
-                action.run();
-                return action;
-            }
-        };
-    }
+//    @Nonnull
+//    static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String url)
+//    {
+//        Checks.notNull(url, "URL");
+//        Matcher matcher = Webhook.WEBHOOK_URL.matcher(url);
+//        if (!matcher.matches())
+//            throw new IllegalArgumentException("Provided invalid webhook URL");
+//        String id = matcher.group(1);
+//        String token = matcher.group(2);
+//        return createClient(api, id, token);
+//    }
+//
+//    @Nonnull
+//    static WebhookClient<WebhookMessageAction> createClient(@Nonnull JDA api, @Nonnull String webhookId, @Nonnull String webhookToken)
+//    {
+//        Checks.notNull(api, "JDA");
+//        Checks.notBlank(webhookToken, "Token");
+//        return new AbstractWebhookClient<WebhookMessageAction>(MiscUtil.parseSnowflake(webhookId), webhookToken, api)
+//        {
+//            @Override
+//            public WebhookMessageAction sendRequest()
+//            {
+//                Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(webhookId, webhookToken);
+//                route = route.withQueryParams("wait", "true");
+//                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
+//                action.run();
+//                return action;
+//            }
+//
+//            @Override
+//            public WebhookMessageAction editRequest(String messageId)
+//            {
+//                Checks.isSnowflake(messageId);
+//                Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(webhookId, webhookToken, messageId);
+//                route = route.withQueryParams("wait", "true");
+//                WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, route);
+//                action.run();
+//                return action;
+//            }
+//        };
+//    }
 }

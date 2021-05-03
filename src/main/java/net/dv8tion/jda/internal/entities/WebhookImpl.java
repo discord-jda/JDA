@@ -260,7 +260,9 @@ public class WebhookImpl extends AbstractWebhookClient<WebhookMessageAction> imp
     {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        return new WebhookMessageActionImpl(api, route);
+        WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, channel, route);
+        action.run();
+        return action;
     }
 
     @Override
@@ -269,7 +271,9 @@ public class WebhookImpl extends AbstractWebhookClient<WebhookMessageAction> imp
         checkToken();
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
-        return new WebhookMessageActionImpl(api, route);
+        WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, channel, route);
+        action.run();
+        return action;
     }
 
     @Nonnull

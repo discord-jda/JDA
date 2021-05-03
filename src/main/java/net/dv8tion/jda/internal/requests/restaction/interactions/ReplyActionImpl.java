@@ -14,58 +14,42 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.requests.restaction;
+package net.dv8tion.jda.internal.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.exceptions.InteractionFailureException;
 import net.dv8tion.jda.api.interactions.ActionRow;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.Request;
-import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-import net.dv8tion.jda.internal.requests.Requester;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
-import net.dv8tion.jda.internal.utils.IOUtil;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.InputStream;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
-public class ReplyActionImpl extends RestActionImpl<InteractionHook> implements ReplyAction
+public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
 {
-    private final InteractionHookImpl hook;
     private final List<MessageEmbed> embeds = new ArrayList<>();
-    private final Map<String, InputStream> files = new HashMap<>();
     private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
     private final List<ActionRow> components = new ArrayList<>();
-    private int flags;
-
     private String content = "";
-    private boolean tts;
-    private boolean defer;
 
-    public ReplyActionImpl(JDA api, Route.CompiledRoute route, InteractionHookImpl hook)
+    private int flags;
+    private boolean tts;
+
+    public ReplyActionImpl(InteractionHookImpl hook)
     {
-        super(api, route);
-        this.hook = hook;
+        super(hook);
     }
 
     public ReplyActionImpl applyMessage(Message message)
@@ -77,20 +61,11 @@ public class ReplyActionImpl extends RestActionImpl<InteractionHook> implements 
         return this;
     }
 
-    public ReplyActionImpl deferred()
-    {
-        // Whether we expect to send a late reply
-        this.defer = true;
-        return this;
-    }
-
-    private DataObject getJSON()
+    protected DataObject getJSON()
     {
         DataObject json = DataObject.empty();
         if (isEmpty())
         {
-            if (!defer)
-                return json.put("type", 6); // this will likely become its own action type, we need to add more abstraction ...
             json.put("type", ResponseType.DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE.getRaw());
             if (flags != 0)
                 json.put("data", DataObject.empty().put("flags", flags));
@@ -118,41 +93,6 @@ public class ReplyActionImpl extends RestActionImpl<InteractionHook> implements 
         return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty();
     }
 
-    @Override
-    protected RequestBody finalizeData()
-    {
-        DataObject json = getJSON();
-        if (files.isEmpty())
-            return getRequestBody(json);
-
-        MultipartBody.Builder body = new MultipartBody.Builder();
-        int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
-            RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
-            body.addFormDataPart("file" + i++, file.getKey(), stream);
-        }
-
-        body.addFormDataPart("payload_json", json.toString());
-        files.clear();
-        return body.build();
-    }
-
-    @Override
-    protected void handleSuccess(Response response, Request<InteractionHook> request)
-    {
-        hook.ready();
-        request.onSuccess(hook);
-    }
-
-    @Override
-    public void handleResponse(Response response, Request<InteractionHook> request)
-    {
-        if (!response.isOk())
-            hook.fail(new InteractionFailureException());
-        super.handleResponse(response, request);
-    }
-
     @Nonnull
     @Override
     public ReplyActionImpl setEphemeral(boolean ephemeral)
@@ -166,7 +106,7 @@ public class ReplyActionImpl extends RestActionImpl<InteractionHook> implements 
 
 //    @Nonnull
 //    @Override
-//    public CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+//    public ReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
 //    {
 //        Checks.notNull(data, "Data");
 //        Checks.notEmpty(name, "Name");
@@ -286,48 +226,5 @@ public class ReplyActionImpl extends RestActionImpl<InteractionHook> implements 
     {
         allowedMentions.mentionRoles(roleIds);
         return this;
-    }
-
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Here we intercept calls to queue/submit/complete to prevent double ack/reply scenarios with a better error message than discord provides //
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    // This is an exception factory method that only returns an exception if we would have to throw it or fail in another way.
-    private IllegalStateException tryAck() // note that hook.ack() is already synchronized so this is actually thread-safe!
-    {
-        // true => we already called this before => this will never succeed!
-        return hook.ack() ? new IllegalStateException("This interaction has already been acknowledged or replied to. You can only reply or acknowledge an interaction (or slash command) once!")
-                          : null; // null indicates we were successful, no exception means we can't fail :)
-    }
-
-    @Override
-    public void queue(Consumer<? super InteractionHook> success, Consumer<? super Throwable> failure)
-    {
-        IllegalStateException exception = tryAck();
-        if (exception != null)
-        {
-            if (failure != null)
-                failure.accept(exception); // if the failure callback throws that will just bubble up, which is acceptable
-            else
-                RestAction.getDefaultFailure().accept(exception);
-            return;
-        }
-
-        super.queue(success, failure);
-    }
-
-    @Nonnull
-    @Override
-    public CompletableFuture<InteractionHook> submit(boolean shouldQueue)
-    {
-        IllegalStateException exception = tryAck();
-        if (exception != null)
-        {
-            CompletableFuture<InteractionHook> future = new CompletableFuture<>();
-            future.completeExceptionally(exception);
-            return future;
-        }
-
-        return super.submit(shouldQueue);
     }
 }

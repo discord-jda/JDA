@@ -18,8 +18,10 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
+import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -52,6 +54,41 @@ public interface ComponentInteraction extends Interaction
     MessageChannel getChannel();
 
     @Nonnull
-    @CheckReturnValue // TODO: Support response type 7 (UPDATE_MESSAGE)
-    RestAction<InteractionHook> acknowledge();
+    @CheckReturnValue
+    UpdateAction deferEdit();
+
+    @Nonnull
+    @CheckReturnValue
+    default UpdateAction editMessage(@Nonnull Message message)
+    {
+        Checks.notNull(message, "Message");
+        UpdateActionImpl action = (UpdateActionImpl) deferReply();
+        return action.applyMessage(message);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default UpdateAction editMessage(@Nonnull String content)
+    {
+        Checks.notNull(content, "Content");
+        return deferEdit().setContent(content);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default UpdateAction editMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    {
+        Checks.notNull(embed, "MessageEmbed");
+        Checks.noneNull(embeds, "MessageEmbed");
+        return deferEdit().setEmbeds(embeds);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default UpdateAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    {
+        Checks.notNull(format, "Format String");
+        return editMessage(String.format(format, args));
+    }
+
 }

@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
@@ -50,13 +51,15 @@ public class WebhookMessageActionImpl
     private final Map<String, InputStream> files = new HashMap<>();
     private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
     private final List<ActionRow> components = new ArrayList<>();
+    private final MessageChannel channel;
 
     private boolean ephemeral, tts;
     private String username, avatarUrl;
 
-    public WebhookMessageActionImpl(JDA api, Route.CompiledRoute route)
+    public WebhookMessageActionImpl(JDA api, MessageChannel channel, Route.CompiledRoute route)
     {
         super(api, route);
+        this.channel = channel;
     }
 
     @Nonnull
@@ -66,6 +69,7 @@ public class WebhookMessageActionImpl
         this.tts = message.isTTS();
         this.embeds.addAll(message.getEmbeds());
         this.allowedMentions.applyMessage(message);
+        // TODO: Copy components
         return setContent(message.getContentRaw());
     }
 
@@ -198,7 +202,7 @@ public class WebhookMessageActionImpl
     {
         // TODO: Create new message object that uses the webhook endpoints to edit/delete
         // TODO: This could be a simple decorator or proxy implementation
-        Message message = request.getJDA().getEntityBuilder().createMessage(response.getObject());
+        Message message = request.getJDA().getEntityBuilder().createMessage(response.getObject(), channel, false);
         request.onSuccess(message);
     }
 

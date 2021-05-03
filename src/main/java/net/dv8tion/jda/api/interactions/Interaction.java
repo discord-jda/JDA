@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.commands.InteractionHook;
-import net.dv8tion.jda.api.requests.restaction.ReplyAction;
-import net.dv8tion.jda.internal.requests.restaction.ReplyActionImpl;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -63,7 +63,7 @@ public interface Interaction extends ISnowflake
 
     /**
      * Whether this interaction has already been acknowledged.
-     * <br>Both {@link #defer()}, {@link #acknowledge()} and {@link #reply(String)} acknowledge an interaction.
+     * <br>Both {@link #deferReply()} and {@link #reply(String)} acknowledge an interaction.
      * Each interaction can only be acknowledged once.
      *
      * @return True, if this interaction has already been acknowledged
@@ -72,13 +72,13 @@ public interface Interaction extends ISnowflake
 
     @Nonnull
     @CheckReturnValue
-    ReplyAction defer();
+    ReplyAction deferReply();
 
     @Nonnull
     @CheckReturnValue
-    default ReplyAction defer(boolean ephemeral)
+    default ReplyAction deferReply(boolean ephemeral)
     {
-        return defer().setEphemeral(ephemeral);
+        return deferReply().setEphemeral(ephemeral);
     }
 
     @Nonnull
@@ -86,7 +86,7 @@ public interface Interaction extends ISnowflake
     default ReplyAction reply(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
-        ReplyActionImpl action = (ReplyActionImpl) defer();
+        ReplyActionImpl action = (ReplyActionImpl) deferReply();
         return action.applyMessage(message);
     }
 
@@ -95,7 +95,7 @@ public interface Interaction extends ISnowflake
     default ReplyAction reply(@Nonnull String content)
     {
         Checks.notNull(content, "Content");
-        return defer().setContent(content);
+        return deferReply().setContent(content);
     }
 
     @Nonnull
@@ -104,7 +104,7 @@ public interface Interaction extends ISnowflake
     {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
-        return defer().addEmbeds(embed).addEmbeds(embeds);
+        return deferReply().addEmbeds(embed).addEmbeds(embeds);
     }
 
     @Nonnull

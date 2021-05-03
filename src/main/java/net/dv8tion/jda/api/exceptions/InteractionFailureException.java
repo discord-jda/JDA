@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.exceptions;
 
-import net.dv8tion.jda.api.requests.restaction.ReplyAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import java.util.concurrent.CancellationException;
 
