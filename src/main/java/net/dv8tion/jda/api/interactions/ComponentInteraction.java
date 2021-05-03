@@ -62,7 +62,7 @@ public interface ComponentInteraction extends Interaction
     default UpdateAction editMessage(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
-        UpdateActionImpl action = (UpdateActionImpl) deferReply();
+        UpdateActionImpl action = (UpdateActionImpl) deferEdit();
         return action.applyMessage(message);
     }
 
