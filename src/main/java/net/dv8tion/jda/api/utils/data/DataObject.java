@@ -780,8 +780,10 @@ public class DataObject implements SerializableData
         Object value = data.get(key);
         if (value == null)
             return null;
-        if (type.isAssignableFrom(value.getClass()))
+        if (type.isInstance(value))
             return type.cast(value);
+        if (type == String.class)
+            return type.cast(value.toString());
         // attempt type coercion
         if (value instanceof Number && numberParse != null)
             return numberParse.apply((Number) value);

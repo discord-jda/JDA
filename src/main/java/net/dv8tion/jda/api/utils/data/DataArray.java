@@ -732,8 +732,10 @@ public class DataArray implements Iterable<Object>, SerializableArray
         Object value = data.get(index);
         if (value == null)
             return null;
-        if (type.isAssignableFrom(value.getClass()))
+        if (type.isInstance(value))
             return type.cast(value);
+        if (type == String.class)
+            return type.cast(value.toString());
         // attempt type coercion
         if (stringMapper != null && value instanceof String)
             return stringMapper.apply((String) value);
