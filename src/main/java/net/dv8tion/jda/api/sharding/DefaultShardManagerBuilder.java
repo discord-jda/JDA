@@ -2320,7 +2320,7 @@ public class  DefaultShardManagerBuilder
      *         {@link net.dv8tion.jda.api.sharding.ShardManager#login()} to start it.
      *
      * @throws  LoginException
-     *          If the provided token is invalid.
+     *          If the provided token is invalid and {@code login} is true
      * @throws  IllegalArgumentException
      *          If the provided token is empty or null. Or the provided intents/cache configuration is not possible.
      *
