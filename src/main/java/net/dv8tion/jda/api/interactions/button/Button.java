@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.button;
 
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.Component;
-import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -31,7 +30,7 @@ public interface Button extends Component
     String getLabel();
 
     @Nonnull
-    Style getStyle();
+    ButtonStyle getStyle();
 
     @Nullable
     String getUrl();
@@ -64,7 +63,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.PRIMARY, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.PRIMARY, false, null);
     }
 
     @Nonnull
@@ -72,7 +71,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.SECONDARY, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null);
     }
 
 
@@ -81,7 +80,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.SUCCESS, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.SUCCESS, false, null);
     }
 
 
@@ -90,7 +89,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(id, label, Style.DANGER, false, null);
+        return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null);
     }
 
 
@@ -99,91 +98,6 @@ public interface Button extends Component
     {
         Checks.notEmpty(url, "URL");
         Checks.notEmpty(label, "Label");
-        return new ButtonImpl(null, label, Style.LINK, url, false, null);
+        return new ButtonImpl(null, label, ButtonStyle.LINK, url, false, null);
     }
-
-    enum Style
-    {
-        UNKNOWN(-1),
-        PRIMARY(1),
-        SECONDARY(2),
-        SUCCESS(3),
-        DANGER(4),
-        LINK(5),
-        ;
-
-        private final int key;
-
-        Style(int key)
-        {
-            this.key = key;
-        }
-
-        public int getKey()
-        {
-            return key;
-        }
-
-        @Nonnull
-        public static Style fromKey(int key)
-        {
-            for (Style style : values())
-            {
-                if (style.key == key)
-                    return style;
-            }
-            return UNKNOWN;
-        }
-    }
-
-    class Emoji implements SerializableData
-    {
-        private final String name;
-        private final long id;
-        private final boolean animated;
-
-        public Emoji(String name, long id, boolean animated)
-        {
-            this.name = name;
-            this.id = id;
-            this.animated = animated;
-        }
-
-        @Nonnull
-        public static Emoji ofUnicode(@Nonnull String name)
-        {
-            return new Emoji(name, 0, false);
-        }
-
-        @Nonnull
-        public static Emoji ofEmote(@Nonnull String name, long id, boolean animated)
-        {
-            return new Emoji(name, id, animated);
-        }
-
-        @Nonnull
-        @Override
-        public DataObject toData()
-        {
-            DataObject json = DataObject.empty().put("name", name);
-            if (id != 0)
-            {
-                json.put("id", id)
-                    .put("animated", animated);
-            }
-            return json;
-        }
-    }
-
-// Only really relevant for internals
-//    enum Type
-//    {
-//        ACTION_ROW(1), BUTTON(2);
-//        private final int key;
-//
-//        Type(int key)
-//        {
-//            this.key = key;
-//        }
-//    }
 }

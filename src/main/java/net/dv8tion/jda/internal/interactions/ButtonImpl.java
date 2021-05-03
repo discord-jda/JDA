@@ -16,7 +16,9 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.button.Button;
+import net.dv8tion.jda.api.interactions.button.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
@@ -26,7 +28,7 @@ public class ButtonImpl implements Button
 {
     private final String id;
     private final String label;
-    private final Style style;
+    private final ButtonStyle style;
     private final String url;
     private final boolean disabled;
     private final Emoji emoji;
@@ -36,22 +38,18 @@ public class ButtonImpl implements Button
         this(
             data.getString("custom_id", null),
             data.getString("label"),
-            Style.fromKey(data.getInt("style")),
+            ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
             data.getBoolean("disabled"),
-            data.optObject("emoji").map(emoji ->
-                new Emoji(emoji.getString("name"),
-                    emoji.getUnsignedLong("id", 0),
-                    emoji.getBoolean("animated"))
-            ).orElse(null));
+            data.optObject("emoji").map(Emoji::load).orElse(null));
     }
 
-    public ButtonImpl(String id, String label, Style style, boolean disabled, Emoji emoji)
+    public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)
     {
         this(id, label, style, null, disabled, emoji);
     }
 
-    public ButtonImpl(String id, String label, Style style, String url, boolean disabled, Emoji emoji)
+    public ButtonImpl(String id, String label, ButtonStyle style, String url, boolean disabled, Emoji emoji)
     {
         this.id = id;
         this.label = label;
@@ -84,7 +82,7 @@ public class ButtonImpl implements Button
 
     @Nonnull
     @Override
-    public Style getStyle()
+    public ButtonStyle getStyle()
     {
         return style;
     }
