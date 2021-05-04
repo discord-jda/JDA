@@ -28,7 +28,8 @@ public final class Helpers
 
     // locale-safe String#format
 
-    public static String format(String format, Object... args) {
+    public static String format(String format, Object... args)
+    {
         return String.format(Locale.ROOT, format, args);
     }
 
