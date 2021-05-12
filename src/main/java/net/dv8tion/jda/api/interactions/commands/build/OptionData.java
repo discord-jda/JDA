@@ -24,10 +24,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class OptionData implements SerializableData
@@ -45,6 +42,7 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description, 100, "Description");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.check(name.toLowerCase(Locale.ROOT).equals(name), "Option names must be lowercase");
         this.type = type;
         this.name = name;
         this.description = description;

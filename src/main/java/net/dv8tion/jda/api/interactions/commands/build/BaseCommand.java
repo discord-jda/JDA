@@ -24,6 +24,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class BaseCommand<T extends BaseCommand<T>> implements SerializableData
@@ -38,6 +39,7 @@ public class BaseCommand<T extends BaseCommand<T>> implements SerializableData
         Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description, 100, "Description");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.check(name.toLowerCase(Locale.ROOT).equals(name), "Names must be lowercase");
         this.name = name;
         this.description = description;
     }
