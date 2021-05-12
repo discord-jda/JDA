@@ -155,7 +155,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null
+     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
      *
      * @return The button instance
      */
@@ -164,6 +164,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
+        Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(id, label, ButtonStyle.PRIMARY, false, null);
     }
 
@@ -178,7 +179,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null
+     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
      *
      * @return The button instance
      */
@@ -187,6 +188,7 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
+        Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null);
     }
 
@@ -201,7 +203,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null
+     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
      *
      * @return The button instance
      */
@@ -210,6 +212,8 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
+        Checks.notLonger(id, 100, "Id");
+        Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(id, label, ButtonStyle.SUCCESS, false, null);
     }
 
@@ -224,7 +228,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null
+     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
      *
      * @return The button instance
      */
@@ -233,6 +237,8 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
+        Checks.notLonger(id, 100, "Id");
+        Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null);
     }
 
@@ -250,7 +256,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null
+     *         If any argument is empty or null, the label is longer than 80 characters, or the url is longer than 512 characters
      *
      * @return The button instance
      */
@@ -259,6 +265,8 @@ public interface Button extends Component
     {
         Checks.notEmpty(url, "URL");
         Checks.notEmpty(label, "Label");
+        Checks.notLonger(url, 512, "URL");
+        Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(null, label, ButtonStyle.LINK, url, false, null);
     }
 
@@ -277,7 +285,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null
+     *         If any argument is empty or null, the label is longer than 80 characters, the id is longer than 100 characters, or the url is longer than 512 characters
      *
      * @return The button instance
      */
@@ -285,10 +293,12 @@ public interface Button extends Component
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label)
     {
         Checks.notNull(style, "Style");
-        Checks.notEmpty(idOrUrl, "Id or URL");
         Checks.notNull(label, "Label");
+        Checks.notLonger(label, 80, "Label");
         if (style == ButtonStyle.LINK)
             return link(idOrUrl, label);
+        Checks.notEmpty(idOrUrl, "Id");
+        Checks.notLonger(idOrUrl, 100, "Id");
         return new ButtonImpl(idOrUrl, label, style, false, null);
     }
 }

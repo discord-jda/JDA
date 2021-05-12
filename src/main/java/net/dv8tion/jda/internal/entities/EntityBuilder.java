@@ -1215,7 +1215,7 @@ public class EntityBuilder
         {
             DataArray array = componentsArrayOpt.get();
             components = array.stream(DataArray::getObject)
-                    .map(o -> o.getArray("components"))
+                    .filter(it -> it.getInt("type", 0) == 1)
                     .map(ActionRow::load)
                     .collect(Collectors.toList());
         }

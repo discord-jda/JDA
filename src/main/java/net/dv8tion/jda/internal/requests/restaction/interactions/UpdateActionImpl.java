@@ -55,7 +55,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
         if (isEmpty())
             return json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw());
         json.put("type", ResponseType.MESSAGE_UPDATE.getRaw());
-        DataObject data = DataObject.empty(); // TODO: Apparently content is required, follow up on this with the api team
+        DataObject data = DataObject.empty();
         if (content != null)
             data.put("content", content);
         if (embeds != null)
@@ -69,8 +69,8 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
     public UpdateAction applyMessage(Message message)
     {
         this.content = message.getContentRaw();
-        this.embeds.addAll(message.getEmbeds());
-        // TODO: Components
+        this.embeds = new ArrayList<>(message.getEmbeds());
+        this.components = new ArrayList<>(message.getActionRows());
         return this;
     }
 
@@ -78,7 +78,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
 
     @Nonnull
     @Override
-    public UpdateAction setEmbeds(@Nonnull Collection<MessageEmbed> embeds)
+    public UpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         for (MessageEmbed embed : embeds)
@@ -101,9 +101,8 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
     public UpdateAction setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
-        if (components == null)
-            components = new ArrayList<>();
-        Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
+        Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
+        this.components = new ArrayList<>();
         Collections.addAll(components, rows);
         return this;
     }
@@ -112,6 +111,8 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
     @Override
     public UpdateAction setContent(@Nullable String content)
     {
+        if (content != null)
+            Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
         this.content = content == null ? "" : content;
         return this;
     }

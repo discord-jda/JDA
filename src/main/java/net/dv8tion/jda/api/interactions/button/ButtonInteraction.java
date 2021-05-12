@@ -27,7 +27,9 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Interaction on a {@link Button} component.
@@ -73,27 +75,25 @@ public interface ButtonInteraction extends ComponentInteraction
             throw new IllegalStateException("Cannot update button for ephemeral messages! Discord does not provide enough information to perform the update.");
         List<ActionRow> components = new ArrayList<>(message.getActionRows());
         String id = getComponentId();
-        find: for (int i = 0; i < components.size(); i++)
+        find: for (Iterator<ActionRow> rows = components.iterator(); rows.hasNext();)
         {
-            List<Component> row = components.get(i).getComponents();
-            for (int j = 0; j < row.size(); j++)
+            List<Component> row = rows.next().getComponents();
+            for (ListIterator<Component> it = row.listIterator(); it.hasNext();)
             {
-                if (id.equals(row.get(j).getId()))
+                Component component = it.next();
+                if (id.equals(component.getId()))
                 {
-                    row = new ArrayList<>(row);
                     if (newButton == null)
-                        row.remove(j);
+                        it.remove();
                     else
-                        row.set(j, newButton);
+                        it.set(newButton);
                     if (row.isEmpty())
-                        components.remove(i);
-                    else
-                        components.set(i, ActionRow.of(row));
+                        rows.remove();
                     break find;
                 }
             }
-
         }
+
         if (isAcknowledged())
         {
             // this doesn't work for ephemeral messages :(

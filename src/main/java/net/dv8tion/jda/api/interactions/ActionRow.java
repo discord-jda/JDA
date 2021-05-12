@@ -24,29 +24,59 @@ import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-public class ActionRow implements SerializableData
+/**
+ * One row of interactive message components.
+ *
+ * @see Component
+ */
+public class ActionRow implements SerializableData, Iterable<Component>
 {
     private final List<Component> components = new ArrayList<>();
 
     private ActionRow() {}
 
+    /**
+     * Load ActionRow from serialized representation.
+     * <br>Inverse of {@link #toData()}.
+     *
+     * @param  data
+     *         Serialized version of an action row
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the provided data is not a valid action row
+     * @throws IllegalArgumentException
+     *         If the data is null or the type is not 1
+     *
+     * @return ActionRow instance
+     */
     @Nonnull
-    public static ActionRow load(@Nonnull DataArray array)
+    public static ActionRow load(@Nonnull DataObject data)
     {
-        Checks.notNull(array, "DataArray");
+        Checks.notNull(data, "Data");
         ActionRow row = new ActionRow();
-        array.stream(DataArray::getObject)
+        if (data.getInt("type", 0) != 1)
+            throw new IllegalArgumentException("Data has incorrect type. Expected: 1 Found: " + data.getInt("type"));
+        data.getArray("components")
+            .stream(DataArray::getObject)
             .map(ButtonImpl::new)
             .forEach(row.components::add);
         return row;
     }
 
+    /**
+     * Create one row of up to 5 interactive message {@link Component components}.
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If anything is null, empty, or more than 5 components are provided
+     *
+     * @return The action row
+     */
     @Nonnull
     public static ActionRow of(@Nonnull Collection<? extends Component> components)
     {
@@ -54,6 +84,17 @@ public class ActionRow implements SerializableData
         return of(components.toArray(new Component[0]));
     }
 
+    /**
+     * Create one row of up to 5 interactive message {@link Component components}.
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If anything is null, empty, or more than 5 components are provided
+     *
+     * @return The action row
+     */
     @Nonnull
     public static ActionRow of(@Nonnull Component... components)
     {
@@ -65,12 +106,23 @@ public class ActionRow implements SerializableData
         return row;
     }
 
+    /**
+     * List representation of this action row.
+     * <br>This list is modifiable. Note that empty action rows are not supported.
+     *
+     * @return {@link List} of components in this action row
+     */
     @Nonnull
     public List<Component> getComponents()
     {
-        return Collections.unmodifiableList(components);
+        return components;
     }
 
+    /**
+     * List of buttons in this action row.
+     *
+     * @return Immutable {@link List} of {@link Button Buttons}
+     */
     @Nonnull
     public List<Button> getButtons()
     {
@@ -88,5 +140,12 @@ public class ActionRow implements SerializableData
         return DataObject.empty()
                 .put("type", 1)
                 .put("components", DataArray.fromCollection(components));
+    }
+
+    @Nonnull
+    @Override
+    public Iterator<Component> iterator()
+    {
+        return components.iterator();
     }
 }

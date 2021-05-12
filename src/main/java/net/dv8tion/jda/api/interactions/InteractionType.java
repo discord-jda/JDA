@@ -16,6 +16,14 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import javax.annotation.CheckReturnValue;
+import javax.annotation.Nonnull;
+
+/**
+ * Enum for interaction types.
+ *
+ * @see Interaction#getType()
+ */
 public enum InteractionType
 {
     UNKNOWN(-1),
@@ -36,6 +44,8 @@ public enum InteractionType
         return key;
     }
 
+    @Nonnull
+    @CheckReturnValue
     public static InteractionType fromKey(int key)
     {
         switch (key)

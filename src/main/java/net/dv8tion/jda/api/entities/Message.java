@@ -783,8 +783,8 @@ public interface Message extends ISnowflake, Formattable
     default List<Button> getButtons()
     {
         return getActionRows().stream()
-                .filter(Button.class::isInstance)
-                .map(Button.class::cast)
+                .map(ActionRow::getButtons)
+                .flatMap(List::stream)
                 .collect(Collectors.toList());
     }
 
