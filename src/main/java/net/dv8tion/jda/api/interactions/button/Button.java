@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.button;
 
 import net.dv8tion.jda.api.entities.Emoji;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -24,40 +25,140 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Represents a Message Button.
+ * <br>These buttons are located below the message in {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}.
+ *
+ * <p>Each button has either a {@code custom_id} or URL attached.
+ * The id has to be provided by the user and can be used to identify the button in the {@link net.dv8tion.jda.api.events.interaction.ButtonClickEvent ButtonClickEvent}.
+ *
+ * <h2>Example Usage</h2>
+ * <pre>{@code
+ * public class HelloBot extends ListenerAdapter {
+ *   @Override
+ *   public void onSlashCommand(SlashCommandEvent event) {
+ *       if (event.getName().equals("hello")) {
+ *           event.reply("Click the button to say hello")
+ *               .addActionRow(Button.primary("hello", "Click Me"))
+ *               .queue();
+ *       } else if (event.getName().equals("info")) {
+ *           event.reply("Click the buttons for more info")
+ *               .addActionRow( // link buttons don't send events, they just open a link in the browser when clicked
+ *                   Button.link("https://github.com/DV8FromTheWorld/JDA", "GitHub"),
+ *                   Button.link("https://ci.dv8tion.net/job/JDA/javadoc/", "Javadocs"))
+ *               .queue();
+ *       }
+ *   }
+ *
+ *   @Override
+ *   public void onButtonClick(ButtonClickEvent event) {
+ *       if (event.getComponentId().equals("hello")) {
+ *           event.reply("Hello :)").queue();
+ *       }
+ *   }
+ * }
+ * }</pre>
+ *
+ * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRow(Component...) ReplyAction.addActionRow(Component...)
+ * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRows(ActionRow...) ReplyAction.addActionRows(ActionRow...)
+ */
 public interface Button extends Component
 {
+    /**
+     * The visible text on the button.
+     *
+     * @return The button label
+     */
     @Nonnull
     String getLabel();
 
+    /**
+     * The style of this button.
+     *
+     * @return {@link ButtonStyle}
+     */
     @Nonnull
     ButtonStyle getStyle();
 
+    /**
+     * The target URL for this button, if it is a {@link ButtonStyle#LINK LINK}-Style Button.
+     *
+     * @return The target URL or null
+     */
     @Nullable
     String getUrl();
 
+    /**
+     * The emoji attached to this button.
+     * <br>This can be either {@link Emoji#isUnicode() unicode} or {@link Emoji#isCustom()} custom.
+     *
+     * <p>You can use {@link #withEmoji(Emoji)} to create a button with an Emoji.
+     *
+     * @return {@link Emoji} for this button
+     */
     @Nullable
     Emoji getEmoji();
 
+    /**
+     * Whether this button is disabled.
+     *
+     * <p>You can use {@link #asDisabled()} or {@link #asEnabled()} to create enabled/disabled instances.
+     *
+     * @return True, if this button is disabled
+     */
     boolean isDisabled();
 
+    /**
+     * Returns a copy of this button with {@link #isDisabled()} set to true.
+     *
+     * @return New disabled button instance
+     */
     @Nonnull
     default Button asDisabled()
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), true, getEmoji());
     }
 
+    /**
+     * Returns a copy of this button with {@link #isDisabled()} set to false.
+     *
+     * @return New enabled button instance
+     */
     @Nonnull
     default Button asEnabled()
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), false, getEmoji());
     }
 
+    /**
+     * Returns a copy of this button with the attached Emoji.
+     *
+     * @param  emoji
+     *         The emoji to use
+     *
+     * @return New button with emoji
+     */
     @Nonnull
     default Button withEmoji(@Nullable Emoji emoji)
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
     }
 
+    /**
+     * Creates a button with {@link ButtonStyle#PRIMARY PRIMARY} Style.
+     * <br>The button is enabled and has no emoji attached by default.
+     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button primary(@Nonnull String id, @Nonnull String label)
     {
@@ -66,6 +167,21 @@ public interface Button extends Component
         return new ButtonImpl(id, label, ButtonStyle.PRIMARY, false, null);
     }
 
+    /**
+     * Creates a button with {@link ButtonStyle#SECONDARY SECONDARY} Style.
+     * <br>The button is enabled and has no emoji attached by default.
+     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button secondary(@Nonnull String id, @Nonnull String label)
     {
@@ -74,6 +190,21 @@ public interface Button extends Component
         return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null);
     }
 
+    /**
+     * Creates a button with {@link ButtonStyle#SUCCESS SUCCESS} Style.
+     * <br>The button is enabled and has no emoji attached by default.
+     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button success(@Nonnull String id, @Nonnull String label)
     {
@@ -82,6 +213,21 @@ public interface Button extends Component
         return new ButtonImpl(id, label, ButtonStyle.SUCCESS, false, null);
     }
 
+    /**
+     * Creates a button with {@link ButtonStyle#DANGER DANGER} Style.
+     * <br>The button is enabled and has no emoji attached by default.
+     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button danger(@Nonnull String id, @Nonnull String label)
     {
@@ -90,6 +236,24 @@ public interface Button extends Component
         return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null);
     }
 
+    /**
+     * Creates a button with {@link ButtonStyle#LINK LINK} Style.
+     * <br>The button is enabled and has no emoji attached by default.
+     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * <p>Note that link buttons never send a {@link net.dv8tion.jda.api.events.interaction.ButtonClickEvent ButtonClickEvent}.
+     * These buttons only open a link for the user.
+     *
+     * @param  url
+     *         The target URL for this button
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button link(@Nonnull String url, @Nonnull String label)
     {
@@ -98,6 +262,25 @@ public interface Button extends Component
         return new ButtonImpl(null, label, ButtonStyle.LINK, url, false, null);
     }
 
+    /**
+     * Create a button with the provided {@link ButtonStyle style}, URL or ID, and label.
+     * <br>The button is enabled and has no emoji attached by default.
+     * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
+     *
+     * <p>See {@link #link(String, String)} or {@link #primary(String, String)} for more details.
+     *
+     * @param  style
+     *         The button style
+     * @param  idOrUrl
+     *         Either the ID or URL for this button
+     * @param  label
+     *         The text to display on the button
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null
+     *
+     * @return The button instance
+     */
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label)
     {
