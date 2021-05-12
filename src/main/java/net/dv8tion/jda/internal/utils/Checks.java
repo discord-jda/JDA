@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.utils;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Collection;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class Checks
@@ -155,6 +156,12 @@ public class Checks
     {
         notNull(input, name);
         check(pattern.matcher(input).matches(), "%s must match regex ^%s$", name, pattern.pattern());
+    }
+
+    public static void isLowercase(final String input, final String name)
+    {
+        notNull(input, name);
+        check(input.toLowerCase(Locale.ROOT).equals(input), "%s must be lowercase only", name);
     }
 
     public static void positive(final int n, final String name)
