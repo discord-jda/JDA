@@ -79,6 +79,7 @@ public class Route
         public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}");
         public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
         public static final Route DELETE_FOLLOWUP = new Route(DELETE, "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
+        public static final Route GET_ORIGINAL =    new Route(GET,    "webhooks/{application_id}/{interaction_token}/messages/@original");
     }
 
     public static class Self

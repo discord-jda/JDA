@@ -27,36 +27,103 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Interaction on a message {@link Component}.
+ *
+ * <p>Instead of {@link #deferReply()} and {@link #reply(String)} you can use {@link #deferEdit()} and {@link #editMessage(String)} with these interactions!
+ * <b>You can only acknowledge an interaction once!</b>
+ */
 public interface ComponentInteraction extends Interaction
 {
+    /**
+     * The custom component ID.
+     * <br>This need not be numerical.
+     *
+     * @return The component ID
+     */
     @Nonnull
     String getComponentId();
 
+    /**
+     * The {@link Component} instance.
+     * <br>This is null on interactions for ephemeral messages.
+     *
+     * @return The {@link Component}, or null if this message is ephemeral
+     */
     @Nullable
     Component getComponent();
 
+    /**
+     * The {@link Message} instance.
+     * <br>This is null on interactions for ephemeral messages.
+     *
+     * @return The {@link Message}, or null if this message is ephemeral
+     */
     @Nullable
     Message getMessage();
 
+    /**
+     * The id of the message.
+     *
+     * @return The message id
+     */
     long getMessageIdLong();
 
+    /**
+     * The id of the message.
+     *
+     * @return The message id
+     */
     @Nonnull
     default String getMessageId()
     {
         return Long.toUnsignedString(getMessageIdLong());
     }
 
+    /**
+     * The {@link Component.Type}
+     *
+     * @return The {@link Component.Type}
+     */
     @Nonnull
     Component.Type getComponentType();
 
+    /**
+     * The respective {@link MessageChannel} for this interaction.
+     *
+     * @return The {@link MessageChannel}
+     */
     @Nonnull
     @Override
     MessageChannel getChannel();
 
+    /**
+     * No-op acknowledgement of this interaction.
+     * <br>This tells discord you intend to update the message using the {@link #getHook() InteractionHook}.
+     * You are not required to actually update this message, this will simply acknowledge that you accepted the interaction.
+     *
+     * @return {@link UpdateAction} that can be used to update the message
+     *
+     * @see    #editMessage(String)
+     */
     @Nonnull
     @CheckReturnValue
     UpdateAction deferEdit();
 
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * @param  message
+     *         The new message content to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided message is null
+     *
+     * @return {@link UpdateAction} that can be used to further update the message
+     */
     @Nonnull
     @CheckReturnValue
     default UpdateAction editMessage(@Nonnull Message message)
@@ -66,6 +133,20 @@ public interface ComponentInteraction extends Interaction
         return action.applyMessage(message);
     }
 
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * @param  content
+     *         The new message content to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided content is null
+     *
+     * @return {@link UpdateAction} that can be used to further update the message
+     */
     @Nonnull
     @CheckReturnValue
     default UpdateAction editMessage(@Nonnull String content)
@@ -74,6 +155,22 @@ public interface ComponentInteraction extends Interaction
         return deferEdit().setContent(content);
     }
 
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * @param  embed
+     *         The new message embed to use
+     * @param  embeds
+     *         Any additional embeds to include in the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided embeds is null
+     *
+     * @return {@link UpdateAction} that can be used to further update the message
+     */
     @Nonnull
     @CheckReturnValue
     default UpdateAction editMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
@@ -83,6 +180,22 @@ public interface ComponentInteraction extends Interaction
         return deferEdit().setEmbeds(embeds);
     }
 
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * @param  format
+     *         The format string for the new message content
+     * @param  args
+     *         The format arguments
+     *
+     * @throws IllegalArgumentException
+     *         If the provided format is null
+     *
+     * @return {@link UpdateAction} that can be used to further update the message
+     */
     @Nonnull
     @CheckReturnValue
     default UpdateAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
@@ -90,5 +203,4 @@ public interface ComponentInteraction extends Interaction
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));
     }
-
 }

@@ -69,7 +69,7 @@ public class WebhookMessageActionImpl
         this.tts = message.isTTS();
         this.embeds.addAll(message.getEmbeds());
         this.allowedMentions.applyMessage(message);
-        // TODO: Copy components
+        this.components.addAll(message.getActionRows());
         return setContent(message.getContentRaw());
     }
 

@@ -30,18 +30,54 @@ import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 
+/**
+ * Webhook API for an interaction. Valid for up to 15 minutes after the interaction.
+ * <br>This can be used to send followup messages or edit the original message of an interaction.
+ *
+ * <p>The interaction has to be acknowledged before any of these actions can be performed.
+ * You need to call one of {@link Interaction#deferReply() deferReply()}, {@link Interaction#reply(String) reply(...)}, {@link ComponentInteraction#deferEdit() deferEdit()}, or {@link ComponentInteraction#editMessage(String) editMessage(...)} first.
+ *
+ * <p>When {@link Interaction#deferReply()} is used, the first message will act identically to {@link #editOriginal(String) editOriginal(...)}.
+ * This means that you cannot make your deferred reply ephemeral through this interaction hook. You need to specify whether your reply is ephemeral or not directly in {@link Interaction#deferReply(boolean) deferReply(boolean)}.
+ *
+ * @see #editOriginal(String)
+ * @see #deleteOriginal()
+ * @see #sendMessage(String)
+ */
 // this is used for followup responses on commands
 public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
 {
+    /**
+     * The interaction attached to this hook.
+     *
+     * @return The {@link Interaction}
+     */
     @Nonnull
     Interaction getInteraction();
 
-    // Whether we should treat messages as ephemeral by default
+    /**
+     * Whether messages sent from this interaction hook should be ephemeral by default.
+     * <br>This does not affect message updates, including deferred replies sent with {@link #sendMessage(String) sendMessage(...)} methods.
+     *
+     * @param  ephemeral
+     *         True if messages should be ephemeral
+     *
+     * @return The same interaction hook instance
+     */
     @Nonnull
     InteractionHook setEphemeral(boolean ephemeral);
 
+    /**
+     * The JDA instance for this interaction
+     *
+     * @return The JDA instance
+     */
     @Nonnull
     JDA getJDA();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Message> retrieveOriginal();
 
     // TODO: These should be specific update actions similar to ComponentInteraction#editMessage
     @Nonnull

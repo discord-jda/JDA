@@ -27,6 +27,12 @@ import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Interaction event for a button click.
+ *
+ * <p>This fires when a user clicks one of the custom buttons attached to a bot or webhook message.
+ * <br><b>Keep in mind that users can use your webhooks to spoof components!</b>
+ */
 public class ButtonClickEvent extends GenericInteractionCreateEvent implements ButtonInteraction
 {
     private final ButtonInteraction interaction;

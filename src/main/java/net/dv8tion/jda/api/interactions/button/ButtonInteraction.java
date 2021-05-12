@@ -29,18 +29,41 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Interaction on a {@link Button} component.
+ */
 public interface ButtonInteraction extends ComponentInteraction
 {
     @Nullable
     @Override
-    default Component getComponent()
+    default Button getComponent()
     {
         return getButton();
     }
 
-    @Nullable // null for ephemeral messages
+    /**
+     * The {@link Button} this interaction belongs to.
+     * <br>This is null for ephemeral messages!
+     *
+     * @return The {@link Button}
+     *
+     * @see    #getComponentId()
+     */
+    @Nullable
     Button getButton();
 
+    /**
+     * Update the button with a new button instance.
+     * <br>This only works for non-ephemeral messages where {@link #getMessage()} is available!
+     *
+     * @param  newButton
+     *         The new button to use, or null to remove this button from the message entirely
+     *
+     * @throws IllegalStateException
+     *         If {@link #getMessage()} is null
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<Void> updateButton(@Nullable Button newButton)
@@ -74,9 +97,9 @@ public interface ButtonInteraction extends ComponentInteraction
         if (isAcknowledged())
         {
             // this doesn't work for ephemeral messages :(
-            WebhookMessageActionImpl action = (WebhookMessageActionImpl) getHook().editMessageById(message.getId(), "content");
+            WebhookMessageActionImpl action = (WebhookMessageActionImpl) getHook().editOriginal("content");
             return action.applyMessage(message)
-                    .addActionRows(components)
+                    .addActionRows(components) // TODO: Make this a setter for edits
                     .map(it -> null);
         }
         else

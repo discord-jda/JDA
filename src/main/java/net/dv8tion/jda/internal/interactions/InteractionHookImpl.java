@@ -17,11 +17,13 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
@@ -130,6 +132,16 @@ public class InteractionHookImpl extends AbstractWebhookClient<InteractionWebhoo
     public JDA getJDA()
     {
         return api;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Message> retrieveOriginal()
+    {
+        JDAImpl jda = (JDAImpl) getJDA();
+        Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
+        return onReady(new TriggerRestAction<>(jda, route, (response, request) ->
+                jda.getEntityBuilder().createMessage(response.getObject(), getInteraction().getMessageChannel(), false)));
     }
 
     @Nonnull
