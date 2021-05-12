@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands;
+package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;

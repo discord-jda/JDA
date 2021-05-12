@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 
 public interface CallbackAction extends RestAction<InteractionHook>

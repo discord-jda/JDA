@@ -17,7 +17,6 @@
 package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;

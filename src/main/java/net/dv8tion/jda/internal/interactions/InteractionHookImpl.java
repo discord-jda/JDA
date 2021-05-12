@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.interactions.commands.InteractionHook;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
