@@ -41,20 +41,48 @@ import javax.annotation.Nullable;
  */
 public interface Interaction extends ISnowflake
 {
+    /**
+     * The raw interaction type.
+     * <br>It is recommended to use {@link #getType()} instead.
+     *
+     * @return The raw interaction type
+     */
     int getTypeRaw();
 
+    /**
+     * The {@link InteractionType} for this interaction.
+     *
+     * @return The {@link InteractionType} or {@link InteractionType#UNKNOWN}
+     */
     @Nonnull
     default InteractionType getType()
     {
         return InteractionType.fromKey(getTypeRaw());
     }
 
+    /**
+     * The interaction token used for responding to an interaction.
+     *
+     * @return The interaction token
+     */
     @Nonnull
     String getToken();
 
+    /**
+     * The {@link Guild} this interaction happened in.
+     * <br>This is null in direct messages.
+     *
+     * @return The {@link Guild} or null
+     */
     @Nullable
     Guild getGuild();
 
+    /**
+     * The {@link ChannelType} for the channel this interaction came from.
+     * <br>If {@link #getChannel()} is null, this returns {@link ChannelType#UNKNOWN}.
+     *
+     * @return The {@link ChannelType}
+     */
     @Nonnull
     default ChannelType getChannelType()
     {
@@ -62,15 +90,39 @@ public interface Interaction extends ISnowflake
         return channel != null ? channel.getType() : ChannelType.UNKNOWN;
     }
 
+    /**
+     * The {@link User} who caused this interaction.
+     *
+     * @return The {@link User}
+     */
     @Nonnull
     User getUser();
 
+    /**
+     * The {@link Member} who caused this interaction.
+     * <br>This is null if the interaction is not from a guild.
+     *
+     * @return The {@link Member}
+     */
     @Nullable
     Member getMember();
 
+    /**
+     * The channel this interaction happened in.
+     *
+     * @return The channel or null if this interaction is not from a channel context
+     */
     @Nullable
     AbstractChannel getChannel();
 
+    /**
+     * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
+     *
+     * @throws UnsupportedOperationException
+     *         If this interaction does not support deferred replies and followup messages
+     *
+     * @return The interaction hook
+     */
     @Nonnull
     InteractionHook getHook();
 
@@ -83,10 +135,34 @@ public interface Interaction extends ISnowflake
      */
     boolean isAcknowledged();
 
+    /**
+     * Defer the reply to this interaction and acknowledge it.
+     * <br>This will send a {@code <Bot> is thinking...} message in chat that will be updated later through either {@link InteractionHook#editOriginal(String)} or {@link InteractionHook#sendMessage(String)}.
+     *
+     * <p>You can use {@link #deferReply(boolean) deferReply(true)} to send a deferred ephemeral reply. If your initial deferred message is not ephemeral it cannot be made ephemeral later.
+     * Your first message to the {@link InteractionHook} will inherit whether the message is ephemeral or not from this deferred reply.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <p>Use {@link #reply(String)} to reply directly.
+     *
+     * @return {@link ReplyAction}
+     */
     @Nonnull
     @CheckReturnValue
     ReplyAction deferReply();
 
+    /**
+     * Defer the reply to this interaction and acknowledge it.
+     * <br>This will send a {@code <Bot> is thinking...} message in chat that will be updated later through either {@link InteractionHook#editOriginal(String)} or {@link InteractionHook#sendMessage(String)}.
+     *
+     * <p>You can use {@code deferReply(true)} to send a deferred ephemeral reply. If your initial deferred message is not ephemeral it cannot be made ephemeral later.
+     * Your first message to the {@link InteractionHook} will inherit whether the message is ephemeral or not from this deferred reply.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <p>Use {@link #reply(String)} to reply directly.
+     *
+     * @return {@link ReplyAction}
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction deferReply(boolean ephemeral)
@@ -94,6 +170,23 @@ public interface Interaction extends ISnowflake
         return deferReply().setEphemeral(ephemeral);
     }
 
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * @param  message
+     *         The message to send
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link ReplyAction}
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction reply(@Nonnull Message message)
@@ -103,6 +196,23 @@ public interface Interaction extends ISnowflake
         return action.applyMessage(message);
     }
 
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * @param  content
+     *         The message content to send
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the content is empty or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *
+     * @return {@link ReplyAction}
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction reply(@Nonnull String content)
@@ -111,6 +221,25 @@ public interface Interaction extends ISnowflake
         return deferReply().setContent(content);
     }
 
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * @param  embed
+     *         The message embed to send
+     * @param  embeds
+     *         Any additional embeds to send
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link ReplyAction}
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction reply(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
@@ -120,6 +249,25 @@ public interface Interaction extends ISnowflake
         return deferReply().addEmbeds(embed).addEmbeds(embeds);
     }
 
+    /**
+     * Reply to this interaction and acknowledge it.
+     * <br>This will send a reply message for this interaction.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * Replies are non-ephemeral by default.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+     *
+     * @param  format
+     *         Format string for the message content
+     * @param  args
+     *         Format arguments for the content
+     *
+     * @throws IllegalArgumentException
+     *         If the format string is null
+     *
+     * @return {@link ReplyAction}
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args)
@@ -128,6 +276,16 @@ public interface Interaction extends ISnowflake
         return reply(String.format(format, args));
     }
 
+    /**
+     * The {@link GuildChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not a guild type, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a guild channel
+     *
+     * @return The {@link GuildChannel}
+     */
+    @Nonnull
     default GuildChannel getGuildChannel()
     {
         AbstractChannel channel = getChannel();
@@ -136,6 +294,16 @@ public interface Interaction extends ISnowflake
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to GuildChannel");
     }
 
+    /**
+     * The {@link MessageChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not a message channel type, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a message channel
+     *
+     * @return The {@link MessageChannel}
+     */
+    @Nonnull
     default MessageChannel getMessageChannel()
     {
         AbstractChannel channel = getChannel();
@@ -144,6 +312,16 @@ public interface Interaction extends ISnowflake
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to MessageChannel");
     }
 
+    /**
+     * The {@link TextChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not {@link ChannelType#TEXT}, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a text channel
+     *
+     * @return The {@link TextChannel}
+     */
+    @Nonnull
     default TextChannel getTextChannel()
     {
         AbstractChannel channel = getChannel();
@@ -152,6 +330,16 @@ public interface Interaction extends ISnowflake
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to TextChannel");
     }
 
+    /**
+     * The {@link VoiceChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not {@link ChannelType#VOICE}, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a voice channel
+     *
+     * @return The {@link VoiceChannel}
+     */
+    @Nonnull
     default VoiceChannel getVoiceChannel()
     {
         AbstractChannel channel = getChannel();
@@ -160,6 +348,16 @@ public interface Interaction extends ISnowflake
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to VoiceChannel");
     }
 
+    /**
+     * The {@link PrivateChannel} this interaction happened in.
+     * <br>If {@link #getChannelType()} is not {@link ChannelType#PRIVATE}, this throws {@link IllegalStateException}!
+     *
+     * @throws IllegalStateException
+     *         If {@link #getChannel()} is not a private channel
+     *
+     * @return The {@link PrivateChannel}
+     */
+    @Nonnull
     default PrivateChannel getPrivateChannel()
     {
         AbstractChannel channel = getChannel();

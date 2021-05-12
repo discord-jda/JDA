@@ -75,6 +75,12 @@ public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
     @Nonnull
     JDA getJDA();
 
+    /**
+     * Retrieves the original reply to this interaction.
+     * <br>This doesn't work for ephemeral messages and will always cause an unknown message error response.
+     *
+     * @return {@link RestAction} - Type: {@link Message}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Message> retrieveOriginal();
@@ -138,7 +144,12 @@ public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
         return editMessageById("@original", data, name, options);
     }
 
-
+    /**
+     * Delete the original reply.
+     * <br>This doesn't work for ephemeral messages.
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<Void> deleteOriginal()

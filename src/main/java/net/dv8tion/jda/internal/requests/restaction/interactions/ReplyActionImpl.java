@@ -179,6 +179,8 @@ public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
     @Override
     public ReplyActionImpl setContent(String content)
     {
+        if (content != null)
+            Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
         this.content = content == null ? "" : content;
         return this;
     }
