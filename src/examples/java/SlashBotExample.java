@@ -49,7 +49,7 @@ public class SlashBotExample extends ListenerAdapter
             new CommandData("ban", "Ban a user from this server. Requires permission to ban users.")
                 .addOption(new OptionData(USER, "user", "The user to ban") // USER type allows to include members of the server or other users by id
                     .setRequired(true)) // This command requires a parameter
-                .addOption(new OptionData(INTEGER, "delDays", "Delete messages from the past days.")) // This is optional
+                .addOption(new OptionData(INTEGER, "del_days", "Delete messages from the past days.")) // This is optional
         );
 
         // Simple reply commands
@@ -118,7 +118,7 @@ public class SlashBotExample extends ListenerAdapter
         }
 
         int delDays = 0;
-        OptionMapping option = event.getOption("delDays");
+        OptionMapping option = event.getOption("del_days");
         if (option != null) // null = not provided
             delDays = (int) Math.max(0, Math.min(7, option.getAsLong()));
         // Ban the user and send a success response
