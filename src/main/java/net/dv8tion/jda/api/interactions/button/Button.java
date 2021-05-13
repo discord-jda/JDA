@@ -35,7 +35,6 @@ import javax.annotation.Nullable;
  * <h2>Example Usage</h2>
  * <pre>{@code
  * public class HelloBot extends ListenerAdapter {
- *   @Override
  *   public void onSlashCommand(SlashCommandEvent event) {
  *       if (event.getName().equals("hello")) {
  *           event.reply("Click the button to say hello")
@@ -50,7 +49,6 @@ import javax.annotation.Nullable;
  *       }
  *   }
  *
- *   @Override
  *   public void onButtonClick(ButtonClickEvent event) {
  *       if (event.getComponentId().equals("hello")) {
  *           event.reply("Hello :)").queue();
