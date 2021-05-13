@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Interaction event for a button click.
+ * Indicates that a custom {@link Button} on one of the bots messages was clicked by a user.
  *
  * <p>This fires when a user clicks one of the custom buttons attached to a bot or webhook message.
  * <br><b>Keep in mind that users can use your webhooks to spoof components!</b>
@@ -45,10 +45,9 @@ public class ButtonClickEvent extends GenericInteractionCreateEvent implements B
 
     @Nonnull
     @Override
-    @SuppressWarnings("ConstantConditions")
     public MessageChannel getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return interaction.getChannel();
     }
 
     @Nonnull

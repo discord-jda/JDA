@@ -19,18 +19,25 @@ package net.dv8tion.jda.api.requests.restaction.interactions;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 
+/**
+ * A callback action is used to <b>acknowledge</b> an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
+ */
 public interface CallbackAction extends RestAction<InteractionHook>
 {
-    enum ResponseType // TODO: Write better docs
+    /**
+     * The possible types of interaction responses.
+     * <br>This is currently only used internally to reduce interface complexity.
+     */
+    enum ResponseType
     {
-        /** Respond with a message, showing the user's input */
+        /** Immediately respond to an interaction with a message */
         CHANNEL_MESSAGE_WITH_SOURCE(4),
-        /** ACK a command without sending a message, showing the user's input */
+        /** Delayed or Deferred response to an interaction, this sends a "Thinking..." message to the channel */
         DEFERRED_CHANNEL_MESSAGE_WITH_SOURCE(5),
         /** Defer the update of the message for a component interaction */
         DEFERRED_MESSAGE_UPDATE(6),
         /** Update the message for a component interaction */
-        MESSAGE_UPDATE(7), // TODO: Support this
+        MESSAGE_UPDATE(7),
         ;
         private final int raw;
 
@@ -39,6 +46,11 @@ public interface CallbackAction extends RestAction<InteractionHook>
             this.raw = raw;
         }
 
+        /**
+         * The raw integer key for this response type
+         *
+         * @return The raw key
+         */
         public int getRaw()
         {
             return raw;

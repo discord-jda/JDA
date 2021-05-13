@@ -18,13 +18,23 @@ package net.dv8tion.jda.api.interactions.button;
 
 import javax.annotation.Nonnull;
 
+/**
+ * The available styles used for {@link Button Buttons}.
+ * <br>A button can have different styles to indicate its purpose.
+ */
 public enum ButtonStyle
 {
+    /** Placeholder for future styles */
     UNKNOWN(-1),
+    /** Primary button style, usually in blue  */
     PRIMARY(1),
+    /** Secondary button style, usually in gray  */
     SECONDARY(2),
+    /** Success/Approve button style, usually in green  */
     SUCCESS(3),
+    /** Danger/Deny button style, usually in red  */
     DANGER(4),
+    /** Link button style, usually in gray and has a link attached  */
     LINK(5),
     ;
 
@@ -35,11 +45,24 @@ public enum ButtonStyle
         this.key = key;
     }
 
+    /**
+     * The raw style integer key
+     *
+     * @return The raw style key
+     */
     public int getKey()
     {
         return key;
     }
 
+    /**
+     * Returns the style associated with the provided key
+     *
+     * @param  key
+     *         The key to convert
+     *
+     * @return The button style or {@link #UNKNOWN}
+     */
     @Nonnull
     public static ButtonStyle fromKey(int key)
     {

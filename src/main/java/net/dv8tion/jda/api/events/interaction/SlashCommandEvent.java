@@ -26,6 +26,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Indicates that a slash command was used in a {@link MessageChannel}.
+ */
 public class SlashCommandEvent extends GenericInteractionCreateEvent implements CommandInteraction
 {
     private final CommandInteractionImpl commandInteraction;
@@ -38,10 +41,9 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
 
     @Nonnull
     @Override
-    @SuppressWarnings("ConstantConditions")
     public MessageChannel getChannel()
     {
-        return (MessageChannel) super.getChannel();
+        return commandInteraction.getChannel();
     }
 
     @Nonnull
@@ -77,33 +79,4 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
     {
         return commandInteraction.getOptions();
     }
-
-// Currently not supported, sad face
-//    @Nonnull
-//    @CheckReturnValue
-//    public CommandReplyAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
-//    {
-//        return acknowledge().addFile(file, options);
-//    }
-//
-//    @Nonnull
-//    @CheckReturnValue
-//    public CommandReplyAction reply(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-//    {
-//        return acknowledge().addFile(file, name, options);
-//    }
-//
-//    @Nonnull
-//    @CheckReturnValue
-//    public CommandReplyAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-//    {
-//        return acknowledge().addFile(data, name, options);
-//    }
-//
-//    @Nonnull
-//    @CheckReturnValue
-//    public CommandReplyAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-//    {
-//        return acknowledge().addFile(data, name, options);
-//    }
 }

@@ -776,9 +776,23 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     List<MessageEmbed> getEmbeds();
 
+    /**
+     * Rows of interactive components such as {@link Button Buttons}.
+     * <br>You can use {@link MessageAction#setActionRows(ActionRow...)} to update these.
+     *
+     * @return Immutable {@link List} of {@link ActionRow}
+     *
+     * @see    #getButtons()
+     * @see    #getButtonById(String)
+     */
     @Nonnull
-    List<ActionRow> getActionRows(); // TODO: Figure out a better naming/api
+    List<ActionRow> getActionRows();
 
+    /**
+     * All {@link Button Buttons} attached to this message.
+     *
+     * @return Immutable {@link List} of {@link Button Buttons}
+     */
     @Nonnull
     default List<Button> getButtons()
     {
@@ -788,6 +802,17 @@ public interface Message extends ISnowflake, Formattable
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets the {@link Button} with the specified ID.
+     *
+     * @param  id
+     *         The id of the button
+     *
+     * @throws IllegalArgumentException
+     *         If the id is null
+     *
+     * @return The {@link Button} or null of no button with that ID is present on this message
+     */
     @Nullable
     default Button getButtonById(@Nonnull String id)
     {
@@ -797,6 +822,19 @@ public interface Message extends ISnowflake, Formattable
                 .findFirst().orElse(null);
     }
 
+    /**
+     * All {@link Button Buttons} with the specified label attached to this message.
+     *
+     * @param  label
+     *         The button label
+     * @param  ignoreCase
+     *         Whether to use {@link String#equalsIgnoreCase(String)} instead of {@link String#equals(Object)}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided label is null
+     *
+     * @return Immutable {@link List} of {@link Button Buttons} with the specified label
+     */
     @Nonnull
     default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
     {

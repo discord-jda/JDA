@@ -30,6 +30,10 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that an interaction was created in a channel.
+ * <br>Every interaction event is derived from this event.
+ */
 @Incubating
 public class GenericInteractionCreateEvent extends Event implements Interaction
 {
@@ -41,10 +45,26 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
         this.interaction = interaction;
     }
 
+    /**
+     * The {@link Interaction} instance.
+     * <br>Note that this event is a delegate which implements the same interface.
+     *
+     * @return The {@link Interaction}
+     */
     @Nonnull
     public Interaction getInteraction()
     {
         return interaction;
+    }
+
+    /**
+     * Whether this interaction happened in a {@link Guild}.
+     *
+     * @return True, if this interaction came from a {@link Guild}.
+     */
+    public boolean isFromGuild()
+    {
+        return getGuild() != null;
     }
 
     @Nonnull
@@ -63,11 +83,6 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public Guild getGuild()
     {
         return interaction.getGuild();
-    }
-
-    public boolean isFromGuild()
-    {
-        return getGuild() != null;
     }
 
     @Nullable
