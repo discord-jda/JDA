@@ -25,10 +25,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Interaction on a {@link Button} component.
@@ -56,6 +53,9 @@ public interface ButtonInteraction extends ComponentInteraction
     /**
      * Update the button with a new button instance.
      * <br>This only works for non-ephemeral messages where {@link #getMessage()} is available!
+     *
+     * <p>If this interaction is already acknowledged this will use {@link #getHook()}
+     * and otherwise {@link #editMessage(Collection)} directly to acknowledge the interaction.
      *
      * @param  newButton
      *         The new button to use, or null to remove this button from the message entirely
@@ -94,13 +94,8 @@ public interface ButtonInteraction extends ComponentInteraction
         }
 
         if (isAcknowledged())
-        {
             return getHook().editMessageById(message.getId(), components).map(it -> null);
-        }
         else
-        {
-            return editMessage(components) // content is required
-                    .map(it -> null);
-        }
+            return editMessage(components).map(it -> null);
     }
 }
