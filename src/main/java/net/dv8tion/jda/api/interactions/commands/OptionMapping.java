@@ -24,6 +24,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+/**
+ * Name/Value pair for a {@link CommandInteraction} option.
+ *
+ * <p>Since values for command options are a union-type you can use this class to coerce the values to the desired target type.
+ * <br>You can use {@link #getType()} to do dynamic handling as well. Each getter documents the conditions and coercion rules for the specific types.
+ *
+ * @see CommandInteraction#getOption(String)
+ * @see CommandInteraction#getOptions()
+ */
 public class OptionMapping
 {
     private final DataObject data;
@@ -107,12 +116,30 @@ public class OptionMapping
         default:
             throw new IllegalStateException("Cannot convert option of type " + type + " to long");
         case STRING:
+        case MENTIONABLE:
         case CHANNEL:
         case ROLE:
         case USER:
         case INTEGER:
             return data.getLong("value");
         }
+    }
+
+    /**
+     * The resolved {@link IMentionable} instance for this option value.
+     *
+     * @throws IllegalStateException
+     *         If the mentioned entity is not resolvable
+     *
+     * @return The resolved {@link IMentionable}
+     */
+    @Nonnull
+    public IMentionable getAsMentionable()
+    {
+        Object entity = resolved.get(getAsLong());
+        if (entity instanceof IMentionable)
+            return (IMentionable) entity;
+        throw new IllegalStateException("Cannot resolve option of type " + type + " to IMentionable");
     }
 
     /**
