@@ -26,6 +26,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Interaction on a message {@link Component}.
@@ -153,6 +156,31 @@ public interface ComponentInteraction extends Interaction
     {
         Checks.notNull(content, "Content");
         return deferEdit().setContent(content);
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * @param  components
+     *         The new message components, such as {@link ActionRow}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are null
+     *
+     * @return {@link UpdateAction} that can be used to further update the message
+     */
+    @Nonnull
+    @CheckReturnValue
+    default UpdateAction editMessage(@Nonnull Collection<? extends ComponentLayout> components)
+    {
+        Checks.noneNull(components, "Components");
+        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
+            throw new UnsupportedOperationException("The provided component layout is not supported");
+        List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
+        return deferEdit().setActionRows(actionRows);
     }
 
     /**

@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.interactions;
 import net.dv8tion.jda.api.interactions.button.Button;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -32,7 +31,7 @@ import java.util.stream.Collectors;
  *
  * @see Component
  */
-public class ActionRow implements SerializableData, Iterable<Component>
+public class ActionRow implements ComponentLayout, Iterable<Component>
 {
     private final List<Component> components = new ArrayList<>();
 
@@ -106,24 +105,15 @@ public class ActionRow implements SerializableData, Iterable<Component>
         return row;
     }
 
-    /**
-     * List representation of this action row.
-     * <br>This list is modifiable. Note that empty action rows are not supported.
-     *
-     * @return {@link List} of components in this action row
-     */
     @Nonnull
+    @Override
     public List<Component> getComponents()
     {
         return components;
     }
 
-    /**
-     * List of buttons in this action row.
-     *
-     * @return Immutable {@link List} of {@link Button Buttons}
-     */
     @Nonnull
+    @Override
     public List<Button> getButtons()
     {
         return Collections.unmodifiableList(
@@ -131,6 +121,13 @@ public class ActionRow implements SerializableData, Iterable<Component>
                 .filter(Button.class::isInstance)
                 .map(Button.class::cast)
                 .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
+    public Type getType()
+    {
+        return Type.ACTION_ROW;
     }
 
     @Nonnull

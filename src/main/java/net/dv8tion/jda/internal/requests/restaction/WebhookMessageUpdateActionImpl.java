@@ -67,6 +67,8 @@ public class WebhookMessageUpdateActionImpl
         return this;
     }
 
+    // TODO: Checks
+
     @Nonnull
     @Override
     public WebhookMessageUpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)

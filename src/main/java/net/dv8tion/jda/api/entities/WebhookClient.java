@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.interactions.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
@@ -25,6 +26,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
+import java.util.Collection;
 
 public interface WebhookClient
 {
@@ -34,7 +36,7 @@ public interface WebhookClient
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
+    WebhookMessageAction sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds); // TODO: Collection<MessageEmbed> overload
 
     @Nonnull
     @CheckReturnValue
@@ -101,6 +103,17 @@ public interface WebhookClient
     default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull String content)
     {
         return editMessageById(Long.toUnsignedString(messageId), content);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components); // We use ComponentLayout for forward compatibility here
+
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    {
+        return editMessageById(Long.toUnsignedString(messageId), components);
     }
 
     @Nonnull

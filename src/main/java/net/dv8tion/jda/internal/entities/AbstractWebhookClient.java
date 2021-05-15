@@ -20,7 +20,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
+import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.interactions.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -30,6 +33,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractWebhookClient implements WebhookClient
@@ -81,6 +87,17 @@ public abstract class AbstractWebhookClient implements WebhookClient
     public WebhookMessageUpdateActionImpl editMessageById(@Nonnull String messageId, @Nonnull String content)
     {
         return (WebhookMessageUpdateActionImpl) editRequest(messageId).setContent(content);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    {
+        Checks.noneNull(components, "Components");
+        if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
+            throw new UnsupportedOperationException("The provided component layout is not supported");
+        List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
+        return editRequest(messageId).setActionRows(actionRows);
     }
 
     @Nonnull

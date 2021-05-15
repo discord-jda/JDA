@@ -29,6 +29,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Collection;
 
 /**
  * Webhook API for an interaction. Valid for up to 15 minutes after the interaction.
@@ -91,6 +92,13 @@ public interface InteractionHook extends WebhookClient
     default WebhookMessageUpdateAction editOriginal(@Nonnull String content)
     {
         return editMessageById("@original", content);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction editOriginal(@Nonnull Collection<? extends ComponentLayout> components)
+    {
+        return editMessageById("@original", components);
     }
 
     @Nonnull
