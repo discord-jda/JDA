@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -25,23 +26,23 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
 
-public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this type parameter really needed? It only hides the setEphemeral method
+public interface WebhookClient
 {
     @Nonnull
     @CheckReturnValue
-    T sendMessage(@Nonnull String content);
+    WebhookMessageAction sendMessage(@Nonnull String content);
 
     @Nonnull
     @CheckReturnValue
-    T sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
+    WebhookMessageAction sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
 
     @Nonnull
     @CheckReturnValue
-    T sendMessage(@Nonnull Message message);
+    WebhookMessageAction sendMessage(@Nonnull Message message);
 
     @Nonnull
     @CheckReturnValue
-    default T sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return sendMessage(String.format(format, args));
@@ -50,11 +51,11 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    T sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    WebhookMessageAction sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @CheckReturnValue
-    default T sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return sendFile(file, file.getName(), options);
@@ -62,7 +63,7 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    default T sendFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction sendFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(),
@@ -81,7 +82,7 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    default T sendFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageAction sendFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
@@ -93,40 +94,40 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    T editMessageById(@Nonnull String messageId, @Nonnull String content);
+    WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull String content);
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(long messageId, @Nonnull String content)
+    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull String content)
     {
         return editMessageById(Long.toUnsignedString(messageId), content);
     }
 
     @Nonnull
     @CheckReturnValue
-    T editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
+    WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(long messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         return editMessageById(Long.toUnsignedString(messageId), embed, embeds);
     }
 
     @Nonnull
     @CheckReturnValue
-    T editMessageById(@Nonnull String messageId, @Nonnull Message message);
+    WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull Message message);
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(long messageId, Message message)
+    default WebhookMessageUpdateAction editMessageById(long messageId, Message message)
     {
         return editMessageById(Long.toUnsignedString(messageId), message);
     }
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageUpdateAction editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
@@ -134,7 +135,7 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageUpdateAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
     {
         return editMessageFormatById(Long.toUnsignedString(messageId), format, args);
     }
@@ -142,11 +143,11 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    T editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
+    WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return editMessageById(messageId, file, file.getName(), options);
@@ -154,7 +155,7 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(),
@@ -173,7 +174,7 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
@@ -183,28 +184,28 @@ public interface WebhookClient<T extends WebhookMessageAction> // TODO: Is this 
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), data, name, options);
     }
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), file, options);
     }
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), file, name, options);
     }
 
     @Nonnull
     @CheckReturnValue
-    default T editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById(Long.toUnsignedString(messageId), data, name, options);
     }

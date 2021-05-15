@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
+import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -45,7 +45,7 @@ import java.io.InputStream;
  * @see #sendMessage(String)
  */
 // this is used for followup responses on commands
-public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
+public interface InteractionHook extends WebhookClient
 {
     /**
      * The interaction attached to this hook.
@@ -85,31 +85,31 @@ public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
     @CheckReturnValue
     RestAction<Message> retrieveOriginal();
 
-    // TODO: These should be specific update actions similar to ComponentInteraction#editMessage
+    // TODO: Docs
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginal(@Nonnull String content)
+    default WebhookMessageUpdateAction editOriginal(@Nonnull String content)
     {
         return editMessageById("@original", content);
     }
 
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginal(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageUpdateAction editOriginal(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         return editMessageById("@original", embed, embeds);
     }
 
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginal(@Nonnull Message message)
+    default WebhookMessageUpdateAction editOriginal(@Nonnull Message message)
     {
         return editMessageById("@original", message);
     }
 
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageUpdateAction editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editOriginal(String.format(format, args));
@@ -118,28 +118,28 @@ public interface InteractionHook extends WebhookClient<InteractionWebhookAction>
 
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", data, name, options);
     }
 
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", file, options);
     }
 
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", file, name, options);
     }
 
     @Nonnull
     @CheckReturnValue
-    default InteractionWebhookAction editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", data, name, options);
     }

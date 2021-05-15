@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -34,49 +33,33 @@ import java.util.Collection;
 import java.util.Collections;
 
 // TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageAction extends RestAction<Message>, AllowedMentions<WebhookMessageAction>
+public interface WebhookMessageUpdateAction extends RestAction<Message>
 {
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction setEphemeral(boolean ephemeral);
+    WebhookMessageUpdateAction setContent(@Nullable String content);
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction setUsername(@Nullable String name);
+    WebhookMessageUpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction setAvatarUrl(@Nullable String iconUrl);
-
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageAction setContent(@Nullable String content);
-
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageAction setTTS(boolean tts);
-
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
-
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageAction addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default WebhookMessageUpdateAction setEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
         ArrayList<MessageEmbed> embeds = new ArrayList<>();
         embeds.add(embed);
         Collections.addAll(embeds, other);
-        return addEmbeds(embeds);
+        return setEmbeds(embeds);
     }
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
+    WebhookMessageUpdateAction addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -85,7 +68,7 @@ public interface WebhookMessageAction extends RestAction<Message>, AllowedMentio
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
     {
         Checks.notEmpty(name, "Name");
         Checks.notNull(data, "File");
@@ -101,7 +84,7 @@ public interface WebhookMessageAction extends RestAction<Message>, AllowedMentio
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file.getName(), file);
@@ -109,24 +92,24 @@ public interface WebhookMessageAction extends RestAction<Message>, AllowedMentio
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction addActionRow(@Nonnull Component... components)
+    default WebhookMessageUpdateAction setActionRow(@Nonnull Component... components)
     {
-        return addActionRows(ActionRow.of(components));
+        return setActionRows(ActionRow.of(components));
     }
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default WebhookMessageUpdateAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
-        return addActionRows(rows.toArray(new ActionRow[0]));
+        return setActionRows(rows.toArray(new ActionRow[0]));
     }
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction addActionRows(@Nonnull ActionRow... rows);
+    WebhookMessageUpdateAction setActionRows(@Nonnull ActionRow... rows);
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageAction applyMessage(@Nonnull Message message);
+    WebhookMessageUpdateAction applyMessage(@Nonnull Message message);
 }

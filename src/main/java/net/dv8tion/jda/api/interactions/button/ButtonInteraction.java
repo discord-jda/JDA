@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.api.interactions.ComponentInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -96,10 +95,9 @@ public interface ButtonInteraction extends ComponentInteraction
 
         if (isAcknowledged())
         {
-            // this doesn't work for ephemeral messages :(
-            WebhookMessageActionImpl action = (WebhookMessageActionImpl) getHook().editMessageById(message.getId(), "content");
-            return action.applyMessage(message)
-                    .addActionRows(components) // TODO: Make this a setter for edits
+            return getHook().editMessageById(message.getId(), "content")
+                    .applyMessage(message)
+                    .setActionRows(components)
                     .map(it -> null);
         }
         else

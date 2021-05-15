@@ -24,7 +24,6 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -44,7 +43,7 @@ import java.util.*;
 
 public class WebhookMessageActionImpl
     extends TriggerRestAction<Message>
-    implements InteractionWebhookAction, WebhookMessageAction
+    implements WebhookMessageAction
 {
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
@@ -209,7 +208,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mentionRepliedUser(boolean mention)
+    public WebhookMessageActionImpl mentionRepliedUser(boolean mention)
     {
         allowedMentions.mentionRepliedUser(mention);
         return this;
@@ -218,7 +217,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    public WebhookMessageActionImpl allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
         this.allowedMentions.allowedMentions(allowedMentions);
         return this;
@@ -227,7 +226,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mention(@Nonnull IMentionable... mentions)
+    public WebhookMessageActionImpl mention(@Nonnull IMentionable... mentions)
     {
         allowedMentions.mention(mentions);
         return this;
@@ -236,7 +235,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mentionUsers(@Nonnull String... userIds)
+    public WebhookMessageActionImpl mentionUsers(@Nonnull String... userIds)
     {
         allowedMentions.mentionUsers(userIds);
         return this;
@@ -245,7 +244,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mentionRoles(@Nonnull String... roleIds)
+    public WebhookMessageActionImpl mentionRoles(@Nonnull String... roleIds)
     {
         allowedMentions.mentionRoles(roleIds);
         return this;

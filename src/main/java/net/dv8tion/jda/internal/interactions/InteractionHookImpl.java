@@ -21,13 +21,13 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class InteractionHookImpl extends AbstractWebhookClient<InteractionWebhookAction> implements InteractionHook
+public class InteractionHookImpl extends AbstractWebhookClient implements InteractionHook
 {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
     private final InteractionImpl interaction;
@@ -155,13 +155,13 @@ public class InteractionHookImpl extends AbstractWebhookClient<InteractionWebhoo
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl editRequest(String messageId)
+    public WebhookMessageUpdateActionImpl editRequest(String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), interaction.getMessageChannel(), route));
+        return onReady(new WebhookMessageUpdateActionImpl(getJDA(), route));
     }
 
     @Nonnull
