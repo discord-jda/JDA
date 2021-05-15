@@ -141,6 +141,8 @@ public interface WebhookClient
     }
 
 
+    // NOTE: These only add files to the message, I believe you can't actually edit or delete any
+
     @Nonnull
     @CheckReturnValue
     WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
