@@ -97,7 +97,7 @@ public interface ButtonInteraction extends ComponentInteraction
         if (isAcknowledged())
         {
             // this doesn't work for ephemeral messages :(
-            WebhookMessageActionImpl action = (WebhookMessageActionImpl) getHook().editOriginal("content");
+            WebhookMessageActionImpl action = (WebhookMessageActionImpl) getHook().editMessageById(message.getId(), "content");
             return action.applyMessage(message)
                     .addActionRows(components) // TODO: Make this a setter for edits
                     .map(it -> null);
