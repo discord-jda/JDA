@@ -94,7 +94,7 @@ public interface ButtonInteraction extends ComponentInteraction
         }
 
         if (isAcknowledged())
-            return getHook().editMessageById(message.getId(), components).map(it -> null);
+            return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);
         else
             return editMessage(components).map(it -> null);
     }

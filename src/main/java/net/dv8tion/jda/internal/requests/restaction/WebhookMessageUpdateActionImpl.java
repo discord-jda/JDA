@@ -74,6 +74,7 @@ public class WebhookMessageUpdateActionImpl
     public WebhookMessageUpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
+        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in one message!");
         this.embeds.clear();
         this.embeds.addAll(embeds);
         set |= EMBEDS;

@@ -90,7 +90,7 @@ public abstract class AbstractWebhookClient implements WebhookClient
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    public WebhookMessageUpdateAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
@@ -101,9 +101,9 @@ public abstract class AbstractWebhookClient implements WebhookClient
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    public WebhookMessageUpdateActionImpl editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return (WebhookMessageUpdateActionImpl) editRequest(messageId).setEmbeds(embed, embeds);
+        return (WebhookMessageUpdateActionImpl) editRequest(messageId).setEmbeds(embeds);
     }
 
     @Nonnull

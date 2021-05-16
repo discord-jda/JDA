@@ -45,7 +45,6 @@ import java.util.Collection;
  * @see #deleteOriginal()
  * @see #sendMessage(String)
  */
-// this is used for followup responses on commands
 public interface InteractionHook extends WebhookClient
 {
     /**
@@ -86,7 +85,29 @@ public interface InteractionHook extends WebhookClient
     @CheckReturnValue
     RestAction<Message> retrieveOriginal();
 
-    // TODO: Docs
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  content
+     *         The new message content to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginal(@Nonnull String content)
@@ -94,27 +115,123 @@ public interface InteractionHook extends WebhookClient
         return editMessageById("@original", content);
     }
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  components
+     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are null, or more than 5 layouts are provided
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
-        return editMessageById("@original", components);
+        return editMessageComponentsById("@original", components);
     }
 
-//    @Nonnull
-//    @CheckReturnValue
-//    default WebhookMessageUpdateAction editOriginalComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
-//    {
-//        return editMessageById("@original", component, components);
-//    }
-//
-//    @Nonnull
-//    @CheckReturnValue
-//    default WebhookMessageUpdateAction editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-//    {
-//        return editMessageEmbedsById("@original", embeds);
-//    }
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  component
+     *         The new component layout for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     * @param  components
+     *         Additional component layouts to use
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are null, or more than 5 layouts are provided
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction editOriginalComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+    {
+        return editMessageComponentsById("@original", component, components);
+    }
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *
+     * @throws IllegalArgumentException
+     *         If the provided embeds are null, or more than 10
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        return editMessageEmbedsById("@original", embeds);
+    }
+
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  embed
+     *         The new message embed to use
+     * @param  embeds
+     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *
+     * @throws IllegalArgumentException
+     *         If the provided embeds are null, or more than 10
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginalEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
@@ -122,6 +239,29 @@ public interface InteractionHook extends WebhookClient
         return editMessageEmbedsById("@original", embed, embeds);
     }
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  message
+     *         The new message to replace the existing message with
+     *
+     * @throws IllegalArgumentException
+     *         If the provided message is null
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginal(@Nonnull Message message)
@@ -129,6 +269,31 @@ public interface InteractionHook extends WebhookClient
         return editMessageById("@original", message);
     }
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  format
+     *         Format string for the message content
+     * @param  args
+     *         Format arguments for the content
+     *
+     * @throws IllegalArgumentException
+     *         If the formatted string is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
@@ -138,6 +303,48 @@ public interface InteractionHook extends WebhookClient
     }
 
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new FileInputStream("image.png"); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  data
+     *         The InputStream data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided data, or filename is {@code null}.
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
@@ -145,6 +352,48 @@ public interface InteractionHook extends WebhookClient
         return editMessageById("@original", data, name, options);
     }
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p>This is a shortcut to {@link #editOriginal(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
+     * <pre>editOriginal(file, file.getName())</pre>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * File file = new File("image.png"); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  file
+     *         The {@link File} data to upload to the webhook.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file is {@code null}.
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
@@ -152,6 +401,48 @@ public interface InteractionHook extends WebhookClient
         return editMessageById("@original", file, options);
     }
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * File file = new File("image.png"); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  file
+     *         The {@link File} data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file or filename is {@code null}.
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
@@ -159,6 +450,48 @@ public interface InteractionHook extends WebhookClient
         return editMessageById("@original", file, name, options);
     }
 
+    /**
+     * Edit the source message sent by this interaction.
+     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
+     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     *
+     * <p>This method will be delayed until the interaction is acknowledged.
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new FileInputStream("image.png"); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.editOriginal(file, "cat.png").setEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message for that id does not exist</li>
+     * </ul>
+     *
+     * @param  data
+     *         The InputStream data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided data or filename is {@code null}.
+     *
+     * @return {@link WebhookMessageUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageUpdateAction editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
