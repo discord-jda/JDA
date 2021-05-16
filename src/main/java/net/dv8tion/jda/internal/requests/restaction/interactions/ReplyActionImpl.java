@@ -120,7 +120,7 @@ public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
 
     @Nonnull
     @Override
-    public ReplyAction addEmbeds(@Nonnull Collection<MessageEmbed> embeds)
+    public ReplyAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         for (MessageEmbed embed : embeds)

@@ -54,7 +54,7 @@ public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction
 
     @Nonnull
     @CheckReturnValue
-    ReplyAction addEmbeds(@Nonnull Collection<MessageEmbed> embeds);
+    ReplyAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     @Nonnull
     @CheckReturnValue

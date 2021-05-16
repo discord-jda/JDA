@@ -26,7 +26,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -187,13 +189,67 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessage(@Nonnull Collection<? extends ComponentLayout> components)
+    default UpdateAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
         List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
         return deferEdit().setActionRows(actionRows);
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     *
+     * @param  components
+     *         The new message components, such as {@link ActionRow}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided components are null
+     *
+     * @return {@link UpdateAction} that can be used to further update the message
+     */
+    @Nonnull
+    @CheckReturnValue
+    default UpdateAction editComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+    {
+        Checks.notNull(component, "ComponentLayouts");
+        Checks.noneNull(components, "ComponentLayouts");
+        List<ComponentLayout> layouts = new ArrayList<>();
+        layouts.add(component);
+        Collections.addAll(layouts, components);
+        return editComponents(layouts);
+    }
+
+    /**
+     * Acknowledgement of this interaction with a message update.
+     * <br>You can use {@link #getHook()} to edit the message further.
+     *
+     * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     *
+     * @param  embeds
+     *         The new {@link MessageEmbed MessageEmbeds}
+     *
+     * @throws IllegalArgumentException
+     *         If any of the provided embeds is null
+     *
+     * @return {@link UpdateAction} that can be used to further update the message
+     */
+    @Nonnull
+    @CheckReturnValue
+    default UpdateAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbed");
+        return deferEdit().setEmbeds(embeds);
     }
 
     /**
@@ -217,7 +273,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default UpdateAction editMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");

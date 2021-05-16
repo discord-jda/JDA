@@ -55,7 +55,7 @@ public interface ButtonInteraction extends ComponentInteraction
      * <br>This only works for non-ephemeral messages where {@link #getMessage()} is available!
      *
      * <p>If this interaction is already acknowledged this will use {@link #getHook()}
-     * and otherwise {@link #editMessage(Collection)} directly to acknowledge the interaction.
+     * and otherwise {@link #editComponents(Collection)} directly to acknowledge the interaction.
      *
      * @param  newButton
      *         The new button to use, or null to remove this button from the message entirely
@@ -96,6 +96,6 @@ public interface ButtonInteraction extends ComponentInteraction
         if (isAcknowledged())
             return getHook().editMessageComponentsById(message.getId(), components).map(it -> null);
         else
-            return editMessage(components).map(it -> null);
+            return editComponents(components).map(it -> null);
     }
 }

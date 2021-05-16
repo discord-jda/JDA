@@ -87,7 +87,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -117,7 +117,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -147,7 +147,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -179,7 +179,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -209,7 +209,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -241,7 +241,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -271,7 +271,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      *
      * <p>This method will be delayed until the interaction is acknowledged.
@@ -305,7 +305,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
@@ -354,7 +354,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
@@ -403,7 +403,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
@@ -452,7 +452,7 @@ public interface InteractionHook extends WebhookClient
 
     /**
      * Edit the source message sent by this interaction.
-     * <br>For {@link ComponentInteraction#editMessage(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
+     * <br>For {@link ComponentInteraction#editComponents(Collection)} and {@link ComponentInteraction#deferEdit()} this will be the message the components are attached to.
      * For {@link Interaction#deferReply()} and {@link Interaction#reply(String)} this will be the reply message instead.
      * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
      *
