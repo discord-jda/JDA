@@ -125,7 +125,6 @@ public interface ComponentInteraction extends Interaction
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  message
      *         The new message content to use
@@ -152,7 +151,6 @@ public interface ComponentInteraction extends Interaction
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  content
      *         The new message content to use
@@ -178,7 +176,6 @@ public interface ComponentInteraction extends Interaction
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  components
      *         The new message components, such as {@link ActionRow}
@@ -207,7 +204,6 @@ public interface ComponentInteraction extends Interaction
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  embed
      *         The new message embed to use
@@ -236,7 +232,6 @@ public interface ComponentInteraction extends Interaction
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  format
      *         The format string for the new message content
