@@ -37,7 +37,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unchecked")
 public abstract class AbstractWebhookClient implements WebhookClient
 {
     protected final long id;
@@ -63,9 +62,9 @@ public abstract class AbstractWebhookClient implements WebhookClient
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    public WebhookMessageActionImpl sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return (WebhookMessageActionImpl) sendRequest().addEmbeds(embed, embeds);
+        return sendRequest().addEmbeds(embeds);
     }
 
     @Nonnull
@@ -102,7 +101,7 @@ public abstract class AbstractWebhookClient implements WebhookClient
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    public WebhookMessageUpdateActionImpl editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         return (WebhookMessageUpdateActionImpl) editRequest(messageId).setEmbeds(embed, embeds);
     }

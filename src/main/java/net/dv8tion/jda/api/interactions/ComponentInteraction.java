@@ -105,6 +105,10 @@ public interface ComponentInteraction extends Interaction
      * <br>This tells discord you intend to update the message using the {@link #getHook() InteractionHook}.
      * You are not required to actually update this message, this will simply acknowledge that you accepted the interaction.
      *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>Use {@link #editMessage(String)} to edit it directly.
+     *
      * @return {@link UpdateAction} that can be used to update the message
      *
      * @see    #editMessage(String)
@@ -118,6 +122,10 @@ public interface ComponentInteraction extends Interaction
      * <br>You can use {@link #getHook()} to edit the message further.
      *
      * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  message
      *         The new message content to use
@@ -142,6 +150,10 @@ public interface ComponentInteraction extends Interaction
      *
      * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
      *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>Use {@link #editMessage(String)} to edit it directly.
+     *
      * @param  content
      *         The new message content to use
      *
@@ -163,6 +175,10 @@ public interface ComponentInteraction extends Interaction
      * <br>You can use {@link #getHook()} to edit the message further.
      *
      * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  components
      *         The new message components, such as {@link ActionRow}
@@ -189,6 +205,10 @@ public interface ComponentInteraction extends Interaction
      *
      * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
      *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>Use {@link #editMessage(String)} to edit it directly.
+     *
      * @param  embed
      *         The new message embed to use
      * @param  embeds
@@ -213,6 +233,10 @@ public interface ComponentInteraction extends Interaction
      * <br>You can use {@link #getHook()} to edit the message further.
      *
      * <p><b>You can only use deferEdit() or editMessage() once per interaction!</b> Use {@link #getHook()} for any additional updates.
+     *
+     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+     * <p>Use {@link #editMessage(String)} to edit it directly.
      *
      * @param  format
      *         The format string for the new message content

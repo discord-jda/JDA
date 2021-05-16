@@ -143,6 +143,7 @@ public interface Interaction extends ISnowflake
      * Your first message to the {@link InteractionHook} will inherit whether the message is ephemeral or not from this deferred reply.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>Use {@link #reply(String)} to reply directly.
      *
      * @return {@link ReplyAction}
@@ -159,6 +160,7 @@ public interface Interaction extends ISnowflake
      * Your first message to the {@link InteractionHook} will inherit whether the message is ephemeral or not from this deferred reply.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>Use {@link #reply(String)} to reply directly.
      *
      * @return {@link ReplyAction}
@@ -177,6 +179,7 @@ public interface Interaction extends ISnowflake
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
      * @param  message
@@ -203,6 +206,7 @@ public interface Interaction extends ISnowflake
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
      * @param  content
@@ -228,6 +232,7 @@ public interface Interaction extends ISnowflake
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
      * @param  embed
@@ -256,6 +261,7 @@ public interface Interaction extends ISnowflake
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
      *
      * @param  format
@@ -264,7 +270,7 @@ public interface Interaction extends ISnowflake
      *         Format arguments for the content
      *
      * @throws IllegalArgumentException
-     *         If the format string is null
+     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH}
      *
      * @return {@link ReplyAction}
      */

@@ -96,16 +96,30 @@ public interface InteractionHook extends WebhookClient
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull Collection<? extends ComponentLayout> components)
+    default WebhookMessageUpdateAction editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
         return editMessageById("@original", components);
     }
 
+//    @Nonnull
+//    @CheckReturnValue
+//    default WebhookMessageUpdateAction editOriginalComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+//    {
+//        return editMessageById("@original", component, components);
+//    }
+//
+//    @Nonnull
+//    @CheckReturnValue
+//    default WebhookMessageUpdateAction editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+//    {
+//        return editMessageEmbedsById("@original", embeds);
+//    }
+
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageUpdateAction editOriginalEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
-        return editMessageById("@original", embed, embeds);
+        return editMessageEmbedsById("@original", embed, embeds);
     }
 
     @Nonnull

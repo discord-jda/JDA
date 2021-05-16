@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.interactions.ComponentLayout;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
@@ -26,22 +27,87 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
+/**
+ * Interface which allows sending messages through the webhooks API.
+ * <br>Interactions can use these through {@link Interaction#getHook()}.
+ *
+ * @see Webhook
+ * @see net.dv8tion.jda.api.interactions.InteractionHook
+ */
 public interface WebhookClient
 {
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     * </ul>
+     *
+     * @param  content
+     *         The message content
+     *
+     * @throws IllegalArgumentException
+     *         If the content is null, empty, or longer than {@link Message#MAX_CONTENT_LENGTH}
+     *
+     * @return {@link WebhookMessageAction}
+     */
     @Nonnull
     @CheckReturnValue
     WebhookMessageAction sendMessage(@Nonnull String content);
 
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageAction sendMessage(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds); // TODO: Collection<MessageEmbed> overload
-
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     * </ul>
+     *
+     * @param  message
+     *         The message to send
+     *
+     * @throws IllegalArgumentException
+     *         If the message is null
+     *
+     * @return {@link WebhookMessageAction}
+     */
     @Nonnull
     @CheckReturnValue
     WebhookMessageAction sendMessage(@Nonnull Message message);
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     * </ul>
+     *
+     * @param  format
+     *         Format string for the message content
+     * @param  args
+     *         Format arguments for the content
+     *
+     * @throws IllegalArgumentException
+     *         If the format string is null or the resulting content is longer than {@link Message#MAX_CONTENT_LENGTH}
+     *
+     * @return {@link WebhookMessageAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageAction sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
@@ -50,11 +116,144 @@ public interface WebhookClient
         return sendMessage(String.format(format, args));
     }
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *
+     * @throws IllegalArgumentException
+     *         If any of the embeds are null, more than 10, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     *
+     * @return {@link WebhookMessageAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     * </ul>
+     *
+     * @param  embed
+     *         {@link MessageEmbed} to use
+     * @param  embeds
+     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *
+     * @throws IllegalArgumentException
+     *         If any of the embeds are null, more than 10, or longer than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}.
+     *
+     * @return {@link WebhookMessageAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    {
+        Checks.notNull(embed, "MessageEmbeds");
+        Checks.noneNull(embeds, "MessageEmbeds");
+        List<MessageEmbed> embedList = new ArrayList<>();
+        embedList.add(embed);
+        Collections.addAll(embedList, embeds);
+        return sendMessageEmbeds(embedList);
+    }
+
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * InputStream file = new FileInputStream("image.png"); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.sendFile(file, "cat.png").addEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
+     * </ul>
+     *
+     * @param  data
+     *         The InputStream data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file or filename is {@code null} or {@code empty}.
+     *
+     * @return {@link WebhookMessageAction}
+     */
     @Nonnull
     @CheckReturnValue
     WebhookMessageAction sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>This is a shortcut to {@link #sendFile(java.io.File, String, AttachmentOption...)} by way of using {@link java.io.File#getName()}.
+     * <pre>sendFile(file, file.getName())</pre>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * byte[] data = IOUtils.readAllBytes(new FileInputStream("image.png")); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.sendFile(file, "cat.png").addEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
+     * </ul>
+     *
+     * @param  file
+     *         The {@link File} data to upload to the webhook.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file is {@code null}.
+     *
+     * @return {@link WebhookMessageAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
@@ -63,6 +262,56 @@ public interface WebhookClient
         return sendFile(file, file.getName(), options);
     }
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
+     * <ol>
+     *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
+     *          after upload and it is the name that will show up in the client when the upload is displayed.
+     *     <br>Note: The fileName does not show up on the Desktop client for images. It does on mobile however.</li>
+     *     <li>The extension of the provided fileName also determines how Discord will treat the file. Discord currently only
+     *         has special handling for image file types, but the fileName's extension must indicate that it is an image file.
+     *         This means it has to end in something like .png, .jpg, .jpeg, .gif, etc. As a note, you can also not provide
+     *         a full name for the file and instead ONLY provide the extension like "png" or "gif" and Discord will generate
+     *         a name for the upload and append the fileName as the extension.</li>
+     * </ol>
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * byte[] data = IOUtils.readAllBytes(new FileInputStream("image.png")); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.sendFile(file, "cat.png").addEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
+     * </ul>
+     *
+     * @param  file
+     *         The {@link File} data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file or filename is {@code null} or {@code empty}.
+     *
+     * @return {@link WebhookMessageAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageAction sendFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
@@ -82,17 +331,54 @@ public interface WebhookClient
         }
     }
 
+    /**
+     * Send a message to this webhook.
+     *
+     * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
+     *
+     * <p><b>Uploading images with Embeds</b>
+     * <br>When uploading an <u>image</u> you can reference said image using the specified filename as URI {@code attachment://filename.ext}.
+     *
+     * <p><u>Example</u>
+     * <pre><code>
+     * WebhookClient hook; // = reference of a WebhookClient such as interaction.getHook()
+     * EmbedBuilder embed = new EmbedBuilder();
+     * byte[] data = IOUtils.readAllBytes(new FileInputStream("image.png")); // the name in your file system can be different from the name used in discord
+     * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
+     *      .setDescription("This is a cute cat :3");
+     * hook.sendFile(file, "cat.png").addEmbeds(embed.build()).queue();
+     * </code></pre>
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_WEBHOOK UNKNOWN_WEBHOOK}
+     *     <br>The webhook is no longer available, either it was deleted or in case of interactions it expired.</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#REQUEST_ENTITY_TOO_LARGE REQUEST_ENTITY_TOO_LARGE}
+     *     <br>The file exceeds the maximum upload size of {@link Message#MAX_FILE_SIZE}</li>
+     * </ul>
+     *
+     * @param  data
+     *         The {@code byte[]} data to upload to the webhook.
+     * @param  name
+     *         The file name that should be sent to discord
+     *         <br>Refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)} for information about this parameter.
+     * @param  options
+     *         Possible options to apply to this attachment, such as marking it as spoiler image
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided file or filename is {@code null} or {@code empty}.
+     *
+     * @return {@link WebhookMessageAction}
+     */
     @Nonnull
     @CheckReturnValue
     default WebhookMessageAction sendFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
-
         return sendFile(new ByteArrayInputStream(data), name, options);
     }
 
-    // TODO: These should be specific update actions similar to ComponentInteraction#editMessage
 
     @Nonnull
     @CheckReturnValue
@@ -114,17 +400,6 @@ public interface WebhookClient
     default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull Collection<? extends ComponentLayout> components)
     {
         return editMessageById(Long.toUnsignedString(messageId), components);
-    }
-
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageUpdateAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds);
-
-    @Nonnull
-    @CheckReturnValue
-    default WebhookMessageUpdateAction editMessageById(long messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
-    {
-        return editMessageById(Long.toUnsignedString(messageId), embed, embeds);
     }
 
     @Nonnull
@@ -151,6 +426,17 @@ public interface WebhookClient
     default WebhookMessageUpdateAction editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
     {
         return editMessageFormatById(Long.toUnsignedString(messageId), format, args);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageUpdateAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds); // TODO: Collection<MessageEmbed> overload
+
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction editMessageEmbedsById(long messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    {
+        return editMessageEmbedsById(Long.toUnsignedString(messageId), embed, embeds);
     }
 
 
