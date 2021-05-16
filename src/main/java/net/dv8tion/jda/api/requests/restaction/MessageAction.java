@@ -689,6 +689,17 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     MessageAction clearFiles(@Nonnull Consumer<InputStream> finalizer);
 
 
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 actions rows are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
@@ -697,6 +708,17 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
         return setActionRows(rows.toArray(new ActionRow[0]));
     }
 
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 actions rows are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     MessageAction setActionRows(@Nonnull ActionRow... rows);
