@@ -58,6 +58,16 @@ public interface InteractionHook extends WebhookClient
     /**
      * Whether messages sent from this interaction hook should be ephemeral by default.
      * <br>This does not affect message updates, including deferred replies sent with {@link #sendMessage(String) sendMessage(...)} methods.
+     * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
+     *
+     * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
+     * <br>Limitations:
+     * <ul>
+     *     <li>Cannot be deleted by the bot</li>
+     *     <li>Cannot contain any files/attachments</li>
+     *     <li>Cannot be reacted to</li>
+     *     <li>Cannot be retrieved</li>
+     * </ul>
      *
      * @param  ephemeral
      *         True if messages should be ephemeral

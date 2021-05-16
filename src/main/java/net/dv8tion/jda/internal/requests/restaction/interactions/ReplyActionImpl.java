@@ -98,9 +98,9 @@ public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
     public ReplyActionImpl setEphemeral(boolean ephemeral)
     {
         if (ephemeral)
-            this.flags |= Flag.EPHEMERAL.getRaw();
+            this.flags |= 64;
         else
-            this.flags &= ~Flag.EPHEMERAL.getRaw();
+            this.flags &= ~64;
         return this;
     }
 

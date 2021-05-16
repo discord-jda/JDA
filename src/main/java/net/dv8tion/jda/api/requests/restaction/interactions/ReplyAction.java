@@ -30,6 +30,10 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
+/**
+ * A {@link CallbackAction} which can be used to send a message reply for an interaction.
+ * <br>You can use {@link #setEphemeral(boolean)} to hide this message from other users.
+ */
 public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction>
 {
     @Nonnull
@@ -44,6 +48,17 @@ public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction
     @Override
     ReplyAction deadline(long timestamp);
 
+    /**
+     * Add {@link MessageEmbed MessageEmbeds} for the message
+     *
+     * @param  embeds
+     *         The message embeds to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or one of the embeds is too big
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
@@ -52,10 +67,32 @@ public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction
         return addEmbeds(Arrays.asList(embeds));
     }
 
+    /**
+     * Add {@link MessageEmbed MessageEmbeds} for the message
+     *
+     * @param  embeds
+     *         The message embeds to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or one of the embeds is too big
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     ReplyAction addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
+    /**
+     * Add a single {@link ActionRow} to the message.
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 components are provided
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction addActionRow(@Nonnull Component... components)
@@ -63,6 +100,17 @@ public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction
         return addActionRows(ActionRow.of(components));
     }
 
+    /**
+     * Add {@link ActionRow ActionRows} to the message.
+     *
+     * @param  rows
+     *         The action rows to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 action rows are provided
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     default ReplyAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
@@ -71,17 +119,64 @@ public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction
         return addActionRows(rows.toArray(new ActionRow[0]));
     }
 
+    /**
+     * Add {@link ActionRow ActionRows} to the message.
+     *
+     * @param  rows
+     *         The action rows to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 action rows are provided
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     ReplyAction addActionRows(@Nonnull ActionRow... rows);
 
+    /**
+     * Set the content for this message.
+     *
+     * @param  content
+     *         The new message content or null to unset
+     *
+     * @throws IllegalArgumentException
+     *         If the provided content is longer than {@link net.dv8tion.jda.api.entities.Message#MAX_CONTENT_LENGTH MAX_CONTENT_LENGTH} characters
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     ReplyAction setContent(@Nullable final String content);
 
+    /**
+     * Enable/Disable Text-To-Speech for the resulting message.
+     *
+     * @param  isTTS
+     *         True, if this should cause a Text-To-Speech effect when sent to the channel
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     ReplyAction setTTS(final boolean isTTS);
 
-    // doesn't support embeds or attachments
+    /**
+     * Set whether this message should be visible to other users.
+     * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
+     *
+     * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
+     * <br>Limitations:
+     * <ul>
+     *     <li>Cannot be deleted by the bot</li>
+     *     <li>Cannot contain any files/attachments</li>
+     *     <li>Cannot be reacted to</li>
+     *     <li>Cannot be retrieved</li>
+     * </ul>
+     *
+     * @param  ephemeral
+     *         True, if this message should be invisible for other users
+     *
+     * @return The same reply action, for chaining convenience
+     */
     @Nonnull
     @CheckReturnValue
     ReplyAction setEphemeral(boolean ephemeral);
@@ -123,20 +218,20 @@ public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction
 //    @CheckReturnValue
 //    CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
 
-    enum Flag
-    {
-        EPHEMERAL(6);
-
-        private final int raw;
-
-        Flag(int offset)
-        {
-            this.raw = 1 << offset;
-        }
-
-        public int getRaw()
-        {
-            return raw;
-        }
-    }
+//    enum Flag
+//    {
+//        EPHEMERAL(6);
+//
+//        private final int raw;
+//
+//        Flag(int offset)
+//        {
+//            this.raw = 1 << offset;
+//        }
+//
+//        public int getRaw()
+//        {
+//            return raw;
+//        }
+//    }
 }

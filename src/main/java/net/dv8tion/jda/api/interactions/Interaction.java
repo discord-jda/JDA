@@ -168,6 +168,16 @@ public interface Interaction extends ISnowflake
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>Use {@link #reply(String)} to reply directly.
      *
+     * <p>Ephemeral messages have some limitations and will be removed once the user restarts their client.
+     * <br>When a message is ephemeral, it will only be visible to the user that used the interaction.
+     * <br>Limitations:
+     * <ul>
+     *     <li>Cannot be deleted by the bot</li>
+     *     <li>Cannot contain any files/attachments</li>
+     *     <li>Cannot be reacted to</li>
+     *     <li>Cannot be retrieved</li>
+     * </ul>
+     *
      * @return {@link ReplyAction}
      */
     @Nonnull
