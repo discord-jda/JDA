@@ -90,7 +90,7 @@ public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
 
     private boolean isEmpty()
     {
-        return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty();
+        return Helpers.isEmpty(content) && embeds.isEmpty() && files.isEmpty() && components.isEmpty();
     }
 
     @Nonnull
