@@ -477,7 +477,7 @@ public interface ChannelManager extends Manager<ChannelManager>
 
     /**
      * Sets the {@link net.dv8tion.jda.api.Region Region} of the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * <br>The default value is {@link Region#AUTOMATIC}</br>
+     * <br>The default value is {@link Region#AUTOMATIC}
      *
      * Possible values are:
      * <ul>
