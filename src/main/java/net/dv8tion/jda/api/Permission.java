@@ -109,7 +109,7 @@ public enum Permission
      */
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD);
+                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER);
 
     private final int offset;
     private final long raw;
