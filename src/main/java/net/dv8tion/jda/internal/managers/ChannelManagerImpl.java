@@ -102,7 +102,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             this.topic = null;
         if ((fields & NEWS) == NEWS)
             this.news = false;
-        if((fields & REGION) == REGION)
+        if ((fields & REGION) == REGION)
             this.region = null;
         if ((fields & PERMISSION) == PERMISSION)
         {
