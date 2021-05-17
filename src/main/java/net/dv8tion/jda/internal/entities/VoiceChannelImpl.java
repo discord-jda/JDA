@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,6 +72,13 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     public Region getRegion()
     {
         return region == null ? Region.AUTOMATIC : Region.fromKey(region);
+    }
+
+    @Nullable
+    @Override
+    public String getRegionRaw()
+    {
+        return region;
     }
 
     @Nonnull
