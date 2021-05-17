@@ -154,10 +154,10 @@ public class PresenceUpdateHandler extends SocketHandler
 
     private void handleActivities(List<Activity> newActivities, @Nullable MemberImpl member, MemberPresenceImpl presence)
     {
+        List<Activity> oldActivities = presence.getActivities();
         presence.setActivities(newActivities);
         if (member == null)
             return;
-        List<Activity> oldActivities = presence.getActivities();
         boolean unorderedEquals = Helpers.deepEqualsUnordered(oldActivities, newActivities);
         if (unorderedEquals)
         {
