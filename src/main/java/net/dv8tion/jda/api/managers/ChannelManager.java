@@ -492,6 +492,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link Region#EUROPE}</li>
      *     <li>{@link Region#INDIA}</li>
      *     <li>{@link Region#SOUTH_KOREA}</li>
+     *     <li>{@link Region#BRAZIL}</li>
+     *     <li>{@link Region#JAPAN}</li>
+     *     <li>{@link Region#RUSSIA}</li>
      * </ul>
      *
      * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels!}</b></br>
