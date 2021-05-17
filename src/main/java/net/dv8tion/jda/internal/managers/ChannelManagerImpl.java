@@ -297,10 +297,9 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     public ChannelManagerImpl setRegion(@Nonnull Region region)
     {
         Checks.notNull(region, "Region");
-        if(getType() != ChannelType.VOICE)
+        if (getType() != ChannelType.VOICE)
             throw new IllegalStateException("Can only change region on voice channels!");
-        if(!Region.VOICE_CHANNEL_REGIONS.contains(region))
-            throw new IllegalArgumentException("Region is not usable for VoiceChannel region overrides!");
+        Checks.check(Region.VOICE_CHANNEL_REGIONS.contains(region), "Region is not usable for VoiceChannel region overrides!");
         this.region = region == Region.AUTOMATIC ? null : region.getKey();
         set |= REGION;
         return this;
