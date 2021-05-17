@@ -17,6 +17,7 @@ package net.dv8tion.jda.api;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 
 /**
  * Represents the Regions used for Audio connections.
@@ -64,6 +65,9 @@ public enum Region
     UNKNOWN("", "Unknown Region", null, false),
 
     AUTOMATIC("automatic", "Automatic", null, false);
+
+    public static final EnumSet<Region> VOICE_CHANNEL_REGIONS =
+            EnumSet.of(US_WEST, US_EAST, US_CENTRAL, US_SOUTH, SINGAPORE, SOUTH_AFRICA, SYDNEY, EUROPE, INDIA, SOUTH_KOREA);
 
     private final String key;
     private final String name;

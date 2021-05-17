@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 
 import javax.annotation.CheckReturnValue;
@@ -64,6 +65,8 @@ public interface ChannelManager extends Manager<ChannelManager>
     long SLOWMODE   = 0x100;
     /** Used to reset the channel type field */
     long NEWS       = 0x200;
+    /** Used to reset the region field */
+    long REGION     = 0x400;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -82,6 +85,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
      *     <li>{@link #NEWS}</li>
+     *     <li>{@link #REGION}</li>
      * </ul>
      *
      * @param  fields
@@ -108,6 +112,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link #BITRATE}</li>
      *     <li>{@link #PERMISSION}</li>
      *     <li>{@link #NEWS}</li>
+     *     <li>{@link #REGION}</li>
      * </ul>
      *
      * @param  fields
@@ -469,6 +474,38 @@ public interface ChannelManager extends Manager<ChannelManager>
     @Nonnull
     @CheckReturnValue
     ChannelManager setBitrate(int bitrate);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.Region Region} of the selected {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+     * <br>The default value is {@link Region#AUTOMATIC}</br>
+     *
+     * Possible values are:
+     * <ul>
+     *     <li>{@link Region#AUTOMATIC}</li>
+     *     <li>{@link Region#US_WEST}</li>
+     *     <li>{@link Region#US_EAST}</li>
+     *     <li>{@link Region#US_CENTRAL}</li>
+     *     <li>{@link Region#US_SOUTH}</li>
+     *     <li>{@link Region#SINGAPORE}</li>
+     *     <li>{@link Region#SOUTH_AFRICA}</li>
+     *     <li>{@link Region#SYDNEY}</li>
+     *     <li>{@link Region#EUROPE}</li>
+     *     <li>{@link Region#INDIA}</li>
+     *     <li>{@link Region#SOUTH_KOREA}</li>
+     * </ul>
+     *
+     * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels!}</b></br>
+     * @param region
+     *        The new {@link net.dv8tion.jda.api.Region Region}
+     * @throws IllegalStateException
+     *         If the selected {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}'s type is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}
+     * @throws IllegalArgumentException
+     *         If the provided Region is not in the list of usable values
+     * @return ChannelManager for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelManager setRegion(Region region);
 
     /**
      * Sets the <b><u>news flag</u></b> of the selected {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
