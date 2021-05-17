@@ -70,6 +70,7 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     @Override
     public Region getRegion()
     {
+        if(region == null) return Region.AUTOMATIC;
         return Region.fromKey(region);
     }
 

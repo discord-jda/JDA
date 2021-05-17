@@ -61,7 +61,9 @@ public enum Region
     VIP_US_SOUTH("vip-us-south", "US South (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
     VIP_US_WEST("vip-us-west", "US West (VIP)", "\uD83C\uDDFA\uD83C\uDDF8", true),
 
-    UNKNOWN("", "Unknown Region", null, false);
+    UNKNOWN("", "Unknown Region", null, false),
+
+    AUTOMATIC("automatic", "Automatic", null, false);
 
     private final String key;
     private final String name;
