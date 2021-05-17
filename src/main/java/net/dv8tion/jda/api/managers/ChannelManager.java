@@ -497,7 +497,8 @@ public interface ChannelManager extends Manager<ChannelManager>
      *     <li>{@link Region#RUSSIA}</li>
      * </ul>
      *
-     * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels!}</b></br>
+     * <br><b>This is only available to {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}!</b>
+     *
      * @param region
      *        The new {@link net.dv8tion.jda.api.Region Region}
      * @throws IllegalStateException
