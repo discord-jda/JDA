@@ -69,7 +69,7 @@ public interface VoiceChannel extends GuildChannel
     Region getRegion();
 
     /**
-     * The raw voice region name for this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
+     * The raw region name for this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}
      *
      * This will return null if the region is set to Automatic.
      * @return Raw region name
