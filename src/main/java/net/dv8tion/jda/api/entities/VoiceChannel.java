@@ -16,6 +16,7 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
 import javax.annotation.Nonnull;
@@ -57,6 +58,14 @@ public interface VoiceChannel extends GuildChannel
      * @return The audio bitrate of this voice channel.
      */
     int getBitrate();
+
+    /**
+     * The {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+     * This will return {@link Region#UNKNOWN} if the region of this channel is set to Automatic.
+     * @return the {@link net.dv8tion.jda.api.Region Region} of this channel.
+     */
+    @Nonnull
+    Region getRegion();
 
     @Nonnull
     @Override
