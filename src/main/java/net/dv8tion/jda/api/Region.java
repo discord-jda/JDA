@@ -67,7 +67,7 @@ public enum Region
     AUTOMATIC("automatic", "Automatic", null, false);
 
     public static final EnumSet<Region> VOICE_CHANNEL_REGIONS =
-            EnumSet.of(US_WEST, US_EAST, US_CENTRAL, US_SOUTH, SINGAPORE, SOUTH_AFRICA, SYDNEY, EUROPE, INDIA, SOUTH_KOREA);
+            EnumSet.of(AUTOMATIC, US_WEST, US_EAST, US_CENTRAL, US_SOUTH, SINGAPORE, SOUTH_AFRICA, SYDNEY, EUROPE, INDIA, SOUTH_KOREA);
 
     private final String key;
     private final String name;
