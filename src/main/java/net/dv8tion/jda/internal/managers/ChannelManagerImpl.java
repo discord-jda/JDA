@@ -438,7 +438,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             frame.put("parent_id", parent);
         if (shouldUpdate(NEWS))
             frame.put("type", news ? 5 : 0);
-        if(shouldUpdate(REGION))
+        if (shouldUpdate(REGION))
             frame.put("rtc_region", region);
         withLock(lock, (lock) ->
         {
