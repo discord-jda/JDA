@@ -354,7 +354,7 @@ public interface User extends IMentionable, IFakeable
         HYPESQUAD(           2, "HypeSquad Events"),
         BUG_HUNTER_LEVEL_1(  3, "Bug Hunter Level 1"),
 
-        // Hypesquad
+        // HypeSquad
         HYPESQUAD_BRAVERY(   6, "HypeSquad Bravery"),
         HYPESQUAD_BRILLIANCE(7, "HypeSquad Brilliance"),
         HYPESQUAD_BALANCE(   8, "HypeSquad Balance"),
