@@ -171,7 +171,7 @@ public class MessageListener extends ListenerAdapter
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
-        jda.addEventListeners(new MessageListener());
+        jda.addEventListener(new MessageListener());
     }
 
     @Override
