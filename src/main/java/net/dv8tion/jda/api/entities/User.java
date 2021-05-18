@@ -369,6 +369,7 @@ public interface User extends IMentionable, IFakeable
         BUG_HUNTER_LEVEL_2(14, "Bug Hunter Level 2"),
         VERIFIED_BOT(      16, "Verified Bot"),
         VERIFIED_DEVELOPER(17, "Early Verified Bot Developer"),
+        CERTIFIED_MODERATOR(18, "Discord Certified Moderator"),
         
         UNKNOWN(-1, "Unknown");
 
