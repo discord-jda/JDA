@@ -5421,20 +5421,31 @@ public interface Guild extends ISnowflake
             return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
         }
     }
+
     /**
      * Represents the NSFW level for this guild.
-     * <p>
-     * <br><b>DEFAULT</b>   {@literal ->}  Is yet to be classified by discord.
-     * <br><b>EXPLICIT</b>  {@literal ->} Is classified as a NSFW server
-     * <br><b>SAFE</b>  {@literal ->}  Doesn't classify as a NSFW server
-     * <br><b>AGE_RESTRICTED</b>  {@literal ->} Is classified as NSFW and has an age restriction in place
      */
     enum NSFWLevel
     {
+        /**
+         * Is yet to be classified by discord.
+         */
         DEFAULT(0),
+        /**
+         * Is classified as a NSFW server
+         */
         EXPLICIT(1),
+        /**
+         * Doesn't classify as a NSFW server
+         */
         SAFE(2),
+        /**
+         * Is classified as NSFW and has an age restriction in place
+         */
         AGE_RESTRICTED(3),
+        /**
+         * Placeholder for unsupported levels.
+         */
         UNKNOWN(-1);
 
         private final int key;

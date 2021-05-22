@@ -1652,6 +1652,7 @@ public class GuildImpl implements Guild
         this.explicitContentLevel = level;
         return this;
     }
+
     public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
     {
         this.nsfwLevel = nsfwLevel;
