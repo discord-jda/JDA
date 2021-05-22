@@ -2357,12 +2357,12 @@ public interface Guild extends ISnowflake
     ExplicitContentLevel getExplicitContentLevel();
 
     /**
-     * Returns the level of multifactor authentication required to execute administrator restricted functions in this guild.
+     * Returns the NSFW Level that this guild is classified with.
      * <br>For a short description of the different values, see {@link net.dv8tion.jda.api.entities.Guild.NSFWLevel NSFW Level}.
      * <p>
      * This value cannot be modified directly.
      *
-     * @return The NSFWLevel required by this Guild.
+     * @return The NSFWLevel of this guild.
      */
     @Nonnull
     NSFWLevel getNSFWLevel();
@@ -5422,8 +5422,13 @@ public interface Guild extends ISnowflake
         }
     }
     /**
-     * Represents the Guild NSFW level.
-      */
+     * Represents the NSFW level for this guild.
+     * <p>
+     * <br><b>DEFAULT</b>   {@literal ->}  Is yet to be classified by discord.
+     * <br><b>EXPLICIT</b>  {@literal ->} Is classified as a NSFW server
+     * <br><b>SAFE</b>  {@literal ->}  Doesn't classify as a NSFW server
+     * <br><b>AGE_RESTRICTED</b>  {@literal ->} Is classified as NSFW and has an age restriction in place
+     */
     enum NSFWLevel
     {
         DEFAULT(0),
