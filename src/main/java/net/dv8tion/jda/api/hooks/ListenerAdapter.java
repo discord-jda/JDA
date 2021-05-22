@@ -319,6 +319,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateBoostCount(@Nonnull GuildUpdateBoostCountEvent event) {}
     public void onGuildUpdateMaxMembers(@Nonnull GuildUpdateMaxMembersEvent event) {}
     public void onGuildUpdateMaxPresences(@Nonnull GuildUpdateMaxPresencesEvent event) {}
+    public void onGuildUpdateNSFWLevel(@Nonnull GuildUpdateNSFWLevelEvent event) {}
+
 
     //Guild Invite Events
     public void onGuildInviteCreate(@Nonnull GuildInviteCreateEvent event) {}
