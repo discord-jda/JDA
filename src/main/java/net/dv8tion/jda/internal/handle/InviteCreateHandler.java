@@ -74,7 +74,9 @@ public class InviteCreateHandler extends SocketHandler
         InviteImpl.ChannelImpl channel = new InviteImpl.ChannelImpl(realChannel);
         InviteImpl.GuildImpl guild = new InviteImpl.GuildImpl(realGuild);
 
-        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, Invite.InviteType.GUILD);
+        Invite.TargetType targetType = Invite.TargetType.fromId(content.getInt("target_type", -1));
+
+        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, Invite.InviteType.GUILD, targetType);
         getJDA().handleEvent(
             new GuildInviteCreateEvent(
                 getJDA(), responseNumber,

@@ -18,6 +18,8 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -118,4 +120,99 @@ public interface InviteAction extends AuditableRestAction<Invite>
     @Nonnull
     @CheckReturnValue
     InviteAction setUnique(@Nullable final Boolean unique);
+
+    /**
+     * Sets the type of target for this voice channel invite.
+     *
+     * @param type
+     *        The target type for this voice channel invite.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If this channel is not a voice channel.
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetType(@Nullable final Invite.TargetType type);
+
+    /**
+     * Sets the id of the targeted application.
+     * This will automatically {@link #setTargetType(Invite.TargetType) set the target type} to {@link Invite.TargetType#EMBEDDED_APPLICATION}.
+     *
+     * @param applicationId
+     *        The id of the embedded application or {@code null} to use none, requires type {@link Invite.TargetType#EMBEDDED_APPLICATION}
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetApplication(@Nullable final Long applicationId);
+
+    /**
+     * Sets the id of the targeted application.
+     * This will automatically {@link #setTargetType(Invite.TargetType) set the target type} to {@link Invite.TargetType#EMBEDDED_APPLICATION}.
+     *
+     * @param applicationId
+     *        The id of the embedded application or {@code null} to use none, requires type {@link Invite.TargetType#EMBEDDED_APPLICATION}
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetApplication(@Nullable final String applicationId) {
+        return setTargetApplication(MiscUtil.parseSnowflake(applicationId));
+    }
+
+    /**
+     * Sets the user whose stream to display for this invite.
+     * This will automatically {@link #setTargetType(Invite.TargetType) set the target type} to {@link Invite.TargetType#STREAM}.
+     * The user must be streaming in the same channel.
+     *
+     * @param userId
+     *        The id of the user whose stream to display.
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    InviteAction setTargetUser(@Nullable final Long userId);
+
+    /**
+     * Sets the user whose stream to display for this invite.
+     * This will automatically {@link #setTargetType(Invite.TargetType) set the target type} to {@link Invite.TargetType#STREAM}.
+     * The user must be streaming in the same channel.
+     *
+     * @param userId
+     *        The id of the user whose stream to display.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided ID is null
+     * @throws java.lang.NumberFormatException
+     *         If the provided ID is not a snowflake
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetUser(@Nonnull String userId) {
+        return setTargetUser(MiscUtil.parseSnowflake(userId));
+    }
+
+    /**
+     * Sets the user whose stream to display for this invite.
+     * This will automatically {@link #setTargetType(Invite.TargetType) set the target type} to {@link Invite.TargetType#STREAM}.
+     * The user must be streaming in the same channel.
+     *
+     * @param user
+     *        The user whose stream to display.
+     *
+     * @return The current InviteAction for chaining.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default InviteAction setTargetUser(@Nonnull User user) {
+        return setTargetUser(user.getIdLong());
+    }
+
 }

@@ -54,10 +54,11 @@ public class InviteImpl implements Invite
     private final OffsetDateTime timeCreated;
     private final int uses;
     private final Invite.InviteType type;
+    private final Invite.TargetType targetType;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
             final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
-            final int uses, final Channel channel, final Guild guild, final Group group, final Invite.InviteType type)
+            final int uses, final Channel channel, final Guild guild, final Group group, final Invite.InviteType type, Invite.TargetType targetType)
     {
         this.api = api;
         this.code = code;
@@ -72,6 +73,7 @@ public class InviteImpl implements Invite
         this.guild = guild;
         this.group = group;
         this.type = type;
+        this.targetType = targetType;
     }
 
     public static RestAction<Invite> resolve(final JDA api, final String code, final boolean withCounts)
@@ -155,6 +157,13 @@ public class InviteImpl implements Invite
     public Invite.InviteType getType()
     {
         return this.type;
+    }
+
+    @Nonnull
+    @Override
+    public TargetType getTargetType()
+    {
+        return this.targetType;
     }
 
     @Override

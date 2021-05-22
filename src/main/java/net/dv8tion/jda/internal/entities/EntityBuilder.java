@@ -1556,6 +1556,7 @@ public class EntityBuilder
 
         final DataObject channelObject = object.getObject("channel");
         final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
+        final Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", -1));
 
         final Invite.InviteType type;
         final Invite.Guild guild;
@@ -1646,7 +1647,7 @@ public class EntityBuilder
 
         return new InviteImpl(getJDA(), code, expanded, inviter,
                               maxAge, maxUses, temporary,
-                              timeCreated, uses, channel, guild, group, type);
+                              timeCreated, uses, channel, guild, group, type, targetType);
     }
 
     public ApplicationInfo createApplicationInfo(DataObject object)

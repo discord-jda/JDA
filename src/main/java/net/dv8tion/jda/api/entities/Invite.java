@@ -143,6 +143,14 @@ public interface Invite
     Invite.InviteType getType();
 
     /**
+     * The target type of this invite.
+     *
+     * @return The invite's type
+     */
+    @Nonnull
+    Invite.TargetType getTargetType();
+
+    /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Channel Invite.Channel} object
      * containing information about this invite's origin channel.
      *
@@ -502,5 +510,40 @@ public interface Invite
         GUILD,
         GROUP,
         UNKNOWN
+    }
+
+    enum TargetType
+    {
+        STREAM(1),
+
+        EMBEDDED_APPLICATION(2),
+
+        /**
+         * Unknown invite target type.
+         * Either this invite does not have a target type or Discord implemented a new invite target type and JDA has not yet implemented support for it.
+         */
+        UNKNOWN(-1);
+
+        private final int id;
+
+        TargetType(int id)
+        {
+            this.id = id;
+        }
+
+        public int getId()
+        {
+            return id;
+        }
+
+        public static TargetType fromId(int id) {
+            for (TargetType type : values())
+            {
+                if (type.id == id)
+                    return type;
+            }
+            return UNKNOWN;
+        }
+
     }
 }
