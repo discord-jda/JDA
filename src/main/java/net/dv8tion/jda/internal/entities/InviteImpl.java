@@ -35,6 +35,7 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
@@ -47,6 +48,8 @@ public class InviteImpl implements Invite
     private final boolean expanded;
     private final Guild guild;
     private final Group group;
+    private final EmbeddedApplication application;
+    private final User targetUser;
     private final User inviter;
     private final int maxAge;
     private final int maxUses;
@@ -57,8 +60,9 @@ public class InviteImpl implements Invite
     private final Invite.TargetType targetType;
 
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
-            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
-            final int uses, final Channel channel, final Guild guild, final Group group, final Invite.InviteType type, Invite.TargetType targetType)
+            final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated, final int uses,
+            final Channel channel, final Guild guild, final Group group, final EmbeddedApplication application, final User targetUser,
+            final Invite.InviteType type, Invite.TargetType targetType)
     {
         this.api = api;
         this.code = code;
@@ -72,6 +76,8 @@ public class InviteImpl implements Invite
         this.channel = channel;
         this.guild = guild;
         this.group = group;
+        this.application = application;
+        this.targetUser = targetUser;
         this.type = type;
         this.targetType = targetType;
     }
@@ -201,6 +207,20 @@ public class InviteImpl implements Invite
         return this.group;
     }
 
+    @Nullable
+    @Override
+    public EmbeddedApplication getTargetApplication()
+    {
+        return this.application;
+    }
+
+    @Nullable
+    @Override
+    public User getTargetUser()
+    {
+        return this.targetUser;
+    }
+
     @Override
     public User getInviter()
     {
@@ -321,7 +341,6 @@ public class InviteImpl implements Invite
         {
             return this.type;
         }
-
     }
 
     public static class GuildImpl implements Guild
@@ -419,7 +438,6 @@ public class InviteImpl implements Invite
 
     public static class GroupImpl implements Group
     {
-
         private final String iconId, name;
         private final long id;
         private final List<String> users;
@@ -461,6 +479,77 @@ public class InviteImpl implements Invite
         public List<String> getUsers()
         {
             return users;
+        }
+    }
+
+    public static class EmbeddedApplicationImpl implements EmbeddedApplication
+    {
+        private final String iconId, name, description, summary;
+        private final long id;
+        private final int maxParticipants;
+
+        public EmbeddedApplicationImpl(final String iconId, final String name, final String description, final String summary, final long id, final int maxParticipants)
+        {
+            this.iconId = iconId;
+            this.name = name;
+            this.description = description;
+            this.summary = summary;
+            this.id = id;
+            this.maxParticipants = maxParticipants;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return this.id;
+        }
+
+        @Nonnull
+        @Override
+        public String getName()
+        {
+            return this.name;
+        }
+
+        @Nonnull
+        @Override
+        public String getDescription()
+        {
+            return this.description;
+        }
+
+        @Nullable
+        @Override
+        public String getSummary()
+        {
+            return this.summary;
+        }
+
+        @Nullable
+        @Override
+        public String getIconId()
+        {
+            return this.iconId;
+        }
+
+        @Nullable
+        @Override
+        public String getIconUrl()
+        {
+            return this.iconId == null ? null
+                    : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
+        }
+
+        @Override
+        public boolean hasMaxParticipants()
+        {
+            return maxParticipants != -1;
+        }
+
+        @Override
+        public int getMaxParticipants()
+        {
+            return maxParticipants;
         }
     }
 }

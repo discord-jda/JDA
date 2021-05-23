@@ -74,9 +74,32 @@ public class InviteCreateHandler extends SocketHandler
         InviteImpl.ChannelImpl channel = new InviteImpl.ChannelImpl(realChannel);
         InviteImpl.GuildImpl guild = new InviteImpl.GuildImpl(realGuild);
 
-        Invite.TargetType targetType = Invite.TargetType.fromId(content.getInt("target_type", -1));
+        final Invite.TargetType targetType = Invite.TargetType.fromId(content.getInt("target_type", -1));
+        final User targetUser;
+        final InviteImpl.EmbeddedApplicationImpl application;
 
-        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, Invite.InviteType.GUILD, targetType);
+        if (targetType == Invite.TargetType.STREAM)
+        {
+            DataObject targetUserObject = content.getObject("target_user");
+            targetUser = getJDA().getEntityBuilder().createUser(targetUserObject);
+            application = null;
+        }
+        else if (targetType == Invite.TargetType.EMBEDDED_APPLICATION)
+        {
+            DataObject applicationObject = content.getObject("target_application");
+            application = new InviteImpl.EmbeddedApplicationImpl(
+                    applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
+                    applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
+            );
+            targetUser = null;
+        }
+        else
+        {
+            application = null;
+            targetUser = null;
+        }
+
+        Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, application, targetUser, Invite.InviteType.GUILD, targetType);
         getJDA().handleEvent(
             new GuildInviteCreateEvent(
                 getJDA(), responseNumber,

@@ -141,7 +141,8 @@ public interface InviteAction extends AuditableRestAction<Invite>
      * This will automatically {@link #setTargetType(Invite.TargetType) set the target type} to {@link Invite.TargetType#EMBEDDED_APPLICATION}.
      *
      * @param applicationId
-     *        The id of the embedded application or {@code null} to use none, requires type {@link Invite.TargetType#EMBEDDED_APPLICATION}
+     *        The id of the embedded application or {@code null} or {@link Invite.TargetType#UNKNOWN} to use none.
+     *        Requires type {@link Invite.TargetType#EMBEDDED_APPLICATION}
      *
      * @return The current InviteAction for chaining.
      */

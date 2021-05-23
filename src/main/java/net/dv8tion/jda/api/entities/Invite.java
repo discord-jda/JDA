@@ -137,7 +137,7 @@ public interface Invite
     /**
      * The type of this invite.
      *
-     * @return The invites's type
+     * @return The invite's type
      */
     @Nonnull
     Invite.InviteType getType();
@@ -162,14 +162,6 @@ public interface Invite
     Channel getChannel();
 
     /**
-     * The invite code
-     *
-     * @return the invite code
-     */
-    @Nonnull
-    String getCode();
-
-    /**
      * An {@link net.dv8tion.jda.api.entities.Invite.Group Invite.Group} object
      * containing information about this invite's origin group.
      *
@@ -179,6 +171,33 @@ public interface Invite
      */
     @Nullable
     Group getGroup();
+
+    /**
+     * An {@link net.dv8tion.jda.api.entities.Invite.EmbeddedApplication Invite.EmbeddedApplication} object
+     * containing information about this invite's application.
+     *
+     * @return Information about this invite's application or {@code null} if this invite's {@link #getTargetType() Invite.TargetType} is not {@link Invite.TargetType#EMBEDDED_APPLICATION}
+     *
+     * @see    net.dv8tion.jda.api.entities.Invite.EmbeddedApplication
+     */
+    @Nullable
+    EmbeddedApplication getTargetApplication();
+
+    /**
+     * The user to whose stream this invite goes.
+     *
+     * @return The user to whose stream this invite goes or {@code null} of this invite's {@link #getTargetType() Invite.TargetType} is not {@link Invite.TargetType#STREAM}
+     */
+    @Nullable
+    User getTargetUser();
+
+    /**
+     * The invite code
+     *
+     * @return the invite code
+     */
+    @Nonnull
+    String getCode();
 
     /**
      * The invite URL for this invite in the format of:
@@ -498,6 +517,73 @@ public interface Invite
          */
         @Nullable
         List<String> getUsers();
+    }
+
+    /**
+     * POJO for the target application information provided by an invite.
+     *
+     * @see #getTargetApplication()
+     */
+    interface EmbeddedApplication extends ISnowflake
+    {
+        /**
+         * The name of this application.
+         *
+         * @return The name of this application.
+         */
+        @Nonnull
+        String getName();
+
+        /**
+         * The description of this application.
+         *
+         * @return The description of this application.
+         */
+        @Nonnull
+        String getDescription();
+
+        /**
+         * The summary of this application or {@code null} if this application has no summary.
+         *
+         * @return The summary of this application.
+         */
+        @Nullable
+        String getSummary();
+
+        /**
+         * The icon id of this application or {@code null} if thr application has no icon.
+         *
+         * @return The application's icon id
+         *
+         * @see    #getIconUrl()
+         */
+        @Nullable
+        String getIconId();
+
+        /**
+         * The icon url of this application or {@code null} if thr application has no icon.
+         *
+         * @return The application's icon url
+         *
+         * @see    #getIconId()
+         */
+        @Nullable
+        String getIconUrl();
+
+        /**
+         * If this application has a max participant count.
+         * If this application does not have max participant count {@link #getMaxParticipants() getMaxParticipants()} will return {@code -1}.
+         *
+         * @return If this application has a max participant count set
+         */
+        boolean hasMaxParticipants();
+
+        /**
+         * The max participant count of this application or {@code -1} if no max participant count is set
+         *
+         * @return {@code -1} if this application does not have a max participant count
+         */
+        int getMaxParticipants();
     }
 
     /**
