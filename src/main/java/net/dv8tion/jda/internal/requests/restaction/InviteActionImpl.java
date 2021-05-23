@@ -128,22 +128,23 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Override
     public InviteAction setTargetType(@Nullable final Invite.TargetType type)
     {
-        this.targetType = type;
+        this.targetType = targetType == Invite.TargetType.UNKNOWN ? null : type;
         return this;
     }
 
     @Nonnull
     @Override
-    public InviteAction setTargetApplication(@Nullable Long applicationId)
+    public InviteAction setTargetApplication(@Nullable final Long applicationId)
     {
-        this.targetType = Invite.TargetType.EMBEDDED_APPLICATION;
+        if (applicationId != null)
+            targetType = Invite.TargetType.EMBEDDED_APPLICATION;
         this.targetApplication = applicationId;
         return this;
     }
 
     @Nonnull
     @Override
-    public InviteAction setTargetUser(@Nullable Long userId)
+    public InviteAction setTargetUser(@Nullable final Long userId)
     {
         this.targetType = Invite.TargetType.STREAM;
         this.targetUser = userId;
