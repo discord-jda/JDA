@@ -145,7 +145,7 @@ public interface Invite
     /**
      * The target type of this invite.
      *
-     * @return The invite's type
+     * @return The invite's target type
      */
     @Nonnull
     Invite.TargetType getTargetType();
@@ -186,7 +186,7 @@ public interface Invite
     /**
      * The user to whose stream this invite goes.
      *
-     * @return The user to whose stream this invite goes or {@code null} of this invite's {@link #getTargetType() Invite.TargetType} is not {@link Invite.TargetType#STREAM}
+     * @return The user to whose stream this invite goes or {@code null} if this invite's {@link #getTargetType() Invite.TargetType} is not {@link Invite.TargetType#STREAM Invite.TargetType.STREAM}
      */
     @Nullable
     User getTargetUser();
@@ -598,6 +598,11 @@ public interface Invite
         UNKNOWN
     }
 
+    /**
+     * Enum representing the target type of an invite.
+     *
+     * @see #getTargetType()
+     */
     enum TargetType
     {
         STREAM(1),
