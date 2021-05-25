@@ -316,7 +316,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages);
+    AuditableRestAction<Void> deleteMessages(@Nonnull Collection<Message> messages);
 
     /**
      * Bulk deletes a list of messages.
@@ -366,7 +366,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds);
+    AuditableRestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds);
 
     /**
      * Deletes a {@link net.dv8tion.jda.api.entities.Webhook Webhook} attached to this channel

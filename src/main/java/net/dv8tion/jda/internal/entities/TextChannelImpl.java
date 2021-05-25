@@ -127,7 +127,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
+    public AuditableRestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
 
@@ -138,7 +138,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds)
+    public AuditableRestAction<Void> deleteMessagesByIds(@Nonnull Collection<String> messageIds)
     {
         checkPermission(Permission.MESSAGE_MANAGE, "Must have MESSAGE_MANAGE in order to bulk delete messages in this channel regardless of author.");
         if (messageIds.size() < 2 || messageIds.size() > 100)
@@ -647,10 +647,10 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     // -- internal --
-    private RestActionImpl<Void> deleteMessages0(Collection<String> messageIds)
+    private AuditableRestActionImpl<Void> deleteMessages0(Collection<String> messageIds)
     {
         DataObject body = DataObject.empty().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
-        return new RestActionImpl<>(getJDA(), route, body);
+        return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 }
