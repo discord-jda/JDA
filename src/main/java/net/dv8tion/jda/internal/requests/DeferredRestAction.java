@@ -178,8 +178,8 @@ public class DeferredRestAction<T, R extends RestAction<T>> implements Auditable
         action.setCheck(transitiveChecks);
         if (deadline >= 0)
             action.deadline(deadline);
-        if (action instanceof AuditableRestAction && reason != null)
-            ((AuditableRestAction<?>) action).reason(reason);
+        if (reason != null)
+            action.reason(reason);
         return action;
     }
 }

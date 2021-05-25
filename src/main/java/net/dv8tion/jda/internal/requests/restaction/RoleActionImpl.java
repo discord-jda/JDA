@@ -78,6 +78,13 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
 
     @Nonnull
     @Override
+    public RoleActionImpl reason(String reason)
+    {
+        return (RoleActionImpl) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public Guild getGuild()
     {
         return guild;

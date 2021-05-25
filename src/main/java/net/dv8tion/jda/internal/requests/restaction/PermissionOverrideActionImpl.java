@@ -116,6 +116,13 @@ public class PermissionOverrideActionImpl
 
     @Nonnull
     @Override
+    public PermissionOverrideActionImpl reason(String reason)
+    {
+        return (PermissionOverrideActionImpl) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public PermissionOverrideAction resetAllow()
     {
         allow = getOriginalAllow();

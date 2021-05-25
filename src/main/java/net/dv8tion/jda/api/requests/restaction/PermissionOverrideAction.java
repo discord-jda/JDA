@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
- * Extension of {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} specifically
+ * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
  * designed to create a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
  * for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
@@ -54,6 +54,10 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     @Override
     PermissionOverrideAction deadline(long timestamp);
+
+    @Nonnull
+    @Override
+    PermissionOverrideAction reason(@Nullable String reason);
 
     /**
      * Shortcut for {@code resetAllow().resetDeny()}.

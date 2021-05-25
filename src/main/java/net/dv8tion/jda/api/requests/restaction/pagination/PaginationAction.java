@@ -146,6 +146,10 @@ public interface PaginationAction<T, M extends PaginationAction<T, M>> extends R
     @Override
     M deadline(long timestamp);
 
+    @Nonnull
+    @Override
+    M reason(@Nullable String reason);
+
     /**
      * The current amount of cached entities for this PaginationAction
      *

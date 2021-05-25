@@ -73,6 +73,13 @@ public class WebhookActionImpl extends AuditableRestActionImpl<Webhook> implemen
 
     @Nonnull
     @Override
+    public WebhookActionImpl reason(String reason)
+    {
+        return (WebhookActionImpl) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public TextChannel getChannel()
     {
         return channel;

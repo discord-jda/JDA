@@ -66,6 +66,13 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
 
     @Nonnull
     @Override
+    public InviteActionImpl reason(String reason)
+    {
+        return (InviteActionImpl) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public InviteActionImpl setMaxAge(final Integer maxAge)
     {

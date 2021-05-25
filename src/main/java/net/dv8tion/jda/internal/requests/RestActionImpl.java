@@ -17,6 +17,7 @@
 package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.Request;
@@ -27,6 +28,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
@@ -68,6 +70,7 @@ public class RestActionImpl<T> implements RestAction<T>
     private boolean priority = false;
     private long deadline = 0;
     private Object rawData;
+    private String reason;
     private BooleanSupplier checks;
 
     public static void setPassContext(boolean enable)
@@ -182,6 +185,14 @@ public class RestActionImpl<T> implements RestAction<T>
         return this;
     }
 
+    @Nonnull
+    @Override
+    public RestAction<T> reason(String reason)
+    {
+        this.reason = reason;
+        return this;
+    }
+
     @Override
     public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
     {
@@ -238,8 +249,17 @@ public class RestActionImpl<T> implements RestAction<T>
 
     protected RequestBody finalizeData() { return data; }
     protected Route.CompiledRoute finalizeRoute() { return route; }
-    protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
     protected BooleanSupplier finalizeChecks() { return null; }
+
+    protected CaseInsensitiveMap<String, String> finalizeHeaders()
+    {
+        String auditReason = reason == null ? ThreadLocalReason.getCurrent() : reason;
+        if (auditReason == null || auditReason.isEmpty())
+            return null;
+        CaseInsensitiveMap<String, String> headers = new CaseInsensitiveMap<>();
+        headers.put("X-Audit-Log-Reason", EncodingUtil.encodeUTF8(auditReason).replace("+", " "));
+        return headers;
+    }
 
     protected RequestBody getRequestBody(DataObject object)
     {

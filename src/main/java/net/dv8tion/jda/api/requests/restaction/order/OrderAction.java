@@ -57,6 +57,10 @@ public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<
     @Override
     M deadline(long timestamp);
 
+    @Nonnull
+    @Override
+    M reason(@Nullable String reason);
+
     /**
      * Whether this instance uses ascending order, from the lowest
      * position to the highest.

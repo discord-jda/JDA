@@ -54,6 +54,10 @@ public interface MemberAction extends RestAction<Void>
     @Override
     MemberAction deadline(long timestamp);
 
+    @Nonnull
+    @Override
+    MemberAction reason(@Nullable String reason);
+
     /**
      * The access token
      *

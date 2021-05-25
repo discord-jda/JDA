@@ -59,6 +59,10 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @Override
     ChannelAction<T> deadline(long timestamp);
 
+    @Nonnull
+    @Override
+    ChannelAction<T> reason(@Nullable String reason);
+
     /**
      * The guild to create this {@link GuildChannel} in
      *

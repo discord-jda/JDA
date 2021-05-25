@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 /**
- * Thread-Local audit-log reason used automatically by {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} instances
+ * Thread-Local audit-log reason used automatically by {@link net.dv8tion.jda.api.requests.RestAction RestAction} instances
  * when no other reason was set.
  *
  * <p>Note that {@link net.dv8tion.jda.api.requests.RestAction#queue(Consumer) RestAction.queue()} will forward any
@@ -56,7 +56,7 @@ import java.util.function.Consumer;
  * </code></pre>
  *
  *
- * @see net.dv8tion.jda.api.requests.restaction.AuditableRestAction#reason(String) AuditableRestAction.reason(String)
+ * @see net.dv8tion.jda.api.requests.RestAction#reason(String) RestAction.reason(String)
  * @see ThreadLocal
  */
 public final class ThreadLocalReason
@@ -69,7 +69,7 @@ public final class ThreadLocalReason
     }
 
     /**
-     * Sets the current reason that should be used for {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}.
+     * Sets the current reason that should be used for {@link net.dv8tion.jda.api.requests.RestAction RestActions}.
      *
      * @param reason
      *        The reason to use, or {@code null} to reset
@@ -98,7 +98,7 @@ public final class ThreadLocalReason
     }
 
     /**
-     * The current reason that should be used for {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}.
+     * The current reason that should be used for {@link net.dv8tion.jda.api.requests.RestAction RestActions}.
      *
      * @return The current thread-local reason, or null
      */

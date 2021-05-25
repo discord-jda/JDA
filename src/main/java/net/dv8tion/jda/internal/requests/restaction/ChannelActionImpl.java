@@ -90,6 +90,13 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     @Nonnull
     @Override
+    public ChannelActionImpl<T> reason(String reason)
+    {
+        return (ChannelActionImpl<T>) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public Guild getGuild()
     {
         return guild;

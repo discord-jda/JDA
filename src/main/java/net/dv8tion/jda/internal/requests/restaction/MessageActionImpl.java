@@ -142,6 +142,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    public MessageAction reason(String reason)
+    {
+        return (MessageAction) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public MessageChannel getChannel()
     {
         return channel;

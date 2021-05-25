@@ -33,6 +33,7 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unchecked")
 public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     extends RestActionImpl<List<T>>
     implements PaginationAction<T, M>
@@ -111,7 +112,6 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
@@ -119,7 +119,6 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (M) super.timeout(timeout, unit);
@@ -127,10 +126,16 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M deadline(long timestamp)
     {
         return (M) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    public M reason(String reason)
+    {
+        return (M) super.reason(reason);
     }
 
     @Override

@@ -21,6 +21,7 @@ import net.dv8tion.jda.internal.managers.ManagerBase;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -62,7 +63,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
 
     @Nonnull
     @Override
-    M setCheck(BooleanSupplier checks);
+    M setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
@@ -71,6 +72,10 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
     @Nonnull
     @Override
     M deadline(long timestamp);
+
+    @Nonnull
+    @Override
+    M reason(@Nullable String reason);
 
     @Nonnull
     @CheckReturnValue

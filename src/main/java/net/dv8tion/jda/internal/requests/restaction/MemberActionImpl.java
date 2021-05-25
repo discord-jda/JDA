@@ -80,6 +80,13 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
 
     @Nonnull
     @Override
+    public MemberAction reason(String reason)
+    {
+        return (MemberAction) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     public String getAccessToken()
     {
         return accessToken;

@@ -17,16 +17,13 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.EncodingUtil;
 import okhttp3.RequestBody;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -92,42 +89,9 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
 
     @Nonnull
     @CheckReturnValue
-    public AuditableRestActionImpl<T> reason(@Nullable String reason)
+    public AuditableRestAction<T> reason(@Nullable String reason)
     {
         this.reason = reason;
         return this;
-    }
-
-    @Override
-    protected CaseInsensitiveMap<String, String> finalizeHeaders()
-    {
-        CaseInsensitiveMap<String, String> headers = super.finalizeHeaders();
-
-        if (reason == null || reason.isEmpty())
-        {
-            String localReason = ThreadLocalReason.getCurrent();
-            if (localReason == null || localReason.isEmpty())
-                return headers;
-            else
-                return generateHeaders(headers, localReason);
-        }
-
-        return generateHeaders(headers, reason);
-    }
-
-    @Nonnull
-    private CaseInsensitiveMap<String, String> generateHeaders(CaseInsensitiveMap<String, String> headers, String reason)
-    {
-        if (headers == null)
-            headers = new CaseInsensitiveMap<>();
-
-        headers.put("X-Audit-Log-Reason", uriEncode(reason));
-        return headers;
-    }
-
-    private String uriEncode(String input)
-    {
-        String formEncode = EncodingUtil.encodeUTF8(input);
-        return formEncode.replace('+', ' ');
     }
 }

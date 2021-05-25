@@ -61,6 +61,10 @@ public interface GuildAction extends RestAction<Void>
     @Override
     GuildAction deadline(long timestamp);
 
+    @Nonnull
+    @Override
+    GuildAction reason(@Nullable String reason);
+
     /**
      * Sets the voice {@link net.dv8tion.jda.api.Region Region} of
      * the resulting {@link net.dv8tion.jda.api.entities.Guild Guild}.

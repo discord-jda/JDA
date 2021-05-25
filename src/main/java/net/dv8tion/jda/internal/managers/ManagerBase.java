@@ -22,12 +22,14 @@ import net.dv8tion.jda.api.managers.Manager;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unchecked")
 public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestActionImpl<Void> implements Manager<M>
 {
     private static boolean enablePermissionChecks = true;
@@ -50,7 +52,6 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
@@ -58,7 +59,6 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (M) super.timeout(timeout, unit);
@@ -66,10 +66,16 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M deadline(long timestamp)
     {
         return (M) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    public M reason(@Nullable String reason)
+    {
+        return (M) super.reason(reason);
     }
 
     @Nonnull

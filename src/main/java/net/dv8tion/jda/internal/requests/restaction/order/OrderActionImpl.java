@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
+@SuppressWarnings("unchecked")
 public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
     extends RestActionImpl<Void>
     implements OrderAction<T, M>
@@ -74,7 +75,6 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
     {
         return (M) super.setCheck(checks);
@@ -82,7 +82,6 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (M) super.timeout(timeout, unit);
@@ -90,10 +89,16 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
 
     @Nonnull
     @Override
-    @SuppressWarnings("unchecked")
     public M deadline(long timestamp)
     {
         return (M) super.deadline(timestamp);
+    }
+
+    @Nonnull
+    @Override
+    public M reason(String reason)
+    {
+        return (M) super.reason(reason);
     }
 
     @Override

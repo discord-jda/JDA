@@ -82,6 +82,13 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
 
     @Nonnull
     @Override
+    public GuildAction reason(String reason)
+    {
+        return (GuildAction) super.reason(reason);
+    }
+
+    @Nonnull
+    @Override
     @CheckReturnValue
     public GuildActionImpl setRegion(Region region)
     {

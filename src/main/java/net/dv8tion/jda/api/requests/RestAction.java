@@ -17,8 +17,10 @@
 package net.dv8tion.jda.api.requests;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.exceptions.ContextException;
 import net.dv8tion.jda.api.exceptions.RateLimitedException;
+import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
 import net.dv8tion.jda.api.utils.Result;
 import net.dv8tion.jda.api.utils.concurrent.DelayedCompletableFuture;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -503,6 +505,35 @@ public interface RestAction<T>
     default RestAction<T> deadline(long timestamp)
     {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Applies the specified reason as audit-log reason field.
+     * <br>When the provided reason is empty or {@code null} it will be treated as not set.
+     *
+     * <p>Reasons for any RestAction may be retrieved
+     * via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getReason() AuditLogEntry.getReason()}
+     * in iterable {@link AuditLogPaginationAction AuditLogPaginationActions}
+     * from {@link net.dv8tion.jda.api.entities.Guild#retrieveAuditLogs() Guild.retrieveAuditLogs()}!
+     *
+     * <p>This will specify the reason via the {@code X-Audit-Log-Reason} Request Header.
+     * <br>Using methods with a reason parameter will always work and <u>override</u> this header.
+     * (ct. {@link net.dv8tion.jda.api.entities.Guild#ban(net.dv8tion.jda.api.entities.User, int, String) Guild.ban(User, int, String)})
+     *
+     * <p>If this action does not create an {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntry}, this reason will be ignored.
+     *
+     * @param  reason
+     *         The reason for this action which should be logged in the Guild's AuditLogs
+     *
+     * @return The current RestAction instance for chaining convenience
+     *
+     * @see    ThreadLocalReason
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<T> reason(@Nullable String reason)
+    {
+        return this;
     }
 
     /**
