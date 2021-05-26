@@ -90,6 +90,18 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     }
 
     @Nonnull
+    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    {
+        return addOption(new OptionData(type, name, description).setRequired(required));
+    }
+
+    @Nonnull
+    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    {
+        return addOption(type, name, description, false);
+    }
+
+    @Nonnull
     public CommandData addSubcommand(@Nonnull SubcommandData data)
     {
         Checks.notNull(data, "Subcommand");

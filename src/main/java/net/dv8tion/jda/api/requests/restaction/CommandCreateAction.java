@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -57,6 +58,20 @@ public interface CommandCreateAction extends RestAction<Command>
     @Nonnull
     @CheckReturnValue
     CommandCreateAction addOption(@Nonnull OptionData data);
+
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    {
+        return addOption(new OptionData(type, name, description).setRequired(required));
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    {
+        return addOption(type, name, description, false);
+    }
 
     @Nonnull
     @CheckReturnValue

@@ -40,6 +40,18 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
     }
 
     @Nonnull
+    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    {
+        return addOption(new OptionData(type, name, description).setRequired(required));
+    }
+
+    @Nonnull
+    public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    {
+        return addOption(type, name, description, false);
+    }
+
+    @Nonnull
     @Override
     public DataObject toData()
     {
