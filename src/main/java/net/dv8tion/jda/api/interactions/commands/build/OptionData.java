@@ -45,6 +45,7 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description, 100, "Description");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.isLowercase(name, "Name");
         this.type = type;
         this.name = name;
         this.description = description;

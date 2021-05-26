@@ -23,12 +23,12 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  *
  * @since  3.0
  */
-public class WebhookImpl extends AbstractWebhookClient<WebhookMessageAction> implements Webhook
+public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 {
     private final TextChannel channel;
     private final WebhookType type;
@@ -255,21 +255,27 @@ public class WebhookImpl extends AbstractWebhookClient<WebhookMessageAction> imp
         return "WH:" + getName() + "(" + id + ")";
     }
 
+    // TODO: Implement WebhookMessage
+
     @Override
-    public WebhookMessageAction sendRequest()
+    public WebhookMessageActionImpl<Void> sendRequest()
     {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        return new WebhookMessageActionImpl(api, route);
+        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, channel, route, (json) -> null);
+        action.run();
+        return action;
     }
 
     @Override
-    public WebhookMessageAction editRequest(String messageId)
+    public WebhookMessageUpdateActionImpl<Void> editRequest(String messageId)
     {
         checkToken();
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
-        return new WebhookMessageActionImpl(api, route);
+        WebhookMessageUpdateActionImpl<Void> action = new WebhookMessageUpdateActionImpl<>(api, route, (json) -> null);
+        action.run();
+        return action;
     }
 
     @Nonnull

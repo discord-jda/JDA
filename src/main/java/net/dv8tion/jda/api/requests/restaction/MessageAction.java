@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -686,6 +687,41 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     @Nonnull
     @CheckReturnValue
     MessageAction clearFiles(@Nonnull Consumer<InputStream> finalizer);
+
+
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 actions rows are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        return setActionRows(rows.toArray(new ActionRow[0]));
+    }
+
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 actions rows are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction setActionRows(@Nonnull ActionRow... rows);
 
     /**
      * Whether all fields should be considered when editing a message

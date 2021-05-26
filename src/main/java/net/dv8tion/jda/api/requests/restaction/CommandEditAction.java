@@ -17,17 +17,17 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 public interface CommandEditAction extends RestAction<Command>
 {
@@ -69,12 +69,13 @@ public interface CommandEditAction extends RestAction<Command>
 
     @Nonnull
     @CheckReturnValue
-    CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type, @Nonnull Consumer<? super CommandCreateAction.OptionBuilder> builder);
+    CommandEditAction addOption(@Nonnull OptionData data);
 
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type)
-    {
-        return addOption(name, description, type, Helpers.emptyConsumer());
-    }
+    CommandEditAction addSubcommand(@Nonnull SubcommandData data);
+
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction addSubcommandGroup(@Nonnull SubcommandGroupData data);
 }

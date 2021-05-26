@@ -49,7 +49,7 @@ import java.util.stream.Stream;
  *
  * <p>This class is not Thread-Safe
  */
-public class DataArray implements Iterable<Object>
+public class DataArray implements Iterable<Object>, SerializableArray
 {
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
     private static final ObjectMapper mapper;
@@ -553,8 +553,8 @@ public class DataArray implements Iterable<Object>
     {
         if (value instanceof SerializableData)
             data.add(((SerializableData) value).toData().data);
-        else if (value instanceof DataArray)
-            data.add(((DataArray) value).data);
+        else if (value instanceof SerializableArray)
+            data.add(((SerializableArray) value).toDataArray().data);
         else
             data.add(value);
         return this;
@@ -604,8 +604,8 @@ public class DataArray implements Iterable<Object>
     {
         if (value instanceof SerializableData)
             data.add(index, ((SerializableData) value).toData().data);
-        else if (value instanceof DataArray)
-            data.add(index, ((DataArray) value).data);
+        else if (value instanceof SerializableArray)
+            data.add(index, ((SerializableArray) value).toDataArray().data);
         else
             data.add(index, value);
         return this;
@@ -732,8 +732,10 @@ public class DataArray implements Iterable<Object>
         Object value = data.get(index);
         if (value == null)
             return null;
-        if (type.isAssignableFrom(value.getClass()))
+        if (type.isInstance(value))
             return type.cast(value);
+        if (type == String.class)
+            return type.cast(value.toString());
         // attempt type coercion
         if (stringMapper != null && value instanceof String)
             return stringMapper.apply((String) value);
@@ -756,5 +758,12 @@ public class DataArray implements Iterable<Object>
     {
         return IntStream.range(0, length())
                 .mapToObj(index -> mapper.apply(this, index));
+    }
+
+    @Nonnull
+    @Override
+    public DataArray toDataArray()
+    {
+        return this;
     }
 }

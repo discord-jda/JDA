@@ -16,15 +16,19 @@
 
 package net.dv8tion.jda.internal.interactions;
 
-import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
-import net.dv8tion.jda.api.interactions.commands.CommandHook;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.TriggerRestAction;
 import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
 
@@ -35,11 +39,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
-public class CommandHookImpl extends AbstractWebhookClient<InteractionWebhookAction> implements CommandHook
+public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook
 {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
-    private final SlashCommandEvent event;
+    private final InteractionImpl interaction;
     private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
     private final Future<?> timeoutHandle;
     private final ReentrantLock mutex = new ReentrantLock();
@@ -51,12 +56,12 @@ public class CommandHookImpl extends AbstractWebhookClient<InteractionWebhookAct
     // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
     private volatile boolean isAck;
 
-    public CommandHookImpl(@Nonnull SlashCommandEvent event)
+    public InteractionHookImpl(@Nonnull InteractionImpl interaction, @Nonnull JDA api)
     {
-        super(event.getJDA().getSelfUser().getApplicationIdLong(), event.getInteractionToken(), event.getJDA());
-        this.event = event;
+        super(api.getSelfUser().getApplicationIdLong(), interaction.getToken(), api);
+        this.interaction = interaction;
         // 10 second timeout for our failure
-        this.timeoutHandle = event.getJDA().getGatewayPool().schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
+        this.timeoutHandle = api.getGatewayPool().schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
     }
 
     public synchronized boolean ack()
@@ -89,7 +94,7 @@ public class CommandHookImpl extends AbstractWebhookClient<InteractionWebhookAct
                 if (!readyCallbacks.isEmpty()) // only log this if we even tried any responses
                 {
                     if (exception instanceof TimeoutException)
-                        JDALogger.getLog(CommandHook.class).warn("Up to {} Interaction Followup Messages Timed out for command with name \"{}\"! Did you forget to acknowledge the interaction?", readyCallbacks.size(), event.getName());
+                        JDALogger.getLog(InteractionHook.class).warn("Up to {} Interaction Followup Messages Timed out! Did you forget to acknowledge the interaction?", readyCallbacks.size());
                     readyCallbacks.forEach(callback -> callback.fail(exception));
                 }
             }
@@ -111,14 +116,14 @@ public class CommandHookImpl extends AbstractWebhookClient<InteractionWebhookAct
 
     @Nonnull
     @Override
-    public SlashCommandEvent getEvent()
+    public Interaction getInteraction()
     {
-        return event;
+        return interaction;
     }
 
     @Nonnull
     @Override
-    public CommandHook setEphemeral(boolean ephemeral)
+    public InteractionHook setEphemeral(boolean ephemeral)
     {
         this.ephemeral = ephemeral;
         return this;
@@ -126,22 +131,41 @@ public class CommandHookImpl extends AbstractWebhookClient<InteractionWebhookAct
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl sendRequest()
+    public JDA getJDA()
     {
-        Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken());
-        route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route)).setEphemeral(ephemeral);
+        return api;
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl editRequest(String messageId)
+    public RestAction<Message> retrieveOriginal()
+    {
+        JDAImpl jda = (JDAImpl) getJDA();
+        Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
+        return onReady(new TriggerRestAction<>(jda, route, (response, request) ->
+                jda.getEntityBuilder().createMessage(response.getObject(), getInteraction().getMessageChannel(), false)));
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageActionImpl<Message> sendRequest()
+    {
+        Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
+        route = route.withQueryParams("wait", "true");
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false);
+        return onReady(new WebhookMessageActionImpl<>(getJDA(), interaction.getMessageChannel(), route, transform)).setEphemeral(ephemeral);
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageUpdateActionImpl<Message> editRequest(String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), messageId);
+        Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), route));
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false);
+        return onReady(new WebhookMessageUpdateActionImpl<>(getJDA(), route, transform));
     }
 
     @Nonnull
@@ -150,7 +174,7 @@ public class CommandHookImpl extends AbstractWebhookClient<InteractionWebhookAct
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
-        Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), event.getInteractionToken(), messageId);
+        Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         return onReady(new TriggerRestAction<>(getJDA(), route));
     }
 }

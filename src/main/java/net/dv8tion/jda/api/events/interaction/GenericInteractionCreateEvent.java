@@ -18,77 +18,119 @@ package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.AbstractChannel;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.InteractionType;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+/**
+ * Indicates that an interaction was created in a channel.
+ * <br>Every interaction event is derived from this event.
+ *
+ * <h2>Requirements</h2>
+ * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
+ * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ */
 @Incubating
-public class GenericInteractionCreateEvent extends Event
+public class GenericInteractionCreateEvent extends Event implements Interaction
 {
-    private final int type;
-    private final String token;
-    private final long interactionId;
-    private final Guild guild;
-    private final Member member;
-    private final User user;
+    private final Interaction interaction;
 
-    public GenericInteractionCreateEvent(@NotNull JDA api, long responseNumber, int type, @Nonnull String token, long interactionId, @Nullable Guild guild, @Nullable Member member, @Nullable User user)
+    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
     {
         super(api, responseNumber);
-        this.type = type;
-        this.token = token;
-        this.interactionId = interactionId;
-        this.guild = guild;
-        this.member = member;
-        this.user = user;
+        this.interaction = interaction;
     }
 
-    public InteractionType getType()
+    /**
+     * The {@link Interaction} instance.
+     * <br>Note that this event is a delegate which implements the same interface.
+     *
+     * @return The {@link Interaction}
+     */
+    @Nonnull
+    public Interaction getInteraction()
     {
-        return InteractionType.fromKey(type);
+        return interaction;
+    }
+
+    /**
+     * Whether this interaction happened in a {@link Guild}.
+     *
+     * @return True, if this interaction came from a {@link Guild}.
+     */
+    public boolean isFromGuild()
+    {
+        return getGuild() != null;
+    }
+
+    @Nonnull
+    @Override
+    public String getToken()
+    {
+        return interaction.getToken();
     }
 
     public int getTypeRaw()
     {
-        return type;
-    }
-
-    public String getInteractionToken()
-    {
-        return token;
-    }
-
-    public long getInteractionIdLong()
-    {
-        return interactionId;
-    }
-
-    public String getInteractionId()
-    {
-        return Long.toUnsignedString(interactionId);
+        return interaction.getTypeRaw();
     }
 
     @Nullable
     public Guild getGuild()
     {
-        return guild;
+        return interaction.getGuild();
+    }
+
+    @Nullable
+    @Override
+    public AbstractChannel getChannel()
+    {
+        return interaction.getChannel();
+    }
+
+    @Nonnull
+    @Override
+    public InteractionHook getHook()
+    {
+        return interaction.getHook();
     }
 
     @Nullable
     public Member getMember()
     {
-        return member;
+        return interaction.getMember();
     }
 
     @Nonnull
     public User getUser()
     {
-        return user;
+        return interaction.getUser();
+    }
+
+    @Override
+    public long getIdLong()
+    {
+        return interaction.getIdLong();
+    }
+
+    @Override
+    public boolean isAcknowledged()
+    {
+        return interaction.isAcknowledged();
+    }
+
+    @Nonnull
+    @Override
+    public ReplyAction deferReply()
+    {
+        return interaction.deferReply();
     }
 }

@@ -653,8 +653,8 @@ public class DataObject implements SerializableData
     {
         if (value instanceof SerializableData)
             data.put(key, ((SerializableData) value).toData().data);
-        else if (value instanceof DataArray)
-            data.put(key, ((DataArray) value).data);
+        else if (value instanceof SerializableArray)
+            data.put(key, ((SerializableArray) value).toDataArray().data);
         else
             data.put(key, value);
         return this;
@@ -780,8 +780,10 @@ public class DataObject implements SerializableData
         Object value = data.get(key);
         if (value == null)
             return null;
-        if (type.isAssignableFrom(value.getClass()))
+        if (type.isInstance(value))
             return type.cast(value);
+        if (type == String.class)
+            return type.cast(value.toString());
         // attempt type coercion
         if (value instanceof Number && numberParse != null)
             return numberParse.apply((Number) value);

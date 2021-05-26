@@ -91,8 +91,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
 
     //Sets the dependencies for the examples
-    configurations.asMap["examplesCompile"] = configurations["apiElements"]
-    configurations.asMap["examplesRuntime"] = configurations["implementation"]
+    configurations["examplesImplementation"].withDependencies {
+        addAll(configurations["api"].allDependencies)
+        addAll(configurations["implementation"].allDependencies)
+    }
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
 }

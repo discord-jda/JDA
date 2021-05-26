@@ -19,10 +19,11 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -39,37 +40,44 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 
-public class WebhookMessageActionImpl
-    extends TriggerRestAction<Message>
-    implements InteractionWebhookAction, WebhookMessageAction
+public class WebhookMessageActionImpl<T>
+    extends TriggerRestAction<T>
+    implements WebhookMessageAction<T>
 {
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
     private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
+    private final List<ActionRow> components = new ArrayList<>();
+    private final MessageChannel channel;
+    private final Function<DataObject, T> transformer;
 
     private boolean ephemeral, tts;
     private String username, avatarUrl;
 
-    public WebhookMessageActionImpl(JDA api, Route.CompiledRoute route)
+    public WebhookMessageActionImpl(JDA api, MessageChannel channel, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
         super(api, route);
+        this.channel = channel;
+        this.transformer = transformer;
     }
 
     @Nonnull
-    public WebhookMessageActionImpl applyMessage(@Nonnull Message message)
+    public WebhookMessageActionImpl<T> applyMessage(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
         this.tts = message.isTTS();
         this.embeds.addAll(message.getEmbeds());
         this.allowedMentions.applyMessage(message);
+        this.components.addAll(message.getActionRows());
         return setContent(message.getContentRaw());
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl setEphemeral(boolean ephemeral)
+    public WebhookMessageActionImpl<T> setEphemeral(boolean ephemeral)
     {
         this.ephemeral = ephemeral;
         return this;
@@ -77,7 +85,7 @@ public class WebhookMessageActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl setContent(@Nullable String content)
+    public WebhookMessageActionImpl<T> setContent(@Nullable String content)
     {
         this.content.setLength(0);
         if (content != null)
@@ -87,7 +95,7 @@ public class WebhookMessageActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl setTTS(boolean tts)
+    public WebhookMessageActionImpl<T> setTTS(boolean tts)
     {
         this.tts = tts;
         return this;
@@ -95,7 +103,7 @@ public class WebhookMessageActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl setUsername(@Nullable String name)
+    public WebhookMessageActionImpl<T> setUsername(@Nullable String name)
     {
         if (name != null)
         {
@@ -108,7 +116,7 @@ public class WebhookMessageActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl setAvatarUrl(@Nullable String iconUrl)
+    public WebhookMessageActionImpl<T> setAvatarUrl(@Nullable String iconUrl)
     {
         if (iconUrl != null && iconUrl.isEmpty())
             iconUrl = null;
@@ -118,7 +126,7 @@ public class WebhookMessageActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageActionImpl<T> addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "Message Embeds");
         Checks.check(this.embeds.size() + embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
@@ -128,7 +136,7 @@ public class WebhookMessageActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options)
+    public WebhookMessageActionImpl<T> addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -138,6 +146,16 @@ public class WebhookMessageActionImpl
         if (options.length > 0 && options[0] == AttachmentOption.SPOILER)
             name = "SPOILER_" + name;
         files.put(name, data);
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public WebhookMessageActionImpl<T> addActionRows(@Nonnull ActionRow... rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        Checks.check(rows.length + components.size() <= 5, "Can only have 5 action rows per message!");
+        Collections.addAll(components, rows);
         return this;
     }
 
@@ -155,6 +173,8 @@ public class WebhookMessageActionImpl
             json.put("flags", 64);
         if (!embeds.isEmpty())
             json.put("embeds", DataArray.fromCollection(embeds));
+        if (!components.isEmpty())
+            json.put("components", DataArray.fromCollection(components));
         json.put("allowed_mentions", allowedMentions);
         return json;
     }
@@ -180,18 +200,16 @@ public class WebhookMessageActionImpl
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Message> request)
+    protected void handleSuccess(Response response, Request<T> request)
     {
-        // TODO: Create new message object that uses the webhook endpoints to edit/delete
-        // TODO: This could be a simple decorator or proxy implementation
-        Message message = request.getJDA().getEntityBuilder().createMessage(response.getObject());
+        T message = transformer.apply(response.getObject());
         request.onSuccess(message);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mentionRepliedUser(boolean mention)
+    public WebhookMessageActionImpl<T> mentionRepliedUser(boolean mention)
     {
         allowedMentions.mentionRepliedUser(mention);
         return this;
@@ -200,7 +218,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    public WebhookMessageActionImpl<T> allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
         this.allowedMentions.allowedMentions(allowedMentions);
         return this;
@@ -209,7 +227,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mention(@Nonnull IMentionable... mentions)
+    public WebhookMessageActionImpl<T> mention(@Nonnull IMentionable... mentions)
     {
         allowedMentions.mention(mentions);
         return this;
@@ -218,7 +236,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mentionUsers(@Nonnull String... userIds)
+    public WebhookMessageActionImpl<T> mentionUsers(@Nonnull String... userIds)
     {
         allowedMentions.mentionUsers(userIds);
         return this;
@@ -227,7 +245,7 @@ public class WebhookMessageActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public InteractionWebhookAction mentionRoles(@Nonnull String... roleIds)
+    public WebhookMessageActionImpl<T> mentionRoles(@Nonnull String... roleIds)
     {
         allowedMentions.mentionRoles(roleIds);
         return this;

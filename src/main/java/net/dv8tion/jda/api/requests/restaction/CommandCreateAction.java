@@ -17,16 +17,16 @@
 package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 public interface CommandCreateAction extends RestAction<Command>
 {
@@ -56,26 +56,13 @@ public interface CommandCreateAction extends RestAction<Command>
 
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type, @Nonnull Consumer<? super OptionBuilder> builder);
+    CommandCreateAction addOption(@Nonnull OptionData data);
 
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull String name, @Nonnull String description, @Nonnull OptionType type)
-    {
-        return addOption(name, description, type, Helpers.emptyConsumer());
-    }
+    CommandCreateAction addSubcommand(@Nonnull SubcommandData data);
 
-    interface OptionBuilder
-    {
-        OptionBuilder setRequired(boolean required); // note: required options must come first
-        OptionBuilder setDefault(boolean isDefault); // there can only be one default (maybe make this special) | default may not be set by a SUB_COMMAND or SUB_COMMAND_GROUP
-        OptionBuilder addChoice(String name, String value);
-        OptionBuilder addChoice(String name, long value);
-
-        OptionBuilder addOption(String name, String description, OptionType type, Consumer<? super OptionBuilder> builder);
-        default OptionBuilder addOption(String name, String description, OptionType type)
-        {
-            return addOption(name, description, type, Helpers.emptyConsumer());
-        }
-    }
+    @Nonnull
+    @CheckReturnValue
+    CommandCreateAction addSubcommandGroup(@Nonnull SubcommandGroupData data);
 }
