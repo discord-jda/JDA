@@ -57,6 +57,7 @@ public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
         this.content = message.getContentRaw();
         this.tts = message.isTTS();
         this.embeds.addAll(message.getEmbeds());
+        this.components.addAll(message.getActionRows());
         this.allowedMentions.applyMessage(message);
         return this;
     }

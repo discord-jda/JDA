@@ -24,11 +24,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Abstract representation for any kind of Discord interaction.
@@ -294,65 +290,65 @@ public interface Interaction extends ISnowflake
         return deferReply().addEmbeds(embed).addEmbeds(embeds);
     }
 
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * @param  components
-     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction replyComponents(@Nonnull Collection<? extends ComponentLayout> components)
-    {
-        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
-            throw new UnsupportedOperationException("Only ActionRow layouts are currently supported.");
-        List<ActionRow> rows = components.stream()
-                .map(ActionRow.class::cast)
-                .collect(Collectors.toList());
-        return deferReply().addActionRows(rows);
-    }
-
-    /**
-     * Reply to this interaction and acknowledge it.
-     * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
-     * Replies are non-ephemeral by default.
-     *
-     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
-     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
-     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
-     *
-     * @param  components
-     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return {@link ReplyAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default ReplyAction replyComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
-    {
-        Checks.notNull(component, "ComponentLayouts");
-        Checks.noneNull(components, "ComponentLayouts");
-        List<ComponentLayout> layouts = new ArrayList<>();
-        layouts.add(component);
-        Collections.addAll(layouts, components);
-        return replyComponents(layouts);
-    }
+//    /**
+//     * Reply to this interaction and acknowledge it.
+//     * <br>This will send a reply message for this interaction.
+//     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+//     * Replies are non-ephemeral by default.
+//     *
+//     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+//     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+//     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+//     *
+//     * @param  components
+//     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
+//     *
+//     * @throws IllegalArgumentException
+//     *         If null is provided
+//     *
+//     * @return {@link ReplyAction}
+//     */
+//    @Nonnull
+//    @CheckReturnValue
+//    default ReplyAction replyComponents(@Nonnull Collection<? extends ComponentLayout> components)
+//    {
+//        if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
+//            throw new UnsupportedOperationException("Only ActionRow layouts are currently supported.");
+//        List<ActionRow> rows = components.stream()
+//                .map(ActionRow.class::cast)
+//                .collect(Collectors.toList());
+//        return deferReply().addActionRows(rows);
+//    }
+//
+//    /**
+//     * Reply to this interaction and acknowledge it.
+//     * <br>This will send a reply message for this interaction.
+//     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+//     * Replies are non-ephemeral by default.
+//     *
+//     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
+//     * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
+//     * <p>If your handling can take longer than 3 seconds, due to various rate limits or other conditions, you should use {@link #deferReply()} instead.
+//     *
+//     * @param  components
+//     *         The {@link ComponentLayout ComponentLayouts} to send, such as {@link ActionRow}
+//     *
+//     * @throws IllegalArgumentException
+//     *         If null is provided
+//     *
+//     * @return {@link ReplyAction}
+//     */
+//    @Nonnull
+//    @CheckReturnValue
+//    default ReplyAction replyComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+//    {
+//        Checks.notNull(component, "ComponentLayouts");
+//        Checks.noneNull(components, "ComponentLayouts");
+//        List<ComponentLayout> layouts = new ArrayList<>();
+//        layouts.add(component);
+//        Collections.addAll(layouts, components);
+//        return replyComponents(layouts);
+//    }
 
     /**
      * Reply to this interaction and acknowledge it.
