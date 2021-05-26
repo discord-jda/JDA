@@ -162,8 +162,35 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
+        Checks.notLonger(id, 100, "Id");
         Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(id, label, ButtonStyle.PRIMARY, false, null);
+    }
+
+    /**
+     * Creates a button with {@link ButtonStyle#PRIMARY PRIMARY} Style.
+     * <br>The button is enabled and has no text label.
+     * To use labels you can use {@code primary(id, label).withEmoji(emoji)}
+     *
+     * <p>To disable the button you can use {@link #asDisabled()}.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null or the id is longer than 100 characters
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button primary(@Nonnull String id, @Nonnull Emoji emoji)
+    {
+        Checks.notEmpty(id, "Id");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notLonger(id, 100, "Id");
+        return new ButtonImpl(id, "", ButtonStyle.PRIMARY, false, emoji);
     }
 
     /**
@@ -186,8 +213,35 @@ public interface Button extends Component
     {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
+        Checks.notLonger(id, 100, "Id");
         Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(id, label, ButtonStyle.SECONDARY, false, null);
+    }
+
+    /**
+     * Creates a button with {@link ButtonStyle#SECONDARY SECONDARY} Style.
+     * <br>The button is enabled and has no text label.
+     * To use labels you can use {@code secondary(id, label).withEmoji(emoji)}
+     *
+     * <p>To disable the button you can use {@link #asDisabled()}.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null or the id is longer than 100 characters
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button secondary(@Nonnull String id, @Nonnull Emoji emoji)
+    {
+        Checks.notEmpty(id, "Id");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notLonger(id, 100, "Id");
+        return new ButtonImpl(id, "", ButtonStyle.SECONDARY, false, emoji);
     }
 
     /**
@@ -216,6 +270,32 @@ public interface Button extends Component
     }
 
     /**
+     * Creates a button with {@link ButtonStyle#SUCCESS SUCCESS} Style.
+     * <br>The button is enabled and has no text label.
+     * To use labels you can use {@code success(id, label).withEmoji(emoji)}
+     *
+     * <p>To disable the button you can use {@link #asDisabled()}.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null or the id is longer than 100 characters
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button success(@Nonnull String id, @Nonnull Emoji emoji)
+    {
+        Checks.notEmpty(id, "Id");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notLonger(id, 100, "Id");
+        return new ButtonImpl(id, "", ButtonStyle.SUCCESS, false, emoji);
+    }
+
+    /**
      * Creates a button with {@link ButtonStyle#DANGER DANGER} Style.
      * <br>The button is enabled and has no emoji attached by default.
      * You can use {@link #asDisabled()} and {@link #withEmoji(Emoji)} to further configure it.
@@ -238,6 +318,32 @@ public interface Button extends Component
         Checks.notLonger(id, 100, "Id");
         Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(id, label, ButtonStyle.DANGER, false, null);
+    }
+
+    /**
+     * Creates a button with {@link ButtonStyle#DANGER DANGER} Style.
+     * <br>The button is enabled and has no text label.
+     * To use labels you can use {@code danger(id, label).withEmoji(emoji)}
+     *
+     * <p>To disable the button you can use {@link #asDisabled()}.
+     *
+     * @param  id
+     *         The custom button ID
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null or the id is longer than 100 characters
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button danger(@Nonnull String id, @Nonnull Emoji emoji)
+    {
+        Checks.notEmpty(id, "Id");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notLonger(id, 100, "Id");
+        return new ButtonImpl(id, "", ButtonStyle.DANGER, false, emoji);
     }
 
     /**
@@ -266,6 +372,35 @@ public interface Button extends Component
         Checks.notLonger(url, 512, "URL");
         Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(null, label, ButtonStyle.LINK, url, false, null);
+    }
+
+    /**
+     * Creates a button with {@link ButtonStyle#LINK LINK} Style.
+     * <br>The button is enabled and has no text label.
+     * To use labels you can use {@code link(url, label).withEmoji(emoji)}
+     *
+     * <p>To disable the button you can use {@link #asDisabled()}.
+     *
+     * <p>Note that link buttons never send a {@link net.dv8tion.jda.api.events.interaction.ButtonClickEvent ButtonClickEvent}.
+     * These buttons only open a link for the user.
+     *
+     * @param  url
+     *         The target URL for this button
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null or the url is longer than 512 characters
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button link(@Nonnull String url, @Nonnull Emoji emoji)
+    {
+        Checks.notEmpty(url, "URL");
+        Checks.notNull(emoji, "Emoji");
+        Checks.notLonger(url, 512, "URL");
+        return new ButtonImpl(null, "", ButtonStyle.LINK, url, false, emoji);
     }
 
     /**
@@ -298,5 +433,36 @@ public interface Button extends Component
         Checks.notEmpty(idOrUrl, "Id");
         Checks.notLonger(idOrUrl, 100, "Id");
         return new ButtonImpl(idOrUrl, label, style, false, null);
+    }
+
+    /**
+     * Create a button with the provided {@link ButtonStyle style}, URL or ID, and emoji.
+     * <br>The button is enabled and has no text label.
+     * To use labels you can use {@code of(style, idOrUrl, label).withEmoji(emoji)}
+     *
+     * <p>See {@link #link(String, Emoji)} or {@link #primary(String, Emoji)} for more details.
+     *
+     * @param  style
+     *         The button style
+     * @param  idOrUrl
+     *         Either the ID or URL for this button
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null, the id is longer than 100 characters, or the url is longer than 512 characters
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji)
+    {
+        Checks.notNull(style, "Style");
+        Checks.notNull(emoji, "Emoji");
+        if (style == ButtonStyle.LINK)
+            return link(idOrUrl, emoji);
+        Checks.notEmpty(idOrUrl, "Id");
+        Checks.notLonger(idOrUrl, 100, "Id");
+        return new ButtonImpl(idOrUrl, "", style, false, emoji);
     }
 }

@@ -37,7 +37,7 @@ public class ButtonImpl implements Button
     {
         this(
             data.getString("custom_id", null),
-            data.getString("label"),
+            data.getString("label", ""),
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
             data.getBoolean("disabled"),
