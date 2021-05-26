@@ -33,19 +33,19 @@ import java.util.Collection;
 import java.util.Collections;
 
 // TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageUpdateAction extends RestAction<Message>
+public interface WebhookMessageUpdateAction<T> extends RestAction<T>
 {
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction setContent(@Nullable String content);
+    WebhookMessageUpdateAction<T> setContent(@Nullable String content);
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
+    WebhookMessageUpdateAction<T> setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds); // Doesn't work on ephemeral messages!
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction setEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default WebhookMessageUpdateAction<T> setEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
         ArrayList<MessageEmbed> embeds = new ArrayList<>();
         embeds.add(embed);
@@ -55,11 +55,11 @@ public interface WebhookMessageUpdateAction extends RestAction<Message>
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
+    WebhookMessageUpdateAction<T> addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options);
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull String name, @Nonnull byte[] data, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
@@ -68,7 +68,7 @@ public interface WebhookMessageUpdateAction extends RestAction<Message>
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull String name, @Nonnull File data, @Nonnull AttachmentOption... options)
     {
         Checks.notEmpty(name, "Name");
         Checks.notNull(data, "File");
@@ -84,7 +84,7 @@ public interface WebhookMessageUpdateAction extends RestAction<Message>
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         return addFile(file.getName(), file);
@@ -92,14 +92,14 @@ public interface WebhookMessageUpdateAction extends RestAction<Message>
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction setActionRow(@Nonnull Component... components)
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Component... components)
     {
         return setActionRows(ActionRow.of(components));
     }
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default WebhookMessageUpdateAction<T> setActionRows(@Nonnull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
@@ -107,9 +107,9 @@ public interface WebhookMessageUpdateAction extends RestAction<Message>
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction setActionRows(@Nonnull ActionRow... rows);
+    WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows);
 
     @Nonnull
     @CheckReturnValue
-    WebhookMessageUpdateAction applyMessage(@Nonnull Message message);
+    WebhookMessageUpdateAction<T> applyMessage(@Nonnull Message message);
 }

@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  *
  * @since  3.0
  */
-public class WebhookImpl extends AbstractWebhookClient implements Webhook
+public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 {
     private final TextChannel channel;
     private final WebhookType type;
@@ -255,23 +255,25 @@ public class WebhookImpl extends AbstractWebhookClient implements Webhook
         return "WH:" + getName() + "(" + id + ")";
     }
 
+    // TODO: Implement WebhookMessage
+
     @Override
-    public WebhookMessageActionImpl sendRequest()
+    public WebhookMessageActionImpl<Void> sendRequest()
     {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
-        WebhookMessageActionImpl action = new WebhookMessageActionImpl(api, channel, route);
+        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, channel, route, (json) -> null);
         action.run();
         return action;
     }
 
     @Override
-    public WebhookMessageUpdateActionImpl editRequest(String messageId)
+    public WebhookMessageUpdateActionImpl<Void> editRequest(String messageId)
     {
         checkToken();
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
-        WebhookMessageUpdateActionImpl action = new WebhookMessageUpdateActionImpl(api, route);
+        WebhookMessageUpdateActionImpl<Void> action = new WebhookMessageUpdateActionImpl<>(api, route, (json) -> null);
         action.run();
         return action;
     }

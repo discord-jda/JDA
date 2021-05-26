@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.AbstractWebhookClient;
 import net.dv8tion.jda.internal.requests.Route;
@@ -38,8 +39,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
-public class InteractionHookImpl extends AbstractWebhookClient implements InteractionHook
+public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook
 {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
     private final InteractionImpl interaction;
@@ -146,22 +148,24 @@ public class InteractionHookImpl extends AbstractWebhookClient implements Intera
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl sendRequest()
+    public WebhookMessageActionImpl<Message> sendRequest()
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageActionImpl(getJDA(), interaction.getMessageChannel(), route)).setEphemeral(ephemeral);
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false);
+        return onReady(new WebhookMessageActionImpl<>(getJDA(), interaction.getMessageChannel(), route, transform)).setEphemeral(ephemeral);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl editRequest(String messageId)
+    public WebhookMessageUpdateActionImpl<Message> editRequest(String messageId)
     {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        return onReady(new WebhookMessageUpdateActionImpl(getJDA(), route));
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false);
+        return onReady(new WebhookMessageUpdateActionImpl<>(getJDA(), route, transform));
     }
 
     @Nonnull

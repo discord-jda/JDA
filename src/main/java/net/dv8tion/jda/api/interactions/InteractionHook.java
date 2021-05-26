@@ -45,7 +45,7 @@ import java.util.Collection;
  * @see #deleteOriginal()
  * @see #sendMessage(String)
  */
-public interface InteractionHook extends WebhookClient
+public interface InteractionHook extends WebhookClient<Message>
 {
     /**
      * The interaction attached to this hook.
@@ -120,7 +120,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull String content)
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull String content)
     {
         return editMessageById("@original", content);
     }
@@ -150,7 +150,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
         return editMessageComponentsById("@original", components);
     }
@@ -182,7 +182,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginalComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
     {
         return editMessageComponentsById("@original", component, components);
     }
@@ -212,7 +212,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return editMessageEmbedsById("@original", embeds);
     }
@@ -244,7 +244,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginalEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         return editMessageEmbedsById("@original", embed, embeds);
     }
@@ -274,7 +274,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull Message message)
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull Message message)
     {
         return editMessageById("@original", message);
     }
@@ -306,7 +306,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
+    default WebhookMessageUpdateAction<Message> editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editOriginal(String.format(format, args));
@@ -357,7 +357,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", data, name, options);
     }
@@ -406,7 +406,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", file, options);
     }
@@ -455,7 +455,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", file, name, options);
     }
@@ -504,7 +504,7 @@ public interface InteractionHook extends WebhookClient
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return editMessageById("@original", data, name, options);
     }

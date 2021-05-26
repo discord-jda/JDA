@@ -37,7 +37,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractWebhookClient implements WebhookClient
+public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 {
     protected final long id;
     protected final JDA api;

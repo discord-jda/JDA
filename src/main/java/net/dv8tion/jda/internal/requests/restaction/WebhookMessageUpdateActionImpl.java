@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -35,10 +37,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
+import java.util.function.Function;
 
-public class WebhookMessageUpdateActionImpl
-    extends TriggerRestAction<Message>
-    implements WebhookMessageUpdateAction
+public class WebhookMessageUpdateActionImpl<T>
+    extends TriggerRestAction<T>
+    implements WebhookMessageUpdateAction<T>
 {
     private static final int CONTENT = 1 << 0;
     private static final int EMBEDS = 1 << 1;
@@ -49,16 +52,18 @@ public class WebhookMessageUpdateActionImpl
     private final List<ActionRow> components = new ArrayList<>();
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
+    private final Function<DataObject, T> transformer;
     private String content;
 
-    public WebhookMessageUpdateActionImpl(JDA api, Route.CompiledRoute route)
+    public WebhookMessageUpdateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
     {
         super(api, route);
+        this.transformer = transformer;
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction setContent(@Nullable String content)
+    public WebhookMessageUpdateAction<T> setContent(@Nullable String content)
     {
         if (content != null)
             Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
@@ -71,7 +76,7 @@ public class WebhookMessageUpdateActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageUpdateAction<T> setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in one message!");
@@ -83,7 +88,7 @@ public class WebhookMessageUpdateActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options)
+    public WebhookMessageUpdateAction<T> addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "File name");
         Checks.notNull(data, "File data");
@@ -97,7 +102,7 @@ public class WebhookMessageUpdateActionImpl
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction setActionRows(@Nonnull ActionRow... rows)
+    public WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
         this.components.clear();
@@ -109,7 +114,7 @@ public class WebhookMessageUpdateActionImpl
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageUpdateAction applyMessage(@Nonnull Message message)
+    public WebhookMessageUpdateAction<T> applyMessage(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
         setContent(message.getContentRaw());
@@ -145,5 +150,12 @@ public class WebhookMessageUpdateActionImpl
         body.addFormDataPart("payload_json", json.toString());
         files.clear();
         return body.build();
+    }
+
+    @Override
+    protected void handleSuccess(Response response, Request<T> request)
+    {
+        T message = transformer.apply(response.getObject());
+        request.onSuccess(message);
     }
 }
