@@ -19,34 +19,36 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.interactions.ComponentLayout;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataMessage extends AbstractMessage
 {
     private final EnumSet<MentionType> allowedMentions;
     private final String[] mentionedRoles;
     private final String[] mentionedUsers;
+    private final ComponentLayout[] components;
     private MessageEmbed embed;
 
     public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed,
-                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles)
+                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, ComponentLayout[] components)
     {
         super(content, nonce, tts);
         this.embed = embed;
         this.allowedMentions = allowedMentions;
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
+        this.components = components;
     }
 
     public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
     {
-        this(tts, content, nonce, embed, null, new String[0], new String[0]);
+        this(tts, content, nonce, embed, null, new String[0], new String[0], new ComponentLayout[0]);
     }
 
     public EnumSet<MentionType> getAllowedMentions()
@@ -108,6 +110,17 @@ public class DataMessage extends AbstractMessage
     public List<MessageEmbed> getEmbeds()
     {
         return embed == null ? Collections.emptyList() : Collections.singletonList(embed);
+    }
+
+    @Nonnull
+    @Override
+    public List<ActionRow> getActionRows()
+    {
+        return components == null ? Collections.emptyList()
+                : Arrays.stream(components)
+                    .filter(ActionRow.class::isInstance)
+                    .map(ActionRow.class::cast)
+                    .collect(Collectors.toList());
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT

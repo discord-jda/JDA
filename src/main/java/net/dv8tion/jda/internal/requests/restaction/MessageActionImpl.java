@@ -141,10 +141,12 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (message == null || message.getType() != MessageType.DEFAULT)
             return this;
         final List<MessageEmbed> embeds = message.getEmbeds();
-        if (embeds != null && !embeds.isEmpty())
+        if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
             embed(embeds.get(0));
         files.clear();
 
+        components = new ArrayList<>();
+        components.addAll(message.getActionRows());
         allowedMentions.applyMessage(message);
         String content = message.getContentRaw();
         return content(content).tts(message.isTTS());
@@ -330,8 +332,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         Checks.noneNull(rows, "ActionRows");
         if (components == null)
             components = new ArrayList<>();
-        Checks.check(components.size() + rows.length <= 5, "Can only have 5 action rows per message!");
-        Collections.addAll(components, rows);
+        Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
+        this.components.clear();
+        Collections.addAll(this.components, rows);
         return this;
     }
 
