@@ -24,8 +24,8 @@ import java.util.regex.Pattern;
 
 public class Checks
 {
-    public static final Pattern ALPHANUMERIC_WITH_DASH = Pattern.compile("[\\p{L}\\p{N}_-]+");
-    public static final Pattern ALPHANUMERIC = Pattern.compile("[\\p{L}\\p{N}_]+");
+    public static final Pattern ALPHANUMERIC_WITH_DASH = Pattern.compile("[\\w-]+");
+    public static final Pattern ALPHANUMERIC = Pattern.compile("[\\w]+", Pattern.UNICODE_CHARACTER_CLASS);
 
     @Contract("null -> fail")
     public static void isSnowflake(final String snowflake)
