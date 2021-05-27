@@ -205,7 +205,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
-        return addFile(new ByteArrayInputStream(data), name);
+        return addFile(new ByteArrayInputStream(data), name, options);
     }
 
     /**
@@ -245,7 +245,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
         Checks.notNull(file, "File");
         try
         {
-            return addFile(new FileInputStream(file), name);
+            return addFile(new FileInputStream(file), name, options);
         }
         catch (FileNotFoundException e)
         {
@@ -273,6 +273,6 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
-        return addFile(file, file.getName());
+        return addFile(file, file.getName(), options);
     }
 }

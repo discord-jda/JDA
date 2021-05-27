@@ -78,7 +78,7 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
     @Override
     public WebhookMessageActionImpl<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return sendRequest().addFile(name, data, options);
+        return sendRequest().addFile(data, name, options);
     }
 
     @Nonnull
