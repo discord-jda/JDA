@@ -74,8 +74,6 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
         return this;
     }
 
-    // TODO: Can this support files?
-
     @Nonnull
     @Override
     public UpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
@@ -89,8 +87,9 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
         }
         if (this.embeds == null)
             this.embeds = new ArrayList<>();
+        this.embeds.clear();
 
-        if (embeds.size() + this.embeds.size() > 10)
+        if (embeds.size() > 10)
             throw new IllegalStateException("Cannot have more than 10 embeds per message!");
         this.embeds.addAll(embeds);
         return this;

@@ -26,9 +26,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -217,14 +216,10 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+    default UpdateAction editComponents(@Nonnull ComponentLayout... components)
     {
-        Checks.notNull(component, "ComponentLayouts");
         Checks.noneNull(components, "ComponentLayouts");
-        List<ComponentLayout> layouts = new ArrayList<>();
-        layouts.add(component);
-        Collections.addAll(layouts, components);
-        return editComponents(layouts);
+        return editComponents(Arrays.asList(components));
     }
 
     /**
@@ -261,10 +256,8 @@ public interface ComponentInteraction extends Interaction
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      *
-     * @param  embed
-     *         The new message embed to use
      * @param  embeds
-     *         Any additional embeds to include in the message
+     *         The new message embeds to include in the message
      *
      * @throws IllegalArgumentException
      *         If any of the provided embeds is null
@@ -273,9 +266,8 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default UpdateAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
     {
-        Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
     }

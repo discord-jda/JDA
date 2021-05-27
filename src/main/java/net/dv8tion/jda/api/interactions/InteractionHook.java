@@ -170,10 +170,8 @@ public interface InteractionHook extends WebhookClient<Message>
      *     <br>The message for that id does not exist</li>
      * </ul>
      *
-     * @param  component
-     *         The new component layout for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
      * @param  components
-     *         Additional component layouts to use
+     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
@@ -182,9 +180,9 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull ComponentLayout... components)
     {
-        return editMessageComponentsById("@original", component, components);
+        return editMessageComponentsById("@original", components);
     }
 
     /**
@@ -232,10 +230,8 @@ public interface InteractionHook extends WebhookClient<Message>
      *     <br>The message for that id does not exist</li>
      * </ul>
      *
-     * @param  embed
-     *         The new message embed to use
      * @param  embeds
-     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         The new {@link MessageEmbed MessageEmbeds} to use
      *
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than 10
@@ -244,9 +240,9 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull MessageEmbed... embeds)
     {
-        return editMessageEmbedsById("@original", embed, embeds);
+        return editMessageEmbedsById("@original", embeds);
     }
 
     /**

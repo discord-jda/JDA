@@ -27,10 +27,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Interface which allows sending messages through the webhooks API.
@@ -630,10 +627,8 @@ public interface WebhookClient<T>
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
-     * @param  embed
-     *         The new message embed to use
      * @param  embeds
-     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         The new {@link MessageEmbed MessageEmbeds} to use
      *
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than 10
@@ -642,14 +637,10 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageUpdateAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... embeds)
     {
-        Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(embeds, "MessageEmbeds");
-        List<MessageEmbed> embedList = new ArrayList<>();
-        embedList.add(embed);
-        Collections.addAll(embedList, embeds);
-        return editMessageEmbedsById(messageId, embedList);
+        return editMessageEmbedsById(messageId, Arrays.asList(embeds));
     }
 
     /**
@@ -667,10 +658,8 @@ public interface WebhookClient<T>
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
-     * @param  embed
-     *         The new message embed to use
      * @param  embeds
-     *         Additional {@link MessageEmbed MessageEmbeds} to use (up to 10 in total)
+     *         The new {@link MessageEmbed MessageEmbeds} to use
      *
      * @throws IllegalArgumentException
      *         If the provided embeds are null, or more than 10
@@ -679,9 +668,9 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... embeds)
     {
-        return editMessageEmbedsById(Long.toUnsignedString(messageId), embed, embeds);
+        return editMessageEmbedsById(Long.toUnsignedString(messageId), embeds);
     }
 
     /**
@@ -756,10 +745,8 @@ public interface WebhookClient<T>
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
-     * @param  component
-     *         The new component layout for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
      * @param  components
-     *         Additional component layouts to use
+     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
@@ -768,14 +755,10 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentLayout... components)
     {
-        Checks.notNull(component, "ComponentLayouts");
         Checks.noneNull(components, "ComponentLayouts");
-        List<ComponentLayout> layouts = new ArrayList<>();
-        layouts.add(component);
-        Collections.addAll(layouts, components);
-        return editMessageComponentsById(messageId, layouts);
+        return editMessageComponentsById(messageId, Arrays.asList(components));
     }
 
     /**
@@ -793,10 +776,8 @@ public interface WebhookClient<T>
      *
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
-     * @param  component
-     *         The new component layout for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
      * @param  components
-     *         Additional component layouts to use
+     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
@@ -805,9 +786,9 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentLayout component, @Nonnull ComponentLayout... components)
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentLayout... components)
     {
-        return editMessageComponentsById(Long.toUnsignedString(messageId), component, components);
+        return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
 
 

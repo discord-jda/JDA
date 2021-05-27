@@ -50,47 +50,47 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
         this.api = api;
     }
 
-    public abstract WebhookMessageActionImpl sendRequest();
-    public abstract WebhookMessageUpdateActionImpl editRequest(String messageId);
+    public abstract WebhookMessageActionImpl<T> sendRequest();
+    public abstract WebhookMessageUpdateActionImpl<T> editRequest(String messageId);
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl sendMessage(@Nonnull String content)
+    public WebhookMessageActionImpl<T> sendMessage(@Nonnull String content)
     {
         return sendRequest().setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageActionImpl<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return sendRequest().addEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl sendMessage(@Nonnull Message message)
+    public WebhookMessageActionImpl<T> sendMessage(@Nonnull Message message)
     {
         return sendRequest().applyMessage(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageActionImpl<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         return sendRequest().addFile(name, data, options);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl editMessageById(@Nonnull String messageId, @Nonnull String content)
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
     {
-        return (WebhookMessageUpdateActionImpl) editRequest(messageId).setContent(content);
+        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
+    public WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
@@ -101,23 +101,23 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
+    public WebhookMessageUpdateActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return (WebhookMessageUpdateActionImpl) editRequest(messageId).setEmbeds(embeds);
+        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl editMessageById(@Nonnull String messageId, @Nonnull Message message)
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message)
     {
-        return (WebhookMessageUpdateActionImpl) editRequest(messageId).applyMessage(message);
+        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).applyMessage(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return (WebhookMessageUpdateActionImpl) editRequest(messageId).addFile(name, data, options);
+        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).addFile(name, data, options);
     }
 
     @Nonnull
