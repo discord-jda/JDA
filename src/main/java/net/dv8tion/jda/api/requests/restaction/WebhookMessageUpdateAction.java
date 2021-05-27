@@ -28,9 +28,8 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 // TODO: WebhookMessage type (no channel/guild attached)
 public interface WebhookMessageUpdateAction<T> extends RestAction<T>
@@ -45,12 +44,10 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
 
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> setEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    default WebhookMessageUpdateAction<T> setEmbeds(@Nonnull MessageEmbed... embeds)
     {
-        ArrayList<MessageEmbed> embeds = new ArrayList<>();
-        embeds.add(embed);
-        Collections.addAll(embeds, other);
-        return setEmbeds(embeds);
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return setEmbeds(Arrays.asList(embeds));
     }
 
     @Nonnull

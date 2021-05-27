@@ -79,6 +79,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
     public UpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
+        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
         for (MessageEmbed embed : embeds)
         {
             Checks.check(embed.isSendable(),
@@ -88,8 +89,6 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
         if (this.embeds == null)
             this.embeds = new ArrayList<>();
         this.embeds.clear();
-
-        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
         this.embeds.addAll(embeds);
         return this;
     }
