@@ -117,7 +117,7 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
     @Override
     public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).addFile(name, data, options);
+        return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).addFile(data, name, options);
     }
 
     @Nonnull

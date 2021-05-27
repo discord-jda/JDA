@@ -264,7 +264,7 @@ public interface WebhookClient<T>
      *
      * <p>If this is an {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook} this method will be delayed until the interaction is acknowledged.
      *
-     * <p>The {@code fileName} parameter is used to inform Discord about what the file should be called. This is 2 fold:
+     * <p>The {@code name} parameter is used to inform Discord about what the file should be called. This is 2 fold:
      * <ol>
      *     <li>The file name provided is the name that is found in {@link net.dv8tion.jda.api.entities.Message.Attachment#getFileName()}
      *          after upload and it is the name that will show up in the client when the upload is displayed.

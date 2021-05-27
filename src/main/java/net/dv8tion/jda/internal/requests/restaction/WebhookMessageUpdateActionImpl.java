@@ -88,7 +88,7 @@ public class WebhookMessageUpdateActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> addFile(@Nonnull String name, @Nonnull InputStream data, @Nonnull AttachmentOption... options)
+    public WebhookMessageUpdateAction<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(name, "File name");
         Checks.notNull(data, "File data");
