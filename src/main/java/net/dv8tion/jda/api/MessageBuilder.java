@@ -72,8 +72,17 @@ public class MessageBuilder implements Appendable
             isTTS = message.isTTS();
             builder.append(message.getContentRaw());
             List<MessageEmbed> embeds = message.getEmbeds();
-            if (embeds != null && !embeds.isEmpty())
+            if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
                 embed = embeds.get(0);
+            components.addAll(message.getActionRows());
+            if (message instanceof DataMessage)
+            {
+                DataMessage data = (DataMessage) message;
+                if (data.getAllowedMentions() != null)
+                    this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, data.getAllowedMentions());
+                Collections.addAll(this.mentionedUsers, data.getMentionedUsersWhitelist());
+                Collections.addAll(this.mentionedRoles, data.getMentionedRolesWhitelist());
+            }
         }
     }
 
@@ -85,6 +94,11 @@ public class MessageBuilder implements Appendable
             this.builder.append(builder.builder);
             this.nonce = builder.nonce;
             this.embed = builder.embed;
+            this.components.addAll(builder.components);
+            if (builder.allowedMentions != null)
+                this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, builder.allowedMentions);
+            this.mentionedRoles.addAll(builder.mentionedRoles);
+            this.mentionedUsers.addAll(builder.mentionedUsers);
         }
     }
 
