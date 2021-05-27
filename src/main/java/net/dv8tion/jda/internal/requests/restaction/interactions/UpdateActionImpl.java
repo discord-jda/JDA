@@ -89,8 +89,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
             this.embeds = new ArrayList<>();
         this.embeds.clear();
 
-        if (embeds.size() > 10)
-            throw new IllegalStateException("Cannot have more than 10 embeds per message!");
+        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
         this.embeds.addAll(embeds);
         return this;
     }

@@ -71,7 +71,7 @@ public interface UpdateAction extends CallbackAction
      *         The message embeds
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or one of the embeds is too big
+     *         If null is provided, one of the embeds is too big, or more than 10 embeds are provided
      *
      * @return The same update action, for chaining convenience
      */
