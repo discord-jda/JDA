@@ -29,6 +29,8 @@ import java.util.*;
 
 /**
  * Interaction on a {@link Button} component.
+ *
+ * @see net.dv8tion.jda.api.events.interaction.ButtonClickEvent
  */
 public interface ButtonInteraction extends ComponentInteraction
 {

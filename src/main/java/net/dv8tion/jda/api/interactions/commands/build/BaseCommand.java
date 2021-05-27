@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BaseCommand<T extends BaseCommand<T>> implements SerializableData
+public abstract class BaseCommand<T extends BaseCommand<T>> implements SerializableData
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
@@ -43,6 +43,17 @@ public class BaseCommand<T extends BaseCommand<T>> implements SerializableData
         this.description = description;
     }
 
+    /**
+     * Configure the name
+     *
+     * @param  name
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null, not alphanumeric, or not between 1-32 characters
+     *
+     * @return The builder, for chaining
+     */
     @Nonnull
     @SuppressWarnings("unchecked")
     public T setName(@Nonnull String name)
@@ -54,6 +65,17 @@ public class BaseCommand<T extends BaseCommand<T>> implements SerializableData
         return (T) this;
     }
 
+    /**
+     * Configure the description
+     *
+     * @param  description
+     *         The lowercase alphanumeric (with dash) description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null, not alphanumeric, or not between 1-100 characters
+     *
+     * @return The builder, for chaining
+     */
     @Nonnull
     @SuppressWarnings("unchecked")
     public T setDescription(@Nonnull String description)
@@ -64,18 +86,33 @@ public class BaseCommand<T extends BaseCommand<T>> implements SerializableData
         return (T) this;
     }
 
+    /**
+     * The configured name
+     *
+     * @return The name
+     */
     @Nonnull
     public String getName()
     {
         return name;
     }
 
+    /**
+     * The configured description
+     *
+     * @return The description
+     */
     @Nonnull
     public String getDescription()
     {
         return description;
     }
 
+    /**
+     * The options for this command.
+     *
+     * @return Immutable list of {@link OptionData}
+     */
     @Nonnull
     public List<OptionData> getOptions()
     {

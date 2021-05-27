@@ -25,6 +25,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Interaction of a Slash-Command.
+ *
+ * @see net.dv8tion.jda.api.events.interaction.SlashCommandEvent
+ */
 public interface CommandInteraction extends Interaction
 {
     /**

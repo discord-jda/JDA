@@ -35,6 +35,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a Discord slash-command.
+ * <br>This can be used to edit or delete the command.
+ *
+ * @see Guild#retrieveCommandById(String)
+ * @see Guild#retrieveCommands()
+ */
 public class Command implements ISnowflake
 {
     private final JDAImpl api;
@@ -63,6 +70,12 @@ public class Command implements ISnowflake
         ).orElse(Collections.emptyList());
     }
 
+    /**
+     * Delete this command.
+     * <br>If this is a global command it may take up to 1 hour to vanish from all clients.
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     public RestAction<Void> delete()
@@ -75,6 +88,12 @@ public class Command implements ISnowflake
         return new RestActionImpl<>(api, route);
     }
 
+    /**
+     * Edit this command.
+     * <br>This can be used to change the command attributes such as name or description.
+     *
+     * @return {@link CommandEditAction}
+     */
     @Nonnull
     @CheckReturnValue
     public CommandEditAction editCommand()
@@ -82,24 +101,49 @@ public class Command implements ISnowflake
         return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
     }
 
+    /**
+     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Command
+     *
+     * @return the corresponding JDA instance
+     */
     @Nonnull
     public JDA getJDA()
     {
         return api;
     }
 
+    /**
+     * The name of this command.
+     *
+     * @return The name
+     */
     @Nonnull
     public String getName()
     {
         return name;
     }
 
+    /**
+     * The description of this command.
+     *
+     * @return The description
+     */
     @Nonnull
     public String getDescription()
     {
         return description;
     }
 
+    // TODO: This should be split to getSubcommands etc
+
+    /**
+     * The {@link Option Options} of this command.
+     * <br>If this command uses subcommands, then the provided list will be the list of subcommands instead.
+     * Each subcommand has its own list of options via {@link Option#getOptions()}.
+     * If this command uses subcommand groups, this will return the groups instead and {@link Option#getOptions()} the respective subcommands within that group.
+     *
+     * @return Immutable list of command options
+     */
     @Nonnull
     public List<Option> getOptions()
     {
@@ -134,6 +178,9 @@ public class Command implements ISnowflake
         return Long.hashCode(id);
     }
 
+    /**
+     * Predefined choice used for options.
+     */
     public static class Choice
     {
         private final String name;
@@ -169,17 +216,33 @@ public class Command implements ISnowflake
             }
         }
 
+        /**
+         * The readable name of this choice.
+         * <br>This is shown to the user in the official client.
+         *
+         * @return The choice name
+         */
         @Nonnull
         public String getName()
         {
             return name;
         }
 
+        /**
+         * The value of this choice.
+         *
+         * @return The long value
+         */
         public long getAsLong()
         {
             return intValue;
         }
 
+        /**
+         * The value of this choice.
+         *
+         * @return The String value
+         */
         @Nonnull
         public String getAsString()
         {
@@ -187,6 +250,13 @@ public class Command implements ISnowflake
         }
     }
 
+    /**
+     * An Option for a command.
+     * <br>Options can also represent subcommands and subcommand groups.
+     *
+     * <p>If this is a subcommand, the {@link #getOptions()} will return the options for that subcommand.
+     * For subcommand groups it will return the subcommands of that group.
+     */
     public static class Option
     {
         private final String name, description;
@@ -206,29 +276,65 @@ public class Command implements ISnowflake
                 .orElse(Collections.emptyList());
         }
 
+        /**
+         * The name of this option, subcommand, or subcommand group.
+         *
+         * @return The name
+         */
         @Nonnull
         public String getName()
         {
             return name;
         }
 
+        /**
+         * The description of this option, subcommand, or subcommand group.
+         *
+         * @return The description
+         */
         @Nonnull
         public String getDescription()
         {
             return description;
         }
 
+        /**
+         * The raw option type.
+         *
+         * @return The type
+         */
         public int getTypeRaw()
         {
             return type;
         }
 
+        /**
+         * The {@link OptionType}.
+         *
+         * @return The type
+         */
+        @Nonnull
+        public OptionType getType()
+        {
+            return OptionType.fromKey(type);
+        }
+
+        /**
+         * The list of predefined {@link Choice Choices} for this option.
+         *
+         * @return Immutable list of choices
+         */
         @Nonnull
         public List<Choice> getChoices()
         {
             return choices;
         }
 
+        /**
+         * The options for this subcommand, or the subcommands whtin this group.
+         *
+         * @return Immutable list of Options
+         */
         @Nonnull
         public List<Option> getOptions()
         {

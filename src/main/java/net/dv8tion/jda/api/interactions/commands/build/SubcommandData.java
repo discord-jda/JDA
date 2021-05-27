@@ -24,27 +24,108 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Builder for a Slash-Command subcommand.
+ */
 public class SubcommandData extends BaseCommand<CommandData> implements SerializableData
 {
+    /**
+     * Create an subcommand builder.
+     *
+     * @param name
+     *        The subcommand name, 1-32 lowercase alphanumeric characters
+     * @param description
+     *        The subcommand description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If any of the following requirements are not met
+     *         <ul>
+     *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
+     *             <li>The description must be 1-100 characters long</li>
+     *         </ul>
+     */
     public SubcommandData(@Nonnull String name, @Nonnull String description)
     {
         super(name, description);
     }
 
+    /**
+     * Adds an option to this subcommand.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  data
+     *         The {@link OptionData}
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The SubcommandData instance, for chaining
+     */
     @Nonnull
     public SubcommandData addOption(@Nonnull OptionData data)
     {
         Checks.notNull(data, "Option");
+        Checks.check(options.length() < 25, "Cannot have more than 25 options for a subcommand!");
         options.add(data);
         return this;
     }
 
+    /**
+     * Adds an option to this subcommand.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  type
+     *         The {@link OptionData}
+     * @param  name
+     *         The lowercase option name, 1-32 characters
+     * @param  description
+     *         The option description, 1-100 characters
+     * @param  required
+     *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The SubcommandData instance, for chaining
+     */
     @Nonnull
     public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
         return addOption(new OptionData(type, name, description).setRequired(required));
     }
 
+    /**
+     * Adds an option to this subcommand.
+     * <br>The option is set to be non-required! You can use {@link #addOption(OptionType, String, String, boolean)} to add a required option instead.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  type
+     *         The {@link OptionData}
+     * @param  name
+     *         The lowercase option name, 1-32 characters
+     * @param  description
+     *         The option description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The SubcommandData instance, for chaining
+     */
     @Nonnull
     public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
@@ -58,6 +139,20 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
         return super.toData().put("type", OptionType.SUB_COMMAND.getKey());
     }
 
+    /**
+     * Parses the provided serialization back into an SubcommandData instance.
+     * <br>This is the reverse function for {@link #toData()}.
+     *
+     * @param  json
+     *         The serialized {@link DataObject} representing the subcommand
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the serialized object is missing required fields
+     * @throws IllegalArgumentException
+     *         If any of the values are failing the respective checks such as length
+     *
+     * @return The parsed SubcommandData instance, which can be further configured through setters
+     */
     @Nonnull
     public static SubcommandData load(@Nonnull DataObject json)
     {
