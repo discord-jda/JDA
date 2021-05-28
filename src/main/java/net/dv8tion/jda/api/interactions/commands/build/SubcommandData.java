@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 
 /**
  * Builder for a Slash-Command subcommand.
@@ -50,12 +51,12 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
     }
 
     /**
-     * Adds an option to this subcommand.
+     * Adds up to 25 options to this subcommand.
      *
      * <p>Required options must be added before non-required options!
      *
-     * @param  data
-     *         The {@link OptionData}
+     * @param  options
+     *         The {@link OptionData options} to add
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -67,12 +68,41 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      * @return The SubcommandData instance, for chaining
      */
     @Nonnull
-    public SubcommandData addOption(@Nonnull OptionData data)
+    public SubcommandData addOptions(@Nonnull OptionData... options)
     {
-        Checks.notNull(data, "Option");
-        Checks.check(options.length() < 25, "Cannot have more than 25 options for a subcommand!");
-        options.add(data);
+        Checks.noneNull(options, "Option");
+        Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a subcommand!");
+        for (OptionData option : options)
+        {
+            Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand to a subcommand!");
+            Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group to a subcommand!");
+            this.options.add(option);
+        }
         return this;
+    }
+
+    /**
+     * Adds up to 25 options to this subcommand.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  options
+     *         The {@link OptionData options} to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The SubcommandData instance, for chaining
+     */
+    @Nonnull
+    public SubcommandData addOptions(@Nonnull Collection<? extends OptionData> options)
+    {
+        Checks.noneNull(options, "Options");
+        return addOptions(options.toArray(new OptionData[0]));
     }
 
     /**
@@ -101,7 +131,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
     @Nonnull
     public SubcommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
-        return addOption(new OptionData(type, name, description).setRequired(required));
+        return addOptions(new OptionData(type, name, description).setRequired(required));
     }
 
     /**
@@ -162,7 +192,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
         json.optArray("options").ifPresent(arr ->
                 arr.stream(DataArray::getObject)
                         .map(OptionData::load)
-                        .forEach(sub::addOption)
+                        .forEach(sub::addOptions)
         );
         return sub;
     }

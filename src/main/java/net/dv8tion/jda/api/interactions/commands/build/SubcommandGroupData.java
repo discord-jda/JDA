@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,10 +68,10 @@ public class SubcommandGroupData extends OptionData implements SerializableData
     }
 
     /**
-     * Add a {@link SubcommandData} to this group.
+     * Add up to 25 {@link SubcommandData Subcommands} to this group.
      *
-     * @param  data
-     *         The subcommand to add
+     * @param  subcommands
+     *         The subcommands to add
      *
      * @throws IllegalArgumentException
      *         If null is provided, or more than 25 subcommands are provided
@@ -78,12 +79,31 @@ public class SubcommandGroupData extends OptionData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData addSubcommand(@Nonnull SubcommandData data)
+    public SubcommandGroupData addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        Checks.notNull(data, "Subcommand");
-        Checks.check(options.length() < 25, "Cannot have more than 25 subcommands in one group!");
-        options.add(data);
+        Checks.noneNull(subcommands, "Subcommand");
+        Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands in one group!");
+        for (SubcommandData subcommand : subcommands)
+            options.add(subcommand);
         return this;
+    }
+
+    /**
+     * Add up to 25 {@link SubcommandData Subcommands} to this group.
+     *
+     * @param  subcommands
+     *         The subcommands to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or more than 25 subcommands are provided
+     *
+     * @return The SubcommandGroupData instance, for chaining
+     */
+    @Nonnull
+    public SubcommandGroupData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
+    {
+        Checks.noneNull(subcommands, "Subcommands");
+        return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
 
     @Nonnull
@@ -116,7 +136,7 @@ public class SubcommandGroupData extends OptionData implements SerializableData
         json.optArray("options").ifPresent(arr ->
                 arr.stream(DataArray::getObject)
                         .map(SubcommandData::load)
-                        .forEach(group::addSubcommand)
+                        .forEach(group::addSubcommands)
         );
         return group;
     }

@@ -24,10 +24,7 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -241,6 +238,58 @@ public class OptionData implements SerializableData
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
         choices.put(name, value);
         return this;
+    }
+
+    /**
+     * Adds up to 25 predefined choices for this option.
+     * <br>The user can only provide one of the choices and cannot specify any other value.
+     *
+     * @param  choices
+     *         The choices to add
+     *
+     * @throws IllegalArgumentException
+     *         If any name or value is null, empty, or longer than 100 characters.
+     *         Also thrown if this is not an option type is incompatible with the choice type or more than 25 choices are provided.
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData addChoices(@Nonnull Command.Choice... choices)
+    {
+        if (this.choices == null)
+            throw new IllegalStateException("Cannot add choices for an option of type " + type);
+        Checks.noneNull(choices, "Choices");
+        Checks.check(choices.length + this.choices.size() <= 25, "Cannot have more than 25 choices for one option!");
+        for (Command.Choice choice : choices)
+        {
+            if (type == OptionType.INTEGER)
+                addChoice(choice.getName(), (int) choice.getAsLong());
+            else if (type == OptionType.STRING)
+                addChoice(choice.getName(), choice.getAsString());
+            else
+                throw new IllegalArgumentException("Cannot add choice for type " + type);
+        }
+        return this;
+    }
+
+    /**
+     * Adds up to 25 predefined choices for this option.
+     * <br>The user can only provide one of the choices and cannot specify any other value.
+     *
+     * @param  choices
+     *         The choices to add
+     *
+     * @throws IllegalArgumentException
+     *         If any name or value is null, empty, or longer than 100 characters.
+     *         Also thrown if this is not an option type is incompatible with the choice type or more than 25 choices are provided.
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices)
+    {
+        Checks.noneNull(choices, "Choices");
+        return addChoices(choices.toArray(new Command.Choice[0]));
     }
 
     @Nonnull
