@@ -108,7 +108,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
             resolveJson.optObject("roles").ifPresent(roles ->
                 roles.keys()
                     .stream()
-                    .map(guild::getRoleById)// TODO: What if its not from this guild?
+                    .map(guild::getRoleById)
                     .filter(Objects::nonNull)
                     .forEach(role -> resolved.put(role.getIdLong(), role))
             );

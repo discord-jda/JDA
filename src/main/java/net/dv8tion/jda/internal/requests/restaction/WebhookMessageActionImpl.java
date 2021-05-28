@@ -166,7 +166,7 @@ public class WebhookMessageActionImpl<T>
         json.put("tts", tts);
 
         if (username != null)
-            json.put("username", username); // TODO: this doesn't work for interactions (?)
+            json.put("username", username);
         if (avatarUrl != null)
             json.put("avatar_url", avatarUrl);
         if (ephemeral)

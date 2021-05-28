@@ -74,7 +74,8 @@ public class InteractionCreateHandler extends SocketHandler
 
     private void handleAction(DataObject content)
     {
-        // TODO: Verify component types
+        if (content.getObject("data").getInt("component_type") != 2)
+            return;
         api.handleEvent(
             new ButtonClickEvent(api, responseNumber,
                 new ButtonInteractionImpl(api, content)));

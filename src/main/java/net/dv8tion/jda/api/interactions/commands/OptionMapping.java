@@ -207,7 +207,7 @@ public class OptionMapping
     {
         if (type != OptionType.CHANNEL)
             throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
-        return (AbstractChannel) resolved.get(getAsLong()); // TODO: Handle uncached channels correctly
+        return (AbstractChannel) resolved.get(getAsLong());
     }
 
     /**
