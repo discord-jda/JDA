@@ -105,25 +105,25 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction addOption(@Nonnull OptionData option)
+    public CommandCreateAction addOptions(@Nonnull OptionData... options)
     {
-        data.addOption(option);
+        data.addOptions(options);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommand(@Nonnull SubcommandData subcommand)
+    public CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommand)
     {
-        data.addSubcommand(subcommand);
+        data.addSubcommands(subcommand);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommandGroup(@Nonnull SubcommandGroupData group)
+    public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData group)
     {
-        data.addSubcommandGroup(group);
+        data.addSubcommandGroups(group);
         return this;
     }
 

@@ -134,27 +134,27 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction addOption(@Nonnull OptionData option)
+    public CommandEditAction addOptions(@Nonnull OptionData... options)
     {
-        data.addOption(option);
+        data.addOptions(options);
         mask |= OPTIONS_SET;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addSubcommand(@Nonnull SubcommandData subcommand)
+    public CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        data.addSubcommand(subcommand);
+        data.addSubcommands(subcommands);
         mask |= OPTIONS_SET;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addSubcommandGroup(@Nonnull SubcommandGroupData group)
+    public CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
-        data.addSubcommandGroup(group);
+        data.addSubcommandGroups(groups);
         mask |= OPTIONS_SET;
         return this;
     }

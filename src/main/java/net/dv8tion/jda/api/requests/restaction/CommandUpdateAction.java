@@ -28,6 +28,10 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
+/**
+ * Specialized {@link RestAction} used to replace existing commands of a guild or globally.
+ * <br>Any commands that currently exist and are not listed through {@link #addCommands(CommandData...)} will be <b>DELETED</b>!
+ */
 public interface CommandUpdateAction extends RestAction<Void>
 {
     @Nonnull
@@ -55,10 +59,34 @@ public interface CommandUpdateAction extends RestAction<Void>
         return (CommandUpdateAction) RestAction.super.addCheck(checks);
     }
 
+    /**
+     * Adds up to 100 commands.
+     * <p>When a command is not listed in this request, it will be deleted.
+     *
+     * @param  commands
+     *         The {@link CommandData commands} to add
+     *
+     * @throws IllegalArgumentException
+     *         If null or more than 100 commands are provided
+     *
+     * @return The CommandUpdateAction instance, for chaining
+     */
     @Nonnull
     @CheckReturnValue
     CommandUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands);
 
+    /**
+     * Adds up to 100 commands.
+     * <p>When a command is not listed in this request, it will be deleted.
+     *
+     * @param  commands
+     *         The {@link CommandData commands} to add
+     *
+     * @throws IllegalArgumentException
+     *         If null or more than 100 commands are provided
+     *
+     * @return The CommandUpdateAction instance, for chaining
+     */
     @Nonnull
     @CheckReturnValue
     default CommandUpdateAction addCommands(@Nonnull CommandData... commands)

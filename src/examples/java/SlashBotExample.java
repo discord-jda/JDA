@@ -50,15 +50,15 @@ public class SlashBotExample extends ListenerAdapter
         // Moderation commands with required options
         commands.addCommands(
             new CommandData("ban", "Ban a user from this server. Requires permission to ban users.")
-                .addOption(new OptionData(USER, "user", "The user to ban") // USER type allows to include members of the server or other users by id
+                .addOptions(new OptionData(USER, "user", "The user to ban") // USER type allows to include members of the server or other users by id
                     .setRequired(true)) // This command requires a parameter
-                .addOption(new OptionData(INTEGER, "del_days", "Delete messages from the past days.")) // This is optional
+                .addOptions(new OptionData(INTEGER, "del_days", "Delete messages from the past days.")) // This is optional
         );
 
         // Simple reply commands
         commands.addCommands(
             new CommandData("say", "Makes the bot say what you tell it to")
-                .addOption(new OptionData(STRING, "content", "What the bot should say")
+                .addOptions(new OptionData(STRING, "content", "What the bot should say")
                     .setRequired(true))
         );
 
@@ -69,7 +69,7 @@ public class SlashBotExample extends ListenerAdapter
 
         commands.addCommands(
             new CommandData("prune", "Prune messages from this channel")
-                .addOption(new OptionData(INTEGER, "amount", "How many messages to prune (Default 100)"))
+                .addOptions(new OptionData(INTEGER, "amount", "How many messages to prune (Default 100)"))
         );
 
         // Send the new set of commands to discord, this will override any existing global commands with the new set provided here

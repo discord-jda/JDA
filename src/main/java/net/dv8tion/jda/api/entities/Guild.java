@@ -74,15 +74,45 @@ public interface Guild extends ISnowflake
     /** Template for {@link #getBannerUrl()}. */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.png";
 
-    // TODO: Docs
+    /**
+     * Retrieves the list of guild commands.
+     * <br>This list does not include global commands! Use {@link JDA#retrieveCommands()} for global commands.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link Command}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<List<Command>> retrieveCommands();
 
+    /**
+     * Retrieves the existing {@link Command} instance by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The command id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link Command}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Command> retrieveCommandById(@Nonnull String id);
 
+    /**
+     * Retrieves the existing {@link Command} instance by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The command id
+     *
+     * @return {@link RestAction} - Type: {@link Command}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<Command> retrieveCommandById(long id)
@@ -90,10 +120,44 @@ public interface Guild extends ISnowflake
         return retrieveCommandById(Long.toUnsignedString(id));
     }
 
+    /**
+     * Creates or updates a command.
+     * <br>If a command with the same name exists, it will be replaced.
+     *
+     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * @param  command
+     *         The {@link CommandData} for the command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link CommandCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     CommandCreateAction upsertCommand(@Nonnull CommandData command);
 
+    /**
+     * Creates or updates a command.
+     * <br>If a command with the same name exists, it will be replaced.
+     *
+     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * @param  name
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     * @param  description
+     *         The description for the command, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name/description do not meet the requirements
+     *
+     * @return {@link CommandCreateAction}
+     */
     @Nonnull
     @CheckReturnValue
     default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
@@ -101,18 +165,83 @@ public interface Guild extends ISnowflake
         return upsertCommand(new CommandData(name, description));
     }
 
+    /**
+     * Configures the complete list of guild commands.
+     * <br>This will replace the existing command list for this guild. You should only use this once on startup!
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * @return {@link CommandUpdateAction}
+     */
     @Nonnull
     @CheckReturnValue
     CommandUpdateAction updateCommands();
 
+    /**
+     * Edit an existing command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
     @Nonnull
     @CheckReturnValue
     CommandEditAction editCommandById(@Nonnull String id);
 
+    /**
+     * Edit an existing command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandEditAction editCommandById(long id)
+    {
+        return editCommandById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Delete the command for this id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  commandId
+     *         The id of the command that should be deleted
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> deleteCommandById(@Nonnull String commandId);
 
+    /**
+     * Delete the command for this id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  commandId
+     *         The id of the command that should be deleted
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     default RestAction<Void> deleteCommandById(long commandId)

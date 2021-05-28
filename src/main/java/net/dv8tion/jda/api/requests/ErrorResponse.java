@@ -61,6 +61,8 @@ public enum ErrorResponse
     UNKNOWN_BRANCH(                 10032, "Unknown Branch"),
     UNKNOWN_REDISTRIBUTABLE(        10036, "Unknown Redistributable"),
     UNKNOWN_INTERACTION(            10062, "Unknown Interaction"),
+    UNKNOWN_COMMAND(                10063, "Unknown application command"),
+    UNKNOWN_COMMAND_PERMISSIONS(    10066, "Unknown application command permissions"),
     BOTS_NOT_ALLOWED(               20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(              20002, "Only bots can use this endpoint"),
     MAX_GUILDS(                     30001, "Maximum number of Guilds reached (100)"),

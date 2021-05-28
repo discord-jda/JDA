@@ -93,12 +93,12 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     }
 
     /**
-     * Adds an option to this command.
+     * Adds up to 25 options to this command.
      *
      * <p>Required options must be added before non-required options!
      *
-     * @param  data
-     *         The {@link OptionData}
+     * @param  options
+     *          The {@link OptionData Options} to add
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -111,29 +111,57 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addOption(@Nonnull OptionData data)
+    public CommandData addOptions(@Nonnull OptionData... options)
     {
-        Checks.notNull(data, "Option");
-        Checks.check(options.length() < 25, "Cannot have more than 25 options for a command!");
-        switch (data.getType())
+        Checks.noneNull(options, "Option");
+        Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
+        for (OptionData data : options)
         {
-        case SUB_COMMAND:
-            if (!allowSubcommands)
-                throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-            allowOption = allowGroups = false;
-            break;
-        case SUB_COMMAND_GROUP:
-            if (!allowGroups)
-                throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-            allowOption = allowSubcommands = false;
-            break;
-        default:
-            if (!allowOption)
-                throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-            allowSubcommands = allowGroups = false;
+            switch (data.getType())
+            {
+            case SUB_COMMAND:
+                if (!allowSubcommands)
+                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+                allowOption = allowGroups = false;
+                break;
+            case SUB_COMMAND_GROUP:
+                if (!allowGroups)
+                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+                allowOption = allowSubcommands = false;
+                break;
+            default:
+                if (!allowOption)
+                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+                allowSubcommands = allowGroups = false;
+            }
+            this.options.add(data);
         }
-        options.add(data);
         return this;
+    }
+
+    /**
+     * Adds up to 25 options to this command.
+     *
+     * <p>Required options must be added before non-required options!
+     *
+     * @param  options
+     *         The {@link OptionData Options} to add
+     *
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If this option is required and you already added a non-required option.</li>
+     *             <li>If more than 25 options are provided.</li>
+     *             <li>If null is provided</li>
+     *         </ul>
+     *
+     * @return The CommandData instance, for chaining
+     */
+    @Nonnull
+    public CommandData addOptions(@Nonnull Collection<? extends OptionData> options)
+    {
+        Checks.noneNull(options, "Option");
+        return addOptions(options.toArray(new OptionData[0]));
     }
 
     /**
@@ -142,7 +170,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * <p>Required options must be added before non-required options!
      *
      * @param  type
-     *         The {@link OptionData}
+     *         The {@link OptionType}
      * @param  name
      *         The lowercase option name, 1-32 characters
      * @param  description
@@ -163,7 +191,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
-        return addOption(new OptionData(type, name, description).setRequired(required));
+        return addOptions(new OptionData(type, name, description).setRequired(required));
     }
 
     /**
@@ -173,7 +201,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * <p>Required options must be added before non-required options!
      *
      * @param  type
-     *         The {@link OptionData}
+     *         The {@link OptionType}
      * @param  name
      *         The lowercase option name, 1-32 characters
      * @param  description
@@ -196,10 +224,10 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     }
 
     /**
-     * Add a {@link SubcommandData} to this command.
+     * Add up to 25 {@link SubcommandData Subcommands} to this command.
      *
-     * @param  data
-     *         The subcommand to add
+     * @param  subcommands
+     *         The subcommands to add
      *
      * @throws IllegalArgumentException
      *         If null is provided, or more than 25 subcommands are provided.
@@ -208,22 +236,42 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addSubcommand(@Nonnull SubcommandData data)
+    public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        Checks.notNull(data, "Subcommand");
+        Checks.noneNull(subcommands, "Subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
         allowOption = allowGroups = false;
-        Checks.check(options.length() < 25, "Cannot have more than 25 subcommands for a command!");
-        options.add(data);
+        Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands for a command!");
+        for (SubcommandData data : subcommands)
+            options.add(data);
         return this;
     }
 
     /**
-     * Add a {@link SubcommandGroupData} to this command.
+     * Add up to 25 {@link SubcommandData Subcommands} to this command.
      *
-     * @param  data
-     *         The subcommand group to add
+     * @param  subcommands
+     *         The subcommands to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or more than 25 subcommands are provided.
+     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *
+     * @return The CommandData instance, for chaining
+     */
+    @Nonnull
+    public CommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
+    {
+        Checks.noneNull(subcommands, "Subcommands");
+        return addSubcommands(subcommands.toArray(new SubcommandData[0]));
+    }
+
+    /**
+     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
+     *
+     * @param  groups
+     *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
      *         If null is provided, or more than 25 subcommand groups are provided.
@@ -232,15 +280,35 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addSubcommandGroup(@Nonnull SubcommandGroupData data)
+    public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
-        Checks.notNull(data, "SubcommandGroup");
+        Checks.noneNull(groups, "SubcommandGroups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
         allowSubcommands = allowOption = false;
-        Checks.check(options.length() < 25, "Cannot have more than 25 subcommand groups for a command!");
-        options.add(data);
+        Checks.check(groups.length + options.length() <= 25, "Cannot have more than 25 subcommand groups for a command!");
+        for (SubcommandGroupData data : groups)
+            options.add(data);
         return this;
+    }
+
+    /**
+     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
+     *
+     * @param  groups
+     *         The subcommand groups to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or more than 25 subcommand groups are provided.
+     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *
+     * @return The CommandData instance, for chaining
+     */
+    @Nonnull
+    public CommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
+    {
+        Checks.noneNull(groups, "SubcommandGroups");
+        return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
     }
 
     /**
@@ -271,13 +339,13 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
             switch (type)
             {
             case SUB_COMMAND:
-                command.addSubcommand(SubcommandData.load(opt));
+                command.addSubcommands(SubcommandData.load(opt));
                 break;
             case SUB_COMMAND_GROUP:
-                command.addSubcommandGroup(SubcommandGroupData.load(opt));
+                command.addSubcommandGroups(SubcommandGroupData.load(opt));
                 break;
             default:
-                command.addOption(OptionData.load(opt));
+                command.addOptions(OptionData.load(opt));
             }
         });
         return command;

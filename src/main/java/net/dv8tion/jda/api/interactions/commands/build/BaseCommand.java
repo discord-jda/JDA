@@ -69,10 +69,10 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      * Configure the description
      *
      * @param  description
-     *         The lowercase alphanumeric (with dash) description, 1-100 characters
+     *         The description, 1-100 characters
      *
      * @throws IllegalArgumentException
-     *         If the name is null, not alphanumeric, or not between 1-100 characters
+     *         If the name is null or not between 1-100 characters
      *
      * @return The builder, for chaining
      */
