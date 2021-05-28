@@ -877,7 +877,7 @@ public class JDAImpl implements JDA
     public CommandUpdateAction updateCommands()
     {
         Route.CompiledRoute route = Route.Interactions.UPDATE_COMMANDS.compile(getSelfUser().getApplicationId());
-        return new CommandUpdateActionImpl(this, route);
+        return new CommandUpdateActionImpl(this, null, route);
     }
 
     @Nonnull

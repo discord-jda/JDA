@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.commands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -28,9 +29,11 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +52,7 @@ public class Command implements ISnowflake
     private final String name, description;
     private final List<Option> options;
     private final long id, guildId;
+    private final boolean defaultEnabled;
 
     public Command(JDAImpl api, Guild guild, DataObject json)
     {
@@ -57,6 +61,7 @@ public class Command implements ISnowflake
         this.name = json.getString("name");
         this.description = json.getString("description");
         this.id = json.getUnsignedLong("id");
+        this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.options = parseOptions(json);
     }
@@ -102,6 +107,55 @@ public class Command implements ISnowflake
     }
 
     /**
+     * Retrieves the {@link CommandPrivilege CommandPrivileges} for this command.
+     * <br>This is a shorcut for {@link Guild#retrieveCommandPrivileges(String)}.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  guild
+     *         The target guild from which to retrieve the privileges
+     *
+     * @throws IllegalArgumentException
+     *         If the guild is null
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
+    {
+        Checks.notNull(guild, "Guild");
+        return guild.retrieveCommandPrivileges(id);
+    }
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  privileges
+     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    {
+        Checks.notNull(guild, "Guild");
+        return guild.updateCommandPrivileges(id, privileges);
+    }
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Command
      *
      * @return the corresponding JDA instance
@@ -132,6 +186,16 @@ public class Command implements ISnowflake
     public String getDescription()
     {
         return description;
+    }
+
+    /**
+     * Whether this command is enabled for everyone by default.
+     *
+     * @return True, if everyone can use this command by default.
+     */
+    public boolean isDefaultEnabled()
+    {
+        return defaultEnabled;
     }
 
     // TODO: This should be split to getSubcommands etc

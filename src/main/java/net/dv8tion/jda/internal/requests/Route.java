@@ -75,6 +75,11 @@ public class Route
         public static final Route EDIT_GUILD_COMMAND =    new Route(PATCH,   "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
         public static final Route DELETE_GUILD_COMMAND =  new Route(DELETE,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
 
+        public static final Route GET_ALL_COMMAND_PERMISSIONS =  new Route(GET, "applications/{application_id}/guilds/{guild_id}/commands/permissions");
+        public static final Route EDIT_ALL_COMMAND_PERMISSIONS = new Route(PUT, "applications/{application_id}/guilds/{guild_id}/commands/permissions");
+        public static final Route GET_COMMAND_PERMISSIONS =      new Route(GET, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
+        public static final Route EDIT_COMMAND_PERMISSIONS =     new Route(PUT, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
+
         public static final Route CALLBACK =        new Route(POST,   "interactions/{interaction_id}/{interaction_token}/callback");
         public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}");
         public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}");

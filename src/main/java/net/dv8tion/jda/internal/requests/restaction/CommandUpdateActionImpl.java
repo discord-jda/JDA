@@ -17,9 +17,13 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -31,14 +35,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
-public class CommandUpdateActionImpl extends RestActionImpl<Void> implements CommandUpdateAction
+public class CommandUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandUpdateAction
 {
     private final List<CommandData> commands = new ArrayList<>();
+    private final GuildImpl guild;
 
-    public CommandUpdateActionImpl(JDA api, Route.CompiledRoute route)
+    public CommandUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route)
     {
         super(api, route);
+        this.guild = guild;
     }
 
     @Nonnull
@@ -85,5 +92,14 @@ public class CommandUpdateActionImpl extends RestActionImpl<Void> implements Com
         DataArray json = DataArray.empty();
         json.addAll(commands);
         return getRequestBody(json);
+    }
+
+    @Override
+    protected void handleSuccess(Response response, Request<List<Command>> request)
+    {
+        List<Command> commands = response.getArray().stream(DataArray::getObject)
+                .map(obj -> new Command(api, guild, obj))
+                .collect(Collectors.toList());
+        request.onSuccess(commands);
     }
 }

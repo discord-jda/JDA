@@ -83,6 +83,14 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
+    public CommandEditAction setDefaultEnabled(boolean enabled)
+    {
+        data.setDefaultEnabled(enabled);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandEditAction addCheck(@Nonnull BooleanSupplier checks)
     {
         return (CommandEditAction) super.addCheck(checks);

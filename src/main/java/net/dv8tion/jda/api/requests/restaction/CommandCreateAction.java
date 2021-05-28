@@ -54,6 +54,19 @@ public interface CommandCreateAction extends RestAction<Command>
     CommandCreateAction deadline(long timestamp);
 
     /**
+     * Whether this command is available to everyone by default.
+     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     *
+     * @param  enabled
+     *         True, if this command is enabled by default for everyone. (Default: true)
+     *
+     * @return The CommandCreateAction instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandCreateAction setDefaultEnabled(boolean enabled);
+
+    /**
      * Change the name of the command to the provided name.
      *
      * @param  name

@@ -35,6 +35,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
+    private boolean defaultPermissions = false; // whether the command uses default_permissions (blacklist/whitelist)
 
     /**
      * Create an command builder.
@@ -54,6 +55,13 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData(@Nonnull String name, @Nonnull String description)
     {
         super(name, description);
+    }
+
+    @Nonnull
+    @Override
+    public DataObject toData()
+    {
+        return super.toData().put("default_permission", defaultPermissions);
     }
 
     /**
@@ -90,6 +98,22 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
                 })
                 .map(SubcommandGroupData::load)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Whether this command is available to everyone by default.
+     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     *
+     * @param  enabled
+     *         True, if this command is enabled by default for everyone. (Default: true)
+     *
+     * @return The CommandData instance, for chaining
+     */
+    @Nonnull
+    public CommandData setDefaultEnabled(boolean enabled)
+    {
+        this.defaultPermissions = enabled;
+        return this;
     }
 
     /**

@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -25,6 +26,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -32,7 +34,7 @@ import java.util.function.BooleanSupplier;
  * Specialized {@link RestAction} used to replace existing commands of a guild or globally.
  * <br>Any commands that currently exist and are not listed through {@link #addCommands(CommandData...)} will be <b>DELETED</b>!
  */
-public interface CommandUpdateAction extends RestAction<Void>
+public interface CommandUpdateAction extends RestAction<List<Command>>
 {
     @Nonnull
     @Override

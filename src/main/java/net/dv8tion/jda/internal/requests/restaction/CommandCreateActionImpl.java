@@ -77,6 +77,14 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
+    public CommandCreateAction setDefaultEnabled(boolean enabled)
+    {
+        data.setDefaultEnabled(enabled);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit)
     {
         return (CommandCreateAction) super.timeout(timeout, unit);

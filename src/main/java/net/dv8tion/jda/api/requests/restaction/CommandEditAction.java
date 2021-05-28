@@ -73,6 +73,19 @@ public interface CommandEditAction extends RestAction<Command>
     CommandEditAction apply(@Nonnull CommandData commandData);
 
     /**
+     * Whether this command is available to everyone by default.
+     * <br>If this is disabled, you need to explicitly whitelist users and roles per guild.
+     *
+     * @param  enabled
+     *         True, if this command is enabled by default for everyone. (Default: true)
+     *
+     * @return The CommandEditAction instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction setDefaultEnabled(boolean enabled);
+
+    /**
      * Configure the name
      *
      * @param  name
