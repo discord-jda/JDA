@@ -214,7 +214,7 @@ public interface Interaction extends ISnowflake
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -240,7 +240,7 @@ public interface Interaction extends ISnowflake
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -265,7 +265,7 @@ public interface Interaction extends ISnowflake
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -294,7 +294,7 @@ public interface Interaction extends ISnowflake
 //    /**
 //     * Reply to this interaction and acknowledge it.
 //     * <br>This will send a reply message for this interaction.
-//     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+//     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
 //     * Replies are non-ephemeral by default.
 //     *
 //     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -324,7 +324,7 @@ public interface Interaction extends ISnowflake
 //    /**
 //     * Reply to this interaction and acknowledge it.
 //     * <br>This will send a reply message for this interaction.
-//     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+//     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
 //     * Replies are non-ephemeral by default.
 //     *
 //     * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
@@ -354,7 +354,7 @@ public interface Interaction extends ISnowflake
     /**
      * Reply to this interaction and acknowledge it.
      * <br>This will send a reply message for this interaction.
-     * You can use {@link ReplyAction#setEphemeral(boolean) setEohemeral(true)} to only let the target user see the message.
+     * You can use {@link ReplyAction#setEphemeral(boolean) setEphemeral(true)} to only let the target user see the message.
      * Replies are non-ephemeral by default.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
