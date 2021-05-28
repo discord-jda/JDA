@@ -35,8 +35,10 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +50,11 @@ import java.util.stream.Collectors;
  */
 public class Command implements ISnowflake
 {
+    private static final EnumSet<OptionType> OPTIONS = EnumSet.complementOf(EnumSet.of(OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP));
+    private static final Predicate<DataObject> OPTION_TEST = it -> OPTIONS.contains(OptionType.fromKey(it.getInt("type")));
+    private static final Predicate<DataObject> SUBCOMMAND_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND;
+    private static final Predicate<DataObject> GROUP_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND_GROUP;
+
     private final JDAImpl api;
     private final Guild guild;
     private final String name, description;
@@ -66,15 +73,16 @@ public class Command implements ISnowflake
         this.id = json.getUnsignedLong("id");
         this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
-        this.options = parseOptions(json, Option::new);
-        this.groups = parseOptions(json, SubcommandGroup::new);
-        this.subcommands = parseOptions(json, Subcommand::new);
+        this.options = parseOptions(json, OPTION_TEST, Option::new);
+        this.groups = parseOptions(json, GROUP_TEST, SubcommandGroup::new);
+        this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
     }
 
-    protected static <T> List<T> parseOptions(DataObject json, Function<DataObject, T> transform)
+    protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
     {
         return json.optArray("options").map(arr ->
             arr.stream(DataArray::getObject)
+               .filter(test)
                .map(transform)
                .collect(Collectors.toList())
         ).orElse(Collections.emptyList());
@@ -423,7 +431,7 @@ public class Command implements ISnowflake
         {
             this.name = json.getString("name");
             this.description = json.getString("description");
-            this.options = parseOptions(json, Option::new);
+            this.options = parseOptions(json, OPTION_TEST, Option::new);
         }
 
         /**
@@ -472,7 +480,7 @@ public class Command implements ISnowflake
         {
             this.name = json.getString("name");
             this.description = json.getString("description");
-            this.subcommands = parseOptions(json, Subcommand::new);
+            this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
         }
 
         /**
