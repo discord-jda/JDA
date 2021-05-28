@@ -35,7 +35,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
-    private boolean defaultPermissions = false; // whether the command uses default_permissions (blacklist/whitelist)
+    private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
 
     /**
      * Create an command builder.
