@@ -44,12 +44,12 @@ public class OptionData implements SerializableData
      * Create an option builder.
      * <br>This option is not {@link #isRequired() required} by default.
      *
-     * @param type
-     *        The {@link OptionType}
-     * @param name
-     *        The option name, 1-32 lowercase alphanumeric characters
-     * @param description
-     *        The option description, 1-100 characters
+     * @param  type
+     *         The {@link OptionType}
+     * @param  name
+     *         The option name, 1-32 lowercase alphanumeric characters
+     * @param  description
+     *         The option description, 1-100 characters
      *
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
@@ -61,6 +61,31 @@ public class OptionData implements SerializableData
      */
     public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
+        this(type, name, description, false);
+    }
+
+    /**
+     * Create an option builder.
+     *
+     * @param  type
+     *         The {@link OptionType}
+     * @param  name
+     *         The option name, 1-32 lowercase alphanumeric characters
+     * @param  description
+     *         The option description, 1-100 characters
+     * @param  isRequired
+     *         True, if this option is required
+     *
+     * @throws IllegalArgumentException
+     *         If any of the following requirements are not met
+     *         <ul>
+     *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
+     *             <li>The description must be 1-100 characters long</li>
+     *             <li>The type must not be null</li>
+     *         </ul>
+     */
+    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired)
+    {
         Checks.notNull(type, "Type");
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");
@@ -71,6 +96,7 @@ public class OptionData implements SerializableData
         this.type = type;
         this.name = name;
         this.description = description;
+        this.isRequired = isRequired;
         if (type.canSupportChoices())
             choices = new LinkedHashMap<>();
     }
