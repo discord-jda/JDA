@@ -18,7 +18,6 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
@@ -798,32 +797,38 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
-        return editMessage(new MessageBuilder().append(newContent).build());
+        checkUser();
+        return channel.editMessageById(getId(), newContent);
     }
 
     @Nonnull
     @Override
     public MessageAction editMessage(@Nonnull MessageEmbed newContent)
     {
-        return editMessage(new MessageBuilder().setEmbed(newContent).build());
+        checkUser();
+        return channel.editMessageById(getId(), newContent);
     }
 
     @Nonnull
     @Override
     public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
-        Checks.notBlank(format, "Format String");
-        return editMessage(new MessageBuilder().appendFormat(format, args).build());
+        checkUser();
+        return channel.editMessageFormatById(getId(), format, args);
     }
 
     @Nonnull
     @Override
     public MessageAction editMessage(@Nonnull Message newContent)
     {
+        checkUser();
+        return channel.editMessageById(getIdLong(), newContent);
+    }
+
+    private void checkUser()
+    {
         if (!getJDA().getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
-
-        return getChannel().editMessageById(getIdLong(), newContent);
     }
 
     @Nonnull
