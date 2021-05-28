@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -51,6 +52,8 @@ public class Command implements ISnowflake
     private final Guild guild;
     private final String name, description;
     private final List<Option> options;
+    private final List<SubcommandGroup> groups;
+    private final List<Subcommand> subcommands;
     private final long id, guildId;
     private final boolean defaultEnabled;
 
@@ -63,14 +66,16 @@ public class Command implements ISnowflake
         this.id = json.getUnsignedLong("id");
         this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
-        this.options = parseOptions(json);
+        this.options = parseOptions(json, Option::new);
+        this.groups = parseOptions(json, SubcommandGroup::new);
+        this.subcommands = parseOptions(json, Subcommand::new);
     }
 
-    protected static List<Option> parseOptions(DataObject json)
+    protected static <T> List<T> parseOptions(DataObject json, Function<DataObject, T> transform)
     {
         return json.optArray("options").map(arr ->
             arr.stream(DataArray::getObject)
-               .map(Option::new)
+               .map(transform)
                .collect(Collectors.toList())
         ).orElse(Collections.emptyList());
     }
@@ -198,13 +203,8 @@ public class Command implements ISnowflake
         return defaultEnabled;
     }
 
-    // TODO: This should be split to getSubcommands etc
-
     /**
      * The {@link Option Options} of this command.
-     * <br>If this command uses subcommands, then the provided list will be the list of subcommands instead.
-     * Each subcommand has its own list of options via {@link Option#getOptions()}.
-     * If this command uses subcommand groups, this will return the groups instead and {@link Option#getOptions()} the respective subcommands within that group.
      *
      * @return Immutable list of command options
      */
@@ -212,6 +212,28 @@ public class Command implements ISnowflake
     public List<Option> getOptions()
     {
         return options;
+    }
+
+    /**
+     * The {@link Subcommand Subcommands} of this command.
+     *
+     * @return Immutable list of subcommands
+     */
+    @Nonnull
+    public List<Subcommand> getSubcommands()
+    {
+        return subcommands;
+    }
+
+    /**
+     * The {@link SubcommandGroup SubcommandGroups} of this command.
+     *
+     * @return Immutable list of subcommand groups
+     */
+    @Nonnull
+    public List<SubcommandGroup> getSubcommandGroups()
+    {
+        return groups;
     }
 
     @Override
@@ -316,16 +338,11 @@ public class Command implements ISnowflake
 
     /**
      * An Option for a command.
-     * <br>Options can also represent subcommands and subcommand groups.
-     *
-     * <p>If this is a subcommand, the {@link #getOptions()} will return the options for that subcommand.
-     * For subcommand groups it will return the subcommands of that group.
      */
     public static class Option
     {
         private final String name, description;
         private final int type;
-        private final List<Option> options;
         private final List<Choice> choices;
 
         public Option(DataObject json)
@@ -333,8 +350,6 @@ public class Command implements ISnowflake
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.type = json.getInt("type");
-
-            this.options = parseOptions(json);
             this.choices = json.optArray("choices")
                 .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
@@ -384,14 +399,53 @@ public class Command implements ISnowflake
         }
 
         /**
-         * The list of predefined {@link Choice Choices} for this option.
+         * The predefined choices available for this option.
+         * <br>If no choices are defined, this returns an empty list.
          *
-         * @return Immutable list of choices
+         * @return Immutable {@link List} of {@link Choice}
          */
         @Nonnull
         public List<Choice> getChoices()
         {
             return choices;
+        }
+    }
+
+    /**
+     * An Subcommand for a command.
+     */
+    public static class Subcommand
+    {
+        private final String name, description;
+        private final List<Option> options;
+
+        public Subcommand(DataObject json)
+        {
+            this.name = json.getString("name");
+            this.description = json.getString("description");
+            this.options = parseOptions(json, Option::new);
+        }
+
+        /**
+         * The name of this subcommand.
+         *
+         * @return The name
+         */
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * The description of this subcommand.
+         *
+         * @return The description
+         */
+        @Nonnull
+        public String getDescription()
+        {
+            return description;
         }
 
         /**
@@ -403,6 +457,55 @@ public class Command implements ISnowflake
         public List<Option> getOptions()
         {
             return options;
+        }
+    }
+
+    /**
+     * An Subcommand Group for a command.
+     */
+    public static class SubcommandGroup
+    {
+        private final String name, description;
+        private final List<Subcommand> subcommands;
+
+        public SubcommandGroup(DataObject json)
+        {
+            this.name = json.getString("name");
+            this.description = json.getString("description");
+            this.subcommands = parseOptions(json, Subcommand::new);
+        }
+
+        /**
+         * The name of this subcommand group.
+         *
+         * @return The name
+         */
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * The description of this subcommand group.
+         *
+         * @return The description
+         */
+        @Nonnull
+        public String getDescription()
+        {
+            return description;
+        }
+
+        /**
+         * The {@link Subcommand Subcommands} in this group
+         *
+         * @return Immutable {@link List} of {@link Subcommand}
+         */
+        @Nonnull
+        public List<Subcommand> getSubcommands()
+        {
+            return subcommands;
         }
     }
 }
