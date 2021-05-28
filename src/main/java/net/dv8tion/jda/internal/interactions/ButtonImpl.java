@@ -17,8 +17,8 @@
 package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.interactions.button.Button;
-import net.dv8tion.jda.api.interactions.button.ButtonStyle;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ButtonStyle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;

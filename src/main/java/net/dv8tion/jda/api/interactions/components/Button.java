@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.button;
+package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.entities.Emoji;
-import net.dv8tion.jda.api.interactions.ActionRow;
-import net.dv8tion.jda.api.interactions.Component;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -27,7 +25,7 @@ import javax.annotation.Nullable;
 
 /**
  * Represents a Message Button.
- * <br>These buttons are located below the message in {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}.
+ * <br>These buttons are located below the message in {@link ActionRow ActionRows}.
  *
  * <p>Each button has either a {@code custom_id} or URL attached.
  * The id has to be provided by the user and can be used to identify the button in the {@link net.dv8tion.jda.api.events.interaction.ButtonClickEvent ButtonClickEvent}.

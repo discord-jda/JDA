@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions;
+package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.utils.data.SerializableData;
 
@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  * Component of a Message.
  * <br>These are used to extend messages with interactive elements such as buttons or dropdown menus.
  *
- * @see net.dv8tion.jda.api.interactions.button.Button Button
+ * @see net.dv8tion.jda.api.interactions.components.Button Button
  * @see ActionRow
  */
 public interface Component extends SerializableData

@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.interactions;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.Component;
-import net.dv8tion.jda.api.interactions.button.Button;
-import net.dv8tion.jda.api.interactions.button.ButtonInteraction;
+import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ButtonInteraction;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;

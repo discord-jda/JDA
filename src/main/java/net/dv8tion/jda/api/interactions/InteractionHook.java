@@ -20,6 +20,9 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.WebhookClient;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -141,7 +144,7 @@ public interface InteractionHook extends WebhookClient<Message>
      * </ul>
      *
      * @param  components
-     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
@@ -171,7 +174,7 @@ public interface InteractionHook extends WebhookClient<Message>
      * </ul>
      *
      * @param  components
-     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided

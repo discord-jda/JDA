@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.interactions.ComponentLayout;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookMessageUpdateAction;
@@ -689,7 +690,7 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
@@ -716,7 +717,7 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
@@ -746,7 +747,7 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided
@@ -777,7 +778,7 @@ public interface WebhookClient<T>
      * @param  messageId
      *         The message id. For interactions this supports {@code "@original"} to edit the source message of the interaction.
      * @param  components
-     *         The new component layouts for this message, such as {@link net.dv8tion.jda.api.interactions.ActionRow ActionRows}
+     *         The new component layouts for this message, such as {@link ActionRow ActionRows}
      *
      * @throws IllegalArgumentException
      *         If the provided components are null, or more than 5 layouts are provided

@@ -19,8 +19,8 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
-import net.dv8tion.jda.api.interactions.ActionRow;
-import net.dv8tion.jda.api.interactions.ComponentLayout;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

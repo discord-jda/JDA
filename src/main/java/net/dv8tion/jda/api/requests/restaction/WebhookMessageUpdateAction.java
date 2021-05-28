@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.interactions.ActionRow;
-import net.dv8tion.jda.api.interactions.Component;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -96,7 +96,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      * Set only one action row for convenience.
      *
      * @param  components
-     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.button.Button Buttons}
+     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
      *
      * @throws IllegalArgumentException
      *         If null or more than 5 components are provided

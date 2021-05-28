@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions;
+package net.dv8tion.jda.api.interactions.components;
 
-import net.dv8tion.jda.api.interactions.button.Button;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;

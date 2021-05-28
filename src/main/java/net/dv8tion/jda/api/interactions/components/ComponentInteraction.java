@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions;
+package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;

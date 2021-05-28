@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.button;
+package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.interactions.ActionRow;
-import net.dv8tion.jda.api.interactions.Component;
-import net.dv8tion.jda.api.interactions.ComponentInteraction;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
