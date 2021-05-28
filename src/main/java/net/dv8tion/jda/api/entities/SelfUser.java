@@ -31,8 +31,20 @@ import javax.annotation.Nullable;
  */
 public interface SelfUser extends User
 {
+    /**
+     * The associated application id for the bot account.
+     * <br>For most bots this is identical to the user id.
+     *
+     * @return The application id
+     */
     long getApplicationIdLong();
 
+    /**
+     * The associated application id for the bot account.
+     * <br>For most bots this is identical to the user id.
+     *
+     * @return The application id
+     */
     @Nonnull
     default String getApplicationId()
     {

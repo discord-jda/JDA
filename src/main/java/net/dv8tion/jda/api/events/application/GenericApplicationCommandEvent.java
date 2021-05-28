@@ -24,6 +24,12 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that a {@link Command} event was fired.
+ * <br>Every ApplicationCommandEvent extends this event and can be casted.
+ *
+ * <p>Can be used to detect changes for commands.
+ */
 public abstract class GenericApplicationCommandEvent extends Event
 {
     private final Command command;
@@ -36,12 +42,22 @@ public abstract class GenericApplicationCommandEvent extends Event
         this.guild = guild;
     }
 
+    /**
+     * The affected command and its new data.
+     *
+     * @return The {@link Command}
+     */
     @Nonnull
     public Command getCommand()
     {
         return command;
     }
 
+    /**
+     * The relevant guild for this command, unless its global.
+     *
+     * @return The {@link Guild}, or null for global commands
+     */
     @Nullable
     public Guild getGuild()
     {

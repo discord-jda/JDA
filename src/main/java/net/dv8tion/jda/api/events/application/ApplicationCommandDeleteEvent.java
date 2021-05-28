@@ -23,6 +23,9 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that a {@link Command} was deleted.
+ */
 public class ApplicationCommandDeleteEvent extends GenericApplicationCommandEvent
 {
     public ApplicationCommandDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)

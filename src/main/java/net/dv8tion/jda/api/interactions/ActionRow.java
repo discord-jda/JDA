@@ -105,6 +105,12 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
         return row;
     }
 
+    /**
+     * Mutable list of components in this ActionRow.
+     * <br>ActionRows should not be empty and are limited to 5 buttons.
+     *
+     * @return The list of components
+     */
     @Nonnull
     @Override
     public List<Component> getComponents()
@@ -112,6 +118,11 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
         return components;
     }
 
+    /**
+     * Immutable list of buttons in this ActionRow.
+     *
+     * @return Immutable list of buttons
+     */
     @Nonnull
     @Override
     public List<Button> getButtons()

@@ -23,6 +23,11 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that a {@link Command} was updated.
+ *
+ * <p>You cannot get the old command information from this event.
+ */
 public class ApplicationCommandUpdateEvent extends GenericApplicationCommandEvent
 {
     public ApplicationCommandUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)
