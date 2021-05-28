@@ -127,6 +127,17 @@ public interface Button extends Component
     }
 
     /**
+     * Returns a copy of this button with {@link #isDisabled()} set to the provided value.
+     *
+     * @return New enabled/disabled button instance
+     */
+    @Nonnull
+    default Button withDisabled(boolean disabled)
+    {
+        return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), disabled, getEmoji());
+    }
+
+    /**
      * Returns a copy of this button with the attached Emoji.
      *
      * @param  emoji
@@ -138,6 +149,87 @@ public interface Button extends Component
     default Button withEmoji(@Nullable Emoji emoji)
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
+    }
+
+    /**
+     * Returns a copy of this button with the provided label.
+     *
+     * @param  label
+     *         The label to use
+     *
+     * @throws IllegalArgumentException
+     *         If the label is not between 1-80 characters
+     *
+     * @return New button with the changed label
+     */
+    @Nonnull
+    default Button withLabel(@Nonnull String label)
+    {
+        Checks.notEmpty(label, "Label");
+        Checks.notLonger(label, 80, "Label");
+        return new ButtonImpl(getId(), label, getStyle(), getUrl(), isDisabled(), getEmoji());
+    }
+
+    /**
+     * Returns a copy of this button with the provided id.
+     *
+     * @param  id
+     *         The id to use
+     *
+     * @throws IllegalArgumentException
+     *         If the id is not between 1-100 characters
+     *
+     * @return New button with the changed id
+     */
+    @Nonnull
+    default Button withId(@Nonnull String id)
+    {
+        Checks.notEmpty(id, "ID");
+        Checks.notLonger(id, 100, "ID");
+        return new ButtonImpl(id, getLabel(), getStyle(), null, isDisabled(), getEmoji());
+    }
+
+    /**
+     * Returns a copy of this button with the provided url.
+     *
+     * @param  url
+     *         The url to use
+     *
+     * @throws IllegalArgumentException
+     *         If the url is null or empty
+     *
+     * @return New button with the changed url
+     */
+    @Nonnull
+    default Button withUrl(@Nonnull String url)
+    {
+        Checks.notEmpty(url, "URL");
+        return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, isDisabled(), getEmoji());
+    }
+
+    /**
+     * Returns a copy of this button with the provided style.
+     *
+     * <p>You cannot use this convert link buttons.
+     *
+     * @param  style
+     *         The style to use
+     *
+     * @throws IllegalArgumentException
+     *         If the style is null or tries to change whether this button is a LINK button
+     *
+     * @return New button with the changed style
+     */
+    @Nonnull
+    default Button withStyle(@Nonnull ButtonStyle style)
+    {
+        Checks.notNull(style, "Style");
+        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
+        if (getStyle() == ButtonStyle.LINK && style != ButtonStyle.LINK)
+            throw new IllegalArgumentException("You cannot change a link button to another style!");
+        if (getStyle() != ButtonStyle.LINK && style == ButtonStyle.LINK)
+            throw new IllegalArgumentException("You cannot change a styled button to a link button!");
+        return new ButtonImpl(getId(), getLabel(), style, getUrl(), isDisabled(), getEmoji());
     }
 
     /**
@@ -423,6 +515,7 @@ public interface Button extends Component
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label)
     {
+        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
         Checks.notNull(style, "Style");
         Checks.notNull(label, "Label");
         Checks.notLonger(label, 80, "Label");
@@ -455,6 +548,7 @@ public interface Button extends Component
     @Nonnull
     static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji)
     {
+        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
         Checks.notNull(style, "Style");
         Checks.notNull(emoji, "Emoji");
         if (style == ButtonStyle.LINK)
