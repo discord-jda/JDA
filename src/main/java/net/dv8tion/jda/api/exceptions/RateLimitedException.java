@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 /**
  * Indicates that we received a {@code 429: Too Many Requests} response
@@ -33,7 +34,7 @@ public class RateLimitedException extends Exception
 
     public RateLimitedException(String route, long retryAfter)
     {
-        super(String.format("The request was ratelimited! Retry-After: %d  Route: %s", retryAfter, route));
+        super(Helpers.format("The request was ratelimited! Retry-After: %d  Route: %s", retryAfter, route));
         this.rateLimitedRoute = route;
         this.retryAfter = retryAfter;
     }

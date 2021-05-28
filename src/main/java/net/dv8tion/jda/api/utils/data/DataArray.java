@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -722,7 +723,7 @@ public class DataArray implements Iterable<Object>
         else if (numberMapper != null && value instanceof Number)
             return numberMapper.apply((Number) value);
 
-        throw new ParsingException(String.format("Cannot parse value for index %d into type %s: %s instance of %s",
+        throw new ParsingException(Helpers.format("Cannot parse value for index %d into type %s: %s instance of %s",
                                                       index, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 

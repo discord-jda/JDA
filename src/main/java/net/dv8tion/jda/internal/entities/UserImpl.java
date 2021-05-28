@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
@@ -63,7 +64,7 @@ public class UserImpl extends UserById implements User
     @Override
     public String getDiscriminator()
     {
-        return String.format("%04d", discriminator);
+        return Helpers.format("%04d", discriminator);
     }
 
     @Override
