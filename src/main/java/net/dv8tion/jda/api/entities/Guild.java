@@ -328,10 +328,10 @@ public interface Guild extends ISnowflake
      * @param  id
      *         The id of the command, this can be global or guild command
      * @param  privileges
-     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
      *
      * @throws IllegalArgumentException
-     *         If null is provided or the id is not a valid snowflake
+     *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
      *
      * @return {@link RestAction}
      */
@@ -350,10 +350,10 @@ public interface Guild extends ISnowflake
      * @param  id
      *         The id of the command, this can be global or guild command
      * @param  privileges
-     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
      *
      * @throws IllegalArgumentException
-     *         If null is provided
+     *         If null is provided or more than 10 privileges are provided
      *
      * @return {@link RestAction}
      */
@@ -377,7 +377,7 @@ public interface Guild extends ISnowflake
      *         Complete map of {@link CommandPrivilege CommandPrivileges} for each command
      *
      * @throws IllegalArgumentException
-     *         If null is provided or any of the map keys is not a valid snowflake
+     *         If null is provided, any of the map keys is not a valid snowflake, or more than 10 privileges are provided for any command
      *
      * @return {@link RestAction}
      */

@@ -215,6 +215,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id, "ID");
         Checks.noneNull(privileges, "Privileges");
+        Checks.check(privileges.size() <= 10, "Cannot have more than 10 privileges for a command!");
         Route.CompiledRoute route = Route.Interactions.EDIT_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
         DataArray array = DataArray.fromCollection(privileges);
         return new RestActionImpl<>(getJDA(), route, DataObject.empty().put("permissions", array));
@@ -228,6 +229,7 @@ public class GuildImpl implements Guild
         privileges.forEach((key, value) -> {
             Checks.isSnowflake(key, "Map Key");
             Checks.noneNull(value, "Privilege List for Command");
+            Checks.check(value.size() <= 10, "Cannot have more than 10 privileges for a command!");
         });
         DataArray array = DataArray.empty();
         privileges.forEach((commandId, list) -> {
