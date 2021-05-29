@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import java.util.concurrent.CancellationException;
 
 /**
- * Exception caused by the failure of {@link ReplyAction CommandReplyAction}.
+ * Exception caused by the failure of {@link ReplyAction ReplyAction}.
  *
- * <p>This is used to signal that a {@link net.dv8tion.jda.api.requests.restaction.InteractionWebhookAction InteractionWebhookAction}
+ * <p>This is used to signal that a {@link net.dv8tion.jda.api.requests.restaction.WebhookMessageAction WebhookMessageAction}
  * was cancelled due to a cascading failure from the initial command acknowledgement.
  */
 public class InteractionFailureException extends CancellationException

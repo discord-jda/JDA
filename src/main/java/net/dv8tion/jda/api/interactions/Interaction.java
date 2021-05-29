@@ -175,6 +175,9 @@ public interface Interaction extends ISnowflake
      *     <li>Cannot be retrieved</li>
      * </ul>
      *
+     * @param  ephemeral
+     *         True, if this message should only be visible to the interaction user
+     *
      * @return {@link ReplyAction}
      */
     @Nonnull

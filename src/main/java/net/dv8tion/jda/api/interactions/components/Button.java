@@ -129,6 +129,9 @@ public interface Button extends Component
     /**
      * Returns a copy of this button with {@link #isDisabled()} set to the provided value.
      *
+     * @param  disabled
+     *         True, if this button should be disabled
+     *
      * @return New enabled/disabled button instance
      */
     @Nonnull
