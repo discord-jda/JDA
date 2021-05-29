@@ -42,7 +42,7 @@ public interface ComponentInteraction extends Interaction
 {
     /**
      * The custom component ID.
-     * <br>This need not be numerical.
+     * <br>This doesn't have to be numeric.
      *
      * @return The component ID
      */
