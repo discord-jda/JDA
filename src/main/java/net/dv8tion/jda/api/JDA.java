@@ -597,6 +597,18 @@ public interface JDA
      * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
      * For testing, it is recommended to use a test guild with guild commands.
      *
+     * <h2>Examples</h2>
+     * <pre>{@code
+     * // Set list to 2 commands
+     * jda.updateCommands()
+     *   .addCommands(new CommandData("ping", "Gives the current ping"))
+     *   .addCommands(new CommandData("ban", "Ban the target user")
+     *     .addOption(OptionType.USER, "user", "The user to ban", true))
+     *   .queue();
+     * // Delete all commands
+     * jda.updateCommands().queue();
+     * }</pre>
+     *
      * @return {@link CommandUpdateAction}
      */
     @Nonnull

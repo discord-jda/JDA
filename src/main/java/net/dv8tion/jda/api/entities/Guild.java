@@ -172,6 +172,18 @@ public interface Guild extends ISnowflake
      *
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
+     * <h2>Examples</h2>
+     * <pre>{@code
+     * // Set list to 2 commands
+     * guild.updateCommands()
+     *   .addCommands(new CommandData("ping", "Gives the current ping"))
+     *   .addCommands(new CommandData("ban", "Ban the target user")
+     *     .addOption(OptionType.USER, "user", "The user to ban", true))
+     *   .queue();
+     * // Delete all commands
+     * guild.updateCommands().queue();
+     * }</pre>
+     *
      * @return {@link CommandUpdateAction}
      */
     @Nonnull
