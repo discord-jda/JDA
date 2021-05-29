@@ -508,7 +508,7 @@ public interface Activity
         @Override
         public String toString()
         {
-            return String.format("RichPresenceTimestamp(%d-%d)", start, end);
+            return Helpers.format("RichPresenceTimestamp(%d-%d)", start, end);
         }
 
         @Override

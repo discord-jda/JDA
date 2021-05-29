@@ -51,7 +51,7 @@ import java.util.function.Consumer;
 
 public class MessageActionImpl extends RestActionImpl<Message> implements MessageAction
 {
-    private static final String CONTENT_TOO_BIG = String.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
+    private static final String CONTENT_TOO_BIG = Helpers.format("A message may not exceed %d characters. Please limit your input!", Message.MAX_CONTENT_LENGTH);
     protected static boolean defaultFailOnInvalidReply = false;
     protected final Map<String, InputStream> files = new HashMap<>();
     protected final Set<InputStream> ownedResources = new HashSet<>();

@@ -27,6 +27,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.Helpers;
 import org.jetbrains.annotations.Contract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -790,7 +791,7 @@ public class DataObject implements SerializableData
         else if (value instanceof String && stringParse != null)
             return stringParse.apply((String) value);
 
-        throw new ParsingException(String.format("Cannot parse value for %s into type %s: %s instance of %s",
+        throw new ParsingException(Helpers.format("Cannot parse value for %s into type %s: %s instance of %s",
                                                       key, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 }

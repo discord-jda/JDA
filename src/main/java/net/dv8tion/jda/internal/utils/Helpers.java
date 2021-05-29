@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -36,6 +33,13 @@ public final class Helpers
     public static <T> Consumer<T> emptyConsumer()
     {
         return (Consumer<T>) EMPTY_CONSUMER;
+    }
+
+    // locale-safe String#format
+
+    public static String format(String format, Object... args)
+    {
+        return String.format(Locale.ROOT, format, args);
     }
 
     // ## StringUtils ##

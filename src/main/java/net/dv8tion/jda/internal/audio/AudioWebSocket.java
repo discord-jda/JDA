@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ class AudioWebSocket extends WebSocketAdapter
         keepAlivePool = getJDA().getAudioLifeCyclePool();
 
         //Append the Secure Websocket scheme so that our websocket library knows how to connect
-        wssEndpoint = String.format("wss://%s/?v=%d", endpoint, JDAInfo.AUDIO_GATEWAY_VERSION);
+        wssEndpoint = Helpers.format("wss://%s/?v=%d", endpoint, JDAInfo.AUDIO_GATEWAY_VERSION);
 
         if (sessionId == null || sessionId.isEmpty())
             throw new IllegalArgumentException("Cannot create a voice connection using a null/empty sessionId!");
