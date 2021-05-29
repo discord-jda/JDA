@@ -120,7 +120,7 @@ public class EmbedBuilder
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty embed!");
         if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
-            throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
+            throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
             throw new IllegalStateException("Cannot build an embed with more than " + MessageEmbed.EMBED_MAX_LENGTH_BOT + " characters!");
         final String description = this.description.length() < 1 ? null : this.description.toString();

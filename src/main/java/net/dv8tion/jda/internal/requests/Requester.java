@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter;
+import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.JDALogger;
 import net.dv8tion.jda.internal.utils.config.AuthorizationConfig;
 import okhttp3.Call;
@@ -39,6 +40,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -47,7 +49,7 @@ import java.util.concurrent.RejectedExecutionException;
 public class Requester
 {
     public static final Logger LOG = JDALogger.getLog(Requester.class);
-    public static final String DISCORD_API_PREFIX = String.format("https://discord.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
+    public static final String DISCORD_API_PREFIX = Helpers.format("https://discord.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
     public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
     public static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");

@@ -16,10 +16,7 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -28,6 +25,13 @@ import java.util.Objects;
  */
 public final class Helpers
 {
+
+    // locale-safe String#format
+
+    public static String format(String format, Object... args)
+    {
+        return String.format(Locale.ROOT, format, args);
+    }
 
     // ## StringUtils ##
 
