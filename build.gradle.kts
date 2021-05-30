@@ -61,11 +61,11 @@ dependencies {
     /* ABI dependencies */
 
     //Code safety
-    api("com.google.code.findbugs:jsr305:3.0.2")
-    api("org.jetbrains:annotations:16.0.1")
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly("org.jetbrains:annotations:21.0.1")
 
     //Logger
-    api("org.slf4j:slf4j-api:1.7.25")
+    implementation("org.slf4j:slf4j-api:1.7.25")
 
     //Web Connection Support
     api("com.neovisionaries:nv-websocket-client:2.14")
