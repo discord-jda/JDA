@@ -19,8 +19,10 @@ package net.dv8tion.jda.api.entities;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.EncodingUtil;
 
 import javax.annotation.Nonnull;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 /**
@@ -100,7 +102,7 @@ public class Emoji implements SerializableData, IMentionable
      * <br>This has to be the unicode characters rather than the emoji name.
      *
      * @param  code
-     *         The unicode characters
+     *         The unicode characters, or codepoint notation such as {@code "U+1f649"}
      *
      * @throws IllegalArgumentException
      *         If the code is null or empty
@@ -108,9 +110,17 @@ public class Emoji implements SerializableData, IMentionable
      * @return The new emoji instance
      */
     @Nonnull
-    public static Emoji ofUnicode(@Nonnull String code) // TODO: Should we allow codepoint notation?
+    public static Emoji ofUnicode(@Nonnull String code)
     {
         Checks.notEmpty(code, "Unicode");
+        if (code.startsWith("U+") || code.startsWith("u+"))
+        {
+            StringBuilder emoji = new StringBuilder();
+            String[] codepoints = code.trim().split("\\s*[uU]\\+");
+            for (String codepoint : codepoints)
+                emoji.append(codepoint.isEmpty() ? "" : EncodingUtil.decodeCodepoint("U+" + codepoint));
+            code = emoji.toString();
+        }
         return new Emoji(code, 0, false);
     }
 
@@ -224,5 +234,26 @@ public class Emoji implements SerializableData, IMentionable
     public String getAsMention()
     {
         return id == 0L ? name : String.format("<%s:%s:%s>", animated ? "a" : "", name, Long.toUnsignedString(id));
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(name, id, animated);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this) return true;
+        if (!(obj instanceof Emoji)) return false;
+        Emoji other = (Emoji) obj;
+        return other.id == id && other.animated == animated && Objects.equals(other.name, name);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "E:" + name + "(" + id + ")";
     }
 }

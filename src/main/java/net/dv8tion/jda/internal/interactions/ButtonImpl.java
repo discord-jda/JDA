@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 public class ButtonImpl implements Button
 {
@@ -123,5 +124,31 @@ public class ButtonImpl implements Button
         else
             json.put("custom_id", id);
         return json;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(id, label, style, url, disabled, emoji);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this) return true;
+        if (!(obj instanceof ButtonImpl)) return false;
+        ButtonImpl other = (ButtonImpl) obj;
+        return Objects.equals(other.id, id)
+            && Objects.equals(other.label, label)
+            && Objects.equals(other.url, url)
+            && Objects.equals(other.emoji, emoji)
+            && other.disabled == disabled
+            && other.style == style;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "B:" + label + "(" + id + ")";
     }
 }
