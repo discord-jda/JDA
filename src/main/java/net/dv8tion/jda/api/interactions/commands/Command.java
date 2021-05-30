@@ -99,10 +99,11 @@ public class Command implements ISnowflake
     public RestAction<Void> delete()
     {
         Route.CompiledRoute route;
+        String appId = getJDA().getSelfUser().getApplicationId();
         if (guildId != 0L)
-            route = Route.Interactions.DELETE_GUILD_COMMAND.compile(Long.toUnsignedString(guildId), getId());
+            route = Route.Interactions.DELETE_GUILD_COMMAND.compile(appId, Long.toUnsignedString(guildId), getId());
         else
-            route = Route.Interactions.DELETE_COMMAND.compile(getId());
+            route = Route.Interactions.DELETE_COMMAND.compile(appId, getId());
         return new RestActionImpl<>(api, route);
     }
 
