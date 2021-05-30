@@ -282,6 +282,14 @@ public class Command implements ISnowflake
         private final long intValue;
         private final String stringValue;
 
+        /**
+         * Create a Choice tuple
+         *
+         * @param name
+         *        The display name of this choice
+         * @param value
+         *        The integer value you receive in a command option
+         */
         public Choice(@Nonnull String name, long value)
         {
             this.name = name;
@@ -289,6 +297,14 @@ public class Command implements ISnowflake
             this.stringValue = Long.toString(value);
         }
 
+        /**
+         * Create a Choice tuple
+         *
+         * @param name
+         *        The display name of this choice
+         * @param value
+         *        The string value you receive in a command option
+         */
         public Choice(@Nonnull String name, @Nonnull String value)
         {
             this.name = name;
@@ -296,8 +312,20 @@ public class Command implements ISnowflake
             this.stringValue = value;
         }
 
+        /**
+         * Create a Choice tuple
+         *
+         * @param json
+         *        The serialized choice instance with name and value mapping
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         * @throws net.dv8tion.jda.api.exceptions.ParsingException
+         *         If the data is not formatted correctly or missing required parameters
+         */
         public Choice(@Nonnull DataObject json)
         {
+            Checks.notNull(json, "DataObject");
             this.name = json.getString("name");
             if (json.isType("value", DataType.INT))
             {
@@ -354,7 +382,7 @@ public class Command implements ISnowflake
         private final int type;
         private final List<Choice> choices;
 
-        public Option(DataObject json)
+        public Option(@Nonnull DataObject json)
         {
             this.name = json.getString("name");
             this.description = json.getString("description");
