@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild.NotificationLevel NotificationLevel} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -32,7 +31,7 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
 {
     public static final String IDENTIFIER = "notification_level";
 
-    public GuildUpdateNotificationLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.NotificationLevel oldNotificationLevel)
+    public GuildUpdateNotificationLevelEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull Guild.NotificationLevel oldNotificationLevel)
     {
         super(api, responseNumber, guild, oldNotificationLevel, guild.getDefaultNotificationLevel(), IDENTIFIER);
     }
@@ -42,7 +41,7 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
      *
      * @return The old NotificationLevel
      */
-    @Nonnull
+    @NotNull
     public Guild.NotificationLevel getOldNotificationLevel()
     {
         return getOldValue();
@@ -53,20 +52,20 @@ public class GuildUpdateNotificationLevelEvent extends GenericGuildUpdateEvent<G
      *
      * @return The new NotificationLevel
      */
-    @Nonnull
+    @NotNull
     public Guild.NotificationLevel getNewNotificationLevel()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.NotificationLevel getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.NotificationLevel getNewValue()
     {

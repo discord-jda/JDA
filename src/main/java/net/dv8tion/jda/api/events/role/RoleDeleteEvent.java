@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.role;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} was deleted.
@@ -28,7 +27,7 @@ import javax.annotation.Nonnull;
  */
 public class RoleDeleteEvent extends GenericRoleEvent
 {
-    public RoleDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role deletedRole)
+    public RoleDeleteEvent(@NotNull JDA api, long responseNumber, @NotNull Role deletedRole)
     {
         super(api, responseNumber, deletedRole);
     }

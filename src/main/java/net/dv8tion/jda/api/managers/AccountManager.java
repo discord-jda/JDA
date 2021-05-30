@@ -20,10 +20,10 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Manager providing functionality to update one or more fields for the logged in account.
@@ -56,7 +56,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return The corresponding SelfUser
      */
-    @Nonnull
+    @NotNull
     SelfUser getSelfUser();
 
     /**
@@ -75,7 +75,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     AccountManager reset(long fields);
@@ -96,7 +96,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     AccountManager reset(long... fields);
@@ -116,9 +116,9 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    AccountManager setName(@Nonnull String name);
+    AccountManager setName(@NotNull String name);
 
     /**
      * Sets the username for the currently logged in account
@@ -145,9 +145,9 @@ public interface AccountManager extends Manager<AccountManager>
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default AccountManager setName(@Nonnull String name, @Nullable String currentPassword)
+    default AccountManager setName(@NotNull String name, @Nullable String currentPassword)
     {
         throw new UnsupportedOperationException();
     }
@@ -161,7 +161,7 @@ public interface AccountManager extends Manager<AccountManager>
      *
      * @return AccountManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     AccountManager setAvatar(@Nullable Icon avatar);
 
@@ -186,7 +186,7 @@ public interface AccountManager extends Manager<AccountManager>
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AccountManager setAvatar(@Nullable Icon avatar, @Nullable String currentPassword)
     {
@@ -216,9 +216,9 @@ public interface AccountManager extends Manager<AccountManager>
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default AccountManager setEmail(@Nonnull String email, @Nonnull String currentPassword)
+    default AccountManager setEmail(@NotNull String email, @NotNull String currentPassword)
     {
         throw new UnsupportedOperationException();
     }
@@ -244,9 +244,9 @@ public interface AccountManager extends Manager<AccountManager>
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default AccountManager setPassword(@Nonnull String newPassword, @Nonnull String currentPassword)
+    default AccountManager setPassword(@NotNull String newPassword, @NotNull String currentPassword)
     {
         throw new UnsupportedOperationException();
     }

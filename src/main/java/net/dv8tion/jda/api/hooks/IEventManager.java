@@ -16,8 +16,8 @@
 package net.dv8tion.jda.api.hooks;
 
 import net.dv8tion.jda.api.events.GenericEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -55,7 +55,7 @@ public interface IEventManager
      * @throws java.lang.UnsupportedOperationException
      *         If the implementation does not support this method
      */
-    void register(@Nonnull Object listener);
+    void register(@NotNull Object listener);
 
     /**
      * Removes the specified listener
@@ -66,7 +66,7 @@ public interface IEventManager
      * @throws java.lang.UnsupportedOperationException
      *         If the implementation does not support this method
      */
-    void unregister(@Nonnull Object listener);
+    void unregister(@NotNull Object listener);
 
     /**
      * Handles the provided {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
@@ -77,7 +77,7 @@ public interface IEventManager
      * @param event
      *        The event to handle
      */
-    void handle(@Nonnull GenericEvent event);
+    void handle(@NotNull GenericEvent event);
 
     /**
      * The currently registered listeners
@@ -87,6 +87,6 @@ public interface IEventManager
      *
      * @return A list of listeners that have already been registered
      */
-    @Nonnull
+    @NotNull
     List<Object> getRegisteredListeners();
 }

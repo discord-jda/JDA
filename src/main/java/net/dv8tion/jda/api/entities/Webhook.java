@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * An object representing Webhooks in Discord
@@ -43,7 +43,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The current JDA instance of this Webhook
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -52,7 +52,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The {@link WebhookType}
      */
-    @Nonnull
+    @NotNull
     WebhookType getType();
 
     /**
@@ -73,7 +73,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The current Guild of this Webhook
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -85,7 +85,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The current TextChannel of this Webhook
      */
-    @Nonnull
+    @NotNull
     TextChannel getChannel();
 
     /**
@@ -123,7 +123,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @see    <a href="https://discord.com/developers/docs/resources/webhook#execute-webhook">Execute Webhook Docs</a>
      */
-    @Nonnull
+    @NotNull
     User getDefaultUser();
 
     /**
@@ -135,7 +135,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The name of this Webhook
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -167,7 +167,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The execution route for this Webhook.
      */
-    @Nonnull
+    @NotNull
     String getUrl();
 
     /**
@@ -209,7 +209,7 @@ public interface Webhook extends ISnowflake, IFakeable
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         <br>The rest action to delete this Webhook.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -243,9 +243,9 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    AuditableRestAction<Void> delete(@Nonnull String token);
+    AuditableRestAction<Void> delete(@NotNull String token);
 
     /**
      * The {@link WebhookManager WebhookManager} for this Webhook.
@@ -259,7 +259,7 @@ public interface Webhook extends ISnowflake, IFakeable
      *
      * @return The {@link WebhookManager WebhookManager} for this Webhook
      */
-    @Nonnull
+    @NotNull
     WebhookManager getManager();
 
     /**
@@ -290,7 +290,7 @@ public interface Webhook extends ISnowflake, IFakeable
          *
          * @return The ID for the channel this webhook belongs to
          */
-        @Nonnull
+        @NotNull
         public String getChannelId()
         {
             return Long.toUnsignedString(channelId);
@@ -314,7 +314,7 @@ public interface Webhook extends ISnowflake, IFakeable
          *
          * @return {@link RestAction} - Type: {@link Webhook}
          */
-        @Nonnull
+        @NotNull
         @CheckReturnValue
         public RestAction<Webhook> resolve()
         {
@@ -349,7 +349,7 @@ public interface Webhook extends ISnowflake, IFakeable
          *
          * @return The channel name
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return name;
@@ -381,7 +381,7 @@ public interface Webhook extends ISnowflake, IFakeable
          *
          * @return The guild name
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return name;

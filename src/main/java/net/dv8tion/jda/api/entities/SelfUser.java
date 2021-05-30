@@ -20,9 +20,8 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents the currently logged in account.
@@ -61,7 +60,7 @@ public interface SelfUser extends User
      *
      * @deprecated This is no longer supported
      */
-    @Nonnull
+    @NotNull
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
@@ -152,6 +151,6 @@ public interface SelfUser extends User
      *
      * @return An AccountManager instance for the current account
      */
-    @Nonnull
+    @NotNull
     AccountManager getManager();
 }

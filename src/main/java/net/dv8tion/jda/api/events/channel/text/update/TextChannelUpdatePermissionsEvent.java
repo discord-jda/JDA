@@ -23,8 +23,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +43,7 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
 {
     private final List<IPermissionHolder> changed;
 
-    public TextChannelUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull List<IPermissionHolder> permHolders)
+    public TextChannelUpdatePermissionsEvent(@NotNull JDA api, long responseNumber, @NotNull TextChannel channel, @NotNull List<IPermissionHolder> permHolders)
     {
         super(api, responseNumber, channel);
         this.changed = permHolders;
@@ -57,7 +57,7 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
      * @see    #getChangedRoles()
      * @see    #getChangedMembers()
      */
-    @Nonnull
+    @NotNull
     public List<IPermissionHolder> getChangedPermissionHolders()
     {
         return changed;
@@ -68,7 +68,7 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
      *
      * @return List of affected roles
      */
-    @Nonnull
+    @NotNull
     public List<Role> getChangedRoles()
     {
         return changed.stream()
@@ -82,7 +82,7 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
      *
      * @return List of affected members
      */
-    @Nonnull
+    @NotNull
     public List<Member> getChangedMembers()
     {
         return changed.stream()

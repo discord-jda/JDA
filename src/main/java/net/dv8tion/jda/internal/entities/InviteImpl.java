@@ -33,8 +33,8 @@ import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
@@ -89,7 +89,7 @@ public class InviteImpl implements Invite
                 jda.getEntityBuilder().createInvite(response.getObject()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -98,7 +98,7 @@ public class InviteImpl implements Invite
         return new AuditableRestActionImpl<>(this.api, route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Invite> expand()
     {
@@ -150,7 +150,7 @@ public class InviteImpl implements Invite
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Invite.InviteType getType()
     {
@@ -163,14 +163,14 @@ public class InviteImpl implements Invite
         return this.channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getCode()
     {
         return this.code;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Deprecated
     @DeprecatedSince("4.BETA.0")
@@ -198,7 +198,7 @@ public class InviteImpl implements Invite
         return this.inviter;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDAImpl getJDA()
     {
@@ -221,7 +221,7 @@ public class InviteImpl implements Invite
         return this.maxUses;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public OffsetDateTime getTimeCreated()
     {
@@ -299,14 +299,14 @@ public class InviteImpl implements Invite
             return id;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public String getName()
         {
             return this.name;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public ChannelType getType()
         {
@@ -361,7 +361,7 @@ public class InviteImpl implements Invite
             return id;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public String getName()
         {
@@ -381,7 +381,7 @@ public class InviteImpl implements Invite
                     : "https://cdn.discordapp.com/splashes/" + this.id + "/" + this.splashId + ".png";
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public VerificationLevel getVerificationLevel()
         {
@@ -400,7 +400,7 @@ public class InviteImpl implements Invite
             return memberCount;
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public Set<String> getFeatures()
         {

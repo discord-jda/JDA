@@ -37,8 +37,8 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -94,7 +94,7 @@ public class RoleImpl implements Role
         return rawPosition;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
@@ -125,30 +125,30 @@ public class RoleImpl implements Role
         return rawPermissions;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<Permission> getPermissions()
     {
         return Permission.getPermissions(rawPermissions);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
+    public EnumSet<Permission> getPermissions(@NotNull GuildChannel channel)
     {
         return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<Permission> getPermissionsExplicit()
     {
         return getPermissions();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    public EnumSet<Permission> getPermissionsExplicit(@NotNull GuildChannel channel)
     {
         return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
@@ -172,7 +172,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Permission... permissions)
+    public boolean hasPermission(@NotNull Permission... permissions)
     {
         long effectivePerms = rawPermissions | getGuild().getPublicRole().getPermissionsRaw();
         for (Permission perm : permissions)
@@ -185,7 +185,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Collection<Permission> permissions)
+    public boolean hasPermission(@NotNull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -193,7 +193,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
+    public boolean hasPermission(@NotNull GuildChannel channel, @NotNull Permission... permissions)
     {
         long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
         for (Permission perm : permissions)
@@ -206,7 +206,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
+    public boolean hasPermission(@NotNull GuildChannel channel, @NotNull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -214,7 +214,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource)
+    public boolean canSync(@NotNull GuildChannel targetChannel, @NotNull GuildChannel syncSource)
     {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
@@ -249,7 +249,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel channel)
+    public boolean canSync(@NotNull GuildChannel channel)
     {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
@@ -263,12 +263,12 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean canInteract(@Nonnull Role role)
+    public boolean canInteract(@NotNull Role role)
     {
         return PermissionUtil.canInteract(this, role);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
@@ -278,9 +278,9 @@ public class RoleImpl implements Role
         return guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RoleAction createCopy(@Nonnull Guild guild)
+    public RoleAction createCopy(@NotNull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         return guild.createRole()
@@ -291,7 +291,7 @@ public class RoleImpl implements Role
                     .setPermissions(rawPermissions);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RoleManager getManager()
     {
@@ -300,7 +300,7 @@ public class RoleImpl implements Role
         return manager;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -316,21 +316,21 @@ public class RoleImpl implements Role
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RoleTags getTags()
     {
         return tags == null ? RoleTagsImpl.EMPTY : tags;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAsMention()
     {
@@ -367,7 +367,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public int compareTo(@Nonnull Role r)
+    public int compareTo(@NotNull Role r)
     {
         if (this == r)
             return 0;

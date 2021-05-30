@@ -15,7 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.EnumSet;
 
 /**
@@ -107,7 +108,7 @@ public enum ChannelType
      *
      * @return The ChannelType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
      */
-    @Nonnull
+    @NotNull
     public static ChannelType fromId(int id)
     {
         if (id == 5) // NEWS = TEXT
@@ -128,7 +129,7 @@ public enum ChannelType
      *
      * @return Possibly-empty {@link java.util.EnumSet} for the bucket
      */
-    @Nonnull
+    @NotNull
     public static EnumSet<ChannelType> fromSortBucket(int bucket)
     {
         EnumSet<ChannelType> types = EnumSet.noneOf(ChannelType.class);

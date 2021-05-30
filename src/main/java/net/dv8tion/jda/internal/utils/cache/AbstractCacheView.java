@@ -26,8 +26,8 @@ import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import org.apache.commons.collections4.iterators.ObjectArrayIterator;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -103,7 +103,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public LockIterator<T> lockedIterator()
     {
@@ -121,7 +121,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<T> asList()
     {
@@ -138,7 +138,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Set<T> asSet()
     {
@@ -167,9 +167,9 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         return elements.isEmpty();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
+    public List<T> getElementsByName(@NotNull String name, boolean ignoreCase)
     {
         Checks.notEmpty(name, "Name");
         if (elements.isEmpty())
@@ -197,21 +197,21 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> stream()
     {
         return StreamSupport.stream(spliterator(), false);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> parallelStream()
     {
         return StreamSupport.stream(spliterator(), true);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<T> iterator()
     {

@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the mfa level of the current user changed.
@@ -32,7 +31,7 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mfa_enabled";
 
-    public SelfUpdateMFAEvent(@Nonnull JDA api, long responseNumber, boolean wasMfaEnabled)
+    public SelfUpdateMFAEvent(@NotNull JDA api, long responseNumber, boolean wasMfaEnabled)
     {
         super(api, responseNumber, wasMfaEnabled, !wasMfaEnabled, IDENTIFIER);
     }
@@ -47,14 +46,14 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
         return getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getNewValue()
     {

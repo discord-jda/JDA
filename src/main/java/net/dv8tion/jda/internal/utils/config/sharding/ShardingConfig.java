@@ -18,8 +18,7 @@ package net.dv8tion.jda.internal.utils.config.sharding;
 
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class ShardingConfig
 {
@@ -61,7 +60,7 @@ public class ShardingConfig
         return useShutdownNow;
     }
 
-    @Nonnull
+    @NotNull
     public static ShardingConfig getDefault()
     {
         return new ShardingConfig(1, false, GatewayIntent.ALL_INTENTS, MemberCachePolicy.ALL);

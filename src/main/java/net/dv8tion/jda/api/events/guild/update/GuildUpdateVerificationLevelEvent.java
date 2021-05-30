@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild.VerificationLevel VerificationLevel} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -32,7 +31,7 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<G
 {
     public static final String IDENTIFIER = "verification_level";
 
-    public GuildUpdateVerificationLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.VerificationLevel oldVerificationLevel)
+    public GuildUpdateVerificationLevelEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull Guild.VerificationLevel oldVerificationLevel)
     {
         super(api, responseNumber, guild, oldVerificationLevel, guild.getVerificationLevel(), IDENTIFIER);
     }
@@ -42,7 +41,7 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<G
      *
      * @return The old VerificationLevel
      */
-    @Nonnull
+    @NotNull
     public Guild.VerificationLevel getOldVerificationLevel()
     {
         return getOldValue();
@@ -53,20 +52,20 @@ public class GuildUpdateVerificationLevelEvent extends GenericGuildUpdateEvent<G
      *
      * @return The new VerificationLevel
      */
-    @Nonnull
+    @NotNull
     public Guild.VerificationLevel getNewVerificationLevel()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.VerificationLevel getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.VerificationLevel getNewValue()
     {

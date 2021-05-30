@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -115,7 +115,7 @@ public enum CacheFlag
      *
      * @return {@link EnumSet} of the cache flags that require the privileged intents
      */
-    @Nonnull
+    @NotNull
     public static EnumSet<CacheFlag> getPrivileged()
     {
         return EnumSet.copyOf(privileged);

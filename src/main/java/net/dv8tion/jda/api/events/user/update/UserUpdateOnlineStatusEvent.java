@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the {@link OnlineStatus OnlineStatus} of a {@link net.dv8tion.jda.api.entities.User User} changed.
@@ -48,21 +47,21 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
     private final Guild guild;
     private final Member member;
 
-    public UserUpdateOnlineStatusEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull OnlineStatus oldOnlineStatus)
+    public UserUpdateOnlineStatusEvent(@NotNull JDA api, long responseNumber, @NotNull Member member, @NotNull OnlineStatus oldOnlineStatus)
     {
         super(api, responseNumber, member.getUser(), oldOnlineStatus, member.getOnlineStatus(), IDENTIFIER);
         this.guild = member.getGuild();
         this.member = member;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
         return guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Member getMember()
     {
@@ -74,7 +73,7 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
      *
      * @return The old status
      */
-    @Nonnull
+    @NotNull
     public OnlineStatus getOldOnlineStatus()
     {
         return getOldValue();
@@ -85,20 +84,20 @@ public class UserUpdateOnlineStatusEvent extends GenericUserUpdateEvent<OnlineSt
      *
      * @return The new status
      */
-    @Nonnull
+    @NotNull
     public OnlineStatus getNewOnlineStatus()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public OnlineStatus getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public OnlineStatus getNewValue() {
         return super.getNewValue();

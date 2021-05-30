@@ -38,9 +38,9 @@ import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.bag.HashBag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Function;
@@ -110,7 +110,7 @@ public class ReceivedMessage extends AbstractMessage
         this.flags = flags;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
@@ -129,23 +129,23 @@ public class ReceivedMessage extends AbstractMessage
         return pinned;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> pin()
     {
         return channel.pinMessageById(getId());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> unpin()
     {
         return channel.unpinMessageById(getId());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> addReaction(@Nonnull Emote emote)
+    public RestAction<Void> addReaction(@NotNull Emote emote)
     {
         Checks.notNull(emote, "Emote");
 
@@ -162,14 +162,14 @@ public class ReceivedMessage extends AbstractMessage
         return channel.addReactionById(getId(), emote);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> addReaction(@Nonnull String unicode)
+    public RestAction<Void> addReaction(@NotNull String unicode)
     {
         return channel.addReactionById(getId(), unicode);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> clearReactions()
     {
@@ -178,34 +178,34 @@ public class ReceivedMessage extends AbstractMessage
         return getTextChannel().clearReactionsById(getId());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull String unicode)
+    public RestAction<Void> clearReactions(@NotNull String unicode)
     {
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), unicode);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> clearReactions(@Nonnull Emote emote)
+    public RestAction<Void> clearReactions(@NotNull Emote emote)
     {
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), emote);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote)
+    public RestAction<Void> removeReaction(@NotNull Emote emote)
     {
         return channel.removeReactionById(getId(), emote);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
+    public RestAction<Void> removeReaction(@NotNull Emote emote, @NotNull User user)
     {
         Checks.notNull(user, "User");  // to prevent NPEs
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
@@ -218,16 +218,16 @@ public class ReceivedMessage extends AbstractMessage
         return getTextChannel().removeReactionById(getIdLong(), emote, user);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode)
+    public RestAction<Void> removeReaction(@NotNull String unicode)
     {
         return channel.removeReactionById(getId(), unicode);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> removeReaction(@Nonnull String unicode, @Nonnull User user)
+    public RestAction<Void> removeReaction(@NotNull String unicode, @NotNull User user)
     {
         Checks.notNull(user, "User");
         if (user.equals(getJDA().getSelfUser()))
@@ -238,22 +238,22 @@ public class ReceivedMessage extends AbstractMessage
         return getTextChannel().removeReactionById(getId(), unicode, user);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
+    public ReactionPaginationAction retrieveReactionUsers(@NotNull Emote emote)
     {
         return channel.retrieveReactionUsersById(id, emote);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
+    public ReactionPaginationAction retrieveReactionUsers(@NotNull String unicode)
     {
         return channel.retrieveReactionUsersById(id, unicode);
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionByUnicode(@Nonnull String unicode)
+    public MessageReaction.ReactionEmote getReactionByUnicode(@NotNull String unicode)
     {
         Checks.notEmpty(unicode, "Emoji");
         Checks.noWhitespace(unicode, "Emoji");
@@ -265,7 +265,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public MessageReaction.ReactionEmote getReactionById(@Nonnull String id)
+    public MessageReaction.ReactionEmote getReactionById(@NotNull String id)
     {
         return getReactionById(MiscUtil.parseSnowflake(id));
     }
@@ -279,7 +279,7 @@ public class ReceivedMessage extends AbstractMessage
             .findFirst().orElse(null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageType getType()
     {
@@ -292,7 +292,7 @@ public class ReceivedMessage extends AbstractMessage
         return id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getJumpUrl()
     {
@@ -310,7 +310,7 @@ public class ReceivedMessage extends AbstractMessage
         return user;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public synchronized List<User> getMentionedUsers()
     {
@@ -319,7 +319,7 @@ public class ReceivedMessage extends AbstractMessage
         return userMentions;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Bag<User> getMentionedUsersBag()
     {
@@ -332,7 +332,7 @@ public class ReceivedMessage extends AbstractMessage
         return getJDA().getTextChannelById(channelId);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public synchronized List<TextChannel> getMentionedChannels()
     {
@@ -341,7 +341,7 @@ public class ReceivedMessage extends AbstractMessage
         return channelMentions;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Bag<TextChannel> getMentionedChannelsBag()
     {
@@ -359,7 +359,7 @@ public class ReceivedMessage extends AbstractMessage
             return getJDA().getRoleById(roleId);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public synchronized List<Role> getMentionedRoles()
     {
@@ -368,16 +368,16 @@ public class ReceivedMessage extends AbstractMessage
         return roleMentions;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Bag<Role> getMentionedRolesBag()
     {
         return processMentions(MentionType.ROLE, new HashBag<>(), false, this::matchRole);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<Member> getMentionedMembers(@Nonnull Guild guild)
+    public List<Member> getMentionedMembers(@NotNull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         if (isFromGuild() && guild.equals(getGuild()) && memberMentions != null)
@@ -394,7 +394,7 @@ public class ReceivedMessage extends AbstractMessage
         return Collections.unmodifiableList(members);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Member> getMentionedMembers()
     {
@@ -404,9 +404,9 @@ public class ReceivedMessage extends AbstractMessage
             throw new IllegalStateException("You must specify a Guild for Messages which are not sent from a TextChannel!");
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<IMentionable> getMentions(@Nonnull MentionType... types)
+    public List<IMentionable> getMentions(@NotNull MentionType... types)
     {
         if (types == null || types.length == 0)
             return getMentions(MentionType.values());
@@ -449,7 +449,7 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public boolean isMentioned(@Nonnull IMentionable mentionable, @Nonnull MentionType... types)
+    public boolean isMentioned(@NotNull IMentionable mentionable, @NotNull MentionType... types)
     {
         Checks.notNull(types, "Mention Types");
         if (types.length == 0)
@@ -563,7 +563,7 @@ public class ReceivedMessage extends AbstractMessage
         return editedTime;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public User getAuthor()
     {
@@ -576,7 +576,7 @@ public class ReceivedMessage extends AbstractMessage
         return member;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getContentStripped()
     {
@@ -590,7 +590,7 @@ public class ReceivedMessage extends AbstractMessage
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getContentDisplay()
     {
@@ -626,14 +626,14 @@ public class ReceivedMessage extends AbstractMessage
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getContentRaw()
     {
         return content;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<String> getInvites()
     {
@@ -658,26 +658,26 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
-    public boolean isFromType(@Nonnull ChannelType type)
+    public boolean isFromType(@NotNull ChannelType type)
     {
         return getChannelType() == type;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelType getChannelType()
     {
         return channel.getType();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageChannel getChannel()
     {
         return channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PrivateChannel getPrivateChannel()
     {
@@ -686,7 +686,7 @@ public class ReceivedMessage extends AbstractMessage
         return (PrivateChannel) channel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public TextChannel getTextChannel()
     {
@@ -703,21 +703,21 @@ public class ReceivedMessage extends AbstractMessage
         return isFromGuild() ? getTextChannel().getParent() : null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
         return getTextChannel().getGuild();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Attachment> getAttachments()
     {
         return attachments;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<MessageEmbed> getEmbeds()
     {
@@ -735,7 +735,7 @@ public class ReceivedMessage extends AbstractMessage
         return emote;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public synchronized List<Emote> getEmotes()
     {
@@ -744,21 +744,21 @@ public class ReceivedMessage extends AbstractMessage
         return emoteMentions;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Bag<Emote> getEmotesBag()
     {
         return processMentions(MentionType.EMOTE, new HashBag<>(), false, this::matchEmote);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<MessageReaction> getReactions()
     {
         return reactions;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<MessageSticker> getStickers()
     {
@@ -784,31 +784,31 @@ public class ReceivedMessage extends AbstractMessage
         return activity;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction editMessage(@Nonnull CharSequence newContent)
+    public MessageAction editMessage(@NotNull CharSequence newContent)
     {
         return editMessage(new MessageBuilder().append(newContent).build());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    public MessageAction editMessage(@NotNull MessageEmbed newContent)
     {
         return editMessage(new MessageBuilder().setEmbed(newContent).build());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    public MessageAction editMessageFormat(@NotNull String format, @NotNull Object... args)
     {
         Checks.notBlank(format, "Format String");
         return editMessage(new MessageBuilder().appendFormat(format, args).build());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction editMessage(@Nonnull Message newContent)
+    public MessageAction editMessage(@NotNull Message newContent)
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
@@ -816,7 +816,7 @@ public class ReceivedMessage extends AbstractMessage
         return getChannel().editMessageById(getIdLong(), newContent);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -833,7 +833,7 @@ public class ReceivedMessage extends AbstractMessage
         return channel.deleteMessageById(getIdLong());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
     {
@@ -848,7 +848,7 @@ public class ReceivedMessage extends AbstractMessage
         return new AuditableRestActionImpl<>(jda, route, DataObject.empty().put("flags", newFlags));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Message> crosspost()
     {
@@ -868,7 +868,7 @@ public class ReceivedMessage extends AbstractMessage
         return (this.flags & MessageFlag.EMBEDS_SUPPRESSED.getValue()) > 0;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<MessageFlag> getFlags()
     {

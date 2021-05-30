@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.locks.Lock;
@@ -55,7 +55,7 @@ public class LockIterator<T> implements ClosableIterator<T>
     private final Iterator<? extends T> it;
     private Lock lock;
 
-    public LockIterator(@Nonnull Iterator<? extends T> it, Lock lock)
+    public LockIterator(@NotNull Iterator<? extends T> it, Lock lock)
     {
         this.it = it;
         this.lock = lock;
@@ -80,7 +80,7 @@ public class LockIterator<T> implements ClosableIterator<T>
         return hasNext;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public T next()
     {

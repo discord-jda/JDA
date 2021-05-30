@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.channel.category.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the name of a {@link net.dv8tion.jda.api.entities.Category Category} was updated.
@@ -32,7 +31,7 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public CategoryUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category, @Nonnull String oldName)
+    public CategoryUpdateNameEvent(@NotNull JDA api, long responseNumber, @NotNull Category category, @NotNull String oldName)
     {
         super(api, responseNumber, category, oldName, category.getName(), IDENTIFIER);
     }
@@ -42,7 +41,7 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent<String>
      *
      * @return The previous name
      */
-    @Nonnull
+    @NotNull
     public String getOldName()
     {
         return getOldValue();
@@ -53,20 +52,20 @@ public class CategoryUpdateNameEvent extends GenericCategoryUpdateEvent<String>
      *
      * @return The new name
      */
-    @Nonnull
+    @NotNull
     public String getNewName()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

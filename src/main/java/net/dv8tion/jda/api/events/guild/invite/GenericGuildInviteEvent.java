@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.guild.invite;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that an {@link Invite} was created or deleted in a {@link Guild}.
@@ -38,7 +37,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
     private final String code;
     private final GuildChannel channel;
 
-    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)
+    public GenericGuildInviteEvent(@NotNull JDA api, long responseNumber, @NotNull String code, @NotNull GuildChannel channel)
     {
         super(api, responseNumber, channel.getGuild());
         this.code = code;
@@ -51,7 +50,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      *
      * @return The invite code
      */
-    @Nonnull
+    @NotNull
     public String getCode()
     {
         return code;
@@ -63,7 +62,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      *
      * @return The invite url
      */
-    @Nonnull
+    @NotNull
     public String getUrl()
     {
         return "https://discord.gg/" + code;
@@ -74,7 +73,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      *
      * @return {@link GuildChannel}
      */
-    @Nonnull
+    @NotNull
     public GuildChannel getChannel()
     {
         return channel;
@@ -85,7 +84,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      *
      * @return {@link ChannelType}
      */
-    @Nonnull
+    @NotNull
     public ChannelType getChannelType()
     {
         return channel.getType();
@@ -102,7 +101,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannel()
      * @see    #getChannelType()
      */
-    @Nonnull
+    @NotNull
     public TextChannel getTextChannel()
     {
         if (getChannelType() != ChannelType.TEXT)
@@ -121,7 +120,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannel()
      * @see    #getChannelType()
      */
-    @Nonnull
+    @NotNull
     public VoiceChannel getVoiceChannel()
     {
         if (getChannelType() != ChannelType.VOICE)
@@ -140,7 +139,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannel()
      * @see    #getChannelType()
      */
-    @Nonnull
+    @NotNull
     public StoreChannel getStoreChannel()
     {
         if (getChannelType() != ChannelType.STORE)
@@ -159,7 +158,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannel()
      * @see    #getChannelType()
      */
-    @Nonnull
+    @NotNull
     public Category getCategory()
     {
         if (getChannelType() != ChannelType.CATEGORY)

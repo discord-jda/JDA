@@ -24,8 +24,8 @@ import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,14 +51,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.CATEGORY;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Member> getMembers()
     {
@@ -83,9 +83,9 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         throw new IllegalStateException("Somehow when determining position we never found the Category in the Guild's channels? wtf?");
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
+    public ChannelAction<Category> createCopy(@NotNull Guild guild)
     {
         Checks.notNull(guild, "Guild");
         ChannelAction<Category> action = guild.createCategory(name);
@@ -102,21 +102,21 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return action;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InviteAction createInvite()
     {
         throw new UnsupportedOperationException("Cannot create invites for category!");
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
         return new CompletedRestAction<>(getJDA(), Collections.emptyList());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<GuildChannel> getChannels()
     {
@@ -128,7 +128,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return Collections.unmodifiableList(channels);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<StoreChannel> getStoreChannels()
     {
@@ -137,7 +137,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .sorted().collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<TextChannel> getTextChannels()
     {
@@ -146,7 +146,7 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .sorted().collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<VoiceChannel> getVoiceChannels()
     {
@@ -155,17 +155,17 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
                     .sorted().collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
+    public ChannelAction<TextChannel> createTextChannel(@NotNull String name)
     {
         ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
         return trySync(action);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
+    public ChannelAction<VoiceChannel> createVoiceChannel(@NotNull String name)
     {
         ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
         return trySync(action);
@@ -187,14 +187,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return action.syncPermissionOverrides();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CategoryOrderAction modifyTextChannelPositions()
     {
         return getGuild().modifyTextChannelPositions(this);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CategoryOrderAction modifyVoiceChannelPositions()
     {

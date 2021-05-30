@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -47,15 +47,15 @@ import java.util.function.BooleanSupplier;
  */
 public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
 {
-    @Nonnull
+    @NotNull
     @Override
     ChannelAction<T> setCheck(@Nullable BooleanSupplier checks);
 
-    @Nonnull
+    @NotNull
     @Override
-    ChannelAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
+    ChannelAction<T> timeout(long timeout, @NotNull TimeUnit unit);
 
-    @Nonnull
+    @NotNull
     @Override
     ChannelAction<T> deadline(long timestamp);
 
@@ -64,7 +64,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The guild
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -72,7 +72,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The channel type
      */
-    @Nonnull
+    @NotNull
     ChannelType getType();
 
     /**
@@ -86,9 +86,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelAction<T> setName(@Nonnull String name);
+    ChannelAction<T> setName(@NotNull String name);
 
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Category Category} for the new GuildChannel.
@@ -108,7 +108,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @see    #syncPermissionOverrides()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setParent(@Nullable Category category);
 
@@ -131,7 +131,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setPosition(@Nullable Integer position);
 
@@ -148,7 +148,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setTopic(@Nullable String topic);
 
@@ -163,7 +163,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setNSFW(boolean nsfw);
 
@@ -186,7 +186,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
 
@@ -208,7 +208,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setNews(boolean news);
 
@@ -243,9 +243,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @see    java.util.EnumSet
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    default ChannelAction<T> addPermissionOverride(@NotNull IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
@@ -292,9 +292,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny)
+    default ChannelAction<T> addPermissionOverride(@NotNull IPermissionHolder target, long allow, long deny)
     {
         Checks.notNull(target, "Override Role/Member");
         if (target instanceof Role)
@@ -333,7 +333,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @see    java.util.EnumSet
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default ChannelAction<T> addMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
@@ -372,7 +372,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @see    java.util.EnumSet
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default ChannelAction<T> addRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
     {
@@ -416,7 +416,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> addMemberPermissionOverride(long memberId, long allow, long deny);
 
@@ -454,7 +454,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      * @see    net.dv8tion.jda.api.Permission#getRaw(java.util.Collection)
      * @see    net.dv8tion.jda.api.Permission#getRaw(net.dv8tion.jda.api.Permission...)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> addRolePermissionOverride(long roleId, long allow, long deny);
 
@@ -467,7 +467,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> removePermissionOverride(long id);
 
@@ -483,9 +483,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ChannelAction<T> removePermissionOverride(@Nonnull String id)
+    default ChannelAction<T> removePermissionOverride(@NotNull String id)
     {
         return removePermissionOverride(MiscUtil.parseSnowflake(id));
     }
@@ -502,9 +502,9 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default ChannelAction<T> removePermissionOverride(@Nonnull IPermissionHolder holder)
+    default ChannelAction<T> removePermissionOverride(@NotNull IPermissionHolder holder)
     {
         Checks.notNull(holder, "PermissionHolder");
         return removePermissionOverride(holder.getIdLong());
@@ -515,7 +515,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> clearPermissionOverrides();
 
@@ -530,7 +530,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> syncPermissionOverrides();
 
@@ -548,7 +548,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setBitrate(@Nullable Integer bitrate);
 
@@ -565,7 +565,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @return The current ChannelAction, for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     ChannelAction<T> setUserlimit(@Nullable Integer userlimit);
 }

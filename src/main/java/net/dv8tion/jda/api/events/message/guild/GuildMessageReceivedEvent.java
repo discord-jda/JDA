@@ -20,9 +20,8 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.entities.Webhook;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a Message is received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
@@ -37,7 +36,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
 {
     private final Message message;
 
-    public GuildMessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
+    public GuildMessageReceivedEvent(@NotNull JDA api, long responseNumber, @NotNull Message message)
     {
         super(api, responseNumber, message.getIdLong(), message.getTextChannel());
         this.message = message;
@@ -48,7 +47,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      *
      * @return The received {@link net.dv8tion.jda.api.entities.Message Message} object.
      */
-    @Nonnull
+    @NotNull
     public Message getMessage()
     {
         return message;
@@ -63,7 +62,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      *
      * @see    #isWebhookMessage()
      */
-    @Nonnull
+    @NotNull
     public User getAuthor()
     {
         return message.getAuthor();

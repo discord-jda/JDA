@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,14 +38,14 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
         return super.setPosition(rawPosition);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.STORE;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Member> getMembers()
     {
@@ -66,9 +66,9 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
         throw new IllegalStateException("Somehow when determining position we never found the StoreChannel in the Guild's channels? wtf?");
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<StoreChannel> createCopy(@Nonnull Guild guild)
+    public ChannelAction<StoreChannel> createCopy(@NotNull Guild guild)
     {
         throw new UnsupportedOperationException("Bots cannot create store channels");
     }

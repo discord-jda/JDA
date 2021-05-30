@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.message.priv.react;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageReaction;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added to a Message in a PrivateChannel.
@@ -32,7 +31,7 @@ import javax.annotation.Nonnull;
  */
 public class PrivateMessageReactionAddEvent extends GenericPrivateMessageReactionEvent
 {
-    public PrivateMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
+    public PrivateMessageReactionAddEvent(@NotNull JDA api, long responseNumber, @NotNull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction, userId);
     }

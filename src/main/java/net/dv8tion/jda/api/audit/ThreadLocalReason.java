@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.api.audit;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.function.Consumer;
 
 /**
@@ -117,7 +118,7 @@ public final class ThreadLocalReason
      *
      * @return The closable instance
      */
-    @Nonnull
+    @NotNull
     public static Closable closable(@Nullable String reason)
     {
         return new ThreadLocalReason.Closable(reason);

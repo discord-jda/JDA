@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.events.message;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a Message was deleted in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
@@ -38,7 +37,7 @@ import javax.annotation.Nonnull;
  */
 public class MessageDeleteEvent extends GenericMessageEvent
 {
-    public MessageDeleteEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel)
+    public MessageDeleteEvent(@NotNull JDA api, long responseNumber, long messageId, @NotNull MessageChannel channel)
     {
         super(api, responseNumber, messageId, channel);
     }

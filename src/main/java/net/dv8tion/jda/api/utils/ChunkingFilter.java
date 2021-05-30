@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Filter function for member chunking of guilds.
@@ -65,8 +64,8 @@ public interface ChunkingFilter
      *
      * @return The resulting filter
      */
-    @Nonnull
-    static ChunkingFilter include(@Nonnull long... ids)
+    @NotNull
+    static ChunkingFilter include(@NotNull long... ids)
     {
         Checks.notNull(ids, "ID array");
         if (ids.length == 0)
@@ -93,8 +92,8 @@ public interface ChunkingFilter
      *
      * @return The resulting filter
      */
-    @Nonnull
-    static ChunkingFilter exclude(@Nonnull long... ids)
+    @NotNull
+    static ChunkingFilter exclude(@NotNull long... ids)
     {
         Checks.notNull(ids, "ID array");
         if (ids.length == 0)

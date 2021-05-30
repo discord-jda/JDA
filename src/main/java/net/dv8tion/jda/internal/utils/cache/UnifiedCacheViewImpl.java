@@ -25,9 +25,9 @@ import net.dv8tion.jda.api.utils.cache.MemberCacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
 import net.dv8tion.jda.api.utils.cache.UnifiedMemberCacheView;
 import net.dv8tion.jda.internal.utils.ChainedClosableIterator;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -66,7 +66,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<T> asList()
     {
@@ -75,7 +75,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return Collections.unmodifiableList(list);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Set<T> asSet()
     {
@@ -88,7 +88,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChainedClosableIterator<T> lockedIterator()
     {
@@ -96,9 +96,9 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
         return new ChainedClosableIterator<>(gen);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<T> getElementsByName(@Nonnull String name, boolean ignoreCase)
+    public List<T> getElementsByName(@NotNull String name, boolean ignoreCase)
     {
         return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByName(name, ignoreCase).stream())
@@ -106,21 +106,21 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> stream()
     {
         return distinctStream().flatMap(CacheView::stream).distinct();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Stream<T> parallelStream()
     {
         return distinctStream().flatMap(CacheView::parallelStream).distinct();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Iterator<T> iterator()
     {
@@ -159,7 +159,7 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
             super(generator);
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public List<Member> getElementsById(long id)
         {
@@ -169,16 +169,16 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
-        @Nonnull
+        @NotNull
         @Override
-        public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase)
+        public List<Member> getElementsByUsername(@NotNull String name, boolean ignoreCase)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsByUsername(name, ignoreCase).stream())
                 .collect(Collectors.toList()));
         }
 
-        @Nonnull
+        @NotNull
         @Override
         public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
         {
@@ -187,18 +187,18 @@ public class UnifiedCacheViewImpl<T, E extends CacheView<T>> implements CacheVie
                 .collect(Collectors.toList()));
         }
 
-        @Nonnull
+        @NotNull
         @Override
-        public List<Member> getElementsWithRoles(@Nonnull Role... roles)
+        public List<Member> getElementsWithRoles(@NotNull Role... roles)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())
                 .collect(Collectors.toList()));
         }
 
-        @Nonnull
+        @NotNull
         @Override
-        public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles)
+        public List<Member> getElementsWithRoles(@NotNull Collection<Role> roles)
         {
             return Collections.unmodifiableList(distinctStream()
                 .flatMap(view -> view.getElementsWithRoles(roles).stream())

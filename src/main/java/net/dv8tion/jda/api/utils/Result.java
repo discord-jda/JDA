@@ -17,10 +17,10 @@
 package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -58,7 +58,7 @@ public class Result<T>
      *
      * @return Result
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public static <E> Result<E> success(@Nullable E value)
     {
@@ -78,9 +78,9 @@ public class Result<T>
      *
      * @return Result
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public static <E> Result<E> failure(@Nonnull Throwable error)
+    public static <E> Result<E> failure(@NotNull Throwable error)
     {
         Checks.notNull(error, "Error");
         return new Result<>(null, error);
@@ -100,9 +100,9 @@ public class Result<T>
      *
      * @return Result instance with the supplied value or exception failure
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    public static <E> Result<E> defer(@Nonnull Supplier<? extends E> supplier)
+    public static <E> Result<E> defer(@NotNull Supplier<? extends E> supplier)
     {
         Checks.notNull(supplier, "Supplier");
         try
@@ -150,8 +150,8 @@ public class Result<T>
      *
      * @return The same result instance
      */
-    @Nonnull
-    public Result<T> onFailure(@Nonnull Consumer<? super Throwable> callback)
+    @NotNull
+    public Result<T> onFailure(@NotNull Consumer<? super Throwable> callback)
     {
         Checks.notNull(callback, "Callback");
         if (isFailure())
@@ -172,8 +172,8 @@ public class Result<T>
      *
      * @return The same result instance
      */
-    @Nonnull
-    public Result<T> onSuccess(@Nonnull Consumer<? super T> callback)
+    @NotNull
+    public Result<T> onSuccess(@NotNull Consumer<? super T> callback)
     {
         Checks.notNull(callback, "Callback");
         if (isSuccess())
@@ -197,10 +197,10 @@ public class Result<T>
      *
      * @see    #flatMap(Function)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
-    public <U> Result<U> map(@Nonnull Function<? super T, ? extends U> function)
+    public <U> Result<U> map(@NotNull Function<? super T, ? extends U> function)
     {
         Checks.notNull(function, "Function");
         if (isSuccess())
@@ -222,10 +222,10 @@ public class Result<T>
      *
      * @return The mapped result
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     @SuppressWarnings("unchecked")
-    public <U> Result<U> flatMap(@Nonnull Function<? super T, ? extends Result<U>> function)
+    public <U> Result<U> flatMap(@NotNull Function<? super T, ? extends Result<U>> function)
     {
         Checks.notNull(function, "Function");
         try
@@ -283,8 +283,8 @@ public class Result<T>
      *
      * @return The same result instance
      */
-    @Nonnull
-    public Result<T> expect(@Nonnull Predicate<? super Throwable> predicate)
+    @NotNull
+    public Result<T> expect(@NotNull Predicate<? super Throwable> predicate)
     {
         Checks.notNull(predicate, "Predicate");
         if (isFailure() && predicate.test(error))

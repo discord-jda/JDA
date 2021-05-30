@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.emote.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the name of an {@link net.dv8tion.jda.api.entities.Emote Emote} changed.
@@ -39,7 +38,7 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public EmoteUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote, @Nonnull String oldName)
+    public EmoteUpdateNameEvent(@NotNull JDA api, long responseNumber, @NotNull Emote emote, @NotNull String oldName)
     {
         super(api, responseNumber, emote, oldName, emote.getName(), IDENTIFIER);
     }
@@ -49,7 +48,7 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
      *
      * @return The old name
      */
-    @Nonnull
+    @NotNull
     public String getOldName()
     {
         return getOldValue();
@@ -60,20 +59,20 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
      *
      * @return The new name
      */
-    @Nonnull
+    @NotNull
     public String getNewName()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

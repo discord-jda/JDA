@@ -18,9 +18,8 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that the Icon of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -33,7 +32,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "icon";
 
-    public GuildUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldIconId)
+    public GuildUpdateIconEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @Nullable String oldIconId)
     {
         super(api, responseNumber, guild, oldIconId, guild.getIconId(), IDENTIFIER);
     }

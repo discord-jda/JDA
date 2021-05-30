@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.guild.override;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link PermissionOverride} of a {@link GuildChannel} has been deleted.
@@ -29,7 +28,7 @@ import javax.annotation.Nonnull;
  */
 public class PermissionOverrideDeleteEvent extends GenericPermissionOverrideEvent
 {
-    public PermissionOverrideDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
+    public PermissionOverrideDeleteEvent(@NotNull JDA api, long responseNumber, @NotNull GuildChannel channel, @NotNull PermissionOverride override)
     {
         super(api, responseNumber, channel, override);
     }

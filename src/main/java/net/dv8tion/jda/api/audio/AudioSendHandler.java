@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api.audio;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import javax.sound.sampled.AudioFormat;
 import java.nio.ByteBuffer;
 

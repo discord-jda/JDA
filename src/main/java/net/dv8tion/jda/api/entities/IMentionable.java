@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.utils.MiscUtil;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Formattable;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -57,7 +57,7 @@ public interface IMentionable extends Formattable, ISnowflake
      *
      * @return A resolvable mention.
      */
-    @Nonnull
+    @NotNull
     String getAsMention();
 
     @Override

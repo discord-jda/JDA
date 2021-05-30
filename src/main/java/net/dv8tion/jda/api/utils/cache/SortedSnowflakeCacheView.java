@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.NavigableSet;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -47,9 +47,9 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      *
      * @since  4.0.0
      */
-    void forEachUnordered(@Nonnull final Consumer<? super T> action);
+    void forEachUnordered(@NotNull final Consumer<? super T> action);
 
-    @Nonnull
+    @NotNull
     @Override
     NavigableSet<T> asSet();
 
@@ -60,7 +60,7 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     Stream<T> streamUnordered();
 
     /**
@@ -70,6 +70,6 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     Stream<T> parallelStreamUnordered();
 }

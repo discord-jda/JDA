@@ -19,8 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.Event;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} event was fired.
@@ -32,7 +31,7 @@ public abstract class GenericTextChannelEvent extends Event
 {
     private final TextChannel channel;
 
-    public GenericTextChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel)
+    public GenericTextChannelEvent(@NotNull JDA api, long responseNumber, @NotNull TextChannel channel)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -43,7 +42,7 @@ public abstract class GenericTextChannelEvent extends Event
      *
      * @return The TextChannel
      */
-    @Nonnull
+    @NotNull
     public TextChannel getChannel()
     {
         return channel;
@@ -55,7 +54,7 @@ public abstract class GenericTextChannelEvent extends Event
      *
      * @return The Guild
      */
-    @Nonnull
+    @NotNull
     public Guild getGuild()
     {
         return channel.getGuild();

@@ -19,9 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
 import net.dv8tion.jda.api.events.channel.text.GenericTextChannelEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} was updated.
@@ -36,8 +35,8 @@ public abstract class GenericTextChannelUpdateEvent<T> extends GenericTextChanne
     protected final String identifier;
 
     public GenericTextChannelUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
+        @NotNull JDA api, long responseNumber, @NotNull TextChannel channel,
+        @Nullable T previous, @Nullable T next, @NotNull String identifier)
     {
         super(api, responseNumber, channel);
         this.previous = previous;
@@ -45,14 +44,14 @@ public abstract class GenericTextChannelUpdateEvent<T> extends GenericTextChanne
         this.identifier = identifier;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public TextChannel getEntity()
     {
         return getChannel();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getPropertyIdentifier()
     {

@@ -24,9 +24,9 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -190,7 +190,7 @@ public class MessageEmbed implements SerializableData
      *
      * @return The {@link net.dv8tion.jda.api.entities.EmbedType EmbedType} of this embed.
      */
-    @Nonnull
+    @NotNull
     public EmbedType getType()
     {
         return type;
@@ -284,7 +284,7 @@ public class MessageEmbed implements SerializableData
      * @return Never-null (but possibly empty) immutable  List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Field} objects
      *         containing field information.
      */
-    @Nonnull
+    @NotNull
     public List<Field> getFields()
     {
         return fields;
@@ -415,7 +415,7 @@ public class MessageEmbed implements SerializableData
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.2.0")
-    public boolean isSendable(@Nonnull AccountType type)
+    public boolean isSendable(@NotNull AccountType type)
     {
         Checks.notNull(type, "AccountType");
         final int length = getLength();
@@ -459,7 +459,7 @@ public class MessageEmbed implements SerializableData
      *
      * @return JSONObject for this embed
      */
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {

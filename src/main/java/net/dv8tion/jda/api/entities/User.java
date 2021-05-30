@@ -24,10 +24,10 @@ import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.entities.UserById;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -98,7 +98,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     static User fromId(long id)
     {
         return new UserById(id);
@@ -120,8 +120,8 @@ public interface User extends IMentionable, IFakeable
      *
      * @since  4.2.1
      */
-    @Nonnull
-    static User fromId(@Nonnull String id)
+    @NotNull
+    static User fromId(@NotNull String id)
     {
         return fromId(MiscUtil.parseSnowflake(id));
     }
@@ -134,7 +134,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User}'s username.
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -147,7 +147,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} discriminator.
      */
-    @Nonnull
+    @NotNull
     String getDiscriminator();
 
     /**
@@ -186,7 +186,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar id.
      */
-    @Nonnull
+    @NotNull
     String getDefaultAvatarId();
 
     /**
@@ -197,7 +197,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} default avatar url.
      */
-    @Nonnull
+    @NotNull
     default String getDefaultAvatarUrl()
     {
         return String.format(DEFAULT_AVATAR_URL, getDefaultAvatarId());
@@ -213,7 +213,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return  Never-null String containing the {@link net.dv8tion.jda.api.entities.User User} effective avatar url.
      */
-    @Nonnull
+    @NotNull
     default String getEffectiveAvatarUrl()
     {
         String avatarUrl = getAvatarUrl();
@@ -229,7 +229,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Never-null String containing the tag for this user, for example DV8FromTheWorld#6297
      */
-    @Nonnull
+    @NotNull
     String getAsTag();
 
     /**
@@ -275,7 +275,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @see    JDA#openPrivateChannelById(long)
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<PrivateChannel> openPrivateChannel();
 
@@ -288,7 +288,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return Immutable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that this user is a member of.
      */
-    @Nonnull
+    @NotNull
     List<Guild> getMutualGuilds();
 
     /**
@@ -320,7 +320,7 @@ public interface User extends IMentionable, IFakeable
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -331,7 +331,7 @@ public interface User extends IMentionable, IFakeable
      * 
      * @return EnumSet containing the flags of the user.
      */
-    @Nonnull
+    @NotNull
     EnumSet<UserFlag> getFlags();
 
     /**
@@ -382,7 +382,7 @@ public interface User extends IMentionable, IFakeable
         private final int raw;
         private final String name;
 
-        UserFlag(int offset, @Nonnull String name)
+        UserFlag(int offset, @NotNull String name)
         {
             this.offset = offset;
             this.raw = 1 << offset;
@@ -394,7 +394,7 @@ public interface User extends IMentionable, IFakeable
          * 
          * @return The readable name of this UserFlag.
          */
-        @Nonnull
+        @NotNull
         public String getName()
         {
             return this.name;
@@ -431,7 +431,7 @@ public interface User extends IMentionable, IFakeable
          *         
          * @return UserFlag relating to the provided offset.
          */
-        @Nonnull
+        @NotNull
         public static UserFlag getFromOffset(int offset)
         {
             for (UserFlag flag : values())
@@ -451,7 +451,7 @@ public interface User extends IMentionable, IFakeable
          *         
          * @return Possibly-empty EnumSet of UserFlags.
          */
-        @Nonnull
+        @NotNull
         public static EnumSet<UserFlag> getFlags(int flags)
         {
             final EnumSet<UserFlag> foundFlags = EnumSet.noneOf(UserFlag.class);
@@ -480,7 +480,7 @@ public interface User extends IMentionable, IFakeable
          *         
          * @return bitmask representing the provided flags.
          */
-        public static int getRaw(@Nonnull UserFlag... flags){
+        public static int getRaw(@NotNull UserFlag... flags){
             Checks.noneNull(flags, "UserFlags");
             
             int raw = 0;
@@ -508,7 +508,7 @@ public interface User extends IMentionable, IFakeable
          * 
          * @see java.util.EnumSet EnumSet
          */
-        public static int getRaw(@Nonnull Collection<UserFlag> flags)
+        public static int getRaw(@NotNull Collection<UserFlag> flags)
         {
             Checks.notNull(flags, "Flag Collection");
             

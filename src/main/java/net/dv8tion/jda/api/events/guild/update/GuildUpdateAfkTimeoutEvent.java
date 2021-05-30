@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild.Timeout AFK-Timeout} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -32,7 +31,7 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
 {
     public static final String IDENTIFIER = "afk_timeout";
 
-    public GuildUpdateAfkTimeoutEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.Timeout oldAfkTimeout)
+    public GuildUpdateAfkTimeoutEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull Guild.Timeout oldAfkTimeout)
     {
         super(api, responseNumber, guild, oldAfkTimeout, guild.getAfkTimeout(), IDENTIFIER);
     }
@@ -42,7 +41,7 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
      *
      * @return The old AFK-Timeout
      */
-    @Nonnull
+    @NotNull
     public Guild.Timeout getOldAfkTimeout()
     {
         return getOldValue();
@@ -53,20 +52,20 @@ public class GuildUpdateAfkTimeoutEvent extends GenericGuildUpdateEvent<Guild.Ti
      *
      * @return The new AFK-Timeout
      */
-    @Nonnull
+    @NotNull
     public Guild.Timeout getNewAfkTimeout()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.Timeout getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.Timeout getNewValue()
     {

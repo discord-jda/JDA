@@ -19,9 +19,9 @@ package net.dv8tion.jda.api.requests.restaction;
 import net.dv8tion.jda.api.audit.ThreadLocalReason;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
@@ -58,27 +58,27 @@ public interface AuditableRestAction<T> extends RestAction<T>
      *
      * @see    ThreadLocalReason
      */
-    @Nonnull
+    @NotNull
     AuditableRestAction<T> reason(@Nullable String reason);
 
     /**
      * {@inheritDoc}
      */
-    @Nonnull
+    @NotNull
     @Override
     AuditableRestAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     /**
      * {@inheritDoc}
      */
-    @Nonnull
+    @NotNull
     @Override
-    AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
+    AuditableRestAction<T> timeout(long timeout, @NotNull TimeUnit unit);
 
     /**
      * {@inheritDoc}
      */
-    @Nonnull
+    @NotNull
     @Override
     AuditableRestAction<T> deadline(long timestamp);
 }

@@ -19,8 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class PermOverrideData implements SerializableData
 {
@@ -47,7 +46,7 @@ public class PermOverrideData implements SerializableData
         this.deny = override.getDeniedRaw();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public DataObject toData()
     {

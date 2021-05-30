@@ -37,8 +37,8 @@ import net.dv8tion.jda.api.events.user.update.GenericUserPresenceEvent;
 import net.dv8tion.jda.api.events.user.update.GenericUserUpdateEvent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -209,7 +209,7 @@ public enum GatewayIntent
      *
      * @return {@link EnumSet} of intents
      */
-    @Nonnull
+    @NotNull
     public static EnumSet<GatewayIntent> getIntents(int raw)
     {
         EnumSet<GatewayIntent> set = EnumSet.noneOf(GatewayIntent.class);
@@ -232,7 +232,7 @@ public enum GatewayIntent
      *
      * @return The bitmask for this set of intents
      */
-    public static int getRaw(@Nonnull Collection<GatewayIntent> set)
+    public static int getRaw(@NotNull Collection<GatewayIntent> set)
     {
         int raw = 0;
         for (GatewayIntent intent : set)
@@ -253,7 +253,7 @@ public enum GatewayIntent
      *
      * @return The bitmask for this set of intents
      */
-    public static int getRaw(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... set)
+    public static int getRaw(@NotNull GatewayIntent intent, @NotNull GatewayIntent... set)
     {
         Checks.notNull(intent, "Intent");
         Checks.notNull(set,    "Intent");
@@ -274,8 +274,8 @@ public enum GatewayIntent
      *
      * @return {@link EnumSet} for the required intents
      */
-    @Nonnull
-    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull CacheFlag flag, @Nonnull CacheFlag... other)
+    @NotNull
+    public static EnumSet<GatewayIntent> fromCacheFlags(@NotNull CacheFlag flag, @NotNull CacheFlag... other)
     {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(other, "CacheFlag");
@@ -294,8 +294,8 @@ public enum GatewayIntent
      *
      * @return {@link EnumSet} for the required intents
      */
-    @Nonnull
-    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull Collection<CacheFlag> flags)
+    @NotNull
+    public static EnumSet<GatewayIntent> fromCacheFlags(@NotNull Collection<CacheFlag> flags)
     {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
         for (CacheFlag flag : flags)
@@ -320,9 +320,9 @@ public enum GatewayIntent
      *
      * @return {@link EnumSet} for the required intents
      */
-    @Nonnull
+    @NotNull
     @SafeVarargs
-    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Class<? extends GenericEvent>... events)
+    public static EnumSet<GatewayIntent> fromEvents(@NotNull Class<? extends GenericEvent>... events)
     {
         Checks.noneNull(events, "Event");
         return fromEvents(Arrays.asList(events));
@@ -339,8 +339,8 @@ public enum GatewayIntent
      *
      * @return {@link EnumSet} for the required intents
      */
-    @Nonnull
-    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events)
+    @NotNull
+    public static EnumSet<GatewayIntent> fromEvents(@NotNull Collection<Class<? extends GenericEvent>> events)
     {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
         for (Class<? extends GenericEvent> event : events)
@@ -396,8 +396,8 @@ public enum GatewayIntent
      *
      * @return {@link EnumSet} for the required intents
      */
-    @Nonnull
-    public static EnumSet<GatewayIntent> from(@Nonnull Collection<Class<? extends GenericEvent>> events, @Nonnull Collection<CacheFlag> flags)
+    @NotNull
+    public static EnumSet<GatewayIntent> from(@NotNull Collection<Class<? extends GenericEvent>> events, @NotNull Collection<CacheFlag> flags)
     {
         EnumSet<GatewayIntent> intents = fromEvents(events);
         intents.addAll(fromCacheFlags(flags));

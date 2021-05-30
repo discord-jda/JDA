@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.events.channel.text;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} has been deleted.
@@ -27,7 +26,7 @@ import javax.annotation.Nonnull;
  */
 public class TextChannelDeleteEvent extends GenericTextChannelEvent
 {
-    public TextChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel)
+    public TextChannelDeleteEvent(@NotNull JDA api, long responseNumber, @NotNull TextChannel channel)
     {
         super(api, responseNumber, channel);
     }

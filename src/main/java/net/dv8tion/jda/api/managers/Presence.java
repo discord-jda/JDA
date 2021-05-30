@@ -19,9 +19,8 @@ package net.dv8tion.jda.api.managers;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The Presence associated with the provided JDA instance
@@ -35,7 +34,7 @@ public interface Presence
      *
      * @return The current JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -45,7 +44,7 @@ public interface Presence
      * @return The {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus}
      *         of the current session
      */
-    @Nonnull
+    @NotNull
     OnlineStatus getStatus();
 
     /**

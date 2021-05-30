@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.events.channel.voice.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link VoiceChannel VoiceChannel}'s position changed.
@@ -31,7 +30,7 @@ public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEv
 {
     public static final String IDENTIFIER = "position";
 
-    public VoiceChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldPosition)
+    public VoiceChannelUpdatePositionEvent(@NotNull JDA api, long responseNumber, @NotNull VoiceChannel channel, int oldPosition)
     {
         super(api, responseNumber, channel, oldPosition, channel.getPositionRaw(), IDENTIFIER);
     }

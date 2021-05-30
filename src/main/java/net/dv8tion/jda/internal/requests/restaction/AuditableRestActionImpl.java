@@ -27,10 +27,10 @@ import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.EncodingUtil;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
@@ -69,28 +69,28 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
         super(api, route, data, handler);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> setCheck(BooleanSupplier checks)
     {
         return (AuditableRestAction<T>) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
+    public AuditableRestAction<T> timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (AuditableRestAction<T>) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<T> deadline(long timestamp)
     {
         return (AuditableRestAction<T>) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     public AuditableRestActionImpl<T> reason(@Nullable String reason)
     {
@@ -115,7 +115,7 @@ public class AuditableRestActionImpl<T> extends RestActionImpl<T> implements Aud
         return generateHeaders(headers, reason);
     }
 
-    @Nonnull
+    @NotNull
     private CaseInsensitiveMap<String, String> generateHeaders(CaseInsensitiveMap<String, String> headers, String reason)
     {
         if (headers == null)

@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.hooks;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -55,7 +55,7 @@ public class InterfacedEventManager implements IEventManager
      *         If the provided listener does not implement {@link net.dv8tion.jda.api.hooks.EventListener EventListener}
      */
     @Override
-    public void register(@Nonnull Object listener)
+    public void register(@NotNull Object listener)
     {
         if (!(listener instanceof EventListener))
         {
@@ -65,7 +65,7 @@ public class InterfacedEventManager implements IEventManager
     }
 
     @Override
-    public void unregister(@Nonnull Object listener)
+    public void unregister(@NotNull Object listener)
     {
         if (!(listener instanceof EventListener))
         {
@@ -79,7 +79,7 @@ public class InterfacedEventManager implements IEventManager
         listeners.remove(listener);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Object> getRegisteredListeners()
     {
@@ -87,7 +87,7 @@ public class InterfacedEventManager implements IEventManager
     }
 
     @Override
-    public void handle(@Nonnull GenericEvent event)
+    public void handle(@NotNull GenericEvent event)
     {
         for (EventListener listener : listeners)
         {

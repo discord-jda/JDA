@@ -16,7 +16,8 @@
 
 package net.dv8tion.jda.api.sharding;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.concurrent.ExecutorService;
 
 /**

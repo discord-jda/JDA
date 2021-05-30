@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public enum WebhookType
 {
@@ -52,7 +52,7 @@ public enum WebhookType
      *
      * @return The WebhookType or {@link #UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     public static WebhookType fromKey(int key)
     {
         for (WebhookType type : values())

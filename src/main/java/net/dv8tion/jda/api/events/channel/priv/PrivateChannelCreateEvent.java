@@ -21,8 +21,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.Event;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.PrivateChannel Private Channel} was created.
@@ -38,7 +37,7 @@ public class PrivateChannelCreateEvent extends Event
 {
     private final PrivateChannel channel;
 
-    public PrivateChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull PrivateChannel channel)
+    public PrivateChannelCreateEvent(@NotNull JDA api, long responseNumber, @NotNull PrivateChannel channel)
     {
         super(api, responseNumber);
         this.channel = channel;
@@ -50,7 +49,7 @@ public class PrivateChannelCreateEvent extends Event
      *
      * @return The User
      */
-    @Nonnull
+    @NotNull
     public User getUser()
     {
         return channel.getUser();
@@ -61,7 +60,7 @@ public class PrivateChannelCreateEvent extends Event
      *
      * @return The PrivateChannel
      */
-    @Nonnull
+    @NotNull
     public PrivateChannel getChannel()
     {
         return channel;

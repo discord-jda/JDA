@@ -27,8 +27,8 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -53,14 +53,14 @@ public class UserImpl extends UserById implements User
         this.api = api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
         return name;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getDiscriminator()
     {
@@ -73,14 +73,14 @@ public class UserImpl extends UserById implements User
         return avatarId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getDefaultAvatarId()
     {
         return String.valueOf(discriminator % 5);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAsTag()
     {
@@ -93,7 +93,7 @@ public class UserImpl extends UserById implements User
         return privateChannel != 0;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -117,7 +117,7 @@ public class UserImpl extends UserById implements User
         return channel != null ? channel : new PrivateChannelImpl(privateChannel, this);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Guild> getMutualGuilds()
     {
@@ -136,7 +136,7 @@ public class UserImpl extends UserById implements User
         return system;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDAImpl getJDA()
     {
@@ -150,7 +150,7 @@ public class UserImpl extends UserById implements User
         return fake;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<UserFlag> getFlags()
     {

@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the name of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -32,7 +31,7 @@ public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public GuildUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull String oldName)
+    public GuildUpdateNameEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull String oldName)
     {
         super(api, responseNumber, guild, oldName, guild.getName(), IDENTIFIER);
     }
@@ -42,7 +41,7 @@ public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The old name
      */
-    @Nonnull
+    @NotNull
     public String getOldName()
     {
         return getOldValue();
@@ -53,20 +52,20 @@ public class GuildUpdateNameEvent extends GenericGuildUpdateEvent<String>
      *
      * @return The new name
      */
-    @Nonnull
+    @NotNull
     public String getNewName()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

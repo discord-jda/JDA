@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.events.guild.member.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -46,7 +46,7 @@ public class GuildMemberUpdateBoostTimeEvent extends GenericGuildMemberUpdateEve
 {
     public static final String IDENTIFIER = "boost_time";
 
-    public GuildMemberUpdateBoostTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
+    public GuildMemberUpdateBoostTimeEvent(@NotNull JDA api, long responseNumber, @NotNull Member member, @Nullable OffsetDateTime previous)
     {
         super(api, responseNumber, member, previous, member.getTimeBoosted(), IDENTIFIER);
     }

@@ -22,9 +22,9 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class UserById implements User
         return this.id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAsMention()
     {
@@ -78,7 +78,7 @@ public class UserById implements User
         throw new UnsupportedOperationException("This User instance only wraps an ID. Other operations are unsupported");
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
@@ -86,7 +86,7 @@ public class UserById implements User
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getDiscriminator()
     {
@@ -102,7 +102,7 @@ public class UserById implements User
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getDefaultAvatarId()
     {
@@ -110,7 +110,7 @@ public class UserById implements User
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAsTag()
     {
@@ -125,7 +125,7 @@ public class UserById implements User
         return false;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<PrivateChannel> openPrivateChannel()
     {
@@ -133,7 +133,7 @@ public class UserById implements User
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Guild> getMutualGuilds()
     {
@@ -155,7 +155,7 @@ public class UserById implements User
         return false;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
@@ -163,7 +163,7 @@ public class UserById implements User
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<UserFlag> getFlags()
     {

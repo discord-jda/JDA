@@ -21,9 +21,8 @@ import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed.
@@ -39,7 +38,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
     protected final long userId;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
+    public GenericPrivateMessageReactionEvent(@NotNull JDA api, long responseNumber, @NotNull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.userId = userId;
@@ -51,7 +50,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The user id
      */
-    @Nonnull
+    @NotNull
     public String getUserId()
     {
         return Long.toUnsignedString(userId);
@@ -86,7 +85,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The message reaction
      */
-    @Nonnull
+    @NotNull
     public MessageReaction getReaction()
     {
         return reaction;
@@ -98,7 +97,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The message reaction emote
      */
-    @Nonnull
+    @NotNull
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();

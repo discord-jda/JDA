@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Category;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * An extension of {@link ChannelOrderAction ChannelOrderAction} with
@@ -42,6 +41,6 @@ public interface CategoryOrderAction extends ChannelOrderAction
      * @return The {@link net.dv8tion.jda.api.entities.Category Category}
      *         of this CategoryOrderAction.
      */
-    @Nonnull
+    @NotNull
     Category getCategory();
 }

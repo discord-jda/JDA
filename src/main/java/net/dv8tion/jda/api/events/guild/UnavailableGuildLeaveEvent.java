@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.Event;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that you left a {@link net.dv8tion.jda.api.entities.Guild Guild} that is not yet available.
@@ -31,7 +30,7 @@ public class UnavailableGuildLeaveEvent extends Event
 {
     private final long guildId;
 
-    public UnavailableGuildLeaveEvent(@Nonnull JDA api, long responseNumber, long guildId)
+    public UnavailableGuildLeaveEvent(@NotNull JDA api, long responseNumber, long guildId)
     {
         super(api, responseNumber);
         this.guildId = guildId;
@@ -42,7 +41,7 @@ public class UnavailableGuildLeaveEvent extends Event
      *
      * @return The id for the guild
      */
-    @Nonnull
+    @NotNull
     public String getGuildId()
     {
         return Long.toUnsignedString(guildId);

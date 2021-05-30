@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added to a Message in a Guild
@@ -34,7 +33,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEvent
 {
-    public GuildMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull MessageReaction reaction)
+    public GuildMessageReactionAddEvent(@NotNull JDA api, long responseNumber, @NotNull Member member, @NotNull MessageReaction reaction)
     {
         super(api, responseNumber, member, reaction, member.getIdLong());
     }
@@ -46,7 +45,7 @@ public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEve
      *
      * @see    #getUserIdLong()
      */
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ConstantConditions")
     public User getUser()
@@ -59,7 +58,7 @@ public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEve
      *
      * @return The member instance for the reacting user
      */
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ConstantConditions")
     public Member getMember()

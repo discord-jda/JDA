@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.events.message.priv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.PrivateChannel;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -35,7 +35,7 @@ public class PrivateMessageEmbedEvent extends GenericPrivateMessageEvent
 {
     private final List<MessageEmbed> embeds;
 
-    public PrivateMessageEmbedEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull PrivateChannel channel, @Nonnull List<MessageEmbed> embeds)
+    public PrivateMessageEmbedEvent(@NotNull JDA api, long responseNumber, long messageId, @NotNull PrivateChannel channel, @NotNull List<MessageEmbed> embeds)
     {
         super(api, responseNumber, messageId, channel);
         this.embeds = embeds;
@@ -46,7 +46,7 @@ public class PrivateMessageEmbedEvent extends GenericPrivateMessageEvent
      *
      * @return The MessageEmbeds
      */
-    @Nonnull
+    @NotNull
     public List<MessageEmbed> getMessageEmbeds()
     {
         return embeds;

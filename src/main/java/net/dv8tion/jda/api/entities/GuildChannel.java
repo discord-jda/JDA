@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.InviteAction;
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -44,7 +44,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @return The channel type
      */
-    @Nonnull
+    @NotNull
     ChannelType getType();
 
     /**
@@ -53,7 +53,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @return The name of this GuildChannel
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -61,7 +61,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @return Never-null {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -86,7 +86,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
      */
-    @Nonnull
+    @NotNull
     List<Member> getMembers();
 
     /**
@@ -118,7 +118,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -137,7 +137,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *         relating to the provided Member or Role.
      */
     @Nullable
-    PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
+    PermissionOverride getPermissionOverride(@NotNull IPermissionHolder permissionHolder);
 
     /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} that are part
@@ -152,7 +152,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      * @return Possibly-empty immutable list of all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
      *         for this {@link GuildChannel GuildChannel}.
      */
-    @Nonnull
+    @NotNull
     List<PermissionOverride> getPermissionOverrides();
 
     /**
@@ -165,7 +165,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *         for {@link net.dv8tion.jda.api.entities.Member Member}
      *         for this {@link GuildChannel GuildChannel}.
      */
-    @Nonnull
+    @NotNull
     List<PermissionOverride> getMemberPermissionOverrides();
 
     /**
@@ -176,7 +176,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *         for {@link net.dv8tion.jda.api.entities.Role Roles}
      *         for this {@link GuildChannel GuildChannel}.
      */
-    @Nonnull
+    @NotNull
     List<PermissionOverride> getRolePermissionOverrides();
 
     /**
@@ -228,9 +228,9 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    ChannelAction<? extends GuildChannel> createCopy(@Nonnull Guild guild);
+    ChannelAction<? extends GuildChannel> createCopy(@NotNull Guild guild);
 
     /**
      * Creates a copy of the specified {@link GuildChannel GuildChannel}.
@@ -260,7 +260,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default ChannelAction<? extends GuildChannel> createCopy()
     {
@@ -280,7 +280,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @return The ChannelManager of this GuildChannel
      */
-    @Nonnull
+    @NotNull
     ChannelManager getManager();
 
     /**
@@ -305,7 +305,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -337,9 +337,9 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified permission holder
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
+    PermissionOverrideAction createPermissionOverride(@NotNull IPermissionHolder permissionHolder);
 
     /**
      * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
@@ -357,9 +357,9 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      * @return {@link PermissionOverrideAction PermissionOverrideAction}
      *         Provides the newly created PermissionOverride for the specified permission holder
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
+    PermissionOverrideAction putPermissionOverride(@NotNull IPermissionHolder permissionHolder);
 
     /**
      * Creates a new override or updates an existing one.
@@ -378,9 +378,9 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    default PermissionOverrideAction upsertPermissionOverride(@NotNull IPermissionHolder permissionHolder)
     {
         PermissionOverride override = getPermissionOverride(permissionHolder);
         if (override != null)
@@ -402,7 +402,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      * 
      * @see    InviteAction
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     InviteAction createInvite();
 
@@ -419,7 +419,7 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      *
      * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites()
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     RestAction<List<Invite>> retrieveInvites();
 }

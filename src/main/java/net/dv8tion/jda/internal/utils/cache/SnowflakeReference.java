@@ -18,8 +18,8 @@ package net.dv8tion.jda.internal.utils.cache;
 
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.lang.ref.WeakReference;
 import java.util.function.LongFunction;
 
@@ -42,7 +42,7 @@ public class SnowflakeReference<T extends ISnowflake> implements ISnowflake
         this.id = referent.getIdLong();
     }
 
-    @Nonnull
+    @NotNull
     public T resolve()
     {
         T referent = reference.get();

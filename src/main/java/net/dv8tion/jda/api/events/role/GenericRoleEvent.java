@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.Event;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} was created/deleted/changed.
@@ -33,7 +32,7 @@ public abstract class GenericRoleEvent extends Event
 {
     protected final Role role;
 
-    public GenericRoleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role)
+    public GenericRoleEvent(@NotNull JDA api, long responseNumber, @NotNull Role role)
     {
         super(api, responseNumber);
         this.role = role;
@@ -44,7 +43,7 @@ public abstract class GenericRoleEvent extends Event
      *
      * @return The role for this event
      */
-    @Nonnull
+    @NotNull
     public Role getRole()
     {
         return role;
@@ -55,7 +54,7 @@ public abstract class GenericRoleEvent extends Event
      *
      * @return The guild of the role
      */
-    @Nonnull
+    @NotNull
     public Guild getGuild()
     {
         return role.getGuild();

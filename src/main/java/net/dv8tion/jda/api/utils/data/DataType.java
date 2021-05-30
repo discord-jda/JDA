@@ -16,8 +16,9 @@
 
 package net.dv8tion.jda.api.utils.data;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public enum DataType
      *
      * @return The DataType constant or {@link #UNKNOWN}
      */
-    @Nonnull
+    @NotNull
     public static DataType getType(@Nullable Object value)
     {
         for (DataType type : values())

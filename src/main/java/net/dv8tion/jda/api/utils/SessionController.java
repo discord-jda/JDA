@@ -21,8 +21,7 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.internal.utils.tuple.Pair;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Controls states and behaviour of one or multiple {@link net.dv8tion.jda.api.JDA JDA} instances.
@@ -114,7 +113,7 @@ public interface SessionController
      * @param  node
      *         The {@link net.dv8tion.jda.api.utils.SessionController.SessionConnectNode SessionConnectNode}
      */
-    void appendSession(@Nonnull SessionConnectNode node);
+    void appendSession(@NotNull SessionConnectNode node);
 
     /**
      * Called by a JDA session when a shutdown has been requested.
@@ -124,7 +123,7 @@ public interface SessionController
      * @param node
      *        The {@link net.dv8tion.jda.api.utils.SessionController.SessionConnectNode SessionConnectNode} to remove from the queue.
      */
-    void removeSession(@Nonnull SessionConnectNode node);
+    void removeSession(@NotNull SessionConnectNode node);
 
     /**
      * Provides the cross-session global REST ratelimit it received through {@link #setGlobalRatelimit(long)}.
@@ -150,8 +149,8 @@ public interface SessionController
      *
      * @return The gateway endpoint
      */
-    @Nonnull
-    String getGateway(@Nonnull JDA api);
+    @NotNull
+    String getGateway(@NotNull JDA api);
 
     /**
      * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
@@ -169,13 +168,13 @@ public interface SessionController
      *         Use {@link #getShardedGateway(JDA)} instead, an implementation for this is ignored
      *         if {@link #getShardedGateway(JDA)} is implemented instead.
      */
-    @Nonnull
+    @NotNull
     @Deprecated
     @ForRemoval
     @DeprecatedSince("4.0.0")
     @ReplaceWith("getShardedGateway(api)")
     @SuppressWarnings("DeprecatedIsStillUsed")
-    Pair<String, Integer> getGatewayBot(@Nonnull JDA api);
+    Pair<String, Integer> getGatewayBot(@NotNull JDA api);
 
     /**
      * Called by {@link net.dv8tion.jda.api.sharding.DefaultShardManager DefaultShardManager}
@@ -189,9 +188,9 @@ public interface SessionController
      *
      * @see    #getGateway(net.dv8tion.jda.api.JDA)
      */
-    @Nonnull
+    @NotNull
     @SuppressWarnings({"deprecation", "RedundantSuppression"})
-    default ShardedGateway getShardedGateway(@Nonnull JDA api)
+    default ShardedGateway getShardedGateway(@NotNull JDA api)
     {
         Pair<String, Integer> tuple = getGatewayBot(api);
         return new ShardedGateway(tuple.getLeft(), tuple.getRight());
@@ -281,7 +280,7 @@ public interface SessionController
          *
          * @return The JDA instance
          */
-        @Nonnull
+        @NotNull
         JDA getJDA();
 
         /**
@@ -290,7 +289,7 @@ public interface SessionController
          *
          * @return The ShardInfo
          */
-        @Nonnull
+        @NotNull
         JDA.ShardInfo getShardInfo();
 
         /**

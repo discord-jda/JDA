@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.events.emote.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -41,7 +41,7 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
 {
     public static final String IDENTIFIER = "roles";
 
-    public EmoteUpdateRolesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote, @Nonnull List<Role> oldRoles)
+    public EmoteUpdateRolesEvent(@NotNull JDA api, long responseNumber, @NotNull Emote emote, @NotNull List<Role> oldRoles)
     {
         super(api, responseNumber, emote, oldRoles, emote.getRoles(), IDENTIFIER);
     }
@@ -51,7 +51,7 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
      *
      * @return The old role whitelist
      */
-    @Nonnull
+    @NotNull
     public List<Role> getOldRoles()
     {
         return getOldValue();
@@ -62,20 +62,20 @@ public class EmoteUpdateRolesEvent extends GenericEmoteUpdateEvent<List<Role>>
      *
      * @return The new role whitelist
      */
-    @Nonnull
+    @NotNull
     public List<Role> getNewRoles()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Role> getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Role> getNewValue()
     {

@@ -57,10 +57,10 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -122,7 +122,7 @@ public class GuildImpl implements Guild
             memberPresences = null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<EnumSet<Region>> retrieveRegions(boolean includeDeprecated)
     {
@@ -145,9 +145,9 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MemberAction addMember(@Nonnull String accessToken, @Nonnull String userId)
+    public MemberAction addMember(@NotNull String accessToken, @NotNull String userId)
     {
         Checks.notBlank(accessToken, "Access-Token");
         Checks.isSnowflake(userId, "User ID");
@@ -194,7 +194,7 @@ public class GuildImpl implements Guild
         return memberCount;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
@@ -207,7 +207,7 @@ public class GuildImpl implements Guild
         return iconId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Set<String> getFeatures()
     {
@@ -220,7 +220,7 @@ public class GuildImpl implements Guild
         return splashId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Deprecated
     public RestAction<String> retrieveVanityUrl()
@@ -244,7 +244,7 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    @Nonnull
+    @NotNull
     public RestAction<VanityInvite> retrieveVanityInvite()
     {
         checkPermission(Permission.MANAGE_SERVER);
@@ -261,7 +261,7 @@ public class GuildImpl implements Guild
         return description;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Locale getLocale()
     {
@@ -275,7 +275,7 @@ public class GuildImpl implements Guild
         return banner;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public BoostTier getBoostTier()
     {
@@ -288,7 +288,7 @@ public class GuildImpl implements Guild
         return boostCount;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("ConstantConditions") // can't be null here
     public List<Member> getBoosters()
@@ -311,7 +311,7 @@ public class GuildImpl implements Guild
         return maxPresences;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<MetaData> retrieveMetaData()
     {
@@ -353,7 +353,7 @@ public class GuildImpl implements Guild
         return communityUpdatesChannel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<List<Webhook>> retrieveWebhooks()
     {
@@ -396,14 +396,14 @@ public class GuildImpl implements Guild
         return ownerId;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Timeout getAfkTimeout()
     {
         return afkTimeout;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getRegionRaw()
     {
@@ -411,12 +411,12 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public boolean isMember(@Nonnull User user)
+    public boolean isMember(@NotNull User user)
     {
         return memberCache.get(user.getIdLong()) != null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Member getSelfMember()
     {
@@ -427,62 +427,62 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public Member getMember(@Nonnull User user)
+    public Member getMember(@NotNull User user)
     {
         Checks.notNull(user, "User");
         return getMemberById(user.getIdLong());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MemberCacheView getMemberCache()
     {
         return memberCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SortedSnowflakeCacheView<Category> getCategoryCache()
     {
         return categoryCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache()
     {
         return storeChannelCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SortedSnowflakeCacheView<TextChannel> getTextChannelCache()
     {
         return textChannelCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
         return voiceChannelCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SortedSnowflakeCacheView<Role> getRoleCache()
     {
         return roleCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public SnowflakeCacheView<Emote> getEmoteCache()
     {
         return emoteCache;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<GuildChannel> getChannels(boolean includeHidden)
     {
@@ -545,7 +545,7 @@ public class GuildImpl implements Guild
         return Collections.unmodifiableList(channels);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<List<ListedEmote>> retrieveEmotes()
     {
@@ -566,9 +566,9 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<ListedEmote> retrieveEmoteById(@Nonnull String id)
+    public RestAction<ListedEmote> retrieveEmoteById(@NotNull String id)
     {
         Checks.isSnowflake(id, "Emote ID");
 
@@ -593,7 +593,7 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestActionImpl<List<Ban>> retrieveBanList()
     {
@@ -617,9 +617,9 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Ban> retrieveBanById(@Nonnull String userId)
+    public RestAction<Ban> retrieveBanById(@NotNull String userId)
     {
         if (!getSelfMember().hasPermission(Permission.BAN_MEMBERS))
             throw new InsufficientPermissionException(this, Permission.BAN_MEMBERS);
@@ -637,7 +637,7 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Integer> retrievePrunableMemberCount(int days)
     {
@@ -650,7 +650,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) -> response.getObject().getInt("pruned"));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Role getPublicRole()
     {
@@ -667,7 +667,7 @@ public class GuildImpl implements Guild
                                     .min(Comparator.naturalOrder()).orElse(null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public GuildManager getManager()
     {
@@ -676,14 +676,14 @@ public class GuildImpl implements Guild
         return manager;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditLogPaginationAction retrieveAuditLogs()
     {
         return new AuditLogPaginationActionImpl(this);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> leave()
     {
@@ -694,7 +694,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> delete()
     {
@@ -704,7 +704,7 @@ public class GuildImpl implements Guild
         return delete(null);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> delete(String mfaCode)
     {
@@ -722,7 +722,7 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, mfaBody);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AudioManager getAudioManager()
     {
@@ -749,14 +749,14 @@ public class GuildImpl implements Guild
         return mng;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDAImpl getJDA()
     {
         return api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<GuildVoiceState> getVoiceStates()
     {
@@ -767,28 +767,28 @@ public class GuildImpl implements Guild
                     .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public VerificationLevel getVerificationLevel()
     {
         return verificationLevel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public NotificationLevel getDefaultNotificationLevel()
     {
         return defaultNotificationLevel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MFALevel getRequiredMFALevel()
     {
         return mfaLevel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ExplicitContentLevel getExplicitContentLevel()
     {
@@ -833,7 +833,7 @@ public class GuildImpl implements Guild
         return available;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @Deprecated
     public CompletableFuture<Void> retrieveMembers()
@@ -861,9 +861,9 @@ public class GuildImpl implements Guild
         return future;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<Void> loadMembers(@Nonnull Consumer<Member> callback)
+    public Task<Void> loadMembers(@NotNull Consumer<Member> callback)
     {
         Checks.notNull(callback, "Callback");
         if (!getJDA().isIntent(GatewayIntent.GUILD_MEMBERS))
@@ -898,7 +898,7 @@ public class GuildImpl implements Guild
         return null;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Member> retrieveMemberById(long id, boolean update)
     {
@@ -918,9 +918,9 @@ public class GuildImpl implements Guild
                 });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids)
+    public Task<List<Member>> retrieveMembersByIds(boolean includePresence, @NotNull long... ids)
     {
         Checks.notNull(ids, "ID Array");
         Checks.check(!includePresence || api.isIntent(GatewayIntent.GUILD_PRESENCES),
@@ -946,10 +946,10 @@ public class GuildImpl implements Guild
         return new GatewayTask<>(result, () -> handle.cancel(false));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
+    public Task<List<Member>> retrieveMembersByPrefix(@NotNull String prefix, int limit)
     {
         Checks.notEmpty(prefix, "Prefix");
         Checks.positive(limit, "Limit");
@@ -978,7 +978,7 @@ public class GuildImpl implements Guild
         return id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {
@@ -998,9 +998,9 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel)
+    public RestAction<Void> moveVoiceMember(@NotNull Member member, @Nullable VoiceChannel voiceChannel)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -1029,9 +1029,9 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> modifyNickname(@Nonnull Member member, String nickname)
+    public AuditableRestAction<Void> modifyNickname(@NotNull Member member, String nickname)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -1061,9 +1061,9 @@ public class GuildImpl implements Guild
         }).setCacheCheck(() -> !Objects.equals(nickname, member.getNickname()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Integer> prune(int days, boolean wait, @Nonnull Role... roles)
+    public AuditableRestAction<Integer> prune(int days, boolean wait, @NotNull Role... roles)
     {
         checkPermission(Permission.KICK_MEMBERS);
 
@@ -1087,9 +1087,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body, (response, request) -> response.getObject().getInt("pruned", 0));
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull Member member, String reason)
+    public AuditableRestAction<Void> kick(@NotNull Member member, String reason)
     {
         Checks.notNull(member, "member");
         checkGuild(member.getGuild(), "member");
@@ -1098,9 +1098,9 @@ public class GuildImpl implements Guild
         return kick0(member.getUser().getId(), reason);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> kick(@Nonnull String userId, @Nullable String reason)
+    public AuditableRestAction<Void> kick(@NotNull String userId, @Nullable String reason)
     {
         Member member = getMemberById(userId);
         if (member != null)
@@ -1111,8 +1111,8 @@ public class GuildImpl implements Guild
         return kick0(userId, reason);
     }
 
-    @Nonnull
-    private AuditableRestAction<Void> kick0(@Nonnull String userId, @Nullable String reason)
+    @NotNull
+    private AuditableRestAction<Void> kick0(@NotNull String userId, @Nullable String reason)
     {
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
         if (!Helpers.isBlank(reason))
@@ -1123,9 +1123,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> ban(@Nonnull User user, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@NotNull User user, int delDays, String reason)
     {
         Checks.notNull(user, "User");
         checkPermission(Permission.BAN_MEMBERS);
@@ -1136,9 +1136,9 @@ public class GuildImpl implements Guild
         return ban0(user.getId(), delDays, reason);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> ban(@Nonnull String userId, int delDays, String reason)
+    public AuditableRestAction<Void> ban(@NotNull String userId, int delDays, String reason)
     {
         Checks.notNull(userId, "User");
         checkPermission(Permission.BAN_MEMBERS);
@@ -1150,8 +1150,8 @@ public class GuildImpl implements Guild
         return ban0(userId, delDays, reason);
     }
 
-    @Nonnull
-    private AuditableRestAction<Void> ban0(@Nonnull String userId, int delDays, String reason)
+    @NotNull
+    private AuditableRestAction<Void> ban0(@NotNull String userId, int delDays, String reason)
     {
         Checks.notNegative(delDays, "Deletion Days");
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
@@ -1169,9 +1169,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, params);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> unban(@Nonnull String userId)
+    public AuditableRestAction<Void> unban(@NotNull String userId)
     {
         Checks.isSnowflake(userId, "User ID");
         checkPermission(Permission.BAN_MEMBERS);
@@ -1180,9 +1180,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> deafen(@Nonnull Member member, boolean deafen)
+    public AuditableRestAction<Void> deafen(@NotNull Member member, boolean deafen)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -1202,9 +1202,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> mute(@Nonnull Member member, boolean mute)
+    public AuditableRestAction<Void> mute(@NotNull Member member, boolean mute)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -1224,9 +1224,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> addRoleToMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> addRoleToMember(@NotNull Member member, @NotNull Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
@@ -1239,9 +1239,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> removeRoleFromMember(@Nonnull Member member, @Nonnull Role role)
+    public AuditableRestAction<Void> removeRoleFromMember(@NotNull Member member, @NotNull Role role)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(role, "Role");
@@ -1254,9 +1254,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
+    public AuditableRestAction<Void> modifyMemberRoles(@NotNull Member member, Collection<Role> rolesToAdd, Collection<Role> rolesToRemove)
     {
         Checks.notNull(member, "Member");
         checkGuild(member.getGuild(), "Member");
@@ -1277,9 +1277,9 @@ public class GuildImpl implements Guild
         return modifyMemberRoles(member, currentRoles);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Collection<Role> roles)
+    public AuditableRestAction<Void> modifyMemberRoles(@NotNull Member member, @NotNull Collection<Role> roles)
     {
         Checks.notNull(member, "Member");
         Checks.notNull(roles, "Roles");
@@ -1325,9 +1325,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Void> transferOwnership(@Nonnull Member newOwner)
+    public AuditableRestAction<Void> transferOwnership(@NotNull Member newOwner)
     {
         Checks.notNull(newOwner, "Member");
         checkGuild(newOwner.getGuild(), "Member");
@@ -1344,9 +1344,9 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(getJDA(), route, body);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name, Category parent)
+    public ChannelAction<TextChannel> createTextChannel(@NotNull String name, Category parent)
     {
         if (parent != null)
         {
@@ -1366,9 +1366,9 @@ public class GuildImpl implements Guild
         return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, Category parent)
+    public ChannelAction<VoiceChannel> createVoiceChannel(@NotNull String name, Category parent)
     {
         if (parent != null)
         {
@@ -1388,9 +1388,9 @@ public class GuildImpl implements Guild
         return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public ChannelAction<Category> createCategory(@Nonnull String name)
+    public ChannelAction<Category> createCategory(@NotNull String name)
     {
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
@@ -1400,7 +1400,7 @@ public class GuildImpl implements Guild
         return new ChannelActionImpl<>(Category.class, name, this, ChannelType.CATEGORY);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RoleAction createRole()
     {
@@ -1408,9 +1408,9 @@ public class GuildImpl implements Guild
         return new RoleActionImpl(this);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
+    public AuditableRestAction<Emote> createEmote(@NotNull String name, @NotNull Icon icon, @NotNull Role... roles)
     {
         checkPermission(Permission.MANAGE_EMOTES);
         Checks.notBlank(name, "Emote name");
@@ -1432,46 +1432,46 @@ public class GuildImpl implements Guild
         });
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelOrderAction modifyCategoryPositions()
     {
         return new ChannelOrderActionImpl(this, ChannelType.CATEGORY.getSortBucket());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelOrderAction modifyTextChannelPositions()
     {
         return new ChannelOrderActionImpl(this, ChannelType.TEXT.getSortBucket());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelOrderAction modifyVoiceChannelPositions()
     {
         return new ChannelOrderActionImpl(this, ChannelType.VOICE.getSortBucket());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CategoryOrderAction modifyTextChannelPositions(@Nonnull Category category)
+    public CategoryOrderAction modifyTextChannelPositions(@NotNull Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
         return new CategoryOrderActionImpl(category, ChannelType.TEXT.getSortBucket());
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public CategoryOrderAction modifyVoiceChannelPositions(@Nonnull Category category)
+    public CategoryOrderAction modifyVoiceChannelPositions(@NotNull Category category)
     {
         Checks.notNull(category, "Category");
         checkGuild(category.getGuild(), "Category");
         return new CategoryOrderActionImpl(category, ChannelType.VOICE.getSortBucket());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RoleOrderAction modifyRolePositions(boolean useAscendingOrder)
     {

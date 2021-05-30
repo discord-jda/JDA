@@ -22,10 +22,10 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.managers.EmoteManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -76,7 +76,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @see    #canProvideRoles()
      */
-    @Nonnull
+    @NotNull
     List<Role> getRoles();
 
     /**
@@ -113,7 +113,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return String representation of this emote's name
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -148,7 +148,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return The JDA instance of this Emote
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -174,7 +174,7 @@ public interface Emote extends IMentionable, IFakeable
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         The RestAction to delete this Emote.
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -193,7 +193,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return The EmoteManager for this Emote
      */
-    @Nonnull
+    @NotNull
     EmoteManager getManager();
 
     /**
@@ -211,7 +211,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @return Discord CDN link to the Emote's image
      */
-    @Nonnull
+    @NotNull
     default String getImageUrl()
     {
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
@@ -225,7 +225,7 @@ public interface Emote extends IMentionable, IFakeable
      *
      * @see    <a href="https://discord.com/developers/docs/resources/channel#message-formatting">Message Formatting</a>
      */
-    @Nonnull
+    @NotNull
     @Override
     default String getAsMention()
     {

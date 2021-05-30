@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.JDALogger;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
-import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -45,9 +45,9 @@ public class GatewayTask<T> implements Task<T>
         return true;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<T> onError(@Nonnull Consumer<? super Throwable> callback)
+    public Task<T> onError(@NotNull Consumer<? super Throwable> callback)
     {
         Checks.notNull(callback, "Callback");
         Consumer<Throwable> failureHandler = ContextException.here((error) -> log.error("Task Failure callback threw error", error));
@@ -67,9 +67,9 @@ public class GatewayTask<T> implements Task<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public Task<T> onSuccess(@Nonnull Consumer<? super T> callback)
+    public Task<T> onSuccess(@NotNull Consumer<? super T> callback)
     {
         Checks.notNull(callback, "Callback");
         Consumer<Throwable> failureHandler = ContextException.here((error) -> log.error("Task Success callback threw error", error));
@@ -88,7 +88,7 @@ public class GatewayTask<T> implements Task<T>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public T get()
     {

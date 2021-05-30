@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.internal.JDAImpl;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 /**
@@ -48,34 +48,34 @@ public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Ac
 
     private final Member member;
 
-    public UserUpdateActivityOrderEvent(@Nonnull JDAImpl api, long responseNumber, @Nonnull List<Activity> previous, @Nonnull Member member)
+    public UserUpdateActivityOrderEvent(@NotNull JDAImpl api, long responseNumber, @NotNull List<Activity> previous, @NotNull Member member)
     {
         super(api, responseNumber, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
         return member.getGuild();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Member getMember()
     {
         return member;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Activity> getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<Activity> getNewValue()
     {

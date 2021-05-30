@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.utils.data.DataObject;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Wrapper for the raw dispatch event received from discord.
@@ -44,7 +43,7 @@ public class RawGatewayEvent extends Event
 {
     private final DataObject data;
 
-    public RawGatewayEvent(@Nonnull JDA api, long responseNumber, @Nonnull DataObject data)
+    public RawGatewayEvent(@NotNull JDA api, long responseNumber, @NotNull DataObject data)
     {
         super(api, responseNumber);
         this.data = data;
@@ -62,7 +61,7 @@ public class RawGatewayEvent extends Event
      *
      * @return The data object
      */
-    @Nonnull
+    @NotNull
     public DataObject getPackage()
     {
         return data;
@@ -73,7 +72,7 @@ public class RawGatewayEvent extends Event
      *
      * @return The payload as a {@link net.dv8tion.jda.api.utils.data.DataObject} instance
      */
-    @Nonnull
+    @NotNull
     public DataObject getPayload()
     {
         return data.getObject("d");
@@ -84,7 +83,7 @@ public class RawGatewayEvent extends Event
      *
      * @return The type of event.
      */
-    @Nonnull
+    @NotNull
     public String getType()
     {
         return data.getString("t");

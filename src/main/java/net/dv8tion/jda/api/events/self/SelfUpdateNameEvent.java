@@ -17,8 +17,7 @@
 package net.dv8tion.jda.api.events.self;
 
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the name of the current user changed.
@@ -31,7 +30,7 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "name";
 
-    public SelfUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull String oldName)
+    public SelfUpdateNameEvent(@NotNull JDA api, long responseNumber, @NotNull String oldName)
     {
         super(api, responseNumber, oldName, api.getSelfUser().getName(), IDENTIFIER);
     }
@@ -41,7 +40,7 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The old name
      */
-    @Nonnull
+    @NotNull
     public String getOldName()
     {
         return getOldValue();
@@ -52,20 +51,20 @@ public class SelfUpdateNameEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The new name
      */
-    @Nonnull
+    @NotNull
     public String getNewName()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

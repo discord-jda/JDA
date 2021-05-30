@@ -17,9 +17,9 @@
 package net.dv8tion.jda.internal.utils.config.sharding;
 
 import net.dv8tion.jda.api.sharding.ThreadPoolProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -85,7 +85,7 @@ public class ThreadingProviderConfig
         return audioPoolProvider;
     }
 
-    @Nonnull
+    @NotNull
     public static ThreadingProviderConfig getDefault()
     {
         return new ThreadingProviderConfig(null, null, null, null, null, null);

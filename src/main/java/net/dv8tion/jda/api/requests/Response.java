@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.utils.IOFunction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.utils.IOUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Optional;
 import java.util.Set;
@@ -47,13 +47,13 @@ public class Response implements Closeable
     private boolean attemptedParsing = false;
     private Exception exception;
 
-    public Response(@Nullable final okhttp3.Response response, @Nonnull final Exception exception, @Nonnull final Set<String> cfRays)
+    public Response(@Nullable final okhttp3.Response response, @NotNull final Exception exception, @NotNull final Set<String> cfRays)
     {
         this(response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
         this.exception = exception;
     }
 
-    public Response(@Nullable final okhttp3.Response response, final int code, @Nonnull final String message, final long retryAfter, @Nonnull final Set<String> cfRays)
+    public Response(@Nullable final okhttp3.Response response, final int code, @NotNull final String message, final long retryAfter, @NotNull final Set<String> cfRays)
     {
         this.rawResponse = response;
         this.code = code;
@@ -77,48 +77,48 @@ public class Response implements Closeable
         }
     }
 
-    public Response(final long retryAfter, @Nonnull final Set<String> cfRays)
+    public Response(final long retryAfter, @NotNull final Set<String> cfRays)
     {
         this(null, 429, "TOO MANY REQUESTS", retryAfter, cfRays);
     }
 
-    public Response(@Nonnull final okhttp3.Response response, final long retryAfter, @Nonnull final Set<String> cfRays)
+    public Response(@NotNull final okhttp3.Response response, final long retryAfter, @NotNull final Set<String> cfRays)
     {
         this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
-    @Nonnull
+    @NotNull
     public DataArray getArray()
     {
         return get(DataArray.class, JSON_SERIALIZE_ARRAY);
     }
 
-    @Nonnull
+    @NotNull
     public Optional<DataArray> optArray()
     {
         return parseBody(true, DataArray.class, JSON_SERIALIZE_ARRAY);
     }
 
-    @Nonnull
+    @NotNull
     public DataObject getObject()
     {
         return get(DataObject.class, JSON_SERIALIZE_OBJECT);
     }
 
-    @Nonnull
+    @NotNull
     public Optional<DataObject> optObject()
     {
         return parseBody(true, DataObject.class, JSON_SERIALIZE_OBJECT);
     }
 
-    @Nonnull
+    @NotNull
     public String getString()
     {
         return parseBody(String.class, this::readString)
             .orElseGet(() -> fallbackString == null ? "N/A" : fallbackString);
     }
 
-    @Nonnull
+    @NotNull
     public <T> T get(Class<T> clazz, IOFunction<BufferedReader, T> parser)
     {
         return parseBody(clazz, parser).orElseThrow(IllegalStateException::new);
@@ -130,7 +130,7 @@ public class Response implements Closeable
         return this.rawResponse;
     }
 
-    @Nonnull
+    @NotNull
     public Set<String> getCFRays()
     {
         return cfRays;

@@ -19,9 +19,9 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -64,7 +64,7 @@ public class DataMessage extends AbstractMessage
         return mentionedUsers;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageType getType()
     {
@@ -103,7 +103,7 @@ public class DataMessage extends AbstractMessage
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<MessageEmbed> getEmbeds()
     {

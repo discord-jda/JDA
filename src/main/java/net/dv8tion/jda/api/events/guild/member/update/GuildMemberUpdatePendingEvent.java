@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.guild.member.update;
 import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link Member Member} has agreed to Membership Screening requirements.
@@ -49,7 +48,7 @@ public class GuildMemberUpdatePendingEvent extends GenericGuildMemberUpdateEvent
 {
     public static final String IDENTIFIER = "pending";
 
-    public GuildMemberUpdatePendingEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, boolean previous)
+    public GuildMemberUpdatePendingEvent(@NotNull JDA api, long responseNumber, @NotNull Member member, boolean previous)
     {
         super(api, responseNumber, member, previous, member.isPending(), IDENTIFIER);
     }

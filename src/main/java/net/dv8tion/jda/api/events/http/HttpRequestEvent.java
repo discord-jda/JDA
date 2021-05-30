@@ -26,9 +26,9 @@ import net.dv8tion.jda.internal.requests.Route.CompiledRoute;
 import okhttp3.Headers;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -41,7 +41,7 @@ public class HttpRequestEvent extends Event
     private final Request<?> request;
     private final Response response;
 
-    public HttpRequestEvent(@Nonnull final Request<?> request, @Nonnull final Response response)
+    public HttpRequestEvent(@NotNull final Request<?> request, @NotNull final Response response)
     {
         super(request.getJDA());
 
@@ -49,7 +49,7 @@ public class HttpRequestEvent extends Event
         this.response = response;
     }
 
-    @Nonnull
+    @NotNull
     public Request<?> getRequest()
     {
         return this.request;
@@ -121,19 +121,19 @@ public class HttpRequestEvent extends Event
         return this.response.getRawResponse();
     }
 
-    @Nonnull
+    @NotNull
     public Set<String> getCFRays()
     {
         return this.response.getCFRays();
     }
 
-    @Nonnull
+    @NotNull
     public RestAction<?> getRestAction()
     {
         return this.request.getRestAction();
     }
 
-    @Nonnull
+    @NotNull
     public CompiledRoute getRoute()
     {
         return this.request.getRoute();

@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.message.guild.react;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.guild.GenericGuildMessageEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the reactions for a {@link net.dv8tion.jda.api.entities.Message Message} were cleared by a moderator in a guild.
@@ -33,7 +32,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildMessageReactionRemoveAllEvent extends GenericGuildMessageEvent
 {
-    public GuildMessageReactionRemoveAllEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel)
+    public GuildMessageReactionRemoveAllEvent(@NotNull JDA api, long responseNumber, long messageId, @NotNull TextChannel channel)
     {
         super(api, responseNumber, messageId, channel);
     }

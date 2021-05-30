@@ -30,9 +30,9 @@ import net.dv8tion.jda.internal.entities.PermissionOverrideImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.PermissionUtil;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -93,28 +93,28 @@ public class PermissionOverrideActionImpl
         };
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverrideActionImpl setCheck(BooleanSupplier checks)
     {
         return (PermissionOverrideActionImpl) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public PermissionOverrideActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
+    public PermissionOverrideActionImpl timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (PermissionOverrideActionImpl) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverrideActionImpl deadline(long timestamp)
     {
         return (PermissionOverrideActionImpl) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverrideAction resetAllow()
     {
@@ -123,7 +123,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverrideAction resetDeny()
     {
@@ -132,7 +132,7 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public GuildChannel getChannel()
     {
@@ -181,7 +181,7 @@ public class PermissionOverrideActionImpl
         return isRole;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setAllow(long allowBits)
@@ -193,14 +193,14 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverrideAction grant(long allowBits)
     {
         return setAllow(getCurrentAllow() | allowBits);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setDeny(long denyBits)
@@ -212,14 +212,14 @@ public class PermissionOverrideActionImpl
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverrideAction deny(long denyBits)
     {
         return setDeny(getCurrentDeny() | denyBits);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public PermissionOverrideAction clear(long inheritedBits)
     {
@@ -243,7 +243,7 @@ public class PermissionOverrideActionImpl
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public PermissionOverrideActionImpl setPermissions(long allowBits, long denyBits)

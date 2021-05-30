@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 
@@ -38,7 +38,7 @@ public interface IPermissionHolder extends ISnowflake
      * 
      * @return A never-null Guild to which this PermissionHolder is linked
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -47,7 +47,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return An EnumSet of Permissions granted to this PermissionHolder.
      */
-    @Nonnull
+    @NotNull
     EnumSet<Permission> getPermissions();
 
     /**
@@ -64,8 +64,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return Set of Permissions granted to this Permission Holder in the specified channel.
      */
-    @Nonnull
-    EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel);
+    @NotNull
+    EnumSet<Permission> getPermissions(@NotNull GuildChannel channel);
 
     /**
      * The explicitly granted permissions for this permission holder in the guild.
@@ -75,7 +75,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return EnumSet of the explicitly granted permissions
      */
-    @Nonnull
+    @NotNull
     EnumSet<Permission> getPermissionsExplicit();
 
     /**
@@ -93,8 +93,8 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return EnumSet of the explicitly granted permissions in the specified channel
      */
-    @Nonnull
-    EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel);
+    @NotNull
+    EnumSet<Permission> getPermissionsExplicit(@NotNull GuildChannel channel);
 
     /**
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.api.Permission Permissions} in the Guild.
@@ -107,7 +107,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder.
      */
-    boolean hasPermission(@Nonnull Permission... permissions);
+    boolean hasPermission(@NotNull Permission... permissions);
 
     /**
      * Checks whether or not this PermissionHolder has the {@link net.dv8tion.jda.api.Permission Permissions} in the provided
@@ -123,7 +123,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @see    java.util.EnumSet EnumSet
      */
-    boolean hasPermission(@Nonnull Collection<Permission> permissions);
+    boolean hasPermission(@NotNull Collection<Permission> permissions);
 
     /**
      * Checks whether or not this PermissionHolder has the given {@link net.dv8tion.jda.api.Permission Permissions} in the specified GuildChannel.
@@ -140,7 +140,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @see    java.util.EnumSet EnumSet
      */
-    boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions);
+    boolean hasPermission(@NotNull GuildChannel channel, @NotNull Permission... permissions);
 
     /**
      * Checks whether or not this PermissionHolder has the {@link net.dv8tion.jda.api.Permission Permissions} in the provided
@@ -156,7 +156,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if all of the specified Permissions are granted to this PermissionHolder in the provided GuildChannel.
      */
-    boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions);
+    boolean hasPermission(@NotNull GuildChannel channel, @NotNull Collection<Permission> permissions);
 
     /**
      * Checks whether or not this PermissionHolder has {@link Permission#VIEW_CHANNEL VIEW_CHANNEL}
@@ -170,7 +170,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if the PermissionHolder has access
      */
-    default boolean hasAccess(@Nonnull GuildChannel channel)
+    default boolean hasAccess(@NotNull GuildChannel channel)
     {
         Checks.notNull(channel, "Channel");
         return channel.getType() == ChannelType.VOICE
@@ -195,7 +195,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if the channels can be synced
      */
-    boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource);
+    boolean canSync(@NotNull GuildChannel targetChannel, @NotNull GuildChannel syncSource);
 
     /**
      * Whether the permissions of this PermissionHolder are good enough to sync the target channel with any other channel.
@@ -211,5 +211,5 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if the channel can be synced
      */
-    boolean canSync(@Nonnull GuildChannel channel);
+    boolean canSync(@NotNull GuildChannel channel);
 }

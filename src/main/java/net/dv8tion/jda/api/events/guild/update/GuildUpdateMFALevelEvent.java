@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild.MFALevel MFALevel} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -32,7 +31,7 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
 {
     public static final String IDENTIFIER = "mfa_level";
 
-    public GuildUpdateMFALevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.MFALevel oldMFALevel)
+    public GuildUpdateMFALevelEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull Guild.MFALevel oldMFALevel)
     {
         super(api, responseNumber, guild, oldMFALevel, guild.getRequiredMFALevel(), IDENTIFIER);
     }
@@ -42,7 +41,7 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
      *
      * @return The old MFALevel
      */
-    @Nonnull
+    @NotNull
     public Guild.MFALevel getOldMFALevel()
     {
         return getOldValue();
@@ -53,20 +52,20 @@ public class GuildUpdateMFALevelEvent extends GenericGuildUpdateEvent<Guild.MFAL
      *
      * @return The new MFALevel
      */
-    @Nonnull
+    @NotNull
     public Guild.MFALevel getNewMFALevel()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.MFALevel getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.MFALevel getNewValue()
     {

@@ -20,10 +20,10 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.time.OffsetDateTime;
 import java.util.Collection;
@@ -55,7 +55,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return {@link net.dv8tion.jda.api.entities.User User}
      */
-    @Nonnull
+    @NotNull
     User getUser();
 
     /**
@@ -63,7 +63,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -71,7 +71,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return The current JDA instance.
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -85,7 +85,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return The time at which this user has joined the guild.
      */
-    @Nonnull
+    @NotNull
     OffsetDateTime getTimeJoined();
 
     /**
@@ -132,7 +132,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return Immutable list of {@link Activity Activities} for the user
      */
-    @Nonnull
+    @NotNull
     List<Activity> getActivities();
 
     /**
@@ -143,7 +143,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return The current {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.api.entities.User User}.
      */
-    @Nonnull
+    @NotNull
     OnlineStatus getOnlineStatus();
 
     /**
@@ -166,8 +166,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
-    OnlineStatus getOnlineStatus(@Nonnull ClientType type);
+    @NotNull
+    OnlineStatus getOnlineStatus(@NotNull ClientType type);
 
     /**
      * A Set of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes} of this Member.
@@ -185,7 +185,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     EnumSet<ClientType> getActiveClients();
 
     /**
@@ -204,7 +204,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return The Nickname of this Member or the Username if no Nickname is present.
      */
-    @Nonnull
+    @NotNull
     String getEffectiveName();
 
     /**
@@ -224,7 +224,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * @see    Guild#removeRoleFromMember(Member, Role)
      * @see    Guild#modifyMemberRoles(Member, Collection, Collection)
      */
-    @Nonnull
+    @NotNull
     List<Role> getRoles();
 
     /**
@@ -263,7 +263,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return True, if this Member is able to interact with the specified Member
      */
-    boolean canInteract(@Nonnull Member member);
+    boolean canInteract(@NotNull Member member);
 
     /**
      * Whether this Member can interact with the provided {@link net.dv8tion.jda.api.entities.Role Role}
@@ -281,7 +281,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return True, if this member is able to interact with the specified Role
      */
-    boolean canInteract(@Nonnull Role role);
+    boolean canInteract(@NotNull Role role);
 
     /**
      * Whether this Member can interact with the provided {@link net.dv8tion.jda.api.entities.Emote Emote}
@@ -297,7 +297,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @return True, if this Member is able to interact with the specified Emote
      */
-    boolean canInteract(@Nonnull Emote emote);
+    boolean canInteract(@NotNull Emote emote);
 
     /**
      * Checks whether this member is the owner of its related {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -371,7 +371,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AuditableRestAction<Void> ban(int delDays)
     {
@@ -420,7 +420,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AuditableRestAction<Void> ban(int delDays, @Nullable String reason)
     {
@@ -454,7 +454,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AuditableRestAction<Void> kick()
     {
@@ -493,7 +493,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AuditableRestAction<Void> kick(@Nullable String reason)
     {
@@ -532,7 +532,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AuditableRestAction<Void> mute(boolean mute)
     {
@@ -570,7 +570,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AuditableRestAction<Void> deafen(boolean deafen)
     {
@@ -614,7 +614,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @since  4.0.0
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default AuditableRestAction<Void> modifyNickname(@Nullable String nickname)
     {

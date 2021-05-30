@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.function.Consumer;
 
 /**
@@ -33,7 +33,7 @@ public class ContextException extends Exception
      *
      * @return Wrapping failure consumer around {@code Throwable::printStackTrace}
      */
-    @Nonnull
+    @NotNull
     public static Consumer<Throwable> herePrintingTrace()
     {
         return here(Throwable::printStackTrace);
@@ -48,8 +48,8 @@ public class ContextException extends Exception
      *
      * @return Wrapper of the provided consumer that will append a context with the current stack-trace
      */
-    @Nonnull
-    public static Consumer<Throwable> here(@Nonnull Consumer<? super Throwable> acceptor)
+    @NotNull
+    public static Consumer<Throwable> here(@NotNull Consumer<? super Throwable> acceptor)
     {
         return new ContextConsumer(new ContextException(), acceptor);
     }

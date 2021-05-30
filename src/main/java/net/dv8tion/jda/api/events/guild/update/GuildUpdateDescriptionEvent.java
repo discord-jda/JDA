@@ -18,9 +18,8 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild#getDescription() description} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -33,7 +32,7 @@ public class GuildUpdateDescriptionEvent extends GenericGuildUpdateEvent<String>
 {
     public static final String IDENTIFIER = "description";
 
-    public GuildUpdateDescriptionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
+    public GuildUpdateDescriptionEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @Nullable String previous)
     {
         super(api, responseNumber, guild, previous, guild.getDescription(), IDENTIFIER);
     }

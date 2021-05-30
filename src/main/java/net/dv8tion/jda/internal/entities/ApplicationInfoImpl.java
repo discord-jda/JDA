@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collection;
 
 public class ApplicationInfoImpl implements ApplicationInfo
@@ -65,7 +65,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return obj instanceof ApplicationInfoImpl && this.id == ((ApplicationInfoImpl) obj).id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getDescription()
     {
@@ -85,7 +85,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
                 : "https://cdn.discordapp.com/app-icons/" + this.id + '/' + this.iconId + ".png";
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ApplicationTeam getTeam()
     {
@@ -98,7 +98,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return this.id;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getInviteUrl(final String guildId, final Collection<Permission> permissions)
     {
@@ -118,21 +118,21 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return builder.toString();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
         return this.api;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
         return this.name;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public User getOwner()
     {

@@ -21,8 +21,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildVoiceState;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
@@ -58,7 +57,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return selfDeafened;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
@@ -113,7 +112,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return connectedChannel;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {
@@ -123,7 +122,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Member getMember()
     {

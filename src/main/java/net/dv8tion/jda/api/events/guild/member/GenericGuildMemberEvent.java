@@ -19,8 +19,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} member event is fired.
@@ -36,7 +35,7 @@ public abstract class GenericGuildMemberEvent extends GenericGuildEvent
 {
     private final Member member;
 
-    public GenericGuildMemberEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
+    public GenericGuildMemberEvent(@NotNull JDA api, long responseNumber, @NotNull Member member)
     {
         super(api, responseNumber, member.getGuild());
         this.member = member;
@@ -48,7 +47,7 @@ public abstract class GenericGuildMemberEvent extends GenericGuildEvent
      *
      * @return The User instance
      */
-    @Nonnull
+    @NotNull
     public User getUser()
     {
         return getMember().getUser();
@@ -59,7 +58,7 @@ public abstract class GenericGuildMemberEvent extends GenericGuildEvent
      *
      * @return The Member instance
      */
-    @Nonnull
+    @NotNull
     public Member getMember()
     {
         return member;

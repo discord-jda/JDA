@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.events.channel.voice.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link VoiceChannel VoiceChannel}'s name changed.
@@ -31,7 +30,7 @@ public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent<
 {
     public static final String IDENTIFIER = "name";
 
-    public VoiceChannelUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nonnull String oldName)
+    public VoiceChannelUpdateNameEvent(@NotNull JDA api, long responseNumber, @NotNull VoiceChannel channel, @NotNull String oldName)
     {
         super(api, responseNumber, channel, oldName, channel.getName(), IDENTIFIER);
     }
@@ -41,7 +40,7 @@ public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent<
      *
      * @return The old name
      */
-    @Nonnull
+    @NotNull
     public String getOldName()
     {
         return getOldValue();
@@ -52,20 +51,20 @@ public class VoiceChannelUpdateNameEvent extends GenericVoiceChannelUpdateEvent<
      *
      * @return The new name
      */
-    @Nonnull
+    @NotNull
     public String getNewName()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

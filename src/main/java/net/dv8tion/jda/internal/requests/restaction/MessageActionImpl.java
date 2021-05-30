@@ -37,10 +37,10 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +75,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
     }
 
-    @Nonnull
+    @NotNull
     public static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return defaultMentions.clone();
@@ -119,28 +119,28 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         this.allowedMentions = defaultMentions;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageAction setCheck(BooleanSupplier checks)
     {
         return (MessageAction) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public MessageAction timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (MessageAction) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageAction deadline(long timestamp)
     {
         return (MessageAction) super.deadline(timestamp);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageChannel getChannel()
     {
@@ -160,7 +160,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return finalizeRoute().getMethod() == Method.PATCH;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
@@ -210,7 +210,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return content(content).tts(message.isTTS());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageActionImpl referenceById(long messageId)
     {
@@ -218,7 +218,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageAction mentionRepliedUser(boolean mention)
     {
@@ -226,7 +226,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageAction failOnInvalidReply(boolean fail)
     {
@@ -234,7 +234,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl tts(final boolean isTTS)
@@ -243,7 +243,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl reset()
@@ -251,7 +251,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return content(null).nonce(null).embed(null).tts(false).override(false).clearFiles();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl nonce(final String nonce)
@@ -260,7 +260,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl content(final String content)
@@ -274,7 +274,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl embed(final MessageEmbed embed)
@@ -289,7 +289,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl append(final CharSequence csq, final int start, final int end)
@@ -300,7 +300,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl append(final char c)
@@ -311,10 +311,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(@Nonnull final InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public MessageActionImpl addFile(@NotNull final InputStream data, @NotNull String name, @NotNull AttachmentOption... options)
     {
         checkEdit();
         Checks.notNull(data, "Data");
@@ -327,10 +327,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public MessageActionImpl addFile(@Nonnull final File file, @Nonnull String name, @Nonnull AttachmentOption... options)
+    public MessageActionImpl addFile(@NotNull final File file, @NotNull String name, @NotNull AttachmentOption... options)
     {
         Checks.notNull(file, "File");
         Checks.noneNull(options, "Options");
@@ -350,7 +350,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl clearFiles()
@@ -360,10 +360,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public MessageActionImpl clearFiles(@Nonnull BiConsumer<String, InputStream> finalizer)
+    public MessageActionImpl clearFiles(@NotNull BiConsumer<String, InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
         for (Iterator<Map.Entry<String, InputStream>> it = files.entrySet().iterator(); it.hasNext();)
@@ -376,10 +376,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
-    public MessageActionImpl clearFiles(@Nonnull Consumer<InputStream> finalizer)
+    public MessageActionImpl clearFiles(@NotNull Consumer<InputStream> finalizer)
     {
         Checks.notNull(finalizer, "Finalizer");
         for (Iterator<InputStream> it = files.values().iterator(); it.hasNext(); )
@@ -391,7 +391,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @CheckReturnValue
     public MessageActionImpl override(final boolean bool)
@@ -400,7 +400,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
@@ -410,9 +410,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction mention(@Nonnull IMentionable... mentions)
+    public MessageAction mention(@NotNull IMentionable... mentions)
     {
         Checks.noneNull(mentions, "Mentionables");
         for (IMentionable mentionable : mentions)
@@ -425,18 +425,18 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction mentionUsers(@Nonnull String... userIds)
+    public MessageAction mentionUsers(@NotNull String... userIds)
     {
         Checks.noneNull(userIds, "User Id");
         Collections.addAll(mentionableUsers, userIds);
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction mentionRoles(@Nonnull String... roleIds)
+    public MessageAction mentionRoles(@NotNull String... roleIds)
     {
         Checks.noneNull(roleIds, "Role Id");
         Collections.addAll(mentionableRoles, roleIds);

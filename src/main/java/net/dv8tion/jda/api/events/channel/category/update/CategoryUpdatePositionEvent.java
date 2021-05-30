@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.channel.category.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the position of a {@link net.dv8tion.jda.api.entities.Category Category} was updated.
@@ -32,7 +31,7 @@ public class CategoryUpdatePositionEvent extends GenericCategoryUpdateEvent<Inte
 {
     public static final String IDENTIFIER = "position";
 
-    public CategoryUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category, int oldPosition)
+    public CategoryUpdatePositionEvent(@NotNull JDA api, long responseNumber, @NotNull Category category, int oldPosition)
     {
         super(api, responseNumber, category, oldPosition, category.getPositionRaw(), IDENTIFIER);
     }

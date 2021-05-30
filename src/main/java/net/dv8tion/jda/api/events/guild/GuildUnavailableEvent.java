@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Guild Guild} became unavailable.
@@ -29,7 +28,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildUnavailableEvent extends GenericGuildEvent
 {
-    public GuildUnavailableEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
+    public GuildUnavailableEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild)
     {
         super(api, responseNumber, guild);
     }

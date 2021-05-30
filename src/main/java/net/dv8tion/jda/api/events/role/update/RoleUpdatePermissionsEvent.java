@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.events.role.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
@@ -37,7 +37,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<EnumSet<P
     private final long oldPermissionsRaw;
     private final long newPermissionsRaw;
 
-    public RoleUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, long oldPermissionsRaw)
+    public RoleUpdatePermissionsEvent(@NotNull JDA api, long responseNumber, @NotNull Role role, long oldPermissionsRaw)
     {
         super(api, responseNumber, role, Permission.getPermissions(oldPermissionsRaw), role.getPermissions(), IDENTIFIER);
         this.oldPermissionsRaw = oldPermissionsRaw;
@@ -49,7 +49,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<EnumSet<P
      *
      * @return The old permissions
      */
-    @Nonnull
+    @NotNull
     public EnumSet<Permission> getOldPermissions()
     {
         return getOldValue();
@@ -70,7 +70,7 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<EnumSet<P
      *
      * @return The new permissions
      */
-    @Nonnull
+    @NotNull
     public EnumSet<Permission> getNewPermissions()
     {
         return getNewValue();
@@ -86,14 +86,14 @@ public class RoleUpdatePermissionsEvent extends GenericRoleUpdateEvent<EnumSet<P
         return newPermissionsRaw;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<Permission> getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public EnumSet<Permission> getNewValue()
     {

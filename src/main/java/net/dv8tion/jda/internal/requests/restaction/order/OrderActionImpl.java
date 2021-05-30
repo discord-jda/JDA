@@ -21,8 +21,8 @@ import net.dv8tion.jda.api.requests.restaction.order.OrderAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -72,7 +72,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         this.ascendingOrder = ascendingOrder;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M setCheck(BooleanSupplier checks)
@@ -80,15 +80,15 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return (M) super.setCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    public M timeout(long timeout, @Nonnull TimeUnit unit)
+    public M timeout(long timeout, @NotNull TimeUnit unit)
     {
         return (M) super.timeout(timeout, unit);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M deadline(long timestamp)
@@ -102,14 +102,14 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return ascendingOrder;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<T> getCurrentOrder()
     {
         return Collections.unmodifiableList(orderList);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M selectPosition(int selectedPosition)
@@ -122,9 +122,9 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return (M) this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public M selectPosition(@Nonnull T selectedEntity)
+    public M selectPosition(@NotNull T selectedEntity)
     {
         Checks.notNull(selectedEntity, "Channel");
         validateInput(selectedEntity);
@@ -138,7 +138,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return selectedPosition;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public T getSelectedEntity()
     {
@@ -148,7 +148,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return orderList.get(selectedPosition);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public M moveUp(int amount)
     {
@@ -174,7 +174,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
             return moveTo(selectedPosition + amount);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public M moveDown(int amount)
     {
@@ -201,7 +201,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
             return moveTo(selectedPosition - amount);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M moveTo(int position)
@@ -215,7 +215,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return (M) this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M swapPosition(int swapPosition)
@@ -232,10 +232,10 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return (M) this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    public M swapPosition(@Nonnull T swapEntity)
+    public M swapPosition(@NotNull T swapEntity)
     {
         Checks.notNull(swapEntity, "Provided swapEntity");
         validateInput(swapEntity);
@@ -243,7 +243,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return swapPosition(orderList.indexOf(swapEntity));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M reverseOrder()
@@ -252,7 +252,7 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return (M) this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
     public M shuffleOrder()
@@ -261,10 +261,10 @@ public abstract class OrderActionImpl<T, M extends OrderAction<T, M>>
         return (M) this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     @SuppressWarnings("unchecked")
-    public M sortOrder(@Nonnull final Comparator<T> comparator)
+    public M sortOrder(@NotNull final Comparator<T> comparator)
     {
         Checks.notNull(comparator, "Provided comparator");
 

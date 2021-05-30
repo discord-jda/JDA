@@ -21,9 +21,9 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,14 +51,14 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
         action2.addCheck(checks);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
         return action1.getJDA();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
     {
@@ -68,9 +68,9 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public RestAction<O> addCheck(@Nonnull BooleanSupplier checks)
+    public RestAction<O> addCheck(@NotNull BooleanSupplier checks)
     {
         action1.addCheck(checks);
         action2.addCheck(checks);
@@ -89,7 +89,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
              && !failed;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<O> deadline(long timestamp)
     {
@@ -161,7 +161,7 @@ public class CombineRestAction<I1, I2, O> implements RestAction<O>
         }
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public CompletableFuture<O> submit(boolean shouldQueue)
     {

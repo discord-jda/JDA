@@ -19,9 +19,8 @@ package net.dv8tion.jda.api.events.guild.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that the owner of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -35,7 +34,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
     public static final String IDENTIFIER = "owner";
     private final long prevId, nextId;
 
-    public GuildUpdateOwnerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable Member oldOwner,
+    public GuildUpdateOwnerEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @Nullable Member oldOwner,
                                  long prevId, long nextId)
     {
         super(api, responseNumber, guild, oldOwner, guild.getOwner(), IDENTIFIER);
@@ -58,7 +57,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
      *
      * @return The new owner id
      */
-    @Nonnull
+    @NotNull
     public String getNewOwnerId()
     {
         return Long.toUnsignedString(nextId);
@@ -79,7 +78,7 @@ public class GuildUpdateOwnerEvent extends GenericGuildUpdateEvent<Member>
      *
      * @return The previous owner id
      */
-    @Nonnull
+    @NotNull
     public String getOldOwnerId()
     {
         return Long.toUnsignedString(prevId);

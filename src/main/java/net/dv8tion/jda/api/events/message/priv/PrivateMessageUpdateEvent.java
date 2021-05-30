@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.message.priv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
@@ -34,7 +33,7 @@ public class PrivateMessageUpdateEvent extends GenericPrivateMessageEvent
 {
     private final Message message;
 
-    public PrivateMessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
+    public PrivateMessageUpdateEvent(@NotNull JDA api, long responseNumber, @NotNull Message message)
     {
         super(api, responseNumber, message.getIdLong(), message.getPrivateChannel());
         this.message = message;
@@ -45,7 +44,7 @@ public class PrivateMessageUpdateEvent extends GenericPrivateMessageEvent
      *
      * @return The Message
      */
-    @Nonnull
+    @NotNull
     public Message getMessage()
     {
         return message;
@@ -58,7 +57,7 @@ public class PrivateMessageUpdateEvent extends GenericPrivateMessageEvent
      *
      * @see    net.dv8tion.jda.api.entities.User User
      */
-    @Nonnull
+    @NotNull
     public User getAuthor()
     {
         return message.getAuthor();

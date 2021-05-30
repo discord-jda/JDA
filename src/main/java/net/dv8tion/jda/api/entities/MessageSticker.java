@@ -15,7 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 
 /**
@@ -60,7 +61,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the name of the sticker
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return name;
@@ -71,7 +72,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the description of the sticker
      */
-    @Nonnull
+    @NotNull
     public String getDescription()
     {
         return description;
@@ -82,7 +83,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the ID of the pack the sticker is from
      */
-    @Nonnull
+    @NotNull
     public String getPackId()
     {
         return Long.toUnsignedString(getPackIdLong());
@@ -104,7 +105,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the Discord hash-id of the sticker
      */
-    @Nonnull
+    @NotNull
     public String getAssetHash()
     {
         return asset;
@@ -118,7 +119,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the url of the sticker
      */
-    @Nonnull
+    @NotNull
     public String getAssetUrl()
     {
         return String.format(ASSET_URL, id, asset, formatType.getExtension());
@@ -129,7 +130,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the format of the sticker
      */
-    @Nonnull
+    @NotNull
     public StickerFormat getFormatType()
     {
         return formatType;
@@ -140,7 +141,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return Possibly-empty unmodifiable Set of tags of the sticker
      */
-    @Nonnull
+    @NotNull
     public Set<String> getTags()
     {
         return tags;
@@ -185,7 +186,7 @@ public class MessageSticker implements ISnowflake
          *
          * @return The file extension for this format
          */
-        @Nonnull
+        @NotNull
         public String getExtension()
         {
             if (this == UNKNOWN)
@@ -201,7 +202,7 @@ public class MessageSticker implements ISnowflake
          *
          * @return The representative StickerFormat or UNKNOWN if it can't be resolved
          */
-        @Nonnull
+        @NotNull
         public static MessageSticker.StickerFormat fromId(int id)
         {
             for (MessageSticker.StickerFormat stickerFormat : values())

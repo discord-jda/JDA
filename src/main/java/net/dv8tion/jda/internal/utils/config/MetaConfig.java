@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.utils.config;
 
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.internal.utils.config.flags.ConfigFlag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -55,7 +55,7 @@ public class MetaConfig
         return mdcContextMap;
     }
 
-    @Nonnull
+    @NotNull
     public EnumSet<CacheFlag> getCacheFlags()
     {
         return cacheFlags;
@@ -76,7 +76,7 @@ public class MetaConfig
         return maxBufferSize;
     }
 
-    @Nonnull
+    @NotNull
     public static MetaConfig getDefault()
     {
         return defaultConfig;

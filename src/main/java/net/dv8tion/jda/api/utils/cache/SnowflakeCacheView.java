@@ -18,9 +18,8 @@ package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.utils.MiscUtil;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} implementation
@@ -54,7 +53,7 @@ public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T>
      * @return Possibly-null entity for the specified ID
      */
     @Nullable
-    default T getElementById(@Nonnull String id)
+    default T getElementById(@NotNull String id)
     {
         return getElementById(MiscUtil.parseSnowflake(id));
     }

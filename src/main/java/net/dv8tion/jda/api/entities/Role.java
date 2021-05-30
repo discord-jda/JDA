@@ -20,10 +20,10 @@ import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.RoleAction;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.awt.*;
 
 /**
@@ -73,7 +73,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return Never-null String containing the name of this {@link net.dv8tion.jda.api.entities.Role Role}.
      */
-    @Nonnull
+    @NotNull
     String getName();
 
     /**
@@ -147,14 +147,14 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return True, if this role can interact with the specified role
      */
-    boolean canInteract(@Nonnull Role role);
+    boolean canInteract(@NotNull Role role);
 
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} this Role exists in
      *
      * @return the Guild containing this Role
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 
     /**
@@ -187,9 +187,9 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    RoleAction createCopy(@Nonnull Guild guild);
+    RoleAction createCopy(@NotNull Guild guild);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Role Role} in this {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -216,7 +216,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      * @return {@link RoleAction RoleAction}
      *         <br>RoleAction with already copied values from the specified {@link net.dv8tion.jda.api.entities.Role Role}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     default RoleAction createCopy()
     {
@@ -238,7 +238,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return The RoleManager of this Role
      */
-    @Nonnull
+    @NotNull
     RoleManager getManager();
 
     /**
@@ -264,7 +264,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction}
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
 
@@ -273,7 +273,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return the corresponding JDA instance
      */
-    @Nonnull
+    @NotNull
     JDA getJDA();
 
     /**
@@ -288,7 +288,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @since  4.2.1
      */
-    @Nonnull
+    @NotNull
     RoleTags getTags();
 
     /**

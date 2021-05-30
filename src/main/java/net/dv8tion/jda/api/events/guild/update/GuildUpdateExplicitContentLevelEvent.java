@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the {@link net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel ExplicitContentLevel} of a {@link net.dv8tion.jda.api.entities.Guild Guild} changed.
@@ -32,7 +31,7 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
 {
     public static final String IDENTIFIER = "explicit_content_filter";
 
-    public GuildUpdateExplicitContentLevelEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Guild.ExplicitContentLevel oldLevel)
+    public GuildUpdateExplicitContentLevelEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull Guild.ExplicitContentLevel oldLevel)
     {
         super(api, responseNumber, guild, oldLevel, guild.getExplicitContentLevel(), IDENTIFIER);
     }
@@ -43,7 +42,7 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
      *
      * @return The old explicit content level
      */
-    @Nonnull
+    @NotNull
     public Guild.ExplicitContentLevel getOldLevel()
     {
         return getOldValue();
@@ -55,20 +54,20 @@ public class GuildUpdateExplicitContentLevelEvent extends GenericGuildUpdateEven
      *
      * @return The new explicit content level
      */
-    @Nonnull
+    @NotNull
     public Guild.ExplicitContentLevel getNewLevel()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.ExplicitContentLevel getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild.ExplicitContentLevel getNewValue()
     {

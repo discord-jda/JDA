@@ -16,8 +16,8 @@
 package net.dv8tion.jda.api;
 
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -116,7 +116,7 @@ public enum Permission
     private final boolean isGuild, isChannel;
     private final String name;
 
-    Permission(int offset, boolean isGuild, boolean isChannel, @Nonnull String name)
+    Permission(int offset, boolean isGuild, boolean isChannel, @NotNull String name)
     {
         this.offset = offset;
         this.raw = 1L << offset;
@@ -130,7 +130,7 @@ public enum Permission
      *
      * @return The readable name of this {@link net.dv8tion.jda.api.Permission Permission}.
      */
-    @Nonnull
+    @NotNull
     public String getName()
     {
         return this.name;
@@ -211,7 +211,7 @@ public enum Permission
      *
      * @return {@link net.dv8tion.jda.api.Permission Permission} relating to the provided offset.
      */
-    @Nonnull
+    @NotNull
     public static Permission getFromOffset(int offset)
     {
         for (Permission perm : values())
@@ -235,7 +235,7 @@ public enum Permission
      * @return Possibly-empty EnumSet of {@link net.dv8tion.jda.api.Permission Permissions}.
      *
      */
-    @Nonnull
+    @NotNull
     public static EnumSet<Permission> getPermissions(long permissions)
     {
         if (permissions == 0)
@@ -258,7 +258,7 @@ public enum Permission
      *
      * @return Unsigned long representing the provided permissions.
      */
-    public static long getRaw(@Nonnull Permission... permissions)
+    public static long getRaw(@NotNull Permission... permissions)
     {
         long raw = 0;
         for (Permission perm : permissions)
@@ -282,7 +282,7 @@ public enum Permission
      *
      * @see    java.util.EnumSet EnumSet
      */
-    public static long getRaw(@Nonnull Collection<Permission> permissions)
+    public static long getRaw(@NotNull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 

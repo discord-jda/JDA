@@ -19,9 +19,8 @@ package net.dv8tion.jda.api.events.self;
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that the phone number associated with your account changed. (client-only)
@@ -39,7 +38,7 @@ public class SelfUpdatePhoneNumberEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "phone";
 
-    public SelfUpdatePhoneNumberEvent(@Nonnull JDA api, long responseNumber, @Nullable String oldPhoneNumber)
+    public SelfUpdatePhoneNumberEvent(@NotNull JDA api, long responseNumber, @Nullable String oldPhoneNumber)
     {
         super(api, responseNumber, oldPhoneNumber, api.getSelfUser().getPhoneNumber(), IDENTIFIER);
     }

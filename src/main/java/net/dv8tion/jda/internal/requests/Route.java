@@ -18,9 +18,9 @@ package net.dv8tion.jda.internal.requests;
 
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
 
 import static net.dv8tion.jda.internal.requests.Method.*;
 
@@ -228,8 +228,8 @@ public class Route
         public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
     }
 
-    @Nonnull
-    public static Route custom(@Nonnull Method method, @Nonnull String route)
+    @NotNull
+    public static Route custom(@NotNull Method method, @NotNull String route)
     {
         Checks.notNull(method, "Method");
         Checks.notEmpty(route, "Route");
@@ -237,32 +237,32 @@ public class Route
         return new Route(method, route);
     }
 
-    @Nonnull
-    public static Route delete(@Nonnull String route)
+    @NotNull
+    public static Route delete(@NotNull String route)
     {
         return custom(DELETE, route);
     }
 
-    @Nonnull
-    public static Route post(@Nonnull String route)
+    @NotNull
+    public static Route post(@NotNull String route)
     {
         return custom(POST, route);
     }
 
-    @Nonnull
-    public static Route put(@Nonnull String route)
+    @NotNull
+    public static Route put(@NotNull String route)
     {
         return custom(PUT, route);
     }
 
-    @Nonnull
-    public static Route patch(@Nonnull String route)
+    @NotNull
+    public static Route patch(@NotNull String route)
     {
         return custom(PATCH, route);
     }
 
-    @Nonnull
-    public static Route get(@Nonnull String route)
+    @NotNull
+    public static Route get(@NotNull String route)
     {
         return custom(GET, route);
     }
@@ -366,7 +366,7 @@ public class Route
             this(baseRoute, compiledRoute, major, false);
         }
 
-        @Nonnull
+        @NotNull
         @CheckReturnValue
         public CompiledRoute withQueryParams(String... params)
         {

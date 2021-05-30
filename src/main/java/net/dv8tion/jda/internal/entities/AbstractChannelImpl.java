@@ -38,8 +38,8 @@ import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.InviteActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.PermissionOverrideActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,7 +68,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public int compareTo(@Nonnull GuildChannel o)
+    public int compareTo(@NotNull GuildChannel o)
     {
         Checks.notNull(o, "Channel");
         if (getType().getSortBucket() != o.getType().getSortBucket()) // if bucket matters
@@ -78,32 +78,32 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return Long.compareUnsigned(id, o.getIdLong());               // last resort by id
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getAsMention()
     {
         return "<#" + id + '>';
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public abstract ChannelAction<T> createCopy(@Nonnull Guild guild);
+    public abstract ChannelAction<T> createCopy(@NotNull Guild guild);
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelAction<T> createCopy()
     {
         return createCopy(getGuild());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
         return name;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public GuildImpl getGuild()
     {
@@ -125,7 +125,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return rawPosition;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
@@ -133,21 +133,21 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    public PermissionOverride getPermissionOverride(@NotNull IPermissionHolder permissionHolder)
     {
         Checks.notNull(permissionHolder, "Permission Holder");
         Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
         return overrides.get(permissionHolder.getIdLong());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<PermissionOverride> getPermissionOverrides()
     {
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<PermissionOverride> getMemberPermissionOverrides()
     {
@@ -156,7 +156,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
                 .collect(Collectors.toList()));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public List<PermissionOverride> getRolePermissionOverrides()
     {
@@ -189,7 +189,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return true;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelManager getManager()
     {
@@ -198,7 +198,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return manager;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditableRestAction<Void> delete()
     {
@@ -208,9 +208,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    public PermissionOverrideAction createPermissionOverride(@NotNull IPermissionHolder permissionHolder)
     {
         Checks.notNull(permissionHolder, "PermissionHolder");
         if (getPermissionOverride(permissionHolder) != null)
@@ -219,9 +219,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return putPermissionOverride(permissionHolder);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    public PermissionOverrideAction putPermissionOverride(@NotNull IPermissionHolder permissionHolder)
     {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(permissionHolder, "PermissionHolder");
@@ -229,7 +229,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return new PermissionOverrideActionImpl(getJDA(), this, permissionHolder);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public InviteAction createInvite()
     {
@@ -238,7 +238,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return new InviteActionImpl(this.getJDA(), this.getId());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<List<Invite>> retrieveInvites()
     {

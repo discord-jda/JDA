@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.events.role.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Role;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Role Role} updated its mentionable state.
@@ -32,7 +31,7 @@ public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent<Boolean>
 {
     public static final String IDENTIFIER = "mentionable";
 
-    public RoleUpdateMentionableEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role role, boolean wasMentionable)
+    public RoleUpdateMentionableEvent(@NotNull JDA api, long responseNumber, @NotNull Role role, boolean wasMentionable)
     {
         super(api, responseNumber, role, wasMentionable, !wasMentionable, IDENTIFIER);
     }
@@ -47,14 +46,14 @@ public class RoleUpdateMentionableEvent extends GenericRoleUpdateEvent<Boolean>
         return getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Boolean getNewValue()
     {

@@ -19,9 +19,8 @@ package net.dv8tion.jda.api.events.channel.voice.update;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.VoiceChannel;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}'s parent changed.
@@ -34,7 +33,7 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
 {
     public static final String IDENTIFIER = "parent";
 
-    public VoiceChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nullable Category oldParent)
+    public VoiceChannelUpdateParentEvent(@NotNull JDA api, long responseNumber, @NotNull VoiceChannel channel, @Nullable Category oldParent)
     {
         super(api, responseNumber, channel, oldParent, channel.getParent(), IDENTIFIER);
     }

@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.events;
 import com.neovisionaries.ws.client.WebSocketFrame;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.CloseCode;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
 /**
@@ -40,9 +40,9 @@ public class DisconnectEvent extends Event
     protected final OffsetDateTime disconnectTime;
 
     public DisconnectEvent(
-        @Nonnull JDA api,
+        @NotNull JDA api,
         @Nullable WebSocketFrame serverCloseFrame, @Nullable WebSocketFrame clientCloseFrame,
-        boolean closedByServer, @Nonnull OffsetDateTime disconnectTime)
+        boolean closedByServer, @NotNull OffsetDateTime disconnectTime)
     {
         super(api);
         this.serverCloseFrame = serverCloseFrame;
@@ -103,7 +103,7 @@ public class DisconnectEvent extends Event
      *
      * @return Time of closure
      */
-    @Nonnull
+    @NotNull
     public OffsetDateTime getTimeDisconnected()
     {
         return disconnectTime;

@@ -17,8 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a Discord Voice GuildChannel.
@@ -58,11 +57,11 @@ public interface VoiceChannel extends GuildChannel
      */
     int getBitrate();
 
-    @Nonnull
+    @NotNull
     @Override
-    ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild);
+    ChannelAction<VoiceChannel> createCopy(@NotNull Guild guild);
 
-    @Nonnull
+    @NotNull
     @Override
     ChannelAction<VoiceChannel> createCopy();
 }

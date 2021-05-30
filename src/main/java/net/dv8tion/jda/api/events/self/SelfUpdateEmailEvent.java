@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.events.self;
 import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Indicates that the email of the current user changed. (client-only)
@@ -38,7 +37,7 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
 {
     public static final String IDENTIFIER = "email";
 
-    public SelfUpdateEmailEvent(@Nonnull JDA api, long responseNumber, @Nonnull String oldEmail)
+    public SelfUpdateEmailEvent(@NotNull JDA api, long responseNumber, @NotNull String oldEmail)
     {
         super(api, responseNumber, oldEmail, api.getSelfUser().getEmail(), IDENTIFIER);
     }
@@ -48,7 +47,7 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The old email
      */
-    @Nonnull
+    @NotNull
     public String getOldEmail()
     {
         return getOldValue();
@@ -59,20 +58,20 @@ public class SelfUpdateEmailEvent extends GenericSelfUpdateEvent<String>
      *
      * @return The new email
      */
-    @Nonnull
+    @NotNull
     public String getNewEmail()
     {
         return getNewValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getNewValue()
     {

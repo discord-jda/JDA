@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.audio;
 
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class CombinedAudio
     protected List<User> users;
     protected short[] audioData;
 
-    public CombinedAudio(@Nonnull List<User> users, @Nonnull short[] audioData)
+    public CombinedAudio(@NotNull List<User> users, @NotNull short[] audioData)
     {
         this.users = Collections.unmodifiableList(users);
         this.audioData = audioData;
@@ -44,7 +44,7 @@ public class CombinedAudio
      *
      * @return Never-null list of all users that provided audio.
      */
-    @Nonnull
+    @NotNull
     public List<User> getUsers()
     {
         return users;
@@ -64,7 +64,7 @@ public class CombinedAudio
      *
      * @return Never-null byte array of PCM data defined by {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT AudioReceiveHandler.OUTPUT_FORMAT}
      */
-    @Nonnull
+    @NotNull
     public byte[] getAudioData(double volume)
     {
         return OpusPacket.getAudioData(audioData, volume);

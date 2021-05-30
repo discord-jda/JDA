@@ -19,10 +19,10 @@ package net.dv8tion.jda.api.managers;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.CheckReturnValue;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -64,7 +64,7 @@ public interface EmoteManager extends Manager<EmoteManager>
      *
      * @return EmoteManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     EmoteManager reset(long fields);
 
@@ -84,7 +84,7 @@ public interface EmoteManager extends Manager<EmoteManager>
      *
      * @return EmoteManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @Override
     EmoteManager reset(long... fields);
 
@@ -95,7 +95,7 @@ public interface EmoteManager extends Manager<EmoteManager>
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    @Nonnull
+    @NotNull
     default Guild getGuild()
     {
         return getEmote().getGuild();
@@ -107,7 +107,7 @@ public interface EmoteManager extends Manager<EmoteManager>
      *
      * @return The target Emote
      */
-    @Nonnull
+    @NotNull
     Emote getEmote();
 
     /**
@@ -126,9 +126,9 @@ public interface EmoteManager extends Manager<EmoteManager>
      *
      * @return EmoteManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
-    EmoteManager setName(@Nonnull String name);
+    EmoteManager setName(@NotNull String name);
 
     /**
      * Sets the <b><u>restriction roles</u></b> of the selected {@link net.dv8tion.jda.api.entities.Emote Emote}.
@@ -145,7 +145,7 @@ public interface EmoteManager extends Manager<EmoteManager>
      *
      * @return EmoteManager for chaining convenience
      */
-    @Nonnull
+    @NotNull
     @CheckReturnValue
     EmoteManager setRoles(@Nullable Set<Role> roles);
 }

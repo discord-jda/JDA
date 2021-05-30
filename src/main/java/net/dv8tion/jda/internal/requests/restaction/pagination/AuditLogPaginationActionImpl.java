@@ -34,8 +34,8 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +56,7 @@ public class AuditLogPaginationActionImpl
         this.guild = guild;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditLogPaginationActionImpl type(ActionType type)
     {
@@ -64,14 +64,14 @@ public class AuditLogPaginationActionImpl
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditLogPaginationActionImpl user(User user)
     {
         return user(user == null ? null : user.getId());
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditLogPaginationActionImpl user(String userId)
     {
@@ -81,14 +81,14 @@ public class AuditLogPaginationActionImpl
         return this;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public AuditLogPaginationActionImpl user(long userId)
     {
         return user(Long.toUnsignedString(userId));
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Guild getGuild()
     {

@@ -25,8 +25,8 @@ import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Collections;
@@ -53,7 +53,7 @@ public class PrivateChannelImpl implements PrivateChannel
             this.user = realUser;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public User getUser()
     {
@@ -76,28 +76,28 @@ public class PrivateChannelImpl implements PrivateChannel
         return lastMessageId > 0;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public String getName()
     {
         return getUser().getName();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public ChannelType getType()
     {
         return ChannelType.PRIVATE;
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public JDA getJDA()
     {
         return user.getJDA();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public RestAction<Void> close()
     {
@@ -105,9 +105,9 @@ public class PrivateChannelImpl implements PrivateChannel
         return new RestActionImpl<>(getJDA(), route);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
+    public List<CompletableFuture<Void>> purgeMessages(@NotNull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
@@ -133,41 +133,41 @@ public class PrivateChannelImpl implements PrivateChannel
         return user.isFake();
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction sendMessage(@Nonnull CharSequence text)
+    public MessageAction sendMessage(@NotNull CharSequence text)
     {
         checkBot();
         return PrivateChannel.super.sendMessage(text);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction sendMessage(@Nonnull MessageEmbed embed)
+    public MessageAction sendMessage(@NotNull MessageEmbed embed)
     {
         checkBot();
         return PrivateChannel.super.sendMessage(embed);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction sendMessage(@Nonnull Message msg)
+    public MessageAction sendMessage(@NotNull Message msg)
     {
         checkBot();
         return PrivateChannel.super.sendMessage(msg);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    public MessageAction sendFile(@NotNull InputStream data, @NotNull String fileName, @NotNull AttachmentOption... options)
     {
         checkBot();
         return PrivateChannel.super.sendFile(data, fileName, options);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    public MessageAction sendFile(@NotNull File file, @NotNull String fileName, @NotNull AttachmentOption... options)
     {
         checkBot();
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
@@ -176,9 +176,9 @@ public class PrivateChannelImpl implements PrivateChannel
         return PrivateChannel.super.sendFile(file, fileName, options);
     }
 
-    @Nonnull
+    @NotNull
     @Override
-    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
+    public MessageAction sendFile(@NotNull byte[] data, @NotNull String fileName, @NotNull AttachmentOption... options)
     {
         checkBot();
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();

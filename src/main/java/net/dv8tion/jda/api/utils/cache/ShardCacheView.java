@@ -16,9 +16,8 @@
 package net.dv8tion.jda.api.utils.cache;
 
 import net.dv8tion.jda.api.JDA;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Read-only view on internal ShardManager cache of JDA instances.
@@ -54,7 +53,7 @@ public interface ShardCacheView extends CacheView<JDA>
      * @return Possibly-null entity for the specified shard ID
      */
     @Nullable
-    default JDA getElementById(@Nonnull String id)
+    default JDA getElementById(@NotNull String id)
     {
         return getElementById(Integer.parseUnsignedInt(id));
     }

@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.events.guild.update;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.Locale;
 
 /**
@@ -36,19 +36,19 @@ public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<Locale>
 {
     public static final String IDENTIFIER = "locale";
 
-    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Locale previous)
+    public GuildUpdateLocaleEvent(@NotNull JDA api, long responseNumber, @NotNull Guild guild, @NotNull Locale previous)
     {
         super(api, responseNumber, guild, previous, guild.getLocale(), IDENTIFIER);
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Locale getOldValue()
     {
         return super.getOldValue();
     }
 
-    @Nonnull
+    @NotNull
     @Override
     public Locale getNewValue()
     {

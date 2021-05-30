@@ -15,7 +15,7 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the different types of {@link net.dv8tion.jda.api.entities.Message Messages} that can be received from Discord.
@@ -169,7 +169,7 @@ public enum MessageType
      *
      * @return A MessageType with the same Discord id key as the one provided, or {@link #UNKNOWN}.
      */
-    @Nonnull
+    @NotNull
     public static MessageType fromId(int id)
     {
         for (MessageType type : values())

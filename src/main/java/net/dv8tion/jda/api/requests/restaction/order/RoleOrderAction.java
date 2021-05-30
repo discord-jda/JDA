@@ -18,8 +18,7 @@ package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Role;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Implementation of {@link OrderAction OrderAction}
@@ -45,6 +44,6 @@ public interface RoleOrderAction extends OrderAction<Role, RoleOrderAction>
      *
      * @return The corresponding {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
-    @Nonnull
+    @NotNull
     Guild getGuild();
 }

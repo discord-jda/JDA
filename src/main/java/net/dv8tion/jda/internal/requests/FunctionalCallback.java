@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.utils.IOBiConsumer;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
@@ -47,14 +47,14 @@ public class FunctionalCallback implements Callback
     }
 
     @Override
-    public void onFailure(@Nonnull Call call, @Nonnull IOException e)
+    public void onFailure(@NotNull Call call, @NotNull IOException e)
     {
         if (failure != null)
             failure.accept(call, e);
     }
 
     @Override
-    public void onResponse(@Nonnull Call call, @Nonnull Response response) throws IOException
+    public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException
     {
         if (success != null)
             success.accept(call, response);

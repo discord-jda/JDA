@@ -17,8 +17,8 @@
 package net.dv8tion.jda.api.audio;
 
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.sound.sampled.AudioFormat;
 
 /**
@@ -81,7 +81,7 @@ public interface AudioReceiveHandler
      *
      * @since  4.0.0
      */
-    default void handleEncodedAudio(@Nonnull OpusPacket packet) {}
+    default void handleEncodedAudio(@NotNull OpusPacket packet) {}
 
     /**
      * If {@link #canReceiveCombined()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.CombinedAudio CombinedAudio}
@@ -102,7 +102,7 @@ public interface AudioReceiveHandler
      * @param  combinedAudio
      *         The combined audio data.
      */
-    default void handleCombinedAudio(@Nonnull CombinedAudio combinedAudio) {}
+    default void handleCombinedAudio(@NotNull CombinedAudio combinedAudio) {}
 
     /**
      * If {@link #canReceiveUser()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.UserAudio UserAudio}
@@ -125,7 +125,7 @@ public interface AudioReceiveHandler
      * @param  userAudio
      *         The user audio data
      */
-    default void handleUserAudio(@Nonnull UserAudio userAudio) {}
+    default void handleUserAudio(@NotNull UserAudio userAudio) {}
 
     /**
      * This method is a filter predicate used by JDA to determine whether or not to include a
@@ -145,7 +145,7 @@ public interface AudioReceiveHandler
      * @return If true, JDA will include the user's audio when merging audio sources when created packets
      *         for {@link #handleCombinedAudio(CombinedAudio)}
      */
-    default boolean includeUserInCombinedAudio(@Nonnull User user)
+    default boolean includeUserInCombinedAudio(@NotNull User user)
     {
         return true;
     }

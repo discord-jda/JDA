@@ -18,8 +18,8 @@ package net.dv8tion.jda.api.audio.hooks;
 
 import net.dv8tion.jda.api.audio.SpeakingMode;
 import net.dv8tion.jda.api.entities.User;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
@@ -44,7 +44,7 @@ public interface ConnectionListener
      * @param  status
      *         The new {@link net.dv8tion.jda.api.audio.hooks.ConnectionStatus ConnectionStatus} of the audio connection.
      */
-    void onStatusChange(@Nonnull ConnectionStatus status);
+    void onStatusChange(@NotNull ConnectionStatus status);
 
     /**
      * This method is an easy way to detect if a user is talking. Discord sends us an event when a user starts or stops
@@ -68,7 +68,7 @@ public interface ConnectionListener
      * @param  speaking
      *         If true, the user has begun transmitting audio.
      */
-    void onUserSpeaking(@Nonnull User user, boolean speaking);
+    void onUserSpeaking(@NotNull User user, boolean speaking);
 
     /**
      * This method is an easy way to detect if a user is talking. Discord sends us an event when a user starts or stops
@@ -96,7 +96,7 @@ public interface ConnectionListener
      * @see    java.util.EnumSet EnumSet
      * @see    net.dv8tion.jda.api.audio.SpeakingMode SpeakingMode
      */
-    default void onUserSpeaking(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes) {}
+    default void onUserSpeaking(@NotNull User user, @NotNull EnumSet<SpeakingMode> modes) {}
 
 
     /**
@@ -123,5 +123,5 @@ public interface ConnectionListener
      * @param  soundshare
      *         If true, the user is using soundshare
      */
-    default void onUserSpeaking(@Nonnull User user, boolean speaking, boolean soundshare) {}
+    default void onUserSpeaking(@NotNull User user, boolean speaking, boolean soundshare) {}
 }
