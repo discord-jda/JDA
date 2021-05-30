@@ -127,6 +127,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
      *             <li>If null is provided</li>
@@ -139,25 +140,15 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     {
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
+        if (!allowOption)
+            throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+        allowSubcommands = allowGroups = false;
         for (OptionData data : options)
         {
-            switch (data.getType())
-            {
-            case SUB_COMMAND:
-                if (!allowSubcommands)
-                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-                allowOption = allowGroups = false;
-                break;
-            case SUB_COMMAND_GROUP:
-                if (!allowGroups)
-                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-                allowOption = allowSubcommands = false;
-                break;
-            default:
-                if (!allowOption)
-                    throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
-                allowSubcommands = allowGroups = false;
-            }
+            if (data.getType() == OptionType.SUB_COMMAND)
+                throw new IllegalArgumentException("Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
+            if (data.getType() == OptionType.SUB_COMMAND_GROUP)
+                throw new IllegalArgumentException("Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
             this.options.add(data);
         }
         return this;
@@ -174,6 +165,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
      *             <li>If null is provided</li>
@@ -205,6 +197,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
      *             <li>If null is provided</li>
@@ -234,6 +227,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
+     *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 options are provided.</li>
      *             <li>If null is provided</li>
