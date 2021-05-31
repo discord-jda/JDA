@@ -21,10 +21,17 @@ import net.dv8tion.jda.api.utils.data.SerializableData;
 import javax.annotation.Nonnull;
 import java.util.List;
 
+/**
+ * Represents a top-level layout used for {@link Component Components} such as {@link Button Buttons}.
+ *
+ * <p>Components must always be contained within such a layout.
+ *
+ * @see ActionRow
+ */
 public interface ComponentLayout extends SerializableData, Iterable<Component>
 {
     /**
-     * List representation of this action row.
+     * List representation of this component layout.
      * <br>This list is modifiable. Note that empty action rows are not supported.
      *
      * @return {@link List} of components in this action row
@@ -33,7 +40,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
     List<Component> getComponents();
 
     /**
-     * List of buttons in this action row.
+     * List of buttons in this component layout.
      *
      * @return Immutable {@link List} of {@link Button Buttons}
      */
