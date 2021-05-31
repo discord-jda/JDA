@@ -232,7 +232,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
     /**
      * Adds the provided {@link java.io.File File} as file data.
      *
-     *  <br><u>This method opens a {@link java.io.FileInputStream FileInputStream} which will be closed by executing this action!</u>
+     * <br><u>This method opens a {@link java.io.FileInputStream FileInputStream} which will be closed by executing this action!</u>
      *
      * @param  file
      *         The File that will be interpreted as file data
