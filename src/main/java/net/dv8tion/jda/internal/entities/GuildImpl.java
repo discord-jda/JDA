@@ -177,7 +177,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<List<CommandPrivilege>> retrieveCommandPrivileges(@Nonnull String commandId)
+    public RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId)
     {
         Checks.isSnowflake(commandId, "ID");
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);

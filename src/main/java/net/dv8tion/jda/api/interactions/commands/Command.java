@@ -122,7 +122,7 @@ public class Command implements ISnowflake
 
     /**
      * Retrieves the {@link CommandPrivilege CommandPrivileges} for this command.
-     * <br>This is a shorcut for {@link Guild#retrieveCommandPrivileges(String)}.
+     * <br>This is a shorcut for {@link Guild#retrieveCommandPrivilegesById(String)}.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *
@@ -142,7 +142,7 @@ public class Command implements ISnowflake
     public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
-        return guild.retrieveCommandPrivileges(id);
+        return guild.retrieveCommandPrivilegesById(id);
     }
 
     /**

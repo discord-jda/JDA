@@ -280,7 +280,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<List<CommandPrivilege>> retrieveCommandPrivileges(@Nonnull String commandId);
+    RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId);
 
     /**
      * Retrieves the {@link CommandPrivilege CommandPrivileges} for the command with the specified ID.
@@ -300,9 +300,9 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> retrieveCommandPrivileges(long commandId)
+    default RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(long commandId)
     {
-        return retrieveCommandPrivileges(Long.toUnsignedString(commandId));
+        return retrieveCommandPrivilegesById(Long.toUnsignedString(commandId));
     }
 
     /**
