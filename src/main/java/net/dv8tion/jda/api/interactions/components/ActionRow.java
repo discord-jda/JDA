@@ -51,7 +51,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return ActionRow instance
      */
     @Nonnull
-    public static ActionRow load(@Nonnull DataObject data)
+    public static ActionRow fromData(@Nonnull DataObject data)
     {
         Checks.notNull(data, "Data");
         ActionRow row = new ActionRow();

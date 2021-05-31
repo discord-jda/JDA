@@ -184,14 +184,14 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      * @return The parsed SubcommandData instance, which can be further configured through setters
      */
     @Nonnull
-    public static SubcommandData load(@Nonnull DataObject json)
+    public static SubcommandData fromData(@Nonnull DataObject json)
     {
         String name = json.getString("name");
         String description = json.getString("description");
         SubcommandData sub = new SubcommandData(name, description);
         json.optArray("options").ifPresent(arr ->
                 arr.stream(DataArray::getObject)
-                        .map(OptionData::load)
+                        .map(OptionData::fromData)
                         .forEach(sub::addOptions)
         );
         return sub;

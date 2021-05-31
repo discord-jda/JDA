@@ -30,9 +30,10 @@ import java.util.stream.Collectors;
 /**
  * Builder for a Slash-Command group.
  */
-public class SubcommandGroupData extends OptionData implements SerializableData
+public class SubcommandGroupData implements SerializableData
 {
     private final DataArray options = DataArray.empty();
+    private final String name, description;
 
     /**
      * Create an group builder.
@@ -51,7 +52,36 @@ public class SubcommandGroupData extends OptionData implements SerializableData
      */
     public SubcommandGroupData(@Nonnull String name, @Nonnull String description)
     {
-        super(OptionType.SUB_COMMAND_GROUP, name, description);
+        Checks.notEmpty(name, "Name");
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(name, 32, "Name");
+        Checks.notLonger(description, 100, "Description");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.isLowercase(name, "Name");
+        this.name = name;
+        this.description = description;
+    }
+
+    /**
+     * The name for this subcommand group
+     *
+     * @return The name
+     */
+    @Nonnull
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
+     * The description for this  subcommand group
+     *
+     * @return The description
+     */
+    @Nonnull
+    public String getDescription()
+    {
+        return description;
     }
 
     /**
@@ -63,7 +93,7 @@ public class SubcommandGroupData extends OptionData implements SerializableData
     public List<SubcommandData> getSubcommands()
     {
         return options.stream(DataArray::getObject)
-                .map(SubcommandData::load)
+                .map(SubcommandData::fromData)
                 .collect(Collectors.toList());
     }
 
@@ -110,7 +140,11 @@ public class SubcommandGroupData extends OptionData implements SerializableData
     @Override
     public DataObject toData()
     {
-        return super.toData().put("options", options);
+        return DataObject.empty()
+                .put("type", OptionType.SUB_COMMAND_GROUP.getKey())
+                .put("name", name)
+                .put("description", description)
+                .put("options", options);
     }
 
     /**
@@ -128,14 +162,14 @@ public class SubcommandGroupData extends OptionData implements SerializableData
      * @return The parsed SubcommandGroupData instance, which can be further configured through setters
      */
     @Nonnull
-    public static SubcommandGroupData load(@Nonnull DataObject json)
+    public static SubcommandGroupData fromData(@Nonnull DataObject json)
     {
         String name = json.getString("name");
         String description = json.getString("description");
         SubcommandGroupData group = new SubcommandGroupData(name, description);
         json.optArray("options").ifPresent(arr ->
                 arr.stream(DataArray::getObject)
-                        .map(SubcommandData::load)
+                        .map(SubcommandData::fromData)
                         .forEach(group::addSubcommands)
         );
         return group;

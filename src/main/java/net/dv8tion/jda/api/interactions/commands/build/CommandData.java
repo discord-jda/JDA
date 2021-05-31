@@ -78,7 +78,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
                     OptionType type = OptionType.fromKey(obj.getInt("type"));
                     return type == OptionType.SUB_COMMAND;
                 })
-                .map(SubcommandData::load)
+                .map(SubcommandData::fromData)
                 .collect(Collectors.toList());
     }
 
@@ -96,7 +96,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
                     OptionType type = OptionType.fromKey(obj.getInt("type"));
                     return type == OptionType.SUB_COMMAND_GROUP;
                 })
-                .map(SubcommandGroupData::load)
+                .map(SubcommandGroupData::fromData)
                 .collect(Collectors.toList());
     }
 
@@ -344,7 +344,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The parsed CommandData instance, which can be further configured through setters
      */
     @Nonnull
-    public static CommandData load(@Nonnull DataObject object)
+    public static CommandData fromData(@Nonnull DataObject object)
     {
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
@@ -357,13 +357,13 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
             switch (type)
             {
             case SUB_COMMAND:
-                command.addSubcommands(SubcommandData.load(opt));
+                command.addSubcommands(SubcommandData.fromData(opt));
                 break;
             case SUB_COMMAND_GROUP:
-                command.addSubcommandGroups(SubcommandGroupData.load(opt));
+                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
                 break;
             default:
-                command.addOptions(OptionData.load(opt));
+                command.addOptions(OptionData.fromData(opt));
             }
         });
         return command;
@@ -384,11 +384,11 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The parsed CommandData instances, which can be further configured through setters
      */
     @Nonnull
-    public static List<CommandData> loadAll(@Nonnull DataArray array)
+    public static List<CommandData> fromList(@Nonnull DataArray array)
     {
         Checks.notNull(array, "DataArray");
         return array.stream(DataArray::getObject)
-                .map(CommandData::load)
+                .map(CommandData::fromData)
                 .collect(Collectors.toList());
     }
 
@@ -407,9 +407,9 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The parsed CommandData instances, which can be further configured through setters
      */
     @Nonnull
-    public static List<CommandData> loadAll(@Nonnull Collection<? extends DataObject> collection)
+    public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)
     {
         Checks.noneNull(collection, "CommandData");
-        return loadAll(DataArray.fromCollection(collection));
+        return fromList(DataArray.fromCollection(collection));
     }
 }

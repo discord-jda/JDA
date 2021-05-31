@@ -117,7 +117,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     public List<OptionData> getOptions()
     {
         return options.stream(DataArray::getObject)
-                .map(OptionData::load)
+                .map(OptionData::fromData)
                 .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
                 .collect(Collectors.toList());
     }

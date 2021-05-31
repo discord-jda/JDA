@@ -42,7 +42,7 @@ public class ButtonImpl implements Button
             ButtonStyle.fromKey(data.getInt("style")),
             data.getString("url", null),
             data.getBoolean("disabled"),
-            data.optObject("emoji").map(Emoji::load).orElse(null));
+            data.optObject("emoji").map(Emoji::fromData).orElse(null));
     }
 
     public ButtonImpl(String id, String label, ButtonStyle style, boolean disabled, Emoji emoji)

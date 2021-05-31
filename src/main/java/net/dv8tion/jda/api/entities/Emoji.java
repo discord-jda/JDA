@@ -110,7 +110,7 @@ public class Emoji implements SerializableData, IMentionable
      * @return The new emoji instance
      */
     @Nonnull
-    public static Emoji ofUnicode(@Nonnull String code)
+    public static Emoji fromUnicode(@Nonnull String code)
     {
         Checks.notEmpty(code, "Unicode");
         if (code.startsWith("U+") || code.startsWith("u+"))
@@ -140,7 +140,7 @@ public class Emoji implements SerializableData, IMentionable
      * @return The new emoji instance
      */
     @Nonnull
-    public static Emoji ofEmote(@Nonnull String name, long id, boolean animated)
+    public static Emoji fromEmote(@Nonnull String name, long id, boolean animated)
     {
         Checks.notEmpty(name, "Name");
         return new Emoji(name, id, animated);
@@ -158,10 +158,10 @@ public class Emoji implements SerializableData, IMentionable
      * @return The new emoji instance
      */
     @Nonnull
-    public static Emoji ofEmote(@Nonnull Emote emote)
+    public static Emoji fromEmote(@Nonnull Emote emote)
     {
         Checks.notNull(emote, "Emote");
-        return ofEmote(emote.getName(), emote.getIdLong(), emote.isAnimated());
+        return fromEmote(emote.getName(), emote.getIdLong(), emote.isAnimated());
     }
 
     // either <a?:name:id> or just unicode
@@ -189,13 +189,13 @@ public class Emoji implements SerializableData, IMentionable
      * @return The emoji instance
      */
     @Nonnull
-    public static Emoji parseMarkdown(@Nonnull String code)
+    public static Emoji fromMarkdown(@Nonnull String code)
     {
         Matcher matcher = Message.MentionType.EMOTE.getPattern().matcher(code);
         if (matcher.matches())
-            return ofEmote(matcher.group(1), Long.parseUnsignedLong(matcher.group(2)), code.startsWith("<a"));
+            return fromEmote(matcher.group(1), Long.parseUnsignedLong(matcher.group(2)), code.startsWith("<a"));
         else
-            return ofUnicode(code);
+            return fromUnicode(code);
     }
 
     /**
@@ -209,7 +209,7 @@ public class Emoji implements SerializableData, IMentionable
      * @return The emoji instance
      */
     @Nonnull
-    public static Emoji load(@Nonnull DataObject emoji)
+    public static Emoji fromData(@Nonnull DataObject emoji)
     {
         return new Emoji(emoji.getString("name"),
                 emoji.getUnsignedLong("id", 0),

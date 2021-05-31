@@ -327,7 +327,7 @@ public class OptionData implements SerializableData
      * @return The parsed OptionData instance, which can be further configured through setters
      */
     @Nonnull
-    public static OptionData load(@Nonnull DataObject json)
+    public static OptionData fromData(@Nonnull DataObject json)
     {
         String name = json.getString("name");
         String description = json.getString("description");
