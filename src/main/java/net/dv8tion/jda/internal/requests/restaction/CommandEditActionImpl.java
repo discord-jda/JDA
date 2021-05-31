@@ -40,7 +40,9 @@ import java.util.function.BooleanSupplier;
 public class CommandEditActionImpl extends RestActionImpl<Command> implements CommandEditAction
 {
     private static final String UNDEFINED = "undefined";
-    private static final int NAME_SET = 1, DESCRIPTION_SET = 2, OPTIONS_SET = 4;
+    private static final int NAME_SET        = 1 << 0;
+    private static final int DESCRIPTION_SET = 1 << 1;
+    private static final int OPTIONS_SET     = 1 << 2;
     private final Guild guild;
     private int mask = 0;
     private CommandData data = new CommandData(UNDEFINED, UNDEFINED);
