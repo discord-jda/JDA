@@ -109,6 +109,7 @@ public class WebhookMessageUpdateActionImpl<T>
         ids.forEach(Checks::isSnowflake);
         this.retainedFiles.clear();
         this.retainedFiles.addAll(ids);
+        set |= RETAINED_FILES;
         return this;
     }
 
