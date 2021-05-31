@@ -60,7 +60,7 @@ public interface ButtonInteraction extends ComponentInteraction
      *         The new button to use, or null to remove this button from the message entirely
      *
      * @throws IllegalStateException
-     *         If {@link #getMessage()} is null
+     *         If this interaction was triggered by a button on an ephemeral message.
      *
      * @return {@link RestAction}
      */
