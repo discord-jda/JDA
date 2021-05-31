@@ -189,9 +189,8 @@ public class SlashBotExample extends ListenerAdapter
         String userId = event.getUser().getId();
         event.reply("This will delete " + amount + " messages.\nAre you sure?") // prompt the user with a button menu
             .addActionRow(// this means "<style>(<id>, <label>)" the id can be spoofed by the user so setup some kinda verification system
-                Button.secondary(userId + ":delete", "Nevermind!")),
-                Button.danger(userId + ":prune:" + amount, "Yes!") // the first parameter is the component id we use in onButtonClick above
-                
+                Button.secondary(userId + ":delete", "Nevermind!"),
+                Button.danger(userId + ":prune:" + amount, "Yes!")) // the first parameter is the component id we use in onButtonClick above
             .queue();
     }
 }
