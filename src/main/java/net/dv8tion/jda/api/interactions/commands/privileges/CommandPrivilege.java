@@ -37,7 +37,7 @@ import java.util.Map;
  * On the other hand if it is disabled by default, this can be used to whitelist users or roles instead.
  *
  * @see Guild#retrieveCommandPrivileges()
- * @see Guild#updateCommandPrivileges(String, Collection)
+ * @see Guild#updateCommandPrivilegesById(String, Collection)
  * @see Guild#updateCommandPrivileges(Map)
  * @see Command#isDefaultEnabled()
  */

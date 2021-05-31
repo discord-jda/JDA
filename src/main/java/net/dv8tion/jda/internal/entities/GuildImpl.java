@@ -211,7 +211,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> updateCommandPrivileges(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    public RestAction<Void> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
         Checks.isSnowflake(id, "ID");
         Checks.noneNull(privileges, "Privileges");

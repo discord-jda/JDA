@@ -166,7 +166,7 @@ public class Command implements ISnowflake
     public RestAction<Void> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
         Checks.notNull(guild, "Guild");
-        return guild.updateCommandPrivileges(id, privileges);
+        return guild.updateCommandPrivilegesById(id, privileges);
     }
 
     /**

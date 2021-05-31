@@ -337,7 +337,33 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> updateCommandPrivileges(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges);
+    RestAction<Void> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges);
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command, this can be global or guild command
+     * @param  privileges
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
+     *
+     * @return {@link RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> updateCommandPrivilegesById(@Nonnull String id, @Nonnull CommandPrivilege... privileges)
+    {
+        Checks.noneNull(privileges, "CommandPrivileges");
+        return updateCommandPrivilegesById(id, Arrays.asList(privileges));
+    }
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
@@ -359,9 +385,35 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> updateCommandPrivileges(long id, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    default RestAction<Void> updateCommandPrivilegesById(long id, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
-        return updateCommandPrivileges(Long.toUnsignedString(id), privileges);
+        return updateCommandPrivilegesById(Long.toUnsignedString(id), privileges);
+    }
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command, this can be global or guild command
+     * @param  privileges
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 10 privileges are provided
+     *
+     * @return {@link RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> updateCommandPrivilegesById(long id, @Nonnull CommandPrivilege... privileges)
+    {
+        Checks.noneNull(privileges, "CommandPrivileges");
+        return updateCommandPrivilegesById(id, Arrays.asList(privileges));
     }
 
     /**
@@ -384,7 +436,6 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     RestAction<Void> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges);
-
 
     /**
      * Retrieves the available regions for this Guild
