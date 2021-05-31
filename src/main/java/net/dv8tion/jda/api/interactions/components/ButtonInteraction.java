@@ -66,7 +66,7 @@ public interface ButtonInteraction extends ComponentInteraction
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> updateButton(@Nullable Button newButton)
+    default RestAction<Void> editButton(@Nullable Button newButton)
     {
         Message message = getMessage();
         if (message == null)
