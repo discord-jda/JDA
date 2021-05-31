@@ -150,7 +150,7 @@ public interface Interaction extends ISnowflake
     boolean isAcknowledged();
 
     /**
-     * Defer the reply to this interaction and acknowledge it.
+     * Acknowledge this interaction and defer the reply to a later time.
      * <br>This will send a {@code <Bot> is thinking...} message in chat that will be updated later through either {@link InteractionHook#editOriginal(String)} or {@link InteractionHook#sendMessage(String)}.
      *
      * <p>You can use {@link #deferReply(boolean) deferReply(true)} to send a deferred ephemeral reply. If your initial deferred message is not ephemeral it cannot be made ephemeral later.
@@ -167,10 +167,10 @@ public interface Interaction extends ISnowflake
     ReplyAction deferReply();
 
     /**
-     * Defer the reply to this interaction and acknowledge it.
+     * Acknowledge this interaction and defer the reply to a later time.
      * <br>This will send a {@code <Bot> is thinking...} message in chat that will be updated later through either {@link InteractionHook#editOriginal(String)} or {@link InteractionHook#sendMessage(String)}.
      *
-     * <p>You can use {@code deferReply(true)} to send a deferred ephemeral reply. If your initial deferred message is not ephemeral it cannot be made ephemeral later.
+     * <p>You can use {@code deferReply()} or {@code deferReply(false)} to send a non-ephemeral deferred reply. If your initial deferred message is ephemeral it cannot be made non-ephemeral later.
      * Your first message to the {@link InteractionHook} will inherit whether the message is ephemeral or not from this deferred reply.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
