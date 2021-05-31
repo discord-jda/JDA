@@ -59,7 +59,16 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
             throw new IllegalArgumentException("Data has incorrect type. Expected: 1 Found: " + data.getInt("type"));
         data.getArray("components")
             .stream(DataArray::getObject)
-            .map(ButtonImpl::new)
+            .map(obj -> {
+                switch (Component.Type.fromKey(obj.getInt("type")))
+                {
+                    case BUTTON:
+                        return new ButtonImpl(obj);
+                    default:
+                        return null;
+                }
+            })
+            .filter(Objects::nonNull)
             .forEach(row.components::add);
         return row;
     }
