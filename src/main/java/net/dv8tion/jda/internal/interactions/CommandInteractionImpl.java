@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -57,16 +58,16 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         if (options.length() == 1)
         {
             DataObject option = options.getObject(0);
-            switch (option.getInt("type"))
+            switch (OptionType.fromKey(option.getInt("type")))
             {
-            case 2: // SUBCOMMAND_GROUP
-                group = option.getString("name");
-                options = option.getArray("options");
-                option = options.getObject(0);
-            case 1: // SUBCOMMAND
-                subcommand = option.getString("name");
-                options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
-                break;
+                case SUB_COMMAND_GROUP:
+                    group = option.getString("name");
+                    options = option.getArray("options");
+                    option = options.getObject(0);
+                case SUB_COMMAND:
+                    subcommand = option.getString("name");
+                    options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
+                    break;
             }
         }
 
@@ -115,8 +116,6 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
             resolveJson.optObject("channels").ifPresent(channels -> {
                 channels.keys().forEach(id -> {
                     ISnowflake channelObj = jda.getGuildChannelById(id);
-                    if (channelObj == null)
-                        channelObj = jda.getPrivateChannelById(id); // I don't think this is possible lol
                     if (channelObj != null)
                         resolved.put(channelObj.getIdLong(), channelObj);
                 });
