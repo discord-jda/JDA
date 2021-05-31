@@ -275,6 +275,9 @@ public class Command implements ISnowflake
 
     /**
      * Predefined choice used for options.
+     * 
+     * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Command.Choice...)
+     * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
     public static class Choice
     {
