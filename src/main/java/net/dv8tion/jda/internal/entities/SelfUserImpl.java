@@ -31,9 +31,9 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 
     private boolean verified;
     private boolean mfaEnabled;
+    private long applicationId;
 
     //Client only
-    private long applicationId;
     private String email;
     private String phoneNumber;
     private boolean mobile;
@@ -42,7 +42,7 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     public SelfUserImpl(long id, JDAImpl api)
     {
         super(id, api);
-        this.applicationId = id; // configured later by ready event
+        this.applicationId = id; // configured later by EntityBuilder#createSelfUser when handling the ready event payload
     }
 
     @Override
