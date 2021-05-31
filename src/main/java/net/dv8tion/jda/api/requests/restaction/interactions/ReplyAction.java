@@ -31,10 +31,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 /**
- * A {@link CallbackAction} which can be used to send a message reply for an interaction.
+ * A {@link InteractionCallbackAction} which can be used to send a message reply for an interaction.
  * <br>You can use {@link #setEphemeral(boolean)} to hide this message from other users.
  */
-public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction>
+public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<ReplyAction>
 {
     @Nonnull
     @Override

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
+public class ReplyActionImpl extends InteractionCallbackActionImpl implements ReplyAction
 {
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();

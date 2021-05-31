@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.interactions.CallbackAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.InteractionCallbackAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
 import net.dv8tion.jda.internal.requests.Requester;
@@ -38,12 +38,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public abstract class CallbackActionImpl extends RestActionImpl<InteractionHook> implements CallbackAction
+public abstract class InteractionCallbackActionImpl extends RestActionImpl<InteractionHook> implements InteractionCallbackAction
 {
     protected final InteractionHookImpl hook;
     protected final Map<String, InputStream> files = new HashMap<>();
 
-    public CallbackActionImpl(InteractionHookImpl hook)
+    public InteractionCallbackActionImpl(InteractionHookImpl hook)
     {
         super(hook.getJDA(), Route.Interactions.CALLBACK.compile(hook.getInteraction().getId(), hook.getInteraction().getToken()));
         this.hook = hook;

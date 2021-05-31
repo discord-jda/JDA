@@ -27,9 +27,9 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * A {@link CallbackAction} which can be used to edit the message for an interaction.
+ * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
  */
-public interface UpdateInteractionAction extends CallbackAction
+public interface UpdateInteractionAction extends InteractionCallbackAction
 {
     /**
      * Set the new content for this message.

@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.requests.RestAction;
 /**
  * A callback action is used to <b>acknowledge</b> an {@link net.dv8tion.jda.api.interactions.Interaction Interaction}.
  */
-public interface CallbackAction extends RestAction<InteractionHook>
+public interface InteractionCallbackAction extends RestAction<InteractionHook>
 {
     /**
      * The possible types of interaction responses.
