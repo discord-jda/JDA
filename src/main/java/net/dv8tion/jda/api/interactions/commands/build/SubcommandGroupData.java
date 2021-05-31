@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class SubcommandGroupData implements SerializableData
 {
     private final DataArray options = DataArray.empty();
-    private final String name, description;
+    private String name, description;
 
     /**
      * Create an group builder.
@@ -60,6 +60,48 @@ public class SubcommandGroupData implements SerializableData
         Checks.isLowercase(name, "Name");
         this.name = name;
         this.description = description;
+    }
+
+    /**
+     * Configure the name
+     *
+     * @param  name
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null, not alphanumeric, or not between 1-32 characters
+     *
+     * @return The SubcommandGroupData instance, for chaining
+     */
+    @Nonnull
+    public SubcommandGroupData setName(@Nonnull String name)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 32, "Name");
+        Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Configure the description
+     *
+     * @param  description
+     *         The description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null or not between 1-100 characters
+     *
+     * @return The SubcommandGroupData instance, for chaining
+     */
+    @Nonnull
+    public SubcommandGroupData setDescription(@Nonnull String description)
+    {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+        this.description = description;
+        return this;
     }
 
     /**

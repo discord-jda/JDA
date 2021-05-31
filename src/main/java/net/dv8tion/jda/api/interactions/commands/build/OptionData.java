@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 public class OptionData implements SerializableData
 {
     private final OptionType type;
-    private final String name, description;
+    private String name, description;
     private boolean isRequired;
     private Map<String, Object> choices;
 
@@ -166,6 +166,48 @@ public class OptionData implements SerializableData
                     return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Configure the name
+     *
+     * @param  name
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null, not alphanumeric, or not between 1-32 characters
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setName(@Nonnull String name)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 32, "Name");
+        Checks.isLowercase(name, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Configure the description
+     *
+     * @param  description
+     *         The description, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the name is null or not between 1-100 characters
+     *
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData setDescription(@Nonnull String description)
+    {
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 100, "Description");
+        this.description = description;
+        return this;
     }
 
     /**

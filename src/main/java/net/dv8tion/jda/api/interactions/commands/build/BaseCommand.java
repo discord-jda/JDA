@@ -60,6 +60,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
+        Checks.isLowercase(name, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         this.name = name;
         return (T) this;
