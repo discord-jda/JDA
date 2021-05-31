@@ -287,7 +287,7 @@ public class CommandPrivilege implements ISnowflake, SerializableData
     {
         return DataObject.empty()
                 .put("id", id)
-                .put("type", type.ordinal()+1)
+                .put("type", type.key)
                 .put("permission", enabled);
     }
 
@@ -296,6 +296,13 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      */
     public enum Type
     {
-        ROLE, USER
+        ROLE(1), USER(2);
+
+        private final int key;
+
+        Type(int key)
+        {
+            this.key = key;
+        }
     }
 }
