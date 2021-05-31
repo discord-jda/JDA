@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Specialized {@link RestAction} used to update an existing message sent by a {@link net.dv8tion.jda.api.entities.Webhook Webhook} or {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHook}.
@@ -162,7 +163,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     /**
      * Adds the provided {@link java.io.InputStream InputStream} as file data.
      * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
      *
      * @param  data
      *         The InputStream data to upload to the webhook.
@@ -184,7 +185,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     /**
      * Adds the provided {@code byte[]} as file data.
      * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
      *
      * @param  data
      *         The {@code byte[]} data to upload to the webhook.
@@ -211,7 +212,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     /**
      * Adds the provided {@link File}.
      * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
      *
      * <p>The {@code name} parameter is used to inform Discord about what the file should be called. This is 2 fold:
      * <ol>
@@ -256,7 +257,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     /**
      * Adds the provided {@link File}.
      * <br><u>The stream will be closed upon execution!</u>
-     * <br>The provided file will be appended to the message. You cannot delete or edit existing files on a message.
+     * <br>The provided file will be appended to the message. You can use {@link #retainFiles(Collection)} to delete files from the message.
      *
      * @param  file
      *         The {@link File} data to upload to the webhook.
@@ -274,5 +275,97 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    WebhookMessageUpdateAction<T> retainFilesById(@Nonnull Collection<String> ids);
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction<T> retainFilesById(@Nonnull String... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays.asList(ids));
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction<T> retainFilesById(long... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays
+                .stream(ids)
+                .mapToObj(Long::toUnsignedString)
+                .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFiles(message.getAttachments().subList(1, message.getAttachments().size()))} would only remove the first attachment from the message.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  attachments
+     *         The attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction<T> retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return retainFilesById(attachments
+                .stream()
+                .map(Message.Attachment::getId)
+                .collect(Collectors.toList())
+        );
     }
 }

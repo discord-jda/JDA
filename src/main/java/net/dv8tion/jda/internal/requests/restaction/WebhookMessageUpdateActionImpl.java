@@ -38,6 +38,7 @@ import javax.annotation.Nullable;
 import java.io.InputStream;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class WebhookMessageUpdateActionImpl<T>
     extends TriggerRestAction<T>
@@ -47,10 +48,12 @@ public class WebhookMessageUpdateActionImpl<T>
     private static final int EMBEDS = 1 << 1;
     private static final int FILES = 1 << 2;
     private static final int COMPONENTS = 1 << 3;
+    private static final int RETAINED_FILES = 1 << 4;
 
     private int set = 0;
     private final List<ActionRow> components = new ArrayList<>();
     private final List<MessageEmbed> embeds = new ArrayList<>();
+    private final List<String> retainedFiles = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
     private final Function<DataObject, T> transformer;
     private String content;
@@ -100,6 +103,17 @@ public class WebhookMessageUpdateActionImpl<T>
 
     @Nonnull
     @Override
+    public WebhookMessageUpdateAction<T> retainFilesById(@Nonnull Collection<String> ids)
+    {
+        Checks.noneNull(ids, "IDs");
+        ids.forEach(Checks::isSnowflake);
+        this.retainedFiles.clear();
+        this.retainedFiles.addAll(ids);
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
@@ -136,6 +150,15 @@ public class WebhookMessageUpdateActionImpl<T>
             json.put("embeds", DataArray.fromCollection(embeds));
         if (isUpdate(COMPONENTS))
             json.put("components", DataArray.fromCollection(components));
+        if (isUpdate(RETAINED_FILES))
+        {
+            json.put("attachments", DataArray.fromCollection(
+                retainedFiles.stream()
+                    .map(id -> DataObject.empty().put("id", id))
+                    .collect(Collectors.toList()))
+            );
+        }
+
         if (!isUpdate(FILES))
             return getRequestBody(json);
         MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);

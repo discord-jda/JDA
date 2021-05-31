@@ -34,12 +34,14 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Extension of a default {@link net.dv8tion.jda.api.requests.RestAction RestAction}
@@ -528,8 +530,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided data is {@code null} or the provided name is blank or {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -557,8 +558,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided data is {@code null} or the provided name is blank or {@code null}
      *         or if the provided data exceeds the maximum file size of the currently logged in account
@@ -590,8 +590,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided file is {@code null} or if the provided File is bigger than the maximum file size of the currently logged in account
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -626,8 +625,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided file is {@code null} or the provided name is blank or {@code null}
      *         or if the provided file is bigger than the maximum file size of the currently logged in account,
@@ -688,6 +686,97 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     @CheckReturnValue
     MessageAction clearFiles(@Nonnull Consumer<InputStream> finalizer);
 
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction retainFilesById(@Nonnull Collection<String> ids);
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction retainFilesById(@Nonnull String... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays.asList(ids));
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction retainFilesById(long... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays
+            .stream(ids)
+            .mapToObj(Long::toUnsignedString)
+            .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFiles(message.getAttachments().subList(1, message.getAttachments().size()))} would only remove the first attachment from the message.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  attachments
+     *         The attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return retainFilesById(attachments
+            .stream()
+            .map(Message.Attachment::getId)
+            .collect(Collectors.toList())
+        );
+    }
 
     /**
      * Set the action rows for the message.

@@ -48,6 +48,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class MessageActionImpl extends RestActionImpl<Message> implements MessageAction
 {
@@ -59,6 +60,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected final MessageChannel channel;
     protected final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
     protected List<ActionRow> components;
+    protected List<String> retainedAttachments;
     protected MessageEmbed embed = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
@@ -250,7 +252,6 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @CheckReturnValue
     public MessageActionImpl addFile(@Nonnull final InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
     {
-        checkEdit();
         Checks.notNull(data, "Data");
         Checks.notBlank(name, "Name");
         Checks.noneNull(options, "Options");
@@ -322,6 +323,16 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             it.remove();
         }
         clearResources();
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction retainFilesById(@Nonnull Collection<String> ids)
+    {
+        if (this.retainedAttachments == null)
+            this.retainedAttachments = new ArrayList<>();
+        this.retainedAttachments.addAll(ids);
         return this;
     }
 
@@ -472,6 +483,13 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.putNull("components");
             else
                 obj.put("components", DataArray.fromCollection(components));
+            if (retainedAttachments != null)
+                obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
+                        .map(id -> DataObject.empty()
+                            .put("id", id))
+                        .collect(Collectors.toList())));
+            else
+                obj.put("attachments", DataArray.empty());
         }
         else
         {
@@ -483,6 +501,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 obj.put("nonce", nonce);
             if (components != null)
                 obj.put("components", DataArray.fromCollection(components));
+            if (retainedAttachments != null)
+                obj.put("attachments", DataArray.fromCollection(retainedAttachments.stream()
+                        .map(id -> DataObject.empty()
+                            .put("id", id))
+                        .collect(Collectors.toList())));
         }
         if (messageReference != 0)
         {
