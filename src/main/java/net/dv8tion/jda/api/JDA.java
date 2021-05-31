@@ -555,6 +555,8 @@ public interface JDA
      *         If null is provided
      *
      * @return {@link CommandCreateAction}
+     *
+     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(CommandData)
      */
     @Nonnull
     @CheckReturnValue
@@ -580,6 +582,8 @@ public interface JDA
      *         If null is provided or the name/description do not meet the requirements
      *
      * @return {@link CommandCreateAction}
+     *
+     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(String, String)  
      */
     @Nonnull
     @CheckReturnValue
