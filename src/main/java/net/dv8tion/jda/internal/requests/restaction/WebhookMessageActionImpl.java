@@ -159,32 +159,32 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    private DataObject getJSON()
+    private DataObject toData()
     {
-        DataObject json = DataObject.empty();
-        json.put("content", content.toString());
-        json.put("tts", tts);
+        DataObject data = DataObject.empty();
+        data.put("content", content.toString());
+        data.put("tts", tts);
 
         if (username != null)
-            json.put("username", username);
+            data.put("username", username);
         if (avatarUrl != null)
-            json.put("avatar_url", avatarUrl);
+            data.put("avatar_url", avatarUrl);
         if (ephemeral)
-            json.put("flags", 64);
+            data.put("flags", 64);
         if (!embeds.isEmpty())
-            json.put("embeds", DataArray.fromCollection(embeds));
+            data.put("embeds", DataArray.fromCollection(embeds));
         if (!components.isEmpty())
-            json.put("components", DataArray.fromCollection(components));
-        json.put("allowed_mentions", allowedMentions);
-        return json;
+            data.put("components", DataArray.fromCollection(components));
+        data.put("allowed_mentions", allowedMentions);
+        return data;
     }
 
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject json = getJSON();
+        DataObject data = toData();
         if (files.isEmpty())
-            return getRequestBody(json);
+            return getRequestBody(data);
 
         MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
         int i = 0;
@@ -194,7 +194,7 @@ public class WebhookMessageActionImpl<T>
             body.addFormDataPart("file" + i++, file.getKey(), stream);
         }
 
-        body.addFormDataPart("payload_json", json.toString());
+        body.addFormDataPart("payload_json", data.toString());
         files.clear();
         return body.build();
     }

@@ -49,7 +49,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
     }
 
     @Override
-    protected DataObject getJSON()
+    protected DataObject toData()
     {
         DataObject json = DataObject.empty();
         if (isEmpty())

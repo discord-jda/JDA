@@ -49,12 +49,12 @@ public abstract class CallbackActionImpl extends RestActionImpl<InteractionHook>
         this.hook = hook;
     }
 
-    protected abstract DataObject getJSON();
+    protected abstract DataObject toData();
 
     @Override
     protected RequestBody finalizeData()
     {
-        DataObject json = getJSON();
+        DataObject json = toData();
         if (files.isEmpty())
             return getRequestBody(json);
 

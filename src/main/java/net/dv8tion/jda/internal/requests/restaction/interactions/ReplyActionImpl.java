@@ -62,7 +62,7 @@ public class ReplyActionImpl extends CallbackActionImpl implements ReplyAction
         return this;
     }
 
-    protected DataObject getJSON()
+    protected DataObject toData()
     {
         DataObject json = DataObject.empty();
         if (isEmpty())
