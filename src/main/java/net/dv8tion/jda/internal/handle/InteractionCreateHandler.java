@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
+import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.ButtonInteractionImpl;
@@ -49,12 +50,12 @@ public class InteractionCreateHandler extends SocketHandler
         if (guildId != 0 && api.getGuildById(guildId) == null)
             return null; // discard event if its not from a guild we are currently in
 
-        switch (type)
+        switch (InteractionType.fromKey(type))
         {
-            case 2: // slash commands
+            case SLASH_COMMAND: // slash commands
                 handleCommand(content);
                 break;
-            case 3: // buttons/components
+            case COMPONENT: // buttons/components
                 handleAction(content);
             default:
                 api.handleEvent(
