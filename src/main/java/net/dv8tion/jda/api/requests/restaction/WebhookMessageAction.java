@@ -49,35 +49,35 @@ import java.util.Collections;
 // TODO: WebhookMessage type (no channel/guild attached)
 public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<WebhookMessageAction<T>>
 {
-    /**
-     * Set the apparent username for the message author.
-     * <br>This changes the username that is shown for the message author.
-     *
-     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
-     *
-     * @param  name
-     *         The username to use, or null to use the default
-     *
-     * @return The same message action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageAction<T> setUsername(@Nullable String name);
-
-    /**
-     * Set the apparent avatar for the message author.
-     * <br>This changes the avatar that is shown for the message author.
-     *
-     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
-     *
-     * @param  iconUrl
-     *         The URL to the avatar, or null to use default
-     *
-     * @return The same message action, for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    WebhookMessageAction<T> setAvatarUrl(@Nullable String iconUrl);
+//    /**
+//     * Set the apparent username for the message author.
+//     * <br>This changes the username that is shown for the message author.
+//     *
+//     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+//     *
+//     * @param  name
+//     *         The username to use, or null to use the default
+//     *
+//     * @return The same message action, for chaining convenience
+//     */
+//    @Nonnull
+//    @CheckReturnValue
+//    WebhookMessageAction<T> setUsername(@Nullable String name);
+//
+//    /**
+//     * Set the apparent avatar for the message author.
+//     * <br>This changes the avatar that is shown for the message author.
+//     *
+//     * <p>This cannot be used with {@link net.dv8tion.jda.api.interactions.InteractionHook InteractionHooks}!
+//     *
+//     * @param  iconUrl
+//     *         The URL to the avatar, or null to use default
+//     *
+//     * @return The same message action, for chaining convenience
+//     */
+//    @Nonnull
+//    @CheckReturnValue
+//    WebhookMessageAction<T> setAvatarUrl(@Nullable String iconUrl);
 
     /**
      * Set whether this message should be visible to other users.

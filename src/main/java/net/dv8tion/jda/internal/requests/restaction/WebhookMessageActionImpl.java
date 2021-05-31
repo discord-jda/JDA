@@ -101,28 +101,28 @@ public class WebhookMessageActionImpl<T>
         return this;
     }
 
-    @Nonnull
-    @Override
-    public WebhookMessageActionImpl<T> setUsername(@Nullable String name)
-    {
-        if (name != null)
-        {
-            Checks.notEmpty(name, "Name");
-            Checks.notLonger(name, 128, "Name");
-        }
-        this.username = name;
-        return this;
-    }
-
-    @Nonnull
-    @Override
-    public WebhookMessageActionImpl<T> setAvatarUrl(@Nullable String iconUrl)
-    {
-        if (iconUrl != null && iconUrl.isEmpty())
-            iconUrl = null;
-        this.avatarUrl = iconUrl;
-        return this;
-    }
+//    @Nonnull
+//    @Override
+//    public WebhookMessageActionImpl<T> setUsername(@Nullable String name)
+//    {
+//        if (name != null)
+//        {
+//            Checks.notEmpty(name, "Name");
+//            Checks.notLonger(name, 128, "Name");
+//        }
+//        this.username = name;
+//        return this;
+//    }
+//
+//    @Nonnull
+//    @Override
+//    public WebhookMessageActionImpl<T> setAvatarUrl(@Nullable String iconUrl)
+//    {
+//        if (iconUrl != null && iconUrl.isEmpty())
+//            iconUrl = null;
+//        this.avatarUrl = iconUrl;
+//        return this;
+//    }
 
     @Nonnull
     @Override
