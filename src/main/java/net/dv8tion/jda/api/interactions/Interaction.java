@@ -80,6 +80,17 @@ public interface Interaction extends ISnowflake
     Guild getGuild();
 
     /**
+     * Whether this interaction came from a {@link Guild}.
+     * <br>This is identical to {@code getGuild() != null}
+     *
+     * @return True, if this interaction happened in a guild
+     */
+    default boolean isFromGuild()
+    {
+        return getGuild() != null;
+    }
+
+    /**
      * The {@link ChannelType} for the channel this interaction came from.
      * <br>If {@link #getChannel()} is null, this returns {@link ChannelType#UNKNOWN}.
      *
