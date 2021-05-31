@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -37,12 +37,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-public class CommandUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandUpdateAction
+public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandListUpdateAction
 {
     private final List<CommandData> commands = new ArrayList<>();
     private final GuildImpl guild;
 
-    public CommandUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route)
+    public CommandListUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route)
     {
         super(api, route);
         this.guild = guild;
@@ -50,35 +50,35 @@ public class CommandUpdateActionImpl extends RestActionImpl<List<Command>> imple
 
     @Nonnull
     @Override
-    public CommandUpdateAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit)
     {
-        return CommandUpdateAction.super.timeout(timeout, unit);
+        return (CommandListUpdateAction) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public CommandUpdateAction addCheck(@Nonnull BooleanSupplier checks)
+    public CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks)
     {
-        return CommandUpdateAction.super.addCheck(checks);
+        return (CommandListUpdateAction) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandUpdateAction setCheck(BooleanSupplier checks)
+    public CommandListUpdateAction setCheck(BooleanSupplier checks)
     {
-        return (CommandUpdateAction) super.setCheck(checks);
+        return (CommandListUpdateAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandUpdateAction deadline(long timestamp)
+    public CommandListUpdateAction deadline(long timestamp)
     {
-        return (CommandUpdateAction) super.deadline(timestamp);
+        return (CommandListUpdateAction) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public CommandUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
+    public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
     {
         Checks.noneNull(commands, "Command");
         Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");

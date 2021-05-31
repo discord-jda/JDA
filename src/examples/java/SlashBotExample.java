@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.restaction.CommandUpdateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 
 import javax.security.auth.login.LoginException;
 import java.util.EnumSet;
@@ -45,7 +45,7 @@ public class SlashBotExample extends ListenerAdapter
                 .build();
 
         // These commands take up to an hour to be activated after creation/update/delete
-        CommandUpdateAction commands = jda.updateCommands();
+        CommandListUpdateAction commands = jda.updateCommands();
 
         // Moderation commands with required options
         commands.addCommands(

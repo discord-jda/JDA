@@ -613,11 +613,11 @@ public interface JDA
      * jda.updateCommands().queue();
      * }</pre>
      *
-     * @return {@link CommandUpdateAction}
+     * @return {@link CommandListUpdateAction}
      */
     @Nonnull
     @CheckReturnValue
-    CommandUpdateAction updateCommands();
+    CommandListUpdateAction updateCommands();
 
     /**
      * Edit an existing global command by id.

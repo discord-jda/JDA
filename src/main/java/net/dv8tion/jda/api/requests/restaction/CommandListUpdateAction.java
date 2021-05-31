@@ -34,32 +34,23 @@ import java.util.function.BooleanSupplier;
  * Specialized {@link RestAction} used to replace existing commands of a guild or globally.
  * <br>Any commands that currently exist and are not listed through {@link #addCommands(CommandData...)} will be <b>DELETED</b>!
  */
-public interface CommandUpdateAction extends RestAction<List<Command>>
+public interface CommandListUpdateAction extends RestAction<List<Command>>
 {
     @Nonnull
     @Override
-    default CommandUpdateAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
-        return (CommandUpdateAction) RestAction.super.timeout(timeout, unit);
-    }
+    CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
-    default CommandUpdateAction deadline(long timestamp)
-    {
-        return (CommandUpdateAction) RestAction.super.deadline(timestamp);
-    }
+    CommandListUpdateAction deadline(long timestamp);
 
     @Nonnull
     @Override
-    CommandUpdateAction setCheck(@Nullable BooleanSupplier checks);
+    CommandListUpdateAction setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
-    default CommandUpdateAction addCheck(@Nonnull BooleanSupplier checks)
-    {
-        return (CommandUpdateAction) RestAction.super.addCheck(checks);
-    }
+    CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks);
 
     /**
      * Adds up to 100 commands.
@@ -75,7 +66,7 @@ public interface CommandUpdateAction extends RestAction<List<Command>>
      */
     @Nonnull
     @CheckReturnValue
-    CommandUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands);
+    CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands);
 
     /**
      * Adds up to 100 commands.
@@ -91,7 +82,7 @@ public interface CommandUpdateAction extends RestAction<List<Command>>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandUpdateAction addCommands(@Nonnull CommandData... commands)
+    default CommandListUpdateAction addCommands(@Nonnull CommandData... commands)
     {
         Checks.noneNull(commands, "Command");
         return addCommands(Arrays.asList(commands));

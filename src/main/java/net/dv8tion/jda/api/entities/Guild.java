@@ -184,11 +184,11 @@ public interface Guild extends ISnowflake
      * guild.updateCommands().queue();
      * }</pre>
      *
-     * @return {@link CommandUpdateAction}
+     * @return {@link CommandListUpdateAction}
      */
     @Nonnull
     @CheckReturnValue
-    CommandUpdateAction updateCommands();
+    CommandListUpdateAction updateCommands();
 
     /**
      * Edit an existing command by id.

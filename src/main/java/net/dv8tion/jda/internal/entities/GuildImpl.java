@@ -152,10 +152,10 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CommandUpdateAction updateCommands()
+    public CommandListUpdateAction updateCommands()
     {
         Route.CompiledRoute route = Route.Interactions.UPDATE_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
-        return new CommandUpdateActionImpl(getJDA(), this, route);
+        return new CommandListUpdateActionImpl(getJDA(), this, route);
     }
 
     @Nonnull
