@@ -33,10 +33,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -61,7 +58,7 @@ public class Command implements ISnowflake
     private final List<Option> options;
     private final List<SubcommandGroup> groups;
     private final List<Subcommand> subcommands;
-    private final long id, guildId;
+    private final long id, guildId, applicationId;
     private final boolean defaultEnabled;
 
     public Command(JDAImpl api, Guild guild, DataObject json)
@@ -73,6 +70,7 @@ public class Command implements ISnowflake
         this.id = json.getUnsignedLong("id");
         this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
+        this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
         this.options = parseOptions(json, OPTION_TEST, Option::new);
         this.groups = parseOptions(json, GROUP_TEST, SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
@@ -92,12 +90,17 @@ public class Command implements ISnowflake
      * Delete this command.
      * <br>If this is a global command it may take up to 1 hour to vanish from all clients.
      *
+     * @throws IllegalStateException
+     *         If this command is not owned by this bot
+     *
      * @return {@link RestAction}
      */
     @Nonnull
     @CheckReturnValue
     public RestAction<Void> delete()
     {
+        if (applicationId != api.getSelfUser().getApplicationIdLong())
+            throw new IllegalStateException("Cannot delete a command from another bot!");
         Route.CompiledRoute route;
         String appId = getJDA().getSelfUser().getApplicationId();
         if (guildId != 0L)
@@ -111,12 +114,17 @@ public class Command implements ISnowflake
      * Edit this command.
      * <br>This can be used to change the command attributes such as name or description.
      *
+     * @throws IllegalStateException
+     *         If this command is not owned by this bot
+     *
      * @return {@link CommandEditAction}
      */
     @Nonnull
     @CheckReturnValue
     public CommandEditAction editCommand()
     {
+        if (applicationId != api.getSelfUser().getApplicationIdLong())
+            throw new IllegalStateException("Cannot edit a command from another bot!");
         return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
     }
 
@@ -158,6 +166,8 @@ public class Command implements ISnowflake
      *
      * @throws IllegalArgumentException
      *         If null is provided
+     * @throws IllegalStateException
+     *         If this command is not owned by this bot
      *
      * @return {@link RestAction}
      */
@@ -165,8 +175,36 @@ public class Command implements ISnowflake
     @CheckReturnValue
     public RestAction<Void> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
+        if (applicationId != api.getSelfUser().getApplicationIdLong())
+            throw new IllegalStateException("Cannot update privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
         return guild.updateCommandPrivilegesById(id, privileges);
+    }
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for this command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  privileges
+     *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     * @throws IllegalStateException
+     *         If this command is not owned by this bot
+     *
+     * @return {@link RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Void> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
+    {
+        Checks.noneNull(privileges, "CommandPrivileges");
+        return updatePrivileges(guild, Arrays.asList(privileges));
     }
 
     /**
@@ -243,6 +281,27 @@ public class Command implements ISnowflake
     public List<SubcommandGroup> getSubcommandGroups()
     {
         return groups;
+    }
+
+    /**
+     * The id of the application this command belongs to.
+     *
+     * @return The application id
+     */
+    public long getApplicationIdLong()
+    {
+        return applicationId;
+    }
+
+    /**
+     * The id of the application this command belongs to.
+     *
+     * @return The application id
+     */
+    @Nonnull
+    public String getApplicationId()
+    {
+        return Long.toUnsignedString(applicationId);
     }
 
     @Override
