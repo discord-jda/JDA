@@ -61,16 +61,6 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
         return interaction;
     }
 
-    /**
-     * Whether this interaction happened in a {@link Guild}.
-     *
-     * @return True, if this interaction came from a {@link Guild}.
-     */
-    public boolean isFromGuild()
-    {
-        return getGuild() != null;
-    }
-
     @Nonnull
     @Override
     public String getToken()
@@ -78,12 +68,14 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
         return interaction.getToken();
     }
 
+    @Override
     public int getTypeRaw()
     {
         return interaction.getTypeRaw();
     }
 
     @Nullable
+    @Override
     public Guild getGuild()
     {
         return interaction.getGuild();
@@ -104,12 +96,14 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     }
 
     @Nullable
+    @Override
     public Member getMember()
     {
         return interaction.getMember();
     }
 
     @Nonnull
+    @Override
     public User getUser()
     {
         return interaction.getUser();
