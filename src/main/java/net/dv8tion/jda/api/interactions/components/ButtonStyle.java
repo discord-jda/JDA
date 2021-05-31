@@ -26,13 +26,13 @@ public enum ButtonStyle
 {
     /** Placeholder for future styles */
     UNKNOWN(-1),
-    /** Primary button style, usually in blue  */
+    /** Primary button style, usually in blue. Often used as the accept, submit, or acknowledge button. For confirm buttons (destructive action), use {@link  #DANGER}. */
     PRIMARY(1),
-    /** Secondary button style, usually in gray  */
+    /** Secondary button style, usually in gray. Often used as the cancel or lesser used option.  */
     SECONDARY(2),
-    /** Success/Approve button style, usually in green  */
+    /** Success/Approve button style, usually in green. This should be used to indicate a positive action.  */
     SUCCESS(3),
-    /** Danger/Deny button style, usually in red  */
+    /** Danger/Deny button style, usually in red. This button should be used to indicate destructive actions.  */
     DANGER(4),
     /** Link button style, usually in gray and has a link attached  */
     LINK(5),
