@@ -106,7 +106,7 @@ val clean: Task by tasks
 val test: Test by tasks
 val check: Task by tasks
 
-shadowJar.classifier = "withDependencies"
+shadowJar.archiveClassifier.set("withDependencies")
 
 val sourcesForRelease = task<Copy>("sourcesForRelease") {
     from("src/main/java") {
@@ -136,7 +136,7 @@ val generateJavaSources = task<SourceTask>("generateJavaSources") {
 
 val noOpusJar = task<ShadowJar>("noOpusJar") {
     dependsOn(shadowJar)
-    classifier = shadowJar.classifier + "-no-opus"
+    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-no-opus")
 
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
@@ -149,9 +149,10 @@ val noOpusJar = task<ShadowJar>("noOpusJar") {
 }
 
 val minimalJar = task<ShadowJar>("minimalJar") {
+    duplicatesStrategy = DuplicatesStrategy.WARN
     dependsOn(shadowJar)
     minimize()
-    classifier = shadowJar.classifier + "-min"
+    archiveClassifier.set(shadowJar.archiveClassifier.get() + "-min")
     configurations = shadowJar.configurations
     from(sourceSets["main"].output)
     exclude("natives/**")     // ~2 MB
@@ -162,7 +163,7 @@ val minimalJar = task<ShadowJar>("minimalJar") {
 }
 
 val sourcesJar = task<Jar>("sourcesJar") {
-    classifier = "sources"
+    archiveClassifier.set("sources")
     from("src/main/java") {
         exclude("**/JDAInfo.java")
     }
@@ -173,7 +174,7 @@ val sourcesJar = task<Jar>("sourcesJar") {
 
 val javadocJar = task<Jar>("javadocJar") {
     dependsOn(javadoc)
-    classifier = "javadoc"
+    archiveClassifier.set("javadoc")
     from(javadoc.destinationDir)
 }
 
@@ -200,9 +201,8 @@ compileJava.apply {
 }
 
 jar.apply {
-    baseName = project.name
     manifest.attributes(mapOf(
-            "Implementation-Version" to version,
+            "Implementation-Version" to archiveVersion,
             "Automatic-Module-Name" to "net.dv8tion.jda"))
 }
 
