@@ -122,6 +122,7 @@ public interface Interaction extends ISnowflake
 
     /**
      * The channel this interaction happened in.
+     * <br>This is currently never null, but might be nullable in the future.
      *
      * @return The channel or null if this interaction is not from a channel context
      */
