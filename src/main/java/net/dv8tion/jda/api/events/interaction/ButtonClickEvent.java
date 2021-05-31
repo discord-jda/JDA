@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonInteraction;
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -56,7 +56,7 @@ public class ButtonClickEvent extends GenericInteractionCreateEvent implements B
 
     @Nonnull
     @Override
-    public UpdateAction deferEdit()
+    public UpdateInteractionAction deferEdit()
     {
         return interaction.deferEdit();
     }

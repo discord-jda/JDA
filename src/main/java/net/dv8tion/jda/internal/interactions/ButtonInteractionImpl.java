@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonInteraction;
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 
 import javax.annotation.Nonnull;
 
@@ -58,9 +58,9 @@ public class ButtonInteractionImpl extends InteractionImpl implements ButtonInte
 
     @Nonnull
     @Override
-    public UpdateAction deferEdit()
+    public UpdateInteractionAction deferEdit()
     {
-        return new UpdateActionImpl(this.hook);
+        return new UpdateInteractionActionImpl(this.hook);
     }
 
     @Nonnull

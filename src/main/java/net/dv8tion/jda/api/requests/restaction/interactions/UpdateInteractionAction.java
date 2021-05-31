@@ -29,7 +29,7 @@ import java.util.Collection;
 /**
  * A {@link CallbackAction} which can be used to edit the message for an interaction.
  */
-public interface UpdateAction extends CallbackAction
+public interface UpdateInteractionAction extends CallbackAction
 {
     /**
      * Set the new content for this message.
@@ -43,7 +43,7 @@ public interface UpdateAction extends CallbackAction
      * @return The same update action, for chaining convenience
      */
     @Nonnull
-    UpdateAction setContent(@Nullable final String content);
+    UpdateInteractionAction setContent(@Nullable final String content);
 
     /**
      * Set the {@link MessageEmbed MessageEmbeds} for the message
@@ -58,7 +58,7 @@ public interface UpdateAction extends CallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction setEmbeds(@Nonnull MessageEmbed... embeds)
+    default UpdateInteractionAction setEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return setEmbeds(Arrays.asList(embeds));
@@ -77,7 +77,7 @@ public interface UpdateAction extends CallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    UpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+    UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
     /**
      * Set the action rows for the message.
@@ -92,7 +92,7 @@ public interface UpdateAction extends CallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default UpdateInteractionAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
     {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
@@ -111,5 +111,5 @@ public interface UpdateAction extends CallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    UpdateAction setActionRows(@Nonnull ActionRow... rows);
+    UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows);
 }

@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.Interaction;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
-import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateActionImpl;
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
+import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -113,13 +113,13 @@ public interface ComponentInteraction extends Interaction
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
      * <p>Use {@link #editMessage(String)} to edit it directly.
      *
-     * @return {@link UpdateAction} that can be used to update the message
+     * @return {@link UpdateInteractionAction} that can be used to update the message
      *
      * @see    #editMessage(String)
      */
     @Nonnull
     @CheckReturnValue
-    UpdateAction deferEdit();
+    UpdateInteractionAction deferEdit();
 
     /**
      * Acknowledgement of this interaction with a message update.
@@ -136,14 +136,14 @@ public interface ComponentInteraction extends Interaction
      * @throws IllegalArgumentException
      *         If the provided message is null
      *
-     * @return {@link UpdateAction} that can be used to further update the message
+     * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessage(@Nonnull Message message)
+    default UpdateInteractionAction editMessage(@Nonnull Message message)
     {
         Checks.notNull(message, "Message");
-        UpdateActionImpl action = (UpdateActionImpl) deferEdit();
+        UpdateInteractionActionImpl action = (UpdateInteractionActionImpl) deferEdit();
         return action.applyMessage(message);
     }
 
@@ -162,11 +162,11 @@ public interface ComponentInteraction extends Interaction
      * @throws IllegalArgumentException
      *         If the provided content is null
      *
-     * @return {@link UpdateAction} that can be used to further update the message
+     * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessage(@Nonnull String content)
+    default UpdateInteractionAction editMessage(@Nonnull String content)
     {
         Checks.notNull(content, "Content");
         return deferEdit().setContent(content);
@@ -187,11 +187,11 @@ public interface ComponentInteraction extends Interaction
      * @throws IllegalArgumentException
      *         If the provided components are null
      *
-     * @return {@link UpdateAction} that can be used to further update the message
+     * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    default UpdateInteractionAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
@@ -215,11 +215,11 @@ public interface ComponentInteraction extends Interaction
      * @throws IllegalArgumentException
      *         If the provided components are null
      *
-     * @return {@link UpdateAction} that can be used to further update the message
+     * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editComponents(@Nonnull ComponentLayout... components)
+    default UpdateInteractionAction editComponents(@Nonnull ComponentLayout... components)
     {
         Checks.noneNull(components, "ComponentLayouts");
         return editComponents(Arrays.asList(components));
@@ -240,11 +240,11 @@ public interface ComponentInteraction extends Interaction
      * @throws IllegalArgumentException
      *         If any of the provided embeds is null
      *
-     * @return {@link UpdateAction} that can be used to further update the message
+     * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default UpdateInteractionAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
@@ -265,11 +265,11 @@ public interface ComponentInteraction extends Interaction
      * @throws IllegalArgumentException
      *         If any of the provided embeds is null
      *
-     * @return {@link UpdateAction} that can be used to further update the message
+     * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    default UpdateInteractionAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
@@ -292,11 +292,11 @@ public interface ComponentInteraction extends Interaction
      * @throws IllegalArgumentException
      *         If the provided format is null
      *
-     * @return {@link UpdateAction} that can be used to further update the message
+     * @return {@link UpdateInteractionAction} that can be used to further update the message
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
+    default UpdateInteractionAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));

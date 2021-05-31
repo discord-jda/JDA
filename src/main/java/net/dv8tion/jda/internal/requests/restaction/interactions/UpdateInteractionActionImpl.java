@@ -19,7 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction.interactions;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateAction;
+import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
@@ -32,13 +32,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
+public class UpdateInteractionActionImpl extends CallbackActionImpl implements UpdateInteractionAction
 {
     private List<MessageEmbed> embeds = null;
     private List<ActionRow> components = null;
     private String content = null;
 
-    public UpdateActionImpl(InteractionHookImpl hook)
+    public UpdateInteractionActionImpl(InteractionHookImpl hook)
     {
         super(hook);
     }
@@ -66,7 +66,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
         return json;
     }
 
-    public UpdateAction applyMessage(Message message)
+    public UpdateInteractionAction applyMessage(Message message)
     {
         this.content = message.getContentRaw();
         this.embeds = new ArrayList<>(message.getEmbeds());
@@ -76,7 +76,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
 
     @Nonnull
     @Override
-    public UpdateAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbed");
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
@@ -95,7 +95,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
 
     @Nonnull
     @Override
-    public UpdateAction setActionRows(@Nonnull ActionRow... rows)
+    public UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows)
     {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
@@ -106,7 +106,7 @@ public class UpdateActionImpl extends CallbackActionImpl implements UpdateAction
 
     @Nonnull
     @Override
-    public UpdateAction setContent(@Nullable String content)
+    public UpdateInteractionAction setContent(@Nullable String content)
     {
         if (content != null)
             Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
