@@ -31,6 +31,7 @@ import java.util.Collection;
 public class SubcommandData extends BaseCommand<CommandData> implements SerializableData
 {
     private boolean allowRequired = true;
+
     /**
      * Create an subcommand builder.
      *
