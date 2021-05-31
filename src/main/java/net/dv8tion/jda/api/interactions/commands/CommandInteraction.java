@@ -49,6 +49,7 @@ public interface CommandInteraction extends Interaction
      */
     @Nonnull
     String getName();
+
     /**
      * The subcommand name.
      * <br>This can be useful for abstractions.
@@ -66,6 +67,7 @@ public interface CommandInteraction extends Interaction
      */
     @Nullable
     String getSubcommandName();
+
     /**
      * The subcommand group name.
      * <br>This can be useful for abstractions.
@@ -131,7 +133,7 @@ public interface CommandInteraction extends Interaction
     }
 
     /**
-     * The list of {@link OptionMapping} for this command.
+     * The options provided by the user when this command was executed.
      * <br>Each option has a name and value.
      *
      * @return The options passed for this command
