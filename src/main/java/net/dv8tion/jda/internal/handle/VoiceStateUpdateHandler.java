@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -136,12 +135,8 @@ public class VoiceStateUpdateHandler extends SocketHandler
 
         if (!Objects.equals(channel, vState.getChannel()))
         {
-            // We use this instead of vState.getChannel() because it might be inaccurate in cache, maybe it makes more sense to change getChannel?
-            VoiceChannelImpl oldChannel = guild.getVoiceChannelCache().applyStream(s ->
-                s.map(VoiceChannelImpl.class::cast)
-                 .filter(vc -> vc.getConnectedMembersMap().remove(userId) != null)
-                 .findFirst().orElse(null)
-            );
+            VoiceChannelImpl oldChannel = (VoiceChannelImpl) vState.getChannel();
+            vState.setConnectedChannel(channel);
 
             if (oldChannel == null)
             {
@@ -154,7 +149,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             }
             else if (channel == null)
             {
-//                oldChannel.getConnectedMembersMap().remove(userId);
+                oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEntityBuilder().updateMemberCache(member);
@@ -188,23 +183,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
                     new GuildVoiceMoveEvent(
-                        getJDA(), responseNumber,
-                        member, oldChannel));
-            }
-        }
-        else if (channel == null)
-        {
-            // Remove user from channel, if possible
-            VoiceChannel oldChannel = guild.getVoiceChannelCache().applyStream(s ->
-                s.map(VoiceChannelImpl.class::cast)
-                 .filter(vc -> vc.getConnectedMembersMap().remove(userId) != null)
-                 .findFirst().orElse(null)
-            );
-            // The member was connected! Lets fire an event in that case :)
-            if (oldChannel != null)
-            {
-                getJDA().handleEvent(
-                    new GuildVoiceLeaveEvent(
                         getJDA(), responseNumber,
                         member, oldChannel));
             }

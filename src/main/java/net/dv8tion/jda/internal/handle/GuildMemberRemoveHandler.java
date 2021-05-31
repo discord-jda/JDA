@@ -96,6 +96,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         if (voiceState != null && voiceState.inVoiceChannel())//If this user was in a VoiceChannel, fire VoiceLeaveEvent.
         {
             VoiceChannel channel = voiceState.getChannel();
+            voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(userId);
             getJDA().handleEvent(
                 new GuildVoiceLeaveEvent(
