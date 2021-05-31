@@ -27,6 +27,12 @@ import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.EnumSet;
 
+/**
+ * Represents the operations used to whitelist/blacklist mentions.
+ *
+ * @param <R>
+ *        The entity that implements this interface, used for fluid interface returns
+ */
 public interface AllowedMentions<R>
 {
     /**
