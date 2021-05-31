@@ -433,6 +433,27 @@ public class Command implements ISnowflake
         {
             return stringValue;
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(name, stringValue);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this) return true;
+            if (!(obj instanceof Choice)) return false;
+            Choice other = (Choice) obj;
+            return Objects.equals(other.name, name) && Objects.equals(other.stringValue, stringValue);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Choice(" + name + "," + stringValue + ")";
+        }
     }
 
     /**
@@ -508,6 +529,30 @@ public class Command implements ISnowflake
         {
             return choices;
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(name, description, type, choices);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this) return true;
+            if (!(obj instanceof Option)) return false;
+            Option other = (Option) obj;
+            return Objects.equals(other.name, name)
+                && Objects.equals(other.description, description)
+                && Objects.equals(other.choices, choices)
+                && other.type == type;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Option[" + getType() + "](" + name + ")";
+        }
     }
 
     /**
@@ -557,6 +602,29 @@ public class Command implements ISnowflake
         {
             return options;
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(name, description, options);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this) return true;
+            if (!(obj instanceof Subcommand)) return false;
+            Subcommand other = (Subcommand) obj;
+            return Objects.equals(other.name, name)
+                && Objects.equals(other.description, description)
+                && Objects.equals(other.options, options);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "Subcommand(" + name + ")";
+        }
     }
 
     /**
@@ -605,6 +673,29 @@ public class Command implements ISnowflake
         public List<Subcommand> getSubcommands()
         {
             return subcommands;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(name, description, subcommands);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (obj == this) return true;
+            if (!(obj instanceof SubcommandGroup)) return false;
+            SubcommandGroup other = (SubcommandGroup) obj;
+            return Objects.equals(other.name, name)
+                    && Objects.equals(other.description, description)
+                    && Objects.equals(other.subcommands, subcommands);
+        }
+
+        @Override
+        public String toString()
+        {
+            return "SubcommandGroup(" + name + ")";
         }
     }
 }
