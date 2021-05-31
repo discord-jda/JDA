@@ -31,9 +31,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class UpdateInteractionActionImpl extends CallbackActionImpl implements UpdateInteractionAction
 {
+    private List<String> retainedFiles = null;
     private List<MessageEmbed> embeds = null;
     private List<ActionRow> components = null;
     private String content = null;
@@ -62,6 +64,14 @@ public class UpdateInteractionActionImpl extends CallbackActionImpl implements U
             data.put("embeds", DataArray.fromCollection(embeds));
         if (components != null)
             data.put("components", DataArray.fromCollection(components));
+        if (retainedFiles != null)
+        {
+            json.put("attachments", DataArray.fromCollection(
+                retainedFiles.stream()
+                    .map(id -> DataObject.empty().put("id", id))
+                    .collect(Collectors.toList()))
+            );
+        }
         json.put("data", data);
         return json;
     }
@@ -103,6 +113,17 @@ public class UpdateInteractionActionImpl extends CallbackActionImpl implements U
         Collections.addAll(components, rows);
         return this;
     }
+
+//    @Nonnull
+//    @Override
+//    public UpdateInteractionAction retainFilesById(@Nonnull Collection<String> ids)
+//    {
+//        Checks.noneNull(ids, "IDs");
+//        ids.forEach(Checks::isSnowflake);
+//        this.retainedFiles = new ArrayList<>();
+//        this.retainedFiles.addAll(ids);
+//        return this;
+//    }
 
     @Nonnull
     @Override
