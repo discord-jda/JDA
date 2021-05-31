@@ -199,7 +199,7 @@ public interface Button extends Component
      *         The url to use
      *
      * @throws IllegalArgumentException
-     *         If the url is null or empty
+     *         If the url is null, empty, or longer than 512 characters
      *
      * @return New button with the changed url
      */
@@ -207,6 +207,7 @@ public interface Button extends Component
     default Button withUrl(@Nonnull String url)
     {
         Checks.notEmpty(url, "URL");
+        Checks.notLonger(url, 512, "URL");
         return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, isDisabled(), getEmoji());
     }
 
