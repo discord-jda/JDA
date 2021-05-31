@@ -44,7 +44,6 @@ public class OptionMapping
     {
         this.data = data;
         this.type = OptionType.fromKey(data.getInt("type", -1));
-        ;
         this.name = data.getString("name");
         this.resolved = resolved;
     }
@@ -74,6 +73,7 @@ public class OptionMapping
     /**
      * The String representation of this option value.
      * <br>This will automatically convert the value to a string if the type is not {@link OptionType#STRING OptionType.STRING}.
+     * <br>This will be the ID of any resolved entity such as {@link Role} or {@link Member}.
      *
      * @return The String representation of this option value
      */
@@ -113,15 +113,15 @@ public class OptionMapping
     {
         switch (type)
         {
-        default:
-            throw new IllegalStateException("Cannot convert option of type " + type + " to long");
-        case STRING:
-        case MENTIONABLE:
-        case CHANNEL:
-        case ROLE:
-        case USER:
-        case INTEGER:
-            return data.getLong("value");
+            default:
+                throw new IllegalStateException("Cannot convert option of type " + type + " to long");
+            case STRING:
+            case MENTIONABLE:
+            case CHANNEL:
+            case ROLE:
+            case USER:
+            case INTEGER:
+                return data.getLong("value");
         }
     }
 
@@ -202,14 +202,6 @@ public class OptionMapping
         throw new IllegalStateException("Could not resolve role!");
     }
 
-    @Nullable
-    private AbstractChannel getAsChannel()
-    {
-        if (type != OptionType.CHANNEL)
-            throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
-        return (AbstractChannel) resolved.get(getAsLong());
-    }
-
     /**
      * The resolved {@link GuildChannel} for this option value.
      * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
@@ -228,13 +220,6 @@ public class OptionMapping
             return (GuildChannel) value;
         throw new IllegalStateException("Could not resolve GuildChannel!");
     }
-
-//        @Nullable
-//        public PrivateChannel getAsPrivateChannel()
-//        {
-//            AbstractChannel value = getAsChannel();
-//            return value instanceof PrivateChannel ? (PrivateChannel) value : null;
-//        }
 
     /**
      * The resolved {@link MessageChannel} for this option value.
@@ -288,5 +273,13 @@ public class OptionMapping
             return false;
         OptionMapping data = (OptionMapping) obj;
         return getType() == data.getType() && getName().equals(data.getName());
+    }
+
+    @Nullable
+    private AbstractChannel getAsChannel()
+    {
+        if (type != OptionType.CHANNEL)
+            throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
+        return (AbstractChannel) resolved.get(getAsLong());
     }
 }
