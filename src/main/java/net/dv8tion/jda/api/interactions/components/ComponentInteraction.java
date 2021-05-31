@@ -41,8 +41,10 @@ import java.util.stream.Collectors;
 public interface ComponentInteraction extends Interaction
 {
     /**
-     * The custom component ID.
-     * <br>This need not be numerical.
+     * The custom component Id provided to the component when it was originally created.
+     * <br>This value should be used to determine what action to take in regards to this interaction.
+     *
+     * <br>This id does not have to be numerical.
      *
      * @return The component ID
      */
@@ -104,8 +106,8 @@ public interface ComponentInteraction extends Interaction
 
     /**
      * No-op acknowledgement of this interaction.
-     * <br>This tells discord you intend to update the message using the {@link #getHook() InteractionHook}.
-     * You are not required to actually update this message, this will simply acknowledge that you accepted the interaction.
+     * <br>This tells discord you intend to update the message that the triggering component is a part of using the {@link #getHook() InteractionHook} instead of sending a reply message.
+     * You are not required to actually update the message, this will simply acknowledge that you accepted the interaction.
      *
      * <p><b>You only have 3 seconds to acknowledge an interaction!</b>
      * <br>When the acknowledgement is sent after the interaction expired, you will receive {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_INTERACTION ErrorResponse.UNKNOWN_INTERACTION}.
