@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that a {@link Command} was deleted.
+ *
+ * <p>This is fired for commands from any application.
  */
 public class ApplicationCommandDeleteEvent extends GenericApplicationCommandEvent
 {

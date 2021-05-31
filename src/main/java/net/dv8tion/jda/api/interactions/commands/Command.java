@@ -130,7 +130,7 @@ public class Command implements ISnowflake
 
     /**
      * Retrieves the {@link CommandPrivilege CommandPrivileges} for this command.
-     * <br>This is a shorcut for {@link Guild#retrieveCommandPrivilegesById(String)}.
+     * <br>This is a shortcut for {@link Guild#retrieveCommandPrivilegesById(String)}.
      *
      * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
      *

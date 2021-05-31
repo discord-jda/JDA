@@ -28,6 +28,8 @@ import javax.annotation.Nullable;
  * Indicates that a {@link Command} event was fired.
  * <br>Every ApplicationCommandEvent extends this event and can be casted.
  *
+ * <p>This is fired for commands from any application.
+ *
  * <p>Can be used to detect changes for commands.
  */
 public abstract class GenericApplicationCommandEvent extends Event

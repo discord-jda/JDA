@@ -27,6 +27,8 @@ import javax.annotation.Nullable;
  * Indicates that a {@link Command} was updated.
  *
  * <p>You cannot get the old command information from this event.
+ *
+ * <p>This is fired for commands from any application.
  */
 public class ApplicationCommandUpdateEvent extends GenericApplicationCommandEvent
 {
