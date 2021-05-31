@@ -217,21 +217,4 @@ public interface ReplyAction extends CallbackAction, AllowedMentions<ReplyAction
 //    @Nonnull
 //    @CheckReturnValue
 //    CommandReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options);
-
-//    enum Flag
-//    {
-//        EPHEMERAL(6);
-//
-//        private final int raw;
-//
-//        Flag(int offset)
-//        {
-//            this.raw = 1 << offset;
-//        }
-//
-//        public int getRaw()
-//        {
-//            return raw;
-//        }
-//    }
 }
