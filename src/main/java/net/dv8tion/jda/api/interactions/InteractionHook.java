@@ -39,7 +39,13 @@ import java.util.Collection;
  * <br>This can be used to send followup messages or edit the original message of an interaction.
  *
  * <p>The interaction has to be acknowledged before any of these actions can be performed.
- * You need to call one of {@link Interaction#deferReply() deferReply()}, {@link Interaction#reply(String) reply(...)}, {@link ComponentInteraction#deferEdit() deferEdit()}, or {@link ComponentInteraction#editMessage(String) editMessage(...)} first.
+ * First, you need to call one of:
+ * <ul>
+ *     <li>{@link Interaction#deferReply() Interaction.deferReply(...)}</li>
+ *     <li>{@link Interaction#reply(String) Interaction.reply(...)}</li>
+ *     <li>{@link ComponentInteraction#deferEdit() ComponentInteraction.deferEdit()}</li>
+ *     <li> {@link ComponentInteraction#editMessage(String) ComponentInteraction.editMessage(...)}</li>
+ * </ul>
  *
  * <p>When {@link Interaction#deferReply()} is used, the first message will act identically to {@link #editOriginal(String) editOriginal(...)}.
  * This means that you cannot make your deferred reply ephemeral through this interaction hook. You need to specify whether your reply is ephemeral or not directly in {@link Interaction#deferReply(boolean) deferReply(boolean)}.
