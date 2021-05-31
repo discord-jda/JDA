@@ -36,6 +36,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     private boolean allowGroups = true;
     private boolean allowOption = true;
     private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
+    private boolean allowRequired = true;
 
     /**
      * Create an command builder.
@@ -140,16 +141,15 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     {
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
-        if (!allowOption)
-            throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
+        Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
         allowSubcommands = allowGroups = false;
-        for (OptionData data : options)
+        for (OptionData option : options)
         {
-            if (data.getType() == OptionType.SUB_COMMAND)
-                throw new IllegalArgumentException("Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
-            if (data.getType() == OptionType.SUB_COMMAND_GROUP)
-                throw new IllegalArgumentException("Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
-            this.options.add(data);
+            Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
+            Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
+            Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
+            allowRequired = option.isRequired(); // prevent adding required options after non-required options
+            this.options.add(option);
         }
         return this;
     }

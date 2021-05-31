@@ -30,6 +30,7 @@ import java.util.Collection;
  */
 public class SubcommandData extends BaseCommand<CommandData> implements SerializableData
 {
+    private boolean allowRequired = true;
     /**
      * Create an subcommand builder.
      *
@@ -76,6 +77,8 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
         {
             Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand to a subcommand!");
             Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group to a subcommand!");
+            Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
+            allowRequired = option.isRequired(); // prevent adding required options after non-required options
             this.options.add(option);
         }
         return this;
