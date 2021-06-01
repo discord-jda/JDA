@@ -112,6 +112,24 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
     }
 
     /**
+     * Set only one action row for convenience.
+     *
+     * @param  components
+     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
+     *
+     * @throws IllegalArgumentException
+     *         If null or more than 5 components are provided
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Collection<? extends Component> components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
+
+    /**
      * Set the action rows for the message.
      *
      * @param  rows

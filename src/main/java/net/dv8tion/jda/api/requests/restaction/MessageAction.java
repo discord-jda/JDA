@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -811,6 +812,45 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     @Nonnull
     @CheckReturnValue
     MessageAction setActionRows(@Nonnull ActionRow... rows);
+
+    /**
+     * Create one row of up to 5 interactive message {@link Component components}.
+     * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If anything is null, empty, or more than 5 components are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setActionRow(@Nonnull Collection<? extends Component> components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
+
+    /**
+     * Create one row of up to 5 interactive message {@link Component components}.
+     * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If anything is null, empty, or more than 5 components are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setActionRow(@Nonnull Component... components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
+
 
     /**
      * Whether all fields should be considered when editing a message

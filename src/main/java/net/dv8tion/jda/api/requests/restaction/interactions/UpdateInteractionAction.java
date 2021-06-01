@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction.interactions;
 
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -112,6 +113,42 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
     @Nonnull
     @CheckReturnValue
     UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows);
+
+    /**
+     * Set only one action row for convenience.
+     *
+     * @param  components
+     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
+     *
+     * @throws IllegalArgumentException
+     *         If null or more than 5 components are provided
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default UpdateInteractionAction setActionRow(@Nonnull Component... components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
+
+    /**
+     * Set only one action row for convenience.
+     *
+     * @param  components
+     *         The action row components, such as {@link net.dv8tion.jda.api.interactions.components.Button Buttons}
+     *
+     * @throws IllegalArgumentException
+     *         If null or more than 5 components are provided
+     *
+     * @return The same update action, for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default UpdateInteractionAction setActionRow(@Nonnull Collection<? extends Component> components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
 
 /////// This is waiting for https://github.com/discord/discord-api-docs/issues/3048
 //
