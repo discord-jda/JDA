@@ -245,11 +245,7 @@ public class GuildImpl implements Guild
 
     private CommandPrivilege parsePrivilege(DataObject data)
     {
-        CommandPrivilege.Type type;
-        if (data.getInt("type") == 1)
-            type = CommandPrivilege.Type.ROLE;
-        else
-            type = CommandPrivilege.Type.USER;
+        CommandPrivilege.Type type = CommandPrivilege.Type.fromKey(data.getInt("type", 1));
         boolean enabled = data.getBoolean("permission");
         return new CommandPrivilege(type, enabled, data.getUnsignedLong("id"));
     }

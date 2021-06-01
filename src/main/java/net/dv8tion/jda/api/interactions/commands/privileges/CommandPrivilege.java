@@ -296,13 +296,34 @@ public class CommandPrivilege implements ISnowflake, SerializableData
      */
     public enum Type
     {
-        ROLE(1), USER(2);
+        UNKNOWN(-1),
+        ROLE(1),
+        USER(2);
 
         private final int key;
 
         Type(int key)
         {
             this.key = key;
+        }
+
+        /**
+         * Returns the appropriate enum constant for the given key.
+         *
+         * @param  key
+         *         The API key for the type
+         *
+         * @return The Type constant, or {@link #UNKNOWN} if there is no known representation
+         */
+        @Nonnull
+        public static Type fromKey(int key)
+        {
+            for (Type type : values())
+            {
+                if (type.key == key)
+                    return type;
+            }
+            return UNKNOWN;
         }
     }
 }
