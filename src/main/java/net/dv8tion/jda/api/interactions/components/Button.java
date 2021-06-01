@@ -59,7 +59,7 @@ import javax.annotation.Nullable;
  * }</pre>
  *
  * To see what each button looks like here is an example cheatsheet:
- *
+ * <br>
  * <img alt="ButtonExample" src="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
  * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRow(Component...) ReplyAction.addActionRow(Component...)
