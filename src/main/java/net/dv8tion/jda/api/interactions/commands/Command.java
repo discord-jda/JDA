@@ -161,6 +161,8 @@ public class Command implements ISnowflake
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
+     * @param  guild
+     *         The target guild from which to update the privileges
      * @param  privileges
      *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
      *
@@ -189,6 +191,8 @@ public class Command implements ISnowflake
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
+     * @param  guild
+     *         The target guild from which to update the privileges
      * @param  privileges
      *         Complete list of {@link CommandPrivilege CommandPrivileges} for this command
      *
