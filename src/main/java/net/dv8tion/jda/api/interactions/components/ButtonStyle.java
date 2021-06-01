@@ -21,6 +21,10 @@ import javax.annotation.Nonnull;
 /**
  * The available styles used for {@link Button Buttons}.
  * <br>A button can have different styles to indicate its purpose.
+ *
+ * <p>To see what each button looks like here is an example cheatsheet:
+ *
+ * <img alt="ButtonExample" src="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  */
 public enum ButtonStyle
 {

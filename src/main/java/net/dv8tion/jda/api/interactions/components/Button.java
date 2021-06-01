@@ -36,13 +36,16 @@ import javax.annotation.Nullable;
  *   public void onSlashCommand(SlashCommandEvent event) {
  *       if (event.getName().equals("hello")) {
  *           event.reply("Click the button to say hello")
- *               .addActionRow(Button.primary("hello", "Click Me"))
+ *               .addActionRow(
+ *                 Button.primary("hello", "Click Me"), // Button with only a label
+ *                 Button.success("emoji", Emoji.fromMarkdown("<:minn:245267426227388416>")) // Button with only an emoji
  *               .queue();
  *       } else if (event.getName().equals("info")) {
  *           event.reply("Click the buttons for more info")
  *               .addActionRow( // link buttons don't send events, they just open a link in the browser when clicked
- *                   Button.link("https://github.com/DV8FromTheWorld/JDA", "GitHub"),
- *                   Button.link("https://ci.dv8tion.net/job/JDA/javadoc/", "Javadocs"))
+ *                   Button.link("https://github.com/DV8FromTheWorld/JDA", "GitHub")
+ *                     .withEmoji(Emoji.fromMarkdown("<:github:849286315580719104>"), // Link Button with label and emoji
+ *                   Button.link("https://ci.dv8tion.net/job/JDA/javadoc/", "Javadocs")) // Link Button with only a label
  *               .queue();
  *       }
  *   }
@@ -54,6 +57,10 @@ import javax.annotation.Nullable;
  *   }
  * }
  * }</pre>
+ *
+ * To see what each button looks like here is an example cheatsheet:
+ *
+ * <img alt="ButtonExample" src="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/52377f69d1f3bfba909c51a449ac6b258f606956/assets/wiki/interactions/ButtonExamples.png">
  *
  * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRow(Component...) ReplyAction.addActionRow(Component...)
  * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRows(ActionRow...) ReplyAction.addActionRows(ActionRow...)
