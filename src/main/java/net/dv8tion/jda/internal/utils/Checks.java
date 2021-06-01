@@ -38,7 +38,7 @@ public class Checks
     {
         notNull(snowflake, message);
         if (snowflake.length() > 20 || !Helpers.isNumeric(snowflake))
-            throw new IllegalArgumentException(message + " is not a valid snowflake value!");
+            throw new IllegalArgumentException(message + " is not a valid snowflake value! Provided: \"" + snowflake + "\"");
     }
 
     @Contract("false, _ -> fail")
@@ -90,7 +90,7 @@ public class Checks
     {
         notNull(argument, name);
         if (Helpers.containsWhitespace(argument))
-            throw new IllegalArgumentException(name + " may not contain blanks");
+            throw new IllegalArgumentException(name + " may not contain blanks. Provided: \"" + argument + "\"");
     }
 
     @Contract("null, _ -> fail")
@@ -149,19 +149,19 @@ public class Checks
     public static void notLonger(final String input, final int length, final String name)
     {
         notNull(input, name);
-        check(Helpers.codePointLength(input) <= length, "%s may not be longer than %d characters!", name, length);
+        check(Helpers.codePointLength(input) <= length, "%s may not be longer than %d characters! Provided: \"%s\"", name, length, input);
     }
 
     public static void matches(final String input, final Pattern pattern, final String name)
     {
         notNull(input, name);
-        check(pattern.matcher(input).matches(), "%s must match regex ^%s$", name, pattern.pattern());
+        check(pattern.matcher(input).matches(), "%s must match regex ^%s$. Provided: \"%s\"", name, pattern.pattern(), input);
     }
 
     public static void isLowercase(final String input, final String name)
     {
         notNull(input, name);
-        check(input.toLowerCase(Locale.ROOT).equals(input), "%s must be lowercase only", name);
+        check(input.toLowerCase(Locale.ROOT).equals(input), "%s must be lowercase only! Provided: \"%s\"", name, input);
     }
 
     public static void positive(final int n, final String name)

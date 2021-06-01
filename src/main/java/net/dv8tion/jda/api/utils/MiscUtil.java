@@ -120,7 +120,7 @@ public class MiscUtil
         catch (NumberFormatException ex)
         {
             throw new NumberFormatException(
-                String.format("The specified ID is not a valid snowflake (%s). Expecting a valid long value!", input));
+                Helpers.format("The specified ID is not a valid snowflake (%s). Expecting a valid long value!", input));
         }
     }
 
