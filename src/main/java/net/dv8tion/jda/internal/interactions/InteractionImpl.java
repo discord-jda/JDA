@@ -59,17 +59,17 @@ public class InteractionImpl implements Interaction
         {
             member = null;
             long channelId = data.getUnsignedLong("channel_id");
-            PrivateChannel c = jda.getPrivateChannelById(channelId);
-            if (c == null)
+            PrivateChannel channel = jda.getPrivateChannelById(channelId);
+            if (channel == null)
             {
-                c = jda.getEntityBuilder().createPrivateChannel(
+                channel = jda.getEntityBuilder().createPrivateChannel(
                     DataObject.empty()
                         .put("id", channelId)
                         .put("recipient", data.getObject("user"))
                 );
             }
-            channel = c;
-            user = c.getUser();
+            this.channel = channel;
+            user = channel.getUser();
         }
     }
 
