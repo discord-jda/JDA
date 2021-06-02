@@ -30,7 +30,7 @@ import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
+import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.IOUtil;
 import okhttp3.MultipartBody;
@@ -49,7 +49,7 @@ public class WebhookMessageActionImpl<T>
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
-    private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
+    private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     private final List<ActionRow> components = new ArrayList<>();
     private final MessageChannel channel;
     private final Function<DataObject, T> transformer;

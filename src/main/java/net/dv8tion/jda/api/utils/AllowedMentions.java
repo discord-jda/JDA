@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.utils;
 
 import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
+import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
@@ -56,7 +56,7 @@ public interface AllowedMentions<R>
      */
     static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        AllowedMentionsUtil.setDefaultMentions(allowedMentions);
+        AllowedMentionsImpl.setDefaultMentions(allowedMentions);
     }
 
     /**
@@ -68,7 +68,7 @@ public interface AllowedMentions<R>
     @Nonnull
     static EnumSet<Message.MentionType> getDefaultMentions()
     {
-        return AllowedMentionsUtil.getDefaultMentions();
+        return AllowedMentionsImpl.getDefaultMentions();
     }
 
     /**
@@ -81,7 +81,7 @@ public interface AllowedMentions<R>
      */
     static void setDefaultMentionRepliedUser(boolean mention)
     {
-        AllowedMentionsUtil.setDefaultMentionRepliedUser(mention);
+        AllowedMentionsImpl.setDefaultMentionRepliedUser(mention);
     }
 
     /**
@@ -95,7 +95,7 @@ public interface AllowedMentions<R>
      */
     static boolean isDefaultMentionRepliedUser()
     {
-        return AllowedMentionsUtil.isDefaultMentionRepliedUser();
+        return AllowedMentionsImpl.isDefaultMentionRepliedUser();
     }
 
     /**

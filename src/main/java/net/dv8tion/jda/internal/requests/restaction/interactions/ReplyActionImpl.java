@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
-import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
+import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -40,7 +40,7 @@ import java.util.function.BooleanSupplier;
 public class ReplyActionImpl extends InteractionCallbackActionImpl implements ReplyAction
 {
     private final List<MessageEmbed> embeds = new ArrayList<>();
-    private final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
+    private final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     private final List<ActionRow> components = new ArrayList<>();
     private String content = "";
 

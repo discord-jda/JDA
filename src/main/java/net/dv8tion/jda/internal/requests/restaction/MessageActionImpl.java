@@ -32,7 +32,7 @@ import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.AllowedMentionsUtil;
+import net.dv8tion.jda.internal.utils.AllowedMentionsImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 import net.dv8tion.jda.internal.utils.IOUtil;
@@ -58,7 +58,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected final Set<InputStream> ownedResources = new HashSet<>();
     protected final StringBuilder content;
     protected final MessageChannel channel;
-    protected final AllowedMentionsUtil allowedMentions = new AllowedMentionsUtil();
+    protected final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     protected List<ActionRow> components;
     protected List<String> retainedAttachments;
     protected MessageEmbed embed = null;

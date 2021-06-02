@@ -27,7 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class AllowedMentionsUtil implements SerializableData, AllowedMentions<AllowedMentionsUtil>
+public class AllowedMentionsImpl implements SerializableData, AllowedMentions<AllowedMentionsImpl>
 {
     private static EnumSet<Message.MentionType> defaultParse = EnumSet.allOf(Message.MentionType.class);
     private static boolean defaultMentionRepliedUser = true;
@@ -91,7 +91,7 @@ public class AllowedMentionsUtil implements SerializableData, AllowedMentions<Al
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public AllowedMentionsUtil applyMessage(Message message)
+    public AllowedMentionsImpl applyMessage(Message message)
     {
         // Insert allowed mentions
         if (message instanceof DataMessage)
@@ -131,7 +131,7 @@ public class AllowedMentionsUtil implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsUtil mentionRepliedUser(boolean mention)
+    public AllowedMentionsImpl mentionRepliedUser(boolean mention)
     {
         this.mentionRepliedUser = mention;
         return this;
@@ -139,7 +139,7 @@ public class AllowedMentionsUtil implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsUtil allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    public AllowedMentionsImpl allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
         this.parse = allowedMentions == null
                 ? EnumSet.allOf(Message.MentionType.class)
@@ -149,7 +149,7 @@ public class AllowedMentionsUtil implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsUtil mention(@Nonnull IMentionable... mentions)
+    public AllowedMentionsImpl mention(@Nonnull IMentionable... mentions)
     {
         Checks.noneNull(mentions, "Mentionables");
         for (IMentionable mentionable : mentions)
@@ -164,7 +164,7 @@ public class AllowedMentionsUtil implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsUtil mentionUsers(@Nonnull String... userIds)
+    public AllowedMentionsImpl mentionUsers(@Nonnull String... userIds)
     {
         Checks.noneNull(userIds, "User Id");
         Collections.addAll(users, userIds);
@@ -173,7 +173,7 @@ public class AllowedMentionsUtil implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsUtil mentionRoles(@Nonnull String... roleIds)
+    public AllowedMentionsImpl mentionRoles(@Nonnull String... roleIds)
     {
         Checks.noneNull(roleIds, "Role Id");
         Collections.addAll(roles, roleIds);
