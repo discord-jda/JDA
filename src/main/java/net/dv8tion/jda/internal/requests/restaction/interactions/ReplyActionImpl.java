@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.InteractionHookImpl;
@@ -30,6 +31,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -105,19 +107,19 @@ public class ReplyActionImpl extends InteractionCallbackActionImpl implements Re
         return this;
     }
 
-//    @Nonnull
-//    @Override
-//    public ReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-//    {
-//        Checks.notNull(data, "Data");
-//        Checks.notEmpty(name, "Name");
-//        Checks.noneNull(options, "Options");
-//        if (options.length > 0)
-//            name = "SPOILER_" + name;
-//
-//        files.put(name, data);
-//        return this;
-//    }
+    @Nonnull
+    @Override
+    public ReplyAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
+    {
+        Checks.notNull(data, "Data");
+        Checks.notEmpty(name, "Name");
+        Checks.noneNull(options, "Options");
+        if (options.length > 0)
+            name = "SPOILER_" + name;
+
+        files.put(name, data);
+        return this;
+    }
 
     @Nonnull
     @Override

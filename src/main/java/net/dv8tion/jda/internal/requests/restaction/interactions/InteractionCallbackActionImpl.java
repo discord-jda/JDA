@@ -58,14 +58,13 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
         if (files.isEmpty())
             return getRequestBody(json);
 
-        MultipartBody.Builder body = new MultipartBody.Builder();
+        MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
         int i = 0;
         for (Map.Entry<String, InputStream> file : files.entrySet())
         {
             RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
             body.addFormDataPart("file" + i++, file.getKey(), stream);
         }
-
         body.addFormDataPart("payload_json", json.toString());
         files.clear();
         return body.build();
