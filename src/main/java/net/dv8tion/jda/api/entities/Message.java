@@ -19,6 +19,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -40,6 +42,7 @@ import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -518,10 +521,10 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
      * jump to the specified message.
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     * 
+     *
      * @return A String representing the jump-to URL for the message
      */
     @Nonnull
@@ -561,8 +564,8 @@ public interface Message extends ISnowflake, Formattable
     String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters 
-     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used 
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters
+     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used
      * for formatting are escaped to prevent possible formatting.
      *
      * @throws java.lang.UnsupportedOperationException
@@ -772,6 +775,79 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     List<MessageEmbed> getEmbeds();
+
+    /**
+     * Rows of interactive components such as {@link Button Buttons}.
+     * <br>You can use {@link MessageAction#setActionRows(ActionRow...)} to update these.
+     *
+     * @return Immutable {@link List} of {@link ActionRow}
+     *
+     * @see    #getButtons()
+     * @see    #getButtonById(String)
+     */
+    @Nonnull
+    List<ActionRow> getActionRows();
+
+    /**
+     * All {@link Button Buttons} attached to this message.
+     *
+     * @return Immutable {@link List} of {@link Button Buttons}
+     */
+    @Nonnull
+    default List<Button> getButtons()
+    {
+        return getActionRows().stream()
+                .map(ActionRow::getButtons)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the {@link Button} with the specified ID.
+     *
+     * @param  id
+     *         The id of the button
+     *
+     * @throws IllegalArgumentException
+     *         If the id is null
+     *
+     * @return The {@link Button} or null of no button with that ID is present on this message
+     */
+    @Nullable
+    default Button getButtonById(@Nonnull String id)
+    {
+        Checks.notNull(id, "Button ID");
+        return getButtons().stream()
+                .filter(it -> id.equals(it.getId()))
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * All {@link Button Buttons} with the specified label attached to this message.
+     *
+     * @param  label
+     *         The button label
+     * @param  ignoreCase
+     *         Whether to use {@link String#equalsIgnoreCase(String)} instead of {@link String#equals(Object)}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided label is null
+     *
+     * @return Immutable {@link List} of {@link Button Buttons} with the specified label
+     */
+    @Nonnull
+    default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
+    {
+        Checks.notNull(label, "Label");
+        Predicate<Button> filter;
+        if (ignoreCase)
+            filter = b -> label.equalsIgnoreCase(b.getLabel());
+        else
+            filter = b -> label.equals(b.getLabel());
+        return getButtons().stream()
+                .filter(filter)
+                .collect(Collectors.toList());
+    }
 
     /**
      * All {@link net.dv8tion.jda.api.entities.Emote Emotes} used in this Message.

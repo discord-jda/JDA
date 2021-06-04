@@ -88,7 +88,11 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @CheckReturnValue
     public RoleActionImpl setName(String name)
     {
-        Checks.check(name == null || name.length() > 0 && name.length() <= 100, "Name must be between 1-100 characters long");
+        if (name != null)
+        {
+            Checks.notEmpty(name, "Name");
+            Checks.notLonger(name, 100, "Name");
+        }
         this.name = name;
         return this;
     }

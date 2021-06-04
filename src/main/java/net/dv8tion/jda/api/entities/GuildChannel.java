@@ -37,25 +37,8 @@ import java.util.List;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends ISnowflake, IMentionable, Comparable<GuildChannel>
+public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<GuildChannel>
 {
-    /**
-     * The {@link net.dv8tion.jda.api.entities.ChannelType ChannelType} for this GuildChannel
-     *
-     * @return The channel type
-     */
-    @Nonnull
-    ChannelType getType();
-
-    /**
-     * The human readable name of the  GuildChannel.
-     * <br>If no name has been set, this returns null.
-     *
-     * @return The name of this GuildChannel
-     */
-    @Nonnull
-    String getName();
-
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.
      *
@@ -112,14 +95,6 @@ public interface GuildChannel extends ISnowflake, IMentionable, Comparable<Guild
      * @return The true, Discord stored, position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
      */
     int getPositionRaw();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this GuildChannel
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}.

@@ -21,6 +21,8 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
 import net.dv8tion.jda.internal.requests.Route;
@@ -50,6 +52,7 @@ public class MessageBuilder implements Appendable
     protected boolean isTTS = false;
     protected String nonce;
     protected MessageEmbed embed;
+    protected List<ComponentLayout> components = new ArrayList<>();
     protected EnumSet<Message.MentionType> allowedMentions = null;
     protected Set<String> mentionedUsers = new HashSet<>();
     protected Set<String> mentionedRoles = new HashSet<>();
@@ -69,8 +72,17 @@ public class MessageBuilder implements Appendable
             isTTS = message.isTTS();
             builder.append(message.getContentRaw());
             List<MessageEmbed> embeds = message.getEmbeds();
-            if (embeds != null && !embeds.isEmpty())
+            if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
                 embed = embeds.get(0);
+            components.addAll(message.getActionRows());
+            if (message instanceof DataMessage)
+            {
+                DataMessage data = (DataMessage) message;
+                if (data.getAllowedMentions() != null)
+                    this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, data.getAllowedMentions());
+                Collections.addAll(this.mentionedUsers, data.getMentionedUsersWhitelist());
+                Collections.addAll(this.mentionedRoles, data.getMentionedRolesWhitelist());
+            }
         }
     }
 
@@ -82,6 +94,11 @@ public class MessageBuilder implements Appendable
             this.builder.append(builder.builder);
             this.nonce = builder.nonce;
             this.embed = builder.embed;
+            this.components.addAll(builder.components);
+            if (builder.allowedMentions != null)
+                this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, builder.allowedMentions);
+            this.mentionedRoles.addAll(builder.mentionedRoles);
+            this.mentionedUsers.addAll(builder.mentionedUsers);
         }
     }
 
@@ -127,6 +144,54 @@ public class MessageBuilder implements Appendable
     {
         this.embed = embed;
         return this;
+    }
+
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows, or null to reset the components
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided in the collection or more than 5 actions rows are provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public MessageBuilder setActionRows(@Nullable Collection<? extends ActionRow> rows)
+    {
+        if (rows == null)
+        {
+            this.components.clear();
+            return this;
+        }
+        Checks.noneNull(rows, "ActionRows");
+        Checks.check(rows.size() <= 5, "Can only have 5 action rows per message!");
+        this.components.clear();
+        this.components.addAll(rows);
+        return this;
+    }
+
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows, or null to reset the components
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided in the array or more than 5 actions rows are provided
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public MessageBuilder setActionRows(@Nullable ActionRow... rows)
+    {
+        if (rows == null)
+        {
+            this.components.clear();
+            return this;
+        }
+        return setActionRows(Arrays.asList(rows));
     }
 
     /**
@@ -1177,7 +1242,7 @@ public class MessageBuilder implements Appendable
 
         String[] ids = new String[0];
         return new DataMessage(isTTS, message, nonce, embed,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
     }
 
     /**
@@ -1250,7 +1315,7 @@ public class MessageBuilder implements Appendable
     {
         String[] ids = new String[0];
         return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null,
-                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids));
+                allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
     }
 
     private String[] toStringArray(long[] users)

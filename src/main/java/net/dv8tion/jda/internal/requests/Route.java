@@ -21,6 +21,8 @@ import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.util.HashSet;
+import java.util.Set;
 
 import static net.dv8tion.jda.internal.requests.Method.*;
 
@@ -55,6 +57,34 @@ public class Route
         public static final Route GET_AUTHORIZED_APPLICATIONS =   new Route(GET,    "oauth2/tokens");
         public static final Route GET_AUTHORIZED_APPLICATION =    new Route(GET,    "oauth2/tokens/{auth_id}");
         public static final Route DELETE_AUTHORIZED_APPLICATION = new Route(DELETE, "oauth2/tokens/{auth_id}");
+    }
+
+    public static class Interactions
+    {
+        public static final Route GET_COMMANDS =    new Route(GET,     "applications/{application_id}/commands");
+        public static final Route GET_COMMAND =     new Route(GET,     "applications/{application_id}/commands/{command_id}");
+        public static final Route CREATE_COMMAND =  new Route(POST,    "applications/{application_id}/commands");
+        public static final Route UPDATE_COMMANDS = new Route(PUT,     "applications/{application_id}/commands");
+        public static final Route EDIT_COMMAND =    new Route(PATCH,   "applications/{application_id}/commands/{command_id}");
+        public static final Route DELETE_COMMAND =  new Route(DELETE,  "applications/{application_id}/commands/{command_id}");
+
+        public static final Route GET_GUILD_COMMANDS =    new Route(GET,     "applications/{application_id}/guilds/{guild_id}/commands");
+        public static final Route GET_GUILD_COMMAND =     new Route(GET,     "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+        public static final Route CREATE_GUILD_COMMAND =  new Route(POST,    "applications/{application_id}/guilds/{guild_id}/commands");
+        public static final Route UPDATE_GUILD_COMMANDS = new Route(PUT,     "applications/{application_id}/guilds/{guild_id}/commands");
+        public static final Route EDIT_GUILD_COMMAND =    new Route(PATCH,   "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+        public static final Route DELETE_GUILD_COMMAND =  new Route(DELETE,  "applications/{application_id}/guilds/{guild_id}/commands/{command_id}");
+
+        public static final Route GET_ALL_COMMAND_PERMISSIONS =  new Route(GET, "applications/{application_id}/guilds/{guild_id}/commands/permissions");
+        public static final Route EDIT_ALL_COMMAND_PERMISSIONS = new Route(PUT, "applications/{application_id}/guilds/{guild_id}/commands/permissions");
+        public static final Route GET_COMMAND_PERMISSIONS =      new Route(GET, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
+        public static final Route EDIT_COMMAND_PERMISSIONS =     new Route(PUT, "applications/{application_id}/guilds/{guild_id}/commands/{command_id}/permissions");
+
+        public static final Route CALLBACK =        new Route(POST,   "interactions/{interaction_id}/{interaction_token}/callback");
+        public static final Route CREATE_FOLLOWUP = new Route(POST,   "webhooks/{application_id}/{interaction_token}");
+        public static final Route EDIT_FOLLOWUP =   new Route(PATCH,  "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
+        public static final Route DELETE_FOLLOWUP = new Route(DELETE, "webhooks/{application_id}/{interaction_token}/messages/{message_id}");
+        public static final Route GET_ORIGINAL =    new Route(GET,    "webhooks/{application_id}/{interaction_token}/messages/@original");
     }
 
     public static class Self
@@ -155,9 +185,11 @@ public class Route
         public static final Route MODIFY_TOKEN_WEBHOOK = new Route(PATCH,  "webhooks/{webhook_id}/{token}");
 
         // Separate
-        public static final Route EXECUTE_WEBHOOK        = new Route(POST, "webhooks/{webhook_id}/{token}");
-        public static final Route EXECUTE_WEBHOOK_SLACK  = new Route(POST, "webhooks/{webhook_id}/{token}/slack");
-        public static final Route EXECUTE_WEBHOOK_GITHUB = new Route(POST, "webhooks/{webhook_id}/{token}/github");
+        public static final Route EXECUTE_WEBHOOK        = new Route(POST,   "webhooks/{webhook_id}/{token}");
+        public static final Route EXECUTE_WEBHOOK_EDIT   = new Route(PATCH,  "webhooks/{webhook_id}/{token}/messages/{message_id}");
+        public static final Route EXECUTE_WEBHOOK_DELETE = new Route(DELETE, "webhooks/{webhook_id}/{token}/messages/{message_id}");
+        public static final Route EXECUTE_WEBHOOK_SLACK  = new Route(POST,   "webhooks/{webhook_id}/{token}/slack");
+        public static final Route EXECUTE_WEBHOOK_GITHUB = new Route(POST,   "webhooks/{webhook_id}/{token}/github");
     }
 
     public static class Roles
@@ -267,7 +299,7 @@ public class Route
         return custom(GET, route);
     }
 
-    private static final String majorParameters = "guild_id:channel_id:webhook_id";
+    private static final String majorParameters = "guild_id:channel_id:webhook_id:interaction_token";
     private final String route;
     private final Method method;
     private final int paramCount;
@@ -306,22 +338,25 @@ public class Route
         }
 
         //Compile the route for interfacing with discord.
-
-        StringBuilder majorParameter = new StringBuilder(majorParameters);
+        Set<String> major = new HashSet<>();
         StringBuilder compiledRoute = new StringBuilder(route);
         for (int i = 0; i < paramCount; i++)
         {
             int paramStart = compiledRoute.indexOf("{");
             int paramEnd = compiledRoute.indexOf("}");
             String paramName = compiledRoute.substring(paramStart+1, paramEnd);
-            int majorParamIndex = majorParameter.indexOf(paramName);
-            if (majorParamIndex > -1)
-                majorParameter.replace(majorParamIndex, majorParamIndex + paramName.length(), params[i]);
+            if (majorParameters.contains(paramName))
+            {
+                if (params[i].length() > 30) // probably a long interaction_token, hash it to keep logs clean (not useful anyway)
+                    major.add(paramName + "=" + Integer.toUnsignedString(params[i].hashCode()));
+                else
+                    major.add(paramName + "=" + params[i]);
+            }
 
             compiledRoute.replace(paramStart, paramEnd + 1, params[i]);
         }
 
-        return new CompiledRoute(this, compiledRoute.toString(), majorParameter.toString());
+        return new CompiledRoute(this, compiledRoute.toString(), major.isEmpty() ? "n/a" : String.join(":", major));
     }
 
     @Override

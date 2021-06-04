@@ -26,6 +26,7 @@ import net.dv8tion.jda.internal.requests.Route;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.regex.Pattern;
 
 /**
  * An object representing Webhooks in Discord
@@ -38,6 +39,39 @@ import javax.annotation.Nullable;
  */
 public interface Webhook extends ISnowflake, IFakeable
 {
+    /**
+     * Pattern for a Webhook URL.
+     *
+     * <h2>Groups</h2>
+     * <table>
+     *   <caption style="display: none">Javadoc is stupid, this is not a required tag</caption>
+     *   <tr>
+     *     <th>Index</th>
+     *     <th>Name</th>
+     *     <th>Description</th>
+     *   </tr>
+     *   <tr>
+     *     <td>0</td>
+     *     <td>N/A</td>
+     *     <td>The entire link</td>
+     *   </tr>
+     *   <tr>
+     *     <td>1</td>
+     *     <td>id</td>
+     *     <td>The ID of the webhook</td>
+     *   </tr>
+     *   <tr>
+     *     <td>2</td>
+     *     <td>token</td>
+     *     <td>The token of the webhook</td>
+     *   </tr>
+     * </table>
+     *
+     * You can use the names with {@link java.util.regex.Matcher#group(String) Matcher.group(String)}
+     * and the index with {@link java.util.regex.Matcher#group(int) Matcher.group(int)}.
+     */
+    Pattern WEBHOOK_URL = Pattern.compile("https?://(?:[^\\s.]+\\.)?discord(?:app)?\\.com/api(?:/v\\d+)?/webhooks/(?<id>\\d+)/(?<token>[^\\s/]+)", Pattern.CASE_INSENSITIVE);
+
     /**
      * The JDA instance of this Webhook.
      *

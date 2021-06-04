@@ -21,11 +21,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.WebhookManager;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.internal.managers.WebhookManagerImpl;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.WebhookMessageUpdateActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -35,17 +38,14 @@ import javax.annotation.Nonnull;
  *
  * @since  3.0
  */
-public class WebhookImpl implements Webhook
+public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 {
     private final TextChannel channel;
-    private final long id;
     private final WebhookType type;
     private WebhookManager manager;
-    private final JDA api;
 
     private Member owner;
     private User user, ownerUser;
-    private String token;
     private ChannelReference sourceChannel;
     private GuildReference sourceGuild;
 
@@ -56,9 +56,8 @@ public class WebhookImpl implements Webhook
 
     public WebhookImpl(TextChannel channel, JDA api, long id, WebhookType type)
     {
+        super(id, null, api);
         this.channel = channel;
-        this.api = api;
-        this.id = id;
         this.type = type;
     }
 
@@ -254,5 +253,42 @@ public class WebhookImpl implements Webhook
     public String toString()
     {
         return "WH:" + getName() + "(" + id + ")";
+    }
+
+    // TODO: Implement WebhookMessage
+
+    @Override
+    public WebhookMessageActionImpl<Void> sendRequest()
+    {
+        checkToken();
+        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
+        WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, channel, route, (json) -> null);
+        action.run();
+        return action;
+    }
+
+    @Override
+    public WebhookMessageUpdateActionImpl<Void> editRequest(String messageId)
+    {
+        checkToken();
+        Checks.isSnowflake(messageId);
+        Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
+        WebhookMessageUpdateActionImpl<Void> action = new WebhookMessageUpdateActionImpl<>(api, route, (json) -> null);
+        action.run();
+        return action;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
+    {
+        checkToken();
+        return super.deleteMessageById(messageId);
+    }
+
+    private void checkToken()
+    {
+        if (token == null)
+            throw new UnsupportedOperationException("Cannot execute webhook without a token!");
     }
 }

@@ -17,10 +17,13 @@
 package net.dv8tion.jda.api.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.util.DefaultIndenter;
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.MapType;
 import net.dv8tion.jda.api.exceptions.ParsingException;
+import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.etf.ExTermDecoder;
 import net.dv8tion.jda.api.utils.data.etf.ExTermEncoder;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -466,7 +469,7 @@ public class DataObject implements SerializableData
      */
     public long getLong(@Nonnull String key)
     {
-        Long value = get(Long.class, key, Long::parseLong, Number::longValue);
+        Long value = get(Long.class, key, MiscUtil::parseLong, Number::longValue);
         if (value == null)
             throw valueError(key, "long");
         return value;
@@ -651,8 +654,8 @@ public class DataObject implements SerializableData
     {
         if (value instanceof SerializableData)
             data.put(key, ((SerializableData) value).toData().data);
-        else if (value instanceof DataArray)
-            data.put(key, ((DataArray) value).data);
+        else if (value instanceof SerializableArray)
+            data.put(key, ((SerializableArray) value).toDataArray().data);
         else
             data.put(key, value);
         return this;
@@ -727,6 +730,22 @@ public class DataObject implements SerializableData
         }
     }
 
+    @Nonnull
+    public String toPrettyString()
+    {
+        DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);
+        DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
+        printer.withObjectIndenter(indent).withArrayIndenter(indent);
+        try
+        {
+            return mapper.writer(printer).writeValueAsString(data);
+        }
+        catch (JsonProcessingException e)
+        {
+            throw new ParsingException(e);
+        }
+    }
+
     /**
      * Converts this DataObject to a {@link java.util.Map}
      *
@@ -762,8 +781,10 @@ public class DataObject implements SerializableData
         Object value = data.get(key);
         if (value == null)
             return null;
-        if (type.isAssignableFrom(value.getClass()))
+        if (type.isInstance(value))
             return type.cast(value);
+        if (type == String.class)
+            return type.cast(value.toString());
         // attempt type coercion
         if (value instanceof Number && numberParse != null)
             return numberParse.apply((Number) value);

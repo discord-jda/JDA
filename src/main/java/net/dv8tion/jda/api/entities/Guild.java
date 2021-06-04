@@ -23,14 +23,14 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.MemberAction;
-import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
@@ -74,6 +74,373 @@ public interface Guild extends ISnowflake
     String SPLASH_URL = "https://cdn.discordapp.com/splashes/%s/%s.png";
     /** Template for {@link #getBannerUrl()}. */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.png";
+
+    /**
+     * Retrieves the list of guild commands.
+     * <br>This list does not include global commands! Use {@link JDA#retrieveCommands()} for global commands.
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link Command}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<Command>> retrieveCommands();
+
+    /**
+     * Retrieves the existing {@link Command} instance by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The command id
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link Command}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Command> retrieveCommandById(@Nonnull String id);
+
+    /**
+     * Retrieves the existing {@link Command} instance by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The command id
+     *
+     * @return {@link RestAction} - Type: {@link Command}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Command> retrieveCommandById(long id)
+    {
+        return retrieveCommandById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Creates or updates a command.
+     * <br>If a command with the same name exists, it will be replaced.
+     *
+     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * @param  command
+     *         The {@link CommandData} for the command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return {@link CommandCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandCreateAction upsertCommand(@Nonnull CommandData command);
+
+    /**
+     * Creates or updates a command.
+     * <br>If a command with the same name exists, it will be replaced.
+     *
+     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * @param  name
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     * @param  description
+     *         The description for the command, 1-100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name/description do not meet the requirements
+     *
+     * @return {@link CommandCreateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
+    {
+        return upsertCommand(new CommandData(name, description));
+    }
+
+    /**
+     * Configures the complete list of guild commands.
+     * <br>This will replace the existing command list for this guild. You should only use this once on startup!
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * <h2>Examples</h2>
+     * <pre>{@code
+     * // Set list to 2 commands
+     * guild.updateCommands()
+     *   .addCommands(new CommandData("ping", "Gives the current ping"))
+     *   .addCommands(new CommandData("ban", "Ban the target user")
+     *     .addOption(OptionType.USER, "user", "The user to ban", true))
+     *   .queue();
+     * // Delete all commands
+     * guild.updateCommands().queue();
+     * }</pre>
+     *
+     * @return {@link CommandListUpdateAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandListUpdateAction updateCommands();
+
+    /**
+     * Edit an existing command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction editCommandById(@Nonnull String id);
+
+    /**
+     * Edit an existing command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command to edit
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandEditAction editCommandById(long id)
+    {
+        return editCommandById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Delete the command for this id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  commandId
+     *         The id of the command that should be deleted
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> deleteCommandById(@Nonnull String commandId);
+
+    /**
+     * Delete the command for this id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  commandId
+     *         The id of the command that should be deleted
+     *
+     * @return {@link RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<Void> deleteCommandById(long commandId)
+    {
+        return deleteCommandById(Long.toUnsignedString(commandId));
+    }
+
+    /**
+     * Retrieves the {@link CommandPrivilege CommandPrivileges} for the command with the specified ID.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  commandId
+     *         The id of the command, this can be global or guild command
+     *
+     * @throws IllegalArgumentException
+     *         If the id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId);
+
+    /**
+     * Retrieves the {@link CommandPrivilege CommandPrivileges} for the command with the specified ID.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  commandId
+     *         The id of the command, this can be global or guild command
+     *
+     * @throws IllegalArgumentException
+     *         If the id is not a valid snowflake
+     *
+     * @return {@link RestAction} - Type: {@link List} of {@link CommandPrivilege}
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(long commandId)
+    {
+        return retrieveCommandPrivilegesById(Long.toUnsignedString(commandId));
+    }
+
+    /**
+     * Retrieves the {@link CommandPrivilege CommandPrivileges} for the commands in this guild.
+     * <br>The RestAction provides a {@link Map} from the command id to the list of privileges.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * @return {@link RestAction} - Type: {@link Map} from {@link String} Command ID to {@link List} of {@link CommandPrivilege}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Map<String, List<CommandPrivilege>>> retrieveCommandPrivileges();
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command, this can be global or guild command
+     * @param  privileges
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
+     *
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges);
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command, this can be global or guild command
+     * @param  privileges
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
+     *
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull CommandPrivilege... privileges)
+    {
+        Checks.noneNull(privileges, "CommandPrivileges");
+        return updateCommandPrivilegesById(id, Arrays.asList(privileges));
+    }
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command, this can be global or guild command
+     * @param  privileges
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 10 privileges are provided
+     *
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    {
+        return updateCommandPrivilegesById(Long.toUnsignedString(id), privileges);
+    }
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  id
+     *         The id of the command, this can be global or guild command
+     * @param  privileges
+     *         Complete list of up to 10 {@link CommandPrivilege CommandPrivileges} for this command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 10 privileges are provided
+     *
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull CommandPrivilege... privileges)
+    {
+        Checks.noneNull(privileges, "CommandPrivileges");
+        return updateCommandPrivilegesById(id, Arrays.asList(privileges));
+    }
+
+    /**
+     * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified commands.
+     * <br>The argument for this function is a {@link Map} similar to the one returned by {@link #retrieveCommandPrivileges()}.
+     *
+     * <p>These privileges are used to restrict who can use commands through Role/User whitelists/blacklists.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * @param  privileges
+     *         Complete map of {@link CommandPrivilege CommandPrivileges} for each command
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, any of the map keys is not a valid snowflake, or more than 10 privileges are provided for any command
+     *
+     * @return {@link RestAction} - Type: {@link Map} from {@link String} Command ID to {@link List} of {@link CommandPrivilege}
+     *         The updated map of command privileges for this guild.
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges);
 
     /**
      * Retrieves the available regions for this Guild

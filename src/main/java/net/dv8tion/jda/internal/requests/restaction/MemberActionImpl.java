@@ -118,7 +118,7 @@ public class MemberActionImpl extends RestActionImpl<Void> implements MemberActi
                 this.nick = null;
                 return this;
             }
-            Checks.check(nick.length() <= 32, "Nickname must not be greater than 32 characters in length");
+            Checks.notLonger(nick, 32, "Nickname");
         }
         this.nick = nick;
         return this;
