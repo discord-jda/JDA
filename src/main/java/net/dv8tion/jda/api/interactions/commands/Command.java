@@ -171,11 +171,12 @@ public class Command implements ISnowflake
      * @throws IllegalStateException
      *         If this command is not owned by this bot
      *
-     * @return {@link RestAction}
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot update privileges for a command from another bot!");
@@ -201,11 +202,12 @@ public class Command implements ISnowflake
      * @throws IllegalStateException
      *         If this command is not owned by this bot
      *
-     * @return {@link RestAction}
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
+    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
     {
         Checks.noneNull(privileges, "CommandPrivileges");
         return updatePrivileges(guild, Arrays.asList(privileges));

@@ -181,13 +181,7 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(commandId, "ID");
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);
-        return new RestActionImpl<>(getJDA(), route, (response, request) ->
-            response.getObject()
-                .getArray("permissions")
-                .stream(DataArray::getObject)
-                .map(this::parsePrivilege)
-                .collect(Collectors.toList())
-        );
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> parsePrivilegesList(response.getObject()));
     }
 
     @Nonnull
@@ -199,10 +193,7 @@ public class GuildImpl implements Guild
             Map<String, List<CommandPrivilege>> privileges = new HashMap<>();
             response.getArray().stream(DataArray::getObject).forEach(obj -> {
                 String id = obj.getString("id");
-                List<CommandPrivilege> list = obj.getArray("permissions")
-                        .stream(DataArray::getObject)
-                        .map(this::parsePrivilege)
-                        .collect(Collectors.toList());
+                List<CommandPrivilege> list = parsePrivilegesList(obj);
                 privileges.put(id, list);
             });
             return privileges;
@@ -211,19 +202,20 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public RestAction<Void> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    public RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
         Checks.isSnowflake(id, "ID");
         Checks.noneNull(privileges, "Privileges");
         Checks.check(privileges.size() <= 10, "Cannot have more than 10 privileges for a command!");
         Route.CompiledRoute route = Route.Interactions.EDIT_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
         DataArray array = DataArray.fromCollection(privileges);
-        return new RestActionImpl<>(getJDA(), route, DataObject.empty().put("permissions", array));
+        return new RestActionImpl<>(getJDA(), route, DataObject.empty().put("permissions", array),
+            (response, request) -> parsePrivilegesList(response.getObject()));
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges)
+    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges)
     {
         Checks.notNull(privileges, "Privileges");
         privileges.forEach((key, value) -> {
@@ -240,7 +232,23 @@ public class GuildImpl implements Guild
         });
 
         Route.CompiledRoute route = Route.Interactions.EDIT_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
-        return new RestActionImpl<>(getJDA(), route, RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson()));
+        return new RestActionImpl<>(getJDA(), route, RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson()), (response, request) -> {
+            Map<String, List<CommandPrivilege>> map = new HashMap<>();
+            response.getArray().stream(DataArray::getObject).forEach(obj -> {
+                String id = obj.getString("id");
+                List<CommandPrivilege> list = parsePrivilegesList(obj);
+                map.put(id, list);
+            });
+            return map;
+        });
+    }
+
+    private List<CommandPrivilege> parsePrivilegesList(DataObject obj)
+    {
+        return obj.getArray("permissions")
+                .stream(DataArray::getObject)
+                .map(this::parsePrivilege)
+                .collect(Collectors.toList());
     }
 
     private CommandPrivilege parsePrivilege(DataObject data)

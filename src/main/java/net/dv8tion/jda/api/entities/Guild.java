@@ -333,11 +333,12 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
      *
-     * @return {@link RestAction}
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges);
+    RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges);
 
     /**
      * Updates the list of {@link CommandPrivilege CommandPrivileges} for the specified command.
@@ -355,11 +356,12 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided, the id is not a valid snowflake, or more than 10 privileges are provided
      *
-     * @return {@link RestAction}
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> updateCommandPrivilegesById(@Nonnull String id, @Nonnull CommandPrivilege... privileges)
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull CommandPrivilege... privileges)
     {
         Checks.noneNull(privileges, "CommandPrivileges");
         return updateCommandPrivilegesById(id, Arrays.asList(privileges));
@@ -381,11 +383,12 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided or more than 10 privileges are provided
      *
-     * @return {@link RestAction}
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> updateCommandPrivilegesById(long id, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull Collection<? extends CommandPrivilege> privileges)
     {
         return updateCommandPrivilegesById(Long.toUnsignedString(id), privileges);
     }
@@ -406,11 +409,12 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided or more than 10 privileges are provided
      *
-     * @return {@link RestAction}
+     * @return {@link RestAction} - Type: {@link List} or {@link CommandPrivilege}
+     *         The updated list of privileges for this command.
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> updateCommandPrivilegesById(long id, @Nonnull CommandPrivilege... privileges)
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull CommandPrivilege... privileges)
     {
         Checks.noneNull(privileges, "CommandPrivileges");
         return updateCommandPrivilegesById(id, Arrays.asList(privileges));
@@ -431,11 +435,12 @@ public interface Guild extends ISnowflake
      * @throws IllegalArgumentException
      *         If null is provided, any of the map keys is not a valid snowflake, or more than 10 privileges are provided for any command
      *
-     * @return {@link RestAction}
+     * @return {@link RestAction} - Type: {@link Map} from {@link String} Command ID to {@link List} of {@link CommandPrivilege}
+     *         The updated map of command privileges for this guild.
      */
     @Nonnull
     @CheckReturnValue
-    RestAction<Void> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges);
+    RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges);
 
     /**
      * Retrieves the available regions for this Guild
