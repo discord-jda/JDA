@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ApplicationInfo;
 import net.dv8tion.jda.api.entities.ApplicationTeam;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -28,7 +29,6 @@ import java.util.Collection;
 public class ApplicationInfoImpl implements ApplicationInfo
 {
     private final JDA api;
-
 
     private final boolean doesBotRequireCodeGrant;
     private final boolean isBotPublic;
@@ -38,6 +38,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final String name;
     private final User owner;
     private final ApplicationTeam team;
+    private String scopes = "bot";
 
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
             boolean isBotPublic, String name, User owner, ApplicationTeam team)
@@ -92,6 +93,22 @@ public class ApplicationInfoImpl implements ApplicationInfo
         return team;
     }
 
+    @Nonnull
+    @Override
+    public ApplicationInfo setRequiredScopes(@Nonnull Collection<String> scopes)
+    {
+        Checks.noneNull(scopes, "Scopes");
+        this.scopes = String.join("+", scopes);
+        if (!this.scopes.contains("bot"))
+        {
+            if (this.scopes.isEmpty())
+                this.scopes = "bot";
+            else
+                this.scopes += "+bot";
+        }
+        return this;
+    }
+
     @Override
     public long getIdLong()
     {
@@ -104,7 +121,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     {
         StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
         builder.append(this.getId());
-        builder.append("&scope=bot");
+        builder.append("&scope=").append(scopes);
         if (permissions != null && !permissions.isEmpty())
         {
             builder.append("&permissions=");

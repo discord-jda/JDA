@@ -351,13 +351,13 @@ public class ChannelUpdateHandler extends SocketHandler
     // False => nothing changed, ignore
     private boolean handlePermissionOverride(PermissionOverride currentOverride, DataObject override, long overrideId, AbstractChannelImpl<?,?> channel)
     {
-        final long allow = override.getLong("allow_new");
-        final long deny = override.getLong("deny_new");
-        final String type = override.getString("type");
-        final boolean isRole = type.equals("role");
+        final long allow = override.getLong("allow");
+        final long deny = override.getLong("deny");
+        final int type = override.getInt("type");
+        final boolean isRole = type == 0;
         if (!isRole)
         {
-            if (!type.equals("member"))
+            if (type != 1)
             {
                 EntityBuilder.LOG.debug("Ignoring unknown invite of type '{}'. JSON: {}", type, override);
                 return false;

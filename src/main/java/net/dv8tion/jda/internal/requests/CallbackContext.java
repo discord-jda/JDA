@@ -27,7 +27,7 @@ public class CallbackContext implements AutoCloseable
         return instance;
     }
 
-    static boolean isCallbackContext()
+    public static boolean isCallbackContext()
     {
         return callback.get();
     }

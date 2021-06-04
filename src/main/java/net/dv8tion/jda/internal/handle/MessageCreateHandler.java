@@ -104,6 +104,7 @@ public class MessageCreateHandler extends SocketHandler
             {
                 PrivateChannelImpl channel = (PrivateChannelImpl) message.getPrivateChannel();
                 channel.setLastMessageId(message.getIdLong());
+                api.usedPrivateChannel(channel.getIdLong());
                 jda.handleEvent(
                     new PrivateMessageReceivedEvent(
                         jda, responseNumber,

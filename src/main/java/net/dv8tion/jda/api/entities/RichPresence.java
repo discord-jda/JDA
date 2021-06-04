@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.internal.utils.Helpers;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -251,7 +253,7 @@ public interface RichPresence extends Activity
         @Override
         public String toString()
         {
-            return String.format("RichPresenceParty(%s | [%d, %d])", id, size, max);
+            return Helpers.format("RichPresenceParty(%s | [%d, %d])", id, size, max);
         }
 
         @Override

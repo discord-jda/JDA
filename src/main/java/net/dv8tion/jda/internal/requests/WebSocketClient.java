@@ -399,8 +399,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             LOG.info("Connected to WebSocket");
             // Log which intents are used on debug level since most people won't know how to use the binary output anyway
-            if (api.useIntents())
-                LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
+            LOG.debug("Connected with gateway intents: {}", Integer.toBinaryString(gatewayIntents));
         }
         else
         {
@@ -707,10 +706,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("properties", connectionProperties)
             .put("v", JDAInfo.DISCORD_GATEWAY_VERSION)
             .put("large_threshold", api.getLargeThreshold());
-        //We only provide intents if they are not the default (all) for backwards compatibility
-        // Discord has additional enforcements put in place even if you specify to subscribe to all intents
-        if (api.useIntents())
-            payload.put("intents", gatewayIntents);
+        payload.put("intents", gatewayIntents);
 
         DataObject identify = DataObject.empty()
                 .put("op", WebSocketCode.IDENTIFY)
@@ -1320,6 +1316,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =   new SocketHandler.NOPHandler(api);
+        handlers.put("APPLICATION_COMMAND_UPDATE",    new ApplicationCommandUpdateHandler(api));
+        handlers.put("APPLICATION_COMMAND_DELETE",    new ApplicationCommandDeleteHandler(api));
+        handlers.put("APPLICATION_COMMAND_CREATE",    new ApplicationCommandCreateHandler(api));
         handlers.put("CHANNEL_CREATE",                new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                new ChannelUpdateHandler(api));
@@ -1337,6 +1336,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_ROLE_UPDATE",             new GuildRoleUpdateHandler(api));
         handlers.put("GUILD_SYNC",                    new GuildSyncHandler(api));
         handlers.put("GUILD_UPDATE",                  new GuildUpdateHandler(api));
+        handlers.put("INTERACTION_CREATE",            new InteractionCreateHandler(api));
         handlers.put("INVITE_CREATE",                 new InviteCreateHandler(api));
         handlers.put("INVITE_DELETE",                 new InviteDeleteHandler(api));
         handlers.put("MESSAGE_CREATE",                new MessageCreateHandler(api));

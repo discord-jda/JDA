@@ -80,6 +80,13 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
+    public String getAsMention()
+    {
+        return "<#" + id + '>';
+    }
+
+    @Nonnull
+    @Override
     public abstract ChannelAction<T> createCopy(@Nonnull Guild guild);
 
     @Nonnull

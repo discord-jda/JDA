@@ -139,6 +139,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * Returns the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the User.
      * <br>If the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} is unrecognized, will return {@link net.dv8tion.jda.api.OnlineStatus#UNKNOWN UNKNOWN}.
      *
+     * <p>This will always return {@link OnlineStatus#OFFLINE} if {@link net.dv8tion.jda.api.utils.cache.CacheFlag#ONLINE_STATUS CacheFlag.ONLINE_STATUS} is disabled.
+     *
      * @return The current {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the {@link net.dv8tion.jda.api.entities.User User}.
      */
     @Nonnull
@@ -363,7 +365,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided member is {@code null}</li>
      *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
@@ -411,7 +412,7 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         <ul>
      *             <li>If the provided amount of days (delDays) is less than 0.</li>
      *             <li>If the provided amount of days (delDays) is bigger than 7.</li>
-     *             <li>If the provided member is {@code null}</li>
+     *             <li>If the provided reason is longer than 512 characters.</li>
      *         </ul>
      *
      *
@@ -442,8 +443,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *     <br>The specified Member was removed from the Guild before finishing the task</li>
      * </ul>
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not a Member of this Guild or is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
@@ -481,13 +480,13 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      * @param  reason
      *         The reason for this action or {@code null} if there is no specified reason
      *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not a Member of this Guild or is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#KICK_MEMBERS} permission.
      * @throws net.dv8tion.jda.api.exceptions.HierarchyException
      *         If the logged in account cannot kick the other member due to permission hierarchy position.
      *         <br>See {@link Member#canInteract(Member)}
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided reason is longer than 512 characters
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
@@ -526,10 +525,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
-     *         If the provided member is not currently connected to a voice channel.
+     *         If the member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -566,10 +563,8 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#VOICE_DEAF_OTHERS} permission.
-     * @throws IllegalArgumentException
-     *         If the provided member is not from this Guild or null.
      * @throws java.lang.IllegalStateException
-     *         If the provided member is not currently connected to a voice channel.
+     *         If the member is not currently connected to a voice channel.
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -605,10 +600,6 @@ public interface Member extends IMentionable, IPermissionHolder, IFakeable
      *         The new nickname of the {@link net.dv8tion.jda.api.entities.Member Member}, provide {@code null} or an
      *         empty String to reset the nickname
      *
-     * @throws IllegalArgumentException
-     *         If the specified {@link net.dv8tion.jda.api.entities.Member Member}
-     *         is not from the same {@link net.dv8tion.jda.api.entities.Guild Guild}.
-     *         Or if the provided member is {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         <ul>
      *             <li>If attempting to set nickname for self and the logged in account has neither {@link net.dv8tion.jda.api.Permission#NICKNAME_CHANGE}

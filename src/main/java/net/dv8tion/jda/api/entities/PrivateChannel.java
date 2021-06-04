@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.CheckReturnValue;
@@ -35,14 +34,6 @@ public interface PrivateChannel extends MessageChannel, IFakeable
      */
     @Nonnull
     User getUser();
-
-    /**
-     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this PrivateChannel
-     *
-     * @return the corresponding JDA instance
-     */
-    @Nonnull
-    JDA getJDA();
 
     /**
      * Closes a PrivateChannel. After being closed successfully the PrivateChannel is removed from the JDA mapping.

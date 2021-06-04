@@ -171,7 +171,7 @@ public class MessageListener extends ListenerAdapter
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
-        jda.addEventListeners(new MessageListener());
+        jda.addEventListener(new MessageListener());
     }
 
     @Override
@@ -225,6 +225,40 @@ public class Bot extends ListenerAdapter
                        response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
                    });
         }
+    }
+}
+```
+
+**Slash-Commands**:
+
+```java
+public class Bot extends ListenerAdapter
+{
+    public static void main(String[] args) throws LoginException
+    {
+        if (args.length < 1) {
+            System.out.println("You have to provide a token as first argument!");
+            System.exit(1);
+        }
+        // args[0] should be the token
+        // We don't need any intents for this bot. Slash commands work without any intents!
+        JDA jda = JDABuilder.createLight(args[0], Collections.emptyList())
+            .addEventListeners(new Bot())
+            .setActivity(Activity.playing("Type /ping"))
+            .build();
+
+        jda.upsertCommand("ping", "Calculate ping of the bot").queue(); // This can take up to 1 hour to show up in the client
+    }
+    
+    @Override
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        if (!event.getName().equals("ping")) return; // make sure we handle the right command
+        long time = System.currentTimeMillis();
+        event.reply("Pong!").setEphemeral(true) // reply or acknowledge
+             .flatMap(v ->
+                 event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time) // then edit original
+             ).queue(); // Queue both reply and edit
     }
 }
 ```
@@ -429,7 +463,8 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 **Gradle**
 ```gradle
 dependencies {
-    compile 'net.dv8tion:JDA:VERSION'
+    //Change 'implementation' to 'compile' in old Gradle versions
+    implementation("net.dv8tion:JDA:VERSION")
 }
 
 repositories {
@@ -444,7 +479,8 @@ repositories {
 **Gradle without Audio**
 ```gradle
 dependencies {
-    compile ('net.dv8tion:JDA:VERSION') {
+    //Change 'implementation' to 'compile' in old Gradle versions
+    implementation("net.dv8tion:JDA:VERSION") {
         exclude module: 'opus-java'
     }
 }

@@ -125,7 +125,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
+        Checks.notLonger(name, 128, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.DEFAULT);
     }
 
@@ -151,7 +151,7 @@ public interface Activity
     {
         Checks.notEmpty(name, "Provided game name");
         name = Helpers.isBlank(name) ? name : name.trim();
-        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
+        Checks.notLonger(name, 128, "Name");
         ActivityType type;
         if (isValidStreamingUrl(url))
             type = ActivityType.STREAMING;
@@ -177,7 +177,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
+        Checks.notLonger(name, 128, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.LISTENING);
     }
 
@@ -201,7 +201,7 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
+        Checks.notLonger(name, 128, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.WATCHING);
     }
 
@@ -224,12 +224,12 @@ public interface Activity
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.check(name.length() <= 128, "Name must not be greater than 128 characters in length");
+        Checks.notLonger(name, 128, "Name");
         return EntityBuilder.createActivity(name, null, ActivityType.COMPETING);
     }
 
     /**
-     * Creates a new Activity instance with the specified name and url.
+     * Creates a new Activity instance with the specified name.
      *
      * @param  type
      *         The {@link net.dv8tion.jda.api.entities.Activity.ActivityType ActivityType} to use
@@ -237,9 +237,12 @@ public interface Activity
      *         The not-null name of the newly created game
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null, empty or longer than 128 characters
+     *         <ul>
+     *           <li>If the specified ActivityType is null or unsupported</li>
+     *           <li>If the specified name is null, empty or longer than 128 characters</li>
+     *         </ul>
      *
-     * @return A valid Activity instance with the provided name and url
+     * @return A valid Activity instance with the provided name
      */
     @Nonnull
     static Activity of(@Nonnull ActivityType type, @Nonnull String name)
@@ -260,7 +263,10 @@ public interface Activity
      *         The streaming url to use, required to display as "streaming".
      *
      * @throws IllegalArgumentException
-     *         If the specified name is null, empty or longer than 128 characters
+     *         <ul>
+     *           <li>If the specified ActivityType is null or unsupported</li>
+     *           <li>If the specified name is null, empty or longer than 128 characters</li>
+     *         </ul>
      *
      * @return A valid Activity instance with the provided name and url
      *
@@ -331,7 +337,7 @@ public interface Activity
          * Used to indicate that the {@link Activity Activity} should display as a custom status
          * in the official client.
          *
-         * @incubating This feature is currently not officially documented and might change
+         * @incubating This Activity type is <b>read-only</b> for bots
          */
         @Incubating
         CUSTOM_STATUS(4),
@@ -508,7 +514,7 @@ public interface Activity
         @Override
         public String toString()
         {
-            return String.format("RichPresenceTimestamp(%d-%d)", start, end);
+            return Helpers.format("RichPresenceTimestamp(%d-%d)", start, end);
         }
 
         @Override

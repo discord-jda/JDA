@@ -278,9 +278,9 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     public ChannelManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
-        Checks.check(name.length() > 0 && name.length() <= 100, "Name must be between 1-100 characters long");
-        if (getType() == ChannelType.TEXT)
-            Checks.noWhitespace(name, "Name");
+        name = name.trim();
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         this.name = name;
         set |= NAME;
         return this;
@@ -319,7 +319,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set topic on text channels");
-        Checks.check(topic == null || topic.length() <= 1024, "Topic must be less or equal to 1024 characters in length");
+        if (topic != null)
+            Checks.notLonger(topic, 1024, "Topic");
         this.topic = topic;
         set |= TOPIC;
         return this;
