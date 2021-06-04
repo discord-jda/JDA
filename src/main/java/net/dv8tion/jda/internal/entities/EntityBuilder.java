@@ -37,7 +37,9 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -112,12 +114,15 @@ public class EntityBuilder
                 userView.getMap().put(selfUser.getIdLong(), selfUser);
         }
 
+        if (!self.isNull("application_id"))
+            selfUser.setApplicationId(self.getUnsignedLong("application_id"));
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
-                .setBot(self.getBoolean("bot"));
+                .setBot(self.getBoolean("bot"))
+                .setSystem(false);
 
         return selfUser;
     }
@@ -322,6 +327,7 @@ public class EntityBuilder
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
                    .setBot(user.getBoolean("bot"))
+                   .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0));
         }
         else
@@ -645,12 +651,27 @@ public class EntityBuilder
     {
         if (member == null)
             throw new NullPointerException("Provided member was null!");
+        OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
+        if (onlineStatus == OnlineStatus.OFFLINE)
+            return; // don't cache offline member presences!
+        MemberPresenceImpl presence = member.getPresence();
+        if (presence == null)
+        {
+            CacheView.SimpleCacheView<MemberPresenceImpl> view = member.getGuild().getPresenceView();
+            if (view == null)
+                return;
+            presence = new MemberPresenceImpl();
+            try (UnlockHook lock = view.writeLock())
+            {
+                view.getMap().put(member.getIdLong(), presence);
+            }
+        }
+
         boolean cacheGame = getJDA().isCacheFlagSet(CacheFlag.ACTIVITY);
         boolean cacheStatus = getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS);
 
         DataArray activityArray = !cacheGame || presenceJson.isNull("activities") ? null : presenceJson.getArray("activities");
         DataObject clientStatusJson = !cacheStatus || presenceJson.isNull("client_status") ? null : presenceJson.getObject("client_status");
-        OnlineStatus onlineStatus = OnlineStatus.fromKey(presenceJson.getString("status"));
         List<Activity> activities = new ArrayList<>();
         boolean parsedActivity = false;
 
@@ -665,8 +686,7 @@ public class EntityBuilder
                 }
                 catch (Exception ex)
                 {
-                    String userId;
-                    userId = member.getUser().getId();
+                    String userId = member.getId();
                     if (LOG.isDebugEnabled())
                         LOG.warn("Encountered exception trying to parse a presence! UserId: {} JSON: {}", userId, activityArray, ex);
                     else
@@ -675,15 +695,15 @@ public class EntityBuilder
             }
         }
         if (cacheGame && parsedActivity)
-            member.setActivities(activities);
-        member.setOnlineStatus(onlineStatus);
+            presence.setActivities(activities);
+        presence.setOnlineStatus(onlineStatus);
         if (clientStatusJson != null)
         {
             for (String key : clientStatusJson.keys())
             {
                 ClientType type = ClientType.fromKey(key);
                 OnlineStatus status = OnlineStatus.fromKey(clientStatusJson.getString(key));
-                member.setOnlineStatus(type, status);
+                presence.setOnlineStatus(type, status);
             }
         }
     }
@@ -968,13 +988,9 @@ public class EntityBuilder
 
     public PrivateChannel createPrivateChannel(DataObject json)
     {
-        return createPrivateChannel(json, false);
-    }
-
-    public PrivateChannel createPrivateChannel(DataObject json, boolean modifyCache)
-    {
         final long channelId = json.getUnsignedLong("id");
         PrivateChannel channel = api.getPrivateChannelById(channelId);
+        api.usedPrivateChannel(channelId);
         if (channel != null)
             return channel;
 
@@ -989,31 +1005,24 @@ public class EntityBuilder
             user = createUser(recipient);
         }
 
-        return createPrivateChannel(json, user, modifyCache);
+        return createPrivateChannel(json, user);
     }
 
     public PrivateChannel createPrivateChannel(DataObject json, UserImpl user)
-    {
-        return createPrivateChannel(json, user, false);
-    }
-
-    public PrivateChannel createPrivateChannel(DataObject json, UserImpl user, boolean modifyCache)
     {
         final long channelId = json.getLong("id");
         PrivateChannelImpl priv = new PrivateChannelImpl(channelId, user)
                 .setLastMessageId(json.getLong("last_message_id", 0));
         user.setPrivateChannel(priv);
 
-        if (modifyCache)
+        // only add channels to cache when they come from an event, otherwise we would never remove the channel
+        SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
+        try (UnlockHook hook = privateView.writeLock())
         {
-            // only add channels to cache when they come from an event, otherwise we would never remove the channel
-            SnowflakeCacheViewImpl<PrivateChannel> privateView = getJDA().getPrivateChannelsView();
-            try (UnlockHook hook = privateView.writeLock())
-            {
-                privateView.getMap().put(channelId, priv);
-            }
-            getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
+            privateView.getMap().put(channelId, priv);
         }
+        api.usedPrivateChannel(channelId);
+        getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
         return priv;
     }
 
@@ -1057,7 +1066,7 @@ public class EntityBuilder
         final int color = roleJson.getInt("color");
         role.setName(roleJson.getString("name"))
             .setRawPosition(roleJson.getInt("position"))
-            .setRawPermissions(roleJson.getLong("permissions_new"))
+            .setRawPermissions(roleJson.getLong("permissions"))
             .setManaged(roleJson.getBoolean("managed"))
             .setHoisted(roleJson.getBoolean("hoist"))
             .setColor(color == 0 ? Role.DEFAULT_COLOR_RAW : color)
@@ -1076,23 +1085,41 @@ public class EntityBuilder
         MessageChannel chan = getJDA().getTextChannelById(channelId);
         if (chan == null)
             chan = getJDA().getPrivateChannelById(channelId);
-        if (chan == null)
+        if (chan == null && !jsonObject.isNull("guild_id"))
             throw new IllegalArgumentException(MISSING_CHANNEL);
 
         return createMessage(jsonObject, chan, modifyCache);
     }
-    public Message createMessage(DataObject jsonObject, MessageChannel chan, boolean modifyCache)
+    public Message createMessage(DataObject jsonObject, @Nullable MessageChannel channel, boolean modifyCache)
     {
+        long channelId = jsonObject.getUnsignedLong("channel_id");
+        if (channel != null && channelId != channel.getIdLong())
+        {
+            channel = api.getTextChannelById(channelId);
+            if (channel == null)
+                channel = api.getPrivateChannelById(channelId);
+        }
+
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
         final long authorId = author.getLong("id");
         MemberImpl member = null;
 
-        if (chan.getType().isGuild() && !jsonObject.isNull("member"))
+        if (channel == null && jsonObject.isNull("guild_id") && authorId != getJDA().getSelfUser().getIdLong())
+        {
+            DataObject channelData = DataObject.empty()
+                    .put("id", channelId)
+                    .put("recipient", author);
+            channel = createPrivateChannel(channelData);
+        }
+        else if (channel == null)
+            throw new IllegalArgumentException(MISSING_CHANNEL);
+
+        if (channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
-            GuildChannel guildChannel = (GuildChannel) chan;
+            GuildChannel guildChannel = (GuildChannel) channel;
             Guild guild = guildChannel.getGuild();
             member = createMember((GuildImpl) guild, memberJson);
             if (modifyCache)
@@ -1111,9 +1138,11 @@ public class EntityBuilder
         final String nonce = jsonObject.isNull("nonce") ? null : jsonObject.get("nonce").toString();
         final int flags = jsonObject.getInt("flags", 0);
 
+        MessageChannel tmpChannel = channel; // because java
         final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
         final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
-        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(chan, id, obj));
+        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(tmpChannel, id, obj));
+        final List<MessageSticker>     stickers    = map(jsonObject, "stickers",    this::createSticker);
 
         MessageActivity activity = null;
 
@@ -1121,18 +1150,18 @@ public class EntityBuilder
             activity = createMessageActivity(jsonObject);
 
         User user;
-        switch (chan.getType())
+        switch (channel.getType())
         {
             case PRIVATE:
                 if (authorId == getJDA().getSelfUser().getIdLong())
                     user = getJDA().getSelfUser();
                 else
-                    user = ((PrivateChannel) chan).getUser();
+                    user = ((PrivateChannel) channel).getUser();
                 break;
             case GROUP:
                 throw new IllegalStateException("Cannot build a message for a group channel, how did this even get here?");
             case TEXT:
-                Guild guild = ((TextChannel) chan).getGuild();
+                Guild guild = ((TextChannel) channel).getGuild();
                 if (member == null)
                     member = (MemberImpl) guild.getMemberById(authorId);
                 user = member != null ? member.getUser() : null;
@@ -1144,7 +1173,7 @@ public class EntityBuilder
                         throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
                 }
                 break;
-            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + chan.getType() + ']');
+            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive
@@ -1164,25 +1193,49 @@ public class EntityBuilder
         Message referencedMessage = null;
         if (!jsonObject.isNull("referenced_message"))
         {
-            referencedMessage = createMessage(jsonObject.getObject("referenced_message"), chan, false);
-            if (type == MessageType.DEFAULT)
-                type = MessageType.INLINE_REPLY;
+            DataObject referenceJson = jsonObject.getObject("referenced_message");
+            try
+            {
+                referencedMessage = createMessage(referenceJson, channel, false);
+            }
+            catch (IllegalArgumentException ex)
+            {
+                // We can just discard the message for some trivial cases
+                if (UNKNOWN_MESSAGE_TYPE.equals(ex.getMessage()))
+                    LOG.debug("Received referenced message with unknown type. Type: {}", referenceJson.getInt("type", -1));
+                else if (MISSING_CHANNEL.equals(ex.getMessage()))
+                    LOG.debug("Received referenced message with unknown channel. channel_id: {} Type: {}",
+                        referenceJson.getUnsignedLong("channel_id", 0), referenceJson.getInt("type", -1));
+                else
+                    throw ex;
+            }
         }
-        switch (type)
+
+        List<ActionRow> components = Collections.emptyList();
+        Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
+        if (componentsArrayOpt.isPresent())
         {
-            case INLINE_REPLY:
-            case DEFAULT:
-                message = new ReceivedMessage(id, chan, type, referencedMessage, fromWebhook,
+            DataArray array = componentsArrayOpt.get();
+            components = array.stream(DataArray::getObject)
+                    .filter(it -> it.getInt("type", 0) == 1)
+                    .map(ActionRow::fromData)
+                    .collect(Collectors.toList());
+        }
+
+        if (type == MessageType.UNKNOWN)
+            throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+        if (!type.isSystem())
+        {
+            message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
-                break;
-            case UNKNOWN:
-                throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
-            default:
-                message = new SystemMessage(id, chan, type, fromWebhook,
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags);
+        }
+        else
+        {
+            message = new SystemMessage(id, channel, type, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, flags);
-                break;
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
+            return message; // We don't need to parse mentions for system messages, they are always empty anyway
         }
 
         GuildImpl guild = message.isFromGuild() ? (GuildImpl) message.getGuild() : null;
@@ -1283,8 +1336,9 @@ public class EntityBuilder
         final String url = jsonObject.getString("url");
         final String proxyUrl = jsonObject.getString("proxy_url");
         final String filename = jsonObject.getString("filename");
+        final String contentType = jsonObject.getString("content_type", null);
         final long id = jsonObject.getLong("id");
-        return new Message.Attachment(id, url, proxyUrl, filename, size, height, width, getJDA());
+        return new Message.Attachment(id, url, proxyUrl, filename, contentType, size, height, width, getJDA());
     }
 
     public MessageEmbed createMessageEmbed(DataObject content)
@@ -1397,21 +1451,44 @@ public class EntityBuilder
             color, thumbnail, siteProvider, author, videoInfo, footer, image, fields);
     }
 
+    public MessageSticker createSticker(DataObject content)
+    {
+        final long id = content.getLong("id");
+        final String name = content.getString("name");
+        final String description = content.getString("description");
+        final long packId = content.getLong("pack_id");
+        final String asset = content.getString("asset");
+        final String previewAsset = content.getString("preview_asset", null);
+        final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
+        final Set<String> tags;
+        if (content.isNull("tags"))
+        {
+            tags = Collections.emptySet();
+        }
+        else
+        {
+            final String[] split = content.getString("tags").split(", ");
+            final Set<String> tmp = new HashSet<>(Arrays.asList(split));
+            tags = Collections.unmodifiableSet(tmp);
+        }
+        return new MessageSticker(id, name, description, packId, asset, previewAsset, format, tags);
+    }
+
     @Nullable
     public PermissionOverride createPermissionOverride(DataObject override, AbstractChannelImpl<?, ?> chan)
     {
-        String type = override.getString("type");
+        int type = override.getInt("type");
         final long id = override.getLong("id");
-        boolean role = type.equals("role");
+        boolean role = type == 0;
         if (role && chan.getGuild().getRoleById(id) == null)
             throw new NoSuchElementException("Attempted to create a PermissionOverride for a non-existent role! JSON: " + override);
-        if (!role && !type.equals("member"))
+        if (!role && type != 1)
             throw new IllegalArgumentException("Provided with an unknown PermissionOverride type! JSON: " + override);
         if (!role && id != api.getSelfUser().getIdLong() && !api.isCacheFlagSet(CacheFlag.MEMBER_OVERRIDES))
             return null;
 
-        long allow = override.getLong("allow_new");
-        long deny = override.getLong("deny_new");
+        long allow = override.getLong("allow");
+        long deny = override.getLong("deny");
         // Don't cache empty @everyone overrides, they ruin our sync check
         if (id == chan.getGuild().getIdLong() && (allow | deny) == 0L)
             return null;

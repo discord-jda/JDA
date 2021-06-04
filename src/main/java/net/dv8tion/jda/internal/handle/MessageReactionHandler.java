@@ -174,6 +174,7 @@ public class MessageReactionHandler extends SocketHandler
                         Objects.requireNonNull(member), reaction));
                 break;
             case PRIVATE:
+                jda.usedPrivateChannel(reaction.getChannel().getIdLong());
                 jda.handleEvent(
                     new PrivateMessageReactionAddEvent(
                         jda, responseNumber,
@@ -202,6 +203,7 @@ public class MessageReactionHandler extends SocketHandler
                         member, reaction, userId));
                 break;
             case PRIVATE:
+                jda.usedPrivateChannel(reaction.getChannel().getIdLong());
                 jda.handleEvent(
                     new PrivateMessageReactionRemoveEvent(
                         jda, responseNumber,

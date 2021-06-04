@@ -57,7 +57,7 @@ import java.util.List;
  * @see   JDA#getTextChannelsByName(String, boolean)
  * @see   JDA#getTextChannelById(long)
  */
-public interface TextChannel extends GuildChannel, MessageChannel, IMentionable
+public interface TextChannel extends GuildChannel, MessageChannel
 {
     /**
      * The maximum duration of slowmode in seconds

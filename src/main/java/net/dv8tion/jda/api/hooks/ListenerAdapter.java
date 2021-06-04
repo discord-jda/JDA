@@ -19,6 +19,10 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
+import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
+import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
+import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
@@ -65,6 +69,9 @@ import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.guild.*;
 import net.dv8tion.jda.api.events.message.guild.react.*;
@@ -183,6 +190,15 @@ public abstract class ListenerAdapter implements EventListener
     public void onStatusChange(@Nonnull StatusChangeEvent event) {}
     public void onException(@Nonnull ExceptionEvent event) {}
 
+    //Interaction Events
+    public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
+    public void onButtonClick(@Nonnull ButtonClickEvent event) {}
+
+    //Application Events
+    public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
+    public void onApplicationCommandDelete(@Nonnull ApplicationCommandDeleteEvent event) {}
+    public void onApplicationCommandCreate(@Nonnull ApplicationCommandCreateEvent event) {}
+
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
     public void onUserUpdateDiscriminator(@Nonnull UserUpdateDiscriminatorEvent event) {}
@@ -269,7 +285,17 @@ public abstract class ListenerAdapter implements EventListener
     public void onCategoryCreate(@Nonnull CategoryCreateEvent event) {}
 
     //PrivateChannel Events
+
+    /**
+     * @deprecated This event is no longer supported by discord
+     */
+    @Deprecated
+    @ForRemoval(deadline = "4.4.0")
+    @DeprecatedSince("4.3.0")
     public void onPrivateChannelCreate(@Nonnull PrivateChannelCreateEvent event) {}
+    @Deprecated
+    @ForRemoval(deadline = "4.4.0")
+    @DeprecatedSince("4.3.0")
     public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
     //Guild Events
@@ -363,6 +389,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
+    public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
+    public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericGuildMessage(@Nonnull GenericGuildMessageEvent event) {}

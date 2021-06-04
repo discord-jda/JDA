@@ -15,7 +15,6 @@
  */
 package net.dv8tion.jda.internal.handle;
 
-import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
@@ -41,11 +40,15 @@ public class TypingStartHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
+        GuildImpl guild = null;
         if (!content.isNull("guild_id"))
         {
-            long guildId = content.getLong("guild_id");
+            long guildId = content.getUnsignedLong("guild_id");
+            guild = (GuildImpl) getJDA().getGuildById(guildId);
             if (getJDA().getGuildSetupController().isLocked(guildId))
                 return guildId;
+            else if (guild == null)
+                return null; // Don't cache typing events
         }
 
         final long channelId = content.getLong("channel_id");
@@ -66,12 +69,9 @@ public class TypingStartHandler extends SocketHandler
             user = getJDA().getUsersView().get(userId);
         if (!content.isNull("member"))
         {
-            Guild guild = api.getGuildById(content.getUnsignedLong("guild_id"));
-            if (guild == null)
-                return null; // Ignore event for unknown guild
             // Try to load member for the typing event
             EntityBuilder entityBuilder = getJDA().getEntityBuilder();
-            member = entityBuilder.createMember((GuildImpl) guild, content.getObject("member"));
+            member = entityBuilder.createMember(guild, content.getObject("member"));
             entityBuilder.updateMemberCache(member);
             user = member.getUser();
         }
