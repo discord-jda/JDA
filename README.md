@@ -171,7 +171,7 @@ public class MessageListener extends ListenerAdapter
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
-        jda.addEventListeners(new MessageListener());
+        jda.addEventListener(new MessageListener());
     }
 
     @Override
@@ -463,7 +463,8 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 **Gradle**
 ```gradle
 dependencies {
-    compile 'net.dv8tion:JDA:VERSION'
+    //Change 'implementation' to 'compile' in old Gradle versions
+    implementation("net.dv8tion:JDA:VERSION")
 }
 
 repositories {
@@ -478,7 +479,8 @@ repositories {
 **Gradle without Audio**
 ```gradle
 dependencies {
-    compile ('net.dv8tion:JDA:VERSION') {
+    //Change 'implementation' to 'compile' in old Gradle versions
+    implementation("net.dv8tion:JDA:VERSION") {
         exclude module: 'opus-java'
     }
 }

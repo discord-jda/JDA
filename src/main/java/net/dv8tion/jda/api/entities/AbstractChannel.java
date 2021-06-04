@@ -27,7 +27,6 @@ public interface AbstractChannel extends ISnowflake
 {
     /**
      * The human readable name of this channel.
-     * <br>If no name has been set, this returns null.
      *
      * @return The name of this channel
      */
