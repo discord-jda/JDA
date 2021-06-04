@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
+import net.dv8tion.jda.internal.interactions.SelectionMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -62,10 +63,12 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
             .map(obj -> {
                 switch (Component.Type.fromKey(obj.getInt("type")))
                 {
-                    case BUTTON:
-                        return new ButtonImpl(obj);
-                    default:
-                        return null;
+                case BUTTON:
+                    return new ButtonImpl(obj);
+                case SELECTION_MENU:
+                    return new SelectionMenuImpl(obj);
+                default:
+                    return null;
                 }
             })
             .filter(Objects::nonNull)
@@ -106,8 +109,16 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     public static ActionRow of(@Nonnull Component... components)
     {
         Checks.noneNull(components, "Components");
-        Checks.check(components.length <= 5, "Can only have 5 components per action row!");
         Checks.check(components.length > 0, "Cannot have empty row!");
+        long differentTypes = Arrays.stream(components)
+                .map(Component::getClass)
+                .distinct()
+                .count();
+        Checks.check(differentTypes <= 1, "Cannot mix different types of components in one action row. Either it contains up to 5 buttons or one selection menu.");
+
+        Component first = components[0];
+        Checks.check(components.length <= first.getMaxPerRow(), "Can only have %d of %s per action row!", first.getMaxPerRow(), first.getType());
+
         ActionRow row = new ActionRow();
         Collections.addAll(row.components, components);
         return row;
