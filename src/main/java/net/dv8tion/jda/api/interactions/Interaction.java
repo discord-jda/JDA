@@ -272,7 +272,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    default ReplyAction reply(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         return deferReply().addEmbeds(embeds);
     }
@@ -299,7 +299,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
+    default ReplyAction reply(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
     {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
