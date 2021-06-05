@@ -50,7 +50,7 @@ import java.util.List;
  */
 public interface Member extends IMentionable, IPermissionHolder, IFakeable
 {
-
+    /** Template for {@link #getAvatarUrl()}. */
     String AVATAR_URL = "https://cdn.discordapp.com/guilds/%s/users/%s/avatars/%s.%s";
 
     /**
