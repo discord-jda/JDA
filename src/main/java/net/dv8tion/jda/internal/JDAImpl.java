@@ -916,7 +916,7 @@ public class JDAImpl implements JDA
         Checks.notBlank(code, "Template code");
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must have 2-100 characters in length!");
+        Checks.notLonger(name, 100, "Name");
 
         final Route.CompiledRoute route = Route.Templates.CREATE_GUILD_FROM_TEMPLATE.compile(code);
 

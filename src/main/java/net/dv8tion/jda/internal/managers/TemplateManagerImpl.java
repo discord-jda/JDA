@@ -92,8 +92,8 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @CheckReturnValue
     public TemplateManagerImpl setName(@Nonnull String name)
     {
-        Checks.notNull(name, "Name");
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be between 2-100 characters long");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         this.name = name;
         set |= NAME;
         return this;
@@ -104,7 +104,8 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @CheckReturnValue
     public TemplateManagerImpl setDescription(@Nullable String description)
     {
-        Checks.check(description == null || description.length() <= 120, "Provided name must be 0 - 120 characters in length");
+        if (description != null)
+            Checks.notLonger(name, 100, "Name");
         this.description = description;
         set |= DESCRIPTION;
         return this;

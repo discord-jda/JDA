@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.dv8tion.jda.api.entities.templates;
 
 import net.dv8tion.jda.api.Permission;
@@ -154,26 +170,23 @@ public class TemplateChannel implements ISnowflake
     /**
      * The slowmode set for this TemplateChannel.
      * <br>If slowmode is set this returns an {@code int} between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}.
-     * <br>If not set this returns {@code 0} or if the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     * <b>is not {@link net.dv8tion.jda.api.entities.ChannelType#TEXT TEXT}</b>, this returns {@code -1}.
+     * <br>If not set this returns {@code 0}.
      *
      * <p>Note bots are unaffected by this.
      * <br>Having {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE MESSAGE_MANAGE} or
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} permission also
      * grants immunity to slowmode.
      *
-     * @return The slowmode for this TextChannel, between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, {@code 0} if no slowmode is set or {@code -1} if the channel is not a text channel
+     * @return The slowmode for this TextChannel, between 1 and {@link net.dv8tion.jda.api.entities.TextChannel#MAX_SLOWMODE TextChannel.MAX_SLOWMODE}, {@code 0} if no slowmode is set.
      */
     public int getSlowmode()
     {
-        return this.channelType == ChannelType.TEXT ? this.slowmode : -1;
+        return this.slowmode;
     }
 
     /**
      * The audio bitrate of the voice audio that is transmitted in this channel. While higher bitrates can be sent to
      * this channel, it will be scaled down by the client.
-     * <br>If the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     * <b>is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}</b>, this returns {@code -1}.
      *
      * <br>Default and recommended value is 64000
      *
@@ -181,13 +194,11 @@ public class TemplateChannel implements ISnowflake
      */
     public int getBitrate()
     {
-        return this.channelType == ChannelType.VOICE ? this.bitrate : -1;
+        return this.bitrate;
     }
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
      * voice channel at once.
-     * <br>If the {@link net.dv8tion.jda.api.entities.ChannelType ChannelType}
-     * <b>is not {@link net.dv8tion.jda.api.entities.ChannelType#VOICE VOICE}</b>, this returns {@code -1}.
      *
      * <br>0 - No limit
      *
@@ -195,7 +206,7 @@ public class TemplateChannel implements ISnowflake
      */
     public int getUserLimit()
     {
-        return this.channelType == ChannelType.VOICE ? this.userLimit : -1;
+        return this.userLimit;
     }
 
     /**

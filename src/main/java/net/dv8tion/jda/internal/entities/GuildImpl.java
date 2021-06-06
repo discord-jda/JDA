@@ -1171,8 +1171,9 @@ public class GuildImpl implements Guild
         Checks.notBlank(name, "Name");
         name = name.trim();
 
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
-        Checks.check(description == null || description.length() <= 120, "Provided name must be 0 - 120 characters in length");
+        Checks.notLonger(name, 100, "Name");
+        Checks.notEmpty(description, "Description");
+        Checks.notLonger(description, 120, "Description");
 
         final Route.CompiledRoute route = Route.Templates.CREATE_TEMPLATE.compile(getId());
 
