@@ -701,7 +701,7 @@ public interface Guild extends ISnowflake
      * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Deprecated
-    @ForRemoval
+    @ReplaceWith("VoiceChannel.getRegion()")
     @Nonnull
     default Region getRegion()
     {
@@ -721,7 +721,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ReplaceWith("VoiceChannel.getRegionRaw()")
     String getRegionRaw();
 
     /**

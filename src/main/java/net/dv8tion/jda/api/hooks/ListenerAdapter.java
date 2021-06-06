@@ -308,6 +308,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateName(@Nonnull GuildUpdateNameEvent event){}
     public void onGuildUpdateNotificationLevel(@Nonnull GuildUpdateNotificationLevelEvent event) {}
     public void onGuildUpdateOwner(@Nonnull GuildUpdateOwnerEvent event) {}
+
+    /**
+     * @deprecated This event is no longer supported by discord
+     */
+    @Deprecated
+    @ReplaceWith("VoiceChannelUpdateRegionEvent")
     public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
     public void onGuildUpdateVerificationLevel(@Nonnull GuildUpdateVerificationLevelEvent event) {}
