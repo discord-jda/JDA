@@ -260,6 +260,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelUpdateUserLimit(@Nonnull VoiceChannelUpdateUserLimitEvent event) {}
     public void onVoiceChannelUpdateBitrate(@Nonnull VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdateParent(@Nonnull VoiceChannelUpdateParentEvent event) {}
+    public void onVoiceChannelUpdateRegion(@Nonnull VoiceChannelUpdateRegionEvent event) {}
     public void onVoiceChannelCreate(@Nonnull VoiceChannelCreateEvent event) {}
 
     //Category Events
