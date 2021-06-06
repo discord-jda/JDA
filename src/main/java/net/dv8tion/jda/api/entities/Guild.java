@@ -697,7 +697,11 @@ public interface Guild extends ISnowflake
      * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
      *
      * @return The the audio Region this Guild is using for audio connections. Can return Region.UNKNOWN.
+     *
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
+    @Deprecated
+    @ForRemoval
     @Nonnull
     default Region getRegion()
     {
@@ -712,8 +716,12 @@ public interface Guild extends ISnowflake
      * <p>This value can be modified using {@link GuildManager#setRegion(net.dv8tion.jda.api.Region)}.
      *
      * @return Raw region name
+     *
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link VoiceChannel#getRegion()} instead.
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
     String getRegionRaw();
 
     /**

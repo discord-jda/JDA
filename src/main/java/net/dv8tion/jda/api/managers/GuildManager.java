@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.managers;
 
+import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
@@ -177,9 +178,13 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @see    net.dv8tion.jda.api.Region#isVip()
      * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
+     * 
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link ChannelManager#setRegion(Region)} instead.
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval
     GuildManager setRegion(@Nonnull Region region);
 
     /**
