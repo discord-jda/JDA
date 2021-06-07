@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.events.guild.update;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
@@ -34,6 +35,7 @@ import javax.annotation.Nonnull;
  */
 @Deprecated
 @ReplaceWith("VoiceChannelUpdateRegionEvent")
+@DeprecatedSince("4.3.0")
 public class GuildUpdateRegionEvent extends GenericGuildUpdateEvent<Region>
 {
     public static final String IDENTIFIER = "region";

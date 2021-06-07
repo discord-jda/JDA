@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to get affected VoiceChannel, affected Guild and previous region.
  *
- * <p>Identifier: {@code rtc_region}
+ * <p>Identifier: {@code region}
  */
 public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEvent<String>
 {
