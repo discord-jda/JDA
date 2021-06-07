@@ -65,6 +65,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      * The old raw region String
      *
      * @return The old raw region String
+     * This will return null if the Region of this {@link VoiceChannel VoiceChannel} is set to Automatic.
      */
     @Nullable
     public String getOldRegionRaw()
@@ -76,6 +77,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      * The new raw region String
      *
      * @return The new raw region String
+     * This will return null if the Region of this {@link VoiceChannel VoiceChannel} is set to Automatic.
      */
     @Nullable
     public String getNewRegionRaw()
