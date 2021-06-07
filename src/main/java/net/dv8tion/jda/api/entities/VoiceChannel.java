@@ -63,6 +63,7 @@ public interface VoiceChannel extends GuildChannel
     /**
      * The {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      * <br>This will return {@link Region#AUTOMATIC} if the region of this channel is set to Automatic.
+     *
      * @return the {@link net.dv8tion.jda.api.Region Region} of this channel.
      */
     @Nonnull
