@@ -978,7 +978,8 @@ public class EntityBuilder
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
-            .setBitrate(json.getInt("bitrate"));
+            .setBitrate(json.getInt("bitrate"))
+            .setRegion(json.getString("rtc_region", null));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)

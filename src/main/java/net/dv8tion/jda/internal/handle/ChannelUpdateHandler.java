@@ -188,6 +188,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 VoiceChannelImpl voiceChannel = (VoiceChannelImpl) getJDA().getVoiceChannelsView().get(channelId);
                 int userLimit = content.getInt("user_limit");
                 int bitrate = content.getInt("bitrate");
+                final String region = content.getString("rtc_region", null);
                 if (voiceChannel == null)
                 {
                     getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
@@ -198,6 +199,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final Category parent = voiceChannel.getParent();
                 final Long oldParent = parent == null ? null : parent.getIdLong();
                 final String oldName = voiceChannel.getName();
+                final String oldRegion = voiceChannel.getRegionRaw();
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
                 final int oldBitrate = voiceChannel.getBitrate();
@@ -208,6 +210,14 @@ public class ChannelUpdateHandler extends SocketHandler
                             new VoiceChannelUpdateNameEvent(
                                     getJDA(), responseNumber,
                                     voiceChannel, oldName));
+                }
+                if (!Objects.equals(oldRegion, region))
+                {
+                    voiceChannel.setRegion(region);
+                    getJDA().handleEvent(
+                            new VoiceChannelUpdateRegionEvent(
+                                    getJDA(), responseNumber,
+                                    voiceChannel, oldRegion));
                 }
                 if (!Objects.equals(oldParent, parentId))
                 {

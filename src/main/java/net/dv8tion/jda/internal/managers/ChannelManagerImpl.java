@@ -21,6 +21,7 @@ import gnu.trove.set.TLongSet;
 import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
@@ -45,6 +46,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     protected String name;
     protected String parent;
     protected String topic;
+    protected String region;
     protected int position;
     protected boolean nsfw;
     protected int slowmode;
@@ -100,6 +102,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             this.topic = null;
         if ((fields & NEWS) == NEWS)
             this.news = false;
+        if ((fields & REGION) == REGION)
+            this.region = null;
         if ((fields & PERMISSION) == PERMISSION)
         {
             withLock(lock, (lock) ->
@@ -129,6 +133,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
         this.name = null;
         this.parent = null;
         this.topic = null;
+        this.region = null;
         this.news = false;
         withLock(lock, (lock) ->
         {
@@ -289,6 +294,20 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @Nonnull
     @Override
     @CheckReturnValue
+    public ChannelManagerImpl setRegion(@Nonnull Region region)
+    {
+        Checks.notNull(region, "Region");
+        if (getType() != ChannelType.VOICE)
+            throw new IllegalStateException("Can only change region on voice channels!");
+        Checks.check(Region.VOICE_CHANNEL_REGIONS.contains(region), "Region is not usable for VoiceChannel region overrides!");
+        this.region = region == Region.AUTOMATIC ? null : region.getKey();
+        set |= REGION;
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    @CheckReturnValue
     public ChannelManagerImpl setParent(Category category)
     {
         if (category != null)
@@ -416,6 +435,8 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
             frame.put("parent_id", parent);
         if (shouldUpdate(NEWS))
             frame.put("type", news ? 5 : 0);
+        if (shouldUpdate(REGION))
+            frame.put("rtc_region", region);
         withLock(lock, (lock) ->
         {
             if (shouldUpdate(PERMISSION))

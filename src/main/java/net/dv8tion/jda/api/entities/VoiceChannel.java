@@ -16,9 +16,11 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents a Discord Voice GuildChannel.
@@ -57,6 +59,24 @@ public interface VoiceChannel extends GuildChannel
      * @return The audio bitrate of this voice channel.
      */
     int getBitrate();
+
+    /**
+     * The {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+     * <br>This will return {@link Region#AUTOMATIC} if the region of this channel is set to Automatic.
+     *
+     * @return the {@link net.dv8tion.jda.api.Region Region} of this channel.
+     */
+    @Nonnull
+    Region getRegion();
+
+    /**
+     * The raw region name for this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
+     * This will return null if the region is set to Automatic.
+     *
+     * @return Raw region name
+     */
+    @Nullable
+    String getRegionRaw();
 
     @Nonnull
     @Override
