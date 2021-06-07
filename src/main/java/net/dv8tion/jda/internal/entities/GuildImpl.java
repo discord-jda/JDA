@@ -1173,10 +1173,7 @@ public class GuildImpl implements Guild
 
         Checks.notLonger(name, 100, "Name");
         if (description != null)
-        {
-            Checks.notEmpty(description, "Description");
             Checks.notLonger(description, 120, "Description");
-        }
 
         final Route.CompiledRoute route = Route.Templates.CREATE_TEMPLATE.compile(getId());
 

@@ -105,10 +105,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     public TemplateManagerImpl setDescription(@Nullable String description)
     {
         if (description != null)
-        {
-            Checks.notEmpty(description, "Description");
-            Checks.notLonger(name, 100, "Description");
-        }
+            Checks.notLonger(name, 120, "Description");
         this.description = description;
         set |= DESCRIPTION;
         return this;
