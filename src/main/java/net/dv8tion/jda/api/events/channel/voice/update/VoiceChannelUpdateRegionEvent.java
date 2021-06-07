@@ -32,7 +32,7 @@ import javax.annotation.Nonnull;
  */
 public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "rtc_region";
+    public static final String IDENTIFIER = "region";
 
     public VoiceChannelUpdateRegionEvent(@NotNull JDA api, long responseNumber, @NotNull VoiceChannel channel, @Nullable String oldRegion)
     {
