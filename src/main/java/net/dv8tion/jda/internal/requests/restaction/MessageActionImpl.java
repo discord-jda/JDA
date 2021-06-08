@@ -61,7 +61,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     protected List<ActionRow> components;
     protected List<String> retainedAttachments;
-    protected MessageEmbed embed = null;
+    protected List<MessageEmbed> embeds = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
     protected boolean failOnInvalidReply = defaultFailOnInvalidReply;
@@ -125,7 +125,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     public boolean isEmpty()
     {
         return Helpers.isBlank(content)
-            && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
+            && (embeds == null || embeds.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
     }
 
     @Override
@@ -220,8 +220,31 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             Checks.check(embed.isSendable(),
                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                MessageEmbed.EMBED_MAX_LENGTH_BOT);
+            if (this.embeds == null)
+                this.embeds = new ArrayList<>();
+            this.embeds.add(embed);
         }
-        this.embed = embed;
+        else
+        {
+            this.embeds = null;
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        embeds.forEach(embed ->
+            Checks.check(embed.isSendable(),
+                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+        );
+        if (this.embeds == null)
+            this.embeds = new ArrayList<>();
+        this.embeds.clear();
+        this.embeds.addAll(embeds);
         return this;
     }
 
@@ -467,10 +490,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         final DataObject obj = DataObject.empty();
         if (override)
         {
-            if (embed == null)
-                obj.putNull("embed");
+            if (embeds == null)
+                obj.putNull("embeds");
             else
-                obj.put("embed", embed);
+                obj.put("embeds", DataArray.fromCollection(embeds));
             if (content.length() == 0)
                 obj.putNull("content");
             else
@@ -493,8 +516,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         }
         else
         {
-            if (embed != null)
-                obj.put("embed", embed);
+            if (embeds != null)
+                obj.put("embeds", DataArray.fromCollection(embeds));
             if (content.length() > 0)
                 obj.put("content", content.toString());
             if (nonce != null)

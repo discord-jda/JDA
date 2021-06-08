@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -437,10 +440,60 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @deprecated This is deprecated in favor of {@link #setEmbeds(MessageEmbed...)}
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval(deadline="5.0.0")
+    @ReplaceWith("setEmbeds(embed)")
+    @DeprecatedSince("4.4.0")
     MessageAction embed(@Nullable final MessageEmbed embed);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * that should be used for this Message.
+     * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
+     *
+     * @param  embeds
+     *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that should
+     *         be attached to this message, {@code Collections.emptyList()} to use no embed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is not sendable according to
+     *         {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+
+    /**
+     * Sets the {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * that should be used for this Message.
+     * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
+     *
+     * @param  embeds
+     *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that should
+     *         be attached to this message, {@code Collections.emptyList()} to use no embed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is not sendable according to
+     *         {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return setEmbeds(Arrays.asList(embeds));
+    }
 
     /**
      * {@inheritDoc}
