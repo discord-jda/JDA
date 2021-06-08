@@ -3144,7 +3144,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         The new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -3193,7 +3193,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         The new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -3241,7 +3241,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         The new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>
@@ -3291,7 +3291,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * @param  messageId
      *         The id referencing the Message that should be edited
      * @param  newEmbeds
-     *         The new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
+     *         Up to 10 new {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} for the edited message
      *
      * @throws IllegalArgumentException
      *         <ul>

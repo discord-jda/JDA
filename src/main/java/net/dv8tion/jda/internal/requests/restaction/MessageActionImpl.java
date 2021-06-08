@@ -241,6 +241,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                 MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
+        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
         if (this.embeds == null)
             this.embeds = new ArrayList<>();
         this.embeds.clear();
