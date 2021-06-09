@@ -242,6 +242,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
                 MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
         if (this.embeds == null)
             this.embeds = new ArrayList<>();
         this.embeds.clear();
