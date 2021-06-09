@@ -17,7 +17,6 @@ package net.dv8tion.jda.api.sharding;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
 import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.GatewayEncoding;
 import net.dv8tion.jda.api.JDABuilder;
@@ -95,55 +94,6 @@ public class  DefaultShardManagerBuilder
     protected ThreadFactory threadFactory = null;
     protected ChunkingFilter chunkingFilter;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
-
-    /**
-     * Creates a completely empty DefaultShardManagerBuilder.
-     * <br>You need to set the token using
-     * {@link #setToken(String) setToken(String)}
-     * before calling {@link #build() build()}.
-     *
-     * @throws UnsupportedOperationException
-     *         Always.
-     *
-     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
-     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(Collection)} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline="4.3.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
-    public DefaultShardManagerBuilder()
-    {
-        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
-    }
-
-    /**
-     * Creates a DefaultShardManagerBuilder with the given token.
-     * <br>This is equivalent to using the constructor
-     * {@link #DefaultShardManagerBuilder() DefaultShardManagerBuilder()}
-     * and calling {@link #setToken(String) setToken(String)}
-     * directly afterward. You can always change the token later with
-     * {@link #setToken(String) setToken(String)}.
-     *
-     * @param token
-     *        The login token
-     *
-     * @throws UnsupportedOperationException
-     *         Always.
-     *
-     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
-     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Use {@link #create(String, Collection)} instead.
-     */
-    @Deprecated
-    @ForRemoval(deadline="4.3.0")
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("DefaultShardManager.create(String, EnumSet)")
-    public DefaultShardManagerBuilder(@Nonnull String token)
-    {
-        throw new UnsupportedOperationException("You cannot use the deprecated constructor anymore. Please use create(...), createDefault(...), or createLight(...) instead.");
-    }
 
     private DefaultShardManagerBuilder(@Nullable String token, int intents)
     {

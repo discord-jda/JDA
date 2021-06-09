@@ -335,13 +335,6 @@ public class MemberImpl implements Member
     }
 
     @Override
-    @Deprecated
-    public boolean isFake()
-    {
-        return getGuild().getMemberById(getIdLong()) == null;
-    }
-
-    @Override
     public boolean isPending()
     {
         return this.pending;

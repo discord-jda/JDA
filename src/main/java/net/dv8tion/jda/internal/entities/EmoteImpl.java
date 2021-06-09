@@ -117,13 +117,6 @@ public class EmoteImpl implements ListedEmote
     }
 
     @Override
-    @Deprecated
-    public boolean isFake()
-    {
-        return false;
-    }
-
-    @Override
     public long getIdLong()
     {
         return id;

@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
  *
  * @see User#openPrivateChannel()
  */
-public interface PrivateChannel extends MessageChannel, IFakeable
+public interface PrivateChannel extends MessageChannel
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.User User} that this {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} communicates with.

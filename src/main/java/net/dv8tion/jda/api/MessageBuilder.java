@@ -19,14 +19,10 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.internal.entities.DataMessage;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
@@ -818,7 +814,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("setAllowedMentions(Collections.emptyList())")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull JDA jda)
@@ -845,7 +841,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("setAllowedMentions(Collections.emptyList())")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull Guild guild)
@@ -874,7 +870,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("denyMentions(types)")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull Guild guild, @Nonnull Message.MentionType... types)
@@ -900,7 +896,7 @@ public class MessageBuilder implements Appendable
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("denyMentions(types)")
     @DeprecatedSince("4.2.0")
     public MessageBuilder stripMentions(@Nonnull JDA jda, @Nonnull Message.MentionType... types)
@@ -1167,52 +1163,6 @@ public class MessageBuilder implements Appendable
             }
         }
         return -1;
-    }
-
-    /**
-     * Creates a {@link MessageAction MessageAction}
-     * with the current settings without building a {@link net.dv8tion.jda.api.entities.Message Message} instance first.
-     *
-     * @param  channel
-     *         The not-null target {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided channel is {@code null}
-     * @throws net.dv8tion.jda.api.exceptions.PermissionException
-     *         If the currently logged in account does not have permission to send or read messages in this channel.
-     * @throws java.lang.UnsupportedOperationException
-     *         If this is a PrivateChannel and both users (sender and receiver) are bots
-     *
-     * @return {@link MessageAction MessageAction}
-     *
-     * @deprecated Use {@link MessageChannel#sendMessage(Message) channel.sendMessage(builder.build())} instead
-     */
-    @Nonnull
-    @Deprecated
-    @DeprecatedSince("4.2.1")
-    @ForRemoval(deadline="4.3.0")
-    @ReplaceWith("channel.sendMessage(builder.build())")
-    public MessageAction sendTo(@Nonnull MessageChannel channel)
-    {
-        Checks.notNull(channel, "Target Channel");
-        switch (channel.getType())
-        {
-            case TEXT:
-                final TextChannel text = (TextChannel) channel;
-                final Member self = text.getGuild().getSelfMember();
-                if (!self.hasAccess(text))
-                    throw new MissingAccessException(text, Permission.VIEW_CHANNEL);
-                if (!self.hasPermission(text, Permission.MESSAGE_WRITE))
-                    throw new InsufficientPermissionException(text, Permission.MESSAGE_WRITE);
-                break;
-            case PRIVATE:
-                final PrivateChannel priv = (PrivateChannel) channel;
-                if (priv.getUser().isBot() && channel.getJDA().getAccountType() == AccountType.BOT)
-                    throw new UnsupportedOperationException("Cannot send a private message between bots.");
-        }
-        final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
-        final MessageActionImpl action = new MessageActionImpl(channel.getJDA(), route, channel, builder);
-        return action.tts(isTTS).embed(embed).nonce(nonce);
     }
 
     /**
