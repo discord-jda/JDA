@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Can be used to retrieve members who change their per guild avatar, triggering guild, the old avatar id and the new avatar id.
  *
- * <p>Identifier: {@code avatar}
+ * <p>Identifier: {@code member_avatar}
  *
  * <h2>Requirements</h2>
  *
@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class GuildMemberUpdateAvatarEvent extends GenericGuildMemberUpdateEvent<String>
 {
-    public static final String IDENTIFIER = "avatar";
+    public static final String IDENTIFIER = "member_avatar";
 
     public GuildMemberUpdateAvatarEvent(@NotNull JDA api, long responseNumber, @NotNull Member member, @Nullable String oldAvatarId)
     {
