@@ -124,7 +124,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public boolean isEmpty()
     {
-        return Helpers.isBlank(content)
+        return !isEdit() // PATCH can be technically empty since you can update stuff like components or remove embeds etc
+            && Helpers.isBlank(content)
             && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
     }
 
@@ -330,6 +331,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public MessageAction retainFilesById(@Nonnull Collection<String> ids)
     {
+        if (!isEdit()) return this; // You can't retain files for messages that don't exist lol
         if (this.retainedAttachments == null)
             this.retainedAttachments = new ArrayList<>();
         this.retainedAttachments.addAll(ids);
@@ -449,7 +451,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
             builder.addFormDataPart("file" + index++, entry.getKey(), body);
         }
-        if (messageReference != 0L || !isEmpty())
+        if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
         // clear remaining resources, they will be closed after being sent
         files.clear();
