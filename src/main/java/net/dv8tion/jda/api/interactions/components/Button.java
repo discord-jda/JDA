@@ -568,4 +568,40 @@ public interface Button extends Component
         Checks.notLonger(idOrUrl, 100, "Id");
         return new ButtonImpl(idOrUrl, "", style, false, emoji);
     }
+
+    /**
+     * Create a button with the provided {@link ButtonStyle style}, URL or ID, label and emoji.
+     * <br>The button is enabled.
+     * You can use {@link #asDisabled()} to disable it.
+     *
+     * <p>See {@link #link(String, String)} or {@link #primary(String, String)} for more details.
+     *
+     * @param  style
+     *         The button style
+     * @param  idOrUrl
+     *         Either the ID or URL for this button
+     * @param  label
+     *         The text to display on the button
+     * @param  emoji
+     *         The emoji to use as the button label
+     *
+     * @throws IllegalArgumentException
+     *         If any argument is empty or null, the label is longer than 80 characters, the id is longer than 100 characters, or the url is longer than 512 characters
+     *
+     * @return The button instance
+     */
+    @Nonnull
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label, @Nonnull Emoji emoji)
+    {
+        Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
+        Checks.notNull(style, "Style");
+        Checks.notNull(label, "Label");
+        Checks.notLonger(label, 80, "Label");
+        Checks.notNull(emoji, "Emoji");
+        if (style == ButtonStyle.LINK)
+            return link(idOrUrl, emoji).withLabel(label);
+        Checks.notEmpty(idOrUrl, "Id");
+        Checks.notLonger(idOrUrl, 100, "Id");
+        return new ButtonImpl(idOrUrl, label, style, false, emoji);
+    }
 }
