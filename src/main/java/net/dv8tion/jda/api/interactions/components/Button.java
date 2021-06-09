@@ -570,8 +570,8 @@ public interface Button extends Component
     }
 
     /**
-     * Create a button with the provided {@link ButtonStyle style}, URL or ID, label and emoji.
-     * <br>The button is enabled.
+     * Create an enabled button with the provided {@link ButtonStyle style}, URL or ID, label and emoji.
+     
      * You can use {@link #asDisabled()} to disable it.
      *
      * <p>See {@link #link(String, String)} or {@link #primary(String, String)} for more details.
