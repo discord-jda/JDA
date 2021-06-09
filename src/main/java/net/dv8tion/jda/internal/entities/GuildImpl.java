@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
@@ -1131,6 +1132,59 @@ public class GuildImpl implements Guild
             for (int i = 0; i < array.length(); i++)
                 invites.add(entityBuilder.createInvite(array.getObject(i)));
             return Collections.unmodifiableList(invites);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<Template>> retrieveTemplates()
+    {
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Templates.GET_GUILD_TEMPLATES.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            DataArray array = response.getArray();
+            List<Template> templates = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                try
+                {
+                    templates.add(entityBuilder.createTemplate(array.getObject(i)));
+                }
+                catch (Exception e)
+                {
+                    JDAImpl.LOG.error("Error creating template from json", e);
+                }
+            }
+            return Collections.unmodifiableList(templates);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Template> createTemplate(@Nonnull String name, @Nullable String description)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+
+        Checks.notLonger(name, 100, "Name");
+        if (description != null)
+            Checks.notLonger(description, 120, "Description");
+
+        final Route.CompiledRoute route = Route.Templates.CREATE_TEMPLATE.compile(getId());
+
+        DataObject object = DataObject.empty();
+        object.put("name", name);
+        object.put("description", description);
+
+        return new RestActionImpl<>(getJDA(), route, object, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createTemplate(response.getObject());
         });
     }
 

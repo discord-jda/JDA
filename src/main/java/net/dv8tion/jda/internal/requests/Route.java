@@ -260,6 +260,17 @@ public class Route
         public static final Route DELETE_INVITE =       new Route(DELETE, "invites/{code}");
     }
 
+    public static class Templates
+    {
+        public static final Route GET_TEMPLATE =               new Route(GET,    "guilds/templates/{code}");
+        public static final Route SYNC_TEMPLATE =              new Route(PUT,    "guilds/{guild_id}/templates/{code}");
+        public static final Route CREATE_TEMPLATE =            new Route(POST,   "guilds/{guild_id}/templates");
+        public static final Route MODIFY_TEMPLATE =            new Route(PATCH,  "guilds/{guild_id}/templates/{code}");
+        public static final Route DELETE_TEMPLATE =            new Route(DELETE, "guilds/{guild_id}/templates/{code}");
+        public static final Route GET_GUILD_TEMPLATES =        new Route(GET,    "guilds/{guild_id}/templates");
+        public static final Route CREATE_GUILD_FROM_TEMPLATE = new Route(POST,   "guilds/templates/{code}");
+    }
+
     @Nonnull
     public static Route custom(@Nonnull Method method, @Nonnull String route)
     {
