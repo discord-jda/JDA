@@ -140,7 +140,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
     public MessageActionImpl apply(final Message message)
     {
-        if (message == null || message.getType() != MessageType.DEFAULT)
+        if (message == null || message.getType().isSystem())
             return this;
         final List<MessageEmbed> embeds = message.getEmbeds();
         if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
