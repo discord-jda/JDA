@@ -144,8 +144,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         if (message == null || message.getType().isSystem())
             return this;
         final List<MessageEmbed> embeds = message.getEmbeds();
-        if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
-            embed(embeds.get(0));
+        if (embeds != null && !embeds.isEmpty())
+            setEmbeds(embeds.stream().filter(e -> e.getType() == EmbedType.RICH).collect(Collectors.toList()));
         files.clear();
 
         components = new ArrayList<>();
@@ -185,7 +185,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @CheckReturnValue
     public MessageActionImpl reset()
     {
-        return content(null).nonce(null).embed(null).tts(false).override(false).clearFiles();
+        return content(null).nonce(null).setEmbeds(Collections.emptyList()).tts(false).override(false).clearFiles();
     }
 
     @Nonnull
@@ -213,6 +213,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public MessageActionImpl embed(final MessageEmbed embed)
     {
@@ -234,7 +235,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    public MessageActionImpl setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         embeds.forEach(embed ->

@@ -1212,7 +1212,7 @@ public class MessageBuilder implements Appendable
         }
         final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
         final MessageActionImpl action = new MessageActionImpl(channel.getJDA(), route, channel, builder);
-        return action.tts(isTTS).embed(embed).nonce(nonce);
+        return action.tts(isTTS).setEmbeds(embed).nonce(nonce);
     }
 
     /**

@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
@@ -1002,10 +1005,97 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     *
+     * @deprecated Use {@link #editMessageEmbeds(MessageEmbed...)} instead
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(@Nonnull MessageEmbed newContent);
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("editMessageEmbeds(newEmbed)")
+    @DeprecatedSince("4.4.0")
+    default MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    {
+        return editMessageEmbeds(newContent);
+    }
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The edit was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         the new embeds of the Message (up to 10)
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account, or
+     *         if any of the passed-in embeds is {@code null}
+     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The edit was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         the new embeds of the Message (up to 10)
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account, or
+     *         if any of the passed-in embeds is {@code null}
+     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return editMessageEmbeds(Arrays.asList(embeds));
+    }
 
     /**
      * Edits this Message's content to the provided format.
@@ -1125,7 +1215,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>By default there won't be any error thrown if the referenced message does not exist.
      * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
-     * <p>For further info, see {@link MessageChannel#sendMessage(MessageEmbed)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  content
      *         The content of the reply message

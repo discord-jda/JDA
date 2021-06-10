@@ -417,7 +417,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
         Checks.notNull(embed, "Provided embed");
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).embed(embed);
+        return new MessageActionImpl(getJDA(), route, this).setEmbeds(embed);
     }
 
     /**
@@ -587,7 +587,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * File file = new File("cat.gif");
      * embed.setImage("attachment://cat.gif")
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file).embed(embed.build()).queue();
+     * channel.sendFile(file).setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to the documentation for {@link #sendFile(java.io.File, String, AttachmentOption...)}.
@@ -655,7 +655,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * File file = new File("cat_01.gif");
      * embed.setImage("attachment://cat.gif") // we specify this in sendFile as "cat.gif"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.gif").embed(embed.build()).queue();
+     * channel.sendFile(file, "cat.gif").setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
@@ -744,7 +744,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
+     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  data
@@ -802,7 +802,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * byte[] file = IOUtil.readFully(new URL("https://http.cat/500").openStream());
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
+     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  data
@@ -3062,7 +3062,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
         Checks.notNull(newEmbed, "MessageEmbed");
 
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageActionImpl(getJDA(), route, this).embed(newEmbed);
+        return new MessageActionImpl(getJDA(), route, this).setEmbeds(newEmbed);
     }
 
     /**

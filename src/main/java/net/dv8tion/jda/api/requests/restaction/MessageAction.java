@@ -72,7 +72,7 @@ import java.util.stream.Collectors;
  *      MessageChannel channel = event.getChannel();
  *      channel.sendMessage("This has an embed with an image!")
  *             .addFile(new File("dog.png"))
- *             .embed(new EmbedBuilder()
+ *             .setEmbeds(new EmbedBuilder()
  *                 .setImage("attachment://dog.png")
  *                 .build())
  *             .queue(); // this actually sends the information to discord
@@ -83,11 +83,11 @@ import java.util.stream.Collectors;
  *
  * @see    Message#editMessage(Message)
  * @see    Message#editMessage(CharSequence)
- * @see    Message#editMessage(MessageEmbed)
+ * @see    Message#editMessageEmbeds(MessageEmbed...)
  * @see    Message#editMessageFormat(String, Object...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(Message)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, AttachmentOption...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, AttachmentOption...)
@@ -381,7 +381,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * <br>{@link #isEmpty()} will result in {@code true} after this has been performed!
      *
      * <p>Convenience over using
-     * {@code content(null).nonce(null).embed(null).tts(false).override(false).clearFiles()}
+     * {@code content(null).nonce(null).setEmbeds(emptyList()).tts(false).override(false).clearFiles()}
      *
      * @return Updated MessageAction for chaining convenience
      */

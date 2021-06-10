@@ -803,10 +803,10 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return channel.editMessageById(getId(), newContent);
+        return channel.editMessageEmbedsById(getId(), embeds);
     }
 
     @Nonnull
