@@ -1223,12 +1223,60 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
      * @since  4.2.1
+     *
+     * @deprecated Use {@link #replyEmbeds(MessageEmbed...)} instead
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("replyEmbeds(content)")
+    @DeprecatedSince("4.4.0")
     default MessageAction reply(@Nonnull MessageEmbed content)
     {
         return getChannel().sendMessage(content).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  embeds
+     *         The content of the reply message
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        return getChannel().sendMessageEmbeds(embeds).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  embeds
+     *         The content of the reply message
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        return getChannel().sendMessageEmbeds(embeds).reference(this);
     }
 
     /**
