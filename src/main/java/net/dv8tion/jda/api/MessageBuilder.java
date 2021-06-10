@@ -49,9 +49,9 @@ public class MessageBuilder implements Appendable
 {
     protected final StringBuilder builder = new StringBuilder();
 
+    protected final List<MessageEmbed> embeds = new ArrayList<>();
     protected boolean isTTS = false;
     protected String nonce;
-    protected MessageEmbed embed;
     protected List<ComponentLayout> components = new ArrayList<>();
     protected EnumSet<Message.MentionType> allowedMentions = null;
     protected Set<String> mentionedUsers = new HashSet<>();
@@ -72,8 +72,8 @@ public class MessageBuilder implements Appendable
             isTTS = message.isTTS();
             builder.append(message.getContentRaw());
             List<MessageEmbed> embeds = message.getEmbeds();
-            if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
-                embed = embeds.get(0);
+            if (embeds != null)
+                embeds.stream().filter(it -> it.getType() == EmbedType.RICH).forEach(this.embeds::add);
             components.addAll(message.getActionRows());
             if (message instanceof DataMessage)
             {
@@ -93,7 +93,7 @@ public class MessageBuilder implements Appendable
             this.isTTS = builder.isTTS;
             this.builder.append(builder.builder);
             this.nonce = builder.nonce;
-            this.embed = builder.embed;
+            this.embeds.addAll(builder.embeds);
             this.components.addAll(builder.components);
             if (builder.allowedMentions != null)
                 this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, builder.allowedMentions);
@@ -105,12 +105,12 @@ public class MessageBuilder implements Appendable
     public MessageBuilder(@Nullable EmbedBuilder builder)
     {
         if (builder != null)
-            this.embed = builder.build();
+            this.embeds.add(builder.build());
     }
 
     public MessageBuilder(@Nullable MessageEmbed embed)
     {
-        this.embed = embed;
+        this.embeds.add(embed);
     }
 
     /**
@@ -129,7 +129,7 @@ public class MessageBuilder implements Appendable
         this.isTTS = tts;
         return this;
     }
-    
+
     /**
      * Adds a {@link net.dv8tion.jda.api.entities.MessageEmbed} to the Message. Embeds can be built using
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
@@ -138,11 +138,69 @@ public class MessageBuilder implements Appendable
      *         the embed to add, or null to remove
      *
      * @return The MessageBuilder instance. Useful for chaining.
+     *
+     * @deprecated Use {@link #setEmbeds(MessageEmbed...)} instead
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("setEmbeds(embed)")
+    @DeprecatedSince("4.4.0")
     public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
     {
-        this.embed = embed;
+        return setEmbeds(embed);
+    }
+
+    /**
+     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
+     *
+     * @param  embeds
+     *         the embeds to add, or null to remove
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         The sum of all {@link MessageEmbed#getLength()} must not be greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}!
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public MessageBuilder setEmbeds(@Nullable MessageEmbed... embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return setEmbeds(Arrays.asList(embeds));
+    }
+    
+    /**
+     * Adds up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to the Message. Embeds can be built using
+     * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
+     *
+     * @param  embeds
+     *         the embeds to add, or null to remove
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         The sum of all {@link MessageEmbed#getLength()} must not be greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}!
+     *
+     * @return The MessageBuilder instance. Useful for chaining.
+     */
+    @Nonnull
+    public MessageBuilder setEmbeds(@Nullable Collection<? extends MessageEmbed> embeds)
+    {
+
+        this.embeds.clear();
+        if (embeds != null)
+        {
+            Checks.noneNull(embeds, "MessageEmbeds");
+            embeds.forEach(embed ->
+                Checks.check(embed.isSendable(),
+                    "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                    MessageEmbed.EMBED_MAX_LENGTH_BOT)
+            );
+            Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+            Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
+            this.embeds.addAll(embeds);
+        }
         return this;
     }
 
@@ -460,7 +518,7 @@ public class MessageBuilder implements Appendable
      * @return whether the message contains content
      */
     public boolean isEmpty() {
-        return builder.length() == 0 && embed == null;
+        return builder.length() == 0 && embeds.isEmpty();
     }
 
     /**
@@ -1023,7 +1081,7 @@ public class MessageBuilder implements Appendable
     @Nonnull
     public MessageBuilder clear() {
         this.builder.setLength(0);
-        this.embed = null;
+        this.embeds.clear();
         this.isTTS = false;
         return this;
     }
@@ -1212,7 +1270,7 @@ public class MessageBuilder implements Appendable
         }
         final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
         final MessageActionImpl action = new MessageActionImpl(channel.getJDA(), route, channel, builder);
-        return action.tts(isTTS).setEmbeds(embed).nonce(nonce);
+        return action.tts(isTTS).setEmbeds(embeds).nonce(nonce);
     }
 
     /**
@@ -1241,7 +1299,7 @@ public class MessageBuilder implements Appendable
             throw new IllegalStateException("Cannot build a Message with more than 2000 characters. Please limit your input.");
 
         String[] ids = new String[0];
-        return new DataMessage(isTTS, message, nonce, embed,
+        return new DataMessage(isTTS, message, nonce, embeds,
                 allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
     }
 
@@ -1302,9 +1360,9 @@ public class MessageBuilder implements Appendable
             messages.add(build(currentBeginIndex, builder.length() - 1));
         }
 
-        if (this.embed != null)
+        if (this.embeds != null)
         {
-            ((DataMessage) messages.get(messages.size() - 1)).setEmbed(embed);
+            ((DataMessage) messages.get(messages.size() - 1)).setEmbeds(embeds);
         }
 
         return messages;
