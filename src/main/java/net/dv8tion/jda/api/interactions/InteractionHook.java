@@ -32,6 +32,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 
 /**
@@ -63,6 +64,16 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     Interaction getInteraction();
+
+    default long getExpirationTimestamp()
+    {
+        return getInteraction().getTimeCreated().plus(15, ChronoUnit.MINUTES).toEpochSecond() * 1000;
+    }
+
+    default boolean isExpired()
+    {
+        return System.currentTimeMillis() > getExpirationTimestamp();
+    }
 
     /**
      * Whether messages sent from this interaction hook should be ephemeral by default.

@@ -1269,7 +1269,7 @@ public class MessageBuilder implements Appendable
                     throw new UnsupportedOperationException("Cannot send a private message between bots.");
         }
         final Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(channel.getId());
-        final MessageActionImpl action = new MessageActionImpl(channel.getJDA(), route, channel, builder);
+        final MessageActionImpl action = new MessageActionImpl(channel.getJDA(), null, channel, builder);
         return action.tts(isTTS).setEmbeds(embeds).nonce(nonce);
     }
 

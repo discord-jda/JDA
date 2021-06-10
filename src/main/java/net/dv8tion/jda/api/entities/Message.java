@@ -1255,7 +1255,8 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     default MessageAction replyEmbeds(@Nonnull MessageEmbed... embeds)
     {
-        return getChannel().sendMessageEmbeds(embeds).reference(this);
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return replyEmbeds(Arrays.asList(embeds));
     }
 
     /**

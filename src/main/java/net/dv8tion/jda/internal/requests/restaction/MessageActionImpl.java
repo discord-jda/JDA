@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -28,7 +29,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -67,6 +67,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected boolean failOnInvalidReply = defaultFailOnInvalidReply;
     protected long messageReference;
 
+    protected final String messageId;
+    private InteractionHook hook = null;
+
     public static void setDefaultFailOnInvalidReply(boolean fail)
     {
         defaultFailOnInvalidReply = fail;
@@ -77,20 +80,43 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return defaultFailOnInvalidReply;
     }
 
-    public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel)
+    public MessageActionImpl(JDA api, String messageId, MessageChannel channel)
     {
-        super(api, route);
+        super(api, messageId != null
+            ? Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId)
+            : Route.Messages.SEND_MESSAGE.compile(channel.getId()));
         this.content = new StringBuilder();
         this.channel = channel;
+        this.messageId = messageId;
     }
 
-    public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder)
+    public MessageActionImpl(JDA api, String messageId, MessageChannel channel, StringBuilder contentBuilder)
     {
-        super(api, route);
+        super(api, messageId != null
+            ? Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId)
+            : Route.Messages.SEND_MESSAGE.compile(channel.getId()));
         Checks.check(contentBuilder.length() <= Message.MAX_CONTENT_LENGTH,
             "Cannot build a Message with more than %d characters. Please limit your input.", Message.MAX_CONTENT_LENGTH);
         this.content = contentBuilder;
         this.channel = channel;
+        this.messageId = messageId;
+    }
+
+    public MessageActionImpl withHook(InteractionHook hook)
+    {
+        this.hook = hook;
+        return this;
+    }
+
+    @Override
+    protected Route.CompiledRoute finalizeRoute()
+    {
+        if (hook == null || hook.isExpired())
+            return super.finalizeRoute(); // Try as a normal bot message
+        if (isEdit()) // Try with interaction hook if its not expired, these have different rate limits and scale better
+            return Route.Interactions.EDIT_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), hook.getInteraction().getToken(), messageId);
+        else
+            return Route.Interactions.CREATE_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), hook.getInteraction().getToken());
     }
 
     @Nonnull
@@ -132,7 +158,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public boolean isEdit()
     {
-        return finalizeRoute().getMethod() == Method.PATCH;
+        return messageId != null;
     }
 
     @Nonnull
@@ -165,7 +191,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction failOnInvalidReply(boolean fail)
+    public MessageActionImpl failOnInvalidReply(boolean fail)
     {
         failOnInvalidReply = fail;
         return this;
@@ -355,7 +381,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction retainFilesById(@Nonnull Collection<String> ids)
+    public MessageActionImpl retainFilesById(@Nonnull Collection<String> ids)
     {
         if (!isEdit()) return this; // You can't retain files for messages that don't exist lol
         if (this.retainedAttachments == null)
@@ -389,7 +415,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mentionRepliedUser(boolean mention)
+    public MessageActionImpl mentionRepliedUser(boolean mention)
     {
         allowedMentions.mentionRepliedUser(mention);
         return this;
@@ -398,7 +424,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    public MessageActionImpl allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
         this.allowedMentions.allowedMentions(allowedMentions);
         return this;
@@ -407,7 +433,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mention(@Nonnull IMentionable... mentions)
+    public MessageActionImpl mention(@Nonnull IMentionable... mentions)
     {
         this.allowedMentions.mention(mentions);
         return this;
@@ -416,7 +442,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mentionUsers(@Nonnull String... userIds)
+    public MessageActionImpl mentionUsers(@Nonnull String... userIds)
     {
         this.allowedMentions.mentionUsers(userIds);
         return this;
@@ -425,7 +451,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mentionRoles(@Nonnull String... roleIds)
+    public MessageActionImpl mentionRoles(@Nonnull String... roleIds)
     {
         this.allowedMentions.mentionRoles(roleIds);
         return this;

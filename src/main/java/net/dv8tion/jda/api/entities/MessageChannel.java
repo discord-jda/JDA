@@ -315,11 +315,10 @@ public interface MessageChannel extends AbstractChannel, Formattable
         Checks.notEmpty(text, "Provided text for message");
         Checks.check(text.length() <= 2000, "Provided text for message must be less than 2000 characters in length");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
         if (text instanceof StringBuilder)
-            return new MessageActionImpl(getJDA(), route, this, (StringBuilder) text);
+            return new MessageActionImpl(getJDA(), null, this, (StringBuilder) text);
         else
-            return new MessageActionImpl(getJDA(), route, this).append(text);
+            return new MessageActionImpl(getJDA(), null, this).append(text);
     }
 
     /**
@@ -416,8 +415,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     {
         Checks.notNull(embed, "Provided embed");
 
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).setEmbeds(embed);
+        return new MessageActionImpl(getJDA(), null, this).setEmbeds(embed);
     }
 
     /**
@@ -459,8 +457,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     @CheckReturnValue
     default MessageAction sendMessageEmbeds(@Nonnull MessageEmbed... embeds)
     {
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).setEmbeds(embeds);
+        return new MessageActionImpl(getJDA(), null, this).setEmbeds(embeds);
     }
 
     /**
@@ -502,8 +499,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     @CheckReturnValue
     default MessageAction sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).setEmbeds(embeds);
+        return new MessageActionImpl(getJDA(), null, this).setEmbeds(embeds);
     }
 
 
@@ -563,9 +559,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     default MessageAction sendMessage(@Nonnull Message msg)
     {
         Checks.notNull(msg, "Message");
-
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).apply(msg);
+        return new MessageActionImpl(getJDA(), null, this).apply(msg);
     }
 
     /**
@@ -623,7 +617,6 @@ public interface MessageChannel extends AbstractChannel, Formattable
     default MessageAction sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
     {
         Checks.notNull(file, "file");
-
         return sendFile(file, file.getName(), options);
     }
 
@@ -777,9 +770,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     {
         Checks.notNull(data, "data InputStream");
         Checks.notNull(fileName, "fileName");
-
-        Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        return new MessageActionImpl(getJDA(), route, this).addFile(data, fileName, options);
+        return new MessageActionImpl(getJDA(), null, this).addFile(data, fileName, options);
     }
 
     /**
@@ -2731,12 +2722,10 @@ public interface MessageChannel extends AbstractChannel, Formattable
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notEmpty(newContent, "Provided message content");
         Checks.check(newContent.length() <= 2000, "Provided newContent length must be 2000 or less characters.");
-
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
         if (newContent instanceof StringBuilder)
-            return new MessageActionImpl(getJDA(), route, this, (StringBuilder) newContent);
+            return new MessageActionImpl(getJDA(), messageId, this, (StringBuilder) newContent);
         else
-            return new MessageActionImpl(getJDA(), route, this).append(newContent);
+            return new MessageActionImpl(getJDA(), messageId, this).append(newContent);
     }
 
     /**
@@ -2835,9 +2824,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(newContent, "message");
-
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageActionImpl(getJDA(), route, this).apply(newContent);
+        return new MessageActionImpl(getJDA(), messageId, this).apply(newContent);
     }
 
     /**
@@ -3060,9 +3047,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     {
         Checks.isSnowflake(messageId, "Message ID");
         Checks.notNull(newEmbed, "MessageEmbed");
-
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageActionImpl(getJDA(), route, this).setEmbeds(newEmbed);
+        return new MessageActionImpl(getJDA(), messageId, this).setEmbeds(newEmbed);
     }
 
     /**
@@ -3262,8 +3247,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
     default MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
     {
         Checks.isSnowflake(messageId, "Message ID");
-        Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
-        return new MessageActionImpl(getJDA(), route, this).setEmbeds(newEmbeds);
+        return new MessageActionImpl(getJDA(), messageId, this).setEmbeds(newEmbeds);
     }
 
     /**
