@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.ChannelType;
@@ -72,9 +74,14 @@ public interface GuildAction extends RestAction<Void>
      *         If the provided region is a VIP region as per {@link net.dv8tion.jda.api.Region#isVip() Region.isVip()}
      *
      * @return The current GuildAction for chaining convenience
+     * 
+     * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link net.dv8tion.jda.api.managers.ChannelManager#setRegion(Region)} instead.
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ReplaceWith("ChannelManager.setRegion()")
+    @DeprecatedSince("4.3.0")
     GuildAction setRegion(@Nullable Region region);
 
     /**

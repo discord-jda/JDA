@@ -36,6 +36,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.security.auth.login.LoginException;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -57,7 +58,7 @@ public interface ShardManager
      * Adds all provided listeners to the event-listeners that will be used to handle events.
      *
      * <p>Note: when using the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventListener} (default),
-     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.api.hooks.EventListener EventListener}!
+     * the given listener <b>must</b> be an instance of {@link net.dv8tion.jda.api.hooks.EventListener EventListener}!
      *
      * @param  listeners
      *         The listener(s) which will react to events.
@@ -91,7 +92,7 @@ public interface ShardManager
      * The listener provider gets a shard id applied and is expected to return a listener.
      *
      * <p>Note: when using the {@link net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventListener} (default),
-     * given listener <b>must</b> be instance of {@link net.dv8tion.jda.api.hooks.EventListener EventListener}!
+     * the given listener <b>must</b> be an instance of {@link net.dv8tion.jda.api.hooks.EventListener EventListener}!
      *
      * @param  eventListenerProvider
      *         The provider of listener(s) which will react to events.
@@ -209,7 +210,7 @@ public interface ShardManager
 
     /**
      * The average time in milliseconds between all shards that discord took to respond to our last heartbeat.
-     * This roughly represents the WebSocket ping of this session. If there is no shard running this wil return {@code -1}.
+     * This roughly represents the WebSocket ping of this session. If there are no shards running, this will return {@code -1}.
      *
      * <p><b>{@link net.dv8tion.jda.api.requests.RestAction RestAction} request times do not
      * correlate to this value!</b>
@@ -244,7 +245,7 @@ public interface ShardManager
 
     /**
      * Gets a list of all {@link net.dv8tion.jda.api.entities.Category Categories} that have the same name as the one
-     * provided. <br>If there are no matching categories this will return an empty list.
+     * provided. <br>If there are no matching categories, this will return an empty list.
      *
      * @param  name
      *         The name to check
@@ -264,7 +265,7 @@ public interface ShardManager
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category} that matches the provided id. <br>If there is no
-     * matching {@link net.dv8tion.jda.api.entities.Category Category} this returns {@code null}.
+     * matching {@link net.dv8tion.jda.api.entities.Category Category}, this will return {@code null}.
      *
      * @param  id
      *         The snowflake ID of the wanted Category
@@ -278,7 +279,7 @@ public interface ShardManager
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category} that matches the provided id. <br>If there is no
-     * matching {@link net.dv8tion.jda.api.entities.Category Category} this returns {@code null}.
+     * matching {@link net.dv8tion.jda.api.entities.Category Category}, this will return {@code null}.
      *
      * @param  id
      *         The snowflake ID of the wanted Category
@@ -357,7 +358,7 @@ public interface ShardManager
     }
 
     /**
-     * A collection of all to us known emotes (managed/restricted included).
+     * A collection of all known emotes (managed/restricted included).
      *
      * <p><b>Hint</b>: To check whether you can use an {@link net.dv8tion.jda.api.entities.Emote Emote} in a specific
      * context you can use {@link Emote#canInteract(net.dv8tion.jda.api.entities.Member)} or {@link
@@ -380,8 +381,8 @@ public interface ShardManager
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.Emote Emotes} that have the same name as the one
-     * provided. <br>If there are no {@link net.dv8tion.jda.api.entities.Emote Emotes} with the provided name, then
-     * this returns an empty list.
+     * provided. <br>If there are no {@link net.dv8tion.jda.api.entities.Emote Emotes} with the provided name, this will
+     * return an empty list.
      *
      * <p><b>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</b>
      *
@@ -402,7 +403,7 @@ public interface ShardManager
 
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.Guild Guild} which has the same id as the one provided.
-     * <br>If there is no connected guild with an id that matches the provided one, then this returns {@code null}.
+     * <br>If there is no connected guild with an id that matches the provided one, this will return {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -417,7 +418,7 @@ public interface ShardManager
 
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.Guild Guild} which has the same id as the one provided.
-     * <br>If there is no connected guild with an id that matches the provided one, then this returns {@code null}.
+     * <br>If there is no connected guild with an id that matches the provided one, this will return {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -432,7 +433,7 @@ public interface ShardManager
 
     /**
      * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.Guild Guilds} that have the same name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.Guild Guilds} with the provided name, then this returns an empty list.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.Guild Guilds} with the provided name, this will return an empty list.
      *
      * @param  name
      *         The name of the requested {@link net.dv8tion.jda.api.entities.Guild Guilds}.
@@ -652,7 +653,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, then this will return {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
@@ -668,7 +669,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, this will return {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
@@ -927,7 +928,7 @@ public interface ShardManager
 
     /**
      * This returns the {@link net.dv8tion.jda.api.JDA JDA} instance which has the same id as the one provided.
-     * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
+     * <br>If there is no shard with an id that matches the provided one, this will return {@code null}.
      *
      * @param  id
      *         The id of the shard.
@@ -943,7 +944,7 @@ public interface ShardManager
 
     /**
      * This returns the {@link net.dv8tion.jda.api.JDA JDA} instance which has the same id as the one provided.
-     * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
+     * <br>If there is no shard with an id that matches the provided one, this will return {@code null}.
      *
      * @param  id
      *         The id of the shard.
@@ -984,7 +985,7 @@ public interface ShardManager
 
     /**
      * This returns the {@link net.dv8tion.jda.api.JDA.Status JDA.Status} of the shard which has the same id as the one provided.
-     * <br>If there is no shard with an id that matches the provided one, then this returns {@code null}.
+     * <br>If there is no shard with an id that matches the provided one, this will return {@code null}.
      *
      * @param  shardId
      *         The id of the shard.
@@ -1014,7 +1015,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, this will return {@code null}.
      *
      * <p><b>Note:</b> just because a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} is present does
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
@@ -1036,7 +1037,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, this will return {@code null}.
      *
      * <p><b>Note:</b> just because a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} is present does
      * not mean that you will be able to send messages to it. Furthermore, if you log into this account on the discord
@@ -1093,7 +1094,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, this will return {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
@@ -1109,7 +1110,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, this will return {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel}.
@@ -1153,7 +1154,7 @@ public interface ShardManager
     
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
-     * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
+     * <br>If there is no visible user with an id that matches the provided one, this will return {@code null}.
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
@@ -1168,7 +1169,7 @@ public interface ShardManager
 
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.User User} which has the same id as the one provided.
-     * <br>If there is no visible user with an id that matches the provided one, this returns {@code null}.
+     * <br>If there is no visible user with an id that matches the provided one, this will return {@code null}.
      *
      * @param  id
      *         The id of the requested {@link net.dv8tion.jda.api.entities.User User}.
@@ -1218,7 +1219,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, this will return {@code null}.
      *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
@@ -1234,7 +1235,7 @@ public interface ShardManager
     /**
      * This returns the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} which has the same id as the one provided.
      * <br>If there is no known {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
-     * one, then this returns {@code null}.
+     * one, this will return {@code null}.
      *
      * @param  id The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1288,7 +1289,7 @@ public interface ShardManager
 
     /**
      * Restarts the shards with the given id only.
-     * <br> If there is no shard with the given Id this method acts like {@link #start(int)}.
+     * <br> If there is no shard with the given Id, this method acts like {@link #start(int)}.
      *
      * @param  id
      *         The id of the target shard
@@ -1483,7 +1484,7 @@ public interface ShardManager
 
     /**
      * Shuts down the shard with the given id only.
-     * <br>This does nothing, if there is no shard with the given id.
+     * <br>If there is no shard with the given id, this will do nothing.
      *
      * @param shardId
      *        The id of the shard that should be stopped
@@ -1500,4 +1501,13 @@ public interface ShardManager
      *         If {@link #shutdown()} has already been invoked
      */
     void start(int shardId);
+
+    /**
+     * Initializes and starts all shards. This should only be called once.
+     *
+     * @throws LoginException
+     *         If the provided token is invalid.
+     */
+    void login() throws LoginException;
+
 }

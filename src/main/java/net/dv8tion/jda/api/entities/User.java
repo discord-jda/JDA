@@ -16,6 +16,9 @@
 package net.dv8tion.jda.api.entities;
 
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -70,7 +73,7 @@ import java.util.regex.Pattern;
  *
  * @see JDA#retrieveUserById(String)
  */
-public interface User extends IMentionable, IFakeable
+public interface User extends IMentionable
 {
     /**
      * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
@@ -299,6 +302,17 @@ public interface User extends IMentionable, IFakeable
     boolean isBot();
 
     /**
+     * Returns whether or not the given user is a System account, which includes the urgent message account
+     * and the community updates bot.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Whether the User's account is marked as System
+     */
+    boolean isSystem();
+
+    /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this User
      *
      * @throws UnsupportedOperationException
@@ -335,22 +349,27 @@ public interface User extends IMentionable, IFakeable
      */
     enum UserFlag
     {
-        STAFF(             0, "Discord Employee"),
-        PARTNER(           1, "Partnered Server Owner"),
-        HYPESQUAD(         2, "HypeSquad Events"),
-        BUG_HUNTER_LEVEL_1(3, "Bug Hunter Level 1"),
+        STAFF(               0, "Discord Employee"),
+        PARTNER(             1, "Partnered Server Owner"),
+        HYPESQUAD(           2, "HypeSquad Events"),
+        BUG_HUNTER_LEVEL_1(  3, "Bug Hunter Level 1"),
 
         // HypeSquad
         HYPESQUAD_BRAVERY(   6, "HypeSquad Bravery"),
         HYPESQUAD_BRILLIANCE(7, "HypeSquad Brilliance"),
         HYPESQUAD_BALANCE(   8, "HypeSquad Balance"),
 
-        EARLY_SUPPORTER(    9, "Early Supporter"),
-        TEAM_USER(         10, "Team User"),
-        SYSTEM(            12, "System User"),
-        BUG_HUNTER_LEVEL_2(14, "Bug Hunter Level 2"),
-        VERIFIED_BOT(      16, "Verified Bot"),
-        VERIFIED_DEVELOPER(17, "Early Verified Bot Developer"),
+        EARLY_SUPPORTER(     9, "Early Supporter"),
+        TEAM_USER(          10, "Team User"),
+        @Deprecated
+        @ForRemoval(deadline = "4.4.0")
+        @ReplaceWith("User.isSystem()")
+        @DeprecatedSince("4.3.0")
+        SYSTEM(             12, "System User"),
+        BUG_HUNTER_LEVEL_2( 14, "Bug Hunter Level 2"),
+        VERIFIED_BOT(       16, "Verified Bot"),
+        VERIFIED_DEVELOPER( 17, "Early Verified Bot Developer"),
+        CERTIFIED_MODERATOR(18, "Discord Certified Moderator"),
         
         UNKNOWN(-1, "Unknown");
 

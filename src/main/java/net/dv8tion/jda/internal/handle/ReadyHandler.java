@@ -51,6 +51,11 @@ public class ReadyHandler extends SocketHandler
         }
 
         DataObject selfJson = content.getObject("user");
+        selfJson.put("application_id", // Used to update SelfUser#getApplicationId
+            content.optObject("application")
+                .map(obj -> obj.getUnsignedLong("id"))
+                .orElse(selfJson.getUnsignedLong("id"))
+        );
 
         builder.createSelfUser(selfJson);
         if (getJDA().getGuildSetupController().setIncompleteCount(distinctGuilds.size()))

@@ -23,6 +23,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 
 public class SystemMessage extends ReceivedMessage
@@ -32,10 +33,10 @@ public class SystemMessage extends ReceivedMessage
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles,
         boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, int flags)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
     {
         super(id, channel, type, null, fromWebhook, mentionsEveryone, mentionedUsers, mentionedRoles,
-            tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, flags);
+            tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, stickers, Collections.emptyList(), flags);
     }
 
     @Nonnull

@@ -148,6 +148,13 @@ public class UserById implements User
         return false;
     }
 
+    @Override
+    public boolean isSystem()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nonnull
     @Override
     public JDA getJDA()
@@ -169,12 +176,5 @@ public class UserById implements User
     {
         unsupported();
         return 0;
-    }
-
-    @Override
-    public boolean isFake()
-    {
-        unsupported();
-        return false;
     }
 }
