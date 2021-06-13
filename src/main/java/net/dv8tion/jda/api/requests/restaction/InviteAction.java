@@ -124,7 +124,7 @@ public interface InviteAction extends AuditableRestAction<Invite>
     /**
      * Sets the id of the targeted application.
      * The invite has to point to a voice channel.
-     * The invite will have the {@link Invite.TargetType#STREAM} target.
+     * The invite will have the {@link Invite.TargetType#EMBEDDED_APPLICATION} target.
      *
      * @param applicationId
      *        The id of the embedded application to target or {@code 0} to remove
