@@ -78,23 +78,22 @@ public class InviteCreateHandler extends SocketHandler
         final User targetUser;
         final InviteImpl.EmbeddedApplicationImpl application;
 
-        if (targetType == Invite.TargetType.STREAM)
+        switch (targetType)
         {
+        case STREAM:
             DataObject targetUserObject = content.getObject("target_user");
             targetUser = getJDA().getEntityBuilder().createUser(targetUserObject);
             application = null;
-        }
-        else if (targetType == Invite.TargetType.EMBEDDED_APPLICATION)
-        {
+            break;
+        case EMBEDDED_APPLICATION:
             DataObject applicationObject = content.getObject("target_application");
             application = new InviteImpl.EmbeddedApplicationImpl(
                     applicationObject.getString("icon", null), applicationObject.getString("name"), applicationObject.getString("description"),
                     applicationObject.getString("summary"), applicationObject.getLong("id"), applicationObject.getInt("max_participants", -1)
             );
             targetUser = null;
-        }
-        else
-        {
+            break;
+        default:
             application = null;
             targetUser = null;
         }

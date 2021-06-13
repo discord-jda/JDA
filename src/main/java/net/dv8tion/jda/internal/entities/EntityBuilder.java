@@ -1515,7 +1515,7 @@ public class EntityBuilder
 
         Optional<DataObject> ownerJson = object.optObject("user");
         User owner = null;
-        
+
         if (ownerJson.isPresent())
         {
             DataObject json = ownerJson.get();
@@ -1621,27 +1621,27 @@ public class EntityBuilder
             group = null;
         }
 
-        if (targetType == Invite.TargetType.STREAM) {
+        switch (targetType)
+        {
+        case EMBEDDED_APPLICATION:
+             final DataObject applicationObject = object.getObject("target_application");
+
+             final String applicationIconId = applicationObject.getString("icon", null);
+             final String applicationName = applicationObject.getString("name");
+             final String applicationDescription = applicationObject.getString("description");
+             final String applicationSummary = applicationObject.getString("summary");
+             final long applicationId = applicationObject.getLong("id");
+             final int maxApplicationParticipants = applicationObject.getInt("max_participants", -1);
+
+             application = new InviteImpl.EmbeddedApplicationImpl(applicationIconId, applicationName, applicationDescription, applicationSummary, applicationId, maxApplicationParticipants);
+             targetUser = null;
+             break;
+        case STREAM:
             final DataObject targetUserObject = object.getObject("target_user");
             targetUser = createUser(targetUserObject);
             application = null;
-        }
-        else if (targetType == Invite.TargetType.EMBEDDED_APPLICATION)
-        {
-            final DataObject applicationObject = object.getObject("target_application");
-
-            final String applicationIconId = applicationObject.getString("icon", null);
-            final String applicationName = applicationObject.getString("name");
-            final String applicationDescription = applicationObject.getString("description");
-            final String applicationSummary = applicationObject.getString("summary");
-            final long applicationId = applicationObject.getLong("id");
-            final int maxApplicationParticipants = applicationObject.getInt("max_participants", -1);
-
-            application = new InviteImpl.EmbeddedApplicationImpl(applicationIconId, applicationName, applicationDescription, applicationSummary, applicationId, maxApplicationParticipants);
-            targetUser = null;
-        }
-        else
-        {
+            break;
+        default:
             application = null;
             targetUser = null;
         }
