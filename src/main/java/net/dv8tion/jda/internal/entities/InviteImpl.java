@@ -541,12 +541,6 @@ public class InviteImpl implements Invite
         }
 
         @Override
-        public boolean hasMaxParticipants()
-        {
-            return maxParticipants != -1;
-        }
-
-        @Override
         public int getMaxParticipants()
         {
             return maxParticipants;

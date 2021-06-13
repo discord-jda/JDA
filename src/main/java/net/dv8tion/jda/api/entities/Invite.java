@@ -145,7 +145,7 @@ public interface Invite
     /**
      * The target type of this invite.
      *
-     * @return The invite's target type
+     * @return The invite's target type or {@link TargetType#UNKNOWN}
      */
     @Nonnull
     Invite.TargetType getTargetType();
@@ -551,7 +551,7 @@ public interface Invite
         String getSummary();
 
         /**
-         * The icon id of this application or {@code null} if thr application has no icon.
+         * The icon id of this application or {@code null} if the application has no icon.
          *
          * @return The application's icon id
          *
@@ -561,7 +561,7 @@ public interface Invite
         String getIconId();
 
         /**
-         * The icon url of this application or {@code null} if thr application has no icon.
+         * The icon url of this application or {@code null} if the application has no icon.
          *
          * @return The application's icon url
          *
@@ -569,14 +569,6 @@ public interface Invite
          */
         @Nullable
         String getIconUrl();
-
-        /**
-         * If this application has a max participant count.
-         * If this application does not have max participant count {@link #getMaxParticipants() getMaxParticipants()} will return {@code -1}.
-         *
-         * @return If this application has a max participant count set
-         */
-        boolean hasMaxParticipants();
 
         /**
          * The max participant count of this application or {@code -1} if no max participant count is set
@@ -605,8 +597,20 @@ public interface Invite
      */
     enum TargetType
     {
+        /**
+         * The invite points to an users stream in a voice channel.
+         * The user to whose stream the invite goes can be get with {@link Invite#getTargetUser() Invite.getTargetUser} and is not {@code null}.
+         *
+         * @see Invite#getTargetUser()
+         */
         STREAM(1),
 
+        /**
+         * The invite points to an application in a voice channel.
+         * The application to which the invite goes can be get with {@link Invite#getTargetApplication() Invite.getTargetApplication} and is not {@code null}.
+         *
+         * @see Invite#getTargetApplication()
+         */
         EMBEDDED_APPLICATION(2),
 
         /**
@@ -622,11 +626,25 @@ public interface Invite
             this.id = id;
         }
 
+        /**
+         * The Discord id key used to represent the target type.
+         *
+         * @return The id key used by discord for this channel type.
+         */
         public int getId()
         {
             return id;
         }
 
+        /**
+         * Static accessor for retrieving a target type based on its Discord id key.
+         *
+         * @param  id
+         *         The id key of the requested target type.
+         *
+         * @return The TargetType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
+         */
+        @Nonnull
         public static TargetType fromId(int id) {
             for (TargetType type : values())
             {
