@@ -152,7 +152,8 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetApplication(@Nonnull final String applicationId) {
+    default InviteAction setTargetApplication(@Nonnull final String applicationId)
+    {
         return setTargetApplication(MiscUtil.parseSnowflake(applicationId));
     }
 
@@ -187,7 +188,8 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetUser(@Nonnull final String userId) {
+    default InviteAction setTargetUser(@Nonnull final String userId)
+    {
         return setTargetUser(MiscUtil.parseSnowflake(userId));
     }
 
@@ -203,7 +205,8 @@ public interface InviteAction extends AuditableRestAction<Invite>
      */
     @Nonnull
     @CheckReturnValue
-    default InviteAction setTargetUser(@Nonnull final User user) {
+    default InviteAction setTargetUser(@Nonnull final User user)
+    {
         return setTargetUser(user.getIdLong());
     }
 
