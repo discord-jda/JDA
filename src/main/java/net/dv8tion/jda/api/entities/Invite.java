@@ -598,7 +598,7 @@ public interface Invite
     enum TargetType
     {
         /**
-         * The invite points to an users stream in a voice channel.
+         * The invite points to a user's stream in a voice channel.
          * The user to whose stream the invite goes can be get with {@link Invite#getTargetUser() Invite.getTargetUser} and is not {@code null}.
          *
          * @see Invite#getTargetUser()
