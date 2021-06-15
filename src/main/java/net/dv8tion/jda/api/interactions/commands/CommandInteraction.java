@@ -200,4 +200,50 @@ public interface CommandInteraction extends Interaction
         List<OptionMapping> options = getOptionsByName(name);
         return options.isEmpty() ? null : options.get(0);
     }
+
+    /**
+     * Gets the slash command String for this slash command.
+     * <br>This is similar to the String you see when clicking the interaction name in the client.
+     *
+     * <p>Example return for an echo command: {@code /say echo phrase: Say this}
+     *
+     * @return The command String for this slash command
+     */
+    @Nonnull
+    default String getCommandString()
+    {
+        //Get text like the text that appears when you hover over the interaction in discord
+        StringBuilder builder = new StringBuilder();
+        builder.append("/").append(getName());
+        if (getSubcommandGroup() != null)
+        {
+            builder.append(getSubcommandGroup()).append(" ");
+        }
+        if (getSubcommandName() != null)
+        {
+            builder.append(getSubcommandName()).append(" ");
+        }
+        builder.append(" ");
+        //build options (formatted appropriately)
+        for (OptionMapping o : getOptions())
+        {
+            builder.append(o.getName()).append(":").append(" ");
+            switch (o.getType())
+            {
+                case CHANNEL:
+                    builder.append(o.getAsGuildChannel().getName()).append(" ");
+                    break;
+                case USER:
+                    builder.append(o.getAsUser().getAsTag()).append(" ");
+                    break;
+                case ROLE:
+                    builder.append(o.getAsRole().getName()).append(" ");
+                    break;
+                default:
+                    builder.append(o.getAsString()).append(" ");
+                    break;
+            }
+        }
+        return builder.toString().trim();
+    }
 }

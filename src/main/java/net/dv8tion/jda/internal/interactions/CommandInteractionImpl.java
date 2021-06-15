@@ -44,7 +44,6 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     private final String name;
     private String subcommand;
     private String group;
-    private String text;
 
     public CommandInteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -74,7 +73,6 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
 
         parseResolved(jda, resolveJson);
         parseOptions(options);
-        buildText();
     }
 
     private void parseOptions(DataArray options)
@@ -125,19 +123,6 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         }
     }
 
-    private void buildText()
-    {
-        //Get text like the text that appears when you hover over the interaction in discord
-        StringBuilder builder = new StringBuilder();
-        builder.append("/").append(getCommandPath().replace("/", " ")).append(" ");
-        //build options (formatted appropriately)
-        for (OptionMapping o : this.options)
-        {
-            builder.append(o.getName()).append(":").append(o.getAsString()).append(" ");
-        }
-        this.text = builder.toString().trim();
-    }
-
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
@@ -176,11 +161,5 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     public List<OptionMapping> getOptions()
     {
         return options;
-    }
-
-    @Nonnull
-    public String getText()
-    {
-        return text;
     }
 }

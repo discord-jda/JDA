@@ -84,17 +84,10 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
         return commandInteraction.getOptions();
     }
 
-    /**
-     * Gets the slash command String for this slash command.
-     * <br>This is similar to the String you see when clicking the interaction name in the client.
-     *
-     * <p>Example return for an echo command: {@code /say echo phrase: Say this}
-     *
-     * @return The command String for this slash command
-     */
     @Nonnull
-    public String getText()
+    @Override
+    public String getCommandString()
     {
-        return commandInteraction.getText();
+        return commandInteraction.getCommandString();
     }
 }
