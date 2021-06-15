@@ -156,16 +156,16 @@ public class MessageBuilder implements Appendable
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
      *
      * @param  embeds
-     *         the embeds to add, or null to remove
+     *         the embeds to add, or empty array to remove
      *
      * @throws java.lang.IllegalArgumentException
-     *         If any of the provided MessageEmbeds is not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         If any of the provided MessageEmbeds is null or not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
      *         The sum of all {@link MessageEmbed#getLength()} must not be greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}!
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setEmbeds(@Nullable MessageEmbed... embeds)
+    public MessageBuilder setEmbeds(@Nonnull MessageEmbed... embeds)
     {
         Checks.noneNull(embeds, "MessageEmbeds");
         return setEmbeds(Arrays.asList(embeds));
@@ -176,31 +176,28 @@ public class MessageBuilder implements Appendable
      * the {@link net.dv8tion.jda.api.EmbedBuilder} and offer specialized formatting.
      *
      * @param  embeds
-     *         the embeds to add, or null to remove
+     *         the embeds to add, or empty list to remove
      *
      * @throws java.lang.IllegalArgumentException
-     *         If any of the provided MessageEmbeds is not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         If any of the provided MessageEmbeds is null or not sendable according to {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
      *         The sum of all {@link MessageEmbed#getLength()} must not be greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}!
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setEmbeds(@Nullable Collection<? extends MessageEmbed> embeds)
+    public MessageBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
 
+        Checks.noneNull(embeds, "MessageEmbeds");
+        embeds.forEach(embed ->
+            Checks.check(embed.isSendable(),
+                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+        );
+        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
         this.embeds.clear();
-        if (embeds != null)
-        {
-            Checks.noneNull(embeds, "MessageEmbeds");
-            embeds.forEach(embed ->
-                Checks.check(embed.isSendable(),
-                    "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-                    MessageEmbed.EMBED_MAX_LENGTH_BOT)
-            );
-            Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
-            Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
-            this.embeds.addAll(embeds);
-        }
+        this.embeds.addAll(embeds);
         return this;
     }
 

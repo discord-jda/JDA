@@ -429,8 +429,10 @@ public interface MessageChannel extends AbstractChannel, Formattable
      *
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
      *
-     * @param  embeds
-     *         the {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to send
+     * @param  embed
+     *         The {@link MessageEmbed MessageEmbed} to send
+     * @param  other
+     *         Additional {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to send
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does
@@ -441,8 +443,8 @@ public interface MessageChannel extends AbstractChannel, Formattable
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_EMBED_LINKS Permission.MESSAGE_EMBED_LINKS}</li>
      *         </ul>
      * @throws java.lang.IllegalArgumentException
-     *         If any of the provided embeds is {@code null} or if the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     *         is not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      * @throws java.lang.UnsupportedOperationException
      *         If this is a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and both the currently logged in account and the target user are bots.
@@ -455,8 +457,13 @@ public interface MessageChannel extends AbstractChannel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction sendMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    default MessageAction sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
+        Checks.notNull(embed, "MessageEmbeds");
+        Checks.noneNull(other, "MessageEmbeds");
+        List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
+        embeds.add(embed);
+        Collections.addAll(embeds, other);
         return new MessageActionImpl(getJDA(), null, this).setEmbeds(embeds);
     }
 
@@ -472,7 +479,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * <p>For {@link net.dv8tion.jda.api.requests.ErrorResponse} information, refer to {@link #sendMessage(Message)}.
      *
      * @param  embeds
-     *         the {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to send
+     *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} to send
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If this is a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does

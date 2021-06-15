@@ -1246,17 +1246,27 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed...)} and {@link MessageAction#reference(Message)}.
      *
-     * @param  embeds
-     *         The content of the reply message
+     * @param  embed
+     *         The embed to reply with
+     * @param  other
+     *         Additional embeds to reply with
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyEmbeds(@Nonnull MessageEmbed... embeds)
+    default MessageAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
     {
-        Checks.noneNull(embeds, "MessageEmbeds");
-        return replyEmbeds(Arrays.asList(embeds));
+        Checks.notNull(embed, "MessageEmbeds");
+        Checks.noneNull(other, "MessageEmbeds");
+        List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
+        embeds.add(embed);
+        Collections.addAll(embeds, other);
+        return replyEmbeds(embeds);
     }
 
     /**
@@ -1269,7 +1279,11 @@ public interface Message extends ISnowflake, Formattable
      * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  embeds
-     *         The content of the reply message
+     *         The embeds to reply with
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      */
