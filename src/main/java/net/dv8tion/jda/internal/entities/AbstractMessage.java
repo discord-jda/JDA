@@ -30,10 +30,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
-import java.util.EnumSet;
-import java.util.FormattableFlags;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractMessage implements Message
 {
@@ -387,7 +384,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> newContent)
     {
         unsupported();
         return null;

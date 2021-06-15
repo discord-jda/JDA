@@ -33,22 +33,22 @@ public class DataMessage extends AbstractMessage
     private final String[] mentionedRoles;
     private final String[] mentionedUsers;
     private final ComponentLayout[] components;
-    private MessageEmbed embed;
+    private Collection<? extends MessageEmbed> embeds;
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed,
+    public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds,
                        EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, ComponentLayout[] components)
     {
         super(content, nonce, tts);
-        this.embed = embed;
+        this.embeds = embeds;
         this.allowedMentions = allowedMentions;
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
         this.components = components;
     }
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
+    public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds)
     {
-        this(tts, content, nonce, embed, null, new String[0], new String[0], new ComponentLayout[0]);
+        this(tts, content, nonce, embeds, null, new String[0], new String[0], new ComponentLayout[0]);
     }
 
     public EnumSet<MentionType> getAllowedMentions()
@@ -84,7 +84,7 @@ public class DataMessage extends AbstractMessage
         return isTTS == other.isTTS
             && other.content.equals(content)
             && Objects.equals(other.nonce, nonce)
-            && Objects.equals(other.embed, embed);
+            && Objects.equals(other.embeds, embeds);
     }
 
     @Override
@@ -99,9 +99,9 @@ public class DataMessage extends AbstractMessage
         return String.format("DataMessage(%.30s)", getContentRaw());
     }
 
-    public DataMessage setEmbed(MessageEmbed embed)
+    public DataMessage setEmbeds(Collection<? extends MessageEmbed> embeds)
     {
-        this.embed = embed;
+        this.embeds = embeds;
         return this;
     }
 
@@ -109,7 +109,7 @@ public class DataMessage extends AbstractMessage
     @Override
     public List<MessageEmbed> getEmbeds()
     {
-        return embed == null ? Collections.emptyList() : Collections.singletonList(embed);
+        return new ArrayList<>(embeds);
     }
 
     @Nonnull

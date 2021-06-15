@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -71,6 +73,8 @@ public class ReceivedMessage extends AbstractMessage
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
     protected final int flags;
+
+    protected InteractionHook interactionHook = null; // late-init
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -110,6 +114,12 @@ public class ReceivedMessage extends AbstractMessage
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
         this.flags = flags;
+    }
+
+    public ReceivedMessage withHook(InteractionHook hook)
+    {
+        this.interactionHook = hook;
+        return this;
     }
 
     @Nonnull
@@ -798,15 +808,15 @@ public class ReceivedMessage extends AbstractMessage
     public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
         checkUser();
-        return channel.editMessageById(getId(), newContent);
+        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return channel.editMessageById(getId(), newContent);
+        return ((MessageActionImpl) channel.editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
     }
 
     @Nonnull
@@ -814,7 +824,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         checkUser();
-        return channel.editMessageFormatById(getId(), format, args);
+        return ((MessageActionImpl) channel.editMessageFormatById(getId(), format, args)).withHook(interactionHook);
     }
 
     @Nonnull
@@ -822,7 +832,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageAction editMessage(@Nonnull Message newContent)
     {
         checkUser();
-        return channel.editMessageById(getIdLong(), newContent);
+        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
     }
 
     private void checkUser()

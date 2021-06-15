@@ -152,7 +152,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false);
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false).withHook(this);
         return onReady(new WebhookMessageActionImpl<>(getJDA(), interaction.getMessageChannel(), route, transform)).setEphemeral(ephemeral);
     }
 
@@ -164,7 +164,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
         route = route.withQueryParams("wait", "true");
-        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false);
+        Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false).withHook(this);
         return onReady(new WebhookMessageUpdateActionImpl<>(getJDA(), route, transform));
     }
 
