@@ -35,8 +35,6 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CommandInteractionImpl extends InteractionImpl implements CommandInteraction
 {
@@ -127,18 +125,15 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         }
     }
 
-    private void buildText() {
+    private void buildText()
+    {
         //Get text like the text that appears when you hover over the interaction in discord
         StringBuilder builder = new StringBuilder();
-        builder.append("/").append(getCommandPath().replace("/", " ")).append(" "); //get command name and format it
-        for (OptionMapping o : this.options) { //build options (formatted appropriately)
-            Matcher match = Pattern.compile("(\\(.+\\))", Pattern.CASE_INSENSITIVE).matcher(o.toString());
-            if (match.find()) {
-                String str = match.group(0);
-                str = str.substring(1); //remove leading (
-                str = str.substring(0, str.length()-1); //remove trailing )
-                builder.append(str).append(" ");
-            }
+        builder.append("/").append(getCommandPath().replace("/", " ")).append(" ");
+        //build options (formatted appropriately)
+        for (OptionMapping o : this.options)
+        {
+            builder.append(o.getName()).append(":").append(o.getAsString()).append(" ");
         }
         this.text = builder.toString().trim();
     }
@@ -184,5 +179,8 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     }
 
     @Nonnull
-    public String getText() { return text; }
+    public String getText()
+    {
+        return text;
+    }
 }
