@@ -83,4 +83,7 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
     {
         return commandInteraction.getOptions();
     }
+
+    @Nonnull
+    public String getText() { return commandInteraction.getText(); }
 }

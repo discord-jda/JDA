@@ -35,6 +35,8 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CommandInteractionImpl extends InteractionImpl implements CommandInteraction
 {
@@ -44,6 +46,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     private final String name;
     private String subcommand;
     private String group;
+    private String text;
 
     public CommandInteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -73,6 +76,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
 
         parseResolved(jda, resolveJson);
         parseOptions(options);
+        buildText();
     }
 
     private void parseOptions(DataArray options)
@@ -123,6 +127,22 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         }
     }
 
+    private void buildText() {
+        //Get text like the text that appears when you hover over the interaction in discord
+        StringBuilder builder = new StringBuilder();
+        builder.append("/").append(getCommandPath().replace("/", " ")).append(" "); //get command name and format it
+        for (OptionMapping o : this.options) { //build options (formatted appropriately)
+            Matcher match = Pattern.compile("(\\(.+\\))", Pattern.CASE_INSENSITIVE).matcher(o.toString());
+            if (match.find()) {
+                String str = match.group(0);
+                str = str.substring(1); //remove leading (
+                str = str.substring(0, str.length()-1); //remove trailing )
+                builder.append(str).append(" ");
+            }
+        }
+        this.text = builder.toString().trim();
+    }
+
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
@@ -162,4 +182,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     {
         return options;
     }
+
+    @Nonnull
+    public String getText() { return text; }
 }
