@@ -190,13 +190,6 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
         return id;
     }
 
-    @Override
-    @Deprecated
-    public boolean isFake()
-    {
-        return token == null;
-    }
-
     /* -- Impl Setters -- */
 
     public WebhookImpl setOwner(Member member, User user)

@@ -51,8 +51,7 @@ import java.util.stream.Collectors;
  * Extension of a default {@link net.dv8tion.jda.api.requests.RestAction RestAction}
  * that allows setting message information before sending!
  *
- * <p>This is available as return type of all sendMessage/sendFile methods in {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
- * or by using {@link net.dv8tion.jda.api.MessageBuilder#sendTo(net.dv8tion.jda.api.entities.MessageChannel) MessageBuilder.sendTo(MessageChannel)}
+ * <p>This is available as return type of all sendMessage/sendFile methods in {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
  *
  * <p>When updating a Message, unset fields will be ignored by default. To override existing fields with no value (remove content)
  * you can use {@link #override(boolean) override(true)}. Setting this to {@code true} will cause all fields to be considered

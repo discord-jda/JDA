@@ -131,47 +131,43 @@ public abstract class ListenerAdapter implements EventListener
 {
     //Deprecated/Unused events
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
 
     @Deprecated
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
 
     @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
-
-    @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.1")
     @ReplaceWith("onResumed(ResumedEvent)")
     public void onResume(@Nonnull ResumedEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.1")
     @ReplaceWith("onReconnected(ReconnectedEvent)")
     public void onReconnect(@Nonnull ReconnectedEvent event) {}

@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
  * @see    Guild#retrieveWebhooks()
  * @see    JDA#retrieveWebhookById(String)
  */
-public interface Webhook extends ISnowflake, IFakeable
+public interface Webhook extends ISnowflake
 {
     /**
      * Pattern for a Webhook URL.

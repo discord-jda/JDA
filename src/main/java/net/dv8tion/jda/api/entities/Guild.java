@@ -723,7 +723,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.0.0")
     @ReplaceWith("getVanityCode()")
     @CheckReturnValue
@@ -2789,7 +2789,7 @@ public interface Guild extends ISnowflake
      * @deprecated Bots don't need to check this and client accounts are not supported
      */
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     boolean checkVerification();
 
@@ -2803,7 +2803,7 @@ public interface Guild extends ISnowflake
      *             unavailable guilds are now removed from cache.
      *             Replace with {@link JDA#isUnavailable(long)}
      */
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @Deprecated
     @DeprecatedSince("4.1.0")
     @ReplaceWith("getJDA().isUnavailable(guild.getIdLong())")

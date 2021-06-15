@@ -35,8 +35,6 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
 
     protected String name;
     protected Icon avatar;
-    protected String email;
-    protected String password;
 
     /**
      * Creates a new AccountManager instance

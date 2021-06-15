@@ -15,14 +15,10 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
-import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
@@ -389,45 +385,6 @@ public class MessageEmbed implements SerializableData
 
         final int length = getLength();
         return length <= EMBED_MAX_LENGTH_BOT;
-    }
-
-    /**
-     * Whether this MessageEmbed can be used in a message.
-     *
-     * <p>Total Character Limits
-     * <ul>
-     *     <li>Bot: {@value #EMBED_MAX_LENGTH_BOT}</li>
-     *     <li>Client: {@value #EMBED_MAX_LENGTH_CLIENT}</li>
-     * </ul>
-     *
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.AccountType AccountType} to inspect
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If the provided AccountType is {@code null} or not supported by this operation
-     *
-     * @return True, if this MessageEmbed can be used to send messages for this specified AccountType
-     *
-     * @see    #getLength()
-     *
-     * @deprecated Use {@link #isSendable()} instead
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    public boolean isSendable(@Nonnull AccountType type)
-    {
-        Checks.notNull(type, "AccountType");
-        final int length = getLength();
-        if (isEmpty())
-            return false;
-
-        switch (type)
-        {
-            case BOT: return length <= EMBED_MAX_LENGTH_BOT;
-            case CLIENT: return length <= EMBED_MAX_LENGTH_CLIENT;
-            default: throw new IllegalArgumentException(String.format("Cannot check against AccountType '%s'!", type));
-        }
     }
 
     @Override

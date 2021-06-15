@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.managers;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.Icon;
 import net.dv8tion.jda.api.entities.SelfUser;
 
@@ -121,38 +119,6 @@ public interface AccountManager extends Manager<AccountManager>
     AccountManager setName(@Nonnull String name);
 
     /**
-     * Sets the username for the currently logged in account
-     *
-     * @param  name
-     *         The new username
-     * @param  currentPassword
-     *         The current password for the represented account,
-     *         this is only required for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
-     *
-     * @throws IllegalArgumentException
-     *         If this is action is performed on an account with the type {@link net.dv8tion.jda.api.AccountType#CLIENT CLIENT}
-     *         and the provided password is {@code null} or empty
-     *         <br>If the provided name is:
-     *         <ul>
-     *             <li>Equal to {@code null}</li>
-     *             <li>Less than 2 or more than 32 characters in length</li>
-     *         </ul>
-     *
-     * @return AccountManager for chaining convenience
-     *
-     * @deprecated This is no longer supported
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    @Nonnull
-    @CheckReturnValue
-    default AccountManager setName(@Nonnull String name, @Nullable String currentPassword)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
      * Sets the avatar for the currently logged in account
      *
      * @param  avatar
@@ -164,90 +130,4 @@ public interface AccountManager extends Manager<AccountManager>
     @Nonnull
     @CheckReturnValue
     AccountManager setAvatar(@Nullable Icon avatar);
-
-    /**
-     * Sets the avatar for the currently logged in account
-     *
-     * @param  avatar
-     *         An {@link net.dv8tion.jda.api.entities.Icon Icon} instance representing
-     *         the new Avatar for the current account, {@code null} to reset the avatar to the default avatar.
-     * @param  currentPassword
-     *         The current password for the represented account,
-     *         this is only required for {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
-     *
-     * @throws IllegalArgumentException
-     *         If the provided {@code currentPassword} is {@code null} or empty and the currently
-     *         logged in account is from {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}
-     *
-     * @return AccountManager for chaining convenience
-     *
-     * @deprecated This is no longer supported
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    @Nonnull
-    @CheckReturnValue
-    default AccountManager setAvatar(@Nullable Icon avatar, @Nullable String currentPassword)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Sets the email for the currently logged in client account.
-     *
-     * @param  email
-     *         The new email
-     * @param  currentPassword
-     *         The <b>valid</b> current password for the represented account
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#CLIENT}
-     * @throws IllegalArgumentException
-     *         <ul>
-     *             <li>If the provided {@code currentPassword} or the provided {@code email} is {@code null} or empty
-     *             <li>If the provided {@code email} is not valid.</li>
-     *         </ul>
-     *
-     * @return AccountManager for chaining convenience
-     *
-     * @deprecated This is no longer supported
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    @Nonnull
-    @CheckReturnValue
-    default AccountManager setEmail(@Nonnull String email, @Nonnull String currentPassword)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Sets the password for the currently logged in client account.
-     * <br>If the new password is equal to the current password this does nothing.
-     *
-     * @param  newPassword
-     *         The new password for the currently logged in account
-     * @param  currentPassword
-     *         The <b>valid</b> current password for the represented account
-     *
-     * @throws net.dv8tion.jda.api.exceptions.AccountTypeException
-     *         If the currently logged in account is not from {@link net.dv8tion.jda.api.AccountType#CLIENT}
-     * @throws IllegalArgumentException
-     *         If any of the provided passwords are {@code null} or empty
-     *
-     * @return AccountManager for chaining convenience
-     *
-     * @deprecated This is no longer supported
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    @Nonnull
-    @CheckReturnValue
-    default AccountManager setPassword(@Nonnull String newPassword, @Nonnull String currentPassword)
-    {
-        throw new UnsupportedOperationException();
-    }
 }

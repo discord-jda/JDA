@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -203,41 +201,6 @@ public class EmbedBuilder
     {
         final int length = length();
         return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
-    }
-
-    /**
-     * Checks whether the constructed {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     * is within the limits for the specified {@link net.dv8tion.jda.api.AccountType AccountType}
-     * <ul>
-     *     <li>Bot: {@value MessageEmbed#EMBED_MAX_LENGTH_BOT}</li>
-     *     <li>Client: {@value MessageEmbed#EMBED_MAX_LENGTH_CLIENT}</li>
-     * </ul>
-     *
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.AccountType AccountType} to validate
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If provided with {@code null}
-     *
-     * @return True, if the {@link #length() length} is less or equal to the specific limit
-     *
-     * @deprecated Replace with {@link #isValidLength()}
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    public boolean isValidLength(@Nonnull AccountType type)
-    {
-        Checks.notNull(type, "AccountType");
-        final int length = length();
-        switch (type)
-        {
-            case BOT:
-                return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
-            case CLIENT:
-            default:
-                return length <= MessageEmbed.EMBED_MAX_LENGTH_CLIENT;
-        }
     }
 
     /**
