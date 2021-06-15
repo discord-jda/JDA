@@ -86,7 +86,7 @@ import java.util.stream.Collectors;
  * @see    Message#editMessageFormat(String, Object...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(Message)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed...)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, AttachmentOption...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, AttachmentOption...)

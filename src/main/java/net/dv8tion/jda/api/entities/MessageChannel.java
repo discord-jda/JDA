@@ -403,7 +403,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      * @see    net.dv8tion.jda.api.MessageBuilder
      * @see    net.dv8tion.jda.api.EmbedBuilder
      * 
-     * @deprecated This is deprecated in favor of {@link #sendMessageEmbeds(MessageEmbed...)}
+     * @deprecated This is deprecated in favor of {@link #sendMessageEmbeds(MessageEmbed, MessageEmbed...)}
      */
     @Nonnull
     @CheckReturnValue
