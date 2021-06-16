@@ -282,8 +282,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setBitrate(Integer bitrate)
     {
-        if (type != ChannelType.VOICE)
-            throw new UnsupportedOperationException("Can only set the bitrate for a VoiceChannel!");
+        if (!type.isAudio())
+            throw new UnsupportedOperationException("Can only set the bitrate for an Audio Channel!");
         if (bitrate != null)
         {
             int maxBitrate = getGuild().getMaxBitrate();

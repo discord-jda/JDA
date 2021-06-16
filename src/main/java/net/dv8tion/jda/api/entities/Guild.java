@@ -1559,6 +1559,16 @@ public interface Guild extends ISnowflake
         return channel instanceof StageChannel ? (StageChannel) channel : null;
     }
 
+    @Nonnull
+    default List<StageChannel> getStageChannels()
+    {
+        return getVoiceChannels()
+                .stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category} from this guild that matches the provided id.
      * This method is similar to {@link net.dv8tion.jda.api.JDA#getCategoryById(String)}, but it only checks in this

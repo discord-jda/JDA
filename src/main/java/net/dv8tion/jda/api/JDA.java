@@ -1446,6 +1446,15 @@ public interface JDA
         return channel instanceof StageChannel ? (StageChannel) channel : null;
     }
 
+    @Nonnull
+    default List<StageChannel> getStageChannels()
+    {
+        return getVoiceChannels().stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
+    }
+
     /**
      * {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.Category Categories} visible to this JDA session.

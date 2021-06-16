@@ -103,6 +103,32 @@ public enum ChannelType
         return isGuild;
     }
 
+    public boolean isAudio()
+    {
+        switch (this)
+        {
+            case VOICE:
+            case STAGE:
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    public boolean isMessage()
+    {
+        switch (this)
+        {
+            //case NEWS: TODO
+            case TEXT:
+            case PRIVATE:
+            case GROUP:
+                return true;
+            default:
+                return false;
+        }
+    }
+
     /**
      * Static accessor for retrieving a channel type based on its Discord id key.
      *
