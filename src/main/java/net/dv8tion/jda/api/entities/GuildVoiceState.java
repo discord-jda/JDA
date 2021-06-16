@@ -168,4 +168,8 @@ public interface GuildVoiceState
     @Nonnull
     @CheckReturnValue
     RestAction<Void> declineSpeaker();
+
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> inviteSpeaker();
 }

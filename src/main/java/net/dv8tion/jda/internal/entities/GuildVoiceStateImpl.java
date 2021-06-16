@@ -120,6 +120,23 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return new RestActionImpl<>(getJDA(), route, body);
     }
 
+    @Nonnull
+    @Override
+    public RestAction<Void> inviteSpeaker()
+    {
+        if (connectedChannel == null)
+            return new CompletedRestAction<>(api, null);
+        if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+            throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
+
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), member.getId());
+        DataObject body = DataObject.empty()
+                .put("channel_id", connectedChannel.getId())
+                .put("suppress", false)
+                .put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+        return new RestActionImpl<>(getJDA(), route, body);
+    }
+
     @Override
     public boolean isMuted()
     {
