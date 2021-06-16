@@ -144,7 +144,7 @@ public class MessageBuilder implements Appendable
     @DeprecatedSince("4.4.0")
     public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
     {
-        return setEmbeds(embed);
+        return embed == null ? setEmbeds() : setEmbeds(embed);
     }
 
     /**
