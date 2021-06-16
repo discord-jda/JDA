@@ -276,6 +276,18 @@ public class EntityBuilder
 
         if (guildObj.getOwner() == null)
             LOG.debug("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
+        if (guildObj.getMember(api.getSelfUser()) == null)
+        {
+            LOG.error("Guild is missing a SelfMember. GuildId: {}", guildId);
+            LOG.debug("Guild is missing a SelfMember. GuildId: {} JSON: \n{}", guildId, guildJson);
+            // This is actually a gateway request
+            guildObj.retrieveMembersByIds(api.getSelfUser().getIdLong()).onSuccess(m -> {
+                if (m.isEmpty())
+                    LOG.warn("Was unable to recover SelfMember for guild with id {}. This guild might be corrupted!", guildId);
+                else
+                    LOG.debug("Successfully recovered SelfMember for guild with id {}.", guildId);
+            });
+        }
 
 
         createGuildEmotePass(guildObj, emotesArray);
