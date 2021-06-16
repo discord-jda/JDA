@@ -223,10 +223,10 @@ class WebSocketSendingThread implements Runnable
         LOG.debug("Sending voice request {}", packet);
         if (send(packet))
         {
-            //If we didn't get RateLimited, Next request attempt will be 2 seconds from now
+            //If we didn't get RateLimited, Next request attempt will be 10 seconds from now
             // we remove it in VoiceStateUpdateHandler once we hear that it has updated our status
-            // in 2 seconds we will attempt again in case we did not receive an update
-            audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 2000);
+            // in 10 seconds we will attempt again in case we did not receive an update
+            audioRequest.setNextAttemptEpoch(System.currentTimeMillis() + 10000);
             //If we are already in the correct state according to voice state
             // we will not receive a VOICE_STATE_UPDATE that would remove it
             // thus we update it here

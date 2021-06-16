@@ -20,24 +20,23 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.MemberAction;
-import net.dv8tion.jda.api.requests.restaction.RoleAction;
+import net.dv8tion.jda.api.requests.restaction.*;
 import net.dv8tion.jda.api.requests.restaction.order.CategoryOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
 import net.dv8tion.jda.api.requests.restaction.order.RoleOrderAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.api.utils.cache.MemberCacheView;
-import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
-import net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView;
+import net.dv8tion.jda.api.utils.cache.*;
 import net.dv8tion.jda.api.utils.concurrent.Task;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -45,10 +44,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.GuildManagerImpl;
 import net.dv8tion.jda.internal.requests.*;
-import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.ChannelActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.MemberActionImpl;
-import net.dv8tion.jda.internal.requests.restaction.RoleActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.*;
 import net.dv8tion.jda.internal.requests.restaction.order.CategoryOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.ChannelOrderActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.order.RoleOrderActionImpl;
@@ -59,6 +55,7 @@ import net.dv8tion.jda.internal.utils.cache.MemberCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.cache.SortedSnowflakeCacheViewImpl;
 import net.dv8tion.jda.internal.utils.concurrent.task.GatewayTask;
+import okhttp3.RequestBody;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -84,6 +81,7 @@ public class GuildImpl implements Guild
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
+    private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
     private GuildManager manager;
 
@@ -117,6 +115,148 @@ public class GuildImpl implements Guild
     {
         this.id = id;
         this.api = api;
+        if (api.getCacheFlags().stream().anyMatch(CacheFlag::isPresence))
+            memberPresences = new CacheView.SimpleCacheView<>(MemberPresenceImpl.class, null);
+        else
+            memberPresences = null;
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<Command>> retrieveCommands()
+    {
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        return new RestActionImpl<>(getJDA(), route,
+                (response, request) ->
+                        response.getArray()
+                                .stream(DataArray::getObject)
+                                .map(json -> new Command(getJDA(), this, json))
+                                .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Command> retrieveCommandById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
+    {
+        Checks.notNull(command, "CommandData");
+        return new CommandCreateActionImpl(this, command);
+    }
+
+    @Nonnull
+    @Override
+    public CommandListUpdateAction updateCommands()
+    {
+        Route.CompiledRoute route = Route.Interactions.UPDATE_GUILD_COMMANDS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        return new CommandListUpdateActionImpl(getJDA(), this, route);
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction editCommandById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new CommandEditActionImpl(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteCommandById(@Nonnull String commandId)
+    {
+        Checks.isSnowflake(commandId);
+        Route.CompiledRoute route = Route.Interactions.DELETE_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);
+        return new RestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(@Nonnull String commandId)
+    {
+        Checks.isSnowflake(commandId, "ID");
+        Route.CompiledRoute route = Route.Interactions.GET_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), commandId);
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> parsePrivilegesList(response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Map<String, List<CommandPrivilege>>> retrieveCommandPrivileges()
+    {
+        Route.CompiledRoute route = Route.Interactions.GET_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            Map<String, List<CommandPrivilege>> privileges = new HashMap<>();
+            response.getArray().stream(DataArray::getObject).forEach(obj -> {
+                String id = obj.getString("id");
+                List<CommandPrivilege> list = parsePrivilegesList(obj);
+                privileges.put(id, list);
+            });
+            return privileges;
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull Collection<? extends CommandPrivilege> privileges)
+    {
+        Checks.isSnowflake(id, "ID");
+        Checks.noneNull(privileges, "Privileges");
+        Checks.check(privileges.size() <= 10, "Cannot have more than 10 privileges for a command!");
+        Route.CompiledRoute route = Route.Interactions.EDIT_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
+        DataArray array = DataArray.fromCollection(privileges);
+        return new RestActionImpl<>(getJDA(), route, DataObject.empty().put("permissions", array),
+            (response, request) -> parsePrivilegesList(response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Map<String, List<CommandPrivilege>>> updateCommandPrivileges(@Nonnull Map<String, Collection<? extends CommandPrivilege>> privileges)
+    {
+        Checks.notNull(privileges, "Privileges");
+        privileges.forEach((key, value) -> {
+            Checks.isSnowflake(key, "Map Key");
+            Checks.noneNull(value, "Privilege List for Command");
+            Checks.check(value.size() <= 10, "Cannot have more than 10 privileges for a command!");
+        });
+        DataArray array = DataArray.empty();
+        privileges.forEach((commandId, list) -> {
+            DataObject entry = DataObject.empty();
+            entry.put("id", commandId);
+            entry.put("permissions", DataArray.fromCollection(list));
+            array.add(entry);
+        });
+
+        Route.CompiledRoute route = Route.Interactions.EDIT_ALL_COMMAND_PERMISSIONS.compile(getJDA().getSelfUser().getApplicationId(), getId());
+        return new RestActionImpl<>(getJDA(), route, RequestBody.create(Requester.MEDIA_TYPE_JSON, array.toJson()), (response, request) -> {
+            Map<String, List<CommandPrivilege>> map = new HashMap<>();
+            response.getArray().stream(DataArray::getObject).forEach(obj -> {
+                String id = obj.getString("id");
+                List<CommandPrivilege> list = parsePrivilegesList(obj);
+                map.put(id, list);
+            });
+            return map;
+        });
+    }
+
+    private List<CommandPrivilege> parsePrivilegesList(DataObject obj)
+    {
+        return obj.getArray("permissions")
+                .stream(DataArray::getObject)
+                .map(this::parsePrivilege)
+                .collect(Collectors.toList());
+    }
+
+    private CommandPrivilege parsePrivilege(DataObject data)
+    {
+        CommandPrivilege.Type type = CommandPrivilege.Type.fromKey(data.getInt("type", 1));
+        boolean enabled = data.getBoolean("permission");
+        return new CommandPrivilege(type, enabled, data.getUnsignedLong("id"));
     }
 
     @Nonnull
@@ -1030,6 +1170,59 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public RestAction<List<Template>> retrieveTemplates()
+    {
+        if (!this.getSelfMember().hasPermission(Permission.MANAGE_SERVER))
+            throw new InsufficientPermissionException(this, Permission.MANAGE_SERVER);
+
+        final Route.CompiledRoute route = Route.Templates.GET_GUILD_TEMPLATES.compile(getId());
+        return new RestActionImpl<>(getJDA(), route, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            DataArray array = response.getArray();
+            List<Template> templates = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
+            {
+                try
+                {
+                    templates.add(entityBuilder.createTemplate(array.getObject(i)));
+                }
+                catch (Exception e)
+                {
+                    JDAImpl.LOG.error("Error creating template from json", e);
+                }
+            }
+            return Collections.unmodifiableList(templates);
+        });
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Template> createTemplate(@Nonnull String name, @Nullable String description)
+    {
+        checkPermission(Permission.MANAGE_SERVER);
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+
+        Checks.notLonger(name, 100, "Name");
+        if (description != null)
+            Checks.notLonger(description, 120, "Description");
+
+        final Route.CompiledRoute route = Route.Templates.CREATE_TEMPLATE.compile(getId());
+
+        DataObject object = DataObject.empty();
+        object.put("name", name);
+        object.put("description", description);
+
+        return new RestActionImpl<>(getJDA(), route, object, (response, request) ->
+        {
+            EntityBuilder entityBuilder = api.getEntityBuilder();
+            return entityBuilder.createTemplate(response.getObject());
+        });
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> moveVoiceMember(@Nonnull Member member, @Nullable VoiceChannel voiceChannel)
     {
         Checks.notNull(member, "Member");
@@ -1146,7 +1339,10 @@ public class GuildImpl implements Guild
     {
         Route.CompiledRoute route = Route.Guilds.KICK_MEMBER.compile(getId(), userId);
         if (!Helpers.isBlank(reason))
+        {
+            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
             route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+        }
         return new AuditableRestActionImpl<>(getJDA(), route);
     }
 
@@ -1184,12 +1380,16 @@ public class GuildImpl implements Guild
         Checks.check(delDays <= 7, "Deletion Days must not be bigger than 7.");
 
         Route.CompiledRoute route = Route.Guilds.BAN.compile(getId(), userId);
+        DataObject params = DataObject.empty();
         if (!Helpers.isBlank(reason))
-            route = route.withQueryParams("reason", EncodingUtil.encodeUTF8(reason));
+        {
+            Checks.check(reason.length() <= 512, "Reason cannot be longer than 512 characters.");
+            params.put("reason", reason);
+        }
         if (delDays > 0)
-            route = route.withQueryParams("delete-message-days", Integer.toString(delDays));
+            params.put("delete_message_days", delDays);
 
-        return new AuditableRestActionImpl<>(getJDA(), route);
+        return new AuditableRestActionImpl<>(getJDA(), route, params);
     }
 
     @Nonnull
@@ -1384,8 +1584,8 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
     }
 
@@ -1406,8 +1606,8 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
     }
 
@@ -1440,8 +1640,8 @@ public class GuildImpl implements Guild
         checkPermission(Permission.MANAGE_CHANNEL);
         Checks.notBlank(name, "Name");
         name = name.trim();
-
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(Category.class, name, this, ChannelType.CATEGORY);
     }
 
@@ -1760,6 +1960,12 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    @Nullable
+    public CacheView.SimpleCacheView<MemberPresenceImpl> getPresenceView()
+    {
+        return memberPresences;
     }
 
     // -- Member Tracking --

@@ -107,10 +107,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setName(@Nonnull String name)
     {
-        Checks.notNull(name, "Channel name");
-        if (name.length() < 1 || name.length() > 100)
-            throw new IllegalArgumentException("Provided channel name must be 1 to 100 characters in length");
-
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         this.name = name;
         return this;
     }

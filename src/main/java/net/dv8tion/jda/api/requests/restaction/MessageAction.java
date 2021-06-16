@@ -16,12 +16,17 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.MessageBuilder;
-import net.dv8tion.jda.api.entities.IMentionable;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
@@ -33,19 +38,20 @@ import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Extension of a default {@link net.dv8tion.jda.api.requests.RestAction RestAction}
  * that allows setting message information before sending!
  *
- * <p>This is available as return type of all sendMessage/sendFile methods in {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}
- * or by using {@link net.dv8tion.jda.api.MessageBuilder#sendTo(net.dv8tion.jda.api.entities.MessageChannel) MessageBuilder.sendTo(MessageChannel)}
+ * <p>This is available as return type of all sendMessage/sendFile methods in {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
  *
  * <p>When updating a Message, unset fields will be ignored by default. To override existing fields with no value (remove content)
  * you can use {@link #override(boolean) override(true)}. Setting this to {@code true} will cause all fields to be considered
@@ -65,7 +71,7 @@ import java.util.function.Consumer;
  *      MessageChannel channel = event.getChannel();
  *      channel.sendMessage("This has an embed with an image!")
  *             .addFile(new File("dog.png"))
- *             .embed(new EmbedBuilder()
+ *             .setEmbeds(new EmbedBuilder()
  *                 .setImage("attachment://dog.png")
  *                 .build())
  *             .queue(); // this actually sends the information to discord
@@ -76,18 +82,18 @@ import java.util.function.Consumer;
  *
  * @see    Message#editMessage(Message)
  * @see    Message#editMessage(CharSequence)
- * @see    Message#editMessage(MessageEmbed)
+ * @see    Message#editMessageEmbeds(MessageEmbed...)
  * @see    Message#editMessageFormat(String, Object...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(Message)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(CharSequence)
- * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)
+ * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendMessageFormat(String, Object...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, AttachmentOption...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(File, String, AttachmentOption...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, AttachmentOption...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, AttachmentOption...)
  */
-public interface MessageAction extends RestAction<Message>, Appendable
+public interface MessageAction extends RestAction<Message>, Appendable, AllowedMentions<MessageAction>
 {
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed by default.
@@ -110,7 +116,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
-        MessageActionImpl.setDefaultMentions(allowedMentions);
+        AllowedMentions.setDefaultMentions(allowedMentions);
     }
 
     /**
@@ -122,7 +128,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     static EnumSet<Message.MentionType> getDefaultMentions()
     {
-        return MessageActionImpl.getDefaultMentions();
+        return AllowedMentions.getDefaultMentions();
     }
 
     /**
@@ -135,7 +141,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     static void setDefaultMentionRepliedUser(boolean mention)
     {
-        MessageActionImpl.setDefaultMentionRepliedUser(mention);
+        AllowedMentions.setDefaultMentionRepliedUser(mention);
     }
 
     /**
@@ -149,7 +155,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      */
     static boolean isDefaultMentionRepliedUser()
     {
-        return MessageActionImpl.isDefaultMentionRepliedUser();
+        return AllowedMentions.isDefaultMentionRepliedUser();
     }
 
     /**
@@ -374,7 +380,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      * <br>{@link #isEmpty()} will result in {@code true} after this has been performed!
      *
      * <p>Convenience over using
-     * {@code content(null).nonce(null).embed(null).tts(false).override(false).clearFiles()}
+     * {@code content(null).nonce(null).setEmbeds(emptyList()).tts(false).override(false).clearFiles()}
      *
      * @return Updated MessageAction for chaining convenience
      */
@@ -433,10 +439,60 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
      *
      * @return Updated MessageAction for chaining convenience
+     *
+     * @deprecated This is deprecated in favor of {@link #setEmbeds(MessageEmbed...)}
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval(deadline="5.0.0")
+    @ReplaceWith("setEmbeds(embed)")
+    @DeprecatedSince("4.4.0")
     MessageAction embed(@Nullable final MessageEmbed embed);
+
+    /**
+     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * that should be used for this Message.
+     * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
+     *
+     * @param  embeds
+     *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that should
+     *         be attached to this message, {@code Collections.emptyList()} to use no embed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is not sendable according to
+     *         {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+
+    /**
+     * Sets up to 10 {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}
+     * that should be used for this Message.
+     * Refer to {@link net.dv8tion.jda.api.EmbedBuilder EmbedBuilder} for more information.
+     *
+     * @param  embeds
+     *         The {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds} that should
+     *         be attached to this message, {@code Collections.emptyList()} to use no embed.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If any of the provided MessageEmbeds is not sendable according to
+     *         {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() MessageEmbed.isSendable()}!
+     *         If the provided MessageEmbed is an unknown implementation this operation will fail as we are unable to deserialize it.
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return setEmbeds(Arrays.asList(embeds));
+    }
 
     /**
      * {@inheritDoc}
@@ -527,8 +583,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided data is {@code null} or the provided name is blank or {@code null}
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -556,8 +611,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided data is {@code null} or the provided name is blank or {@code null}
      *         or if the provided data exceeds the maximum file size of the currently logged in account
@@ -589,8 +643,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided file is {@code null} or if the provided File is bigger than the maximum file size of the currently logged in account
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
@@ -625,8 +678,7 @@ public interface MessageAction extends RestAction<Message>, Appendable
      *         Possible options to apply to this attachment, such as marking it as spoiler image
      *
      * @throws java.lang.IllegalStateException
-     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method,
-     *         or if this MessageAction will perform an edit operation on an existing Message (see {@link #isEdit()})
+     *         If the file limit of {@value Message#MAX_FILE_AMOUNT} has been reached prior to calling this method
      * @throws java.lang.IllegalArgumentException
      *         If the provided file is {@code null} or the provided name is blank or {@code null}
      *         or if the provided file is bigger than the maximum file size of the currently logged in account,
@@ -688,6 +740,171 @@ public interface MessageAction extends RestAction<Message>, Appendable
     MessageAction clearFiles(@Nonnull Consumer<InputStream> finalizer);
 
     /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction retainFilesById(@Nonnull Collection<String> ids);
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction retainFilesById(@Nonnull String... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays.asList(ids));
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFilesById(Arrays.asList("123"))} would remove all attachments except for the one with the id 123.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  ids
+     *         The ids for the attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction retainFilesById(long... ids)
+    {
+        Checks.notNull(ids, "IDs");
+        return retainFilesById(Arrays
+            .stream(ids)
+            .mapToObj(Long::toUnsignedString)
+            .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Removes all attachments that are currently attached to the existing message except for the ones provided.
+     * <br>For example {@code retainFiles(message.getAttachments().subList(1, message.getAttachments().size()))} would only remove the first attachment from the message.
+     *
+     * <p>To remove all attachments from the message you can pass an empty list.
+     *
+     * @param  attachments
+     *         The attachments which should be retained on the message
+     *
+     * @throws IllegalArgumentException
+     *         If any of the ids is null or not a valid snowflake
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
+    {
+        Checks.noneNull(attachments, "Attachments");
+        return retainFilesById(attachments
+            .stream()
+            .map(Message.Attachment::getId)
+            .collect(Collectors.toList())
+        );
+    }
+
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 actions rows are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    {
+        Checks.noneNull(rows, "ActionRows");
+        return setActionRows(rows.toArray(new ActionRow[0]));
+    }
+
+    /**
+     * Set the action rows for the message.
+     *
+     * @param  rows
+     *         The new action rows
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or more than 5 actions rows are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction setActionRows(@Nonnull ActionRow... rows);
+
+    /**
+     * Create one row of up to 5 interactive message {@link Component components}.
+     * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If anything is null, empty, or more than 5 components are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setActionRow(@Nonnull Collection<? extends Component> components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
+
+    /**
+     * Create one row of up to 5 interactive message {@link Component components}.
+     * <br>This is identical to {@code setActionRows(ActionRow.of(components))}
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If anything is null, empty, or more than 5 components are provided
+     *
+     * @return Updated MessageAction for chaining convenience
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction setActionRow(@Nonnull Component... components)
+    {
+        return setActionRows(ActionRow.of(components));
+    }
+
+
+    /**
      * Whether all fields should be considered when editing a message
      *
      * @param  bool
@@ -698,187 +915,4 @@ public interface MessageAction extends RestAction<Message>, Appendable
     @Nonnull
     @CheckReturnValue
     MessageAction override(final boolean bool);
-
-    /**
-     * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed.
-     * <br>If a message is sent with an empty Set of MentionTypes, then it will not ping any User, Role or {@code @everyone}/{@code @here},
-     * while still showing up as mention tag.
-     * <p>
-     * If {@code null} is provided to this method, then all Types will be pingable
-     * (unless whitelisting via one of the {@code mention*} methods is used).
-     * <p>
-     * Note: A default for this can be set using {@link #setDefaultMentions(Collection) MessageAction.setDefaultMentions(Collection)}.
-     *
-     * @param  allowedMentions
-     *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
-     *
-     * @return Updated MessageAction for chaining convenience
-     */
-    @Nonnull
-    @CheckReturnValue
-    MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions);
-
-    /**
-     * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
-     * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
-     *
-     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  mentions
-     *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    MessageAction mention(@Nonnull IMentionable... mentions);
-
-    /**
-     * Used to provide a whitelist for {@link net.dv8tion.jda.api.entities.User Users}, {@link net.dv8tion.jda.api.entities.Member Members}
-     * and {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     * <br>On other types of {@link net.dv8tion.jda.api.entities.IMentionable IMentionable}, this does nothing.
-     *
-     * <p><b>Note:</b> When a User/Member is whitelisted this way, then parsing of User mentions is automatically disabled (same applies to Roles).
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  mentions
-     *         Users, Members and Roles that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageAction mention(@Nonnull Collection<? extends IMentionable> mentions)
-    {
-        Checks.noneNull(mentions, "Mention");
-        return mention(mentions.toArray(new IMentionable[0]));
-    }
-
-    /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     *
-     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  userIds
-     *         Ids of Users that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    MessageAction mentionUsers(@Nonnull String... userIds);
-
-    /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.User Users} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     *
-     * <p><b>Note:</b> When a User is whitelisted this way, then parsing of User mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  userIds
-     *         Ids of Users that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageAction mentionUsers(@Nonnull long... userIds)
-    {
-        Checks.notNull(userIds, "UserId array");
-        String[] stringIds = new String[userIds.length];
-        for (int i = 0; i < userIds.length; i++)
-        {
-            stringIds[i] = Long.toUnsignedString(userIds[i]);
-        }
-        return mentionUsers(stringIds);
-    }
-
-    /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     *
-     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  roleIds
-     *         Ids of Roles that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    MessageAction mentionRoles(@Nonnull String... roleIds);
-
-    /**
-     * Used to provide a whitelist of {@link net.dv8tion.jda.api.entities.Role Roles} that should be pinged,
-     * even when they would not be pinged otherwise according to the Set of allowed mention types.
-     *
-     * <p><b>Note:</b> When a Role is whitelisted this way, then parsing of Role mentions is automatically disabled.
-     * <br>Also note that whitelisting users or roles implicitly disables parsing of other mentions, if not otherwise set via
-     * {@link #setDefaultMentions(Collection)} or {@link #allowedMentions(Collection)}.
-     *
-     * @param  roleIds
-     *         Ids of Roles that should be explicitly whitelisted to be pingable.
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided
-     *
-     * @return Updated MessageAction for chaining convenience
-     *
-     * @see    #allowedMentions(Collection)
-     * @see    #setDefaultMentions(Collection)
-     */
-    @Nonnull
-    @CheckReturnValue
-    default MessageAction mentionRoles(@Nonnull long... roleIds)
-    {
-        Checks.notNull(roleIds, "RoleId array");
-        String[] stringIds = new String[roleIds.length];
-        for (int i = 0; i < roleIds.length; i++)
-        {
-            stringIds[i] = Long.toUnsignedString(roleIds[i]);
-        }
-        return mentionRoles(stringIds);
-    }
 }

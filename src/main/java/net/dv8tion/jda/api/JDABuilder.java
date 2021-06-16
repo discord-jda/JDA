@@ -95,67 +95,6 @@ public class JDABuilder
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
     protected GatewayEncoding encoding = GatewayEncoding.JSON;
 
-    /**
-     * Creates a completely empty JDABuilder.
-     *
-     * <br>If you use this, you need to set the token using
-     * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
-     *
-     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
-     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Refer to {@link #create(String, Collection)}, {@link #createDefault(String, Collection)}, and {@link #createLight(String, Collection)} instead.
-     *
-     * @see #JDABuilder(String)
-     */
-    @Deprecated
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("JDABuilder.create(GatewayIntent...)")
-    public JDABuilder() {}
-
-    /**
-     * Creates a JDABuilder with the predefined token.
-     *
-     * @param token
-     *        The bot token to use
-     *
-     * @deprecated Due to breaking changes to the discord api gateway you are now required to explicitly
-     * state which events your bot needs. For this reason we have changed to new factory methods that require setting
-     * the gateway intents. Refer to {@link #create(String, Collection)}, {@link #createDefault(String, Collection)}, and {@link #createLight(String, Collection)} instead.
-     *
-     * @see   #setToken(String)
-     */
-    @Deprecated
-    @DeprecatedSince("4.2.0")
-    @ReplaceWith("JDABuilder.create(String, GatewayIntent...)")
-    public JDABuilder(@Nullable String token)
-    {
-        this.token = token;
-    }
-
-    /**
-     * Creates a completely empty JDABuilder.
-     * <br>If you use this, you need to set the token using
-     * {@link net.dv8tion.jda.api.JDABuilder#setToken(String) setToken(String)}
-     * before calling {@link net.dv8tion.jda.api.JDABuilder#build() build()}
-     *
-     * @param  accountType
-     *         The {@link net.dv8tion.jda.api.AccountType AccountType}.
-     *
-     * @throws IllegalArgumentException
-     *         If the given AccountType is {@code null}
-     *
-     * @deprecated This will be removed in a future version, replace with {@link #create(String, Collection)}.
-     *             We no longer support login with {@link AccountType#CLIENT}.
-     */
-    @Deprecated
-    @ReplaceWith("JDABuilder.create(String)")
-    @DeprecatedSince("4.2.0")
-    public JDABuilder(@Nonnull AccountType accountType)
-    {
-        Checks.check(accountType == AccountType.BOT, "Client accounts are no longer supported!");
-    }
-
     private JDABuilder(@Nullable String token, int intents)
     {
         this.token = token;
@@ -274,7 +213,7 @@ public class JDABuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .disableCache(CacheFlag.CLIENT_STATUS, CacheFlag.ACTIVITY)
+                   .disableCache(CacheFlag.getPrivileged())
                    .setLargeThreshold(250);
     }
 

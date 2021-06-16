@@ -61,7 +61,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         if (color == 0)
             color = Role.DEFAULT_COLOR_RAW;
         int position = rolejson.getInt("position");
-        long permissions = rolejson.getLong("permissions_new");
+        long permissions = rolejson.getLong("permissions");
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
 

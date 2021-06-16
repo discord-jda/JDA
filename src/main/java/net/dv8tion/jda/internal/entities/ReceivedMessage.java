@@ -18,11 +18,12 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -34,6 +35,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import org.apache.commons.collections4.Bag;
 import org.apache.commons.collections4.CollectionUtils;
@@ -66,9 +68,13 @@ public class ReceivedMessage extends AbstractMessage
     protected final List<MessageReaction> reactions;
     protected final List<Attachment> attachments;
     protected final List<MessageEmbed> embeds;
+    protected final List<MessageSticker> stickers;
+    protected final List<ActionRow> components;
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
     protected final int flags;
+
+    protected InteractionHook interactionHook = null; // late-init
 
     // LAZY EVALUATED
     protected String altContent = null;
@@ -85,7 +91,7 @@ public class ReceivedMessage extends AbstractMessage
         long id, MessageChannel channel, MessageType type, Message referencedMessage,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, int flags)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -103,9 +109,17 @@ public class ReceivedMessage extends AbstractMessage
         this.reactions = Collections.unmodifiableList(reactions);
         this.attachments = Collections.unmodifiableList(attachments);
         this.embeds = Collections.unmodifiableList(embeds);
+        this.stickers = Collections.unmodifiableList(stickers);
+        this.components = Collections.unmodifiableList(components);
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
         this.flags = flags;
+    }
+
+    public ReceivedMessage withHook(InteractionHook hook)
+    {
+        this.interactionHook = hook;
+        return this;
     }
 
     @Nonnull
@@ -722,6 +736,13 @@ public class ReceivedMessage extends AbstractMessage
         return embeds;
     }
 
+    @Nonnull
+    @Override
+    public List<ActionRow> getActionRows()
+    {
+        return components;
+    }
+
     private Emote matchEmote(Matcher m)
     {
         long emoteId = MiscUtil.parseSnowflake(m.group(2));
@@ -756,6 +777,13 @@ public class ReceivedMessage extends AbstractMessage
         return reactions;
     }
 
+    @Nonnull
+    @Override
+    public List<MessageSticker> getStickers()
+    {
+        return this.stickers;
+    }
+
     @Override
     public boolean isWebhookMessage()
     {
@@ -779,32 +807,38 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
-        return editMessage(new MessageBuilder().append(newContent).build());
+        checkUser();
+        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
-        return editMessage(new MessageBuilder().setEmbed(newContent).build());
+        checkUser();
+        return ((MessageActionImpl) channel.editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
     public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
-        Checks.notBlank(format, "Format String");
-        return editMessage(new MessageBuilder().appendFormat(format, args).build());
+        checkUser();
+        return ((MessageActionImpl) channel.editMessageFormatById(getId(), format, args)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
     public MessageAction editMessage(@Nonnull Message newContent)
     {
+        checkUser();
+        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
+    }
+
+    private void checkUser()
+    {
         if (!getJDA().getSelfUser().equals(getAuthor()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
-
-        return getChannel().editMessageById(getIdLong(), newContent);
     }
 
     @Nonnull

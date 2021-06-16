@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-
 /**
  * Represents the type of account that is logged in.
  * <br>Used to differentiate between Bots and Client accounts.
@@ -26,14 +23,5 @@ import net.dv8tion.jda.annotations.ForRemoval;
 public enum AccountType
 {
     /** An OAuth2 Bot which was created by an application */
-    BOT,
-    /**
-     * A User-Account which can be used via the official Discord Client
-     *
-     * @deprecated This will be removed in a future version
-     */
-    @ForRemoval
-    @Deprecated
-    @DeprecatedSince("4.2.0")
-    CLIENT
+    BOT
 }

@@ -106,7 +106,8 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must have 2-100 characters in length!");
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         this.name = name;
         return this;
     }

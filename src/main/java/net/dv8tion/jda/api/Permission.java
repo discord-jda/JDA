@@ -55,7 +55,7 @@ public enum Permission
     USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
     // Voice Permissions
-    VOICE_STREAM(      9, true, true, "Stream"),
+    VOICE_STREAM(      9, true, true, "Video"),
     VOICE_CONNECT(    20, true, true, "Connect"),
     VOICE_SPEAK(      21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
@@ -111,7 +111,7 @@ public enum Permission
      */
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, REQUEST_TO_SPEAK);
+                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER, REQUEST_TO_SPEAK);
 
     private final int offset;
     private final long raw;

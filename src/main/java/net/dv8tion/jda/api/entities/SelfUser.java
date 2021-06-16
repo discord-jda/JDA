@@ -15,14 +15,10 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.managers.AccountManager;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents the currently logged in account.
@@ -31,6 +27,26 @@ import javax.annotation.Nullable;
  */
 public interface SelfUser extends User
 {
+    /**
+     * The associated application id for the bot account.
+     * <br>For most bots this is identical to the user id.
+     *
+     * @return The application id
+     */
+    long getApplicationIdLong();
+
+    /**
+     * The associated application id for the bot account.
+     * <br>For most bots this is identical to the user id.
+     *
+     * @return The application id
+     */
+    @Nonnull
+    default String getApplicationId()
+    {
+        return Long.toUnsignedString(getApplicationIdLong());
+    }
+
 
     /**
      * The status of this account's verification.
@@ -48,88 +64,6 @@ public interface SelfUser extends User
      * @return True, if this account has MFA protecting it.
      */
     boolean isMfaEnabled();
-
-    /**
-     * Used to get the email of the currently logged in account.
-     * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} method only!
-     *
-     * @throws AccountTypeException
-     *         If this method is called when {@link net.dv8tion.jda.api.JDA#getAccountType() JDA#getAccountType()} does not return
-     *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
-     *
-     * @return The email of the currently logged in account.
-     *
-     * @deprecated This is no longer supported
-     */
-    @Nonnull
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    default String getEmail()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Shows whether there has ever been a mobile app connected to this account.
-     * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} method only!
-     *
-     * @throws AccountTypeException
-     *         If this method is called when {@link net.dv8tion.jda.api.JDA#getAccountType() JDA#getAccountType()} does not return
-     *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
-     *
-     * @return {@code true} if the account is linked with a mobile app, otherwise {@code false}
-     *
-     * @deprecated This is no longer supported
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    default boolean isMobile()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * The Discord Nitro status of this account.
-     * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} method only!
-     *
-     * @throws AccountTypeException
-     *         If this method is called when {@link net.dv8tion.jda.api.JDA#getAccountType() JDA#getAccountType()} does not return
-     *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
-     *
-     * @return The Discord Nitro status of the currently logged in account.
-     *
-     * @deprecated This is no longer supported
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    default boolean isNitro()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Used to get the phone number of the currently logged in account if a phone number has been attached to it.
-     * <br><b>NOTE:</b> this is a {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT} method only!
-     *
-     * @throws AccountTypeException
-     *         If this method is called when {@link net.dv8tion.jda.api.JDA#getAccountType() JDA#getAccountType()} does not return
-     *         {@link net.dv8tion.jda.api.AccountType#CLIENT AccountType.CLIENT}. E.g: If the logged in account isn't a Client account!
-     *
-     * @return The phone of the currently logged in account or null if there's no number associated
-     *
-     * @deprecated This is no longer supported
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    @Nullable
-    default String getPhoneNumber()
-    {
-        throw new UnsupportedOperationException();
-    }
 
     /**
      * Returns the maximum size for files that can be uploaded with this account.
