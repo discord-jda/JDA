@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nonnull;
-
 /**
  * Represents a Stage Channel, also known as Radio Channel.
  *
@@ -26,11 +24,5 @@ import javax.annotation.Nonnull;
  */
 public interface StageChannel extends VoiceChannel
 {
-    /**
-     * The topic of a stage channel.
-     *
-     * @return The topic
-     */
-    @Nonnull
-    String getTopic();
+    // TODO: Stage Instance https://discord.com/developers/docs/resources/stage-instance
 }

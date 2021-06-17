@@ -23,8 +23,6 @@ import javax.annotation.Nonnull;
 
 public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
 {
-    private String topic = "";
-
     public StageChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
@@ -35,18 +33,5 @@ public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
     public ChannelType getType()
     {
         return ChannelType.STAGE;
-    }
-
-    @Nonnull
-    @Override
-    public String getTopic()
-    {
-        return topic;
-    }
-
-    public StageChannelImpl setTopic(String topic)
-    {
-        this.topic = topic;
-        return this;
     }
 }

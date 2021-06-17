@@ -138,8 +138,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setTopic(String topic)
     {
-        if (type != ChannelType.TEXT && type != ChannelType.STAGE)
-            throw new UnsupportedOperationException("Can only set the topic for a TextChannel or StageChannel!");
+        if (type != ChannelType.TEXT)
+            throw new UnsupportedOperationException("Can only set the topic for a TextChannel!");
         if (topic != null && topic.length() > 1024)
             throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
         this.topic = topic;
