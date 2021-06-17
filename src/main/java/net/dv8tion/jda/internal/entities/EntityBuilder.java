@@ -998,6 +998,9 @@ public class EntityBuilder
             .setBitrate(json.getInt("bitrate"))
             .setRegion(json.getString("rtc_region", null));
 
+        if (channel instanceof StageChannelImpl)
+            ((StageChannelImpl) channel).setTopic(json.getString("topic", null));
+
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
             getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, id);
