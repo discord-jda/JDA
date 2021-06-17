@@ -30,7 +30,7 @@ import java.time.OffsetDateTime;
  *
  * @see Member#getVoiceState()
  */
-public interface GuildVoiceState
+public interface GuildVoiceState extends ISnowflake
 {
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this VoiceState
@@ -129,10 +129,24 @@ public interface GuildVoiceState
      * Returns the {@link net.dv8tion.jda.api.entities.Member Member} corresponding to this GuildVoiceState instance
      * (Backreference)
      *
+     *
+     * @throws IllegalStateException
+     *         If {@link #isMember()} is false
+     *
      * @return the Member that holds this GuildVoiceState
      */
     @Nonnull
     Member getMember();
+
+    /**
+     * Whether this voice state is for a {@link Guild} {@link Member} or not.
+     *
+     * <p>Public stage instances can contain voice states for users that have not joined the guild.
+     * In that case this will return false and {@link #getMember()} will throw {@link IllegalStateException}.
+     *
+     * @return True, if this voice state is for a guild member
+     */
+    boolean isMember();
 
     /**
      * Used to determine if the {@link net.dv8tion.jda.api.entities.Member Member} is currently in a {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}

@@ -36,6 +36,7 @@ import java.time.OffsetDateTime;
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
     private final JDA api;
+    private final long userId;
     private Guild guild;
     private Member member;
 
@@ -49,11 +50,17 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean suppressed = false;
     private boolean stream = false;
 
+    public GuildVoiceStateImpl(Guild guild, long userId)
+    {
+        this.api = guild.getJDA();
+        this.guild = guild;
+        this.userId = userId;
+    }
+
     public GuildVoiceStateImpl(Member member)
     {
-        this.api = member.getJDA();
-        this.guild = member.getGuild();
-        this.member = member;
+        this(member.getGuild(), member.getIdLong());
+        setMember(member);
     }
 
     @Override
@@ -113,7 +120,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
 
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), member.getId());
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());
         DataObject body = DataObject.empty()
                 .put("channel_id", connectedChannel.getId())
                 .put("suppress", suppress);
@@ -129,7 +136,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
 
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), member.getId());
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());
         DataObject body = DataObject.empty()
                 .put("channel_id", connectedChannel.getId())
                 .put("suppress", false)
@@ -193,10 +200,18 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public Member getMember()
     {
+        if (!isMember())
+            throw new IllegalStateException("Cannot get the member for a non-member voice state! This voice state is for an audience member of a public stage instance.");
         Member realMember = getGuild().getMemberById(member.getIdLong());
         if (realMember != null)
             member = realMember;
         return member;
+    }
+
+    @Override
+    public boolean isMember()
+    {
+        return member != null;
     }
 
     @Override
@@ -206,9 +221,15 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
+    public long getIdLong()
+    {
+        return userId;
+    }
+
+    @Override
     public int hashCode()
     {
-        return getMember().hashCode();
+        return Long.hashCode(userId);
     }
 
     @Override
@@ -219,16 +240,22 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         if (!(obj instanceof GuildVoiceState))
             return false;
         GuildVoiceState oStatus = (GuildVoiceState) obj;
-        return this.getMember().equals(oStatus.getMember());
+        return userId == oStatus.getIdLong();
     }
 
     @Override
     public String toString()
     {
-        return "VS:" + getGuild().getName() + ':' + getMember().getEffectiveName();
+        return "VS:" + getGuild().getName() + '(' + getId() + ')';
     }
 
     // -- Setters --
+
+    public GuildVoiceStateImpl setMember(Member member)
+    {
+        this.member = member;
+        return this;
+    }
 
     public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
     {
