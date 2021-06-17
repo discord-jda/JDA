@@ -352,17 +352,17 @@ public class MessageEmbed implements SerializableData
             length = 0;
 
             if (title != null)
-                length += title.length();
+                length += Helpers.codePointLength(title);
             if (description != null)
-                length += description.length();
+                length += Helpers.codePointLength(description);
             if (author != null)
-                length += author.getName().length();
+                length += Helpers.codePointLength(author.getName());
             if (footer != null)
-                length += footer.getText().length();
+                length += Helpers.codePointLength(footer.getText());
             if (fields != null)
             {
                 for (Field f : fields)
-                    length += f.getName().length() + f.getValue().length();
+                    length += Helpers.codePointLength(f.getName()) + Helpers.codePointLength(f.getValue());
             }
 
             return length;
