@@ -5083,7 +5083,7 @@ public interface Guild extends ISnowflake
     ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel VoiceChannel} in this Guild.
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
@@ -5115,7 +5115,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel VoiceChannel} in this Guild.
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
      * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by

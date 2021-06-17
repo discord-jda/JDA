@@ -1584,7 +1584,6 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
     }
@@ -1606,7 +1605,6 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
     }
@@ -1628,8 +1626,7 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-
-        Checks.check(name.length() > 0 && name.length() <= 100, "Provided name must be 1 - 100 characters in length");
+        Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(StageChannel.class, name, this, ChannelType.STAGE).setParent(parent);
     }
 
