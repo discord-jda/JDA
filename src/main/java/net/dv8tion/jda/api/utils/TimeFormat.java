@@ -28,15 +28,15 @@ import java.util.regex.Pattern;
 public enum TimeFormat
 {
     /** Formats time as {@code 18:49} or {@code 6:49 PM} */
-    TIME("t"), // 18:49
+    TIME_SHORT("t"), // 18:49
     /** Formats time as {@code 18:49:26} or {@code 6:49:26 PM} */
     TIME_LONG("T"), // 18:49:26
     /** Formats date as {@code 16/06/2021} or {@code 06/16/2021} */
-    ISO_DATE("d"), // 16/06/2021
+    DATE_SHORT("d"), // 16/06/2021
     /** Formats date as {@code 16 June 2021} */
-    DATE("D"), // 16 June 2021
+    DATE_LONG("D"), // 16 June 2021
     /** Formats date and time as {@code 16 June 2021 18:49} or {@code 16 June 2021 6:49 PM} */
-    DATE_TIME("f"), // 16 June 2021 18:49
+    DATE_TIME_SHORT("f"), // 16 June 2021 18:49
     /** Formats date and time as {@code Wednesday, 16 June 2021 18:49} or {@code Wednesday, 16 June 2021 6:49 PM} */
     DATE_TIME_LONG("F"), // Wednesday, 16 June 2021 18:49
     /** Formats date and time as relative {@code 18 minutes ago} or {@code 2 days ago} */
@@ -58,7 +58,7 @@ public enum TimeFormat
             if (format.letter.equals(key))
                 return format;
         }
-        return DATE_TIME;
+        return DATE_TIME_SHORT;
     }
 
     @Nonnull
