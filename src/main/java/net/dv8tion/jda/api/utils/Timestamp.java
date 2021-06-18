@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.api.utils;
 
+import net.dv8tion.jda.internal.utils.Checks;
+
 import javax.annotation.Nonnull;
 import java.time.Duration;
 import java.time.Instant;
@@ -27,6 +29,7 @@ public class Timestamp
 
     public Timestamp(TimeFormat format, long timestamp)
     {
+        Checks.notNull(format, "TimeFormat");
         this.format = format;
         this.timestamp = timestamp;
     }
@@ -57,6 +60,7 @@ public class Timestamp
     @Nonnull
     public Timestamp plus(@Nonnull Duration duration)
     {
+        Checks.notNull(duration, "Duration");
         return plus(duration.toMillis());
     }
 
@@ -69,12 +73,13 @@ public class Timestamp
     @Nonnull
     public Timestamp minus(@Nonnull Duration duration)
     {
+        Checks.notNull(duration, "Duration");
         return plus(duration.toMillis());
     }
 
     @Override
     public String toString()
     {
-        return "<t:" + timestamp / 1000 + ":" + format.letter + ">";
+        return "<t:" + timestamp / 1000 + ":" + format.getFlag() + ">";
     }
 }

@@ -43,11 +43,20 @@ public enum TimeFormat
     RELATIVE("R"),
     ;
 
+    public static final TimeFormat DEFAULT = DATE_TIME_SHORT;
     public static final Pattern MARKDOWN = Pattern.compile("<t:(?<time>-?\\d{1,17})(?::(?<format>[tTdDfFR]))?>");
-    public final String letter;
 
-    TimeFormat(String letter) {
-        this.letter = letter;
+    private final String flag;
+
+    TimeFormat(String flag)
+    {
+        this.flag = flag;
+    }
+
+    @Nonnull
+    public String getFlag()
+    {
+        return flag;
     }
 
     @Nonnull
@@ -55,19 +64,21 @@ public enum TimeFormat
     {
         for (TimeFormat format : values())
         {
-            if (format.letter.equals(key))
+            if (format.flag.equals(key))
                 return format;
         }
-        return DATE_TIME_SHORT;
+        return DEFAULT;
     }
 
     @Nonnull
     public static Timestamp parse(@Nonnull String markdown)
     {
+        Checks.notNull(markdown, "Markdown");
         Matcher matcher = MARKDOWN.matcher(markdown);
         if (!matcher.find())
             throw new IllegalArgumentException("Invalid markdown format! Provided: " + markdown);
-        return new Timestamp(fromKey(matcher.group("format")), Long.parseLong(matcher.group("time")) * 1000);
+        String format = matcher.group("format");
+        return new Timestamp(format == null ? DEFAULT : fromKey(format), Long.parseLong(matcher.group("time")) * 1000);
     }
 
     @Nonnull
@@ -81,13 +92,20 @@ public enum TimeFormat
     @Nonnull
     public String format(long timestamp)
     {
-        return "<t:" + timestamp / 1000 + ":" + letter + ">";
+        return "<t:" + timestamp / 1000 + ":" + flag + ">";
     }
 
     @Nonnull
     public Timestamp atInstant(@Nonnull Instant instant)
     {
+        Checks.notNull(instant, "Instant");
         return new Timestamp(this, instant.toEpochMilli());
+    }
+
+    @Nonnull
+    public Timestamp atTimestamp(long timestamp)
+    {
+        return new Timestamp(this, timestamp);
     }
 
     @Nonnull
