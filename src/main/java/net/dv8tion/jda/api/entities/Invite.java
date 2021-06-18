@@ -358,7 +358,7 @@ public interface Invite
         /**
          * The name of this channel.
          *
-         * @return The channels's name
+         * @return The channel's name
          */
         @Nonnull
         String getName();
@@ -403,7 +403,7 @@ public interface Invite
         /**
          * The name of this guild.
          *
-         * @return The guilds's name
+         * @return The guild's name
          */
         @Nonnull
         String getName();
@@ -515,7 +515,7 @@ public interface Invite
          * {@link #resolve(net.dv8tion.jda.api.JDA, java.lang.String, boolean) Invite.resolve()} method with the
          * {@code withCounts} boolean set to {@code true}.
          *
-         * @return The names of the groups's users or null if not preset in the invite
+         * @return The names of the group's users or null if not preset in the invite
          */
         @Nullable
         List<String> getUsers();
