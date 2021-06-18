@@ -145,7 +145,7 @@ public interface Invite
     /**
      * The target type of this invite.
      *
-     * @return The invite's target type or {@link TargetType#UNKNOWN}
+     * @return The invite's target type or {@link TargetType#NONE}
      */
     @Nonnull
     Invite.TargetType getTargetType();
@@ -614,8 +614,13 @@ public interface Invite
         EMBEDDED_APPLICATION(2),
 
         /**
-         * Unknown invite target type.
-         * Either this invite does not have a target type or Discord implemented a new invite target type and JDA has not yet implemented support for it.
+         * This invite does not have a target type.
+         */
+        NONE(0),
+
+        /**
+         * Unknown Discord invite target type. Should never happen and would only possibly happen if Discord implemented a new
+         * target type and JDA had yet to implement support for it.
          */
         UNKNOWN(-1);
 

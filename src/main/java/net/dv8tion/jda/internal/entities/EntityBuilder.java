@@ -1556,7 +1556,7 @@ public class EntityBuilder
 
         final DataObject channelObject = object.getObject("channel");
         final ChannelType channelType = ChannelType.fromId(channelObject.getInt("type"));
-        final Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", -1));
+        final Invite.TargetType targetType = Invite.TargetType.fromId(object.getInt("target_type", 0));
 
         final Invite.InviteType type;
         final Invite.Guild guild;

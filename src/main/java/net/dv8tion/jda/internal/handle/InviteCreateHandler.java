@@ -74,7 +74,7 @@ public class InviteCreateHandler extends SocketHandler
         InviteImpl.ChannelImpl channel = new InviteImpl.ChannelImpl(realChannel);
         InviteImpl.GuildImpl guild = new InviteImpl.GuildImpl(realGuild);
 
-        final Invite.TargetType targetType = Invite.TargetType.fromId(content.getInt("target_type", -1));
+        final Invite.TargetType targetType = Invite.TargetType.fromId(content.getInt("target_type", 0));
         final User targetUser;
         final InviteImpl.EmbeddedApplicationImpl application;
 
