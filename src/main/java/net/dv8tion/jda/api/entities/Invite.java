@@ -146,6 +146,8 @@ public interface Invite
      * The target type of this invite.
      *
      * @return The invite's target type or {@link TargetType#NONE}
+     *
+     * @see    net.dv8tion.jda.api.entities.Invite.TargetType
      */
     @Nonnull
     Invite.TargetType getTargetType();
@@ -579,7 +581,10 @@ public interface Invite
     }
 
     /**
-     * Enum representing the type of an invite.
+     * A TargetType indicates additional action to be taken by the client on accepting the invite,
+     * typically connecting external services or launching external applications depending on the specific TargetType.
+     *
+     * Some actions might not be available or show up on certain devices.
      *
      * @see #getType()
      */
