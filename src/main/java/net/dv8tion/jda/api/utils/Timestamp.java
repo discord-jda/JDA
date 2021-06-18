@@ -74,7 +74,7 @@ public class Timestamp
     public Timestamp minus(@Nonnull Duration duration)
     {
         Checks.notNull(duration, "Duration");
-        return plus(duration.toMillis());
+        return minus(duration.toMillis());
     }
 
     @Override
