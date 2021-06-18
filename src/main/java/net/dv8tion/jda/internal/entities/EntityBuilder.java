@@ -279,6 +279,9 @@ public class EntityBuilder
 
 
         createGuildEmotePass(guildObj, emotesArray);
+        guildJson.optArray("stage_instances")
+                .map(arr -> arr.stream(DataArray::getObject))
+                .ifPresent(list -> list.forEach(it -> createStageInstance(guildObj, it)));
 
         guildObj.setAfkChannel(guildObj.getVoiceChannelById(afkChannelId))
                 .setSystemChannel(guildObj.getTextChannelById(systemChannelId))
@@ -1042,6 +1045,33 @@ public class EntityBuilder
         api.usedPrivateChannel(channelId);
         getJDA().getEventCache().playbackCache(EventCache.Type.CHANNEL, channelId);
         return priv;
+    }
+
+    @Nullable
+    public StageInstance createStageInstance(GuildImpl guild, DataObject json)
+    {
+        long channelId = json.getUnsignedLong("channel_id");
+        StageChannelImpl channel = (StageChannelImpl) guild.getStageChannelById(channelId);
+        if (channel == null)
+            return null;
+
+        long id = json.getUnsignedLong("id");
+        String topic = json.getString("topic");
+        boolean discoverable = !json.getBoolean("discoverable_disabled");
+        StageInstance.PrivacyLevel level = StageInstance.PrivacyLevel.fromKey(json.getInt("privacy_level", -1));
+
+
+        StageInstanceImpl instance = (StageInstanceImpl) channel.getStageInstance();
+        if (instance == null)
+        {
+            instance = new StageInstanceImpl(id, channel);
+            channel.setStageInstance(instance);
+        }
+
+        return instance
+                .setPrivacyLevel(level)
+                .setDiscoverable(discoverable)
+                .setTopic(topic);
     }
 
     public void createOverridesPass(AbstractChannelImpl<?,?> channel, DataArray overrides)

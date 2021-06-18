@@ -18,11 +18,15 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
 {
+    private StageInstance instance;
+
     public StageChannelImpl(long id, GuildImpl guild)
     {
         super(id, guild);
@@ -33,5 +37,18 @@ public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
     public ChannelType getType()
     {
         return ChannelType.STAGE;
+    }
+
+    @Nullable
+    @Override
+    public StageInstance getStageInstance()
+    {
+        return instance;
+    }
+
+    public StageChannelImpl setStageInstance(StageInstance instance)
+    {
+        this.instance = instance;
+        return this;
     }
 }

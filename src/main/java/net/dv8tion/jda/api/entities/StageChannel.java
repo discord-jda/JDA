@@ -16,6 +16,12 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.internal.utils.Checks;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Represents a Stage Channel, also known as Radio Channel.
  *
@@ -24,5 +30,31 @@ package net.dv8tion.jda.api.entities;
  */
 public interface StageChannel extends VoiceChannel
 {
-    // TODO: Stage Instance https://discord.com/developers/docs/resources/stage-instance
+    @Nullable
+    StageInstance getStageInstance();
+
+    /**
+     * Whether this member is considered a moderator for this stage channel.
+     * <br>Moderators can modify the {@link #getStageInstance() Stage Instance} and promote speakers.
+     *
+     * <p>A member is considered a stage moderator if they have these permissions:
+     * <ul>
+     *     <li>{@link Permission#MANAGE_CHANNEL}</li>
+     *     <li>{@link Permission#VOICE_MUTE_OTHERS}</li>
+     *     <li>{@link Permission#VOICE_MOVE_OTHERS}</li>
+     * </ul>
+     *
+     * @param  member
+     *         The member to check
+     *
+     * @throws IllegalArgumentException
+     *         If the provided member is null or not from this guild
+     *
+     * @return True, if the provided member is a stage moderator
+     */
+    default boolean isModerator(@Nonnull Member member)
+    {
+        Checks.notNull(member, "Member");
+        return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
+    }
 }
