@@ -226,6 +226,14 @@ public class Route
         public static final Route STOP_CALL =        new Route(POST,   "channels/{channel_id}/call/stop_ringing"); // aka deny or end call
     }
 
+    public static class StageInstances
+    {
+        public static final Route GET_INSTANCE =    new Route(GET,    "stage-instances/{channel_id}");
+        public static final Route DELETE_INSTANCE = new Route(DELETE, "stage-instances/{channel_id}");
+        public static final Route EDIT_INSTANCE =   new Route(PATCH,  "stage-instances/{channel_id}");
+        public static final Route CREATE_INSTANCE = new Route(POST,   "stage-instances");
+    }
+
     public static class Messages
     {
         public static final Route EDIT_MESSAGE =          new Route(PATCH,  "channels/{channel_id}/messages/{message_id}"); // requires special handling, same bucket but different endpoints

@@ -33,6 +33,8 @@ public interface StageChannel extends VoiceChannel
     @Nullable
     StageInstance getStageInstance();
 
+    // TODO: createStageInstance() aka "go live"
+
     /**
      * Whether this member is considered a moderator for this stage channel.
      * <br>Moderators can modify the {@link #getStageInstance() Stage Instance} and promote speakers.

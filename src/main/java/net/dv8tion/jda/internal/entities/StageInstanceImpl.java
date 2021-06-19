@@ -19,6 +19,9 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
+import net.dv8tion.jda.internal.requests.Route;
 
 public class StageInstanceImpl implements StageInstance
 {
@@ -72,6 +75,13 @@ public class StageInstanceImpl implements StageInstance
     public boolean isDiscoverable()
     {
         return discoverable;
+    }
+
+    @Override
+    public RestAction<Void> delete()
+    {
+        Route.CompiledRoute route = Route.StageInstances.DELETE_INSTANCE.compile(channel.getId());
+        return new RestActionImpl<>(channel.getJDA(), route);
     }
 
     public StageInstanceImpl setTopic(String topic)
