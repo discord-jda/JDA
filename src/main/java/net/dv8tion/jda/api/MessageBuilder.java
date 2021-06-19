@@ -1302,9 +1302,9 @@ public class MessageBuilder implements Appendable
             throw new IllegalStateException("Failed to split the messages");
         }
 
-        if (currentBeginIndex < builder.length() - 1)
+        if (currentBeginIndex < builder.length())
         {
-            messages.add(build(currentBeginIndex, builder.length() - 1));
+            messages.add(build(currentBeginIndex, builder.length()));
         }
 
         if (this.embeds != null)
