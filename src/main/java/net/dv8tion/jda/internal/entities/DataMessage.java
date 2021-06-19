@@ -109,7 +109,7 @@ public class DataMessage extends AbstractMessage
     @Override
     public List<MessageEmbed> getEmbeds()
     {
-        return new ArrayList<>(embeds);
+        return embeds == null ? Collections.emptyList() : new ArrayList<>(embeds);
     }
 
     @Nonnull
