@@ -16,14 +16,18 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.managers.StageInstanceManagerImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
+
+import java.util.EnumSet;
 
 public class StageInstanceImpl implements StageInstance
 {
@@ -83,6 +87,7 @@ public class StageInstanceImpl implements StageInstance
     @Override
     public RestAction<Void> delete()
     {
+        checkPermissions();
         Route.CompiledRoute route = Route.StageInstances.DELETE_INSTANCE.compile(channel.getId());
         return new RestActionImpl<>(channel.getJDA(), route);
     }
@@ -90,6 +95,7 @@ public class StageInstanceImpl implements StageInstance
     @Override
     public StageInstanceManager getManager()
     {
+        checkPermissions();
         if (manager == null)
             manager = new StageInstanceManagerImpl(this);
         return manager;
@@ -111,5 +117,16 @@ public class StageInstanceImpl implements StageInstance
     {
         this.discoverable = discoverable;
         return this;
+    }
+
+    private void checkPermissions()
+    {
+        EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(getChannel());
+        EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
+        for (Permission perm : required)
+        {
+            if (!permissions.contains(perm))
+                throw new InsufficientPermissionException(getChannel(), perm, "You must be a stage moderator to manage a stage instance! Missing Permission: " + perm);
+        }
     }
 }

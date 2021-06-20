@@ -39,8 +39,6 @@ public interface StageChannel extends VoiceChannel
     @CheckReturnValue
     StageInstanceAction createStageInstance(@Nonnull String topic);
 
-    // TODO: createStageInstance() aka "go live"
-
     /**
      * Whether this member is considered a moderator for this stage channel.
      * <br>Moderators can modify the {@link #getStageInstance() Stage Instance} and promote speakers.
