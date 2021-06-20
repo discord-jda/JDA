@@ -39,7 +39,7 @@ public interface AudioReceiveHandler
      */
     default boolean canSupportCombinedAudio()
     {
-        return true;
+        return canReceiveCombined();
     }
 
     /**
