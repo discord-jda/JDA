@@ -468,7 +468,7 @@ public class AudioConnection
             receiveThread.start();
         }
 
-        if (receiveHandler.setCombinedExecutor())
+        if (receiveHandler.shouldCombineAudio())
         {
             setupCombinedExecutor();
         }
