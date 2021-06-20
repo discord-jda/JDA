@@ -217,5 +217,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
                 getJDA().getDirectAudioController().update(guild, channel);
         }
+
+        ((GuildImpl) guild).updateRequestToSpeak();
     }
 }

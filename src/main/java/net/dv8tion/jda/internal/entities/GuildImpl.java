@@ -84,6 +84,7 @@ public class GuildImpl implements Guild
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
     private GuildManager manager;
+    private boolean pendingRequestToSpeak = false;
 
     private Member owner;
     private String name;
@@ -886,37 +887,27 @@ public class GuildImpl implements Guild
         return mng;
     }
 
-    @Nonnull
-    @CheckReturnValue
-    public RestAction<Void> requestToSpeak()
+    @Override
+    public synchronized void requestToSpeak()
     {
-        VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
-        if (!(connectedChannel instanceof StageChannel))
-            return new CompletedRestAction<>(api, null);
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
-        DataObject body = DataObject.empty()
-                .put("channel_id", connectedChannel.getId());
-        // Stage moderators can bypass the request queue by just unsuppressing
-        if (getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
-            body.putNull("request_to_speak_timestamp").put("suppress", false);
-        else
-            body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
-        return new RestActionImpl<>(api, route, body);
+        pendingRequestToSpeak = true;
+        updateRequestToSpeak();
     }
 
-    @Nonnull
     @Override
-    public RestAction<Void> cancelRequestToSpeak()
+    public synchronized void cancelRequestToSpeak()
     {
+        pendingRequestToSpeak = false;
         VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
-        if (!(connectedChannel instanceof StageChannel))
-            return new CompletedRestAction<>(api, null);
+        if (!(connectedChannel instanceof StageChannel) || ((StageChannel) connectedChannel).getStageInstance() == null)
+            return;
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
         DataObject body = DataObject.empty()
                 .putNull("request_to_speak_timestamp")
                 .put("suppress", true)
                 .put("channel_id", connectedChannel.getId());
-        return new RestActionImpl<>(api, route, body);
+
+        new RestActionImpl<>(api, route, body).queue();
     }
 
     @Nonnull
@@ -1753,6 +1744,31 @@ public class GuildImpl implements Guild
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    public synchronized void updateRequestToSpeak()
+    {
+        if (!pendingRequestToSpeak)
+            return;
+        VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
+        if (!(connectedChannel instanceof StageChannel))
+            return;
+        StageChannel stage = (StageChannel) connectedChannel;
+        if (stage.getStageInstance() == null)
+            return;
+
+        pendingRequestToSpeak = false;
+
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
+        DataObject body = DataObject.empty()
+                .put("channel_id", connectedChannel.getId());
+        // Stage moderators can bypass the request queue by just unsuppressing
+        if (getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+            body.putNull("request_to_speak_timestamp").put("suppress", false);
+        else
+            body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
+
+        new RestActionImpl<>(api, route, body).queue();
     }
 
     // ---- Setters -----

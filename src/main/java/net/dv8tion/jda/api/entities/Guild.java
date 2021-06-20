@@ -2726,17 +2726,24 @@ public interface Guild extends ISnowflake
     AudioManager getAudioManager();
 
     /**
-     * If the currently logged in account is currently connected to a {@link StageChannel} with an active {@link StageInstance},
+     * Once the currently logged in account is connected to a {@link StageChannel} with an active {@link StageInstance},
      * this will trigger a {@link GuildVoiceState#getRequestToSpeakTimestamp() Request-to-Speak} (aka raise your hand).
-     * <br>You can use {@link #cancelRequestToSpeak()} to move back to the audience.
+     *
+     * <p>This will set an internal flag to automatically request to speak once the bot joins a stage channel.
+     * <br>You can use {@link #cancelRequestToSpeak()} to move back to the audience or cancel your pending request.
      *
      * <p>If the self member has {@link Permission#VOICE_MUTE_OTHERS} this will immediately promote them to speaker.
      *
-     * @return {@link RestAction}
+     * <p>Example:
+     * <pre>{@code
+     * stageChannel.createStageInstance("Talent Show").queue()
+     * guild.requestToSpeak(); // Set request to speak flag
+     * guild.getAudioManager().openAudioConnection(stageChannel); // join the channel
+     * }</pre>
+     *
+     * @see #cancelRequestToSpeak()
      */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> requestToSpeak();
+    void requestToSpeak();
 
     /**
      * Cancels the {@link #requestToSpeak() Request-to-Speak}.
@@ -2744,11 +2751,9 @@ public interface Guild extends ISnowflake
      *
      * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
      *
-     * @return {@link RestAction}
+     * @see #requestToSpeak()
      */
-    @Nonnull
-    @CheckReturnValue
-    RestAction<Void> cancelRequestToSpeak();
+    void cancelRequestToSpeak();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Guild
