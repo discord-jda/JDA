@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  *        .queue();
  * manager.reset(ChannelManager.TOPIC | ChannelManager.PRIVACY_LEVEL)
  *        .setTopic("Talent Show | WINNER GETS FREE NITRO")
- *        .setPrivacyLevel(PrivacyLevel.GUILD)
+ *        .setPrivacyLevel(PrivacyLevel.GUILD_ONLY)
  *        .queue();
  * }</pre>
  *
