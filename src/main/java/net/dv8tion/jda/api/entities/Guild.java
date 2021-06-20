@@ -2725,10 +2725,27 @@ public interface Guild extends ISnowflake
     @Nonnull
     AudioManager getAudioManager();
 
+    /**
+     * If the currently logged in account is currently connected to a {@link StageChannel} with an active {@link StageInstance},
+     * this will trigger a {@link GuildVoiceState#getRequestToSpeakTimestamp() Request-to-Speak} (aka raise your hand).
+     * <br>You can use {@link #cancelRequestToSpeak()} to move back to the audience.
+     *
+     * <p>If the self member has {@link Permission#VOICE_MUTE_OTHERS} this will immediately promote them to speaker.
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> requestToSpeak();
 
+    /**
+     * Cancels the {@link #requestToSpeak() Request-to-Speak}.
+     * <br>This can also be used to move back to the audience if you are currently a speaker.
+     *
+     * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> cancelRequestToSpeak();
