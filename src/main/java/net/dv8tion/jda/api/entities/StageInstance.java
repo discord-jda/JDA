@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.managers.StageInstanceManager;
 import net.dv8tion.jda.api.requests.RestAction;
 
 import javax.annotation.Nonnull;
@@ -32,7 +33,7 @@ public interface StageInstance extends ISnowflake
 
     RestAction<Void> delete();
 
-    // TODO: getManager()
+    StageInstanceManager getManager();
 
     enum PrivacyLevel
     {
