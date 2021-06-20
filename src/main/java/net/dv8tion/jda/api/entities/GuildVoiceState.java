@@ -175,14 +175,51 @@ public interface GuildVoiceState extends ISnowflake
     @Nullable
     OffsetDateTime getRequestToSpeakTimestamp();
 
+    /**
+     * Promote the member to speaker.
+     * <p>This requires a non-null {@link #getRequestToSpeakTimestamp()}.
+     * You can use {@link #inviteSpeaker()} to invite the member to become a speaker if they haven't requested to speak.
+     *
+     * <p>This does nothing if the member is not connected to a {@link StageChannel}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}
+     *         in the associated {@link StageChannel}
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> approveSpeaker();
 
+    /**
+     * Reject this members {@link #getRequestToSpeakTimestamp() request to speak}.
+     * <p>This requires a non-null {@link #getRequestToSpeakTimestamp()}.
+     * The member will have to request to speak again.
+     *
+     * <p>This does nothing if the member is not connected to a {@link StageChannel}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}
+     *         in the associated {@link StageChannel}
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> declineSpeaker();
 
+    /**
+     * Invite this member to become a speaker.
+     *
+     * <p>This does nothing if the member is not connected to a {@link StageChannel}.
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}
+     *         in the associated {@link StageChannel}
+     *
+     * @return {@link RestAction}
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Void> inviteSpeaker();

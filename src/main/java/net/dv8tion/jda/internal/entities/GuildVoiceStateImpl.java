@@ -18,10 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildVoiceState;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -115,7 +112,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     private RestAction<Void> update(boolean suppress)
     {
-        if (requestToSpeak == 0L || connectedChannel == null)
+        if (requestToSpeak == 0L || !(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(api, null);
         if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
@@ -131,7 +128,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public RestAction<Void> inviteSpeaker()
     {
-        if (connectedChannel == null)
+        if (!(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(api, null);
         if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
