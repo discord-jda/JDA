@@ -80,6 +80,7 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
     public StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
     {
         Checks.notNull(level, "PrivacyLevel");
+        Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "The PrivacyLevel must not be UNKNOWN!");
         this.level = level;
         return this;
     }
