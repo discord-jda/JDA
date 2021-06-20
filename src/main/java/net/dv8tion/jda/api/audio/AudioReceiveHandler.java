@@ -37,6 +37,17 @@ public interface AudioReceiveHandler
      *
      * @return If true, JDA enables subsystems to combine all user audio into a single provided data packet.
      */
+    default boolean setCombinedExecutor()
+    {
+        return false;
+    }
+
+    /**
+     * If this method returns true, then JDA will generate combined audio data and provide it to the handler.
+     * <br><b>Only enable if you specifically want combined audio because combining audio is costly if unused.</b>
+     *
+     * @return If true, JDA will receive next combined packet
+     */
     default boolean canReceiveCombined()
     {
         return false;

@@ -207,6 +207,12 @@ public class AudioEchoExample extends ListenerAdapter
 
         /* Receive Handling */
 
+        @Override // set CombinedExecutor
+        public boolean setCombinedExecutor()
+        {
+            return true;
+        }
+
         @Override // combine multiple user audio-streams into a single one
         public boolean canReceiveCombined()
         {
