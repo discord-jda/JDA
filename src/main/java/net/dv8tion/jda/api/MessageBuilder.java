@@ -1274,7 +1274,7 @@ public class MessageBuilder implements Appendable
 
         LinkedList<Message> messages = new LinkedList<>();
 
-        if (builder.length() <= 2000) {
+        if (builder.length() <= Message.MAX_CONTENT_LENGTH) {
             messages.add(this.build());
             return messages;
         }
@@ -1287,7 +1287,7 @@ public class MessageBuilder implements Appendable
         int currentBeginIndex = 0;
 
         messageLoop:
-        while (currentBeginIndex < builder.length() - 2000)
+        while (currentBeginIndex < builder.length() - Message.MAX_CONTENT_LENGTH)
         {
             for (SplitPolicy splitPolicy : policy)
             {
