@@ -35,8 +35,7 @@ public class MessageListenerExample extends ListenerAdapter
      */
     public static void main(String[] args)
     {
-        //We construct a builder for a BOT account. If we wanted to use a CLIENT account
-        // we would use AccountType.CLIENT
+        //We construct a builder for the bot.
         try
         {
             JDA jda = JDABuilder.createDefault("Your-Token-Goes-Here") // The token of the account that is logging in.
@@ -89,11 +88,11 @@ public class MessageListenerExample extends ListenerAdapter
         MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
                                                         //  This could be a TextChannel, PrivateChannel, or Group!
 
-        String msg = message.getContentDisplay();              //This returns a human readable version of the Message. Similar to
-                                                        // what you would see in the client.
+        String msg = message.getContentDisplay();       //This returns a human readable version of the Message. Similar to
+                                                        //  what you would see in the client.
 
-        boolean bot = author.isBot();                    //This boolean is useful to determine if the User that
-                                                        // sent the Message is a BOT or not!
+        boolean bot = author.isBot();                   //This boolean is useful to determine if the User that
+                                                        //  sent the Message is a BOT or not!
 
         if (event.isFromType(ChannelType.TEXT))         //If this message was sent to a Guild TextChannel
         {
@@ -109,11 +108,11 @@ public class MessageListenerExample extends ListenerAdapter
             if (message.isWebhookMessage())
             {
                 name = author.getName();                //If this is a Webhook message, then there is no Member associated
-            }                                           // with the User, thus we default to the author for name.
+            }                                           //  with the User, thus we default to the author for name.
             else
             {
                 name = member.getEffectiveName();       //This will either use the Member's nickname if they have one,
-            }                                           // otherwise it will default to their username. (User#getName())
+            }                                           //  otherwise it will default to their username. (User#getName())
 
             System.out.printf("(%s)[%s]<%s>: %s\n", guild.getName(), textChannel.getName(), name, msg);
         }
