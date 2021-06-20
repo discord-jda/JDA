@@ -176,7 +176,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
-                getJDA().getEntityBuilder().updateMemberCache(member);
+                getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
                 getJDA().handleEvent(
                     new GuildVoiceLeaveEvent(
                         getJDA(), responseNumber,
