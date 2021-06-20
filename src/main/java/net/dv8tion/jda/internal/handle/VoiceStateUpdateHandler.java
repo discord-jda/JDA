@@ -96,8 +96,6 @@ public class VoiceStateUpdateHandler extends SocketHandler
         }
 
 
-        if (content.isNull("member"))
-            return; // This means the voice state is for a lurker, which we currently don't handle
         DataObject memberJson = content.getObject("member");
         MemberImpl member = getJDA().getEntityBuilder().createMember((GuildImpl) guild, memberJson);
         if (member == null) return;
