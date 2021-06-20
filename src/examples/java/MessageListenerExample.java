@@ -86,7 +86,7 @@ public class MessageListenerExample extends ListenerAdapter
         User author = event.getAuthor();                //The user that sent the message
         Message message = event.getMessage();           //The message that was received.
         MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
-                                                        //  This could be a TextChannel, PrivateChannel, or Group!
+                                                        //  This could be a channel from a guild (TextChannel or a StoreChannel) or a PrivateChannel!
 
         String msg = message.getContentDisplay();       //This returns a human readable version of the Message. Similar to
                                                         //  what you would see in the client.
