@@ -1287,7 +1287,7 @@ public class MessageBuilder implements Appendable
         int currentBeginIndex = 0;
 
         messageLoop:
-        while (currentBeginIndex < builder.length() - 2001)
+        while (currentBeginIndex < builder.length() - 2000)
         {
             for (SplitPolicy splitPolicy : policy)
             {
