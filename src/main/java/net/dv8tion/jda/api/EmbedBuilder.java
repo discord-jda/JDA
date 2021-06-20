@@ -119,8 +119,8 @@ public class EmbedBuilder
             throw new IllegalStateException("Cannot build an empty embed!");
         if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
             throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
-        if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
-            throw new IllegalStateException("Cannot build an embed with more than " + MessageEmbed.EMBED_MAX_LENGTH_BOT + " characters!");
+        if (!isValidLength())
+            throw new IllegalStateException(Helpers.format("Cannot build an embed with more than %d characters!", MessageEmbed.EMBED_MAX_LENGTH_BOT));
         final String description = this.description.length() < 1 ? null : this.description.toString();
 
         return EntityBuilder.createMessageEmbed(url, title, description, EmbedType.RICH, timestamp,
@@ -199,8 +199,7 @@ public class EmbedBuilder
      */
     public boolean isValidLength()
     {
-        final int length = length();
-        return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
+        return length() <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
     }
 
     /**
