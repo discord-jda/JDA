@@ -17,8 +17,10 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -32,6 +34,10 @@ public interface StageChannel extends VoiceChannel
 {
     @Nullable
     StageInstance getStageInstance();
+
+    @Nonnull
+    @CheckReturnValue
+    StageInstanceAction createStageInstance(@Nonnull String topic);
 
     // TODO: createStageInstance() aka "go live"
 

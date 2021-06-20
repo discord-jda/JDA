@@ -19,6 +19,8 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
+import net.dv8tion.jda.internal.requests.restaction.StageInstanceActionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -44,6 +46,13 @@ public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
     public StageInstance getStageInstance()
     {
         return instance;
+    }
+
+    @Nonnull
+    @Override
+    public StageInstanceAction createStageInstance(@Nonnull String topic)
+    {
+        return new StageInstanceActionImpl(this).setTopic(topic);
     }
 
     public StageChannelImpl setStageInstance(StageInstance instance)
