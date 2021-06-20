@@ -21,6 +21,13 @@ import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} updated its {@code topic}.
+ *
+ * <p>Can be used to retrieve the topic.
+ *
+ * <p>Identifier: {@code topic}
+ */
 @SuppressWarnings("ConstantConditions")
 public class StageInstanceUpdateTopicEvent extends GenericStageInstanceUpdateEvent<String>
 {

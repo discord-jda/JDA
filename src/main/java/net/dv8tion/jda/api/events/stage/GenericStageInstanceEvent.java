@@ -22,6 +22,12 @@ import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was created/deleted/changed.
+ * <br>Every StageInstanceEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any StageInstanceEvent.
+ */
 public abstract class GenericStageInstanceEvent extends GenericGuildEvent
 {
     protected final StageInstance instance;

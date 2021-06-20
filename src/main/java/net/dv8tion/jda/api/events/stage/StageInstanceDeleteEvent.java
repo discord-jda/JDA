@@ -21,6 +21,11 @@ import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was deleted.
+ *
+ * <p>Can be used to retrieve the deleted StageInstance and its Guild.
+ */
 public class StageInstanceDeleteEvent extends GenericStageInstanceEvent
 {
     public StageInstanceDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)

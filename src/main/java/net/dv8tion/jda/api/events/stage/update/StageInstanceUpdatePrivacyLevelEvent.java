@@ -21,6 +21,13 @@ import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} updated its {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel PrivacyLevel}.
+ *
+ * <p>Can be used to retrieve the privacy level.
+ *
+ * <p>Identifier: {@code privacy_level}
+ */
 @SuppressWarnings("ConstantConditions")
 public class StageInstanceUpdatePrivacyLevelEvent extends GenericStageInstanceUpdateEvent<StageInstance.PrivacyLevel>
 {

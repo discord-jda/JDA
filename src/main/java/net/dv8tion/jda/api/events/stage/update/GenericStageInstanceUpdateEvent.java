@@ -24,6 +24,12 @@ import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was updated.
+ * <br>Every StageInstanceUpdateEvent is derived from this event and can be casted.
+ *
+ * <p>Can be used to detect any StageInstanceUpdateEvent.
+ */
 public abstract class GenericStageInstanceUpdateEvent<T> extends GenericStageInstanceEvent implements UpdateEvent<StageInstance, T>
 {
     protected final T previous;

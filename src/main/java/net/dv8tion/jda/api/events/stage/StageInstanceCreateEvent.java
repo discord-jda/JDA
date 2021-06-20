@@ -21,6 +21,11 @@ import net.dv8tion.jda.api.entities.StageInstance;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Indicates that a {@link net.dv8tion.jda.api.entities.StageInstance StageInstance} was created.
+ *
+ * <p>Can be used to retrieve the created StageInstance and its Guild.
+ */
 public class StageInstanceCreateEvent extends GenericStageInstanceEvent
 {
     public StageInstanceCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
