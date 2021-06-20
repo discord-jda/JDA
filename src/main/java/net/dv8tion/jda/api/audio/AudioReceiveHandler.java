@@ -39,7 +39,7 @@ public interface AudioReceiveHandler
      */
     default boolean shouldCombineAudio()
     {
-        return false;
+        return true;
     }
 
     /**
