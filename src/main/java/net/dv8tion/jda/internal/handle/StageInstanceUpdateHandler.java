@@ -16,9 +16,15 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.StageChannel;
+import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdatePrivacyLevelEvent;
+import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
+
+import java.util.Objects;
 
 public class StageInstanceUpdateHandler extends SocketHandler
 {
@@ -42,7 +48,23 @@ public class StageInstanceUpdateHandler extends SocketHandler
             return null;
         }
 
-        getJDA().getEntityBuilder().createStageInstance(guild, content);
+        StageChannel channel = getJDA().getStageChannelById(content.getUnsignedLong("channel_id"));
+        if (channel == null)
+            return null;
+        StageInstance oldInstance = channel.getStageInstance();
+        if (oldInstance == null)
+            return null;
+
+        String oldTopic = oldInstance.getTopic();
+        StageInstance.PrivacyLevel oldLevel = oldInstance.getPrivacyLevel();
+        StageInstance newInstance = getJDA().getEntityBuilder().createStageInstance(guild, content);
+        if (newInstance == null)
+            return null;
+
+        if (!Objects.equals(oldTopic, newInstance.getTopic()))
+            getJDA().handleEvent(new StageInstanceUpdateTopicEvent(getJDA(), responseNumber, newInstance, oldTopic));
+        if (oldLevel != newInstance.getPrivacyLevel())
+            getJDA().handleEvent(new StageInstanceUpdatePrivacyLevelEvent(getJDA(), responseNumber, newInstance, oldLevel));
         return null;
     }
 }

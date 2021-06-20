@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -42,7 +44,9 @@ public class StageInstanceCreateHandler extends SocketHandler
             return null;
         }
 
-        getJDA().getEntityBuilder().createStageInstance(guild, content);
+        StageInstance instance = getJDA().getEntityBuilder().createStageInstance(guild, content);
+        if (instance != null)
+            getJDA().handleEvent(new StageInstanceCreateEvent(getJDA(), responseNumber, instance));
         return null;
     }
 }

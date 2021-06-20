@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.handle;
 
+import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
@@ -47,7 +49,10 @@ public class StageInstanceDeleteHandler extends SocketHandler
         StageChannelImpl channel = (StageChannelImpl) guild.getStageChannelById(channelId);
         if (channel == null)
             return null;
+        StageInstance instance = channel.getStageInstance();
         channel.setStageInstance(null);
+        if (instance != null)
+            getJDA().handleEvent(new StageInstanceDeleteEvent(getJDA(), responseNumber, instance));
         return null;
     }
 }
