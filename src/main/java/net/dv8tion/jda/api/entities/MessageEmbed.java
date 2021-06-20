@@ -93,17 +93,6 @@ public class MessageEmbed implements SerializableData
      */
     public static final int EMBED_MAX_LENGTH_BOT = 6000;
 
-    /**
-     * The maximum amount of total visible characters an embed can have
-     * <br>This limit depends on the current {@link net.dv8tion.jda.api.AccountType AccountType} and applies to CLIENT
-     *
-     * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence)
-     * @see net.dv8tion.jda.api.EmbedBuilder#setTitle(String)
-     * @see net.dv8tion.jda.api.EmbedBuilder#setFooter(String, String)
-     * @see net.dv8tion.jda.api.EmbedBuilder#addField(String, String, boolean)
-     */
-    public static final int EMBED_MAX_LENGTH_CLIENT = 2000;
-
     protected final Object mutex = new Object();
 
     protected final String url;
