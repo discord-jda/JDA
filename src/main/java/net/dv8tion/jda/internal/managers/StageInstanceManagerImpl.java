@@ -67,6 +67,7 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
     public StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
     {
         Checks.notNull(level, "PrivacyLevel");
+        Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "PrivacyLevel must not be UNKNOWN!");
         this.privacyLevel = level;
         set |= PRIVACY_LEVEL;
         return this;
