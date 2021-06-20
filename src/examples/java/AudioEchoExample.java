@@ -208,7 +208,7 @@ public class AudioEchoExample extends ListenerAdapter
         /* Receive Handling */
 
         @Override // combine multiple user audio-streams into a single one
-        public boolean shouldCombineAudio()
+        public boolean canSupportCombinedAudio()
         {
             return true;
         }
