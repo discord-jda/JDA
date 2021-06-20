@@ -18,8 +18,11 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
+import net.dv8tion.jda.api.requests.Request;
+import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -87,7 +90,14 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
         DataObject body = DataObject.empty();
         body.put("channel_id", channel.getId());
         body.put("topic", topic);
-        body.put("privacy_level", level);
+        body.put("privacy_level", level.getKey());
         return getRequestBody(body);
+    }
+
+    @Override
+    protected void handleSuccess(Response response, Request<StageInstance> request)
+    {
+        StageInstance instance = api.getEntityBuilder().createStageInstance((GuildImpl) channel.getGuild(), response.getObject());
+        request.onSuccess(instance);
     }
 }

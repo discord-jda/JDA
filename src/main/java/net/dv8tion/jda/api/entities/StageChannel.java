@@ -32,9 +32,31 @@ import javax.annotation.Nullable;
  */
 public interface StageChannel extends VoiceChannel
 {
+    /**
+     * {@link StageInstance} attached to this stage channel.
+     *
+     * <p>This indicates whether a stage channel is currently "live".
+     *
+     * @return The {@link StageInstance} or {@code null} if this stage is not live
+     */
     @Nullable
     StageInstance getStageInstance();
 
+    /**
+     * Create a new {@link StageInstance} for this stage channel.
+     *
+     * <p>If there already is an active {@link StageInstance} for this channel, this will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#STAGE_ALREADY_OPEN ErrorResponse.STAGE_ALREADY_OPEN}.
+     *
+     * @param  topic
+     *         The topic of this stage instance, must be 1-120 characters long
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the self member is not a stage moderator. (See {@link #isModerator(Member)})
+     * @throws IllegalArgumentException
+     *         If the topic is null, empty, or longer than 120 characters
+     *
+     * @return {@link StageInstanceAction}
+     */
     @Nonnull
     @CheckReturnValue
     StageInstanceAction createStageInstance(@Nonnull String topic);

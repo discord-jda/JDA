@@ -110,6 +110,7 @@ public enum ErrorResponse
     MFA_NOT_ENABLED(                60003, "MFA auth required but not enabled"),
     REACTION_BLOCKED(               90001, "Reaction Blocked"),
     RESOURCES_OVERLOADED(          130000, "Resource overloaded"),
+    STAGE_ALREADY_OPEN(            150006, "The Stage is already open"),
 
     SERVER_ERROR(                       0, "Discord encountered an internal server error! Not good!");
 
