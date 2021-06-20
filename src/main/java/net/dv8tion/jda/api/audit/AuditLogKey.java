@@ -262,6 +262,16 @@ public enum AuditLogKey
      */
     CHANNEL_OVERRIDES("permission_overwrites"),
 
+    // STAGE_INSTANCE
+
+    /**
+     * Change of the {@link net.dv8tion.jda.api.entities.StageInstance#getPrivacyLevel() StageInstance.getPrivacyLevel()} value
+     * <br>Use with {@link net.dv8tion.jda.api.entities.StageInstance.PrivacyLevel#fromKey(int) StageInstance.PrivacyLevel.fromKey(int)}
+     *
+     * <p>Expected type: <b>Integer</b>
+     */
+    STAGE_INSTANCE_PRIVACY_LEVEL("privacy_level"),
+
 
     // MEMBER
     /**
