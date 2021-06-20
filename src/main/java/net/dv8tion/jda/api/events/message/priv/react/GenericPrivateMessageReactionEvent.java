@@ -131,7 +131,6 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      * <br>Simple shortcut for {@code getChannel().retrieveMessageById(getMessageId())}.
      *
      * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
-     * To retrieve the member you can use {@code getGuild().retrieveMember(message.getAuthor())}.
      *
      * @return {@link RestAction} - Type: {@link Message}
      *
