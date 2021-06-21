@@ -1232,15 +1232,28 @@ public class EntityBuilder
 
         if (type == MessageType.UNKNOWN)
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
+
+        MessageReference messageReference = null;
+
+        if (!jsonObject.isNull("message_reference")) {
+            DataObject messageReferenceJson = jsonObject.getObject("message_reference");
+
+            messageReference = new MessageReference(
+                    messageReferenceJson.getLong("message_id"),
+                    messageReferenceJson.getLong("channel_id"),
+                    referencedMessage
+            );
+        }
+
         if (!type.isSystem())
         {
-            message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
+            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags);
         }
         else
         {
-            message = new SystemMessage(id, channel, type, fromWebhook,
+            message = new SystemMessage(id, channel, type, messageReference, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
             return message; // We don't need to parse mentions for system messages, they are always empty anyway

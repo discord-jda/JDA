@@ -227,6 +227,44 @@ public interface Message extends ISnowflake, Formattable
     Message getReferencedMessage();
 
     /**
+     * This returns the id of the referenced message, never null
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this message does not have a reference
+     *
+     * @return The referenced message id
+     */
+    long getReferencedMessageIdLong();
+
+    /**
+     * Retrieves the referenced message for this message. If one is already present, it will be returned.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this message does not have a reference
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
+     */
+    RestAction<Message> retrieveReferencedMessage();
+
+    /**
+     * This returns the id of the referenced message, never null
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this message does not have a reference
+     *
+     * @return The referenced message id
+     */
+    @Nonnull
+    String getReferencedMessageId();
+
+    /**
+     * This determines whether a message has a reference, for use with {@link Message#retrieveReferencedMessage()}
+     *
+     * @return Whether this message has a reference attached to it
+     */
+    boolean hasReferencedMessage();
+
+    /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
      * <br>If no user was mentioned, this list is empty. Elements are sorted in order of appearance. This only
      * counts direct mentions of the user and not mentions through roles or the everyone tag.

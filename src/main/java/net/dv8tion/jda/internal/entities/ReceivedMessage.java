@@ -33,6 +33,7 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
+import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
@@ -57,6 +58,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final long id;
     protected final MessageType type;
     protected final MessageChannel channel;
+    protected final MessageReference messageReference;
     protected final Message referencedMessage;
     protected final boolean fromWebhook;
     protected final boolean mentionsEveryone;
@@ -88,7 +90,7 @@ public class ReceivedMessage extends AbstractMessage
     protected List<String> invites = null;
 
     public ReceivedMessage(
-        long id, MessageChannel channel, MessageType type, Message referencedMessage,
+        long id, MessageChannel channel, MessageType type, MessageReference messageReference,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags)
@@ -96,7 +98,9 @@ public class ReceivedMessage extends AbstractMessage
         super(content, nonce, tts);
         this.id = id;
         this.channel = channel;
-        this.referencedMessage = referencedMessage;
+        this.messageReference = messageReference;
+        this.referencedMessage = (messageReference != null) ? messageReference.getReferencedMessage() : null;
+
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
@@ -133,6 +137,50 @@ public class ReceivedMessage extends AbstractMessage
     public Message getReferencedMessage()
     {
         return referencedMessage;
+    }
+
+    @Override
+    public long getReferencedMessageIdLong()
+    {
+        if (messageReference == null) {
+            throw new IllegalStateException("Cannot get an id for a non-existent reference.");
+        }
+        return messageReference.getMessageIdLong();
+    }
+
+
+    @Nonnull
+    @Override
+    public String getReferencedMessageId()
+    {
+        if (messageReference == null) {
+            throw new IllegalStateException("Cannot get an id for a non-existent reference.");
+        }
+
+        return Long.toUnsignedString(getReferencedMessageIdLong());
+    }
+
+    @Override
+    public boolean hasReferencedMessage()
+    {
+        return messageReference != null;
+    }
+
+    @Override
+    public RestAction<Message> retrieveReferencedMessage()
+    {
+        if (messageReference == null) {
+            throw new IllegalStateException("Cannot get a retrieve a message for a non-existent reference.");
+        }
+
+        if (referencedMessage != null) {
+            return new CompletedRestAction<>(getJDA(), referencedMessage);
+        }
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(messageReference.getChannelId(), getReferencedMessageId());
+        JDAImpl jda = (JDAImpl) getJDA();
+        return new RestActionImpl<>(jda, route,
+                (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false));
     }
 
     @Override

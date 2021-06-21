@@ -32,6 +32,8 @@ import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.util.*;
 
+import org.jetbrains.annotations.NotNull;
+
 public abstract class AbstractMessage implements Message
 {
     protected static final String UNSUPPORTED = "This operation is not supported for Messages of this type!";
@@ -108,6 +110,34 @@ public abstract class AbstractMessage implements Message
     public Message getReferencedMessage()
     {
         return null;
+    }
+
+    @NotNull
+    @Override
+    public String getReferencedMessageId()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public long getReferencedMessageIdLong()
+    {
+        unsupported();
+        return 0;
+    }
+
+    @Override
+    public RestAction<Message> retrieveReferencedMessage()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Override
+    public boolean hasReferencedMessage()
+    {
+        return false;
     }
 
     @Nonnull
