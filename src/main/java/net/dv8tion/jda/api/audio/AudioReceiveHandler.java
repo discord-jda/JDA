@@ -35,7 +35,7 @@ public interface AudioReceiveHandler
      * If this method returns true, then JDA will generate combined audio data and provide it to the handler.
      * <br><b>Only enable if you specifically want combined audio because combining audio is costly if unused.</b>
      *
-     * @return If true, JDA will combine the next 20ms of user audio
+     * @return If true, JDA enables subsystems to combine all user audio into a single provided data packet.
      */
     default boolean canSupportCombinedAudio()
     {
@@ -49,7 +49,7 @@ public interface AudioReceiveHandler
      * by this method at runtime.
      * <br><b>Only enable if you specifically want combined audio because combining audio is costly if unused.</b>
      *
-     * @return If true, JDA will attempt to receive next combined packet
+     * @return If true, JDA will combine the next 20ms of user audio
      */
     default boolean canReceiveCombined()
     {
