@@ -2746,6 +2746,7 @@ public interface Guild extends ISnowflake
      *
      * @see    #cancelRequestToSpeak()
      */
+    @Nonnull
     Task<Void> requestToSpeak();
 
     /**
@@ -2759,6 +2760,7 @@ public interface Guild extends ISnowflake
      *
      * @see    #requestToSpeak()
      */
+    @Nonnull
     Task<Void> cancelRequestToSpeak();
 
     /**
