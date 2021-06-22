@@ -84,7 +84,7 @@ public class GuildImpl implements Guild
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
     private GuildManager manager;
-    private boolean pendingRequestToSpeak = false;
+    private CompletableFuture<Void> pendingRequestToSpeak;
 
     private Member owner;
     private String name;
@@ -888,26 +888,36 @@ public class GuildImpl implements Guild
     }
 
     @Override
-    public synchronized void requestToSpeak()
+    public synchronized Task<Void> requestToSpeak()
     {
-        pendingRequestToSpeak = true;
+        if (!isRequestToSpeakPending())
+            pendingRequestToSpeak = new CompletableFuture<>();
+
+        Task<Void> task = new GatewayTask<>(pendingRequestToSpeak, this::cancelRequestToSpeak);
         updateRequestToSpeak();
+        return task;
     }
 
     @Override
-    public synchronized void cancelRequestToSpeak()
+    public synchronized Task<Void> cancelRequestToSpeak()
     {
-        pendingRequestToSpeak = false;
+        if (isRequestToSpeakPending())
+        {
+            pendingRequestToSpeak.cancel(false);
+            pendingRequestToSpeak = null;
+        }
+
         VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
         if (!(connectedChannel instanceof StageChannel) || ((StageChannel) connectedChannel).getStageInstance() == null)
-            return;
+            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
         DataObject body = DataObject.empty()
                 .putNull("request_to_speak_timestamp")
                 .put("suppress", true)
                 .put("channel_id", connectedChannel.getId());
 
-        new RestActionImpl<>(api, route, body).queue();
+        CompletableFuture<Void> future = new RestActionImpl<Void>(api, route, body).submit();
+        return new GatewayTask<>(future, () -> future.cancel(false));
     }
 
     @Nonnull
@@ -1746,9 +1756,14 @@ public class GuildImpl implements Guild
         });
     }
 
+    private synchronized boolean isRequestToSpeakPending()
+    {
+        return pendingRequestToSpeak != null && !pendingRequestToSpeak.isDone();
+    }
+
     public synchronized void updateRequestToSpeak()
     {
-        if (!pendingRequestToSpeak)
+        if (!isRequestToSpeakPending())
             return;
         VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
         if (!(connectedChannel instanceof StageChannel))
@@ -1757,7 +1772,8 @@ public class GuildImpl implements Guild
         if (stage.getStageInstance() == null)
             return;
 
-        pendingRequestToSpeak = false;
+        CompletableFuture<Void> future = pendingRequestToSpeak;
+        pendingRequestToSpeak = null;
 
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
         DataObject body = DataObject.empty()
@@ -1768,7 +1784,8 @@ public class GuildImpl implements Guild
         else
             body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
 
-        new RestActionImpl<>(api, route, body).queue();
+        new RestActionImpl<>(api, route, body)
+            .queue((v) -> future.complete(null), future::completeExceptionally);
     }
 
     // ---- Setters -----

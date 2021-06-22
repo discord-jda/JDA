@@ -2741,9 +2741,12 @@ public interface Guild extends ISnowflake
      * guild.getAudioManager().openAudioConnection(stageChannel); // join the channel
      * }</pre>
      *
-     * @see #cancelRequestToSpeak()
+     * @return {@link Task} representing the request to speak.
+     *         Calling {@link Task#get()} can result in deadlocks and should be avoided at all times.
+     *
+     * @see    #cancelRequestToSpeak()
      */
-    void requestToSpeak();
+    Task<Void> requestToSpeak();
 
     /**
      * Cancels the {@link #requestToSpeak() Request-to-Speak}.
@@ -2751,9 +2754,12 @@ public interface Guild extends ISnowflake
      *
      * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
      *
-     * @see #requestToSpeak()
+     * @return {@link Task} representing the request to speak cancellation.
+     *         Calling {@link Task#get()} can result in deadlocks and should be avoided at all times.
+     *
+     * @see    #requestToSpeak()
      */
-    void cancelRequestToSpeak();
+    Task<Void> cancelRequestToSpeak();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Guild
