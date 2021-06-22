@@ -79,7 +79,7 @@ public interface ButtonInteraction extends ComponentInteraction
             for (ListIterator<Component> it = row.listIterator(); it.hasNext();)
             {
                 Component component = it.next();
-                if (id.equals(component.getId()))
+                if (component.getId().equals(newButton.getId()))
                 {
                     if (newButton == null)
                         it.remove();
