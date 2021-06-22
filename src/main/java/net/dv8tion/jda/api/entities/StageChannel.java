@@ -64,8 +64,10 @@ public interface StageChannel extends VoiceChannel
     /**
      * Whether this member is considered a moderator for this stage channel.
      * <br>Moderators can modify the {@link #getStageInstance() Stage Instance} and promote speakers.
+     * To promote a speaker you can use {@link GuildVoiceState#inviteSpeaker()} or {@link GuildVoiceState#approveSpeaker()} if they have already raised their hand (indicated by {@link GuildVoiceState#getRequestToSpeakTimestamp()}).
+     * A stage moderator can move between speaker and audience without raising their hand. This can be done with {@link Guild#requestToSpeak()} and {@link Guild#cancelRequestToSpeak()} respectively.
      *
-     * <p>A member is considered a stage moderator if they have these permissions:
+     * <p>A member is considered a stage moderator if they have these permissions in the stage channel:
      * <ul>
      *     <li>{@link Permission#MANAGE_CHANNEL}</li>
      *     <li>{@link Permission#VOICE_MUTE_OTHERS}</li>
