@@ -887,6 +887,7 @@ public class GuildImpl implements Guild
         return mng;
     }
 
+    @Nonnull
     @Override
     public synchronized Task<Void> requestToSpeak()
     {
@@ -898,6 +899,7 @@ public class GuildImpl implements Guild
         return task;
     }
 
+    @Nonnull
     @Override
     public synchronized Task<Void> cancelRequestToSpeak()
     {
