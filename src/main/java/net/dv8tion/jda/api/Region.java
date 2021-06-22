@@ -114,7 +114,6 @@ public enum Region
      * 
      * @return Possibly-null unicode for the region's flag
      */
-    @Nonnull
     public String getEmoji()
     {
         return emoji;
