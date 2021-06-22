@@ -33,7 +33,6 @@ import java.time.OffsetDateTime;
 public class GuildVoiceStateImpl implements GuildVoiceState
 {
     private final JDA api;
-    private final long userId;
     private Guild guild;
     private Member member;
 
@@ -47,16 +46,9 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean suppressed = false;
     private boolean stream = false;
 
-    public GuildVoiceStateImpl(Guild guild, long userId)
-    {
-        this.api = guild.getJDA();
-        this.guild = guild;
-        this.userId = userId;
-    }
-
     public GuildVoiceStateImpl(Member member)
     {
-        this(member.getGuild(), member.getIdLong());
+        this.api = member.getJDA();
         setMember(member);
     }
 
@@ -197,18 +189,10 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public Member getMember()
     {
-        if (!isMember())
-            throw new IllegalStateException("Cannot get the member for a non-member voice state! This voice state is for an audience member of a public stage instance.");
         Member realMember = getGuild().getMemberById(member.getIdLong());
         if (realMember != null)
             member = realMember;
         return member;
-    }
-
-    @Override
-    public boolean isMember()
-    {
-        return member != null;
     }
 
     @Override
@@ -220,13 +204,13 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     @Override
     public long getIdLong()
     {
-        return userId;
+        return member.getIdLong();
     }
 
     @Override
     public int hashCode()
     {
-        return Long.hashCode(userId);
+        return member.hashCode();
     }
 
     @Override
@@ -237,7 +221,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         if (!(obj instanceof GuildVoiceState))
             return false;
         GuildVoiceState oStatus = (GuildVoiceState) obj;
-        return userId == oStatus.getIdLong();
+        return member.equals(oStatus.getMember());
     }
 
     @Override

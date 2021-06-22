@@ -103,6 +103,11 @@ public enum ChannelType
         return isGuild;
     }
 
+    /**
+     * Whether channels of this type support audio connections.
+     *
+     * @return True, if channels of this type support audio
+     */
     public boolean isAudio()
     {
         switch (this)
@@ -115,6 +120,11 @@ public enum ChannelType
         }
     }
 
+    /**
+     * Whether channels of this type support message sending.
+     *
+     * @return True, if channels of this type support messages
+     */
     public boolean isMessage()
     {
         switch (this)
