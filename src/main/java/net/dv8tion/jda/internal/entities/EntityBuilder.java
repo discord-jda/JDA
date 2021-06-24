@@ -1235,7 +1235,8 @@ public class EntityBuilder
 
         MessageReference messageReference = null;
 
-        if (!jsonObject.isNull("message_reference")) {
+        if (!jsonObject.isNull("message_reference"))
+        {
             DataObject messageReferenceJson = jsonObject.getObject("message_reference");
 
             messageReference = new MessageReference(

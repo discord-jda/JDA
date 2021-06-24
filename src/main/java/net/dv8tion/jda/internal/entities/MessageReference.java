@@ -8,7 +8,8 @@ public class MessageReference
     private final long channelId;
     private final Message referencedMessage;
 
-    public MessageReference(long messageId, long channelId, Message referencedMessage) {
+    public MessageReference(long messageId, long channelId, Message referencedMessage)
+    {
         this.messageId = messageId;
         this.channelId = channelId;
         this.referencedMessage = referencedMessage;
@@ -30,11 +31,13 @@ public class MessageReference
     }
 
 
-    public String getMessageId() {
+    public String getMessageId()
+    {
         return Long.toUnsignedString(getMessageIdLong());
     }
 
-    public String getChannelId() {
+    public String getChannelId()
+    {
         return Long.toUnsignedString(getChannelIdLong());
     }
 }

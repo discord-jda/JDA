@@ -142,7 +142,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public long getReferencedMessageIdLong()
     {
-        if (messageReference == null) {
+        if (messageReference == null)
+        {
             throw new IllegalStateException("Cannot get an id for a non-existent reference.");
         }
         return messageReference.getMessageIdLong();
@@ -153,7 +154,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getReferencedMessageId()
     {
-        if (messageReference == null) {
+        if (messageReference == null)
+        {
             throw new IllegalStateException("Cannot get an id for a non-existent reference.");
         }
 
