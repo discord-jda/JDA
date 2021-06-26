@@ -1464,9 +1464,8 @@ public class EntityBuilder
         final long id = content.getLong("id");
         final String name = content.getString("name");
         final String description = content.getString("description");
-        final long packId = content.getLong("pack_id");
-        final String asset = content.getString("asset");
-        final String previewAsset = content.getString("preview_asset", null);
+        final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
+        final String asset = content.getString("asset", "");
         final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
         final Set<String> tags;
         if (content.isNull("tags"))
@@ -1479,7 +1478,7 @@ public class EntityBuilder
             final Set<String> tmp = new HashSet<>(Arrays.asList(split));
             tags = Collections.unmodifiableSet(tmp);
         }
-        return new MessageSticker(id, name, description, packId, asset, previewAsset, format, tags);
+        return new MessageSticker(id, name, description, packId, asset, format, tags);
     }
 
     @Nullable

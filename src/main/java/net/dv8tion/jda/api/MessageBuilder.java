@@ -1274,7 +1274,7 @@ public class MessageBuilder implements Appendable
 
         LinkedList<Message> messages = new LinkedList<>();
 
-        if (builder.length() <= 2000) {
+        if (builder.length() <= Message.MAX_CONTENT_LENGTH) {
             messages.add(this.build());
             return messages;
         }
@@ -1287,7 +1287,7 @@ public class MessageBuilder implements Appendable
         int currentBeginIndex = 0;
 
         messageLoop:
-        while (currentBeginIndex < builder.length() - 2001)
+        while (currentBeginIndex < builder.length() - Message.MAX_CONTENT_LENGTH)
         {
             for (SplitPolicy splitPolicy : policy)
             {
@@ -1302,9 +1302,9 @@ public class MessageBuilder implements Appendable
             throw new IllegalStateException("Failed to split the messages");
         }
 
-        if (currentBeginIndex < builder.length() - 1)
+        if (currentBeginIndex < builder.length())
         {
-            messages.add(build(currentBeginIndex, builder.length() - 1));
+            messages.add(build(currentBeginIndex, builder.length()));
         }
 
         if (this.embeds != null)

@@ -15,6 +15,11 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
+import net.dv8tion.jda.internal.utils.Helpers;
+
 import javax.annotation.Nonnull;
 import java.util.Set;
 
@@ -30,21 +35,29 @@ public class MessageSticker implements ISnowflake
     private final String description;
     private final long packId;
     private final String asset;
-    private final String previewAsset;
     private final StickerFormat formatType;
     private final Set<String> tags;
 
-    /** Template for {@link #getAssetUrl()} */
+    /**
+     * Template for {@link #getAssetUrl()}
+     *
+     * @deprecated Use {@link #ICON_URL} instead
+     */
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("ICON_URL")
+    @DeprecatedSince("4.3.1")
     public static final String ASSET_URL = "https://cdn.discordapp.com/stickers/%s/%s.%s";
+    /** Template for {@link #getIconUrl()} */
+    public static final String ICON_URL = "https://cdn.discordapp.com/stickers/%s.%s";
 
-    public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final String previewAsset, final StickerFormat formatType, final Set<String> tags)
+    public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final StickerFormat formatType, final Set<String> tags)
     {
         this.id = id;
         this.name = name;
         this.description = description;
         this.packId = packId;
         this.asset = asset;
-        this.previewAsset = previewAsset;
         this.formatType = formatType;
         this.tags = tags;
     }
@@ -80,6 +93,8 @@ public class MessageSticker implements ISnowflake
     /**
      * The ID of the pack the sticker is from.
      *
+     * <p>If this sticker is from a guild, this will be the guild id instead.
+     *
      * @return the ID of the pack the sticker is from
      */
     @Nonnull
@@ -90,6 +105,8 @@ public class MessageSticker implements ISnowflake
 
     /**
      * The ID of the pack the sticker is from.
+     *
+     * <p>If this sticker is from a guild, this will be the guild id instead.
      *
      * @return the ID of the pack the sticker is from
      */
@@ -103,8 +120,14 @@ public class MessageSticker implements ISnowflake
      * <br><b>The URL for fetching sticker assets is currently private.</b>
      *
      * @return the Discord hash-id of the sticker
+     *
+     * @deprecated Use {@link #getIconUrl()} instead
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getIconUrl()")
+    @DeprecatedSince("4.3.1")
     public String getAssetHash()
     {
         return asset;
@@ -117,11 +140,31 @@ public class MessageSticker implements ISnowflake
      *         If the {@link StickerFormat StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
      *
      * @return the url of the sticker
+     *
+     * @deprecated Use {@link #getIconUrl()} instead
      */
     @Nonnull
+    @Deprecated
+    @ForRemoval
+    @ReplaceWith("getIconUrl()")
+    @DeprecatedSince("4.3.1")
     public String getAssetUrl()
     {
         return String.format(ASSET_URL, id, asset, formatType.getExtension());
+    }
+
+    /**
+     * The url of the sticker image.
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the {@link StickerFormat StickerFormat} of this sticker is {@link StickerFormat#UNKNOWN UNKNOWN}
+     *
+     * @return The image url of the sticker
+     */
+    @Nonnull
+    public String getIconUrl()
+    {
+        return Helpers.format(ICON_URL, getId(), formatType.getExtension());
     }
 
     /**
