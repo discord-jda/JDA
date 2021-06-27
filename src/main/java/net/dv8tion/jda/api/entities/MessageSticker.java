@@ -80,9 +80,9 @@ public class MessageSticker implements ISnowflake
     }
 
     /**
-     * The description of the sticker.
+     * The description of the sticker or empty String if the sticker doesn't have one.
      *
-     * @return the description of the sticker
+     * @return Possibly-empty String containing the description of the sticker
      */
     @Nonnull
     public String getDescription()
