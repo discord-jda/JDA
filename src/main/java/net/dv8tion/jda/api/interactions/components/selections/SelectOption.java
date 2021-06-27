@@ -267,7 +267,7 @@ public class SelectOption implements SerializableData
      * @throws net.dv8tion.jda.api.exceptions.ParsingException
      *         If the data representation is invalid
      * @throws IllegalArgumentException
-     *         If some part of the data has an invalid length
+     *         If some part of the data has an invalid length or null is provided
      *
      * @return The parsed SelectOption instance
      */
@@ -275,6 +275,7 @@ public class SelectOption implements SerializableData
     @CheckReturnValue
     public static SelectOption fromData(@Nonnull DataObject data)
     {
+        Checks.notNull(data, "DataObject");
         return new SelectOption(
             data.getString("label"),
             data.getString("value"),

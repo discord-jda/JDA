@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.components.selections;
 
 import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.SelectionMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -123,6 +124,27 @@ public interface SelectionMenu extends Component
     static Builder create(@Nonnull String customId)
     {
         return new Builder(customId);
+    }
+
+    /**
+     * Inverse function for {@link #toData()} which parses the serialized selection menu data.
+     * <br>Returns a {@link Builder} which allows for further configuration.
+     *
+     * @param  data
+     *         The serialized selection menu data
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the data representation is invalid
+     * @throws IllegalArgumentException
+     *         If some part of the data has an invalid length or null is provided
+     *
+     * @return The parsed SelectionMenu Builder instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    static Builder fromData(@Nonnull DataObject data)
+    {
+        return new SelectionMenuImpl(data).createCopy();
     }
 
     /**
