@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
@@ -862,6 +863,13 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
     {
+        if (!getJDA().getSelfUser().equals(getAuthor()))
+        {
+            if (isFromType(ChannelType.PRIVATE))
+                throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
+            else if (!getGuild().getSelfMember().hasPermission(getTextChannel(), Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
+        }
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
         int newFlags = flags;
