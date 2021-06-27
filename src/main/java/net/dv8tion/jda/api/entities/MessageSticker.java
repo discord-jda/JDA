@@ -21,6 +21,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.internal.utils.Helpers;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -80,11 +81,11 @@ public class MessageSticker implements ISnowflake
     }
 
     /**
-     * The description of the sticker.
+     * The description of the sticker or {@code null} if the sticker doesn't have one.
      *
-     * @return the description of the sticker
+     * @return Possibly-null String containing the description of the sticker
      */
-    @Nonnull
+    @Nullable
     public String getDescription()
     {
         return description;
