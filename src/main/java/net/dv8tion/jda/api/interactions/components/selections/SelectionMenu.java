@@ -264,6 +264,8 @@ public interface SelectionMenu extends Component
          *         If the total amount of options is greater than 25 or null is provided
          *
          * @return The same builder instance for chaining
+         *
+         * @see    SelectOption#of(String, String)
          */
         @Nonnull
         public Builder addOptions(@Nonnull SelectOption... options)
@@ -284,6 +286,8 @@ public interface SelectionMenu extends Component
          *         If the total amount of options is greater than 25 or null is provided
          *
          * @return The same builder instance for chaining
+         *
+         * @see    SelectOption#of(String, String)
          */
         @Nonnull
         public Builder addOptions(@Nonnull Collection<? extends SelectOption> options)
@@ -329,7 +333,7 @@ public interface SelectionMenu extends Component
         @Nonnull
         public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull Emoji emoji)
         {
-            return addOptions(new SelectOption(label, value).setEmoji(emoji));
+            return addOption(label, value, null, emoji);
         }
 
         /**
@@ -350,7 +354,7 @@ public interface SelectionMenu extends Component
         @Nonnull
         public Builder addOption(@Nonnull String label, @Nonnull String value, @Nonnull String description)
         {
-            return addOptions(new SelectOption(label, value).setDescription(description));
+            return addOption(label, value, description, null);
         }
 
         /**
@@ -373,9 +377,7 @@ public interface SelectionMenu extends Component
         @Nonnull
         public Builder addOption(@Nonnull String label, @Nonnull String value, @Nullable String description, @Nullable Emoji emoji)
         {
-            return addOptions(new SelectOption(label, value)
-                .setDescription(description)
-                .setEmoji(emoji));
+            return addOptions(new SelectOption(label, value, description, false, emoji));
         }
 
         /**

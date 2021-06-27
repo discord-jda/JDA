@@ -21,80 +21,222 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * One of the possible options provided in a {@link SelectionMenu}.
+ */
 public class SelectOption implements SerializableData
 {
     private final String label, value;
-    private String description;
-    private boolean isDefault;
-    private Emoji emoji;
+    private final String description;
+    private final boolean isDefault;
+    private final Emoji emoji;
 
-    public SelectOption(@Nonnull String label, @Nonnull String value)
+    /**
+     * Creates a new SelectOption instance
+     *
+     * @param  label
+     *         The label for the option, up to 25 characters
+     * @param  value
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the null is provided, or any of the individual parameter requirements are violated.
+     */
+    protected SelectOption(@Nonnull String label, @Nonnull String value)
     {
         this(label, value, null, false, null);
     }
 
-    public SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
+    /**
+     * Creates a new SelectOption instance
+     *
+     * @param  label
+     *         The label for the option, up to 25 characters
+     * @param  value
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+     * @param  description
+     *         The description explaining the meaning of this option in more detail, up to 50 characters
+     * @param  isDefault
+     *         Whether this option is selected by default
+     * @param  emoji
+     *         The {@link Emoji} shown next to this option, or null
+     *
+     * @throws IllegalArgumentException
+     *         If the an invalid null is provided, or any of the individual parameter requirements are violated.
+     */
+    protected SelectOption(@Nonnull String label, @Nonnull String value, @Nullable String description, boolean isDefault, @Nullable Emoji emoji)
     {
         Checks.notEmpty(label, "Label");
         Checks.notEmpty(value, "Value");
         Checks.notLonger(label, 25, "Label");
         Checks.notLonger(value, 100, "Value");
-        this.label = label;
-        this.value = value;
-        setDefault(isDefault);
-        setEmoji(emoji);
-        setDescription(description);
-    }
-
-    @Nonnull
-    public SelectOption setDescription(@Nullable String description)
-    {
         if (description != null)
             Checks.notLonger(description, 50, "Description");
+        this.label = label;
+        this.value = value;
         this.description = description;
-        return this;
-    }
-
-    @Nonnull
-    public SelectOption setDefault(boolean isDefault)
-    {
         this.isDefault = isDefault;
-        return this;
-    }
-
-    @Nonnull
-    public SelectOption setEmoji(Emoji emoji)
-    {
         this.emoji = emoji;
-        return this;
     }
 
+    /**
+     * Creates a new SelectOption instance.
+     * <br>You can further configure this with the various setters that return new instances.
+     *
+     * @param  label
+     *         The label for the option, up to 25 characters
+     * @param  value
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the null is provided, or any of the individual parameter requirements are violated.
+     */
+    @Nonnull
+    @CheckReturnValue
+    public static SelectOption of(@Nonnull String label, @Nonnull String value)
+    {
+        return new SelectOption(label, value);
+    }
+
+    /**
+     * Returns a copy of this select option with the changed label.
+     *
+     * @param  label
+     *         The label for the option, up to 25 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the label is null, empty, or longer than 25 characters
+     *
+     * @return The new select option instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    public SelectOption withLabel(@Nonnull String label)
+    {
+        return new SelectOption(label, value, description, isDefault, emoji);
+    }
+
+    /**
+     * Returns a copy of this select option with the changed value.
+     *
+     * @param  value
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the label is null, empty, or longer than 100 characters
+     *
+     * @return The new select option instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    public SelectOption withValue(@Nonnull String value)
+    {
+        return new SelectOption(label, value, description, isDefault, emoji);
+    }
+
+    /**
+     * Returns a copy of this select option with the changed description of this option.
+     * <br>Default: {@code null}
+     *
+     * @param  description
+     *         The new description or null to have no description, up to 50 characters
+     *
+     * @throws IllegalArgumentException
+     *         If the provided description is longer than 50 characters
+     *
+     * @return The new select option instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    public SelectOption withDescription(@Nullable String description)
+    {
+        return new SelectOption(label, value, description, isDefault, emoji);
+    }
+
+    /**
+     * Returns a copy of this select option with the changed default.
+     * <br>Default: {@code false}
+     *
+     * @param  isDefault
+     *         Whether this option is selected by default
+     *
+     * @return The new select option instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    public SelectOption withDefault(boolean isDefault)
+    {
+        return new SelectOption(label, value, description, isDefault, emoji);
+    }
+
+    /**
+     * Returns a copy of this select option with the changed emoji.
+     * <br>Default: {@code null}
+     *
+     * @param  emoji
+     *         The {@link Emoji} shown next to this option, or null
+     *
+     * @return The new select option instance
+     */
+    @Nonnull
+    @CheckReturnValue
+    public SelectOption withEmoji(@Nullable Emoji emoji)
+    {
+        return new SelectOption(label, value, description, isDefault, emoji);
+    }
+
+    /**
+     * The current option label which would be shown to the user in the client.
+     *
+     * @return The label
+     */
     @Nonnull
     public String getLabel()
     {
         return label;
     }
 
+    /**
+     * The current option value which is used to identify the selected options in {@link SelectionMenuInteraction#getValues()}.
+     *
+     * @return The option value
+     */
     @Nonnull
     public String getValue()
     {
         return value;
     }
 
+    /**
+     * The current description for this option.
+     *
+     * @return The description
+     */
     @Nullable
     public String getDescription()
     {
         return description;
     }
 
+    /**
+     * Whether this option is selected by default
+     *
+     * @return True, if this option is selected by default
+     */
     public boolean isDefault()
     {
         return isDefault;
     }
 
+    /**
+     * The emoji attached to this option which is shown next to the option in the selection menu
+     *
+     * @return The attached emoji
+     */
     @Nullable
     public Emoji getEmoji()
     {
@@ -116,7 +258,21 @@ public class SelectOption implements SerializableData
         return object;
     }
 
+    /**
+     * Inverse function for {@link #toData()} which parses the serialized option data
+     *
+     * @param  data
+     *         The serialized option data
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the data representation is invalid
+     * @throws IllegalArgumentException
+     *         If some part of the data has an invalid length
+     *
+     * @return The parsed SelectOption instance
+     */
     @Nonnull
+    @CheckReturnValue
     public static SelectOption fromData(@Nonnull DataObject data)
     {
         return new SelectOption(
