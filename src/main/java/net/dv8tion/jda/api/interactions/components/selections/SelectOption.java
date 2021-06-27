@@ -41,15 +41,16 @@ public class SelectOption implements SerializableData
         Checks.notEmpty(label, "Label");
         Checks.notEmpty(value, "Value");
         Checks.notLonger(label, 25, "Label");
-        this.label = label; // max 100
-        this.value = value; // max 100
+        Checks.notLonger(value, 100, "Value");
+        this.label = label;
+        this.value = value;
         setDefault(isDefault);
         setEmoji(emoji);
         setDescription(description);
     }
 
     @Nonnull
-    public SelectOption setDescription(String description)
+    public SelectOption setDescription(@Nullable String description)
     {
         if (description != null)
             Checks.notLonger(description, 50, "Description");
@@ -119,11 +120,11 @@ public class SelectOption implements SerializableData
     public static SelectOption fromData(@Nonnull DataObject data)
     {
         return new SelectOption(
-                data.getString("label"),
-                data.getString("value"),
-                data.getString("description", null),
-                data.getBoolean("default", false),
-                data.optObject("emoji").map(Emoji::fromData).orElse(null)
+            data.getString("label"),
+            data.getString("value"),
+            data.getString("description", null),
+            data.getBoolean("default", false),
+            data.optObject("emoji").map(Emoji::fromData).orElse(null)
         );
     }
 }

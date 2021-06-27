@@ -17,9 +17,14 @@
 package net.dv8tion.jda.api.interactions.components;
 
 import net.dv8tion.jda.api.utils.data.SerializableData;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.Objects;
 
 /**
  * Represents a top-level layout used for {@link Component Components} such as {@link Button Buttons}.
@@ -54,6 +59,42 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
      */
     @Nonnull
     Type getType();
+
+    default Component updateComponent(@Nonnull String id, @Nullable Component newComponent)
+    {
+        List<Component> list = getComponents();
+        for (ListIterator<Component> it = list.listIterator(); it.hasNext();)
+        {
+            Component component = it.next();
+            if (id.equals(component.getId()) || (component instanceof Button && id.equals(((Button) component).getUrl())))
+            {
+                if (newComponent == null)
+                    it.remove();
+                else
+                    it.set(newComponent);
+                return component;
+            }
+        }
+        return null;
+    }
+
+    static boolean updateComponent(@Nonnull List<? extends ComponentLayout> layout, @Nonnull String id, @Nullable Component newComponent)
+    {
+        Checks.notNull(layout, "ComponentLayout");
+        Checks.notEmpty(id, "ID or URL");
+        for (Iterator<? extends ComponentLayout> it = layout.iterator(); it.hasNext();)
+        {
+            ComponentLayout components = it.next();
+            Component oldComponent = components.updateComponent(id, newComponent);
+            if (oldComponent != null)
+            {
+                if (components.getComponents().isEmpty())
+                    it.remove();
+                return !Objects.equals(oldComponent, newComponent);
+            }
+        }
+        return false;
+    }
 
     /**
      * The layout types

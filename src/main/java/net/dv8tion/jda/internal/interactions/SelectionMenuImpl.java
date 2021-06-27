@@ -115,6 +115,7 @@ public class SelectionMenuImpl implements SelectionMenu
         return maxValues;
     }
 
+    @Nonnull
     @Override
     public List<SelectOption> getOptions()
     {
