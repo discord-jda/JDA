@@ -865,11 +865,10 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
-            TextChannel textChannel = getTextChannel();
             if (isFromType(ChannelType.PRIVATE))
                 throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
-            else if (!getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_MANAGE))
-                throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_MANAGE);
+            else if (!getGuild().getSelfMember().hasPermission(getTextChannel(), Permission.MESSAGE_MANAGE))
+                throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
         }
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getChannel().getId(), getId());
