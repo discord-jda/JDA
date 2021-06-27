@@ -1463,7 +1463,7 @@ public class EntityBuilder
     {
         final long id = content.getLong("id");
         final String name = content.getString("name");
-        final String description = content.getString("description", null);
+        final String description = content.getString("description", "");
         final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
         final String asset = content.getString("asset", "");
         final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
