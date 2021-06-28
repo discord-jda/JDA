@@ -273,18 +273,18 @@ public interface Message extends ISnowflake, Formattable
     Bag<User> getMentionedUsersBag();
 
     /**
-     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.TextChannel TextChannels}.
+     * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannels}.
      * <br>If none were mentioned, this list is empty. Elements are sorted in order of appearance.
      *
-     * <p><b>This may include TextChannels from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
+     * <p><b>This may include GuildChannel from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is ia system message.
      *
-     * @return immutable list of mentioned TextChannels
+     * @return immutable list of mentioned GuildChannels
      */
     @Nonnull
-    List<TextChannel> getMentionedChannels();
+    List<GuildChannel> getMentionedChannels();
 
     /**
      * A {@link org.apache.commons.collections4.Bag Bag} of mentioned channels.
@@ -294,10 +294,10 @@ public interface Message extends ISnowflake, Formattable
      * <pre>{@code
      * public void sendCount(Message msg)
      * {
-     *     List<TextChannel> mentions = msg.getMentionedTextChannels(); // distinct list, in order of appearance
-     *     Bag<TextChannel> count = msg.getMentionedTextChannelsBag();
+     *     List<GuildChannel> mentions = msg.getMentionedChannels(); // distinct list, in order of appearance
+     *     Bag<GuildChannel> count = msg.getMentionedChannelsBag();
      *     StringBuilder content = new StringBuilder();
-     *     for (TextChannel channel : mentions)
+     *     for (GuildChannel channel : mentions)
      *     {
      *         content.append("#")
      *                .append(channel.getName())
@@ -310,14 +310,14 @@ public interface Message extends ISnowflake, Formattable
      * }</pre>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     *         If this is a system message.
      *
      * @return {@link org.apache.commons.collections4.Bag Bag} of mentioned channels
      *
      * @see    #getMentionedChannels()
      */
     @Nonnull
-    Bag<TextChannel> getMentionedChannelsBag();
+    Bag<GuildChannel> getMentionedChannelsBag();
 
     /**
      * A immutable list of all mentioned {@link net.dv8tion.jda.api.entities.Role Roles}.

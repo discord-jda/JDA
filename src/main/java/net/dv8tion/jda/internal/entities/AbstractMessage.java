@@ -120,7 +120,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public Bag<TextChannel> getMentionedChannelsBag()
+    public Bag<GuildChannel> getMentionedChannelsBag()
     {
         unsupported();
         return null;
@@ -144,7 +144,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public List<TextChannel> getMentionedChannels()
+    public List<GuildChannel> getMentionedChannels()
     {
         unsupported();
         return null;

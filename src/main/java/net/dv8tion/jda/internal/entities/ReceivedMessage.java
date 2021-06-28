@@ -85,7 +85,7 @@ public class ReceivedMessage extends AbstractMessage
     protected List<Member> memberMentions = null;
     protected List<Emote> emoteMentions = null;
     protected List<Role> roleMentions = null;
-    protected List<TextChannel> channelMentions = null;
+    protected List<GuildChannel> channelMentions = null;
     protected List<String> invites = null;
 
     public ReceivedMessage(
@@ -345,20 +345,26 @@ public class ReceivedMessage extends AbstractMessage
         return getJDA().getTextChannelById(channelId);
     }
 
+    private GuildChannel matchGuildChannel(Matcher matcher)
+    {
+        long channelId = MiscUtil.parseSnowflake(matcher.group(1));
+        return getJDA().getGuildChannelById(channelId);
+    }
+
     @Nonnull
     @Override
-    public synchronized List<TextChannel> getMentionedChannels()
+    public synchronized List<GuildChannel> getMentionedChannels()
     {
         if (channelMentions == null)
-            channelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchTextChannel));
+            channelMentions = Collections.unmodifiableList(processMentions(MentionType.CHANNEL, new ArrayList<>(), true, this::matchGuildChannel));
         return channelMentions;
     }
 
     @Nonnull
     @Override
-    public Bag<TextChannel> getMentionedChannelsBag()
+    public Bag<GuildChannel> getMentionedChannelsBag()
     {
-        return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchTextChannel);
+        return processMentions(MentionType.CHANNEL, new HashBag<>(), false, this::matchGuildChannel);
     }
 
     private Role matchRole(Matcher matcher)
@@ -627,9 +633,10 @@ public class ReceivedMessage extends AbstractMessage
             {
                 tmp = tmp.replace(emote.getAsMention(), ":" + emote.getName() + ":");
             }
-            for (TextChannel mentionedChannel : getMentionedChannels())
+            for (GuildChannel mentionedChannel : getMentionedChannels())
             {
-                tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
+                if (mentionedChannel instanceof TextChannel)
+                    tmp = tmp.replace(mentionedChannel.getAsMention(), '#' + mentionedChannel.getName());
             }
             for (Role mentionedRole : getMentionedRoles())
             {
