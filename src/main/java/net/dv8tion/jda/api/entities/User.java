@@ -73,7 +73,7 @@ import java.util.regex.Pattern;
  *
  * @see JDA#retrieveUserById(String)
  */
-public interface User extends IMentionable, IFakeable
+public interface User extends IMentionable
 {
     /**
      * Compiled pattern for a Discord Tag: {@code (.{2,32})#(\d{4})}
@@ -349,26 +349,27 @@ public interface User extends IMentionable, IFakeable
      */
     enum UserFlag
     {
-        STAFF(             0, "Discord Employee"),
-        PARTNER(           1, "Partnered Server Owner"),
-        HYPESQUAD(         2, "HypeSquad Events"),
-        BUG_HUNTER_LEVEL_1(3, "Bug Hunter Level 1"),
+        STAFF(               0, "Discord Employee"),
+        PARTNER(             1, "Partnered Server Owner"),
+        HYPESQUAD(           2, "HypeSquad Events"),
+        BUG_HUNTER_LEVEL_1(  3, "Bug Hunter Level 1"),
 
         // HypeSquad
         HYPESQUAD_BRAVERY(   6, "HypeSquad Bravery"),
         HYPESQUAD_BRILLIANCE(7, "HypeSquad Brilliance"),
         HYPESQUAD_BALANCE(   8, "HypeSquad Balance"),
 
-        EARLY_SUPPORTER(    9, "Early Supporter"),
-        TEAM_USER(         10, "Team User"),
+        EARLY_SUPPORTER(     9, "Early Supporter"),
+        TEAM_USER(          10, "Team User"),
         @Deprecated
-        @ForRemoval
+        @ForRemoval(deadline = "4.4.0")
         @ReplaceWith("User.isSystem()")
         @DeprecatedSince("4.3.0")
-        SYSTEM(            12, "System User"),
-        BUG_HUNTER_LEVEL_2(14, "Bug Hunter Level 2"),
-        VERIFIED_BOT(      16, "Verified Bot"),
-        VERIFIED_DEVELOPER(17, "Early Verified Bot Developer"),
+        SYSTEM(             12, "System User"),
+        BUG_HUNTER_LEVEL_2( 14, "Bug Hunter Level 2"),
+        VERIFIED_BOT(       16, "Verified Bot"),
+        VERIFIED_DEVELOPER( 17, "Early Verified Bot Developer"),
+        CERTIFIED_MODERATOR(18, "Discord Certified Moderator"),
         
         UNKNOWN(-1, "Unknown");
 

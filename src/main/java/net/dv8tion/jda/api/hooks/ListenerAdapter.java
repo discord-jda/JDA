@@ -19,6 +19,10 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.events.*;
+import net.dv8tion.jda.api.events.application.ApplicationCommandCreateEvent;
+import net.dv8tion.jda.api.events.application.ApplicationCommandDeleteEvent;
+import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
+import net.dv8tion.jda.api.events.application.GenericApplicationCommandEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryCreateEvent;
 import net.dv8tion.jda.api.events.channel.category.CategoryDeleteEvent;
 import net.dv8tion.jda.api.events.channel.category.GenericCategoryEvent;
@@ -65,6 +69,9 @@ import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.guild.*;
 import net.dv8tion.jda.api.events.message.guild.react.*;
@@ -124,47 +131,43 @@ public abstract class ListenerAdapter implements EventListener
 {
     //Deprecated/Unused events
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onTextChannelUpdatePermissions(@Nonnull TextChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onStoreChannelUpdatePermissions(@Nonnull StoreChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onVoiceChannelUpdatePermissions(@Nonnull VoiceChannelUpdatePermissionsEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onPermissionOverrideUpdate(), onPermissionOverrideCreate(), and onPermissionOverrideDelete()")
     public void onCategoryUpdatePermissions(@Nonnull CategoryUpdatePermissionsEvent event) {}
 
     @Deprecated
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.0")
     @ReplaceWith("onGuildMemberRemove(GuildMemberRemoveEvent)")
     public void onGuildMemberLeave(@Nonnull GuildMemberLeaveEvent event) {}
 
     @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    public void onSelfUpdateEmail(@Nonnull SelfUpdateEmailEvent event) {}
-
-    @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.1")
     @ReplaceWith("onResumed(ResumedEvent)")
     public void onResume(@Nonnull ResumedEvent event) {}
 
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.2.1")
     @ReplaceWith("onReconnected(ReconnectedEvent)")
     public void onReconnect(@Nonnull ReconnectedEvent event) {}
@@ -182,6 +185,15 @@ public abstract class ListenerAdapter implements EventListener
     public void onShutdown(@Nonnull ShutdownEvent event) {}
     public void onStatusChange(@Nonnull StatusChangeEvent event) {}
     public void onException(@Nonnull ExceptionEvent event) {}
+
+    //Interaction Events
+    public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
+    public void onButtonClick(@Nonnull ButtonClickEvent event) {}
+
+    //Application Events
+    public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
+    public void onApplicationCommandDelete(@Nonnull ApplicationCommandDeleteEvent event) {}
+    public void onApplicationCommandCreate(@Nonnull ApplicationCommandCreateEvent event) {}
 
     //User Events
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
@@ -260,6 +272,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onVoiceChannelUpdateUserLimit(@Nonnull VoiceChannelUpdateUserLimitEvent event) {}
     public void onVoiceChannelUpdateBitrate(@Nonnull VoiceChannelUpdateBitrateEvent event) {}
     public void onVoiceChannelUpdateParent(@Nonnull VoiceChannelUpdateParentEvent event) {}
+    public void onVoiceChannelUpdateRegion(@Nonnull VoiceChannelUpdateRegionEvent event) {}
     public void onVoiceChannelCreate(@Nonnull VoiceChannelCreateEvent event) {}
 
     //Category Events
@@ -307,6 +320,12 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildUpdateName(@Nonnull GuildUpdateNameEvent event){}
     public void onGuildUpdateNotificationLevel(@Nonnull GuildUpdateNotificationLevelEvent event) {}
     public void onGuildUpdateOwner(@Nonnull GuildUpdateOwnerEvent event) {}
+
+    /**
+     * @deprecated This event is no longer supported by discord, use {@link #onVoiceChannelUpdateRegion(VoiceChannelUpdateRegionEvent)} instead.
+     */
+    @Deprecated
+    @ReplaceWith("VoiceChannelUpdateRegionEvent")
     public void onGuildUpdateRegion(@Nonnull GuildUpdateRegionEvent event) {}
     public void onGuildUpdateSplash(@Nonnull GuildUpdateSplashEvent event) {}
     public void onGuildUpdateVerificationLevel(@Nonnull GuildUpdateVerificationLevelEvent event) {}
@@ -373,6 +392,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onHttpRequest(@Nonnull HttpRequestEvent event) {}
 
     //Generic Events
+    public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
+    public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericGuildMessage(@Nonnull GenericGuildMessageEvent event) {}

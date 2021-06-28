@@ -104,8 +104,9 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         Checks.notBlank(name, "Webhook name");
         name = name.trim();
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
         checkPermission(Permission.MANAGE_WEBHOOKS);
-        Checks.check(name.length() >= 2 && name.length() <= 100, "Name must be 2-100 characters in length!");
 
         return new WebhookActionImpl(getJDA(), this, name);
     }
@@ -584,12 +585,23 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    @Deprecated
     public MessageAction editMessageById(@Nonnull String messageId, @Nonnull MessageEmbed newEmbed)
     {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_WRITE);
         checkPermission(Permission.MESSAGE_EMBED_LINKS);
         return TextChannel.super.editMessageById(messageId, newEmbed);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> newEmbeds)
+    {
+        checkPermission(Permission.MESSAGE_READ);
+        checkPermission(Permission.MESSAGE_WRITE);
+        checkPermission(Permission.MESSAGE_EMBED_LINKS);
+        return TextChannel.super.editMessageEmbedsById(messageId, newEmbeds);
     }
 
     @Nonnull

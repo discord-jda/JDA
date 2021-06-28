@@ -26,9 +26,16 @@ import net.dv8tion.jda.api.audit.ActionType;
 import net.dv8tion.jda.api.audit.AuditLogChange;
 import net.dv8tion.jda.api.audit.AuditLogEntry;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.Guild.ExplicitContentLevel;
+import net.dv8tion.jda.api.entities.Guild.NotificationLevel;
+import net.dv8tion.jda.api.entities.Guild.Timeout;
 import net.dv8tion.jda.api.entities.Guild.VerificationLevel;
 import net.dv8tion.jda.api.entities.MessageEmbed.*;
 import net.dv8tion.jda.api.entities.GuildThread;
+import net.dv8tion.jda.api.entities.templates.Template;
+import net.dv8tion.jda.api.entities.templates.TemplateChannel;
+import net.dv8tion.jda.api.entities.templates.TemplateGuild;
+import net.dv8tion.jda.api.entities.templates.TemplateRole;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
@@ -38,6 +45,7 @@ import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
 import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -114,6 +122,8 @@ public class EntityBuilder
                 userView.getMap().put(selfUser.getIdLong(), selfUser);
         }
 
+        if (!self.isNull("application_id"))
+            selfUser.setApplicationId(self.getUnsignedLong("application_id"));
         selfUser.setVerified(self.getBoolean("verified"))
                 .setMfaEnabled(self.getBoolean("mfa_enabled"))
                 .setName(self.getString("username"))
@@ -1067,7 +1077,8 @@ public class EntityBuilder
             .setName(json.getString("name"))
             .setPosition(json.getInt("position"))
             .setUserLimit(json.getInt("user_limit"))
-            .setBitrate(json.getInt("bitrate"));
+            .setBitrate(json.getInt("bitrate"))
+            .setRegion(json.getString("rtc_region", null));
 
         createOverridesPass(channel, json.getArray("permission_overwrites"));
         if (playbackCache)
@@ -1181,11 +1192,15 @@ public class EntityBuilder
 
         return createMessage(jsonObject, chan, modifyCache);
     }
-    public Message createMessage(DataObject jsonObject, @Nullable MessageChannel channel, boolean modifyCache)
+    public ReceivedMessage createMessage(DataObject jsonObject, @Nullable MessageChannel channel, boolean modifyCache)
     {
         long channelId = jsonObject.getUnsignedLong("channel_id");
         if (channel != null && channelId != channel.getIdLong())
-            channel = null;
+        {
+            channel = api.getTextChannelById(channelId);
+            if (channel == null)
+                channel = api.getPrivateChannelById(channelId);
+        }
 
         final long id = jsonObject.getLong("id");
         final DataObject author = jsonObject.getObject("author");
@@ -1303,13 +1318,24 @@ public class EntityBuilder
             }
         }
 
+        List<ActionRow> components = Collections.emptyList();
+        Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
+        if (componentsArrayOpt.isPresent())
+        {
+            DataArray array = componentsArrayOpt.get();
+            components = array.stream(DataArray::getObject)
+                    .filter(it -> it.getInt("type", 0) == 1)
+                    .map(ActionRow::fromData)
+                    .collect(Collectors.toList());
+        }
+
         if (type == MessageType.UNKNOWN)
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         if (!type.isSystem())
         {
             message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags);
         }
         else
         {
@@ -1536,10 +1562,9 @@ public class EntityBuilder
     {
         final long id = content.getLong("id");
         final String name = content.getString("name");
-        final String description = content.getString("description");
-        final long packId = content.getLong("pack_id");
-        final String asset = content.getString("asset");
-        final String previewAsset = content.getString("preview_asset", null);
+        final String description = content.getString("description", "");
+        final long packId = content.getLong("pack_id", content.getLong("guild_id", 0L));
+        final String asset = content.getString("asset", "");
         final MessageSticker.StickerFormat format = MessageSticker.StickerFormat.fromId(content.getInt("format_type"));
         final Set<String> tags;
         if (content.isNull("tags"))
@@ -1552,7 +1577,7 @@ public class EntityBuilder
             final Set<String> tmp = new HashSet<>(Arrays.asList(split));
             tags = Collections.unmodifiableSet(tmp);
         }
-        return new MessageSticker(id, name, description, packId, asset, previewAsset, format, tags);
+        return new MessageSticker(id, name, description, packId, asset, format, tags);
     }
 
     @Nullable
@@ -1614,7 +1639,7 @@ public class EntityBuilder
 
         Optional<DataObject> ownerJson = object.optObject("user");
         User owner = null;
-        
+
         if (ownerJson.isPresent())
         {
             DataObject json = ownerJson.get();
@@ -1746,6 +1771,92 @@ public class EntityBuilder
         return new InviteImpl(getJDA(), code, expanded, inviter,
                               maxAge, maxUses, temporary,
                               timeCreated, uses, channel, guild, group, type);
+    }
+
+    public Template createTemplate(DataObject object)
+    {
+        final String code = object.getString("code");
+        final String name = object.getString("name");
+        final String description = object.getString("description", null);
+        final int uses = object.getInt("usage_count");
+        final User creator = createUser(object.getObject("creator"));
+        final OffsetDateTime createdAt = OffsetDateTime.parse(object.getString("created_at"));
+        final OffsetDateTime updatedAt = OffsetDateTime.parse(object.getString("updated_at"));
+        final long guildId = object.getLong("source_guild_id");
+        final DataObject guildObject = object.getObject("serialized_source_guild");
+        final String guildName = guildObject.getString("name");
+        final String guildDescription = guildObject.getString("description", null);
+        final String region = guildObject.getString("region", null);
+        final String guildIconId = guildObject.getString("icon_hash", null);
+        final VerificationLevel guildVerificationLevel = VerificationLevel.fromKey(guildObject.getInt("verification_level", -1));
+        final NotificationLevel notificationLevel = NotificationLevel.fromKey(guildObject.getInt("default_message_notifications", 0));
+        final ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.fromKey(guildObject.getInt("explicit_content_filter", 0));
+        final Locale locale = Locale.forLanguageTag(guildObject.getString("preferred_locale", "en"));
+        final Timeout afkTimeout = Timeout.fromKey(guildObject.getInt("afk_timeout", 0));
+        final DataArray roleArray = guildObject.getArray("roles");
+        final DataArray channelsArray = guildObject.getArray("channels");
+        final long afkChannelId = guildObject.getLong("afk_channel_id", -1L);
+        final long systemChannelId = guildObject.getLong("system_channel_id", -1L);
+
+        final List<TemplateRole> roles = new ArrayList<>();
+        for (int i = 0; i < roleArray.length(); i++)
+        {
+               DataObject obj = roleArray.getObject(i);
+               final long roleId = obj.getLong("id");
+               final String roleName = obj.getString("name");
+               final int roleColor = obj.getInt("color");
+               final boolean hoisted = obj.getBoolean("hoist");
+               final boolean mentionable = obj.getBoolean("mentionable");
+               final long rawPermissions = obj.getLong("permissions");
+               roles.add(new TemplateRole(roleId, roleName, roleColor == 0 ? Role.DEFAULT_COLOR_RAW : roleColor, hoisted, mentionable, rawPermissions));
+        }
+
+        final List<TemplateChannel> channels = new ArrayList<>();
+        for (int i = 0; i < channelsArray.length(); i++)
+        {
+            DataObject obj = channelsArray.getObject(i);
+            final long channelId = obj.getLong("id");
+            final int type = obj.getInt("type");
+            final ChannelType channelType = ChannelType.fromId(type);
+            final String channelName = obj.getString("name");
+            final String topic = obj.getString("topic", null);
+            final int rawPosition = obj.getInt("position");
+            final long parentId = obj.getLong("parent_id", -1);
+
+            final boolean nsfw = obj.getBoolean("nsfw");
+            final int slowmode = obj.getInt("rate_limit_per_user");
+
+            final int bitrate = obj.getInt("bitrate");
+            final int userLimit = obj.getInt("user_limit");
+
+            final List<TemplateChannel.PermissionOverride> permissionOverrides = new ArrayList<>();
+            DataArray overrides = obj.getArray("permission_overwrites");
+
+            for (int j = 0; j < overrides.length(); j++)
+            {
+                DataObject overrideObj = overrides.getObject(j);
+                final long overrideId = overrideObj.getLong("id");
+                final long allow = overrideObj.getLong("allow");
+                final long deny = overrideObj.getLong("deny");
+                permissionOverrides.add(new TemplateChannel.PermissionOverride(overrideId, allow, deny));
+            }
+            channels.add(new TemplateChannel(channelId, channelType, channelName, topic, rawPosition, parentId, type == 5, permissionOverrides, nsfw,
+                    slowmode, bitrate, userLimit));
+        }
+
+        TemplateChannel afkChannel = channels.stream().filter(templateChannel -> templateChannel.getIdLong() == afkChannelId)
+                .findFirst().orElse(null);
+        TemplateChannel systemChannel = channels.stream().filter(templateChannel -> templateChannel.getIdLong() == systemChannelId)
+                .findFirst().orElse(null);
+
+        final TemplateGuild guild = new TemplateGuild(guildId, guildName, guildDescription, region, guildIconId, guildVerificationLevel, notificationLevel, explicitContentLevel, locale,
+                afkTimeout, afkChannel, systemChannel, roles, channels);
+
+        final boolean synced = !object.getBoolean("is_dirty", false);
+
+        return new Template(getJDA(), code, name, description,
+                uses, creator, createdAt, updatedAt,
+                guild, synced);
     }
 
     public ApplicationInfo createApplicationInfo(DataObject object)

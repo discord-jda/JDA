@@ -16,10 +16,8 @@
 
 package net.dv8tion.jda.internal.utils;
 
-import java.util.Collection;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * This class has major inspiration from <a href="https://commons.apache.org/proper/commons-lang/" target="_blank">Lang 3</a>
@@ -28,6 +26,21 @@ import java.util.Objects;
  */
 public final class Helpers
 {
+    @SuppressWarnings("rawtypes")
+    private static final Consumer EMPTY_CONSUMER = (v) -> {};
+
+    @SuppressWarnings("unchecked")
+    public static <T> Consumer<T> emptyConsumer()
+    {
+        return (Consumer<T>) EMPTY_CONSUMER;
+    }
+
+    // locale-safe String#format
+
+    public static String format(String format, Object... args)
+    {
+        return String.format(Locale.ROOT, format, args);
+    }
 
     // ## StringUtils ##
 
@@ -117,6 +130,11 @@ public final class Helpers
                 return false;
         }
         return true;
+    }
+
+    public static int codePointLength(final String string)
+    {
+        return string.codePointCount(0, string.length());
     }
 
     // ## CollectionUtils ##

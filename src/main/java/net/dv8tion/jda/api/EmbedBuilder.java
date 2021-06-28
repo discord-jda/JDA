@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.EmbedType;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.Role;
@@ -59,7 +57,7 @@ public class EmbedBuilder
 
     /**
      * Constructs a new EmbedBuilder instance, which can be used to create {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
-     * These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.MessageChannel#sendMessage(MessageEmbed)}.
+     * These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)}.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
      */
     public EmbedBuilder() { }
@@ -120,7 +118,7 @@ public class EmbedBuilder
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty embed!");
         if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
-            throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
+            throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
             throw new IllegalStateException("Cannot build an embed with more than " + MessageEmbed.EMBED_MAX_LENGTH_BOT + " characters!");
         final String description = this.description.length() < 1 ? null : this.description.toString();
@@ -203,41 +201,6 @@ public class EmbedBuilder
     {
         final int length = length();
         return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
-    }
-
-    /**
-     * Checks whether the constructed {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed}
-     * is within the limits for the specified {@link net.dv8tion.jda.api.AccountType AccountType}
-     * <ul>
-     *     <li>Bot: {@value MessageEmbed#EMBED_MAX_LENGTH_BOT}</li>
-     *     <li>Client: {@value MessageEmbed#EMBED_MAX_LENGTH_CLIENT}</li>
-     * </ul>
-     *
-     * @param  type
-     *         The {@link net.dv8tion.jda.api.AccountType AccountType} to validate
-     *
-     * @throws java.lang.IllegalArgumentException
-     *         If provided with {@code null}
-     *
-     * @return True, if the {@link #length() length} is less or equal to the specific limit
-     *
-     * @deprecated Replace with {@link #isValidLength()}
-     */
-    @Deprecated
-    @ForRemoval
-    @DeprecatedSince("4.2.0")
-    public boolean isValidLength(@Nonnull AccountType type)
-    {
-        Checks.notNull(type, "AccountType");
-        final int length = length();
-        switch (type)
-        {
-            case BOT:
-                return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
-            case CLIENT:
-            default:
-                return length <= MessageEmbed.EMBED_MAX_LENGTH_CLIENT;
-        }
     }
 
     /**
@@ -480,7 +443,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setThumbnail("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
+     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  url
@@ -526,7 +489,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setImage("attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
+     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  url
@@ -623,7 +586,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setAuthor("Minn", null, "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
+     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  name
@@ -699,7 +662,7 @@ public class EmbedBuilder
      * InputStream file = new URL("https://http.cat/500").openStream();
      * embed.setFooter("Cool footer!", "attachment://cat.png") // we specify this in sendFile as "cat.png"
      *      .setDescription("This is a cute cat :3");
-     * channel.sendFile(file, "cat.png").embed(embed.build()).queue();
+     * channel.sendFile(file, "cat.png").setEmbeds(embed.build()).queue();
      * </code></pre>
      *
      * @param  text

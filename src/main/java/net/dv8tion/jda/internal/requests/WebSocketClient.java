@@ -1316,6 +1316,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void setupHandlers()
     {
         final SocketHandler.NOPHandler nopHandler =   new SocketHandler.NOPHandler(api);
+        handlers.put("APPLICATION_COMMAND_UPDATE",    new ApplicationCommandUpdateHandler(api));
+        handlers.put("APPLICATION_COMMAND_DELETE",    new ApplicationCommandDeleteHandler(api));
+        handlers.put("APPLICATION_COMMAND_CREATE",    new ApplicationCommandCreateHandler(api));
         handlers.put("CHANNEL_CREATE",                new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",                new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",                new ChannelUpdateHandler(api));
@@ -1333,6 +1336,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("GUILD_ROLE_UPDATE",             new GuildRoleUpdateHandler(api));
         handlers.put("GUILD_SYNC",                    new GuildSyncHandler(api));
         handlers.put("GUILD_UPDATE",                  new GuildUpdateHandler(api));
+        handlers.put("INTERACTION_CREATE",            new InteractionCreateHandler(api));
         handlers.put("INVITE_CREATE",                 new InviteCreateHandler(api));
         handlers.put("INVITE_DELETE",                 new InviteDeleteHandler(api));
         handlers.put("MESSAGE_CREATE",                new MessageCreateHandler(api));

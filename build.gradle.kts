@@ -29,7 +29,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
-val versionObj = Version(major = "4", minor = "2", revision = "1")
+val versionObj = Version(major = "4", minor = "3", revision = "0")
 
 project.group = "net.dv8tion"
 project.version = "$versionObj"
@@ -91,8 +91,10 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-databind:2.10.1")
 
     //Sets the dependencies for the examples
-    configurations.asMap["examplesCompile"] = configurations["apiElements"]
-    configurations.asMap["examplesRuntime"] = configurations["implementation"]
+    configurations["examplesImplementation"].withDependencies {
+        addAll(configurations["api"].allDependencies)
+        addAll(configurations["implementation"].allDependencies)
+    }
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.4.0")
 }

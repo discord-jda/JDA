@@ -171,7 +171,7 @@ public class MessageListener extends ListenerAdapter
         //You can also add event listeners to the already built JDA instance
         // Note that some events may not be received if the listener is added after calling build()
         // This includes events such as the ReadyEvent
-        jda.addEventListeners(new MessageListener());
+        jda.addEventListener(new MessageListener());
     }
 
     @Override
@@ -225,6 +225,40 @@ public class Bot extends ListenerAdapter
                        response.editMessageFormat("Pong: %d ms", System.currentTimeMillis() - time).queue();
                    });
         }
+    }
+}
+```
+
+**Slash-Commands**:
+
+```java
+public class Bot extends ListenerAdapter
+{
+    public static void main(String[] args) throws LoginException
+    {
+        if (args.length < 1) {
+            System.out.println("You have to provide a token as first argument!");
+            System.exit(1);
+        }
+        // args[0] should be the token
+        // We don't need any intents for this bot. Slash commands work without any intents!
+        JDA jda = JDABuilder.createLight(args[0], Collections.emptyList())
+            .addEventListeners(new Bot())
+            .setActivity(Activity.playing("Type /ping"))
+            .build();
+
+        jda.upsertCommand("ping", "Calculate ping of the bot").queue(); // This can take up to 1 hour to show up in the client
+    }
+    
+    @Override
+    public void onSlashCommand(SlashCommandEvent event)
+    {
+        if (!event.getName().equals("ping")) return; // make sure we handle the right command
+        long time = System.currentTimeMillis();
+        event.reply("Pong!").setEphemeral(true) // reply or acknowledge
+             .flatMap(v ->
+                 event.getHook().editOriginalFormat("Pong: %d ms", System.currentTimeMillis() - time) // then edit original
+             ).queue(); // Queue both reply and edit
     }
 }
 ```
@@ -429,7 +463,8 @@ Be sure to replace the **VERSION** key below with the one of the versions shown 
 **Gradle**
 ```gradle
 dependencies {
-    compile 'net.dv8tion:JDA:VERSION'
+    //Change 'implementation' to 'compile' in old Gradle versions
+    implementation("net.dv8tion:JDA:VERSION")
 }
 
 repositories {
@@ -444,7 +479,8 @@ repositories {
 **Gradle without Audio**
 ```gradle
 dependencies {
-    compile ('net.dv8tion:JDA:VERSION') {
+    //Change 'implementation' to 'compile' in old Gradle versions
+    implementation("net.dv8tion:JDA:VERSION") {
         exclude module: 'opus-java'
     }
 }
@@ -539,28 +575,6 @@ as it is easier.
 
 [Lavalink-Client](https://github.com/FredBoat/Lavalink-Client) is the official Lavalink client for JDA.
 
-### [JDA-Utilities](https://github.com/JDA-Applications/JDA-Utilities)
-
-Created and maintained by [jagrosh](https://github.com/jagrosh).
-<br>JDA-Utilities provides a Command-Extension and several utilities to make using JDA very simple.
-
-Features include:
-- Paginated Message using Reactions
-- EventWaiter allowing to wait for a response and other events
-
-
-<!--
-TODO: Ensure this is compatible with version 4
-### [JDAction](https://github.com/sedmelluq/jdaction)
-
-Created and maintained by [sedmelluq](https://github.com/sedmelluq)
-<br>JDAction is a [Gradle](https://gradle.org/) plugin which makes sure that the return values of all methods which return a RestAction are used.
-Since it is a common mistake to forget to `.queue()`/`.complete()`/`.submit()` RestActions,
-and it is often only discovered after noticing that something doesn't work,
-this plugin will help catch those cases quickly as it will cause a build failure in such case.
-
-More info about RestAction: [Wiki](https://github.com/DV8FromTheWorld/JDA/wiki/7\)-Using-RestAction)
--->
 
 ### [jda-nas](https://github.com/sedmelluq/jda-nas)
 
@@ -575,27 +589,28 @@ JDABuilder builder = JDABuilder.createDefault(BOT_TOKEN)
     .setAudioSendFactory(new NativeAudioSendFactory());
 ```
 
-### [jda-reactor](https://github.com/MinnDevelopment/jda-reactor)
+### [jda-ktx](https://github.com/MinnDevelopment/jda-ktx)
 
 Created and maintained by [MinnDevelopment](https://github.com/MinnDevelopment).
-<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a [reactive](http://reactivex.io/intro.html) alternative to common JDA interfaces.
+<br>Provides [Kotlin](https://kotlinlang.org/) extensions for **RestAction** and events that provide a more idiomatic Kotlin experience.
 
 ```kotlin
 fun main() {
-    val manager = ReactiveEventManager()
-    manager.on<ReadyEvent>()
-           .subscribe { println("Ready to serve!") }
-    manager.on<MessageReceivedEvent>()
-           .filter { it.message.contentRaw == "!ping" }
-           .subscribe { it.channel.sendMessage("Pong!").queue() }
-
     val jda = JDABuilder.createDefault(BOT_TOKEN)
-               .setEventManager(manager)
+               .injectKTX()
                .build()
+    
+    jda.onCommand("ping") { event ->
+        val time = measureTime {
+            event.reply("Pong!").await()
+        }.inWholeMilliseconds
+
+        event.hook.editOriginal("Pong: $time ms").queue()
+    }
 }
 ```
 
-An example bot for this can be found at [Reactive JDA Bot](https://github.com/MinnDevelopment/reactive-jda-bot).
+There is a number of examples available in the [README](https://github.com/MinnDevelopment/jda-ktx/#jda-ktx).
 
 ------
 

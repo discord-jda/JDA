@@ -15,10 +15,15 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.annotations.DeprecatedSince;
+import net.dv8tion.jda.annotations.ForRemoval;
+import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -40,6 +45,7 @@ import java.io.*;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -518,10 +524,10 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the jump-to URL for the received message. Clicking this URL in the Discord client will cause the client to
      * jump to the specified message.
-     * 
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
-     * 
+     *
      * @return A String representing the jump-to URL for the message
      */
     @Nonnull
@@ -561,8 +567,8 @@ public interface Message extends ISnowflake, Formattable
     String getContentRaw();
 
     /**
-     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters 
-     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used 
+     * Gets the textual content of this message using {@link #getContentDisplay()} and then strips it of markdown characters
+     * like {@literal *, **, __, ~~, ||} that provide text formatting. Any characters that match these but are not being used
      * for formatting are escaped to prevent possible formatting.
      *
      * @throws java.lang.UnsupportedOperationException
@@ -774,6 +780,79 @@ public interface Message extends ISnowflake, Formattable
     List<MessageEmbed> getEmbeds();
 
     /**
+     * Rows of interactive components such as {@link Button Buttons}.
+     * <br>You can use {@link MessageAction#setActionRows(ActionRow...)} to update these.
+     *
+     * @return Immutable {@link List} of {@link ActionRow}
+     *
+     * @see    #getButtons()
+     * @see    #getButtonById(String)
+     */
+    @Nonnull
+    List<ActionRow> getActionRows();
+
+    /**
+     * All {@link Button Buttons} attached to this message.
+     *
+     * @return Immutable {@link List} of {@link Button Buttons}
+     */
+    @Nonnull
+    default List<Button> getButtons()
+    {
+        return getActionRows().stream()
+                .map(ActionRow::getButtons)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the {@link Button} with the specified ID.
+     *
+     * @param  id
+     *         The id of the button
+     *
+     * @throws IllegalArgumentException
+     *         If the id is null
+     *
+     * @return The {@link Button} or null of no button with that ID is present on this message
+     */
+    @Nullable
+    default Button getButtonById(@Nonnull String id)
+    {
+        Checks.notNull(id, "Button ID");
+        return getButtons().stream()
+                .filter(it -> id.equals(it.getId()))
+                .findFirst().orElse(null);
+    }
+
+    /**
+     * All {@link Button Buttons} with the specified label attached to this message.
+     *
+     * @param  label
+     *         The button label
+     * @param  ignoreCase
+     *         Whether to use {@link String#equalsIgnoreCase(String)} instead of {@link String#equals(Object)}
+     *
+     * @throws IllegalArgumentException
+     *         If the provided label is null
+     *
+     * @return Immutable {@link List} of {@link Button Buttons} with the specified label
+     */
+    @Nonnull
+    default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
+    {
+        Checks.notNull(label, "Label");
+        Predicate<Button> filter;
+        if (ignoreCase)
+            filter = b -> label.equalsIgnoreCase(b.getLabel());
+        else
+            filter = b -> label.equals(b.getLabel());
+        return getButtons().stream()
+                .filter(filter)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * All {@link net.dv8tion.jda.api.entities.Emote Emotes} used in this Message.
      * <br><b>This only includes Custom Emotes, not unicode Emojis.</b> JDA classifies Emotes as the Custom Emojis uploaded
      * to a Guild and retrievable with {@link net.dv8tion.jda.api.entities.Guild#getEmotes()}. These are not the same
@@ -926,10 +1005,97 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction MessageAction}
      *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     *
+     * @deprecated Use {@link #editMessageEmbeds(MessageEmbed...)} instead
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editMessage(@Nonnull MessageEmbed newContent);
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("editMessageEmbeds(newEmbed)")
+    @DeprecatedSince("4.4.0")
+    default MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    {
+        return editMessageEmbeds(newContent);
+    }
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The edit was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         the new embeds of the Message (up to 10)
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account, or
+     *         if any of the passed-in embeds is {@code null}
+     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     */
+    @Nonnull
+    @CheckReturnValue
+    MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
+
+    /**
+     * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
+     * <br><b>Messages can only be edited by the account that sent them!</b>.
+     *
+     * <p>This message instance will not be updated by this operation, please use the response message instead.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The edit was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The edit was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_WRITE Permission.MESSAGE_WRITE} in
+     *         the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The edit was attempted after the Message had been deleted.</li>
+     * </ul>
+     *
+     * @param  embeds
+     *         the new embeds of the Message (up to 10)
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
+     * @throws java.lang.IllegalStateException
+     *         If the message attempting to be edited was not created by the currently logged in account, or
+     *         if any of the passed-in embeds is {@code null}
+     *         or not {@link net.dv8tion.jda.api.entities.MessageEmbed#isSendable() sendable}.
+     *
+     * @return {@link MessageAction MessageAction}
+     *         <br>The {@link net.dv8tion.jda.api.entities.Message Message} with the updated content
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        return editMessageEmbeds(Arrays.asList(embeds));
+    }
 
     /**
      * Edits this Message's content to the provided format.
@@ -1049,7 +1215,7 @@ public interface Message extends ISnowflake, Formattable
      * <br>By default there won't be any error thrown if the referenced message does not exist.
      * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
      *
-     * <p>For further info, see {@link MessageChannel#sendMessage(MessageEmbed)} and {@link MessageAction#reference(Message)}.
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
      *
      * @param  content
      *         The content of the reply message
@@ -1057,12 +1223,75 @@ public interface Message extends ISnowflake, Formattable
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
      * @since  4.2.1
+     *
+     * @deprecated Use {@link #replyEmbeds(MessageEmbed, MessageEmbed...)} instead
      */
     @Nonnull
     @CheckReturnValue
+    @Deprecated
+    @ForRemoval(deadline = "5.0.0")
+    @ReplaceWith("replyEmbeds(content)")
+    @DeprecatedSince("4.4.0")
     default MessageAction reply(@Nonnull MessageEmbed content)
     {
         return getChannel().sendMessage(content).reference(this);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  embed
+     *         The embed to reply with
+     * @param  other
+     *         Additional embeds to reply with
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
+    {
+        Checks.notNull(embed, "MessageEmbeds");
+        Checks.noneNull(other, "MessageEmbeds");
+        List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
+        embeds.add(embed);
+        Collections.addAll(embeds, other);
+        return replyEmbeds(embeds);
+    }
+
+    /**
+     * Replies and references this message.
+     * <br>This is identical to {@code message.getChannel().sendMessageEmbeds(embeds).reference(message)}.
+     * You can use {@link MessageAction#mentionRepliedUser(boolean) mentionRepliedUser(false)} to not mention the author of the message.
+     * <br>By default there won't be any error thrown if the referenced message does not exist.
+     * This behavior can be changed with {@link MessageAction#failOnInvalidReply(boolean)}.
+     *
+     * <p>For further info, see {@link MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)} and {@link MessageAction#reference(Message)}.
+     *
+     * @param  embeds
+     *         The embeds to reply with
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, any of the embeds are not {@link MessageEmbed#isSendable() sendable}, more than 10 embeds are provided,
+     *         or the sum of {@link MessageEmbed#getLength()} is greater than {@link MessageEmbed#EMBED_MAX_LENGTH_BOT}
+     *
+     * @return {@link MessageAction} Providing the {@link Message} created from this upload.
+     */
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        return getChannel().sendMessageEmbeds(embeds).reference(this);
     }
 
     /**

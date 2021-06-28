@@ -19,34 +19,36 @@ package net.dv8tion.jda.internal.entities;
 import net.dv8tion.jda.api.entities.MessageActivity;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.MessageType;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataMessage extends AbstractMessage
 {
     private final EnumSet<MentionType> allowedMentions;
     private final String[] mentionedRoles;
     private final String[] mentionedUsers;
-    private MessageEmbed embed;
+    private final ComponentLayout[] components;
+    private Collection<? extends MessageEmbed> embeds;
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed,
-                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles)
+    public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds,
+                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, ComponentLayout[] components)
     {
         super(content, nonce, tts);
-        this.embed = embed;
+        this.embeds = embeds;
         this.allowedMentions = allowedMentions;
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
+        this.components = components;
     }
 
-    public DataMessage(boolean tts, String content, String nonce, MessageEmbed embed)
+    public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds)
     {
-        this(tts, content, nonce, embed, null, new String[0], new String[0]);
+        this(tts, content, nonce, embeds, null, new String[0], new String[0], new ComponentLayout[0]);
     }
 
     public EnumSet<MentionType> getAllowedMentions()
@@ -82,7 +84,7 @@ public class DataMessage extends AbstractMessage
         return isTTS == other.isTTS
             && other.content.equals(content)
             && Objects.equals(other.nonce, nonce)
-            && Objects.equals(other.embed, embed);
+            && Objects.equals(other.embeds, embeds);
     }
 
     @Override
@@ -97,9 +99,9 @@ public class DataMessage extends AbstractMessage
         return String.format("DataMessage(%.30s)", getContentRaw());
     }
 
-    public DataMessage setEmbed(MessageEmbed embed)
+    public DataMessage setEmbeds(Collection<? extends MessageEmbed> embeds)
     {
-        this.embed = embed;
+        this.embeds = embeds;
         return this;
     }
 
@@ -107,7 +109,18 @@ public class DataMessage extends AbstractMessage
     @Override
     public List<MessageEmbed> getEmbeds()
     {
-        return embed == null ? Collections.emptyList() : Collections.singletonList(embed);
+        return embeds == null ? Collections.emptyList() : new ArrayList<>(embeds);
+    }
+
+    @Nonnull
+    @Override
+    public List<ActionRow> getActionRows()
+    {
+        return components == null ? Collections.emptyList()
+                : Arrays.stream(components)
+                    .filter(ActionRow.class::isInstance)
+                    .map(ActionRow.class::cast)
+                    .collect(Collectors.toList());
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT

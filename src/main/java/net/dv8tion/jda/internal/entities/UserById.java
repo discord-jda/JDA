@@ -177,11 +177,4 @@ public class UserById implements User
         unsupported();
         return 0;
     }
-
-    @Override
-    public boolean isFake()
-    {
-        unsupported();
-        return false;
-    }
 }

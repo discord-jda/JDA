@@ -35,17 +35,23 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
+import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
+import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.*;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
 import net.dv8tion.jda.api.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.UserImpl;
@@ -56,6 +62,9 @@ import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.managers.DirectAudioControllerImpl;
 import net.dv8tion.jda.internal.managers.PresenceImpl;
 import net.dv8tion.jda.internal.requests.*;
+import net.dv8tion.jda.internal.requests.restaction.CommandCreateActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
+import net.dv8tion.jda.internal.requests.restaction.CommandListUpdateActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.GuildActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 import net.dv8tion.jda.internal.utils.Helpers;
@@ -121,7 +130,7 @@ public class JDAImpl implements JDA
     protected String gatewayUrl;
     protected ChunkingFilter chunkingFilter;
 
-    protected String clientId = null;
+    protected String clientId = null,  requiredScopes = "bot";
     protected ShardManager shardManager = null;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
@@ -837,11 +846,88 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public RestAction<List<Command>> retrieveCommands()
+    {
+        Route.CompiledRoute route = Route.Interactions.GET_COMMANDS.compile(getSelfUser().getApplicationId());
+        return new RestActionImpl<>(this, route,
+            (response, request) ->
+                response.getArray()
+                        .stream(DataArray::getObject)
+                        .map(json -> new Command(this, null, json))
+                        .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Command> retrieveCommandById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
+        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+    }
+
+    @Nonnull
+    @Override
+    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
+    {
+        Checks.notNull(command, "CommandData");
+        return new CommandCreateActionImpl(this, command);
+    }
+
+    @Nonnull
+    @Override
+    public CommandListUpdateAction updateCommands()
+    {
+        Route.CompiledRoute route = Route.Interactions.UPDATE_COMMANDS.compile(getSelfUser().getApplicationId());
+        return new CommandListUpdateActionImpl(this, null, route);
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction editCommandById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new CommandEditActionImpl(this, id);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> deleteCommandById(@Nonnull String commandId)
+    {
+        Checks.isSnowflake(commandId);
+        Route.CompiledRoute route = Route.Interactions.DELETE_COMMAND.compile(getSelfUser().getApplicationId(), commandId);
+        return new RestActionImpl<>(this, route);
+    }
+
+    @Nonnull
+    @Override
     public GuildActionImpl createGuild(@Nonnull String name)
     {
         if (guildCache.size() >= 10)
             throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
         return new GuildActionImpl(this, name);
+    }
+
+    @Nonnull
+    @Override
+    public RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, Icon icon)
+    {
+        if (guildCache.size() >= 10)
+            throw new IllegalStateException("Cannot create a Guild with a Bot in 10 or more guilds!");
+
+        Checks.notBlank(code, "Template code");
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.notLonger(name, 100, "Name");
+
+        final Route.CompiledRoute route = Route.Templates.CREATE_GUILD_FROM_TEMPLATE.compile(code);
+
+        DataObject object = DataObject.empty();
+        object.put("name", name);
+        if (icon != null)
+            object.put("icon", icon.getEncoding());
+
+        return new RestActionImpl<>(this, route, object);
     }
 
     @Nonnull
@@ -876,6 +962,22 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
+    public JDA setRequiredScopes(@Nonnull Collection<String> scopes)
+    {
+        Checks.noneNull(scopes, "Scopes");
+        this.requiredScopes = String.join("+", scopes);
+        if (!requiredScopes.contains("bot"))
+        {
+            if (requiredScopes.isEmpty())
+                requiredScopes = "bot";
+            else
+                requiredScopes += "+bot";
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
     public String getInviteUrl(Permission... permissions)
     {
         StringBuilder builder = buildBaseInviteUrl();
@@ -897,9 +999,15 @@ public class JDAImpl implements JDA
     private StringBuilder buildBaseInviteUrl()
     {
         if (clientId == null)
-            retrieveApplicationInfo().complete();
-        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?scope=bot&client_id=");
+        {
+            if (selfUser != null)
+                clientId = selfUser.getApplicationId(); // populated by READY event
+            else
+                retrieveApplicationInfo().complete();
+        }
+        StringBuilder builder = new StringBuilder("https://discord.com/oauth2/authorize?client_id=");
         builder.append(clientId);
+        builder.append("&scope=").append(requiredScopes);
         return builder;
     }
 

@@ -125,7 +125,7 @@ public enum MessageType
      * This message was created by an interaction. Usually in combination with Slash Commands.
      * <br>Most commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
      */
-    APPLICATION_COMMAND(20),
+    APPLICATION_COMMAND(20, false),
 
     /**
      * TODO docs | THREAD_STARTER_MESSAGE

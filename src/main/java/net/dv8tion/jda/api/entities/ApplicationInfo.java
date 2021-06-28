@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -78,6 +79,40 @@ public interface ApplicationInfo extends ISnowflake
      */
     @Nullable
     ApplicationTeam getTeam();
+
+    /**
+     * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
+     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     *
+     * @param  scopes
+     *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The current ApplicationInfo instance
+     */
+    @Nonnull
+    default ApplicationInfo setRequiredScopes(@Nonnull String... scopes)
+    {
+        Checks.noneNull(scopes, "Scopes");
+        return setRequiredScopes(Arrays.asList(scopes));
+    }
+
+    /**
+     * Configures the required scopes applied to the {@link #getInviteUrl(Permission...)} and similar methods.
+     * <br>To use slash commands you must add {@code "applications.commands"} to these scopes. The scope {@code "bot"} is always applied.
+     *
+     * @param  scopes
+     *         The scopes to use with {@link #getInviteUrl(Permission...)} and the likes
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided
+     *
+     * @return The current ApplicationInfo instance
+     */
+    @Nonnull
+    ApplicationInfo setRequiredScopes(@Nonnull Collection<String> scopes);
 
     /**
      * Creates a OAuth invite-link used to invite the bot.

@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -29,10 +30,7 @@ import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
-import java.util.EnumSet;
-import java.util.FormattableFlags;
-import java.util.Formatter;
-import java.util.List;
+import java.util.*;
 
 public abstract class AbstractMessage implements Message
 {
@@ -338,6 +336,14 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public List<ActionRow> getActionRows()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public List<Emote> getEmotes()
     {
         unsupported();
@@ -378,7 +384,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> newContent)
     {
         unsupported();
         return null;

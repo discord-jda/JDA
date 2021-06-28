@@ -171,7 +171,7 @@ public interface SessionController
      */
     @Nonnull
     @Deprecated
-    @ForRemoval
+    @ForRemoval(deadline = "4.4.0")
     @DeprecatedSince("4.0.0")
     @ReplaceWith("getShardedGateway(api)")
     @SuppressWarnings("DeprecatedIsStillUsed")
