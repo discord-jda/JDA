@@ -909,16 +909,11 @@ public class GuildImpl implements Guild
             pendingRequestToSpeak = null;
         }
 
-        VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
-        if (!(connectedChannel instanceof StageChannel) || ((StageChannel) connectedChannel).getStageInstance() == null)
+        VoiceChannel channel = getSelfMember().getVoiceState().getChannel();
+        StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
+        if (instance == null)
             return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
-        DataObject body = DataObject.empty()
-                .putNull("request_to_speak_timestamp")
-                .put("suppress", true)
-                .put("channel_id", connectedChannel.getId());
-
-        CompletableFuture<Void> future = new RestActionImpl<Void>(api, route, body).submit();
+        CompletableFuture<Void> future = instance.cancelRequestToSpeak().submit();
         return new GatewayTask<>(future, () -> future.cancel(false));
     }
 
@@ -1771,23 +1766,14 @@ public class GuildImpl implements Guild
         if (!(connectedChannel instanceof StageChannel))
             return;
         StageChannel stage = (StageChannel) connectedChannel;
-        if (stage.getStageInstance() == null)
+        StageInstance instance = stage.getStageInstance();
+        if (instance == null)
             return;
 
         CompletableFuture<Void> future = pendingRequestToSpeak;
         pendingRequestToSpeak = null;
 
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(getId(), "@me");
-        DataObject body = DataObject.empty()
-                .put("channel_id", connectedChannel.getId());
-        // Stage moderators can bypass the request queue by just unsuppressing
-        if (getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
-            body.putNull("request_to_speak_timestamp").put("suppress", false);
-        else
-            body.put("request_to_speak_timestamp", OffsetDateTime.now().toString());
-
-        new RestActionImpl<>(api, route, body)
-            .queue((v) -> future.complete(null), future::completeExceptionally);
+        instance.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
     }
 
     // ---- Setters -----
