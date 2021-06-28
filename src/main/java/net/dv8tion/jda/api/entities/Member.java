@@ -20,6 +20,7 @@ import net.dv8tion.jda.annotations.Incubating;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -226,6 +227,24 @@ public interface Member extends IMentionable, IPermissionHolder
      */
     @Nonnull
     List<Role> getRoles();
+
+    /**
+     * Check member's {@link Role roles} for the role provided.
+     * <br>Returns {@code True} if the member has the role.
+     *
+     * @param role The role to check for
+     * @return True, if the member has the provided role
+     */
+    boolean hasRole(Role role);
+
+    /**
+     * Check member's {@link Role roles} against a Collection.
+     * <br>Returns {@code True} if the member has all roles in the provided collection.
+     *
+     * @param roles A collection of all roles to check against
+     * @return True, if member has all roles in the collection
+     */
+    boolean hasRoles(Collection<Role> roles);
 
     /**
      * The {@link java.awt.Color Color} of this Member's name in a Guild.

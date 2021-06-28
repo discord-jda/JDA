@@ -183,6 +183,19 @@ public class MemberImpl implements Member
     }
 
     @Override
+    public boolean hasRole(Role role)
+    {
+        Checks.notNull(role, "Provided role");
+        return getRoles().stream().anyMatch(it -> it.getId().equals(role.getId()));
+    }
+
+    @Override
+    public boolean hasRoles(Collection<Role> roles)
+    {
+        return getRoles().containsAll(roles);
+    }
+
+    @Override
     public Color getColor()
     {
         final int raw = getColorRaw();
