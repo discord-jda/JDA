@@ -238,18 +238,8 @@ public interface CommandInteraction extends Interaction
                 builder.append("@").append(o.getAsRole().getName()).append(" ");
                 break;
             case MENTIONABLE:
-                if (o instanceof Member)
-                {
-                    builder.append("@").append(
-                           ((Member) o).getEffectiveName()
-                    ).append(" ");
-                }
-                else if (o instanceof Emote)
-                {
-                    builder.append("@").append(
-                            ((Emote) o).getName()
-                    ).append(" ");
-                }
+                builder.append("M:").append(o.getAsMentionable().getIdLong()).append(" ");
+                break;
             default:
                 builder.append(o.getAsString()).append(" ");
                 break;
