@@ -74,12 +74,6 @@ public class ButtonImpl implements Button
         return id;
     }
 
-    @Override
-    public int getMaxPerRow()
-    {
-        return 5;
-    }
-
     @Nonnull
     @Override
     public String getLabel()

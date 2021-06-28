@@ -90,12 +90,6 @@ public class SelectionMenuImpl implements SelectionMenu
         return id;
     }
 
-    @Override
-    public int getMaxPerRow()
-    {
-        return 1;
-    }
-
     @Nullable
     @Override
     public String getPlaceholder()

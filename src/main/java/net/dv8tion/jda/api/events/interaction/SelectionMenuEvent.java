@@ -28,6 +28,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
+/**
+ * Indicates that a custom {@link SelectionMenu} on one of the bots messages was used by a user.
+ *
+ * <p>This fires when a user selects the options on one of the custom selection menus attached to a bot or webhook message.
+ *
+ * <h2>Requirements</h2>
+ * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
+ * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
+ */
 public class SelectionMenuEvent extends GenericInteractionCreateEvent implements SelectionMenuInteraction
 {
     private final SelectionMenuInteraction menuInteraction;

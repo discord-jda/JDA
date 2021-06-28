@@ -31,7 +31,6 @@ import javax.annotation.Nullable;
  * Indicates that a custom {@link Button} on one of the bots messages was clicked by a user.
  *
  * <p>This fires when a user clicks one of the custom buttons attached to a bot or webhook message.
- * <br><b>Keep in mind that users can use your webhooks to spoof components!</b>
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.

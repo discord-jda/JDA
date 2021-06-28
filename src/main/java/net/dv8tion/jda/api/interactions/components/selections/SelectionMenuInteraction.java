@@ -28,13 +28,58 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * Component Interaction for a {@link SelectionMenu}.
+ *
+ * @see net.dv8tion.jda.api.events.interaction.SelectionMenuEvent
+ */
 public interface SelectionMenuInteraction extends ComponentInteraction
 {
     @Nullable
     @Override
     SelectionMenu getComponent();
 
+    /**
+     * The {@link SelectionMenu} this interaction belongs to.
+     * <br>This is null for ephemeral messages!
+     *
+     * @return The {@link SelectionMenu}
+     *
+     * @see    #getComponentId()
+     */
+    @Nullable
+    default SelectionMenu getSelectionMenu()
+    {
+        return getComponent();
+    }
+
+    /**
+     * If available, this will resolve the selected {@link #getValues() values} to the representative {@link SelectOption SelectOption} instances.
+     * <br>This is null if the message is ephemeral.
+     *
+     * @return {@link List} of the selected options or null if this message is ephemeral
+     */
+    @Nullable
+    default List<SelectOption> getSelectedOptions()
+    {
+        SelectionMenu menu = getComponent();
+        if (menu == null)
+            return null;
+
+        List<String> values = getValues();
+        return menu.getOptions()
+                .stream()
+                .filter(it -> values.contains(it.getValue()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * The selected values. These are defined in the individual {@link SelectOption SelectOptions}.
+     *
+     * @return {@link List} of {@link SelectOption#getValue()}
+     */
     @Nonnull
     List<String> getValues();
 
