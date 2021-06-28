@@ -215,14 +215,14 @@ public interface SelectionMenu extends Component
          *         The min values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is negative
+         *         If the provided amount is less than 1
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setMinValues(int minValues)
         {
-            Checks.notNegative(minValues, "Min Values");
+            Checks.positive(minValues, "Min Values");
             this.minValues = minValues;
             return this;
         }
@@ -261,7 +261,7 @@ public interface SelectionMenu extends Component
          *         The max values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is not a valid range ({@code 0 <= min <= max})
+         *         If the provided amount is not a valid range ({@code 1 <= min <= max})
          *
          * @return The same builder instance for chaining
          */
@@ -460,14 +460,17 @@ public interface SelectionMenu extends Component
          * <br>A selection menu may not have more than 25 options at once.
          *
          * @throws IllegalArgumentException
-         *         If the number of options is either greater than {@link #getMaxValues()} or greater than 25
+         *         If the number of options is greater than {@link #getMaxValues()}, less than {@link #getMinValues()}, or greater than 25.
+         *         Also throws is {@link #getMinValues()} is greater than {@link #getMaxValues()}.
          *
          * @return The new {@link SelectionMenu} instance
          */
         @Nonnull
         public SelectionMenu build()
         {
+            Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
             Checks.check(maxValues <= options.size(), "The max values should be less than or equal to the amount of available options");
+            Checks.check(minValues <= options.size(), "The min values should be less than or equal to the amount of available options");
             Checks.check(options.size() <= 25, "Cannot build a selection menu with more than 25 options.");
             return new SelectionMenuImpl(customId, placeholder, minValues, maxValues, options);
         }
