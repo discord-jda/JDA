@@ -279,7 +279,7 @@ public interface Message extends ISnowflake, Formattable
      * <p><b>This may include GuildChannel from other {@link net.dv8tion.jda.api.entities.Guild Guilds}</b>
      *
      * @throws java.lang.UnsupportedOperationException
-     *         If this is ia system message.
+     *         If this is a system message.
      *
      * @return immutable list of mentioned GuildChannels
      */
