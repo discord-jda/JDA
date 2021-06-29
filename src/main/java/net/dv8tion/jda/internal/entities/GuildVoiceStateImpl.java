@@ -49,7 +49,8 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl(Member member)
     {
         this.api = member.getJDA();
-        setMember(member);
+        this.guild = member.getGuild();
+        this.member = member;
     }
 
     @Override
@@ -233,12 +234,6 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     // -- Setters --
-
-    public GuildVoiceStateImpl setMember(Member member)
-    {
-        this.member = member;
-        return this;
-    }
 
     public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
     {
