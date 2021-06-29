@@ -110,17 +110,17 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     {
         Checks.noneNull(components, "Components");
         Checks.check(components.length > 0, "Cannot have empty row!");
-        long differentTypes = Arrays.stream(components)
-                .map(Component::getClass)
-                .distinct()
-                .count();
-        Checks.check(differentTypes <= 1, "Cannot mix different types of components in one action row. Either it contains up to 5 buttons or one selection menu.");
-
-        Component first = components[0];
-        Checks.check(components.length <= first.getMaxPerRow(), "Can only have %d of %s per action row!", first.getMaxPerRow(), first.getType());
-
         ActionRow row = new ActionRow();
         Collections.addAll(row.components, components);
+        if (!row.isValid())
+        {
+            Map<Component.Type, List<Component>> grouped = Arrays.stream(components).collect(Collectors.groupingBy(Component::getType));
+            String provided = grouped.entrySet()
+                .stream()
+                .map(entry -> entry.getValue().size() + "/" + entry.getKey().getMaxPerRow() + " of " + entry.getKey())
+                .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException("Cannot create action row with invalid component combinations. Provided: " + provided);
+        }
         return row;
     }
 
