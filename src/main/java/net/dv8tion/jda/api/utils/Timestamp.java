@@ -26,7 +26,7 @@ import java.time.Instant;
  * Utility class representing Discord Markdown timestamps.
  * <br>This class implements {@link #toString()} such that it can be directly included in message content.
  *
- * <p>These timestamps are rendered by the individual receiving discord client in a local timezone and language format.
+ * <p>These timestamps are rendered by the individual receiving Discord client in a local timezone and language format.
  * Each timestamp can be displayed with different {@link TimeFormat TimeFormats}.
  */
 public class Timestamp

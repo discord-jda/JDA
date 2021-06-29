@@ -48,9 +48,9 @@ public enum TimeFormat
     DATE_SHORT("d"),
     /** Formats date as {@code 16 June 2021} */
     DATE_LONG("D"),
-    /** Formats date and time as {@code 16 June 2021 18:49} or {@code 16 June 2021 6:49 PM} */
+    /** Formats date and time as {@code 16 June 2021 18:49} or {@code June 16, 2021 6:49 PM} */
     DATE_TIME_SHORT("f"),
-    /** Formats date and time as {@code Wednesday, 16 June 2021 18:49} or {@code Wednesday, 16 June 2021 6:49 PM} */
+    /** Formats date and time as {@code Wednesday, 16 June 2021 18:49} or {@code Wednesday, June 16, 2021 6:49 PM} */
     DATE_TIME_LONG("F"),
     /** Formats date and time as relative {@code 18 minutes ago} or {@code 2 days ago} */
     RELATIVE("R"),
@@ -137,7 +137,7 @@ public enum TimeFormat
     }
 
     /**
-     * Parses the provided markdown into an {@link Timestamp} instance.
+     * Parses the provided markdown into a {@link Timestamp} instance.
      * <br>This is the reverse operation for the {@link Timestamp#toString() Timestamp.toString()} representation.
      *
      * @param  markdown
