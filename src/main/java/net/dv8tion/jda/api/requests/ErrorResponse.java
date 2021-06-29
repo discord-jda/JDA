@@ -64,6 +64,7 @@ public enum ErrorResponse
     UNKNOWN_INTERACTION(            10062, "Unknown Interaction"),
     UNKNOWN_COMMAND(                10063, "Unknown application command"),
     UNKNOWN_COMMAND_PERMISSIONS(    10066, "Unknown application command permissions"),
+    UNKNOWN_STAGE_INSTANCE(         10067, "Unknown Stage Instance"),
     BOTS_NOT_ALLOWED(               20001, "Bots cannot use this endpoint"),
     ONLY_BOTS_ALLOWED(              20002, "Only bots can use this endpoint"),
     MAX_GUILDS(                     30001, "Maximum number of Guilds reached (100)"),
@@ -110,6 +111,7 @@ public enum ErrorResponse
     MFA_NOT_ENABLED(                60003, "MFA auth required but not enabled"),
     REACTION_BLOCKED(               90001, "Reaction Blocked"),
     RESOURCES_OVERLOADED(          130000, "Resource overloaded"),
+    STAGE_ALREADY_OPEN(            150006, "The Stage is already open"),
 
     SERVER_ERROR(                       0, "Discord encountered an internal server error! Not good!");
 

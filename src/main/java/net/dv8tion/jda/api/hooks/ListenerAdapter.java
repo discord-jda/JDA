@@ -85,6 +85,12 @@ import net.dv8tion.jda.api.events.role.RoleCreateEvent;
 import net.dv8tion.jda.api.events.role.RoleDeleteEvent;
 import net.dv8tion.jda.api.events.role.update.*;
 import net.dv8tion.jda.api.events.self.*;
+import net.dv8tion.jda.api.events.stage.GenericStageInstanceEvent;
+import net.dv8tion.jda.api.events.stage.StageInstanceCreateEvent;
+import net.dv8tion.jda.api.events.stage.StageInstanceDeleteEvent;
+import net.dv8tion.jda.api.events.stage.update.GenericStageInstanceUpdateEvent;
+import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdatePrivacyLevelEvent;
+import net.dv8tion.jda.api.events.stage.update.StageInstanceUpdateTopicEvent;
 import net.dv8tion.jda.api.events.user.GenericUserEvent;
 import net.dv8tion.jda.api.events.user.UserActivityEndEvent;
 import net.dv8tion.jda.api.events.user.UserActivityStartEvent;
@@ -295,6 +301,12 @@ public abstract class ListenerAdapter implements EventListener
     @DeprecatedSince("4.3.0")
     public void onPrivateChannelDelete(@Nonnull PrivateChannelDeleteEvent event) {}
 
+    //StageInstance Event
+    public void onStageInstanceDelete(@Nonnull StageInstanceDeleteEvent event) {}
+    public void onStageInstanceUpdateTopic(@Nonnull StageInstanceUpdateTopicEvent event) {}
+    public void onStageInstanceUpdatePrivacyLevel(@Nonnull StageInstanceUpdatePrivacyLevelEvent event) {}
+    public void onStageInstanceCreate(@Nonnull StageInstanceCreateEvent event) {}
+
     //Guild Events
     public void onGuildReady(@Nonnull GuildReadyEvent event) {}
     public void onGuildTimeout(@Nonnull GuildTimeoutEvent event) {}
@@ -367,6 +379,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildVoiceSelfDeafen(@Nonnull GuildVoiceSelfDeafenEvent event) {}
     public void onGuildVoiceSuppress(@Nonnull GuildVoiceSuppressEvent event) {}
     public void onGuildVoiceStream(@Nonnull GuildVoiceStreamEvent event) {}
+    public void onGuildVoiceRequestToSpeak(@Nonnull GuildVoiceRequestToSpeakEvent event) {}
 
     //Role events
     public void onRoleCreate(@Nonnull RoleCreateEvent event) {}
@@ -411,6 +424,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericVoiceChannelUpdate(@Nonnull GenericVoiceChannelUpdateEvent event) {}
     public void onGenericCategory(@Nonnull GenericCategoryEvent event) {}
     public void onGenericCategoryUpdate(@Nonnull GenericCategoryUpdateEvent event) {}
+    public void onGenericStageInstance(@Nonnull GenericStageInstanceEvent event) {}
+    public void onGenericStageInstanceUpdate(@Nonnull GenericStageInstanceUpdateEvent event) {}
     public void onGenericGuild(@Nonnull GenericGuildEvent event) {}
     public void onGenericGuildUpdate(@Nonnull GenericGuildUpdateEvent event) {}
     public void onGenericGuildInvite(@Nonnull GenericGuildInviteEvent event) {}

@@ -84,6 +84,7 @@ public class GuildImpl implements Guild
     private final CacheView.SimpleCacheView<MemberPresenceImpl> memberPresences;
 
     private GuildManager manager;
+    private CompletableFuture<Void> pendingRequestToSpeak;
 
     private Member owner;
     private String name;
@@ -888,6 +889,36 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    public synchronized Task<Void> requestToSpeak()
+    {
+        if (!isRequestToSpeakPending())
+            pendingRequestToSpeak = new CompletableFuture<>();
+
+        Task<Void> task = new GatewayTask<>(pendingRequestToSpeak, this::cancelRequestToSpeak);
+        updateRequestToSpeak();
+        return task;
+    }
+
+    @Nonnull
+    @Override
+    public synchronized Task<Void> cancelRequestToSpeak()
+    {
+        if (isRequestToSpeakPending())
+        {
+            pendingRequestToSpeak.cancel(false);
+            pendingRequestToSpeak = null;
+        }
+
+        VoiceChannel channel = getSelfMember().getVoiceState().getChannel();
+        StageInstance instance = channel instanceof StageChannel ? ((StageChannel) channel).getStageInstance() : null;
+        if (instance == null)
+            return new GatewayTask<>(CompletableFuture.completedFuture(null), () -> {});
+        CompletableFuture<Void> future = instance.cancelRequestToSpeak().submit();
+        return new GatewayTask<>(future, () -> future.cancel(false));
+    }
+
+    @Nonnull
+    @Override
     public JDAImpl getJDA()
     {
         return api;
@@ -1551,7 +1582,6 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(TextChannel.class, name, this, ChannelType.TEXT).setParent(parent);
     }
@@ -1573,9 +1603,29 @@ public class GuildImpl implements Guild
 
         Checks.notBlank(name, "Name");
         name = name.trim();
-        Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
         return new ChannelActionImpl<>(VoiceChannel.class, name, this, ChannelType.VOICE).setParent(parent);
+    }
+
+    @Nonnull
+    @Override
+    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name, Category parent)
+    {
+        if (parent != null)
+        {
+            Checks.check(parent.getGuild().equals(this), "Category is not from the same guild!");
+            if (!getSelfMember().hasPermission(parent, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(parent, Permission.MANAGE_CHANNEL);
+        }
+        else
+        {
+            checkPermission(Permission.MANAGE_CHANNEL);
+        }
+
+        Checks.notBlank(name, "Name");
+        name = name.trim();
+        Checks.notLonger(name, 100, "Name");
+        return new ChannelActionImpl<>(StageChannel.class, name, this, ChannelType.STAGE).setParent(parent);
     }
 
     @Nonnull
@@ -1701,6 +1751,29 @@ public class GuildImpl implements Guild
             checkPosition(role);
             Checks.check(!role.isManaged(), "Cannot %s a managed role %s a Member. Role: %s", type, preposition, role.toString());
         });
+    }
+
+    private synchronized boolean isRequestToSpeakPending()
+    {
+        return pendingRequestToSpeak != null && !pendingRequestToSpeak.isDone();
+    }
+
+    public synchronized void updateRequestToSpeak()
+    {
+        if (!isRequestToSpeakPending())
+            return;
+        VoiceChannel connectedChannel = getSelfMember().getVoiceState().getChannel();
+        if (!(connectedChannel instanceof StageChannel))
+            return;
+        StageChannel stage = (StageChannel) connectedChannel;
+        StageInstance instance = stage.getStageInstance();
+        if (instance == null)
+            return;
+
+        CompletableFuture<Void> future = pendingRequestToSpeak;
+        pendingRequestToSpeak = null;
+
+        instance.requestToSpeak().queue((v) -> future.complete(null), future::completeExceptionally);
     }
 
     // ---- Setters -----
