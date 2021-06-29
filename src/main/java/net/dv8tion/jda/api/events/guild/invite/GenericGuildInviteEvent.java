@@ -114,7 +114,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * The {@link VoiceChannel} this invite points to.
      *
      * @throws IllegalStateException
-     *         If this did not happen in a voice channel
+     *         If this did not happen in a voice channel or stage channel
      *
      * @return {@link VoiceChannel}
      *

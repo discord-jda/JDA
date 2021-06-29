@@ -230,7 +230,7 @@ public class Route
     {
         public static final Route GET_INSTANCE =    new Route(GET,    "stage-instances/{channel_id}");
         public static final Route DELETE_INSTANCE = new Route(DELETE, "stage-instances/{channel_id}");
-        public static final Route UPDATE_INSTANCE =   new Route(PATCH,  "stage-instances/{channel_id}");
+        public static final Route UPDATE_INSTANCE = new Route(PATCH,  "stage-instances/{channel_id}");
         public static final Route CREATE_INSTANCE = new Route(POST,   "stage-instances");
     }
 

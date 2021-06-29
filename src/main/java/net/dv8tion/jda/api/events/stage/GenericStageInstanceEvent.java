@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.events.stage;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.StageChannel;
 import net.dv8tion.jda.api.entities.StageInstance;
 import net.dv8tion.jda.api.events.guild.GenericGuildEvent;
 
@@ -47,5 +48,16 @@ public abstract class GenericStageInstanceEvent extends GenericGuildEvent
     public StageInstance getInstance()
     {
         return instance;
+    }
+
+    /**
+     * The {@link StageChannel} this instance belongs to
+     *
+     * @return The StageChannel
+     */
+    @Nonnull
+    public StageChannel getChannel()
+    {
+        return instance.getChannel();
     }
 }

@@ -25,7 +25,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Represents a Stage Channel, also known as Radio Channel.
+ * Represents a Stage Channel.
  *
  * <p>This is a more advanced version of a {@link VoiceChannel}
  * that can be used to host events with speakers and listeners.

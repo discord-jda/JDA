@@ -270,7 +270,7 @@ public enum AuditLogKey
      *
      * <p>Expected type: <b>Integer</b>
      */
-    STAGE_INSTANCE_PRIVACY_LEVEL("privacy_level"),
+    PRIVACY_LEVEL("privacy_level"),
 
 
     // MEMBER

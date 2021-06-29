@@ -334,9 +334,11 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                     object.put("rate_limit_per_user", slowmode);
                 if (news != null)
                     object.put("type", news ? 5 : 0);
+                break;
             case STAGE:
-                if (topic != null && !topic.isEmpty())
-                    object.put("topic", topic);
+                if (bitrate != null)
+                    object.put("bitrate", bitrate);
+                break;
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());

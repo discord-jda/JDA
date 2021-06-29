@@ -457,7 +457,7 @@ public enum ActionType
      * <h2>Possible Keys</h2>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STAGE_INSTANCE_PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
      * </ul>
      */
     STAGE_INSTANCE_CREATE(83, TargetType.STAGE_INSTANCE),
@@ -473,7 +473,7 @@ public enum ActionType
      * <h2>Possible Keys</h2>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STAGE_INSTANCE_PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
      * </ul>
      */
     STAGE_INSTANCE_UPDATE(84, TargetType.STAGE_INSTANCE),
@@ -489,7 +489,7 @@ public enum ActionType
      * <h2>Possible Keys</h2>
      * <ul>
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#CHANNEL_TOPIC CHANNEL_TOPIC}</li>
-     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#STAGE_INSTANCE_PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
+     *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#PRIVACY_LEVEL STAGE_INSTANCE_PRIVACY_LEVEL}</li>
      * </ul>
      */
     STAGE_INSTANCE_DELETE(85, TargetType.STAGE_INSTANCE),

@@ -68,7 +68,7 @@ public interface StageInstance extends ISnowflake
     /**
      * Whether this stage instance can be found in stage discovery.
      *
-     * @return True, if this is a public stage that can be found in stage discovery
+     * @return True if this is a public stage that can be found in stage discovery
      */
     boolean isDiscoverable();
 
