@@ -50,7 +50,7 @@ import java.util.List;
  * @see    JDA#getEmotesByName(String, boolean)
  * @see    JDA#getEmotes()
  */
-public interface Emote extends IMentionable, IFakeable
+public interface Emote extends IMentionable
 {
     /** Template for {@link #getImageUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";

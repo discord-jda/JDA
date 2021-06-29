@@ -16,9 +16,6 @@
 
 package net.dv8tion.jda.api;
 
-import net.dv8tion.jda.annotations.DeprecatedSince;
-import net.dv8tion.jda.annotations.ForRemoval;
-import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
@@ -725,6 +722,36 @@ public interface JDA
     @Nonnull
     @CheckReturnValue
     GuildAction createGuild(@Nonnull String name);
+
+    /**
+     * Constructs a new {@link net.dv8tion.jda.api.entities.Guild Guild} from the specified template code.
+     *
+     * <p>This RestAction does not provide the resulting Guild!
+     * It will be in a following {@link net.dv8tion.jda.api.events.guild.GuildJoinEvent GuildJoinEvent}.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_GUILD_TEMPLATE Unknown Guild Template}
+     *     <br>The template doesn't exist.</li>
+     * </ul>
+     *
+     * @param  code
+     *         The template code to use to create a guild
+     * @param  name
+     *         The name of the resulting guild
+     * @param  icon
+     *         The {@link net.dv8tion.jda.api.entities.Icon Icon} to use, or null to use no icon
+     *
+     * @throws java.lang.IllegalStateException
+     *         If the currently logged in account is in 10 or more guilds
+     * @throws java.lang.IllegalArgumentException
+     *         If the provided name is empty, {@code null} or not between 2-100 characters
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction}
+     */
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Void> createGuildFromTemplate(@Nonnull String code, @Nonnull String name, @Nullable Icon icon);
 
     /**
      * {@link net.dv8tion.jda.api.utils.cache.CacheView CacheView} of
@@ -1712,31 +1739,6 @@ public interface JDA
     default VoiceChannel getVoiceChannelById(long id)
     {
         return getVoiceChannelCache().getElementById(id);
-    }
-
-    /**
-     * An unmodifiable list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that have the same name as the one provided.
-     * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
-     *
-     * @param  name
-     *         The name of the requested {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
-     * @param  ignoreCase
-     *         Whether to ignore case or not when comparing the provided name to each {@link net.dv8tion.jda.api.entities.VoiceChannel#getName()}.
-     *
-     * @return Possibly-empty list of all the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} that all have the
-     *         same name as the provided name.
-     *
-     * @deprecated
-     *         Replace with {@link #getVoiceChannelsByName(String, boolean)}
-     */
-    @Nonnull
-    @Deprecated
-    @DeprecatedSince("4.0.0")
-    @ForRemoval(deadline="4.3.0")
-    @ReplaceWith("jda.getVoiceChannelsByName(name, ignoreCase)")
-    default List<VoiceChannel> getVoiceChannelByName(@Nonnull String name, boolean ignoreCase)
-    {
-        return getVoiceChannelsByName(name, ignoreCase);
     }
 
     /**

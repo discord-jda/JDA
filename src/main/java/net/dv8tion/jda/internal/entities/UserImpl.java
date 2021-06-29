@@ -143,13 +143,6 @@ public class UserImpl extends UserById implements User
         return api;
     }
 
-    @Override
-    @Deprecated
-    public boolean isFake()
-    {
-        return fake;
-    }
-
     @Nonnull
     @Override
     public EnumSet<UserFlag> getFlags()

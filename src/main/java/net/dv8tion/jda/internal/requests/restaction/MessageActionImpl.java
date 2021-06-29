@@ -21,6 +21,7 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.MissingAccessException;
+import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -28,7 +29,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.requests.Method;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -61,11 +61,14 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     protected final AllowedMentionsImpl allowedMentions = new AllowedMentionsImpl();
     protected List<ActionRow> components;
     protected List<String> retainedAttachments;
-    protected MessageEmbed embed = null;
+    protected List<MessageEmbed> embeds = null;
     protected String nonce = null;
     protected boolean tts = false, override = false;
     protected boolean failOnInvalidReply = defaultFailOnInvalidReply;
     protected long messageReference;
+
+    protected final String messageId;
+    private InteractionHook hook = null;
 
     public static void setDefaultFailOnInvalidReply(boolean fail)
     {
@@ -77,20 +80,43 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         return defaultFailOnInvalidReply;
     }
 
-    public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel)
+    public MessageActionImpl(JDA api, String messageId, MessageChannel channel)
     {
-        super(api, route);
+        super(api, messageId != null
+            ? Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId)
+            : Route.Messages.SEND_MESSAGE.compile(channel.getId()));
         this.content = new StringBuilder();
         this.channel = channel;
+        this.messageId = messageId;
     }
 
-    public MessageActionImpl(JDA api, Route.CompiledRoute route, MessageChannel channel, StringBuilder contentBuilder)
+    public MessageActionImpl(JDA api, String messageId, MessageChannel channel, StringBuilder contentBuilder)
     {
-        super(api, route);
+        super(api, messageId != null
+            ? Route.Messages.EDIT_MESSAGE.compile(channel.getId(), messageId)
+            : Route.Messages.SEND_MESSAGE.compile(channel.getId()));
         Checks.check(contentBuilder.length() <= Message.MAX_CONTENT_LENGTH,
             "Cannot build a Message with more than %d characters. Please limit your input.", Message.MAX_CONTENT_LENGTH);
         this.content = contentBuilder;
         this.channel = channel;
+        this.messageId = messageId;
+    }
+
+    public MessageActionImpl withHook(InteractionHook hook)
+    {
+        this.hook = hook;
+        return this;
+    }
+
+    @Override
+    protected Route.CompiledRoute finalizeRoute()
+    {
+        if (hook == null || hook.isExpired())
+            return super.finalizeRoute(); // Try as a normal bot message
+        if (isEdit()) // Try with interaction hook if its not expired, these have different rate limits and scale better
+            return Route.Interactions.EDIT_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), hook.getInteraction().getToken(), messageId);
+        else
+            return Route.Interactions.CREATE_FOLLOWUP.compile(api.getSelfUser().getApplicationId(), hook.getInteraction().getToken());
     }
 
     @Nonnull
@@ -124,14 +150,15 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Override
     public boolean isEmpty()
     {
-        return Helpers.isBlank(content)
-            && (embed == null || embed.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
+        return !isEdit() // PATCH can be technically empty since you can update stuff like components or remove embeds etc
+            && Helpers.isBlank(content)
+            && (embeds == null || embeds.isEmpty() || !hasPermission(Permission.MESSAGE_EMBED_LINKS));
     }
 
     @Override
     public boolean isEdit()
     {
-        return finalizeRoute().getMethod() == Method.PATCH;
+        return messageId != null;
     }
 
     @Nonnull
@@ -140,11 +167,11 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
     public MessageActionImpl apply(final Message message)
     {
-        if (message == null || message.getType() != MessageType.DEFAULT)
+        if (message == null || message.getType().isSystem())
             return this;
         final List<MessageEmbed> embeds = message.getEmbeds();
-        if (embeds != null && !embeds.isEmpty() && embeds.get(0).getType() == EmbedType.RICH)
-            embed(embeds.get(0));
+        if (embeds != null && !embeds.isEmpty())
+            setEmbeds(embeds.stream().filter(e -> e.getType() == EmbedType.RICH).collect(Collectors.toList()));
         files.clear();
 
         components = new ArrayList<>();
@@ -164,7 +191,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction failOnInvalidReply(boolean fail)
+    public MessageActionImpl failOnInvalidReply(boolean fail)
     {
         failOnInvalidReply = fail;
         return this;
@@ -184,7 +211,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @CheckReturnValue
     public MessageActionImpl reset()
     {
-        return content(null).nonce(null).embed(null).tts(false).override(false).clearFiles();
+        return content(null).nonce(null).setEmbeds(Collections.emptyList()).tts(false).override(false).clearFiles();
     }
 
     @Nonnull
@@ -212,6 +239,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
+    @Deprecated
     @CheckReturnValue
     public MessageActionImpl embed(final MessageEmbed embed)
     {
@@ -220,8 +248,33 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             Checks.check(embed.isSendable(),
                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                MessageEmbed.EMBED_MAX_LENGTH_BOT);
+            if (this.embeds == null)
+                this.embeds = new ArrayList<>();
+            this.embeds.add(embed);
         }
-        this.embed = embed;
+        else
+        {
+            this.embeds = null;
+        }
+        return this;
+    }
+
+    @Nonnull
+    @Override
+    public MessageActionImpl setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        Checks.noneNull(embeds, "MessageEmbeds");
+        embeds.forEach(embed ->
+            Checks.check(embed.isSendable(),
+                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+        );
+        Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
+        Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
+        if (this.embeds == null)
+            this.embeds = new ArrayList<>();
+        this.embeds.clear();
+        this.embeds.addAll(embeds);
         return this;
     }
 
@@ -328,8 +381,9 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
 
     @Nonnull
     @Override
-    public MessageAction retainFilesById(@Nonnull Collection<String> ids)
+    public MessageActionImpl retainFilesById(@Nonnull Collection<String> ids)
     {
+        if (!isEdit()) return this; // You can't retain files for messages that don't exist lol
         if (this.retainedAttachments == null)
             this.retainedAttachments = new ArrayList<>();
         this.retainedAttachments.addAll(ids);
@@ -361,7 +415,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mentionRepliedUser(boolean mention)
+    public MessageActionImpl mentionRepliedUser(boolean mention)
     {
         allowedMentions.mentionRepliedUser(mention);
         return this;
@@ -370,7 +424,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
+    public MessageActionImpl allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
     {
         this.allowedMentions.allowedMentions(allowedMentions);
         return this;
@@ -379,7 +433,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mention(@Nonnull IMentionable... mentions)
+    public MessageActionImpl mention(@Nonnull IMentionable... mentions)
     {
         this.allowedMentions.mention(mentions);
         return this;
@@ -388,7 +442,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mentionUsers(@Nonnull String... userIds)
+    public MessageActionImpl mentionUsers(@Nonnull String... userIds)
     {
         this.allowedMentions.mentionUsers(userIds);
         return this;
@@ -397,7 +451,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public MessageAction mentionRoles(@Nonnull String... roleIds)
+    public MessageActionImpl mentionRoles(@Nonnull String... roleIds)
     {
         this.allowedMentions.mentionRoles(roleIds);
         return this;
@@ -449,7 +503,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             final RequestBody body = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, entry.getValue());
             builder.addFormDataPart("file" + index++, entry.getKey(), body);
         }
-        if (messageReference != 0L || !isEmpty())
+        if (messageReference != 0L || components != null || retainedAttachments != null || !isEmpty())
             builder.addFormDataPart("payload_json", getJSON().toString());
         // clear remaining resources, they will be closed after being sent
         files.clear();
@@ -467,10 +521,10 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         final DataObject obj = DataObject.empty();
         if (override)
         {
-            if (embed == null)
-                obj.putNull("embed");
+            if (embeds == null)
+                obj.putNull("embeds");
             else
-                obj.put("embed", embed);
+                obj.put("embeds", DataArray.fromCollection(embeds));
             if (content.length() == 0)
                 obj.putNull("content");
             else
@@ -493,8 +547,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
         }
         else
         {
-            if (embed != null)
-                obj.put("embed", embed);
+            if (embeds != null)
+                obj.put("embeds", DataArray.fromCollection(embeds));
             if (content.length() > 0)
                 obj.put("content", content.toString());
             if (nonce != null)

@@ -384,7 +384,7 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
     /**
      * Returns all invites for this channel.
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel.
-     * Will throw a {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
+     * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} in this channel
