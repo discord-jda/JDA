@@ -94,6 +94,8 @@ public class SelectOption implements SerializableData
      *
      * @throws IllegalArgumentException
      *         If the null is provided, or any of the individual parameter requirements are violated.
+     *
+     * @return The new select option instance
      */
     @Nonnull
     @CheckReturnValue
