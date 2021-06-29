@@ -117,7 +117,13 @@ public interface StageInstance extends ISnowflake
     /**
      * Deletes this stage instance
      *
-     * <p>If this stage instance is already deleted, this will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STAGE_INSTANCE ErrorResponse.UNKNOWN_STAGE_INSTANCE}.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_STAGE_INSTANCE UNKNOWN_STAGE_INSTANCE}
+     *     <br>If this stage instance is already deleted</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel was deleted</li>
+     * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the self member is not a {@link StageChannel#isModerator(Member) stage moderator}

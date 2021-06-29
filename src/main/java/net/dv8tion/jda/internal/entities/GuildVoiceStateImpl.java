@@ -106,10 +106,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     {
         if (requestToSpeak == 0L || !(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(api, null);
-        if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
+        Member selfMember = getGuild().getSelfMember();
+        boolean isSelf = selfMember.equals(member);
+        if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
 
-        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());
+        Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), isSelf ? "@me" : getId());
         DataObject body = DataObject.empty()
                 .put("channel_id", connectedChannel.getId())
                 .put("suppress", suppress);

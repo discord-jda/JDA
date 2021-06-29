@@ -31,7 +31,7 @@ import java.time.OffsetDateTime;
  * Indicates that a guild member has updated their {@link GuildVoiceState#getRequestToSpeakTimestamp() Request-to-Speak}.
  *
  * <p>If {@link #getNewTime()} is non-null, this means the member has <em>raised their hand</em> and wants to speak.
- * You can use {@link #approve()} or {@link #decline()} to handle this request if you have {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}.
+ * You can use {@link #approveSpeaker()} or {@link #declineSpeaker()} to handle this request if you have {@link net.dv8tion.jda.api.Permission#VOICE_MUTE_OTHERS Permission.VOICE_MUTE_OTHERS}.
  *
  * <h2>Requirements</h2>
  *
@@ -94,7 +94,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> approve()
+    public RestAction<Void> approveSpeaker()
     {
         return getVoiceState().approveSpeaker();
     }
@@ -114,7 +114,7 @@ public class GuildVoiceRequestToSpeakEvent extends GenericGuildVoiceEvent
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> decline()
+    public RestAction<Void> declineSpeaker()
     {
         return getVoiceState().declineSpeaker();
     }

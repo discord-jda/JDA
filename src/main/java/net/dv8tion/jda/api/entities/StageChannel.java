@@ -45,7 +45,13 @@ public interface StageChannel extends VoiceChannel
     /**
      * Create a new {@link StageInstance} for this stage channel.
      *
-     * <p>If there already is an active {@link StageInstance} for this channel, this will fail with {@link net.dv8tion.jda.api.requests.ErrorResponse#STAGE_ALREADY_OPEN ErrorResponse.STAGE_ALREADY_OPEN}.
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} include:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#STAGE_ALREADY_OPEN STAGE_ALREADY_OPEN}
+     *     <br>If there already is an active {@link StageInstance} for this channel</li>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>If the channel was deleted</li>
+     * </ul>
      *
      * @param  topic
      *         The topic of this stage instance, must be 1-120 characters long
