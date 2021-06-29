@@ -69,7 +69,9 @@ import net.dv8tion.jda.api.events.guild.override.PermissionOverrideUpdateEvent;
 import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
-import net.dv8tion.jda.api.events.interaction.*;
+import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
+import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.guild.*;
 import net.dv8tion.jda.api.events.message.guild.react.*;
@@ -193,7 +195,6 @@ public abstract class ListenerAdapter implements EventListener
     //Interaction Events
     public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
     public void onButtonClick(@Nonnull ButtonClickEvent event) {}
-    public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
 
     //Application Events
     public void onApplicationCommandUpdate(@Nonnull ApplicationCommandUpdateEvent event) {}
@@ -378,7 +379,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onGuildVoiceSelfDeafen(@Nonnull GuildVoiceSelfDeafenEvent event) {}
     public void onGuildVoiceSuppress(@Nonnull GuildVoiceSuppressEvent event) {}
     public void onGuildVoiceStream(@Nonnull GuildVoiceStreamEvent event) {}
-    public void onGuildVoiceVideo(@Nonnull GuildVoiceVideoEvent event) {}
     public void onGuildVoiceRequestToSpeak(@Nonnull GuildVoiceRequestToSpeakEvent event) {}
 
     //Role events
@@ -407,7 +407,6 @@ public abstract class ListenerAdapter implements EventListener
     //Generic Events
     public void onGenericApplicationCommand(@Nonnull GenericApplicationCommandEvent event) {}
     public void onGenericInteractionCreate(@Nonnull GenericInteractionCreateEvent event) {}
-    public void onGenericComponentInteractionCreate(@Nonnull GenericComponentInteractionCreateEvent event) {}
     public void onGenericMessage(@Nonnull GenericMessageEvent event) {}
     public void onGenericMessageReaction(@Nonnull GenericMessageReactionEvent event) {}
     public void onGenericGuildMessage(@Nonnull GenericGuildMessageEvent event) {}

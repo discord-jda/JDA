@@ -77,6 +77,8 @@ public enum Permission
 
     REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
 
+    REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
+
     UNKNOWN(-1, false, false, "Unknown");
 
     /**

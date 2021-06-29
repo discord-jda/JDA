@@ -36,7 +36,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private Guild guild;
     private Member member;
 
-    private AudioChannel connectedChannel;
+    private VoiceChannel connectedChannel;
     private String sessionId;
     private long requestToSpeak;
     private boolean selfMuted = false;
@@ -45,13 +45,11 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean guildDeafened = false;
     private boolean suppressed = false;
     private boolean stream = false;
-    private boolean video = false;
 
     public GuildVoiceStateImpl(Member member)
     {
         this.api = member.getJDA();
-        this.guild = member.getGuild();
-        this.member = member;
+        setMember(member);
     }
 
     @Override
@@ -110,7 +108,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
             return new CompletedRestAction<>(api, null);
         Member selfMember = getGuild().getSelfMember();
         boolean isSelf = selfMember.equals(member);
-        if (!isSelf && !selfMember.hasPermission((IPermissionContainer) connectedChannel, Permission.VOICE_MUTE_OTHERS))
+        if (!isSelf && !selfMember.hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
 
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), isSelf ? "@me" : getId());
@@ -126,7 +124,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     {
         if (!(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(api, null);
-        if (!getGuild().getSelfMember().hasPermission((IPermissionContainer) connectedChannel, Permission.VOICE_MUTE_OTHERS))
+        if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
             throw new InsufficientPermissionException(connectedChannel, Permission.VOICE_MUTE_OTHERS);
 
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), getId());
@@ -174,13 +172,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public boolean isSendingVideo()
-    {
-        return video;
-    }
-
-    @Override
-    public AudioChannel getChannel()
+    public VoiceChannel getChannel()
     {
         return connectedChannel;
     }
@@ -206,7 +198,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public boolean inAudioChannel()
+    public boolean inVoiceChannel()
     {
         return getChannel() != null;
     }
@@ -242,7 +234,13 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     // -- Setters --
 
-    public GuildVoiceStateImpl setConnectedChannel(AudioChannel connectedChannel)
+    public GuildVoiceStateImpl setMember(Member member)
+    {
+        this.member = member;
+        return this;
+    }
+
+    public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
     {
         this.connectedChannel = connectedChannel;
         return this;
@@ -290,12 +288,6 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return this;
     }
 
-    public GuildVoiceStateImpl setVideo(boolean video)
-    {
-        this.video = video;
-        return this;
-    }
-    
     public GuildVoiceStateImpl setRequestToSpeak(OffsetDateTime timestamp)
     {
         this.requestToSpeak = timestamp == null ? 0L : timestamp.toInstant().toEpochMilli();

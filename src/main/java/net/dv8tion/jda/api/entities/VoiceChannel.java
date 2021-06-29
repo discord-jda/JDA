@@ -46,6 +46,8 @@ public interface VoiceChannel extends GuildChannel, AudioChannel, ICategorizable
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} at once.
      * <br>0 - No limit
      *
+     * <p>This is meaningless for {@link StageChannel StageChannels}.
+     *
      * @return The maximum amount of members allowed in this channel at once.
      */
     int getUserLimit();
