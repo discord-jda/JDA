@@ -282,8 +282,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     public ChannelActionImpl<T> setBitrate(Integer bitrate)
     {
-        if (type != ChannelType.VOICE)
-            throw new UnsupportedOperationException("Can only set the bitrate for a VoiceChannel!");
+        if (!type.isAudio())
+            throw new UnsupportedOperationException("Can only set the bitrate for an Audio Channel!");
         if (bitrate != null)
         {
             int maxBitrate = getGuild().getMaxBitrate();
@@ -328,14 +328,17 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                     object.put("user_limit", userlimit);
                 break;
             case TEXT:
-                if (topic != null && !topic.isEmpty())
-                    object.put("topic", topic);
                 if (nsfw != null)
                     object.put("nsfw", nsfw);
                 if (slowmode != null)
                     object.put("rate_limit_per_user", slowmode);
                 if (news != null)
                     object.put("type", news ? 5 : 0);
+                break;
+            case STAGE:
+                if (bitrate != null)
+                    object.put("bitrate", bitrate);
+                break;
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());
@@ -350,6 +353,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         GuildChannel channel;
         switch (type)
         {
+            case STAGE:
             case VOICE:
                 channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
                 break;

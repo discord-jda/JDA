@@ -145,6 +145,7 @@ public class Route
         public static final Route GET_GUILD_EMOTES =   new Route(GET,    "guilds/{guild_id}/emojis");
         public static final Route GET_AUDIT_LOGS =     new Route(GET,    "guilds/{guild_id}/audit-logs");
         public static final Route GET_VOICE_REGIONS =  new Route(GET,    "guilds/{guild_id}/regions");
+        public static final Route UPDATE_VOICE_STATE = new Route(PATCH,  "guilds/{guild_id}/voice-states/{user_id}");
 
         public static final Route GET_INTEGRATIONS =   new Route(GET,    "guilds/{guild_id}/integrations");
         public static final Route CREATE_INTEGRATION = new Route(POST,   "guilds/{guild_id}/integrations");
@@ -236,6 +237,14 @@ public class Route
         public static final Route REMOVE_RECIPIENT = new Route(DELETE, "channels/{channel_id}/recipients/{user_id}");
         public static final Route START_CALL =       new Route(POST,   "channels/{channel_id}/call/ring");
         public static final Route STOP_CALL =        new Route(POST,   "channels/{channel_id}/call/stop_ringing"); // aka deny or end call
+    }
+
+    public static class StageInstances
+    {
+        public static final Route GET_INSTANCE =    new Route(GET,    "stage-instances/{channel_id}");
+        public static final Route DELETE_INSTANCE = new Route(DELETE, "stage-instances/{channel_id}");
+        public static final Route UPDATE_INSTANCE = new Route(PATCH,  "stage-instances/{channel_id}");
+        public static final Route CREATE_INSTANCE = new Route(POST,   "stage-instances");
     }
 
     public static class Messages

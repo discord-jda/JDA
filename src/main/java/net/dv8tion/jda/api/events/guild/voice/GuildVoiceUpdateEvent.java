@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.api.events.guild.voice;
 
+import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.VoiceChannel;
 import net.dv8tion.jda.api.events.UpdateEvent;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -48,6 +50,22 @@ import javax.annotation.Nullable;
 public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
 {
     String IDENTIFIER = "voice-channel";
+
+    /**
+     * The affected {@link net.dv8tion.jda.api.entities.Member Member}
+     *
+     * @return The affected Member
+     */
+    @Nonnull
+    Member getMember();
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *
+     * @return The Guild
+     */
+    @Nonnull
+    Guild getGuild();
 
     /**
      * The {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.api.entities.Member Member} is moved from
