@@ -107,14 +107,13 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
         return reaction.getReactionEmote();
     }
 
-
     /**
      * Retrieves the {@link User} who owns the reaction.
      * <br>If a user is known, this will return {@link #getUser()}.
      *
      * @return {@link RestAction} - Type: {@link User}
      *
-     * @since  4.3.0
+     * @since  4.3.1
      */
     @Nonnull
     @CheckReturnValue
