@@ -77,13 +77,14 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     }
 
     /**
-     * Create one row of up to 5 interactive message {@link Component components}.
+     * Create one row of interactive message {@link Component components}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or more than 5 components are provided
+     *         If anything is null, empty, or an invalid number of components are provided
      *
      * @return The action row
      */
@@ -95,13 +96,14 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     }
 
     /**
-     * Create one row of up to 5 interactive message {@link Component components}.
+     * Create one row of interactive message {@link Component components}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or more than 5 components are provided
+     *         If anything is null, empty, or an invalid number of components are provided
      *
      * @return The action row
      */
