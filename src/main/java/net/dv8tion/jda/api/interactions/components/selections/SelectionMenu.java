@@ -25,10 +25,8 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Represents a selection menu in a message.
@@ -483,6 +481,49 @@ public interface SelectionMenu extends Component
         public List<SelectOption> getOptions()
         {
             return options;
+        }
+
+        /**
+         * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
+         *
+         * @param  values
+         *         The {@link SelectOption#getValue() option values}
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setDefaultValues(@Nonnull Collection<String> values)
+        {
+            Checks.noneNull(values, "Values");
+            Set<String> set = new HashSet<>(values);
+            for (ListIterator<SelectOption> it = getOptions ().listIterator(); it.hasNext();)
+            {
+                SelectOption option = it.next();
+                it.set(option.withDefault(set.contains(option.getValue())));
+            }
+            return this;
+        }
+
+
+        /**
+         * Configures which of the currently applied {@link #getOptions() options} should be selected by default.
+         *
+         * @param  values
+         *         The {@link SelectOption SelectOptions}
+         *
+         * @throws IllegalArgumentException
+         *         If null is provided
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setDefaultOptions(@Nonnull Collection<? extends SelectOption> values)
+        {
+            Checks.noneNull(values, "Values");
+            return setDefaultValues(values.stream().map(SelectOption::getValue).collect(Collectors.toSet()));
         }
 
         /**
