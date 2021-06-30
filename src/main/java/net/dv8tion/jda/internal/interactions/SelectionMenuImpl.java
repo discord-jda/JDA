@@ -119,7 +119,7 @@ public class SelectionMenuImpl implements SelectionMenu
         data.put("custom_id", id);
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
-        data.put("disabled", true);
+        data.put("disabled", disabled);
         data.put("options", DataArray.fromCollection(options));
         if (placeholder != null)
             data.put("placeholder", placeholder);
