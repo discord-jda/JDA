@@ -20,7 +20,6 @@ import net.dv8tion.jda.api.interactions.components.selections.SelectOption;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -31,6 +30,7 @@ public class SelectionMenuImpl implements SelectionMenu
 {
     private final String id, placeholder;
     private final int minValues, maxValues;
+    private final boolean disabled;
     private final List<SelectOption> options;
 
     public SelectionMenuImpl(DataObject data)
@@ -40,31 +40,19 @@ public class SelectionMenuImpl implements SelectionMenu
             data.getString("placeholder", null),
             data.getInt("min_values", 1),
             data.getInt("max_values", 1),
+            data.getBoolean("disabled"),
             parseOptions(data.getArray("options"))
         );
     }
 
-    public SelectionMenuImpl(String id, String placeholder, int minValues, int maxValues, List<SelectOption> options)
+    public SelectionMenuImpl(String id, String placeholder, int minValues, int maxValues, boolean disabled, List<SelectOption> options)
     {
         this.id = id;
         this.placeholder = placeholder;
         this.minValues = minValues;
         this.maxValues = maxValues;
+        this.disabled = disabled;
         this.options = options;
-    }
-
-    public SelectionMenuImpl validate()
-    {
-        Checks.notNull(id, "Component ID");
-        Checks.notEmpty(id, "Component ID");
-        Checks.notLonger(id, 100, "Component ID");
-        if (placeholder != null)
-            Checks.notLonger(placeholder, 100, "Placeholder");
-        Checks.notEmpty(options, "Options");
-        Checks.check(maxValues <= options.size(), "Max Values must be less or equal to the number of options");
-        Checks.check(minValues <= options.size(), "Min Values must be less or equal to the number of options");
-        Checks.check(options.size() <= 25, "Cannot have more than 25 options!");
-        return this;
     }
 
     private static List<SelectOption> parseOptions(DataArray array)
@@ -116,6 +104,12 @@ public class SelectionMenuImpl implements SelectionMenu
         return options;
     }
 
+    @Override
+    public boolean isDisabled()
+    {
+        return disabled;
+    }
+
     @Nonnull
     @Override
     public DataObject toData()
@@ -125,6 +119,7 @@ public class SelectionMenuImpl implements SelectionMenu
         data.put("custom_id", id);
         data.put("min_values", minValues);
         data.put("max_values", maxValues);
+        data.put("disabled", true);
         data.put("options", DataArray.fromCollection(options));
         if (placeholder != null)
             data.put("placeholder", placeholder);

@@ -91,6 +91,16 @@ public interface SelectionMenu extends Component
     List<SelectOption> getOptions();
 
     /**
+     * Whether this menu is disabled.
+     * <br>You can quickly get a disabled menu from an existing menu with {@code createCopy().setDisabled(true).build()}.
+     *
+     * @return True, if this menu is disabled
+     *
+     * @see    Builder#setDisabled(boolean)
+     */
+    boolean isDisabled();
+
+    /**
      * Creates a new preconfigured {@link Builder} with the same settings used for this selection menu.
      * <br>This can be useful to create an updated version of this menu without needing to rebuild it from scratch.
      *
@@ -155,6 +165,7 @@ public interface SelectionMenu extends Component
         private String customId;
         private String placeholder;
         private int minValues = 1, maxValues = 1;
+        private boolean disabled = false;
         private final List<SelectOption> options = new ArrayList<>();
 
         private Builder(@Nonnull String customId)
@@ -272,6 +283,22 @@ public interface SelectionMenu extends Component
         {
             Checks.check(min <= max, "Min Values should be less than or equal to Max Values! Provided: [%d, %d]", min, max);
             return setMinValues(min).setMaxValues(max);
+        }
+
+        /**
+         * Configure whether this selection menu should be disabled.
+         * <br>Default: {@code false}
+         *
+         * @param  disabled
+         *         Whether this menu is disabled
+         *
+         * @return The same builder instance for chaining
+         */
+        @Nonnull
+        public Builder setDisabled(boolean disabled)
+        {
+            this.disabled = disabled;
+            return this;
         }
 
         /**
@@ -474,7 +501,7 @@ public interface SelectionMenu extends Component
             Checks.check(options.size() <= 25, "Cannot build a selection menu with more than 25 options.");
             int min = Math.min(minValues, options.size());
             int max = Math.min(maxValues, options.size());
-            return new SelectionMenuImpl(customId, placeholder, min, max, options);
+            return new SelectionMenuImpl(customId, placeholder, min, max, disabled, options);
         }
     }
 }
