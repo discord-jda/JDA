@@ -92,13 +92,58 @@ public interface SelectionMenu extends Component
 
     /**
      * Whether this menu is disabled.
-     * <br>You can quickly get a disabled menu from an existing menu with {@code createCopy().setDisabled(true).build()}.
+     * <br>You can quickly get a disabled menu from an existing menu with {@link #asDisabled()}.
      *
      * @return True, if this menu is disabled
      *
      * @see    Builder#setDisabled(boolean)
      */
     boolean isDisabled();
+
+    /**
+     * Creates a copy of this menu with {@link #isDisabled()} set to true.
+     *
+     * @return A new disabled SelectionMenu instance
+     *
+     * @see    #withDisabled(boolean)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default SelectionMenu asDisabled()
+    {
+        return withDisabled(true);
+    }
+
+    /**
+     * Creates a copy of this menu with {@link #isDisabled()} set to false.
+     *
+     * @return A new enabled SelectionMenu instance
+     *
+     * @see    #withDisabled(boolean)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default SelectionMenu asEnabled()
+    {
+        return withDisabled(false);
+    }
+
+    /**
+     * Creates a copy of this menu with {@link #isDisabled()} set to the desired value.
+     *
+     * @param  disabled
+     *         Whether the menu should be disabled
+     *
+     * @return A new SelectionMenu instance with {@link #isDisabled()} set to the desired value
+     *
+     * @see    #withDisabled(boolean)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default SelectionMenu withDisabled(boolean disabled)
+    {
+        return createCopy().setDisabled(disabled).build();
+    }
 
     /**
      * Creates a new preconfigured {@link Builder} with the same settings used for this selection menu.
