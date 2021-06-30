@@ -30,8 +30,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 
-public class GuildVoiceStateImpl implements GuildVoiceState
-{
+public class GuildVoiceStateImpl implements GuildVoiceState {
     private final JDA api;
     private Guild guild;
     private Member member;
@@ -46,65 +45,55 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean suppressed = false;
     private boolean stream = false;
 
-    public GuildVoiceStateImpl(Member member)
-    {
+    public GuildVoiceStateImpl(Member member) {
         this.api = member.getJDA();
         this.guild = member.getGuild();
         this.member = member;
     }
 
     @Override
-    public boolean isSelfMuted()
-    {
+    public boolean isSelfMuted() {
         return selfMuted;
     }
 
     @Override
-    public boolean isSelfDeafened()
-    {
+    public boolean isSelfDeafened() {
         return selfDeafened;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Override
-    public String getSessionId()
-    {
+    public String getSessionId() {
         return sessionId;
     }
 
-    public long getRequestToSpeak()
-    {
+    public long getRequestToSpeak() {
         return requestToSpeak;
     }
 
     @Override
-    public OffsetDateTime getRequestToSpeakTimestamp()
-    {
+    public OffsetDateTime getRequestToSpeakTimestamp() {
         return requestToSpeak == 0 ? null : Helpers.toOffset(requestToSpeak);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> approveSpeaker()
-    {
+    public RestAction<Void> approveSpeaker() {
         return update(false);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> declineSpeaker()
-    {
+    public RestAction<Void> declineSpeaker() {
         return update(true);
     }
 
-    private RestAction<Void> update(boolean suppress)
-    {
+    private RestAction<Void> update(boolean suppress) {
         if (requestToSpeak == 0L || !(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(api, null);
         Member selfMember = getGuild().getSelfMember();
@@ -121,8 +110,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     @Nonnull
     @Override
-    public RestAction<Void> inviteSpeaker()
-    {
+    public RestAction<Void> inviteSpeaker() {
         if (!(connectedChannel instanceof StageChannel))
             return new CompletedRestAction<>(api, null);
         if (!getGuild().getSelfMember().hasPermission(connectedChannel, Permission.VOICE_MUTE_OTHERS))
@@ -137,51 +125,43 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public boolean isMuted()
-    {
+    public boolean isMuted() {
         return isSelfMuted() || isGuildMuted();
     }
 
     @Override
-    public boolean isDeafened()
-    {
+    public boolean isDeafened() {
         return isSelfDeafened() || isGuildDeafened();
     }
 
     @Override
-    public boolean isGuildMuted()
-    {
+    public boolean isGuildMuted() {
         return guildMuted;
     }
 
     @Override
-    public boolean isGuildDeafened()
-    {
+    public boolean isGuildDeafened() {
         return guildDeafened;
     }
 
     @Override
-    public boolean isSuppressed()
-    {
+    public boolean isSuppressed() {
         return suppressed;
     }
 
     @Override
-    public boolean isStream()
-    {
+    public boolean isStream() {
         return stream;
     }
 
     @Override
-    public VoiceChannel getChannel()
-    {
+    public VoiceChannel getChannel() {
         return connectedChannel;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         Guild realGuild = api.getGuildById(guild.getIdLong());
         if (realGuild != null)
             guild = realGuild;
@@ -190,8 +170,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
 
     @Nonnull
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         Member realMember = getGuild().getMemberById(member.getIdLong());
         if (realMember != null)
             member = realMember;
@@ -199,26 +178,22 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public boolean inVoiceChannel()
-    {
+    public boolean inVoiceChannel() {
         return getChannel() != null;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return member.getIdLong();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return member.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof GuildVoiceState))
@@ -228,63 +203,53 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "VS:" + getGuild().getName() + '(' + getId() + ')';
     }
 
     // -- Setters --
 
-    public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel)
-    {
+    public GuildVoiceStateImpl setConnectedChannel(VoiceChannel connectedChannel) {
         this.connectedChannel = connectedChannel;
         return this;
     }
 
-    public GuildVoiceStateImpl setSessionId(String sessionId)
-    {
+    public GuildVoiceStateImpl setSessionId(String sessionId) {
         this.sessionId = sessionId;
         return this;
     }
 
-    public GuildVoiceStateImpl setSelfMuted(boolean selfMuted)
-    {
+    public GuildVoiceStateImpl setSelfMuted(boolean selfMuted) {
         this.selfMuted = selfMuted;
         return this;
     }
 
-    public GuildVoiceStateImpl setSelfDeafened(boolean selfDeafened)
-    {
+    public GuildVoiceStateImpl setSelfDeafened(boolean selfDeafened) {
         this.selfDeafened = selfDeafened;
         return this;
     }
 
-    public GuildVoiceStateImpl setGuildMuted(boolean guildMuted)
-    {
+    public GuildVoiceStateImpl setGuildMuted(boolean guildMuted) {
         this.guildMuted = guildMuted;
         return this;
     }
 
-    public GuildVoiceStateImpl setGuildDeafened(boolean guildDeafened)
-    {
+    public GuildVoiceStateImpl setGuildDeafened(boolean guildDeafened) {
         this.guildDeafened = guildDeafened;
         return this;
     }
 
-    public GuildVoiceStateImpl setSuppressed(boolean suppressed)
-    {
+    public GuildVoiceStateImpl setSuppressed(boolean suppressed) {
         this.suppressed = suppressed;
         return this;
     }
 
-    public GuildVoiceStateImpl setStream(boolean stream)
-    {
+    public GuildVoiceStateImpl setStream(boolean stream) {
         this.stream = stream;
         return this;
     }
 
-    public GuildVoiceStateImpl setRequestToSpeak(OffsetDateTime timestamp)
-    {
+    public GuildVoiceStateImpl setRequestToSpeak(OffsetDateTime timestamp) {
         this.requestToSpeak = timestamp == null ? 0L : timestamp.toInstant().toEpochMilli();
         return this;
     }

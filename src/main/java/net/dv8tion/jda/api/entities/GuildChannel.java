@@ -37,8 +37,7 @@ import java.util.List;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<GuildChannel>
-{
+public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<GuildChannel> {
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.
      *
@@ -163,7 +162,7 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
      *
      * @return True, if this channel is synced with its parent category
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     boolean isSynced();
 
@@ -237,8 +236,7 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<? extends GuildChannel> createCopy()
-    {
+    default ChannelAction<? extends GuildChannel> createCopy() {
         return createCopy(getGuild());
     }
 
@@ -351,12 +349,11 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
      * @return {@link net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction}
      *         <br>With the current settings of an existing override or a fresh override with no permissions set
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
+    default PermissionOverrideAction upsertPermissionOverride(@Nonnull IPermissionHolder permissionHolder) {
         PermissionOverride override = getPermissionOverride(permissionHolder);
         if (override != null)
             return override.getManager();
@@ -374,7 +371,7 @@ public interface GuildChannel extends AbstractChannel, IMentionable, Comparable<
      *         If this is an instance of a {@link net.dv8tion.jda.api.entities.Category Category}
      *
      * @return A new {@link InviteAction InviteAction}
-     * 
+     *
      * @see    InviteAction
      */
     @Nonnull

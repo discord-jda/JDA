@@ -43,30 +43,29 @@ import java.util.Collection;
  *
  * @see net.dv8tion.jda.api.entities.GuildChannel#getManager()
  */
-public interface ChannelManager extends Manager<ChannelManager>
-{
+public interface ChannelManager extends Manager<ChannelManager> {
     /** Used to reset the name field */
-    long NAME       = 0x1;
+    long NAME = 0x1;
     /** Used to reset the parent field */
-    long PARENT     = 0x2;
+    long PARENT = 0x2;
     /** Used to reset the topic field */
-    long TOPIC      = 0x4;
+    long TOPIC = 0x4;
     /** Used to reset the position field */
-    long POSITION   = 0x8;
+    long POSITION = 0x8;
     /** Used to reset the nsfw field */
-    long NSFW       = 0x10;
+    long NSFW = 0x10;
     /** Used to reset the userlimit field */
-    long USERLIMIT  = 0x20;
+    long USERLIMIT = 0x20;
     /** Used to reset the bitrate field */
-    long BITRATE    = 0x40;
+    long BITRATE = 0x40;
     /** Used to reset the permission field */
     long PERMISSION = 0x80;
     /** Used to reset the rate-limit per user field */
-    long SLOWMODE   = 0x100;
+    long SLOWMODE = 0x100;
     /** Used to reset the channel type field */
-    long NEWS       = 0x200;
+    long NEWS = 0x200;
     /** Used to reset the region field */
-    long REGION     = 0x400;
+    long REGION = 0x400;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -139,8 +138,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @return The ChannelType
      */
     @Nonnull
-    default ChannelType getType()
-    {
+    default ChannelType getType() {
         return getChannel().getType();
     }
 
@@ -152,8 +150,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getChannel().getGuild();
     }
 
@@ -228,10 +225,9 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelManager putPermissionOverride(@Nonnull IPermissionHolder permHolder, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default ChannelManager putPermissionOverride(@Nonnull IPermissionHolder permHolder, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
-        long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
+        long denyRaw = deny == null ? 0 : Permission.getRaw(deny);
         return putPermissionOverride(permHolder, allowRaw, denyRaw);
     }
 
@@ -265,20 +261,19 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * <p>This behaves as if calling {@link #sync(net.dv8tion.jda.api.entities.GuildChannel)} with this GuildChannel's {@link net.dv8tion.jda.api.entities.GuildChannel#getParent() Parent}.
      *
-     * @throws  java.lang.IllegalStateException
+     * @throws java.lang.IllegalStateException
      *          If this GuildChannel has no parent
-     * @throws  net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *          If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *          in this channel or {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} is false for the self member.
      *
-     * @return  ChannelManager for chaining convenience
+     * @return ChannelManager for chaining convenience
      *
      * @see     <a href="https://discord.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelManager sync()
-    {
+    default ChannelManager sync() {
         if (getChannel().getParent() == null)
             throw new IllegalStateException("sync() requires a parent category");
         return sync(getChannel().getParent());
@@ -297,13 +292,13 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @param   syncSource
      *          The GuildChannel from where all PermissionOverrides should be copied from
      *
-     * @throws  java.lang.IllegalArgumentException
+     * @throws java.lang.IllegalArgumentException
      *          If the given snySource is {@code null}, this GuildChannel or from a different Guild.
-     * @throws  net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *          If the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_PERMISSIONS Permission.MANAGE_PERMISSIONS}
      *          in this channel or {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} is false for the self member.
      *
-     * @return  ChannelManager for chaining convenience
+     * @return ChannelManager for chaining convenience
      *
      * @see     <a href="https://discord.com/developers/docs/topics/permissions#permission-syncing" target="_blank">Discord Documentation - Permission Syncing</a>
      */
@@ -347,7 +342,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      *
      * @return ChannelManager for chaining convenience
      *
-     * @since  3.4.0
+     * @since 3.4.0
      */
     @Nonnull
     @CheckReturnValue
@@ -529,7 +524,7 @@ public interface ChannelManager extends Manager<ChannelManager>
      * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
      * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue

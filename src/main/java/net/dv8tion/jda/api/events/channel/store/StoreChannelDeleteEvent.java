@@ -26,10 +26,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect when a StoreChannel has been deleted.
  */
-public class StoreChannelDeleteEvent extends GenericStoreChannelEvent
-{
-    public StoreChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel)
-    {
+public class StoreChannelDeleteEvent extends GenericStoreChannelEvent {
+    public StoreChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel) {
         super(api, responseNumber, channel);
     }
 }

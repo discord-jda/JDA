@@ -33,15 +33,13 @@ import java.util.Objects;
  * @see CommandInteraction#getOption(String)
  * @see CommandInteraction#getOptions()
  */
-public class OptionMapping
-{
+public class OptionMapping {
     private final DataObject data;
     private final OptionType type;
     private final String name;
     private final TLongObjectMap<Object> resolved;
 
-    public OptionMapping(DataObject data, TLongObjectMap<Object> resolved)
-    {
+    public OptionMapping(DataObject data, TLongObjectMap<Object> resolved) {
         this.data = data;
         this.type = OptionType.fromKey(data.getInt("type", -1));
         this.name = data.getString("name");
@@ -54,8 +52,7 @@ public class OptionMapping
      * @return The {@link OptionType OptionType}
      */
     @Nonnull
-    public OptionType getType()
-    {
+    public OptionType getType() {
         return type;
     }
 
@@ -65,8 +62,7 @@ public class OptionMapping
      * @return The option name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -78,8 +74,7 @@ public class OptionMapping
      * @return The String representation of this option value
      */
     @Nonnull
-    public String getAsString()
-    {
+    public String getAsString() {
         return data.getString("value");
     }
 
@@ -91,8 +86,7 @@ public class OptionMapping
      *
      * @return The boolean value
      */
-    public boolean getAsBoolean()
-    {
+    public boolean getAsBoolean() {
         if (type != OptionType.BOOLEAN)
             throw new IllegalStateException("Cannot convert option of type " + type + " to boolean");
         return data.getBoolean("value");
@@ -109,19 +103,17 @@ public class OptionMapping
      *
      * @return The long value
      */
-    public long getAsLong()
-    {
-        switch (type)
-        {
-            default:
-                throw new IllegalStateException("Cannot convert option of type " + type + " to long");
-            case STRING:
-            case MENTIONABLE:
-            case CHANNEL:
-            case ROLE:
-            case USER:
-            case INTEGER:
-                return data.getLong("value");
+    public long getAsLong() {
+        switch (type) {
+        default:
+            throw new IllegalStateException("Cannot convert option of type " + type + " to long");
+        case STRING:
+        case MENTIONABLE:
+        case CHANNEL:
+        case ROLE:
+        case USER:
+        case INTEGER:
+            return data.getLong("value");
         }
     }
 
@@ -134,8 +126,7 @@ public class OptionMapping
      * @return The resolved {@link IMentionable}
      */
     @Nonnull
-    public IMentionable getAsMentionable()
-    {
+    public IMentionable getAsMentionable() {
         Object entity = resolved.get(getAsLong());
         if (entity instanceof IMentionable)
             return (IMentionable) entity;
@@ -152,8 +143,7 @@ public class OptionMapping
      * @return The resolved {@link Member}, or null
      */
     @Nullable
-    public Member getAsMember()
-    {
+    public Member getAsMember() {
         if (type != OptionType.USER)
             throw new IllegalStateException("Cannot resolve Member for option " + getName() + " of type " + type);
         Object object = resolved.get(getAsLong());
@@ -171,8 +161,7 @@ public class OptionMapping
      * @return The resolved {@link User}
      */
     @Nonnull
-    public User getAsUser()
-    {
+    public User getAsUser() {
         if (type != OptionType.USER)
             throw new IllegalStateException("Cannot resolve User for option " + getName() + " of type " + type);
         Object object = resolved.get(getAsLong());
@@ -192,8 +181,7 @@ public class OptionMapping
      * @return The resolved {@link Role}
      */
     @Nonnull
-    public Role getAsRole()
-    {
+    public Role getAsRole() {
         if (type != OptionType.ROLE)
             throw new IllegalStateException("Cannot resolve Role for option " + getName() + " of type " + type);
         Object role = resolved.get(getAsLong());
@@ -213,8 +201,7 @@ public class OptionMapping
      * @return The resolved {@link GuildChannel}
      */
     @Nonnull
-    public GuildChannel getAsGuildChannel()
-    {
+    public GuildChannel getAsGuildChannel() {
         AbstractChannel value = getAsChannel();
         if (value instanceof GuildChannel)
             return (GuildChannel) value;
@@ -231,8 +218,7 @@ public class OptionMapping
      * @return The resolved {@link MessageChannel}, or null if this was not a message channel
      */
     @Nullable
-    public MessageChannel getAsMessageChannel()
-    {
+    public MessageChannel getAsMessageChannel() {
         AbstractChannel value = getAsChannel();
         return value instanceof MessageChannel ? (MessageChannel) value : null;
     }
@@ -246,27 +232,23 @@ public class OptionMapping
      * @return The {@link ChannelType}
      */
     @Nonnull
-    public ChannelType getChannelType()
-    {
+    public ChannelType getChannelType() {
         AbstractChannel channel = getAsChannel();
         return channel == null ? ChannelType.UNKNOWN : channel.getType();
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Option[" + getType() + "](" + getName() + "=" + getAsString() + ")";
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(getType(), getName());
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof OptionMapping))
@@ -276,8 +258,7 @@ public class OptionMapping
     }
 
     @Nullable
-    private AbstractChannel getAsChannel()
-    {
+    private AbstractChannel getAsChannel() {
         if (type != OptionType.CHANNEL)
             throw new IllegalStateException("Cannot resolve AbstractChannel for option " + getName() + " of type " + type);
         return (AbstractChannel) resolved.get(getAsLong());

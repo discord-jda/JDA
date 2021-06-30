@@ -46,13 +46,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.RejectedExecutionException;
 
-public class Requester
-{
+public class Requester {
     public static final Logger LOG = JDALogger.getLog(Requester.class);
     public static final String DISCORD_API_PREFIX = Helpers.format("https://discord.com/api/v%d/", JDAInfo.DISCORD_REST_VERSION);
     public static final String USER_AGENT = "DiscordBot (" + JDAInfo.GITHUB + ", " + JDAInfo.VERSION + ")";
     public static final RequestBody EMPTY_BODY = RequestBody.create(null, new byte[0]);
-    public static final MediaType MEDIA_TYPE_JSON  = MediaType.parse("application/json; charset=utf-8");
+    public static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     public static final MediaType MEDIA_TYPE_OCTET = MediaType.parse("application/octet-stream; charset=utf-8");
 
     protected final JDAImpl api;
@@ -67,13 +66,11 @@ public class Requester
 
     private volatile boolean retryOnTimeout = false;
 
-    public Requester(JDA api)
-    {
+    public Requester(JDA api) {
         this(api, ((JDAImpl) api).getAuthorizationConfig());
     }
 
-    public Requester(JDA api, AuthorizationConfig authConfig)
-    {
+    public Requester(JDA api, AuthorizationConfig authConfig) {
         if (authConfig == null)
             throw new NullPointerException("Provided config was null!");
 
@@ -83,13 +80,11 @@ public class Requester
         this.httpClient = this.api.getHttpClient();
     }
 
-    public void setContextReady(boolean ready)
-    {
+    public void setContextReady(boolean ready) {
         this.isContextReady = ready;
     }
 
-    public void setContext()
-    {
+    public void setContext() {
         if (!isContextReady)
             return;
         if (contextMap == null)
@@ -97,13 +92,11 @@ public class Requester
         contextMap.forEach(MDC::put);
     }
 
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
-    public <T> void request(Request<T> apiRequest)
-    {
+    public <T> void request(Request<T> apiRequest) {
         if (rateLimiter.isStopped)
             throw new RejectedExecutionException("The Requester has been stopped! No new requests can be requested!");
 
@@ -113,15 +106,13 @@ public class Requester
             execute(apiRequest, true);
     }
 
-    private static boolean isRetry(Throwable e)
-    {
+    private static boolean isRetry(Throwable e) {
         return e instanceof SocketException             // Socket couldn't be created or access failed
-            || e instanceof SocketTimeoutException      // Connection timed out
-            || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
+                || e instanceof SocketTimeoutException      // Connection timed out
+                || e instanceof SSLPeerUnverifiedException; // SSL Certificate was wrong
     }
 
-    public Long execute(Request<?> apiRequest)
-    {
+    public Long execute(Request<?> apiRequest) {
         return execute(apiRequest, false);
     }
 
@@ -137,17 +128,14 @@ public class Requester
      *         the request can be made again. This could either be for the Per-Route ratelimit or the Global ratelimit.
      *         <br>Check if globalCooldown is {@code null} to determine if it was Per-Route or Global.
      */
-    public Long execute(Request<?> apiRequest, boolean handleOnRateLimit)
-    {
+    public Long execute(Request<?> apiRequest, boolean handleOnRateLimit) {
         return execute(apiRequest, false, handleOnRateLimit);
     }
 
-    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
-    {
+    public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit) {
         Route.CompiledRoute route = apiRequest.getRoute();
         Long retryAfter = rateLimiter.getRateLimit(route);
-        if (retryAfter != null && retryAfter > 0)
-        {
+        if (retryAfter != null && retryAfter > 0) {
             if (handleOnRatelimit)
                 apiRequest.handleResponse(new Response(retryAfter, Collections.emptySet()));
             return retryAfter;
@@ -176,8 +164,7 @@ public class Requester
 
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
-        if (apiRequest.getHeaders() != null)
-        {
+        if (apiRequest.getHeaders() != null) {
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
                 builder.addHeader(header.getKey(), header.getValue());
         }
@@ -189,12 +176,10 @@ public class Requester
         // we have an array of all responses to later close them all at once
         //the response below this comment is used as the first successful response from the server
         okhttp3.Response lastResponse = null;
-        try
-        {
+        try {
             LOG.trace("Executing request {} {}", apiRequest.getRoute().getMethod(), url);
             int attempt = 0;
-            do
-            {
+            do {
                 if (apiRequest.isSkipped())
                     return null;
 
@@ -212,18 +197,17 @@ public class Requester
                 LOG.debug("Requesting {} -> {} returned status {}... retrying (attempt {})",
                         apiRequest.getRoute().getMethod(),
                         url, lastResponse.code(), attempt);
-                try
-                {
+                try {
                     Thread.sleep(50 * attempt);
                 }
-                catch (InterruptedException ignored) {}
+                catch (InterruptedException ignored) {
+                }
             }
             while (attempt < 3 && lastResponse.code() >= 500);
 
             LOG.trace("Finished Request {} {} with code {}", route.getMethod(), lastResponse.request().url(), lastResponse.code());
 
-            if (lastResponse.code() >= 500)
-            {
+            if (lastResponse.code() >= 500) {
                 //Epic failure from other end. Attempted 4 times.
                 Response response = new Response(lastResponse, -1, rays);
                 apiRequest.handleResponse(response);
@@ -241,30 +225,25 @@ public class Requester
 
             return retryAfter;
         }
-        catch (UnknownHostException e)
-        {
+        catch (UnknownHostException e) {
             LOG.error("DNS resolution failed: {}", e.getMessage());
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             if (retryOnTimeout && !retried && isRetry(e))
                 return execute(apiRequest, true, handleOnRatelimit);
             LOG.error("There was an I/O error while executing a REST request: {}", e.getMessage());
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             LOG.error("There was an unexpected error while executing a REST request", e);
             apiRequest.handleResponse(new Response(lastResponse, e, rays));
             return null;
         }
-        finally
-        {
-            for (okhttp3.Response r : responses)
-            {
+        finally {
+            for (okhttp3.Response r : responses) {
                 if (r == null)
                     break;
                 r.close();
@@ -272,8 +251,7 @@ public class Requester
         }
     }
 
-    private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder)
-    {
+    private void applyBody(Request<?> apiRequest, okhttp3.Request.Builder builder) {
         String method = apiRequest.getRoute().getMethod().toString();
         RequestBody body = apiRequest.getBody();
 
@@ -283,11 +261,10 @@ public class Requester
         builder.method(method, body);
     }
 
-    private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder, boolean authorized)
-    {
+    private void applyHeaders(Request<?> apiRequest, okhttp3.Request.Builder builder, boolean authorized) {
         builder.header("user-agent", USER_AGENT)
-               .header("accept-encoding", "gzip")
-               .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
+                .header("accept-encoding", "gzip")
+                .header("x-ratelimit-precision", "millisecond"); // still sending this in case of regressions
 
         //adding token to all requests to the discord api or cdn pages
         //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
@@ -296,35 +273,29 @@ public class Requester
 
         // Apply custom headers like X-Audit-Log-Reason
         // If customHeaders is null this does nothing
-        if (apiRequest.getHeaders() != null)
-        {
+        if (apiRequest.getHeaders() != null) {
             for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
                 builder.addHeader(header.getKey(), header.getValue());
         }
     }
 
-    public OkHttpClient getHttpClient()
-    {
+    public OkHttpClient getHttpClient() {
         return this.httpClient;
     }
 
-    public RateLimiter getRateLimiter()
-    {
+    public RateLimiter getRateLimiter() {
         return rateLimiter;
     }
 
-    public void setRetryOnTimeout(boolean retryOnTimeout)
-    {
+    public void setRetryOnTimeout(boolean retryOnTimeout) {
         this.retryOnTimeout = retryOnTimeout;
     }
 
-    public boolean stop()
-    {
+    public boolean stop() {
         return rateLimiter.stop();
     }
 
-    public void shutdown()
-    {
+    public void shutdown() {
         rateLimiter.shutdown();
     }
 

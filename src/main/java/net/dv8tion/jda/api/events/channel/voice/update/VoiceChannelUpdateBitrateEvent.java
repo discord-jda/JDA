@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code bitrate}
  */
-public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent<Integer>
-{
+public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEvent<Integer> {
     public static final String IDENTIFIER = "bitrate";
 
-    public VoiceChannelUpdateBitrateEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldBitrate)
-    {
+    public VoiceChannelUpdateBitrateEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldBitrate) {
         super(api, responseNumber, channel, oldBitrate, channel.getBitrate(), IDENTIFIER);
     }
 
@@ -41,8 +39,7 @@ public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEve
      *
      * @return The old bitrate
      */
-    public int getOldBitrate()
-    {
+    public int getOldBitrate() {
         return getOldValue();
     }
 
@@ -51,8 +48,7 @@ public class VoiceChannelUpdateBitrateEvent extends GenericVoiceChannelUpdateEve
      *
      * @return The new bitrate
      */
-    public int getNewBitrate()
-    {
+    public int getNewBitrate() {
         return getNewValue();
     }
 }

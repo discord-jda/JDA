@@ -53,8 +53,7 @@ import javax.annotation.Nonnull;
  * @since 4.2.0
  */
 @FunctionalInterface
-public interface MemberCachePolicy
-{
+public interface MemberCachePolicy {
     /**
      * Disable all member caching
      */
@@ -132,8 +131,7 @@ public interface MemberCachePolicy
      * @return New policy which combines both using a logical OR
      */
     @Nonnull
-    default MemberCachePolicy or(@Nonnull MemberCachePolicy policy)
-    {
+    default MemberCachePolicy or(@Nonnull MemberCachePolicy policy) {
         Checks.notNull(policy, "Policy");
         return (member) -> cacheMember(member) || policy.cacheMember(member);
     }
@@ -151,8 +149,7 @@ public interface MemberCachePolicy
      * @return New policy which combines both using a logical AND
      */
     @Nonnull
-    default MemberCachePolicy and(@Nonnull MemberCachePolicy policy)
-    {
+    default MemberCachePolicy and(@Nonnull MemberCachePolicy policy) {
         return (member) -> cacheMember(member) && policy.cacheMember(member);
     }
 
@@ -168,8 +165,7 @@ public interface MemberCachePolicy
      * @return New policy which combines all provided polices using a logical OR
      */
     @Nonnull
-    static MemberCachePolicy any(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies)
-    {
+    static MemberCachePolicy any(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies) {
         Checks.notNull(policy, "Policy");
         Checks.notNull(policies, "Policy");
         for (MemberCachePolicy p : policies)
@@ -189,8 +185,7 @@ public interface MemberCachePolicy
      * @return New policy which combines all provided polices using a logical AND
      */
     @Nonnull
-    static MemberCachePolicy all(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies)
-    {
+    static MemberCachePolicy all(@Nonnull MemberCachePolicy policy, @Nonnull MemberCachePolicy... policies) {
         Checks.notNull(policy, "Policy");
         Checks.notNull(policies, "Policy");
         for (MemberCachePolicy p : policies)

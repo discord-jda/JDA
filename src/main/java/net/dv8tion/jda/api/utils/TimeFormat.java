@@ -38,8 +38,7 @@ import java.util.regex.Pattern;
  * channel.sendMessage("Uptime: " + TimeFormat.RELATIVE.format(getStartTime())).queue();
  * }</pre>
  */
-public enum TimeFormat
-{
+public enum TimeFormat {
     /** Formats time as {@code 18:49} or {@code 6:49 PM} */
     TIME_SHORT("t"),
     /** Formats time as {@code 18:49:26} or {@code 6:49:26 PM} */
@@ -95,8 +94,7 @@ public enum TimeFormat
 
     private final String style;
 
-    TimeFormat(String style)
-    {
+    TimeFormat(String style) {
         this.style = style;
     }
 
@@ -107,8 +105,7 @@ public enum TimeFormat
      * @return The style flag
      */
     @Nonnull
-    public String getStyle()
-    {
+    public String getStyle() {
         return style;
     }
 
@@ -124,12 +121,10 @@ public enum TimeFormat
      * @return The representative TimeFormat or {@link #DEFAULT} if none could be identified
      */
     @Nonnull
-    public static TimeFormat fromStyle(@Nonnull String style)
-    {
+    public static TimeFormat fromStyle(@Nonnull String style) {
         Checks.notEmpty(style, "Style");
         Checks.notLonger(style, 1, "Style");
-        for (TimeFormat format : values())
-        {
+        for (TimeFormat format : values()) {
             if (format.style.equals(style))
                 return format;
         }
@@ -149,8 +144,7 @@ public enum TimeFormat
      * @return {@link Timestamp} instance for the provided markdown
      */
     @Nonnull
-    public static Timestamp parse(@Nonnull String markdown)
-    {
+    public static Timestamp parse(@Nonnull String markdown) {
         Checks.notNull(markdown, "Markdown");
         Matcher matcher = MARKDOWN.matcher(markdown.trim());
         if (!matcher.find())
@@ -175,8 +169,7 @@ public enum TimeFormat
      * @see    Instant#from(TemporalAccessor)
      */
     @Nonnull
-    public String format(@Nonnull TemporalAccessor temporal)
-    {
+    public String format(@Nonnull TemporalAccessor temporal) {
         Checks.notNull(temporal, "Temporal");
         long timestamp = Instant.from(temporal).toEpochMilli();
         return format(timestamp);
@@ -192,8 +185,7 @@ public enum TimeFormat
      * @return The markdown string with this encoded style
      */
     @Nonnull
-    public String format(long timestamp)
-    {
+    public String format(long timestamp) {
         return "<t:" + timestamp / 1000 + ":" + style + ">";
     }
 
@@ -214,8 +206,7 @@ public enum TimeFormat
      * @see    Instant#toEpochMilli()
      */
     @Nonnull
-    public Timestamp atInstant(@Nonnull Instant instant)
-    {
+    public Timestamp atInstant(@Nonnull Instant instant) {
         Checks.notNull(instant, "Instant");
         return new Timestamp(this, instant.toEpochMilli());
     }
@@ -232,8 +223,7 @@ public enum TimeFormat
      * @see    #now()
      */
     @Nonnull
-    public Timestamp atTimestamp(long timestamp)
-    {
+    public Timestamp atTimestamp(long timestamp) {
         return new Timestamp(this, timestamp);
     }
 
@@ -246,8 +236,7 @@ public enum TimeFormat
      * @see    Timestamp#minus(long)
      */
     @Nonnull
-    public Timestamp now()
-    {
+    public Timestamp now() {
         return new Timestamp(this, System.currentTimeMillis());
     }
 
@@ -266,8 +255,7 @@ public enum TimeFormat
      * @see    Timestamp#plus(Duration)
      */
     @Nonnull
-    public Timestamp after(@Nonnull Duration duration)
-    {
+    public Timestamp after(@Nonnull Duration duration) {
         return now().plus(duration);
     }
 
@@ -283,8 +271,7 @@ public enum TimeFormat
      * @see    Timestamp#plus(long)
      */
     @Nonnull
-    public Timestamp after(long millis)
-    {
+    public Timestamp after(long millis) {
         return now().plus(millis);
     }
 
@@ -303,8 +290,7 @@ public enum TimeFormat
      * @see    Timestamp#minus(Duration)
      */
     @Nonnull
-    public Timestamp before(@Nonnull Duration duration)
-    {
+    public Timestamp before(@Nonnull Duration duration) {
         return now().minus(duration);
     }
 
@@ -320,8 +306,7 @@ public enum TimeFormat
      * @see    Timestamp#minus(long)
      */
     @Nonnull
-    public Timestamp before(long millis)
-    {
+    public Timestamp before(long millis) {
         return now().minus(millis);
     }
 }

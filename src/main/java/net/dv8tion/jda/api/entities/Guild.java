@@ -68,8 +68,7 @@ import java.util.stream.Collectors;
  * @see JDA#getGuildsByName(String, boolean)
  * @see JDA#getGuilds()
  */
-public interface Guild extends ISnowflake
-{
+public interface Guild extends ISnowflake {
     /** Template for {@link #getIconUrl()}. */
     String ICON_URL = "https://cdn.discordapp.com/icons/%s/%s.%s";
     /** Template for {@link #getSplashUrl()}. */
@@ -118,8 +117,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Command> retrieveCommandById(long id)
-    {
+    default RestAction<Command> retrieveCommandById(long id) {
         return retrieveCommandById(Long.toUnsignedString(id));
     }
 
@@ -163,8 +161,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
-    {
+    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description) {
         return upsertCommand(new CommandData(name, description));
     }
 
@@ -223,8 +220,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction editCommandById(long id)
-    {
+    default CommandEditAction editCommandById(long id) {
         return editCommandById(Long.toUnsignedString(id));
     }
 
@@ -259,8 +255,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteCommandById(long commandId)
-    {
+    default RestAction<Void> deleteCommandById(long commandId) {
         return deleteCommandById(Long.toUnsignedString(commandId));
     }
 
@@ -302,8 +297,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(long commandId)
-    {
+    default RestAction<List<CommandPrivilege>> retrieveCommandPrivilegesById(long commandId) {
         return retrieveCommandPrivilegesById(Long.toUnsignedString(commandId));
     }
 
@@ -363,8 +357,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull CommandPrivilege... privileges)
-    {
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(@Nonnull String id, @Nonnull CommandPrivilege... privileges) {
         Checks.noneNull(privileges, "CommandPrivileges");
         return updateCommandPrivilegesById(id, Arrays.asList(privileges));
     }
@@ -390,8 +383,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull Collection<? extends CommandPrivilege> privileges) {
         return updateCommandPrivilegesById(Long.toUnsignedString(id), privileges);
     }
 
@@ -416,8 +408,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull CommandPrivilege... privileges)
-    {
+    default RestAction<List<CommandPrivilege>> updateCommandPrivilegesById(long id, @Nonnull CommandPrivilege... privileges) {
         Checks.noneNull(privileges, "CommandPrivileges");
         return updateCommandPrivilegesById(id, Arrays.asList(privileges));
     }
@@ -453,8 +444,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<EnumSet<Region>> retrieveRegions()
-    {
+    default RestAction<EnumSet<Region>> retrieveRegions() {
         return retrieveRegions(true);
     }
 
@@ -489,7 +479,7 @@ public interface Guild extends ISnowflake
      *
      * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
-     * @since  3.7.0
+     * @since 3.7.0
      */
     @Nonnull
     @CheckReturnValue
@@ -514,12 +504,11 @@ public interface Guild extends ISnowflake
      *
      * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
-     * @since  3.7.0
+     * @since 3.7.0
      */
     @Nonnull
     @CheckReturnValue
-    default MemberAction addMember(@Nonnull String accessToken, @Nonnull User user)
-    {
+    default MemberAction addMember(@Nonnull String accessToken, @Nonnull User user) {
         Checks.notNull(user, "User");
         return addMember(accessToken, user.getId());
     }
@@ -543,12 +532,11 @@ public interface Guild extends ISnowflake
      *
      * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
      *
-     * @since  3.7.0
+     * @since 3.7.0
      */
     @Nonnull
     @CheckReturnValue
-    default MemberAction addMember(@Nonnull String accessToken, long userId)
-    {
+    default MemberAction addMember(@Nonnull String accessToken, long userId) {
         return addMember(accessToken, Long.toUnsignedString(userId));
     }
 
@@ -647,8 +635,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null String containing the Guild's icon URL.
      */
     @Nullable
-    default String getIconUrl()
-    {
+    default String getIconUrl() {
         String iconId = getIconId();
         return iconId == null ? null : String.format(ICON_URL, getId(), iconId, iconId.startsWith("a_") ? "gif" : "png");
     }
@@ -688,8 +675,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null String containing the Guild's splash URL.
      */
     @Nullable
-    default String getSplashUrl()
-    {
+    default String getSplashUrl() {
         String splashId = getSplashId();
         return splashId == null ? null : String.format(SPLASH_URL, getId(), splashId);
     }
@@ -738,7 +724,7 @@ public interface Guild extends ISnowflake
      *
      * @return The vanity code or null
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #getVanityUrl()
      */
@@ -753,11 +739,10 @@ public interface Guild extends ISnowflake
      *
      * @return The vanity url or null
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nullable
-    default String getVanityUrl()
-    {
+    default String getVanityUrl() {
         return getVanityCode() == null ? null : "https://discord.gg/" + getVanityCode();
     }
 
@@ -783,7 +768,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link RestAction} - Type: {@link VanityInvite}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -797,7 +782,7 @@ public interface Guild extends ISnowflake
      *
      * @return The description
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nullable
     String getDescription();
@@ -810,7 +795,7 @@ public interface Guild extends ISnowflake
      *
      * @return The preferred {@link Locale} for this guild
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     Locale getLocale();
@@ -823,7 +808,7 @@ public interface Guild extends ISnowflake
      *
      * @return The guild banner id or null
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #getBannerUrl()
      */
@@ -838,11 +823,10 @@ public interface Guild extends ISnowflake
      *
      * @return The guild banner url or null
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nullable
-    default String getBannerUrl()
-    {
+    default String getBannerUrl() {
         String bannerId = getBannerId();
         return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId);
     }
@@ -853,7 +837,7 @@ public interface Guild extends ISnowflake
      *
      * @return The boost tier.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     BoostTier getBoostTier();
@@ -863,7 +847,7 @@ public interface Guild extends ISnowflake
      *
      * @return The boost count
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     int getBoostCount();
 
@@ -883,10 +867,9 @@ public interface Guild extends ISnowflake
      *
      * @return The maximum bitrate
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
-    default int getMaxBitrate()
-    {
+    default int getMaxBitrate() {
         int maxBitrate = getFeatures().contains("VIP_REGIONS") ? 384000 : 96000;
         return Math.max(maxBitrate, getBoostTier().getMaxBitrate());
     }
@@ -899,8 +882,7 @@ public interface Guild extends ISnowflake
      *
      * @since 4.2.0
      */
-    default long getMaxFileSize()
-    {
+    default long getMaxFileSize() {
         return getBoostTier().getMaxFileSize();
     }
 
@@ -911,8 +893,7 @@ public interface Guild extends ISnowflake
      *
      * @since 4.0.0
      */
-    default int getMaxEmotes()
-    {
+    default int getMaxEmotes() {
         int maxEmotes = getFeatures().contains("MORE_EMOJI") ? 200 : 50;
         return Math.max(maxEmotes, getBoostTier().getMaxEmotes());
     }
@@ -922,7 +903,7 @@ public interface Guild extends ISnowflake
      *
      * @return The maximum amount of members
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #retrieveMetaData()
      */
@@ -935,7 +916,7 @@ public interface Guild extends ISnowflake
      *
      * @return The maximum amount of connected members this guild can have
      *
-     * @since  4.0.0
+     * @since 4.0.0
      *
      * @see    #retrieveMetaData()
      */
@@ -946,7 +927,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link RestAction} - Type: {@link MetaData}
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1038,8 +1019,7 @@ public interface Guild extends ISnowflake
      * @see    #getOwner()
      */
     @Nonnull
-    default String getOwnerId()
-    {
+    default String getOwnerId() {
         return Long.toUnsignedString(getOwnerIdLong());
     }
 
@@ -1073,8 +1053,7 @@ public interface Guild extends ISnowflake
     @ReplaceWith("VoiceChannel.getRegion()")
     @DeprecatedSince("4.3.0")
     @Nonnull
-    default Region getRegion()
-    {
+    default Region getRegion() {
         return Region.fromKey(getRegionRaw());
     }
 
@@ -1155,8 +1134,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveMemberById(String)
      */
     @Nullable
-    default Member getMemberById(@Nonnull String userId)
-    {
+    default Member getMemberById(@Nonnull String userId) {
         return getMemberCache().getElementById(userId);
     }
 
@@ -1177,8 +1155,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveMemberById(long)
      */
     @Nullable
-    default Member getMemberById(long userId)
-    {
+    default Member getMemberById(long userId) {
         return getMemberCache().getElementById(userId);
     }
 
@@ -1208,8 +1185,7 @@ public interface Guild extends ISnowflake
      * @see    net.dv8tion.jda.api.JDA#getUserByTag(String)
      */
     @Nullable
-    default Member getMemberByTag(@Nonnull String tag)
-    {
+    default Member getMemberByTag(@Nonnull String tag) {
         User user = getJDA().getUserByTag(tag);
         return user == null ? null : getMember(user);
     }
@@ -1242,8 +1218,7 @@ public interface Guild extends ISnowflake
      * @see    #getMemberByTag(String)
      */
     @Nullable
-    default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator)
-    {
+    default Member getMemberByTag(@Nonnull String username, @Nonnull String discriminator) {
         User user = getJDA().getUserByTag(username, discriminator);
         return user == null ? null : getMember(user);
     }
@@ -1265,8 +1240,7 @@ public interface Guild extends ISnowflake
      * @see    #loadMembers()
      */
     @Nonnull
-    default List<Member> getMembers()
-    {
+    default List<Member> getMembers() {
         return getMemberCache().asList();
     }
 
@@ -1291,8 +1265,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
-    default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<Member> getMembersByName(@Nonnull String name, boolean ignoreCase) {
         return getMemberCache().getElementsByUsername(name, ignoreCase);
     }
 
@@ -1314,8 +1287,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
-    default List<Member> getMembersByNickname(@Nullable String nickname, boolean ignoreCase)
-    {
+    default List<Member> getMembersByNickname(@Nullable String nickname, boolean ignoreCase) {
         return getMemberCache().getElementsByNickname(nickname, ignoreCase);
     }
 
@@ -1340,8 +1312,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveMembersByPrefix(String, int)
      */
     @Nonnull
-    default List<Member> getMembersByEffectiveName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<Member> getMembersByEffectiveName(@Nonnull String name, boolean ignoreCase) {
         return getMemberCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1364,8 +1335,7 @@ public interface Guild extends ISnowflake
      * @see    #findMembersWithRoles(Role...)
      */
     @Nonnull
-    default List<Member> getMembersWithRoles(@Nonnull Role... roles)
-    {
+    default List<Member> getMembersWithRoles(@Nonnull Role... roles) {
         return getMemberCache().getElementsWithRoles(roles);
     }
 
@@ -1388,8 +1358,7 @@ public interface Guild extends ISnowflake
      * @see    #findMembersWithRoles(Collection)
      */
     @Nonnull
-    default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles)
-    {
+    default List<Member> getMembersWithRoles(@Nonnull Collection<Role> roles) {
         return getMemberCache().getElementsWithRoles(roles);
     }
 
@@ -1430,8 +1399,7 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull String id)
-    {
+    default GuildChannel getGuildChannelById(@Nonnull String id) {
         return getGuildChannelById(MiscUtil.parseSnowflake(id));
     }
 
@@ -1453,8 +1421,7 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(long id)
-    {
+    default GuildChannel getGuildChannelById(long id) {
         GuildChannel channel = getTextChannelById(id);
         if (channel == null)
             channel = getVoiceChannelById(id);
@@ -1491,8 +1458,7 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
-    {
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id) {
         return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
     }
 
@@ -1517,21 +1483,19 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
-    {
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id) {
         Checks.notNull(type, "ChannelType");
-        switch (type)
-        {
-            case TEXT:
-                return getTextChannelById(id);
-            case VOICE:
-                return getVoiceChannelById(id);
-            case STAGE:
-                return getStageChannelById(id);
-            case STORE:
-                return getStoreChannelById(id);
-            case CATEGORY:
-                return getCategoryById(id);
+        switch (type) {
+        case TEXT:
+            return getTextChannelById(id);
+        case VOICE:
+            return getVoiceChannelById(id);
+        case STAGE:
+            return getStageChannelById(id);
+        case STORE:
+            return getStoreChannelById(id);
+        case CATEGORY:
+            return getCategoryById(id);
         }
         return null;
     }
@@ -1549,8 +1513,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-empty immutable list of all StageChannel names that match the provided name.
      */
     @Nonnull
-    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getVoiceChannelsByName(name, ignoreCase)
                 .stream()
                 .filter(StageChannel.class::isInstance)
@@ -1574,8 +1537,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
      */
     @Nullable
-    default StageChannel getStageChannelById(@Nonnull String id)
-    {
+    default StageChannel getStageChannelById(@Nonnull String id) {
         return getStageChannelById(MiscUtil.parseSnowflake(id));
     }
 
@@ -1592,8 +1554,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
      */
     @Nullable
-    default StageChannel getStageChannelById(long id)
-    {
+    default StageChannel getStageChannelById(long id) {
         VoiceChannel channel = getVoiceChannelById(id);
         return channel instanceof StageChannel ? (StageChannel) channel : null;
     }
@@ -1608,8 +1569,7 @@ public interface Guild extends ISnowflake
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
      */
     @Nonnull
-    default List<StageChannel> getStageChannels()
-    {
+    default List<StageChannel> getStageChannels() {
         return getVoiceChannels()
                 .stream()
                 .filter(StageChannel.class::isInstance)
@@ -1632,8 +1592,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
-    default Category getCategoryById(@Nonnull String id)
-    {
+    default Category getCategoryById(@Nonnull String id) {
         return getCategoryCache().getElementById(id);
     }
 
@@ -1649,8 +1608,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for the provided ID.
      */
     @Nullable
-    default Category getCategoryById(long id)
-    {
+    default Category getCategoryById(long id) {
         return getCategoryCache().getElementById(id);
     }
 
@@ -1666,8 +1624,7 @@ public interface Guild extends ISnowflake
      * @return An immutable list of all {@link net.dv8tion.jda.api.entities.Category Categories} in this Guild.
      */
     @Nonnull
-    default List<Category> getCategories()
-    {
+    default List<Category> getCategories() {
         return getCategoryCache().asList();
     }
 
@@ -1686,8 +1643,7 @@ public interface Guild extends ISnowflake
      * @return Immutable list of all categories matching the provided name
      */
     @Nonnull
-    default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<Category> getCategoriesByName(@Nonnull String name, boolean ignoreCase) {
         return getCategoryCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1716,11 +1672,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nullable
-    default StoreChannel getStoreChannelById(@Nonnull String id)
-    {
+    default StoreChannel getStoreChannelById(@Nonnull String id) {
         return getStoreChannelCache().getElementById(id);
     }
 
@@ -1736,11 +1691,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} with matching id.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nullable
-    default StoreChannel getStoreChannelById(long id)
-    {
+    default StoreChannel getStoreChannelById(long id) {
         return getStoreChannelCache().getElementById(id);
     }
 
@@ -1755,11 +1709,10 @@ public interface Guild extends ISnowflake
      *
      * @return An immutable List of all {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannel} in this Guild.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
-    default List<StoreChannel> getStoreChannels()
-    {
+    default List<StoreChannel> getStoreChannels() {
         return getStoreChannelCache().asList();
     }
 
@@ -1775,11 +1728,10 @@ public interface Guild extends ISnowflake
      *
      * @return Possibly-empty immutable list of all StoreChannels with names that match the provided name.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
-    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<StoreChannel> getStoreChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getStoreChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1790,7 +1742,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     SortedSnowflakeCacheView<StoreChannel> getStoreChannelCache();
@@ -1811,8 +1763,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with matching id.
      */
     @Nullable
-    default TextChannel getTextChannelById(@Nonnull String id)
-    {
+    default TextChannel getTextChannelById(@Nonnull String id) {
         return getTextChannelCache().getElementById(id);
     }
 
@@ -1829,8 +1780,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} with matching id.
      */
     @Nullable
-    default TextChannel getTextChannelById(long id)
-    {
+    default TextChannel getTextChannelById(long id) {
         return getTextChannelCache().getElementById(id);
     }
 
@@ -1846,8 +1796,7 @@ public interface Guild extends ISnowflake
      * @return An immutable List of all {@link net.dv8tion.jda.api.entities.TextChannel TextChannels} in this Guild.
      */
     @Nonnull
-    default List<TextChannel> getTextChannels()
-    {
+    default List<TextChannel> getTextChannels() {
         return getTextChannelCache().asList();
     }
 
@@ -1864,8 +1813,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-empty immutable list of all TextChannels names that match the provided name.
      */
     @Nonnull
-    default List<TextChannel> getTextChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<TextChannel> getTextChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getTextChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1897,8 +1845,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with matching id.
      */
     @Nullable
-    default VoiceChannel getVoiceChannelById(@Nonnull String id)
-    {
+    default VoiceChannel getVoiceChannelById(@Nonnull String id) {
         return getVoiceChannelCache().getElementById(id);
     }
 
@@ -1917,8 +1864,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with matching id.
      */
     @Nullable
-    default VoiceChannel getVoiceChannelById(long id)
-    {
+    default VoiceChannel getVoiceChannelById(long id) {
         return getVoiceChannelCache().getElementById(id);
     }
 
@@ -1936,8 +1882,7 @@ public interface Guild extends ISnowflake
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @Nonnull
-    default List<VoiceChannel> getVoiceChannels()
-    {
+    default List<VoiceChannel> getVoiceChannels() {
         return getVoiceChannelCache().asList();
     }
 
@@ -1956,8 +1901,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-empty immutable list of all VoiceChannel names that match the provided name.
      */
     @Nonnull
-    default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<VoiceChannel> getVoiceChannelsByName(@Nonnull String name, boolean ignoreCase) {
         return getVoiceChannelCache().getElementsByName(name, ignoreCase);
     }
 
@@ -1995,8 +1939,7 @@ public interface Guild extends ISnowflake
      * @see    #getChannels(boolean)
      */
     @Nonnull
-    default List<GuildChannel> getChannels()
-    {
+    default List<GuildChannel> getChannels() {
         return getChannels(true);
     }
 
@@ -2042,8 +1985,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} with matching id.
      */
     @Nullable
-    default Role getRoleById(@Nonnull String id)
-    {
+    default Role getRoleById(@Nonnull String id) {
         return getRoleCache().getElementById(id);
     }
 
@@ -2059,8 +2001,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Role Role} with matching id.
      */
     @Nullable
-    default Role getRoleById(long id)
-    {
+    default Role getRoleById(long id) {
         return getRoleCache().getElementById(id);
     }
 
@@ -2077,8 +2018,7 @@ public interface Guild extends ISnowflake
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.Role Roles}.
      */
     @Nonnull
-    default List<Role> getRoles()
-    {
+    default List<Role> getRoles() {
         return getRoleCache().asList();
     }
 
@@ -2095,8 +2035,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-empty immutable list of all Role names that match the provided name.
      */
     @Nonnull
-    default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<Role> getRolesByName(@Nonnull String name, boolean ignoreCase) {
         return getRoleCache().getElementsByName(name, ignoreCase);
     }
 
@@ -2116,12 +2055,11 @@ public interface Guild extends ISnowflake
      * @return The bot role, or null if no role matches
      */
     @Nullable
-    default Role getRoleByBot(long userId)
-    {
+    default Role getRoleByBot(long userId) {
         return getRoleCache().applyStream(stream ->
-            stream.filter(role -> role.getTags().getBotIdLong() == userId)
-                  .findFirst()
-                  .orElse(null)
+                stream.filter(role -> role.getTags().getBotIdLong() == userId)
+                        .findFirst()
+                        .orElse(null)
         );
     }
 
@@ -2144,8 +2082,7 @@ public interface Guild extends ISnowflake
      * @return The bot role, or null if no role matches
      */
     @Nullable
-    default Role getRoleByBot(@Nonnull String userId)
-    {
+    default Role getRoleByBot(@Nonnull String userId) {
         return getRoleByBot(MiscUtil.parseSnowflake(userId));
     }
 
@@ -2168,8 +2105,7 @@ public interface Guild extends ISnowflake
      * @return The bot role, or null if no role matches
      */
     @Nullable
-    default Role getRoleByBot(@Nonnull User user)
-    {
+    default Role getRoleByBot(@Nonnull User user) {
         Checks.notNull(user, "User");
         return getRoleByBot(user.getIdLong());
     }
@@ -2187,8 +2123,7 @@ public interface Guild extends ISnowflake
      * @return The bot role, or null if no role matches
      */
     @Nullable
-    default Role getBotRole()
-    {
+    default Role getBotRole() {
         return getRoleByBot(getJDA().getSelfUser());
     }
 
@@ -2204,12 +2139,11 @@ public interface Guild extends ISnowflake
      * @return The boost role, or null if no role matches
      */
     @Nullable
-    default Role getBoostRole()
-    {
+    default Role getBoostRole() {
         return getRoleCache().applyStream(stream ->
-            stream.filter(role -> role.getTags().isBoost())
-                  .findFirst()
-                  .orElse(null)
+                stream.filter(role -> role.getTags().isBoost())
+                        .findFirst()
+                        .orElse(null)
         );
     }
 
@@ -2244,8 +2178,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveEmoteById(String)
      */
     @Nullable
-    default Emote getEmoteById(@Nonnull String id)
-    {
+    default Emote getEmoteById(@Nonnull String id) {
         return getEmoteCache().getElementById(id);
     }
 
@@ -2267,8 +2200,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveEmoteById(long)
      */
     @Nullable
-    default Emote getEmoteById(long id)
-    {
+    default Emote getEmoteById(long id) {
         return getEmoteCache().getElementById(id);
     }
 
@@ -2290,8 +2222,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveEmotes()
      */
     @Nonnull
-    default List<Emote> getEmotes()
-    {
+    default List<Emote> getEmotes() {
         return getEmoteCache().asList();
     }
 
@@ -2312,8 +2243,7 @@ public interface Guild extends ISnowflake
      * @return Possibly-empty immutable list of all Emotes that match the provided name.
      */
     @Nonnull
-    default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase)
-    {
+    default List<Emote> getEmotesByName(@Nonnull String name, boolean ignoreCase) {
         return getEmoteCache().getElementsByName(name, ignoreCase);
     }
 
@@ -2339,7 +2269,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
      *
-     * @since  3.8.0
+     * @since 3.8.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2367,7 +2297,7 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
      *
-     * @since  3.8.0
+     * @since 3.8.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2391,12 +2321,11 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
      *
-     * @since  3.8.0
+     * @since 3.8.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ListedEmote> retrieveEmoteById(long id)
-    {
+    default RestAction<ListedEmote> retrieveEmoteById(long id) {
         return retrieveEmoteById(Long.toUnsignedString(id));
     }
 
@@ -2418,27 +2347,25 @@ public interface Guild extends ISnowflake
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
      *
-     * @since  3.8.0
+     * @since 3.8.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<ListedEmote> retrieveEmote(@Nonnull Emote emote)
-    {
+    default RestAction<ListedEmote> retrieveEmote(@Nonnull Emote emote) {
         Checks.notNull(emote, "Emote");
         if (emote.getGuild() != null)
             Checks.check(emote.getGuild().equals(this), "Emote must be from the same Guild!");
 
         JDA jda = getJDA();
         return new DeferredRestAction<>(jda, ListedEmote.class,
-        () -> {
-            if (emote instanceof ListedEmote)
-            {
-                ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
-                    return listedEmote;
-            }
-            return null;
-        }, () -> retrieveEmoteById(emote.getId()));
+                () -> {
+                    if (emote instanceof ListedEmote) {
+                        ListedEmote listedEmote = (ListedEmote) emote;
+                        if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                            return listedEmote;
+                    }
+                    return null;
+                }, () -> retrieveEmoteById(emote.getId()));
     }
 
     /**
@@ -2489,8 +2416,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Ban> retrieveBanById(long userId)
-    {
+    default RestAction<Ban> retrieveBanById(long userId) {
         return retrieveBanById(Long.toUnsignedString(userId));
     }
 
@@ -2548,8 +2474,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Ban> retrieveBan(@Nonnull User bannedUser)
-    {
+    default RestAction<Ban> retrieveBan(@Nonnull User bannedUser) {
         Checks.notNull(bannedUser, "bannedUser");
         return retrieveBanById(bannedUser.getId());
     }
@@ -2983,8 +2908,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> loadMembers()
-    {
+    default Task<List<Member>> loadMembers() {
         return findMembers((m) -> true);
     }
 
@@ -3010,8 +2934,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> findMembers(@Nonnull Predicate<? super Member> filter)
-    {
+    default Task<List<Member>> findMembers(@Nonnull Predicate<? super Member> filter) {
         Checks.notNull(filter, "Filter");
         List<Member> list = new ArrayList<>();
         CompletableFuture<List<Member>> future = new CompletableFuture<>();
@@ -3021,7 +2944,7 @@ public interface Guild extends ISnowflake
         });
         GatewayTask<List<Member>> task = new GatewayTask<>(future, reference::cancel);
         reference.onSuccess(it -> future.complete(list))
-                 .onError(future::completeExceptionally);
+                .onError(future::completeExceptionally);
         return task;
     }
 
@@ -3045,12 +2968,11 @@ public interface Guild extends ISnowflake
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles)
-    {
+    default Task<List<Member>> findMembersWithRoles(@Nonnull Collection<Role> roles) {
         Checks.noneNull(roles, "Roles");
         for (Role role : roles)
             Checks.check(this.equals(role.getGuild()), "All roles must be from the same guild!");
@@ -3058,7 +2980,8 @@ public interface Guild extends ISnowflake
         if (isLoaded() || roles.isEmpty() || roles.contains(getPublicRole())) // Member#getRoles never contains the public role
         {
             CompletableFuture<List<Member>> future = CompletableFuture.completedFuture(getMembersWithRoles(roles));
-            return new GatewayTask<>(future, () -> {});
+            return new GatewayTask<>(future, () -> {
+            });
         }
 
         return findMembers(member -> member.getRoles().containsAll(roles));
@@ -3084,12 +3007,11 @@ public interface Guild extends ISnowflake
      *
      * @return {@link Task} - Type: {@link List} of {@link Member}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> findMembersWithRoles(@Nonnull Role... roles)
-    {
+    default Task<List<Member>> findMembersWithRoles(@Nonnull Role... roles) {
         Checks.noneNull(roles, "Roles");
         return findMembersWithRoles(Arrays.asList(roles));
     }
@@ -3149,8 +3071,7 @@ public interface Guild extends ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMember(@Nonnull User user)
-    {
+    default RestAction<Member> retrieveMember(@Nonnull User user) {
         Checks.notNull(user, "User");
         return retrieveMemberById(user.getId());
     }
@@ -3189,8 +3110,7 @@ public interface Guild extends ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMemberById(@Nonnull String id)
-    {
+    default RestAction<Member> retrieveMemberById(@Nonnull String id) {
         return retrieveMemberById(MiscUtil.parseSnowflake(id));
     }
 
@@ -3223,8 +3143,7 @@ public interface Guild extends ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMemberById(long id)
-    {
+    default RestAction<Member> retrieveMemberById(long id) {
         return retrieveMemberById(id, true);
     }
 
@@ -3255,8 +3174,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveMemberById(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveOwner()
-    {
+    default RestAction<Member> retrieveOwner() {
         return retrieveMemberById(getOwnerIdLong());
     }
 
@@ -3291,8 +3209,7 @@ public interface Guild extends ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMember(@Nonnull User user, boolean update)
-    {
+    default RestAction<Member> retrieveMember(@Nonnull User user, boolean update) {
         Checks.notNull(user, "User");
         return retrieveMemberById(user.getId(), update);
     }
@@ -3330,8 +3247,7 @@ public interface Guild extends ISnowflake
      * @see    #unloadMember(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveMemberById(@Nonnull String id, boolean update)
-    {
+    default RestAction<Member> retrieveMemberById(@Nonnull String id, boolean update) {
         return retrieveMemberById(MiscUtil.parseSnowflake(id), update);
     }
 
@@ -3392,8 +3308,7 @@ public interface Guild extends ISnowflake
      * @see    #retrieveMemberById(long)
      */
     @Nonnull
-    default RestAction<Member> retrieveOwner(boolean update)
-    {
+    default RestAction<Member> retrieveOwner(boolean update) {
         return retrieveMemberById(getOwnerIdLong(), update);
     }
 
@@ -3425,11 +3340,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(@Nonnull Collection<User> users)
-    {
+    default Task<List<Member>> retrieveMembers(@Nonnull Collection<User> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {
+            });
 
         long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
         return retrieveMembersByIds(ids);
@@ -3463,11 +3378,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids)
-    {
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty())
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {
+            });
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
         return retrieveMembersByIds(arr);
@@ -3501,11 +3416,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids)
-    {
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0)
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {
+            });
 
         long[] arr = new long[ids.length];
         for (int i = 0; i < ids.length; i++)
@@ -3541,8 +3456,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids)
-    {
+    default Task<List<Member>> retrieveMembersByIds(@Nonnull long... ids) {
         boolean presence = getJDA().getGatewayIntents().contains(GatewayIntent.GUILD_PRESENCES);
         return retrieveMembersByIds(presence, ids);
     }
@@ -3576,11 +3490,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembers(boolean includePresence, @Nonnull Collection<User> users)
-    {
+    default Task<List<Member>> retrieveMembers(boolean includePresence, @Nonnull Collection<User> users) {
         Checks.noneNull(users, "Users");
         if (users.isEmpty())
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {
+            });
 
         long[] ids = users.stream().mapToLong(User::getIdLong).toArray();
         return retrieveMembersByIds(includePresence, ids);
@@ -3615,11 +3529,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull Collection<Long> ids)
-    {
+    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull Collection<Long> ids) {
         Checks.noneNull(ids, "IDs");
         if (ids.isEmpty())
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {
+            });
 
         long[] arr = ids.stream().mapToLong(Long::longValue).toArray();
         return retrieveMembersByIds(includePresence, arr);
@@ -3654,11 +3568,11 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull String... ids)
-    {
+    default Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull String... ids) {
         Checks.notNull(ids, "Array");
         if (ids.length == 0)
-            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {});
+            return new GatewayTask<>(CompletableFuture.completedFuture(Collections.emptyList()), () -> {
+            });
 
         long[] arr = new long[ids.length];
         for (int i = 0; i < ids.length; i++)
@@ -3820,8 +3734,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> kickVoiceMember(@Nonnull Member member)
-    {
+    default RestAction<Void> kickVoiceMember(@Nonnull Member member) {
         return moveVoiceMember(member, null);
     }
 
@@ -3905,8 +3818,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Integer> prune(int days, @Nonnull Role... roles)
-    {
+    default AuditableRestAction<Integer> prune(int days, @Nonnull Role... roles) {
         return prune(days, true, roles);
     }
 
@@ -4057,8 +3969,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull Member member)
-    {
+    default AuditableRestAction<Void> kick(@Nonnull Member member) {
         return kick(member, null);
     }
 
@@ -4093,8 +4004,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nonnull String userId)
-    {
+    default AuditableRestAction<Void> kick(@Nonnull String userId) {
         return kick(userId, null);
     }
 
@@ -4238,8 +4148,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, @Nullable String reason)
-    {
+    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays, @Nullable String reason) {
         Checks.notNull(member, "Member");
         //Don't check if the provided member is from this guild. It doesn't matter if they are or aren't.
 
@@ -4288,8 +4197,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays)
-    {
+    default AuditableRestAction<Void> ban(@Nonnull Member member, int delDays) {
         return ban(member, delDays, null);
     }
 
@@ -4335,8 +4243,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull User user, int delDays)
-    {
+    default AuditableRestAction<Void> ban(@Nonnull User user, int delDays) {
         return ban(user, delDays, null);
     }
 
@@ -4382,8 +4289,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(@Nonnull String userId, int delDays)
-    {
+    default AuditableRestAction<Void> ban(@Nonnull String userId, int delDays) {
         return ban(userId, delDays, null);
     }
 
@@ -4412,8 +4318,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> unban(@Nonnull User user)
-    {
+    default AuditableRestAction<Void> unban(@Nonnull User user) {
         Checks.notNull(user, "User");
 
         return unban(user.getId());
@@ -4608,8 +4513,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> addRoleToMember(long userId, @Nonnull Role role)
-    {
+    default AuditableRestAction<Void> addRoleToMember(long userId, @Nonnull Role role) {
         Checks.notNull(role, "Role");
         Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
 
@@ -4666,8 +4570,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> addRoleToMember(@Nonnull String userId, @Nonnull Role role)
-    {
+    default AuditableRestAction<Void> addRoleToMember(@Nonnull String userId, @Nonnull Role role) {
         return addRoleToMember(MiscUtil.parseSnowflake(userId), role);
     }
 
@@ -4757,8 +4660,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> removeRoleFromMember(long userId, @Nonnull Role role)
-    {
+    default AuditableRestAction<Void> removeRoleFromMember(long userId, @Nonnull Role role) {
         Checks.notNull(role, "Role");
         Checks.check(role.getGuild().equals(this), "Role must be from the same guild! Trying to use role from %s in %s", role.getGuild().toString(), toString());
 
@@ -4815,8 +4717,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> removeRoleFromMember(@Nonnull String userId, @Nonnull Role role)
-    {
+    default AuditableRestAction<Void> removeRoleFromMember(@Nonnull String userId, @Nonnull Role role) {
         return removeRoleFromMember(MiscUtil.parseSnowflake(userId), role);
     }
 
@@ -4945,8 +4846,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Role... roles)
-    {
+    default AuditableRestAction<Void> modifyMemberRoles(@Nonnull Member member, @Nonnull Role... roles) {
         return modifyMemberRoles(member, Arrays.asList(roles));
     }
 
@@ -5069,8 +4969,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
-    {
+    default ChannelAction<TextChannel> createTextChannel(@Nonnull String name) {
         return createTextChannel(name, null);
     }
 
@@ -5133,8 +5032,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
-    {
+    default ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name) {
         return createVoiceChannel(name, null);
     }
 
@@ -5197,8 +5095,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
-    {
+    default ChannelAction<StageChannel> createStageChannel(@Nonnull String name) {
         return createStageChannel(name, null);
     }
 
@@ -5300,7 +5197,7 @@ public interface Guild extends ISnowflake
      * @return A specific {@link ChannelAction ChannelAction}
      *         <br>This action allows to set fields for the new GuildChannel before creating it!
      *
-     * @since  3.1
+     * @since 3.1
      *
      * @see    #createTextChannel(String)
      * @see    #createVoiceChannel(String)
@@ -5309,8 +5206,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked") // we need to do an unchecked cast for the channel type here
-    default <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
-    {
+    default <T extends GuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel) {
         Checks.notNull(channel, "Channel");
         return (ChannelAction<T>) channel.createCopy(this);
     }
@@ -5372,8 +5268,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction createCopyOfRole(@Nonnull Role role)
-    {
+    default RoleAction createCopyOfRole(@Nonnull Role role) {
         Checks.notNull(role, "Role");
         return role.createCopy(this);
     }
@@ -5566,8 +5461,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default RoleOrderAction modifyRolePositions()
-    {
+    default RoleOrderAction modifyRolePositions() {
         return modifyRolePositions(true);
     }
 
@@ -5607,8 +5501,7 @@ public interface Guild extends ISnowflake
      * AFK {@link net.dv8tion.jda.api.entities.VoiceChannel} if one is set
      * ({@link net.dv8tion.jda.api.entities.Guild#getAfkChannel() Guild.getAfkChannel()}).
      */
-    enum Timeout
-    {
+    enum Timeout {
         SECONDS_60(60),
         SECONDS_300(300),
         SECONDS_900(900),
@@ -5617,8 +5510,7 @@ public interface Guild extends ISnowflake
 
         private final int seconds;
 
-        Timeout(int seconds)
-        {
+        Timeout(int seconds) {
             this.seconds = seconds;
         }
 
@@ -5627,8 +5519,7 @@ public interface Guild extends ISnowflake
          *
          * @return An positive non-negative int representing the timeout amount in seconds.
          */
-        public int getSeconds()
-        {
+        public int getSeconds() {
             return seconds;
         }
 
@@ -5645,10 +5536,8 @@ public interface Guild extends ISnowflake
          * @return The {@link net.dv8tion.jda.api.entities.Guild.Timeout Timeout} related to the amount of seconds provided.
          */
         @Nonnull
-        public static Timeout fromKey(int seconds)
-        {
-            for (Timeout t : values())
-            {
+        public static Timeout fromKey(int seconds) {
+            for (Timeout t : values()) {
                 if (t.getSeconds() == seconds)
                     return t;
             }
@@ -5666,8 +5555,7 @@ public interface Guild extends ISnowflake
      * <br><b>High</b>      {@literal ->} you have to be member of this guild for at least 10min.
      * <br><b>Very High</b> {@literal ->} you must have a verified phone on your discord account.
      */
-    enum VerificationLevel
-    {
+    enum VerificationLevel {
         NONE(0),
         LOW(1),
         MEDIUM(2),
@@ -5677,8 +5565,7 @@ public interface Guild extends ISnowflake
 
         private final int key;
 
-        VerificationLevel(int key)
-        {
+        VerificationLevel(int key) {
             this.key = key;
         }
 
@@ -5687,8 +5574,7 @@ public interface Guild extends ISnowflake
          *
          * @return Integer id key for this VerificationLevel.
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -5702,11 +5588,9 @@ public interface Guild extends ISnowflake
          * @return The VerificationLevel related to the provided key, or {@link #UNKNOWN VerificationLevel.UNKNOWN} if the key is not recognized.
          */
         @Nonnull
-        public static VerificationLevel fromKey(int key)
-        {
-            for (VerificationLevel level : VerificationLevel.values())
-            {
-                if(level.getKey() == key)
+        public static VerificationLevel fromKey(int key) {
+            for (VerificationLevel level : VerificationLevel.values()) {
+                if (level.getKey() == key)
                     return level;
             }
             return UNKNOWN;
@@ -5720,16 +5604,14 @@ public interface Guild extends ISnowflake
      * <br><b>All_Messages</b>   {@literal ->} Every message sent in this guild will result in a message ping.
      * <br><b>Mentions_Only</b>  {@literal ->} Only messages that specifically mention will result in a ping.
      */
-    enum NotificationLevel
-    {
+    enum NotificationLevel {
         ALL_MESSAGES(0),
         MENTIONS_ONLY(1),
         UNKNOWN(-1);
 
         private final int key;
 
-        NotificationLevel(int key)
-        {
+        NotificationLevel(int key) {
             this.key = key;
         }
 
@@ -5738,8 +5620,7 @@ public interface Guild extends ISnowflake
          *
          * @return Integer id for this NotificationLevel.
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -5753,10 +5634,8 @@ public interface Guild extends ISnowflake
          * @return The NotificationLevel related to the provided key, or {@link #UNKNOWN NotificationLevel.UNKNOWN} if the key is not recognized.
          */
         @Nonnull
-        public static NotificationLevel fromKey(int key)
-        {
-            for (NotificationLevel level : values())
-            {
+        public static NotificationLevel fromKey(int key) {
+            for (NotificationLevel level : values()) {
                 if (level.getKey() == key)
                     return level;
             }
@@ -5771,16 +5650,14 @@ public interface Guild extends ISnowflake
      * <br><b>None</b>             {@literal ->} There is no MFA level restriction on administrator functions in this guild.
      * <br><b>Two_Factor_Auth</b>  {@literal ->} Users must have 2FA enabled on their account to perform administrator functions.
      */
-    enum MFALevel
-    {
+    enum MFALevel {
         NONE(0),
         TWO_FACTOR_AUTH(1),
         UNKNOWN(-1);
 
         private final int key;
 
-        MFALevel(int key)
-        {
+        MFALevel(int key) {
             this.key = key;
         }
 
@@ -5789,8 +5666,7 @@ public interface Guild extends ISnowflake
          *
          * @return Integer id for this MFALevel.
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -5804,10 +5680,8 @@ public interface Guild extends ISnowflake
          * @return The MFALevel related to the provided key, or {@link #UNKNOWN MFALevel.UNKNOWN} if the key is not recognized.
          */
         @Nonnull
-        public static MFALevel fromKey(int key)
-        {
-            for (MFALevel level : values())
-            {
+        public static MFALevel fromKey(int key) {
+            for (MFALevel level : values()) {
                 if (level.getKey() == key)
                     return level;
             }
@@ -5819,8 +5693,7 @@ public interface Guild extends ISnowflake
      * The Explicit-Content-Filter Level of a Guild.
      * <br>This decides whom's messages should be scanned for explicit content.
      */
-    enum ExplicitContentLevel
-    {
+    enum ExplicitContentLevel {
         OFF(0, "Don't scan any messages."),
         NO_ROLE(1, "Scan messages from members without a role."),
         ALL(2, "Scan messages sent by all members."),
@@ -5830,8 +5703,7 @@ public interface Guild extends ISnowflake
         private final int key;
         private final String description;
 
-        ExplicitContentLevel(int key, String description)
-        {
+        ExplicitContentLevel(int key, String description) {
             this.key = key;
             this.description = description;
         }
@@ -5841,8 +5713,7 @@ public interface Guild extends ISnowflake
          *
          * @return key
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -5852,16 +5723,13 @@ public interface Guild extends ISnowflake
          * @return Description for this level
          */
         @Nonnull
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
         @Nonnull
-        public static ExplicitContentLevel fromKey(int key)
-        {
-            for (ExplicitContentLevel level : values())
-            {
+        public static ExplicitContentLevel fromKey(int key) {
+            for (ExplicitContentLevel level : values()) {
                 if (level.key == key)
                     return level;
             }
@@ -5873,10 +5741,9 @@ public interface Guild extends ISnowflake
      * The boost tier for this guild.
      * <br>Each tier unlocks new perks for a guild that can be seen in the {@link #getFeatures() features}.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
-    enum BoostTier
-    {
+    enum BoostTier {
         /**
          * The default tier.
          * <br>Unlocked at 0 boosters.
@@ -5906,8 +5773,7 @@ public interface Guild extends ISnowflake
         private final int maxBitrate;
         private final int maxEmotes;
 
-        BoostTier(int key, int maxBitrate, int maxEmotes)
-        {
+        BoostTier(int key, int maxBitrate, int maxEmotes) {
             this.key = key;
             this.maxBitrate = maxBitrate;
             this.maxEmotes = maxEmotes;
@@ -5918,8 +5784,7 @@ public interface Guild extends ISnowflake
          *
          * @return The key
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -5930,8 +5795,7 @@ public interface Guild extends ISnowflake
          *
          * @see    net.dv8tion.jda.api.entities.Guild#getMaxBitrate()
          */
-        public int getMaxBitrate()
-        {
+        public int getMaxBitrate() {
             return maxBitrate;
         }
 
@@ -5939,11 +5803,10 @@ public interface Guild extends ISnowflake
          * The maximum amount of emotes a guild can have when this tier is reached.
          *
          * @return The maximum emotes
-         * 
+         *
          * @see    net.dv8tion.jda.api.entities.Guild#getMaxEmotes()
          */
-        public int getMaxEmotes() 
-        {
+        public int getMaxEmotes() {
             return maxEmotes;
         }
 
@@ -5954,8 +5817,7 @@ public interface Guild extends ISnowflake
          *
          * @see    net.dv8tion.jda.api.entities.Guild#getMaxFileSize()
          */
-        public long getMaxFileSize()
-        {
+        public long getMaxFileSize() {
             if (key == 2)
                 return 50 << 20;
             else if (key == 3)
@@ -5972,10 +5834,8 @@ public interface Guild extends ISnowflake
          * @return The BoostTier or {@link #UNKNOWN}
          */
         @Nonnull
-        public static BoostTier fromKey(int key)
-        {
-            for (BoostTier tier : values())
-            {
+        public static BoostTier fromKey(int key) {
+            for (BoostTier tier : values()) {
                 if (tier.key == key)
                     return tier;
             }
@@ -5989,13 +5849,11 @@ public interface Guild extends ISnowflake
      * @see #retrieveBanList()
      * @see <a href="https://discord.com/developers/docs/resources/guild#ban-object" target="_blank">Discord Docs: Ban Object</a>
      */
-    class Ban
-    {
+    class Ban {
         protected final User user;
         protected final String reason;
 
-        public Ban(User user, String reason)
-        {
+        public Ban(User user, String reason) {
             this.user = user;
             this.reason = reason;
         }
@@ -6006,8 +5864,7 @@ public interface Guild extends ISnowflake
          * @return The banned User
          */
         @Nonnull
-        public User getUser()
-        {
+        public User getUser() {
             return user;
         }
 
@@ -6017,14 +5874,12 @@ public interface Guild extends ISnowflake
          * @return The reason for this ban, or {@code null}
          */
         @Nullable
-        public String getReason()
-        {
+        public String getReason() {
             return reason;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "GuildBan:" + user + (reason == null ? "" : '(' + reason + ')');
         }
     }
@@ -6034,15 +5889,13 @@ public interface Guild extends ISnowflake
      *
      * @since 4.2.0
      */
-    class MetaData
-    {
+    class MetaData {
         private final int memberLimit;
         private final int presenceLimit;
         private final int approximatePresences;
         private final int approximateMembers;
 
-        public MetaData(int memberLimit, int presenceLimit, int approximatePresences, int approximateMembers)
-        {
+        public MetaData(int memberLimit, int presenceLimit, int approximatePresences, int approximateMembers) {
             this.memberLimit = memberLimit;
             this.presenceLimit = presenceLimit;
             this.approximatePresences = approximatePresences;
@@ -6055,8 +5908,7 @@ public interface Guild extends ISnowflake
          *
          * @return The member limit
          */
-        public int getMemberLimit()
-        {
+        public int getMemberLimit() {
             return memberLimit;
         }
 
@@ -6066,8 +5918,7 @@ public interface Guild extends ISnowflake
          *
          * @return The presence limit
          */
-        public int getPresenceLimit()
-        {
+        public int getPresenceLimit() {
             return presenceLimit;
         }
 
@@ -6076,8 +5927,7 @@ public interface Guild extends ISnowflake
          *
          * @return The approximate presence count
          */
-        public int getApproximatePresences()
-        {
+        public int getApproximatePresences() {
             return approximatePresences;
         }
 
@@ -6086,8 +5936,7 @@ public interface Guild extends ISnowflake
          *
          * @return The approximate member count
          */
-        public int getApproximateMembers()
-        {
+        public int getApproximateMembers() {
             return approximateMembers;
         }
     }

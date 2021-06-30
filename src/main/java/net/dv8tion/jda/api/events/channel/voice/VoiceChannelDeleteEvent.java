@@ -25,10 +25,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to get affected VoiceChannel or affected Guild.
  */
-public class VoiceChannelDeleteEvent extends GenericVoiceChannelEvent
-{
-    public VoiceChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel)
-    {
+public class VoiceChannelDeleteEvent extends GenericVoiceChannelEvent {
+    public VoiceChannelDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel) {
         super(api, responseNumber, channel);
     }
 }

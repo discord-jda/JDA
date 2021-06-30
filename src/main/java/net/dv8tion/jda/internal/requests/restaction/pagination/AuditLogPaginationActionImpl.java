@@ -40,16 +40,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AuditLogPaginationActionImpl
-    extends PaginationActionImpl<AuditLogEntry, AuditLogPaginationAction>
-    implements AuditLogPaginationAction
-{
+        extends PaginationActionImpl<AuditLogEntry, AuditLogPaginationAction>
+        implements AuditLogPaginationAction {
     protected final Guild guild;
     // filters
     protected ActionType type = null;
     protected String userId = null;
 
-    public AuditLogPaginationActionImpl(Guild guild)
-    {
+    public AuditLogPaginationActionImpl(Guild guild) {
         super(guild.getJDA(), Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()), 1, 100, 100);
         if (!guild.getSelfMember().hasPermission(Permission.VIEW_AUDIT_LOGS))
             throw new InsufficientPermissionException(guild, Permission.VIEW_AUDIT_LOGS);
@@ -58,23 +56,20 @@ public class AuditLogPaginationActionImpl
 
     @Nonnull
     @Override
-    public AuditLogPaginationActionImpl type(ActionType type)
-    {
+    public AuditLogPaginationActionImpl type(ActionType type) {
         this.type = type;
         return this;
     }
 
     @Nonnull
     @Override
-    public AuditLogPaginationActionImpl user(User user)
-    {
+    public AuditLogPaginationActionImpl user(User user) {
         return user(user == null ? null : user.getId());
     }
 
     @Nonnull
     @Override
-    public AuditLogPaginationActionImpl user(String userId)
-    {
+    public AuditLogPaginationActionImpl user(String userId) {
         if (userId != null)
             Checks.isSnowflake(userId, "User ID");
         this.userId = userId;
@@ -83,21 +78,18 @@ public class AuditLogPaginationActionImpl
 
     @Nonnull
     @Override
-    public AuditLogPaginationActionImpl user(long userId)
-    {
+    public AuditLogPaginationActionImpl user(long userId) {
         return user(Long.toUnsignedString(userId));
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Override
-    protected Route.CompiledRoute finalizeRoute()
-    {
+    protected Route.CompiledRoute finalizeRoute() {
         Route.CompiledRoute route = super.finalizeRoute();
 
         final String limit = String.valueOf(this.limit.get());
@@ -118,8 +110,7 @@ public class AuditLogPaginationActionImpl
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<AuditLogEntry>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<AuditLogEntry>> request) {
         DataObject obj = response.getObject();
         DataArray users = obj.getArray("users");
         DataArray webhooks = obj.getArray("webhooks");
@@ -129,23 +120,19 @@ public class AuditLogPaginationActionImpl
         EntityBuilder builder = api.getEntityBuilder();
 
         TLongObjectMap<DataObject> userMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < users.length(); i++)
-        {
+        for (int i = 0; i < users.length(); i++) {
             DataObject user = users.getObject(i);
             userMap.put(user.getLong("id"), user);
         }
 
         TLongObjectMap<DataObject> webhookMap = new TLongObjectHashMap<>();
-        for (int i = 0; i < webhooks.length(); i++)
-        {
+        for (int i = 0; i < webhooks.length(); i++) {
             DataObject webhook = webhooks.getObject(i);
             webhookMap.put(webhook.getLong("id"), webhook);
         }
 
-        for (int i = 0; i < entries.length(); i++)
-        {
-            try
-            {
+        for (int i = 0; i < entries.length(); i++) {
+            try {
                 DataObject entry = entries.getObject(i);
                 DataObject user = userMap.get(entry.getLong("user_id", 0));
                 DataObject webhook = webhookMap.get(entry.getLong("target_id", 0));
@@ -156,8 +143,7 @@ public class AuditLogPaginationActionImpl
                 this.last = result;
                 this.lastKey = last.getIdLong();
             }
-            catch (ParsingException | NullPointerException e)
-            {
+            catch (ParsingException | NullPointerException e) {
                 LOG.warn("Encountered exception in AuditLogPagination", e);
             }
         }
@@ -166,8 +152,7 @@ public class AuditLogPaginationActionImpl
     }
 
     @Override
-    protected long getKey(AuditLogEntry it)
-    {
+    protected long getKey(AuditLogEntry it) {
         return it.getIdLong();
     }
 }

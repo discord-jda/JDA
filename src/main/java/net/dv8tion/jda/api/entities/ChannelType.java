@@ -21,8 +21,7 @@ import java.util.EnumSet;
 /**
  * Enum used to differentiate between the different types of Discord channels.
  */
-public enum ChannelType
-{
+public enum ChannelType {
     /**
      * A {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}, Guild-Only.
      */
@@ -61,13 +60,11 @@ public enum ChannelType
     private final int id;
     private final boolean isGuild;
 
-    ChannelType(int id, int sortBucket)
-    {
+    ChannelType(int id, int sortBucket) {
         this(id, sortBucket, false);
     }
 
-    ChannelType(int id, int sortBucket, boolean isGuild)
-    {
+    ChannelType(int id, int sortBucket, boolean isGuild) {
         this.id = id;
         this.sortBucket = sortBucket;
         this.isGuild = isGuild;
@@ -78,8 +75,7 @@ public enum ChannelType
      *
      * @return The sorting bucket
      */
-    public int getSortBucket()
-    {
+    public int getSortBucket() {
         return sortBucket;
     }
 
@@ -88,8 +84,7 @@ public enum ChannelType
      *
      * @return The id key used by discord for this channel type.
      */
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
@@ -98,8 +93,7 @@ public enum ChannelType
      *
      * @return Whether or not this a GuildChannel
      */
-    public boolean isGuild()
-    {
+    public boolean isGuild() {
         return isGuild;
     }
 
@@ -108,15 +102,13 @@ public enum ChannelType
      *
      * @return True, if channels of this type support audio
      */
-    public boolean isAudio()
-    {
-        switch (this)
-        {
-            case VOICE:
-            case STAGE:
-                return true;
-            default:
-                return false;
+    public boolean isAudio() {
+        switch (this) {
+        case VOICE:
+        case STAGE:
+            return true;
+        default:
+            return false;
         }
     }
 
@@ -125,17 +117,15 @@ public enum ChannelType
      *
      * @return True, if channels of this type support messages
      */
-    public boolean isMessage()
-    {
-        switch (this)
-        {
-            //case NEWS: TODO
-            case TEXT:
-            case PRIVATE:
-            case GROUP:
-                return true;
-            default:
-                return false;
+    public boolean isMessage() {
+        switch (this) {
+        //case NEWS: TODO
+        case TEXT:
+        case PRIVATE:
+        case GROUP:
+            return true;
+        default:
+            return false;
         }
     }
 
@@ -148,12 +138,10 @@ public enum ChannelType
      * @return The ChannelType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
      */
     @Nonnull
-    public static ChannelType fromId(int id)
-    {
+    public static ChannelType fromId(int id) {
         if (id == 5) // NEWS = TEXT
             return TEXT;
-        for (ChannelType type : values())
-        {
+        for (ChannelType type : values()) {
             if (type.id == id)
                 return type;
         }
@@ -169,11 +157,9 @@ public enum ChannelType
      * @return Possibly-empty {@link java.util.EnumSet} for the bucket
      */
     @Nonnull
-    public static EnumSet<ChannelType> fromSortBucket(int bucket)
-    {
+    public static EnumSet<ChannelType> fromSortBucket(int bucket) {
         EnumSet<ChannelType> types = EnumSet.noneOf(ChannelType.class);
-        for (ChannelType type : values())
-        {
+        for (ChannelType type : values()) {
             if (type.getSortBucket() == bucket)
                 types.add(type);
         }

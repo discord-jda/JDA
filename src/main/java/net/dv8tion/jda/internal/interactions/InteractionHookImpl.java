@@ -41,8 +41,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
-public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook
-{
+public class InteractionHookImpl extends AbstractWebhookClient<Message> implements InteractionHook {
     public static final String TIMEOUT_MESSAGE = "Timed out waiting for interaction acknowledgement";
     private final InteractionImpl interaction;
     private final List<TriggerRestAction<?>> readyCallbacks = new LinkedList<>();
@@ -56,28 +55,24 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
     // By default, discord only responds with "unknown interaction" which is horrible UX so we add a check manually here
     private volatile boolean isAck;
 
-    public InteractionHookImpl(@Nonnull InteractionImpl interaction, @Nonnull JDA api)
-    {
+    public InteractionHookImpl(@Nonnull InteractionImpl interaction, @Nonnull JDA api) {
         super(api.getSelfUser().getApplicationIdLong(), interaction.getToken(), api);
         this.interaction = interaction;
         // 10 second timeout for our failure
         this.timeoutHandle = api.getGatewayPool().schedule(() -> this.fail(new TimeoutException(TIMEOUT_MESSAGE)), 10, TimeUnit.SECONDS);
     }
 
-    public synchronized boolean ack()
-    {
+    public synchronized boolean ack() {
         boolean wasAck = isAck;
         this.isAck = true;
         return wasAck;
     }
 
-    public synchronized boolean isAck()
-    {
+    public synchronized boolean isAck() {
         return isAck;
     }
 
-    public void ready()
-    {
+    public void ready() {
         MiscUtil.locked(mutex, () -> {
             timeoutHandle.cancel(false);
             isReady = true;
@@ -85,11 +80,9 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         });
     }
 
-    public void fail(Exception exception)
-    {
+    public void fail(Exception exception) {
         MiscUtil.locked(mutex, () -> {
-            if (!isReady && this.exception == null)
-            {
+            if (!isReady && this.exception == null) {
                 this.exception = exception;
                 if (!readyCallbacks.isEmpty()) // only log this if we even tried any responses
                 {
@@ -101,8 +94,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
         });
     }
 
-    private <T extends TriggerRestAction<R>, R> T onReady(T runnable)
-    {
+    private <T extends TriggerRestAction<R>, R> T onReady(T runnable) {
         return MiscUtil.locked(mutex, () -> {
             if (isReady)
                 runnable.run();
@@ -116,30 +108,26 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public Interaction getInteraction()
-    {
+    public Interaction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public InteractionHook setEphemeral(boolean ephemeral)
-    {
+    public InteractionHook setEphemeral(boolean ephemeral) {
         this.ephemeral = ephemeral;
         return this;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public RestAction<Message> retrieveOriginal()
-    {
+    public RestAction<Message> retrieveOriginal() {
         JDAImpl jda = (JDAImpl) getJDA();
         Route.CompiledRoute route = Route.Interactions.GET_ORIGINAL.compile(jda.getSelfUser().getApplicationId(), interaction.getToken());
         return onReady(new TriggerRestAction<>(jda, route, (response, request) ->
@@ -148,8 +136,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<Message> sendRequest()
-    {
+    public WebhookMessageActionImpl<Message> sendRequest() {
         Route.CompiledRoute route = Route.Interactions.CREATE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken());
         route = route.withQueryParams("wait", "true");
         Function<DataObject, Message> transform = (json) -> ((JDAImpl) api).getEntityBuilder().createMessage(json, getInteraction().getMessageChannel(), false).withHook(this);
@@ -158,8 +145,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<Message> editRequest(String messageId)
-    {
+    public WebhookMessageUpdateActionImpl<Message> editRequest(String messageId) {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.EDIT_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);
@@ -170,8 +156,7 @@ public class InteractionHookImpl extends AbstractWebhookClient<Message> implemen
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
-    {
+    public RestAction<Void> deleteMessageById(@Nonnull String messageId) {
         if (!"@original".equals(messageId))
             Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Interactions.DELETE_FOLLOWUP.compile(getJDA().getSelfUser().getApplicationId(), interaction.getToken(), messageId);

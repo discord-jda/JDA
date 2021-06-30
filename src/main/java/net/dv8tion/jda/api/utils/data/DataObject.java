@@ -48,15 +48,13 @@ import java.util.function.UnaryOperator;
  *
  * <p>This class is not Thread-Safe.
  */
-public class DataObject implements SerializableData
-{
+public class DataObject implements SerializableData {
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
     private static final ObjectMapper mapper;
     private static final SimpleModule module;
     private static final MapType mapType;
 
-    static
-    {
+    static {
         mapper = new ObjectMapper();
         module = new SimpleModule();
         module.addAbstractTypeMapping(Map.class, HashMap.class);
@@ -67,8 +65,7 @@ public class DataObject implements SerializableData
 
     protected final Map<String, Object> data;
 
-    protected DataObject(@Nonnull Map<String, Object> data)
-    {
+    protected DataObject(@Nonnull Map<String, Object> data) {
         this.data = data;
     }
 
@@ -80,8 +77,7 @@ public class DataObject implements SerializableData
      * @see    #put(String, Object)
      */
     @Nonnull
-    public static DataObject empty()
-    {
+    public static DataObject empty() {
         return new DataObject(new HashMap<>());
     }
 
@@ -97,15 +93,12 @@ public class DataObject implements SerializableData
      * @return A DataObject instance for the provided payload
      */
     @Nonnull
-    public static DataObject fromJson(@Nonnull byte[] data)
-    {
-        try
-        {
+    public static DataObject fromJson(@Nonnull byte[] data) {
+        try {
             Map<String, Object> map = mapper.readValue(data, mapType);
             return new DataObject(map);
         }
-        catch (IOException ex)
-        {
+        catch (IOException ex) {
             throw new ParsingException(ex);
         }
     }
@@ -122,15 +115,12 @@ public class DataObject implements SerializableData
      * @return A DataObject instance for the provided payload
      */
     @Nonnull
-    public static DataObject fromJson(@Nonnull String json)
-    {
-        try
-        {
+    public static DataObject fromJson(@Nonnull String json) {
+        try {
             Map<String, Object> map = mapper.readValue(json, mapType);
             return new DataObject(map);
         }
-        catch (IOException ex)
-        {
+        catch (IOException ex) {
             throw new ParsingException(ex);
         }
     }
@@ -147,15 +137,12 @@ public class DataObject implements SerializableData
      * @return A DataObject instance for the provided payload
      */
     @Nonnull
-    public static DataObject fromJson(@Nonnull InputStream stream)
-    {
-        try
-        {
+    public static DataObject fromJson(@Nonnull InputStream stream) {
+        try {
             Map<String, Object> map = mapper.readValue(stream, mapType);
             return new DataObject(map);
         }
-        catch (IOException ex)
-        {
+        catch (IOException ex) {
             throw new ParsingException(ex);
         }
     }
@@ -172,15 +159,12 @@ public class DataObject implements SerializableData
      * @return A DataObject instance for the provided payload
      */
     @Nonnull
-    public static DataObject fromJson(@Nonnull Reader stream)
-    {
-        try
-        {
+    public static DataObject fromJson(@Nonnull Reader stream) {
+        try {
             Map<String, Object> map = mapper.readValue(stream, mapType);
             return new DataObject(map);
         }
-        catch (IOException ex)
-        {
+        catch (IOException ex) {
             throw new ParsingException(ex);
         }
     }
@@ -199,19 +183,16 @@ public class DataObject implements SerializableData
      *
      * @return A DataObject instance for the provided payload
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
-    public static DataObject fromETF(@Nonnull byte[] data)
-    {
+    public static DataObject fromETF(@Nonnull byte[] data) {
         Checks.notNull(data, "Data");
-        try
-        {
+        try {
             Map<String, Object> map = ExTermDecoder.unpackMap(ByteBuffer.wrap(data));
             return new DataObject(map);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             log.error("Failed to parse ETF data {}", Arrays.toString(data), ex);
             throw new ParsingException(ex);
         }
@@ -225,8 +206,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the specified key is present
      */
-    public boolean hasKey(@Nonnull String key)
-    {
+    public boolean hasKey(@Nonnull String key) {
         return data.containsKey(key);
     }
 
@@ -238,8 +218,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the specified key is null or missing
      */
-    public boolean isNull(@Nonnull String key)
-    {
+    public boolean isNull(@Nonnull String key) {
         return data.get(key) == null;
     }
 
@@ -255,8 +234,7 @@ public class DataObject implements SerializableData
      *
      * @see    net.dv8tion.jda.api.utils.data.DataType#isType(Object) DataType.isType(Object)
      */
-    public boolean isType(@Nonnull String key, @Nonnull DataType type)
-    {
+    public boolean isType(@Nonnull String key, @Nonnull DataType type) {
         return type.isType(data.get(key));
     }
 
@@ -272,8 +250,7 @@ public class DataObject implements SerializableData
      * @return The resolved instance of DataObject for the key
      */
     @Nonnull
-    public DataObject getObject(@Nonnull String key)
-    {
+    public DataObject getObject(@Nonnull String key) {
         return optObject(key).orElseThrow(() -> valueError(key, "DataObject"));
     }
 
@@ -290,15 +267,12 @@ public class DataObject implements SerializableData
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public Optional<DataObject> optObject(@Nonnull String key)
-    {
+    public Optional<DataObject> optObject(@Nonnull String key) {
         Map<String, Object> child = null;
-        try
-        {
+        try {
             child = (Map<String, Object>) get(Map.class, key);
         }
-        catch (ClassCastException ex)
-        {
+        catch (ClassCastException ex) {
             log.error("Unable to extract child data", ex);
         }
         return child == null ? Optional.empty() : Optional.of(new DataObject(child));
@@ -316,8 +290,7 @@ public class DataObject implements SerializableData
      * @return The resolved instance of DataArray for the key
      */
     @Nonnull
-    public DataArray getArray(@Nonnull String key)
-    {
+    public DataArray getArray(@Nonnull String key) {
         return optArray(key).orElseThrow(() -> valueError(key, "DataArray"));
     }
 
@@ -334,15 +307,12 @@ public class DataObject implements SerializableData
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public Optional<DataArray> optArray(@Nonnull String key)
-    {
+    public Optional<DataArray> optArray(@Nonnull String key) {
         List<Object> child = null;
-        try
-        {
+        try {
             child = (List<Object>) get(List.class, key);
         }
-        catch (ClassCastException ex)
-        {
+        catch (ClassCastException ex) {
             log.error("Unable to extract child data", ex);
         }
         return child == null ? Optional.empty() : Optional.of(new DataArray(child));
@@ -357,8 +327,7 @@ public class DataObject implements SerializableData
      * @return {@link java.util.Optional} with a possible value
      */
     @Nonnull
-    public Optional<Object> opt(@Nonnull String key)
-    {
+    public Optional<Object> opt(@Nonnull String key) {
         return Optional.ofNullable(data.get(key));
     }
 
@@ -376,8 +345,7 @@ public class DataObject implements SerializableData
      * @see    #opt(String)
      */
     @Nonnull
-    public Object get(@Nonnull String key)
-    {
+    public Object get(@Nonnull String key) {
         Object value = data.get(key);
         if (value == null)
             throw valueError(key, "any");
@@ -396,8 +364,7 @@ public class DataObject implements SerializableData
      * @return The String value
      */
     @Nonnull
-    public String getString(@Nonnull String key)
-    {
+    public String getString(@Nonnull String key) {
         String value = getString(key, null);
         if (value == null)
             throw valueError(key, "String");
@@ -415,8 +382,7 @@ public class DataObject implements SerializableData
      * @return The String value, or null if provided with null defaultValue
      */
     @Contract("_, !null -> !null")
-    public String getString(@Nonnull String key, @Nullable String defaultValue)
-    {
+    public String getString(@Nonnull String key, @Nullable String defaultValue) {
         String value = get(String.class, key, UnaryOperator.identity(), String::valueOf);
         return value == null ? defaultValue : value;
     }
@@ -432,8 +398,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the value is present and set to true. False if the value is missing or set to false.
      */
-    public boolean getBoolean(@Nonnull String key)
-    {
+    public boolean getBoolean(@Nonnull String key) {
         return getBoolean(key, false);
     }
 
@@ -450,8 +415,7 @@ public class DataObject implements SerializableData
      *
      * @return True, if the value is present and set to true. False if the value is set to false. defaultValue if it is missing.
      */
-    public boolean getBoolean(@Nonnull String key, boolean defaultValue)
-    {
+    public boolean getBoolean(@Nonnull String key, boolean defaultValue) {
         Boolean value = get(Boolean.class, key, Boolean::parseBoolean, null);
         return value == null ? defaultValue : value;
     }
@@ -467,8 +431,7 @@ public class DataObject implements SerializableData
      *
      * @return The long value for the key
      */
-    public long getLong(@Nonnull String key)
-    {
+    public long getLong(@Nonnull String key) {
         Long value = get(Long.class, key, MiscUtil::parseLong, Number::longValue);
         if (value == null)
             throw valueError(key, "long");
@@ -488,8 +451,7 @@ public class DataObject implements SerializableData
      *
      * @return The long value for the key
      */
-    public long getLong(@Nonnull String key, long defaultValue)
-    {
+    public long getLong(@Nonnull String key, long defaultValue) {
         Long value = get(Long.class, key, Long::parseLong, Number::longValue);
         return value == null ? defaultValue : value;
     }
@@ -505,8 +467,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned long value for the key
      */
-    public long getUnsignedLong(@Nonnull String key)
-    {
+    public long getUnsignedLong(@Nonnull String key) {
         Long value = get(Long.class, key, Long::parseUnsignedLong, Number::longValue);
         if (value == null)
             throw valueError(key, "unsigned long");
@@ -526,8 +487,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned long value for the key
      */
-    public long getUnsignedLong(@Nonnull String key, long defaultValue)
-    {
+    public long getUnsignedLong(@Nonnull String key, long defaultValue) {
         Long value = get(Long.class, key, Long::parseUnsignedLong, Number::longValue);
         return value == null ? defaultValue : value;
     }
@@ -543,8 +503,7 @@ public class DataObject implements SerializableData
      *
      * @return The int value for the key
      */
-    public int getInt(@Nonnull String key)
-    {
+    public int getInt(@Nonnull String key) {
         Integer value = get(Integer.class, key, Integer::parseInt, Number::intValue);
         if (value == null)
             throw valueError(key, "int");
@@ -564,8 +523,7 @@ public class DataObject implements SerializableData
      *
      * @return The int value for the key
      */
-    public int getInt(@Nonnull String key, int defaultValue)
-    {
+    public int getInt(@Nonnull String key, int defaultValue) {
         Integer value = get(Integer.class, key, Integer::parseInt, Number::intValue);
         return value == null ? defaultValue : value;
     }
@@ -581,8 +539,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned int value for the key
      */
-    public int getUnsignedInt(@Nonnull String key)
-    {
+    public int getUnsignedInt(@Nonnull String key) {
         Integer value = get(Integer.class, key, Integer::parseUnsignedInt, Number::intValue);
         if (value == null)
             throw valueError(key, "unsigned int");
@@ -602,8 +559,7 @@ public class DataObject implements SerializableData
      *
      * @return The unsigned int value for the key
      */
-    public int getUnsignedInt(@Nonnull String key, int defaultValue)
-    {
+    public int getUnsignedInt(@Nonnull String key, int defaultValue) {
         Integer value = get(Integer.class, key, Integer::parseUnsignedInt, Number::intValue);
         return value == null ? defaultValue : value;
     }
@@ -618,8 +574,7 @@ public class DataObject implements SerializableData
      * @return A DataObject with the removed key
      */
     @Nonnull
-    public DataObject remove(@Nonnull String key)
-    {
+    public DataObject remove(@Nonnull String key) {
         data.remove(key);
         return this;
     }
@@ -633,8 +588,7 @@ public class DataObject implements SerializableData
      * @return A DataObject with the updated value
      */
     @Nonnull
-    public DataObject putNull(@Nonnull String key)
-    {
+    public DataObject putNull(@Nonnull String key) {
         data.put(key, null);
         return this;
     }
@@ -650,8 +604,7 @@ public class DataObject implements SerializableData
      * @return A DataObject with the updated value
      */
     @Nonnull
-    public DataObject put(@Nonnull String key, @Nullable Object value)
-    {
+    public DataObject put(@Nonnull String key, @Nullable Object value) {
         if (value instanceof SerializableData)
             data.put(key, ((SerializableData) value).toData().data);
         else if (value instanceof SerializableArray)
@@ -667,8 +620,7 @@ public class DataObject implements SerializableData
      * @return {@link java.util.Collection} for all values
      */
     @Nonnull
-    public Collection<Object> values()
-    {
+    public Collection<Object> values() {
         return data.values();
     }
 
@@ -678,8 +630,7 @@ public class DataObject implements SerializableData
      * @return {@link Set} of keys
      */
     @Nonnull
-    public Set<String> keys()
-    {
+    public Set<String> keys() {
         return data.keySet();
     }
 
@@ -689,16 +640,13 @@ public class DataObject implements SerializableData
      * @return byte array containing the JSON representation of this object
      */
     @Nonnull
-    public byte[] toJson()
-    {
-        try
-        {
+    public byte[] toJson() {
+        try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             mapper.writeValue(outputStream, data);
             return outputStream.toByteArray();
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
@@ -708,40 +656,33 @@ public class DataObject implements SerializableData
      *
      * @return byte array containing the encoded ETF term
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
-    public byte[] toETF()
-    {
+    public byte[] toETF() {
         ByteBuffer buffer = ExTermEncoder.pack(data);
         return Arrays.copyOfRange(buffer.array(), buffer.arrayOffset(), buffer.arrayOffset() + buffer.limit());
     }
 
     @Override
-    public String toString()
-    {
-        try
-        {
+    public String toString() {
+        try {
             return mapper.writeValueAsString(data);
         }
-        catch (JsonProcessingException e)
-        {
+        catch (JsonProcessingException e) {
             throw new ParsingException(e);
         }
     }
 
     @Nonnull
-    public String toPrettyString()
-    {
+    public String toPrettyString() {
         DefaultPrettyPrinter.Indenter indent = new DefaultIndenter("    ", DefaultIndenter.SYS_LF);
         DefaultPrettyPrinter printer = new DefaultPrettyPrinter();
         printer.withObjectIndenter(indent).withArrayIndenter(indent);
-        try
-        {
+        try {
             return mapper.writer(printer).writeValueAsString(data);
         }
-        catch (JsonProcessingException e)
-        {
+        catch (JsonProcessingException e) {
             throw new ParsingException(e);
         }
     }
@@ -752,32 +693,27 @@ public class DataObject implements SerializableData
      * @return The resulting map
      */
     @Nonnull
-    public Map<String, Object> toMap()
-    {
+    public Map<String, Object> toMap() {
         return data;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return this;
     }
 
-    private ParsingException valueError(String key, String expectedType)
-    {
+    private ParsingException valueError(String key, String expectedType) {
         return new ParsingException("Unable to resolve value with key " + key + " to type " + expectedType + ": " + data.get(key));
     }
 
     @Nullable
-    private <T> T get(@Nonnull Class<T> type, @Nonnull String key)
-    {
+    private <T> T get(@Nonnull Class<T> type, @Nonnull String key) {
         return get(type, key, null, null);
     }
 
     @Nullable
-    private <T> T get(@Nonnull Class<T> type, @Nonnull String key, @Nullable Function<String, T> stringParse, @Nullable Function<Number, T> numberParse)
-    {
+    private <T> T get(@Nonnull Class<T> type, @Nonnull String key, @Nullable Function<String, T> stringParse, @Nullable Function<Number, T> numberParse) {
         Object value = data.get(key);
         if (value == null)
             return null;
@@ -792,6 +728,6 @@ public class DataObject implements SerializableData
             return stringParse.apply((String) value);
 
         throw new ParsingException(Helpers.format("Cannot parse value for %s into type %s: %s instance of %s",
-                                                      key, type.getSimpleName(), value, value.getClass().getSimpleName()));
+                key, type.getSimpleName(), value, value.getClass().getSimpleName()));
     }
 }

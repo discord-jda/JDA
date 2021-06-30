@@ -22,23 +22,19 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-public class ApplicationCommandUpdateHandler extends SocketHandler
-{
-    public ApplicationCommandUpdateHandler(JDAImpl api)
-    {
+public class ApplicationCommandUpdateHandler extends SocketHandler {
+    public ApplicationCommandUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         /* {"op":0,"s":7,"t":"APPLICATION_COMMAND_UPDATE","d":{"name":"ping","guild_id":"163772719836430337","description":"Test command","id":"819569491162955796","version":"820389460008108083","application_id":"420321485757087746"}} */
         long guildId = content.getUnsignedLong("guild_id");
         if (api.getGuildSetupController().isLocked(guildId))
             return guildId;
         Guild guild = api.getGuildById(guildId);
-        if (guildId != 0L && guild == null)
-        {
+        if (guildId != 0L && guild == null) {
             EventCache.LOG.debug("Received APPLICATION_COMMAND_UPDATE for Guild that isn't cache. GuildId: {}", guildId);
             api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
@@ -46,8 +42,8 @@ public class ApplicationCommandUpdateHandler extends SocketHandler
 
         Command command = new Command(api, guild, content);
         api.handleEvent(
-            new ApplicationCommandUpdateEvent(api, responseNumber,
-                command, guild));
+                new ApplicationCommandUpdateEvent(api, responseNumber,
+                        command, guild));
         return null;
     }
 }

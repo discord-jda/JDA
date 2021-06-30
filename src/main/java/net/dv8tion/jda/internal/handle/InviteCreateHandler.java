@@ -28,22 +28,18 @@ import net.dv8tion.jda.internal.entities.InviteImpl;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
-public class InviteCreateHandler extends SocketHandler
-{
-    public InviteCreateHandler(JDAImpl api)
-    {
+public class InviteCreateHandler extends SocketHandler {
+    public InviteCreateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
         Guild realGuild = getJDA().getGuildById(guildId);
-        if (realGuild == null)
-        {
+        if (realGuild == null) {
             EventCache.LOG.debug("Caching INVITE_CREATE for unknown guild with id {}", guildId);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
@@ -51,8 +47,7 @@ public class InviteCreateHandler extends SocketHandler
 
         long channelId = content.getUnsignedLong("channel_id");
         GuildChannel realChannel = realGuild.getGuildChannelById(channelId);
-        if (realChannel == null)
-        {
+        if (realChannel == null) {
             EventCache.LOG.debug("Caching INVITE_CREATE for unknown channel with id {} in guild with id {}", channelId, guildId);
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             return null;
@@ -76,9 +71,9 @@ public class InviteCreateHandler extends SocketHandler
 
         Invite invite = new InviteImpl(getJDA(), code, expanded, inviter, maxAge, maxUses, temporary, creationTime, 0, channel, guild, null, Invite.InviteType.GUILD);
         getJDA().handleEvent(
-            new GuildInviteCreateEvent(
-                getJDA(), responseNumber,
-                invite, realChannel));
+                new GuildInviteCreateEvent(
+                        getJDA(), responseNumber,
+                        invite, realChannel));
         return null;
     }
 }

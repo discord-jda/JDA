@@ -28,37 +28,31 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 
-public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
-{
+public class StageChannelImpl extends VoiceChannelImpl implements StageChannel {
     private StageInstance instance;
 
-    public StageChannelImpl(long id, GuildImpl guild)
-    {
+    public StageChannelImpl(long id, GuildImpl guild) {
         super(id, guild);
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.STAGE;
     }
 
     @Nullable
     @Override
-    public StageInstance getStageInstance()
-    {
+    public StageInstance getStageInstance() {
         return instance;
     }
 
     @Nonnull
     @Override
-    public StageInstanceAction createStageInstance(@Nonnull String topic)
-    {
+    public StageInstanceAction createStageInstance(@Nonnull String topic) {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(this);
         EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
-        for (Permission perm : required)
-        {
+        for (Permission perm : required) {
             if (!permissions.contains(perm))
                 throw new InsufficientPermissionException(this, perm, "You must be a stage moderator to create a stage instance! Missing Permission: " + perm);
         }
@@ -66,8 +60,7 @@ public class StageChannelImpl extends VoiceChannelImpl implements StageChannel
         return new StageInstanceActionImpl(this).setTopic(topic);
     }
 
-    public StageChannelImpl setStageInstance(StageInstance instance)
-    {
+    public StageChannelImpl setStageInstance(StageInstance instance) {
         this.instance = instance;
         return this;
     }

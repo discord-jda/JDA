@@ -32,8 +32,7 @@ import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
 import java.util.EnumSet;
 
-public class StageInstanceImpl implements StageInstance
-{
+public class StageInstanceImpl implements StageInstance {
     private final long id;
     private StageChannel channel;
     private StageInstanceManager manager;
@@ -42,29 +41,25 @@ public class StageInstanceImpl implements StageInstance
     private PrivacyLevel privacyLevel;
     private boolean discoverable;
 
-    public StageInstanceImpl(long id, StageChannel channel)
-    {
+    public StageInstanceImpl(long id, StageChannel channel) {
         this.id = id;
         this.channel = channel;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return getChannel().getGuild();
     }
 
     @Nonnull
     @Override
-    public StageChannel getChannel()
-    {
+    public StageChannel getChannel() {
         StageChannel real = channel.getJDA().getStageChannelById(channel.getIdLong());
         if (real != null)
             channel = real;
@@ -73,28 +68,24 @@ public class StageInstanceImpl implements StageInstance
 
     @Nonnull
     @Override
-    public String getTopic()
-    {
+    public String getTopic() {
         return topic;
     }
 
     @Nonnull
     @Override
-    public PrivacyLevel getPrivacyLevel()
-    {
+    public PrivacyLevel getPrivacyLevel() {
         return privacyLevel;
     }
 
     @Override
-    public boolean isDiscoverable()
-    {
+    public boolean isDiscoverable() {
         return discoverable;
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> delete()
-    {
+    public RestAction<Void> delete() {
         checkPermissions();
         Route.CompiledRoute route = Route.StageInstances.DELETE_INSTANCE.compile(channel.getId());
         return new RestActionImpl<>(channel.getJDA(), route);
@@ -102,8 +93,7 @@ public class StageInstanceImpl implements StageInstance
 
     @Nonnull
     @Override
-    public RestAction<Void> requestToSpeak()
-    {
+    public RestAction<Void> requestToSpeak() {
         Guild guild = getGuild();
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
         DataObject body = DataObject.empty().put("channel_id", channel.getId());
@@ -120,8 +110,7 @@ public class StageInstanceImpl implements StageInstance
 
     @Nonnull
     @Override
-    public RestAction<Void> cancelRequestToSpeak()
-    {
+    public RestAction<Void> cancelRequestToSpeak() {
         Guild guild = getGuild();
         Route.CompiledRoute route = Route.Guilds.UPDATE_VOICE_STATE.compile(guild.getId(), "@me");
         DataObject body = DataObject.empty()
@@ -136,38 +125,32 @@ public class StageInstanceImpl implements StageInstance
 
     @Nonnull
     @Override
-    public StageInstanceManager getManager()
-    {
+    public StageInstanceManager getManager() {
         checkPermissions();
         if (manager == null)
             manager = new StageInstanceManagerImpl(this);
         return manager;
     }
 
-    public StageInstanceImpl setTopic(String topic)
-    {
+    public StageInstanceImpl setTopic(String topic) {
         this.topic = topic;
         return this;
     }
 
-    public StageInstanceImpl setPrivacyLevel(PrivacyLevel privacyLevel)
-    {
+    public StageInstanceImpl setPrivacyLevel(PrivacyLevel privacyLevel) {
         this.privacyLevel = privacyLevel;
         return this;
     }
 
-    public StageInstanceImpl setDiscoverable(boolean discoverable)
-    {
+    public StageInstanceImpl setDiscoverable(boolean discoverable) {
         this.discoverable = discoverable;
         return this;
     }
 
-    private void checkPermissions()
-    {
+    private void checkPermissions() {
         EnumSet<Permission> permissions = getGuild().getSelfMember().getPermissions(getChannel());
         EnumSet<Permission> required = EnumSet.of(Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
-        for (Permission perm : required)
-        {
+        for (Permission perm : required) {
             if (!permissions.contains(perm))
                 throw new InsufficientPermissionException(getChannel(), perm, "You must be a stage moderator to manage a stage instance! Missing Permission: " + perm);
         }

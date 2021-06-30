@@ -26,13 +26,11 @@ import java.time.OffsetDateTime;
  * Indicates that JDA has fully disconnected from Discord and will not attempt to reconnect again.
  * <br>At this stage all internal cache is invalid!
  */
-public class ShutdownEvent extends Event
-{
+public class ShutdownEvent extends Event {
     protected final OffsetDateTime shutdownTime;
     protected final int code;
 
-    public ShutdownEvent(@Nonnull JDA api, @Nonnull OffsetDateTime shutdownTime, int code)
-    {
+    public ShutdownEvent(@Nonnull JDA api, @Nonnull OffsetDateTime shutdownTime, int code) {
         super(api);
         this.shutdownTime = shutdownTime;
         this.code = code;
@@ -45,8 +43,7 @@ public class ShutdownEvent extends Event
      *         the point in time when the connection was dropped.
      */
     @Nonnull
-    public OffsetDateTime getTimeShutdown()
-    {
+    public OffsetDateTime getTimeShutdown() {
         return shutdownTime;
     }
 
@@ -59,8 +56,7 @@ public class ShutdownEvent extends Event
      * @return Possibly-null {@link net.dv8tion.jda.api.requests.CloseCode CloseCode}
      */
     @Nullable
-    public CloseCode getCloseCode()
-    {
+    public CloseCode getCloseCode() {
         return CloseCode.from(code);
     }
 
@@ -70,8 +66,7 @@ public class ShutdownEvent extends Event
      *
      * @return int close code of the Server Close-Frame
      */
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
 }

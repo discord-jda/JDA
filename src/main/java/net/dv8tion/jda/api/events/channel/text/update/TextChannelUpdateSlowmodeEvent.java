@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code slowmode}
  */
-public class TextChannelUpdateSlowmodeEvent extends GenericTextChannelUpdateEvent<Integer>
-{
+public class TextChannelUpdateSlowmodeEvent extends GenericTextChannelUpdateEvent<Integer> {
     public static final String IDENTIFIER = "slowmode";
 
-    public TextChannelUpdateSlowmodeEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, int oldSlowmode)
-    {
+    public TextChannelUpdateSlowmodeEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, int oldSlowmode) {
         super(api, responseNumber, channel, oldSlowmode, channel.getSlowmode(), IDENTIFIER);
     }
 
@@ -41,8 +39,7 @@ public class TextChannelUpdateSlowmodeEvent extends GenericTextChannelUpdateEven
      *
      * @return The old slowmode.
      */
-    public int getOldSlowmode()
-    {
+    public int getOldSlowmode() {
         return getOldValue();
     }
 
@@ -51,8 +48,7 @@ public class TextChannelUpdateSlowmodeEvent extends GenericTextChannelUpdateEven
      *
      * @return The new slowmode.
      */
-    public int getNewSlowmode()
-    {
+    public int getNewSlowmode() {
         return getNewValue();
     }
 }

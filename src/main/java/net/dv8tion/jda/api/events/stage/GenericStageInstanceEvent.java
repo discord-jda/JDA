@@ -29,12 +29,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any StageInstanceEvent.
  */
-public abstract class GenericStageInstanceEvent extends GenericGuildEvent
-{
+public abstract class GenericStageInstanceEvent extends GenericGuildEvent {
     protected final StageInstance instance;
 
-    public GenericStageInstanceEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance)
-    {
+    public GenericStageInstanceEvent(@Nonnull JDA api, long responseNumber, @Nonnull StageInstance stageInstance) {
         super(api, responseNumber, stageInstance.getGuild());
         this.instance = stageInstance;
     }
@@ -45,8 +43,7 @@ public abstract class GenericStageInstanceEvent extends GenericGuildEvent
      * @return The {@link StageInstance}
      */
     @Nonnull
-    public StageInstance getInstance()
-    {
+    public StageInstance getInstance() {
         return instance;
     }
 
@@ -56,8 +53,7 @@ public abstract class GenericStageInstanceEvent extends GenericGuildEvent
      * @return The StageChannel
      */
     @Nonnull
-    public StageChannel getChannel()
-    {
+    public StageChannel getChannel() {
         return instance.getChannel();
     }
 }

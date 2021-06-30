@@ -30,16 +30,14 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect any category update event
  */
-public abstract class GenericCategoryUpdateEvent<T> extends GenericCategoryEvent implements UpdateEvent<Category, T>
-{
+public abstract class GenericCategoryUpdateEvent<T> extends GenericCategoryEvent implements UpdateEvent<Category, T> {
     protected final T previous;
     protected final T next;
     protected final String identifier;
 
     public GenericCategoryUpdateEvent(
-        @Nonnull JDA api, long responseNumber, @Nonnull Category category,
-        @Nullable T previous, @Nullable T next, @Nonnull String identifier)
-    {
+            @Nonnull JDA api, long responseNumber, @Nonnull Category category,
+            @Nullable T previous, @Nullable T next, @Nonnull String identifier) {
         super(api, responseNumber, category);
         this.previous = previous;
         this.next = next;
@@ -48,35 +46,30 @@ public abstract class GenericCategoryUpdateEvent<T> extends GenericCategoryEvent
 
     @Nonnull
     @Override
-    public Category getEntity()
-    {
+    public Category getEntity() {
         return getCategory();
     }
 
     @Nonnull
     @Override
-    public String getPropertyIdentifier()
-    {
+    public String getPropertyIdentifier() {
         return identifier;
     }
 
     @Nullable
     @Override
-    public T getOldValue()
-    {
+    public T getOldValue() {
         return previous;
     }
 
     @Nullable
     @Override
-    public T getNewValue()
-    {
+    public T getNewValue() {
         return next;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "CategoryUpdate[" + getPropertyIdentifier() + "](" + getOldValue() + "->" + getNewValue() + ')';
     }
 }

@@ -37,11 +37,10 @@ import java.util.regex.Pattern;
  * <br>A visual breakdown of an Embed and how it relates to this class is available at
  * <a href="https://raw.githubusercontent.com/DV8FromTheWorld/JDA/assets/assets/docs/embeds/01-Overview.png" target="_blank">Embed Overview</a>.
  *
- * @since  3.0
+ * @since 3.0
  * @author John A. Grosh
  */
-public class EmbedBuilder
-{
+public class EmbedBuilder {
     public final static String ZERO_WIDTH_SPACE = "\u200E";
     public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
 
@@ -60,12 +59,11 @@ public class EmbedBuilder
      * These can then be sent to a channel using {@link net.dv8tion.jda.api.entities.MessageChannel#sendMessageEmbeds(MessageEmbed, MessageEmbed...)}.
      * <br>Every part of an embed can be removed or cleared by providing {@code null} to the setter method.
      */
-    public EmbedBuilder() { }
+    public EmbedBuilder() {
+    }
 
-    public EmbedBuilder(@Nullable EmbedBuilder builder)
-    {
-        if (builder != null)
-        {
+    public EmbedBuilder(@Nullable EmbedBuilder builder) {
+        if (builder != null) {
             setDescription(builder.description.toString());
             this.fields.addAll(builder.fields);
             this.url = builder.url;
@@ -78,17 +76,15 @@ public class EmbedBuilder
             this.image = builder.image;
         }
     }
-    
+
     /**
      * Creates an EmbedBuilder using fields in an existing embed.
      *
      * @param  embed
      *         the existing embed
      */
-    public EmbedBuilder(@Nullable MessageEmbed embed)
-    {
-        if(embed != null)
-        {
+    public EmbedBuilder(@Nullable MessageEmbed embed) {
+        if (embed != null) {
             setDescription(embed.getDescription());
             this.url = embed.getUrl();
             this.title = embed.getTitle();
@@ -113,8 +109,7 @@ public class EmbedBuilder
      * @return the built, sendable {@link net.dv8tion.jda.api.entities.MessageEmbed}
      */
     @Nonnull
-    public MessageEmbed build()
-    {
+    public MessageEmbed build() {
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty embed!");
         if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
@@ -134,8 +129,7 @@ public class EmbedBuilder
      * @return The current EmbedBuilder with default values
      */
     @Nonnull
-    public EmbedBuilder clear()
-    {
+    public EmbedBuilder clear() {
         description.setLength(0);
         fields.clear();
         url = null;
@@ -154,17 +148,16 @@ public class EmbedBuilder
      *
      * @return true if the embed is empty and cannot be built
      */
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return title == null
-            && timestamp == null
-            && thumbnail == null
-            && author == null
-            && footer == null
-            && image == null
-            && color == Role.DEFAULT_COLOR_RAW
-            && description.length() == 0
-            && fields.isEmpty();
+                && timestamp == null
+                && thumbnail == null
+                && author == null
+                && footer == null
+                && image == null
+                && color == Role.DEFAULT_COLOR_RAW
+                && description.length() == 0
+                && fields.isEmpty();
     }
 
     /**
@@ -173,11 +166,9 @@ public class EmbedBuilder
      *
      * @return length of the current builder state
      */
-    public int length()
-    {
+    public int length() {
         int length = description.length();
-        synchronized (fields)
-        {
+        synchronized (fields) {
             length = fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
         }
         if (title != null)
@@ -197,8 +188,7 @@ public class EmbedBuilder
      *
      * @see    MessageEmbed#EMBED_MAX_LENGTH_BOT
      */
-    public boolean isValidLength()
-    {
+    public boolean isValidLength() {
         final int length = length();
         return length <= MessageEmbed.EMBED_MAX_LENGTH_BOT;
     }
@@ -221,11 +211,10 @@ public class EmbedBuilder
      * @return the builder after the title has been set
      */
     @Nonnull
-    public EmbedBuilder setTitle(@Nullable String title)
-    {
+    public EmbedBuilder setTitle(@Nullable String title) {
         return setTitle(title, null);
     }
-    
+
     /**
      * Sets the Title of the embed.
      * <br>You can provide {@code null} as url if no url should be used.
@@ -248,15 +237,12 @@ public class EmbedBuilder
      * @return the builder after the title has been set
      */
     @Nonnull
-    public EmbedBuilder setTitle(@Nullable String title, @Nullable String url)
-    {
-        if (title == null)
-        {
+    public EmbedBuilder setTitle(@Nullable String title, @Nullable String url) {
+        if (title == null) {
             this.title = null;
             this.url = null;
         }
-        else
-        {
+        else {
             Checks.notEmpty(title, "Title");
             Checks.check(title.length() <= MessageEmbed.TITLE_MAX_LENGTH, "Title cannot be longer than %d characters.", MessageEmbed.TITLE_MAX_LENGTH);
             if (Helpers.isBlank(url))
@@ -277,8 +263,7 @@ public class EmbedBuilder
      * @return StringBuilder with current description context
      */
     @Nonnull
-    public StringBuilder getDescriptionBuilder()
-    {
+    public StringBuilder getDescriptionBuilder() {
         return description;
     }
 
@@ -296,8 +281,7 @@ public class EmbedBuilder
      * @return the builder after the description has been set
      */
     @Nonnull
-    public final EmbedBuilder setDescription(@Nullable CharSequence description)
-    {
+    public final EmbedBuilder setDescription(@Nullable CharSequence description) {
         this.description.setLength(0);
         if (description != null && description.length() >= 1)
             appendDescription(description);
@@ -321,8 +305,7 @@ public class EmbedBuilder
      * @return the builder after the description has been set
      */
     @Nonnull
-    public EmbedBuilder appendDescription(@Nonnull CharSequence description)
-    {
+    public EmbedBuilder appendDescription(@Nonnull CharSequence description) {
         Checks.notNull(description, "description");
         Checks.check(this.description.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
                 "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
@@ -344,49 +327,39 @@ public class EmbedBuilder
      * @return the builder after the timestamp has been set
      */
     @Nonnull
-    public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal)
-    {
-        if (temporal == null)
-        {
+    public EmbedBuilder setTimestamp(@Nullable TemporalAccessor temporal) {
+        if (temporal == null) {
             this.timestamp = null;
         }
-        else if (temporal instanceof OffsetDateTime)
-        {
+        else if (temporal instanceof OffsetDateTime) {
             this.timestamp = (OffsetDateTime) temporal;
         }
-        else
-        {
+        else {
             ZoneOffset offset;
-            try
-            {
+            try {
                 offset = ZoneOffset.from(temporal);
             }
-            catch (DateTimeException ignore)
-            {
+            catch (DateTimeException ignore) {
                 offset = ZoneOffset.UTC;
             }
-            try
-            {
+            try {
                 LocalDateTime ldt = LocalDateTime.from(temporal);
                 this.timestamp = OffsetDateTime.of(ldt, offset);
             }
-            catch (DateTimeException ignore)
-            {
-                try
-                {
+            catch (DateTimeException ignore) {
+                try {
                     Instant instant = Instant.from(temporal);
                     this.timestamp = OffsetDateTime.ofInstant(instant, offset);
                 }
-                catch (DateTimeException ex)
-                {
+                catch (DateTimeException ex) {
                     throw new DateTimeException("Unable to obtain OffsetDateTime from TemporalAccessor: " +
                             temporal + " of type " + temporal.getClass().getName(), ex);
                 }
             }
         }
-        return this; 
+        return this;
     }
-    
+
     /**
      * Sets the Color of the embed.
      *
@@ -401,8 +374,7 @@ public class EmbedBuilder
      * @see    #setColor(int)
      */
     @Nonnull
-    public EmbedBuilder setColor(@Nullable Color color)
-    {
+    public EmbedBuilder setColor(@Nullable Color color) {
         this.color = color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB();
         return this;
     }
@@ -420,12 +392,11 @@ public class EmbedBuilder
      * @see    #setColor(java.awt.Color)
      */
     @Nonnull
-    public EmbedBuilder setColor(int color)
-    {
+    public EmbedBuilder setColor(int color) {
         this.color = color;
         return this;
     }
-    
+
     /**
      * Sets the Thumbnail of the embed.
      *
@@ -458,14 +429,11 @@ public class EmbedBuilder
      * @return the builder after the thumbnail has been set
      */
     @Nonnull
-    public EmbedBuilder setThumbnail(@Nullable String url)
-    {
-        if (url == null)
-        {
+    public EmbedBuilder setThumbnail(@Nullable String url) {
+        if (url == null) {
             this.thumbnail = null;
         }
-        else
-        {
+        else {
             urlCheck(url);
             this.thumbnail = new MessageEmbed.Thumbnail(url, null, 0, 0);
         }
@@ -506,20 +474,17 @@ public class EmbedBuilder
      * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(java.io.File, String, net.dv8tion.jda.api.utils.AttachmentOption...) MessageChannel.sendFile(...)
      */
     @Nonnull
-    public EmbedBuilder setImage(@Nullable String url)
-    {
-        if (url == null)
-        {
+    public EmbedBuilder setImage(@Nullable String url) {
+        if (url == null) {
             this.image = null;
         }
-        else
-        {
+        else {
             urlCheck(url);
             this.image = new MessageEmbed.ImageInfo(url, null, 0, 0);
         }
         return this;
     }
-    
+
     /**
      * Sets the Author of the embed. The author appears in the top left of the embed and can have a small
      * image beside it along with the author's name being made clickable by way of providing a url.
@@ -536,8 +501,7 @@ public class EmbedBuilder
      * @return the builder after the author has been set
      */
     @Nonnull
-    public EmbedBuilder setAuthor(@Nullable String name)
-    {
+    public EmbedBuilder setAuthor(@Nullable String name) {
         return setAuthor(name, null, null);
     }
 
@@ -563,8 +527,7 @@ public class EmbedBuilder
      * @return the builder after the author has been set
      */
     @Nonnull
-    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url)
-    {
+    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url) {
         return setAuthor(name, url, null);
     }
 
@@ -608,16 +571,13 @@ public class EmbedBuilder
      * @return the builder after the author has been set
      */
     @Nonnull
-    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url, @Nullable String iconUrl)
-    {
+    public EmbedBuilder setAuthor(@Nullable String name, @Nullable String url, @Nullable String iconUrl) {
         //We only check if the name is null because its presence is what determines if the
         // the author will appear in the embed.
-        if (name == null)
-        {
+        if (name == null) {
             this.author = null;
         }
-        else
-        {
+        else {
             Checks.check(name.length() <= MessageEmbed.AUTHOR_MAX_LENGTH, "Name cannot be longer than %d characters.", MessageEmbed.AUTHOR_MAX_LENGTH);
             urlCheck(url);
             urlCheck(iconUrl);
@@ -640,8 +600,7 @@ public class EmbedBuilder
      * @return the builder after the footer has been set
      */
     @Nonnull
-    public EmbedBuilder setFooter(@Nullable String text)
-    {
+    public EmbedBuilder setFooter(@Nullable String text) {
         return setFooter(text, null);
     }
 
@@ -680,16 +639,13 @@ public class EmbedBuilder
      * @return the builder after the footer has been set
      */
     @Nonnull
-    public EmbedBuilder setFooter(@Nullable String text, @Nullable String iconUrl)
-    {
+    public EmbedBuilder setFooter(@Nullable String text, @Nullable String iconUrl) {
         //We only check if the text is null because its presence is what determines if the
         // footer will appear in the embed.
-        if (text == null)
-        {
+        if (text == null) {
             this.footer = null;
         }
-        else
-        {
+        else {
             Checks.check(text.length() <= MessageEmbed.TEXT_MAX_LENGTH, "Text cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
@@ -700,18 +656,17 @@ public class EmbedBuilder
     /**
      * Copies the provided Field into a new Field for this builder.
      * <br>For additional documentation, see {@link #addField(String, String, boolean)}
-     * 
+     *
      * @param  field
      *         the field object to add
      *
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addField(@Nullable MessageEmbed.Field field)
-    {
+    public EmbedBuilder addField(@Nullable MessageEmbed.Field field) {
         return field == null ? this : addField(field.getName(), field.getValue(), field.isInline());
     }
-    
+
     /**
      * Adds a Field to the embed.
      *
@@ -738,14 +693,13 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addField(@Nullable String name, @Nullable String value, boolean inline)
-    {
+    public EmbedBuilder addField(@Nullable String name, @Nullable String value, boolean inline) {
         if (name == null && value == null)
             return this;
         this.fields.add(new MessageEmbed.Field(name, value, inline));
         return this;
     }
-    
+
     /**
      * Adds a blank (empty) Field to the embed.
      *
@@ -758,8 +712,7 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder addBlankField(boolean inline)
-    {
+    public EmbedBuilder addBlankField(boolean inline) {
         this.fields.add(new MessageEmbed.Field(ZERO_WIDTH_SPACE, ZERO_WIDTH_SPACE, inline));
         return this;
     }
@@ -773,12 +726,11 @@ public class EmbedBuilder
      * @return the builder after the field has been added
      */
     @Nonnull
-    public EmbedBuilder clearFields()
-    {
+    public EmbedBuilder clearFields() {
         this.fields.clear();
         return this;
     }
-    
+
     /**
      * <b>Modifiable</b> list of {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbed} Fields that the builder will
      * use for {@link #build()}.
@@ -788,15 +740,12 @@ public class EmbedBuilder
      * @return Mutable List of {@link net.dv8tion.jda.api.entities.MessageEmbed.Field Fields}
      */
     @Nonnull
-    public List<MessageEmbed.Field> getFields()
-    {
+    public List<MessageEmbed.Field> getFields() {
         return fields;
     }
 
-    private void urlCheck(@Nullable String url)
-    {
-        if (url != null)
-        {
+    private void urlCheck(@Nullable String url) {
+        if (url != null) {
             Checks.check(url.length() <= MessageEmbed.URL_MAX_LENGTH, "URL cannot be longer than %d characters.", MessageEmbed.URL_MAX_LENGTH);
             Checks.check(URL_PATTERN.matcher(url).matches(), "URL must be a valid http(s) or attachment url.");
         }

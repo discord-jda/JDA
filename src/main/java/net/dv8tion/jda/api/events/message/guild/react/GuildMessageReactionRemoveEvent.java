@@ -32,10 +32,8 @@ import javax.annotation.Nullable;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  */
-public class GuildMessageReactionRemoveEvent extends GenericGuildMessageReactionEvent
-{
-    public GuildMessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
-    {
+public class GuildMessageReactionRemoveEvent extends GenericGuildMessageReactionEvent {
+    public GuildMessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nullable Member member, @Nonnull MessageReaction reaction, long userId) {
         super(api, responseNumber, member, reaction, userId);
     }
 }

@@ -34,8 +34,7 @@ import java.util.List;
  *
  * @see CacheView CacheView for details on Efficient Memory Usage
  */
-public interface UnifiedMemberCacheView extends CacheView<Member>
-{
+public interface UnifiedMemberCacheView extends CacheView<Member> {
     /**
      * Retrieves all member represented by the provided ID.
      *
@@ -60,8 +59,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      * @return Possibly-empty unmodifiable list of member for the specified ID
      */
     @Nonnull
-    default List<Member> getElementsById(@Nonnull String id)
-    {
+    default List<Member> getElementsById(@Nonnull String id) {
         return getElementsById(MiscUtil.parseSnowflake(id));
     }
 
@@ -95,8 +93,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      * @return Immutable list of members with the given username
      */
     @Nonnull
-    default List<Member> getElementsByUsername(@Nonnull String name)
-    {
+    default List<Member> getElementsByUsername(@Nonnull String name) {
         return getElementsByUsername(name, false);
     }
 
@@ -128,8 +125,7 @@ public interface UnifiedMemberCacheView extends CacheView<Member>
      * @return Immutable list of members with the given nickname
      */
     @Nonnull
-    default List<Member> getElementsByNickname(@Nullable String name)
-    {
+    default List<Member> getElementsByNickname(@Nullable String name) {
         return getElementsByNickname(name, false);
     }
 

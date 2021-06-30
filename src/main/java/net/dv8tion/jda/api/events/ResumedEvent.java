@@ -25,10 +25,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to marks the continuation of event flow stopped by the {@link net.dv8tion.jda.api.events.DisconnectEvent DisconnectEvent}.
  */
-public class ResumedEvent extends Event
-{
-    public ResumedEvent(@Nonnull JDA api, long responseNumber)
-    {
+public class ResumedEvent extends Event {
+    public ResumedEvent(@Nonnull JDA api, long responseNumber) {
         super(api, responseNumber);
     }
 }

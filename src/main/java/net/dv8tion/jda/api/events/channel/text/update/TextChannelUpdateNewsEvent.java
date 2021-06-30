@@ -29,29 +29,25 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code news}
  *
- * @since  4.2.1
+ * @since 4.2.1
  */
 @SuppressWarnings("ConstantConditions")
-public class TextChannelUpdateNewsEvent extends GenericTextChannelUpdateEvent<Boolean>
-{
+public class TextChannelUpdateNewsEvent extends GenericTextChannelUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "news";
 
-    public TextChannelUpdateNewsEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel)
-    {
+    public TextChannelUpdateNewsEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel) {
         super(api, responseNumber, channel, !channel.isNews(), channel.isNews(), IDENTIFIER);
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
-    {
+    public Boolean getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
-    {
+    public Boolean getNewValue() {
         return super.getNewValue();
     }
 }

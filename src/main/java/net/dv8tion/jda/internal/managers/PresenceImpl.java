@@ -33,10 +33,9 @@ import java.util.Collections;
  * The Presence associated with the provided JDA instance
  * <br><b>Note that this does not automatically handle the 5/60 second rate limit!</b>
  *
- * @since  3.0
+ * @since 3.0
  */
-public class PresenceImpl implements Presence
-{
+public class PresenceImpl implements Presence {
     private final JDAImpl api;
     private boolean idle = false;
     private Activity activity = null;
@@ -48,8 +47,7 @@ public class PresenceImpl implements Presence
      * @param jda
      *        The not-null JDAImpl instance to use
      */
-    public PresenceImpl(JDAImpl jda)
-    {
+    public PresenceImpl(JDAImpl jda) {
         this.api = jda;
     }
 
@@ -59,27 +57,23 @@ public class PresenceImpl implements Presence
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public OnlineStatus getStatus()
-    {
+    public OnlineStatus getStatus() {
         return status;
     }
 
     @Override
-    public Activity getActivity()
-    {
+    public Activity getActivity() {
         return activity;
     }
 
     @Override
-    public boolean isIdle()
-    {
+    public boolean isIdle() {
         return idle;
     }
 
@@ -88,26 +82,22 @@ public class PresenceImpl implements Presence
 
 
     @Override
-    public void setStatus(OnlineStatus status)
-    {
+    public void setStatus(OnlineStatus status) {
         setPresence(status, activity, idle);
     }
 
     @Override
-    public void setActivity(Activity game)
-    {
+    public void setActivity(Activity game) {
         setPresence(status, game);
     }
 
     @Override
-    public void setIdle(boolean idle)
-    {
+    public void setIdle(boolean idle) {
         setPresence(status, idle);
     }
 
     @Override
-    public void setPresence(OnlineStatus status, Activity activity, boolean idle)
-    {
+    public void setPresence(OnlineStatus status, Activity activity, boolean idle) {
         Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
@@ -120,20 +110,17 @@ public class PresenceImpl implements Presence
     }
 
     @Override
-    public void setPresence(OnlineStatus status, Activity activity)
-    {
+    public void setPresence(OnlineStatus status, Activity activity) {
         setPresence(status, activity, idle);
     }
 
     @Override
-    public void setPresence(OnlineStatus status, boolean idle)
-    {
+    public void setPresence(OnlineStatus status, boolean idle) {
         setPresence(status, activity, idle);
     }
 
     @Override
-    public void setPresence(Activity game, boolean idle)
-    {
+    public void setPresence(Activity game, boolean idle) {
         setPresence(status, game, idle);
     }
 
@@ -141,8 +128,7 @@ public class PresenceImpl implements Presence
     /* -- Impl Setters -- */
 
 
-    public PresenceImpl setCacheStatus(OnlineStatus status)
-    {
+    public PresenceImpl setCacheStatus(OnlineStatus status) {
         if (status == null)
             throw new NullPointerException("Null OnlineStatus is not allowed.");
         if (status == OnlineStatus.OFFLINE)
@@ -151,14 +137,12 @@ public class PresenceImpl implements Presence
         return this;
     }
 
-    public PresenceImpl setCacheActivity(Activity game)
-    {
+    public PresenceImpl setCacheActivity(Activity game) {
         this.activity = game;
         return this;
     }
 
-    public PresenceImpl setCacheIdle(boolean idle)
-    {
+    public PresenceImpl setCacheIdle(boolean idle) {
         this.idle = idle;
         return this;
     }
@@ -167,20 +151,18 @@ public class PresenceImpl implements Presence
     /* -- Internal Methods -- */
 
 
-    public DataObject getFullPresence()
-    {
+    public DataObject getFullPresence() {
         DataObject activity = getGameJson(this.activity);
         return DataObject.empty()
-              .put("afk", idle)
-              .put("since", System.currentTimeMillis())
-              .put("activities", DataArray.fromCollection(activity == null // this is done so that nested DataObject is converted to a Map
-                      ? Collections.emptyList()
-                      : Collections.singletonList(activity)))
-              .put("status", getStatus().getKey());
+                .put("afk", idle)
+                .put("since", System.currentTimeMillis())
+                .put("activities", DataArray.fromCollection(activity == null // this is done so that nested DataObject is converted to a Map
+                        ? Collections.emptyList()
+                        : Collections.singletonList(activity)))
+                .put("status", getStatus().getKey());
     }
 
-    private DataObject getGameJson(Activity activity)
-    {
+    private DataObject getGameJson(Activity activity) {
         if (activity == null || activity.getName() == null || activity.getType() == null)
             return null;
         DataObject gameObj = DataObject.empty();
@@ -196,15 +178,14 @@ public class PresenceImpl implements Presence
     /* -- Terminal -- */
 
 
-    protected void update()
-    {
+    protected void update() {
         DataObject data = getFullPresence();
         JDA.Status status = api.getStatus();
         if (status == JDA.Status.RECONNECT_QUEUED || status == JDA.Status.SHUTDOWN || status == JDA.Status.SHUTTING_DOWN)
             return;
         api.getClient().send(DataObject.empty()
-            .put("d", data)
-            .put("op", WebSocketCode.PRESENCE));
+                .put("d", data)
+                .put("op", WebSocketCode.PRESENCE));
     }
 
 }

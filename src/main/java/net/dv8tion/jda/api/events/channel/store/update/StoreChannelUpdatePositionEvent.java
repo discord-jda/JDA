@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code position}
  */
-public class StoreChannelUpdatePositionEvent extends GenericStoreChannelUpdateEvent<Integer>
-{
+public class StoreChannelUpdatePositionEvent extends GenericStoreChannelUpdateEvent<Integer> {
     public static final String IDENTIFIER = "position";
 
-    public StoreChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel, int prev)
-    {
+    public StoreChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel, int prev) {
         super(api, responseNumber, channel, prev, channel.getPositionRaw(), IDENTIFIER);
     }
 
@@ -42,8 +40,7 @@ public class StoreChannelUpdatePositionEvent extends GenericStoreChannelUpdateEv
      *
      * @return The old position
      */
-    public int getOldPosition()
-    {
+    public int getOldPosition() {
         return getOldValue();
     }
 
@@ -52,8 +49,7 @@ public class StoreChannelUpdatePositionEvent extends GenericStoreChannelUpdateEv
      *
      * @return The new position
      */
-    public int getNewPosition()
-    {
+    public int getNewPosition() {
         return getNewValue();
     }
 }

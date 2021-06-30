@@ -26,22 +26,18 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EmoteImpl;
 
-public class MessageReactionClearEmoteHandler extends SocketHandler
-{
-    public MessageReactionClearEmoteHandler(JDAImpl api)
-    {
+public class MessageReactionClearEmoteHandler extends SocketHandler {
+    public MessageReactionClearEmoteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
         Guild guild = getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown guild {}", guildId);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
@@ -49,8 +45,7 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
 
         long channelId = content.getUnsignedLong("channel_id");
         TextChannel channel = guild.getTextChannelById(channelId);
-        if (channel == null)
-        {
+        if (channel == null) {
             EventCache.LOG.debug("Caching MESSAGE_REACTION_REMOVE_EMOJI event for unknown channel {}", channelId);
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             return null;
@@ -59,19 +54,16 @@ public class MessageReactionClearEmoteHandler extends SocketHandler
         long messageId = content.getUnsignedInt("message_id");
         DataObject emoji = content.getObject("emoji");
         MessageReaction.ReactionEmote reactionEmote = null;
-        if (emoji.isNull("id"))
-        {
+        if (emoji.isNull("id")) {
             reactionEmote = MessageReaction.ReactionEmote.fromUnicode(emoji.getString("name"), getJDA());
         }
-        else
-        {
+        else {
             long emoteId = emoji.getUnsignedLong("emoji");
             Emote emote = getJDA().getEmoteById(emoteId);
-            if (emote == null)
-            {
+            if (emote == null) {
                 emote = new EmoteImpl(emoteId, getJDA())
-                    .setAnimated(emoji.getBoolean("animated"))
-                    .setName(emoji.getString("name", ""));
+                        .setAnimated(emoji.getBoolean("animated"))
+                        .setName(emoji.getString("name", ""));
             }
             reactionEmote = MessageReaction.ReactionEmote.fromCustom(emote);
         }

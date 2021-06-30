@@ -31,8 +31,7 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager
-{
+public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> implements PermOverrideManager {
     protected final boolean role;
     protected PermissionOverride override;
 
@@ -45,11 +44,10 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
      * @param override
      *        The {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} to manage
      */
-    public PermOverrideManagerImpl(PermissionOverride override)
-    {
+    public PermOverrideManagerImpl(PermissionOverride override) {
         super(override.getJDA(),
-              Route.Channels.MODIFY_PERM_OVERRIDE.compile(
-                  override.getChannel().getId(), override.getId()));
+                Route.Channels.MODIFY_PERM_OVERRIDE.compile(
+                        override.getChannel().getId(), override.getId()));
         this.override = override;
         this.role = override.isRoleOverride();
         this.allowed = override.getAllowedRaw();
@@ -58,8 +56,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
             checkPermissions();
     }
 
-    private void setupValues()
-    {
+    private void setupValues() {
         if (!shouldUpdate(ALLOWED))
             this.allowed = getPermissionOverride().getAllowedRaw();
         if (!shouldUpdate(DENIED))
@@ -68,8 +65,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
 
     @Nonnull
     @Override
-    public PermissionOverride getPermissionOverride()
-    {
+    public PermissionOverride getPermissionOverride() {
         AbstractChannelImpl<?, ?> channel = (AbstractChannelImpl<?, ?>) override.getChannel();
         PermissionOverride realOverride = channel.getOverrideMap().get(override.getIdLong());
         if (realOverride != null)
@@ -80,8 +76,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Nonnull
     @Override
     @CheckReturnValue
-    public PermOverrideManagerImpl reset(long fields)
-    {
+    public PermOverrideManagerImpl reset(long fields) {
         super.reset(fields);
         return this;
     }
@@ -89,8 +84,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Nonnull
     @Override
     @CheckReturnValue
-    public PermOverrideManagerImpl reset(long... fields)
-    {
+    public PermOverrideManagerImpl reset(long... fields) {
         super.reset(fields);
         return this;
     }
@@ -98,8 +92,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Nonnull
     @Override
     @CheckReturnValue
-    public PermOverrideManagerImpl reset()
-    {
+    public PermOverrideManagerImpl reset() {
         super.reset();
         return this;
     }
@@ -107,8 +100,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Nonnull
     @Override
     @CheckReturnValue
-    public PermOverrideManagerImpl grant(long permissions)
-    {
+    public PermOverrideManagerImpl grant(long permissions) {
         if (permissions == 0)
             return this;
         setupValues();
@@ -121,8 +113,7 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Nonnull
     @Override
     @CheckReturnValue
-    public PermOverrideManagerImpl deny(long permissions)
-    {
+    public PermOverrideManagerImpl deny(long permissions) {
         if (permissions == 0)
             return this;
         setupValues();
@@ -135,17 +126,14 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     @Nonnull
     @Override
     @CheckReturnValue
-    public PermOverrideManagerImpl clear(long permissions)
-    {
+    public PermOverrideManagerImpl clear(long permissions) {
         setupValues();
-        if ((allowed & permissions) != 0)
-        {
+        if ((allowed & permissions) != 0) {
             this.allowed &= ~permissions;
             this.set |= ALLOWED;
         }
 
-        if ((denied & permissions) != 0)
-        {
+        if ((denied & permissions) != 0) {
             this.denied &= ~permissions;
             this.set |= DENIED;
         }
@@ -154,24 +142,22 @@ public class PermOverrideManagerImpl extends ManagerBase<PermOverrideManager> im
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         String targetId = override.getId();
         // setup missing values here
         setupValues();
         RequestBody data = getRequestBody(
-            DataObject.empty()
-                .put("id", targetId)
-                .put("type", role ? "role" : "member")
-                .put("allow", this.allowed)
-                .put("deny",  this.denied));
+                DataObject.empty()
+                        .put("id", targetId)
+                        .put("type", role ? "role" : "member")
+                        .put("allow", this.allowed)
+                        .put("deny", this.denied));
         reset();
         return data;
     }
 
     @Override
-    protected boolean checkPermissions()
-    {
+    protected boolean checkPermissions() {
         Member selfMember = getGuild().getSelfMember();
         GuildChannel channel = getChannel();
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))

@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code nsfw}
  */
-public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Boolean>
-{
+public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "nsfw";
 
-    public TextChannelUpdateNSFWEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, boolean oldNsfw)
-    {
+    public TextChannelUpdateNSFWEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, boolean oldNsfw) {
         super(api, responseNumber, channel, oldNsfw, channel.isNSFW(), IDENTIFIER);
     }
 
@@ -41,8 +39,7 @@ public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Bo
      *
      * @return True, if the channel was marked NSFW before
      */
-    public boolean getOldNSFW()
-    {
+    public boolean getOldNSFW() {
         return getOldValue();
     }
 }

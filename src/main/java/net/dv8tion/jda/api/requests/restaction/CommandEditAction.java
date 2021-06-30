@@ -35,8 +35,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Specialized {@link RestAction} used to edit an existing command.
  */
-public interface CommandEditAction extends RestAction<Command>
-{
+public interface CommandEditAction extends RestAction<Command> {
     @Nonnull
     @Override
     @CheckReturnValue
@@ -170,8 +169,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOptions(@Nonnull Collection<? extends OptionData> options)
-    {
+    default CommandEditAction addOptions(@Nonnull Collection<? extends OptionData> options) {
         Checks.noneNull(options, "Options");
         return addOptions(options.toArray(new OptionData[0]));
     }
@@ -204,8 +202,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
-    {
+    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required) {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
 
@@ -235,8 +232,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
+    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         return addOption(type, name, description, false);
     }
 
@@ -272,8 +268,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
-    {
+    default CommandEditAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
@@ -310,8 +305,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
-    {
+    default CommandEditAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups) {
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
     }

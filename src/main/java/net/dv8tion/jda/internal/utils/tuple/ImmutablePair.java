@@ -32,8 +32,7 @@ package net.dv8tion.jda.internal.utils.tuple;
  *
  * @since Lang 3.0
  */
-public final class ImmutablePair<L, R> extends Pair<L, R>
-{
+public final class ImmutablePair<L, R> extends Pair<L, R> {
     /** Left object */
     public final L left;
     /** Right object */

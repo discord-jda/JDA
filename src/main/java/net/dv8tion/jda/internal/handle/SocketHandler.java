@@ -18,19 +18,16 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-public abstract class SocketHandler
-{
+public abstract class SocketHandler {
     protected final JDAImpl api;
     protected long responseNumber;
     protected DataObject allContent;
 
-    public SocketHandler(JDAImpl api)
-    {
+    public SocketHandler(JDAImpl api) {
         this.api = api;
     }
 
-    public final synchronized void handle(long responseTotal, DataObject o)
-    {
+    public final synchronized void handle(long responseTotal, DataObject o) {
         this.allContent = o;
         this.responseNumber = responseTotal;
         final Long guildId = handleInternally(o.getObject("d"));
@@ -39,8 +36,7 @@ public abstract class SocketHandler
         this.allContent = null;
     }
 
-    protected JDAImpl getJDA()
-    {
+    protected JDAImpl getJDA() {
         return api;
     }
 
@@ -53,16 +49,13 @@ public abstract class SocketHandler
      */
     protected abstract Long handleInternally(DataObject content);
 
-    public static class NOPHandler extends SocketHandler
-    {
-        public NOPHandler(JDAImpl api)
-        {
+    public static class NOPHandler extends SocketHandler {
+        public NOPHandler(JDAImpl api) {
             super(api);
         }
 
         @Override
-        protected Long handleInternally(DataObject content)
-        {
+        protected Long handleInternally(DataObject content) {
             return null;
         }
     }

@@ -41,8 +41,7 @@ import java.util.Collection;
  * <p><b>You can only acknowledge an interaction once!</b> Any additional calls to reply/deferReply will result in exceptions.
  * You can use {@link #isAcknowledged()} to check whether the interaction has been acknowledged already.
  */
-public interface Interaction extends ISnowflake
-{
+public interface Interaction extends ISnowflake {
     /**
      * The raw interaction type.
      * <br>It is recommended to use {@link #getType()} instead.
@@ -57,8 +56,7 @@ public interface Interaction extends ISnowflake
      * @return The {@link InteractionType} or {@link InteractionType#UNKNOWN}
      */
     @Nonnull
-    default InteractionType getType()
-    {
+    default InteractionType getType() {
         return InteractionType.fromKey(getTypeRaw());
     }
 
@@ -85,8 +83,7 @@ public interface Interaction extends ISnowflake
      *
      * @return True, if this interaction happened in a guild
      */
-    default boolean isFromGuild()
-    {
+    default boolean isFromGuild() {
         return getGuild() != null;
     }
 
@@ -97,8 +94,7 @@ public interface Interaction extends ISnowflake
      * @return The {@link ChannelType}
      */
     @Nonnull
-    default ChannelType getChannelType()
-    {
+    default ChannelType getChannelType() {
         AbstractChannel channel = getChannel();
         return channel != null ? channel.getType() : ChannelType.UNKNOWN;
     }
@@ -194,8 +190,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction deferReply(boolean ephemeral)
-    {
+    default ReplyAction deferReply(boolean ephemeral) {
         return deferReply().setEphemeral(ephemeral);
     }
 
@@ -219,8 +214,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction reply(@Nonnull Message message)
-    {
+    default ReplyAction reply(@Nonnull Message message) {
         Checks.notNull(message, "Message");
         ReplyActionImpl action = (ReplyActionImpl) deferReply();
         return action.applyMessage(message);
@@ -246,8 +240,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction reply(@Nonnull String content)
-    {
+    default ReplyAction reply(@Nonnull String content) {
         Checks.notNull(content, "Content");
         return deferReply().setContent(content);
     }
@@ -272,8 +265,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default ReplyAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return deferReply().addEmbeds(embeds);
     }
 
@@ -299,8 +291,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
-    {
+    default ReplyAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds) {
         Checks.notNull(embed, "MessageEmbed");
         Checks.noneNull(embeds, "MessageEmbed");
         return deferReply().addEmbeds(embed).addEmbeds(embeds);
@@ -388,8 +379,7 @@ public interface Interaction extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default ReplyAction replyFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return reply(String.format(format, args));
     }
@@ -404,8 +394,7 @@ public interface Interaction extends ISnowflake
      * @return The {@link GuildChannel}
      */
     @Nonnull
-    default GuildChannel getGuildChannel()
-    {
+    default GuildChannel getGuildChannel() {
         AbstractChannel channel = getChannel();
         if (channel instanceof GuildChannel)
             return (GuildChannel) channel;
@@ -422,8 +411,7 @@ public interface Interaction extends ISnowflake
      * @return The {@link MessageChannel}
      */
     @Nonnull
-    default MessageChannel getMessageChannel()
-    {
+    default MessageChannel getMessageChannel() {
         AbstractChannel channel = getChannel();
         if (channel instanceof MessageChannel)
             return (MessageChannel) channel;
@@ -440,8 +428,7 @@ public interface Interaction extends ISnowflake
      * @return The {@link TextChannel}
      */
     @Nonnull
-    default TextChannel getTextChannel()
-    {
+    default TextChannel getTextChannel() {
         AbstractChannel channel = getChannel();
         if (channel instanceof TextChannel)
             return (TextChannel) channel;
@@ -458,8 +445,7 @@ public interface Interaction extends ISnowflake
      * @return The {@link VoiceChannel}
      */
     @Nonnull
-    default VoiceChannel getVoiceChannel()
-    {
+    default VoiceChannel getVoiceChannel() {
         AbstractChannel channel = getChannel();
         if (channel instanceof VoiceChannel)
             return (VoiceChannel) channel;
@@ -476,8 +462,7 @@ public interface Interaction extends ISnowflake
      * @return The {@link PrivateChannel}
      */
     @Nonnull
-    default PrivateChannel getPrivateChannel()
-    {
+    default PrivateChannel getPrivateChannel() {
         AbstractChannel channel = getChannel();
         if (channel instanceof PrivateChannel)
             return (PrivateChannel) channel;

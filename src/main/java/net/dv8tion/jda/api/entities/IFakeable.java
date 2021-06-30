@@ -38,10 +38,9 @@ import net.dv8tion.jda.annotations.ForRemoval;
  */
 @Deprecated
 @DeprecatedSince("4.2.1")
-@ForRemoval(deadline="4.3.0")
+@ForRemoval(deadline = "4.3.0")
 @SuppressWarnings("DeprecatedIsStillUsed")
-public interface IFakeable
-{
+public interface IFakeable {
     /**
      * Describes whether an entity is fake or not.
      *
@@ -49,6 +48,6 @@ public interface IFakeable
      */
     @Deprecated
     @DeprecatedSince("4.2.1")
-    @ForRemoval(deadline="4.3.0")
+    @ForRemoval(deadline = "4.3.0")
     boolean isFake();
 }

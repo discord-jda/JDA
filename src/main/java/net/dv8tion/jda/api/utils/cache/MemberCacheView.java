@@ -34,8 +34,7 @@ import java.util.List;
  *
  * @see CacheView CacheView for details on Efficient Memory Usage
  */
-public interface MemberCacheView extends SnowflakeCacheView<Member>
-{
+public interface MemberCacheView extends SnowflakeCacheView<Member> {
     /**
      * Retrieves the member represented by the provided ID.
      *
@@ -60,8 +59,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member>
      * @return Possibly-null member for the specified ID
      */
     @Nullable
-    default Member getElementById(@Nonnull String id)
-    {
+    default Member getElementById(@Nonnull String id) {
         return getElementById(MiscUtil.parseSnowflake(id));
     }
 
@@ -95,8 +93,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member>
      * @return Immutable list of members with the given username
      */
     @Nonnull
-    default List<Member> getElementsByUsername(@Nonnull String name)
-    {
+    default List<Member> getElementsByUsername(@Nonnull String name) {
         return getElementsByUsername(name, false);
     }
 
@@ -128,8 +125,7 @@ public interface MemberCacheView extends SnowflakeCacheView<Member>
      * @return Immutable list of members with the given nickname
      */
     @Nonnull
-    default List<Member> getElementsByNickname(@Nullable String name)
-    {
+    default List<Member> getElementsByNickname(@Nullable String name) {
         return getElementsByNickname(name, false);
     }
 

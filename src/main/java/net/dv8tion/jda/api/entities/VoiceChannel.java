@@ -40,8 +40,7 @@ import javax.annotation.Nullable;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends GuildChannel
-{
+public interface VoiceChannel extends GuildChannel {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} at once.

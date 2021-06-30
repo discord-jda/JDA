@@ -27,8 +27,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DataMessage extends AbstractMessage
-{
+public class DataMessage extends AbstractMessage {
     private final EnumSet<MentionType> allowedMentions;
     private final String[] mentionedRoles;
     private final String[] mentionedUsers;
@@ -36,8 +35,7 @@ public class DataMessage extends AbstractMessage
     private Collection<? extends MessageEmbed> embeds;
 
     public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds,
-                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, ComponentLayout[] components)
-    {
+                       EnumSet<MentionType> allowedMentions, String[] mentionedUsers, String[] mentionedRoles, ComponentLayout[] components) {
         super(content, nonce, tts);
         this.embeds = embeds;
         this.allowedMentions = allowedMentions;
@@ -46,102 +44,88 @@ public class DataMessage extends AbstractMessage
         this.components = components;
     }
 
-    public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds)
-    {
+    public DataMessage(boolean tts, String content, String nonce, Collection<? extends MessageEmbed> embeds) {
         this(tts, content, nonce, embeds, null, new String[0], new String[0], new ComponentLayout[0]);
     }
 
-    public EnumSet<MentionType> getAllowedMentions()
-    {
+    public EnumSet<MentionType> getAllowedMentions() {
         return allowedMentions;
     }
 
-    public String[] getMentionedRolesWhitelist()
-    {
+    public String[] getMentionedRolesWhitelist() {
         return mentionedRoles;
     }
 
-    public String[] getMentionedUsersWhitelist()
-    {
+    public String[] getMentionedUsersWhitelist() {
         return mentionedUsers;
     }
 
     @Nonnull
     @Override
-    public MessageType getType()
-    {
+    public MessageType getType() {
         return MessageType.DEFAULT;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (!(o instanceof DataMessage))
             return false;
         DataMessage other = (DataMessage) o;
         return isTTS == other.isTTS
-            && other.content.equals(content)
-            && Objects.equals(other.nonce, nonce)
-            && Objects.equals(other.embeds, embeds);
+                && other.content.equals(content)
+                && Objects.equals(other.nonce, nonce)
+                && Objects.equals(other.embeds, embeds);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return System.identityHashCode(this);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return String.format("DataMessage(%.30s)", getContentRaw());
     }
 
-    public DataMessage setEmbeds(Collection<? extends MessageEmbed> embeds)
-    {
+    public DataMessage setEmbeds(Collection<? extends MessageEmbed> embeds) {
         this.embeds = embeds;
         return this;
     }
 
     @Nonnull
     @Override
-    public List<MessageEmbed> getEmbeds()
-    {
+    public List<MessageEmbed> getEmbeds() {
         return embeds == null ? Collections.emptyList() : new ArrayList<>(embeds);
     }
 
     @Nonnull
     @Override
-    public List<ActionRow> getActionRows()
-    {
+    public List<ActionRow> getActionRows() {
         return components == null ? Collections.emptyList()
                 : Arrays.stream(components)
-                    .filter(ActionRow.class::isInstance)
-                    .map(ActionRow.class::cast)
-                    .collect(Collectors.toList());
+                .filter(ActionRow.class::isInstance)
+                .map(ActionRow.class::cast)
+                .collect(Collectors.toList());
     }
 
     // UNSUPPORTED OPERATIONS ON MESSAGE BUILDER OUTPUT
 
     @Override
-    protected void unsupported()
-    {
+    protected void unsupported() {
         throw new UnsupportedOperationException("This operation is not supported for Messages that were created by a MessageBuilder!");
     }
 
     @Nullable
     @Override
-    public MessageActivity getActivity()
-    {
+    public MessageActivity getActivity() {
         unsupported();
         return null;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         unsupported();
         return 0;
     }

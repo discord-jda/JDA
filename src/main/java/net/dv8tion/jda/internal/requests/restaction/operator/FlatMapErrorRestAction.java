@@ -28,27 +28,22 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
-{
+public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T> {
     private final Predicate<? super Throwable> check;
     private final Function<? super Throwable, ? extends RestAction<? extends T>> map;
 
-    public FlatMapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends RestAction<? extends T>> map)
-    {
+    public FlatMapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends RestAction<? extends T>> map) {
         super(action);
         this.check = check;
         this.map = map;
     }
 
     @Override
-    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
-    {
+    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         Consumer<? super Throwable> contextFailure = contextWrap(failure);
         action.queue(success, contextWrap((error) -> {
-            try
-            {
-                if (check.test(error))
-                {
+            try {
+                if (check.test(error)) {
                     // If check passed we can apply the fallback function and flatten it
                     RestAction<? extends T> then = map.apply(error);
                     if (then == null)
@@ -58,34 +53,27 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
                 }
                 else doFailure(failure, error); // No contextFailure because error already has context
             }
-            catch (Throwable e)
-            {
+            catch (Throwable e) {
                 doFailure(failure, Helpers.appendCause(e, error)); // No contextFailure because error already has context
             }
         }));
     }
 
     @Override
-    public T complete(boolean shouldQueue) throws RateLimitedException
-    {
-        try
-        {
+    public T complete(boolean shouldQueue) throws RateLimitedException {
+        try {
             return action.complete(shouldQueue);
         }
-        catch (Throwable error)
-        {
-            try
-            {
-                if (check.test(error))
-                {
+        catch (Throwable error) {
+            try {
+                if (check.test(error)) {
                     RestAction<? extends T> then = map.apply(error);
                     if (then == null)
                         throw new IllegalStateException("FlatMapError operand is null", error);
                     return then.complete(shouldQueue);
                 }
             }
-            catch (Throwable e)
-            {
+            catch (Throwable e) {
                 if (e instanceof IllegalStateException && e.getCause() == error)
                     throw (IllegalStateException) e;
                 else if (e instanceof RateLimitedException)
@@ -100,8 +88,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
+    public CompletableFuture<T> submit(boolean shouldQueue) {
         return action.submit(shouldQueue)
                 .handle((result, error) -> {
                     if (check.test(error))
@@ -112,8 +99,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
     }
 
     @Contract("_ -> fail")
-    private void fail(Throwable error)
-    {
+    private void fail(Throwable error) {
         if (error instanceof RuntimeException)
             throw (RuntimeException) error;
         else if (error instanceof Error)

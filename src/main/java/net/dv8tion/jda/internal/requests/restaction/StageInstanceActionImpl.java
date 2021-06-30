@@ -32,43 +32,37 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class StageInstanceActionImpl extends RestActionImpl<StageInstance> implements StageInstanceAction
-{
+public class StageInstanceActionImpl extends RestActionImpl<StageInstance> implements StageInstanceAction {
     private final StageChannel channel;
     private String topic;
     private StageInstance.PrivacyLevel level = StageInstance.PrivacyLevel.GUILD_ONLY;
 
-    public StageInstanceActionImpl(StageChannel channel)
-    {
+    public StageInstanceActionImpl(StageChannel channel) {
         super(channel.getJDA(), Route.StageInstances.CREATE_INSTANCE.compile());
         this.channel = channel;
     }
 
     @Nonnull
     @Override
-    public StageInstanceAction setCheck(BooleanSupplier checks)
-    {
+    public StageInstanceAction setCheck(BooleanSupplier checks) {
         return (StageInstanceAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public StageInstanceAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public StageInstanceAction timeout(long timeout, @Nonnull TimeUnit unit) {
         return (StageInstanceAction) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public StageInstanceAction deadline(long timestamp)
-    {
+    public StageInstanceAction deadline(long timestamp) {
         return (StageInstanceAction) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public StageInstanceAction setTopic(@Nonnull String topic)
-    {
+    public StageInstanceAction setTopic(@Nonnull String topic) {
         Checks.notEmpty(topic, "Topic");
         Checks.notLonger(topic, 120, "Topic");
         this.topic = topic;
@@ -77,8 +71,7 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
 
     @Nonnull
     @Override
-    public StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
-    {
+    public StageInstanceAction setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level) {
         Checks.notNull(level, "PrivacyLevel");
         Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "The PrivacyLevel must not be UNKNOWN!");
         this.level = level;
@@ -86,8 +79,7 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
         body.put("channel_id", channel.getId());
         body.put("topic", topic);
@@ -96,8 +88,7 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<StageInstance> request)
-    {
+    protected void handleSuccess(Response response, Request<StageInstance> request) {
         StageInstance instance = api.getEntityBuilder().createStageInstance((GuildImpl) channel.getGuild(), response.getObject());
         request.onSuccess(instance);
     }

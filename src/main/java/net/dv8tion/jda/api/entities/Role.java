@@ -39,8 +39,7 @@ import java.awt.*;
  * @see JDA#getRolesByName(String, boolean)
  * @see JDA#getRoles()
  */
-public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
-{
+public interface Role extends IMentionable, IPermissionHolder, Comparable<Role> {
     /** Used to keep consistency between color values used in the API */
     int DEFAULT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
 
@@ -218,8 +217,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction createCopy()
-    {
+    default RoleAction createCopy() {
         return createCopy(getGuild());
     }
 
@@ -286,7 +284,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
      *
      * @return {@link RoleTags}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     RoleTags getTags();
@@ -294,10 +292,9 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
     /**
      * Tags associated with this role.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
-    interface RoleTags
-    {
+    interface RoleTags {
         /**
          * Whether this role is associated with a bot.
          *
@@ -322,8 +319,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
          * @see    #isBot()
          */
         @Nullable
-        default String getBotId()
-        {
+        default String getBotId() {
             return isBot() ? Long.toUnsignedString(getBotIdLong()) : null;
         }
 
@@ -359,8 +355,7 @@ public interface Role extends IMentionable, IPermissionHolder, Comparable<Role>
          * @see    #isIntegration()
          */
         @Nullable
-        default String getIntegrationId()
-        {
+        default String getIntegrationId() {
             return isIntegration() ? Long.toUnsignedString(getIntegrationIdLong()) : null;
         }
     }

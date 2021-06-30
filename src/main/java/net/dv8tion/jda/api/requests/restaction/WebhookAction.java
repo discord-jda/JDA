@@ -33,8 +33,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see net.dv8tion.jda.api.entities.TextChannel#createWebhook(String)
  */
-public interface WebhookAction extends AuditableRestAction<Webhook>
-{
+public interface WebhookAction extends AuditableRestAction<Webhook> {
     @Nonnull
     @Override
     WebhookAction setCheck(@Nullable BooleanSupplier checks);
@@ -61,8 +60,7 @@ public interface WebhookAction extends AuditableRestAction<Webhook>
      * @return The guild
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getChannel().getGuild();
     }
 

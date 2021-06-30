@@ -55,8 +55,7 @@ import java.util.Collection;
  * @see #deleteOriginal()
  * @see #sendMessage(String)
  */
-public interface InteractionHook extends WebhookClient<Message>
-{
+public interface InteractionHook extends WebhookClient<Message> {
     /**
      * The interaction attached to this hook.
      *
@@ -74,8 +73,7 @@ public interface InteractionHook extends WebhookClient<Message>
      * @see    System#currentTimeMillis()
      * @see    #isExpired()
      */
-    default long getExpirationTimestamp()
-    {
+    default long getExpirationTimestamp() {
         return getInteraction().getTimeCreated().plus(15, ChronoUnit.MINUTES).toEpochSecond() * 1000;
     }
 
@@ -87,8 +85,7 @@ public interface InteractionHook extends WebhookClient<Message>
      *
      * @see    #getExpirationTimestamp()
      */
-    default boolean isExpired()
-    {
+    default boolean isExpired() {
         return System.currentTimeMillis() > getExpirationTimestamp();
     }
 
@@ -157,8 +154,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull String content)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull String content) {
         return editMessageById("@original", content);
     }
 
@@ -187,8 +183,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull Collection<? extends ComponentLayout> components) {
         return editMessageComponentsById("@original", components);
     }
 
@@ -217,8 +212,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull ComponentLayout... components)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginalComponents(@Nonnull ComponentLayout... components) {
         return editMessageComponentsById("@original", components);
     }
 
@@ -247,8 +241,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return editMessageEmbedsById("@original", embeds);
     }
 
@@ -277,8 +270,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginalEmbeds(@Nonnull MessageEmbed... embeds) {
         return editMessageEmbedsById("@original", embeds);
     }
 
@@ -307,8 +299,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull Message message)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull Message message) {
         return editMessageById("@original", message);
     }
 
@@ -339,8 +330,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginalFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginalFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editOriginal(String.format(format, args));
     }
@@ -390,8 +380,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return editMessageById("@original", data, name, options);
     }
 
@@ -439,8 +428,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull AttachmentOption... options) {
         return editMessageById("@original", file, options);
     }
 
@@ -488,8 +476,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return editMessageById("@original", file, name, options);
     }
 
@@ -537,8 +524,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<Message> editOriginal(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return editMessageById("@original", data, name, options);
     }
 
@@ -550,8 +536,7 @@ public interface InteractionHook extends WebhookClient<Message>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteOriginal()
-    {
+    default RestAction<Void> deleteOriginal() {
         return deleteMessageById("@original");
     }
 }

@@ -37,12 +37,11 @@ import java.util.regex.Matcher;
  * StringBuilder, and the methods provided by this class are a combination of those offered by the StringBuilder and
  * {@link String#format(String, Object...)}.
  *
- * @since  1.0
+ * @since 1.0
  * @author Michael Ritter
  * @author Aljoscha Grebe
  */
-public class MessageBuilder implements Appendable
-{
+public class MessageBuilder implements Appendable {
     protected final StringBuilder builder = new StringBuilder();
 
     protected final List<MessageEmbed> embeds = new ArrayList<>();
@@ -53,26 +52,23 @@ public class MessageBuilder implements Appendable
     protected Set<String> mentionedUsers = new HashSet<>();
     protected Set<String> mentionedRoles = new HashSet<>();
 
-    public MessageBuilder() {}
+    public MessageBuilder() {
+    }
 
-    public MessageBuilder(@Nullable CharSequence content)
-    {
+    public MessageBuilder(@Nullable CharSequence content) {
         if (content != null)
             builder.append(content);
     }
 
-    public MessageBuilder(@Nullable Message message)
-    {
-        if (message != null)
-        {
+    public MessageBuilder(@Nullable Message message) {
+        if (message != null) {
             isTTS = message.isTTS();
             builder.append(message.getContentRaw());
             List<MessageEmbed> embeds = message.getEmbeds();
             if (embeds != null)
                 embeds.stream().filter(it -> it.getType() == EmbedType.RICH).forEach(this.embeds::add);
             components.addAll(message.getActionRows());
-            if (message instanceof DataMessage)
-            {
+            if (message instanceof DataMessage) {
                 DataMessage data = (DataMessage) message;
                 if (data.getAllowedMentions() != null)
                     this.allowedMentions = Helpers.copyEnumSet(Message.MentionType.class, data.getAllowedMentions());
@@ -82,10 +78,8 @@ public class MessageBuilder implements Appendable
         }
     }
 
-    public MessageBuilder(@Nullable MessageBuilder builder)
-    {
-        if (builder != null)
-        {
+    public MessageBuilder(@Nullable MessageBuilder builder) {
+        if (builder != null) {
             this.isTTS = builder.isTTS;
             this.builder.append(builder.builder);
             this.nonce = builder.nonce;
@@ -98,14 +92,12 @@ public class MessageBuilder implements Appendable
         }
     }
 
-    public MessageBuilder(@Nullable EmbedBuilder builder)
-    {
+    public MessageBuilder(@Nullable EmbedBuilder builder) {
         if (builder != null)
             this.embeds.add(builder.build());
     }
 
-    public MessageBuilder(@Nullable MessageEmbed embed)
-    {
+    public MessageBuilder(@Nullable MessageEmbed embed) {
         this.embeds.add(embed);
     }
 
@@ -120,8 +112,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setTTS(boolean tts)
-    {
+    public MessageBuilder setTTS(boolean tts) {
         this.isTTS = tts;
         return this;
     }
@@ -142,8 +133,7 @@ public class MessageBuilder implements Appendable
     @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("setEmbeds(embed)")
     @DeprecatedSince("4.4.0")
-    public MessageBuilder setEmbed(@Nullable MessageEmbed embed)
-    {
+    public MessageBuilder setEmbed(@Nullable MessageEmbed embed) {
         return embed == null ? setEmbeds() : setEmbeds(embed);
     }
 
@@ -161,8 +151,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    public MessageBuilder setEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbeds");
         return setEmbeds(Arrays.asList(embeds));
     }
@@ -181,14 +170,13 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public MessageBuilder setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
 
         Checks.noneNull(embeds, "MessageEmbeds");
         embeds.forEach(embed ->
-            Checks.check(embed.isSendable(),
-                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+                Checks.check(embed.isSendable(),
+                        "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                        MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
         Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
@@ -209,10 +197,8 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setActionRows(@Nullable Collection<? extends ActionRow> rows)
-    {
-        if (rows == null)
-        {
+    public MessageBuilder setActionRows(@Nullable Collection<? extends ActionRow> rows) {
+        if (rows == null) {
             this.components.clear();
             return this;
         }
@@ -235,10 +221,8 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setActionRows(@Nullable ActionRow... rows)
-    {
-        if (rows == null)
-        {
+    public MessageBuilder setActionRows(@Nullable ActionRow... rows) {
+        if (rows == null) {
             this.components.clear();
             return this;
         }
@@ -261,8 +245,7 @@ public class MessageBuilder implements Appendable
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
      */
     @Nonnull
-    public MessageBuilder setNonce(@Nullable String nonce)
-    {
+    public MessageBuilder setNonce(@Nullable String nonce) {
         this.nonce = nonce;
         return this;
     }
@@ -279,14 +262,11 @@ public class MessageBuilder implements Appendable
      * @see    net.dv8tion.jda.api.entities.Message#getContentRaw()
      */
     @Nonnull
-    public MessageBuilder setContent(@Nullable String content)
-    {
-        if (content == null)
-        {
+    public MessageBuilder setContent(@Nullable String content) {
+        if (content == null) {
             builder.setLength(0);
         }
-        else
-        {
+        else {
             final int newLength = Math.max(builder.length(), content.length());
             builder.replace(0, newLength, content);
         }
@@ -295,24 +275,21 @@ public class MessageBuilder implements Appendable
 
     @Nonnull
     @Override
-    public MessageBuilder append(@Nullable CharSequence text)
-    {
+    public MessageBuilder append(@Nullable CharSequence text) {
         builder.append(text);
         return this;
     }
 
     @Nonnull
     @Override
-    public MessageBuilder append(@Nullable CharSequence text, int start, int end)
-    {
+    public MessageBuilder append(@Nullable CharSequence text, int start, int end) {
         builder.append(text, start, end);
         return this;
     }
 
     @Nonnull
     @Override
-    public MessageBuilder append(char c)
-    {
+    public MessageBuilder append(char c) {
         builder.append(c);
         return this;
     }
@@ -320,15 +297,14 @@ public class MessageBuilder implements Appendable
     /**
      * Appends the string representation of an object to the Message.
      * <br>This is the same as {@link #append(CharSequence) append(String.valueOf(object))}
-     * 
+     *
      * @param  object
      *         the object to append
      *
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder append(@Nullable Object object)
-    {
+    public MessageBuilder append(@Nullable Object object) {
         return append(String.valueOf(object));
     }
 
@@ -349,8 +325,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder append(@Nonnull IMentionable mention)
-    {
+    public MessageBuilder append(@Nonnull IMentionable mention) {
         Checks.notNull(mention, "Mentionable");
         builder.append(mention.getAsMention());
         return this;
@@ -367,13 +342,10 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder append(@Nullable CharSequence text, @Nonnull Formatting... format)
-    {
+    public MessageBuilder append(@Nullable CharSequence text, @Nonnull Formatting... format) {
         boolean blockPresent = false;
-        for (Formatting formatting : format)
-        {
-            if (formatting == Formatting.BLOCK)
-            {
+        for (Formatting formatting : format) {
+            if (formatting == Formatting.BLOCK) {
                 blockPresent = true;
                 continue;
             }
@@ -386,8 +358,7 @@ public class MessageBuilder implements Appendable
 
         if (blockPresent)
             builder.append(Formatting.BLOCK.getTag());
-        for (int i = format.length - 1; i >= 0; i--)
-        {
+        for (int i = format.length - 1; i >= 0; i--) {
             if (format[i] == Formatting.BLOCK) continue;
             builder.append(format[i].getTag());
         }
@@ -446,13 +417,12 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder appendFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    public MessageBuilder appendFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notEmpty(format, "Format String");
         this.append(String.format(format, args));
         return this;
     }
-    
+
     /**
      * Appends a code-line to the Message.
      * Code Lines are similar to code-blocks, however they are displayed in-line and do not support language specific highlighting.
@@ -463,8 +433,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder appendCodeLine(@Nullable CharSequence text)
-    {
+    public MessageBuilder appendCodeLine(@Nullable CharSequence text) {
         this.append(text, Formatting.BLOCK);
         return this;
     }
@@ -482,8 +451,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder appendCodeBlock(@Nullable CharSequence text, @Nullable CharSequence language)
-    {
+    public MessageBuilder appendCodeBlock(@Nullable CharSequence text, @Nullable CharSequence language) {
         builder.append("```").append(language).append('\n').append(text).append("\n```");
         return this;
     }
@@ -500,14 +468,13 @@ public class MessageBuilder implements Appendable
      *
      * @return the current length of the content that will be built into a Message.
      */
-    public int length()
-    {
+    public int length() {
         return builder.length();
     }
 
     /**
      * Checks if the message contains any contend. This includes text as well as embeds.
-     * 
+     *
      * @return whether the message contains content
      */
     public boolean isEmpty() {
@@ -527,11 +494,9 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder replace(@Nonnull String target, @Nonnull String replacement)
-    {
+    public MessageBuilder replace(@Nonnull String target, @Nonnull String replacement) {
         int index = builder.indexOf(target);
-        while (index != -1)
-        {
+        while (index != -1) {
             builder.replace(index, index + target.length(), replacement);
             index = builder.indexOf(target, index + replacement.length());
         }
@@ -549,11 +514,9 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder replaceFirst(@Nonnull String target, @Nonnull String replacement)
-    {
+    public MessageBuilder replaceFirst(@Nonnull String target, @Nonnull String replacement) {
         int index = builder.indexOf(target);
-        if (index != -1)
-        {
+        if (index != -1) {
             builder.replace(index, index + target.length(), replacement);
         }
         return this;
@@ -570,11 +533,9 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder replaceLast(@Nonnull String target, @Nonnull String replacement)
-    {
+    public MessageBuilder replaceLast(@Nonnull String target, @Nonnull String replacement) {
         int index = builder.lastIndexOf(target);
-        if (index != -1)
-        {
+        if (index != -1) {
             builder.replace(index, index + target.length(), replacement);
         }
         return this;
@@ -588,8 +549,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder clearMentionedUsers()
-    {
+    public MessageBuilder clearMentionedUsers() {
         mentionedUsers.clear();
         return this;
     }
@@ -602,8 +562,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder clearMentionedRoles()
-    {
+    public MessageBuilder clearMentionedRoles() {
         mentionedRoles.clear();
         return this;
     }
@@ -617,8 +576,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder clearMentions()
-    {
+    public MessageBuilder clearMentions() {
         return clearMentionedUsers().clearMentionedRoles();
     }
 
@@ -632,8 +590,7 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> mentionTypes)
-    {
+    public MessageBuilder setAllowedMentions(@Nullable Collection<Message.MentionType> mentionTypes) {
         this.allowedMentions = mentionTypes == null
                 ? MessageAction.getDefaultMentions()
                 : Helpers.copyEnumSet(Message.MentionType.class, mentionTypes);
@@ -652,11 +609,9 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder allowMentions(@Nonnull Message.MentionType... types)
-    {
+    public MessageBuilder allowMentions(@Nonnull Message.MentionType... types) {
         Checks.noneNull(types, "MentionTypes");
-        if (types.length > 0)
-        {
+        if (types.length > 0) {
             if (allowedMentions == null)
                 allowedMentions = MessageAction.getDefaultMentions();
             Collections.addAll(allowedMentions, types);
@@ -676,11 +631,9 @@ public class MessageBuilder implements Appendable
      * @return The MessageBuilder instance. Useful for chaining.
      */
     @Nonnull
-    public MessageBuilder denyMentions(@Nonnull Message.MentionType... types)
-    {
+    public MessageBuilder denyMentions(@Nonnull Message.MentionType... types) {
         Checks.noneNull(types, "MentionTypes");
-        if (types.length > 0)
-        {
+        if (types.length > 0) {
             if (allowedMentions == null)
                 allowedMentions = MessageAction.getDefaultMentions();
             for (Message.MentionType type : types)
@@ -708,12 +661,10 @@ public class MessageBuilder implements Appendable
      * @see    MessageAction#mention(IMentionable...)
      */
     @Nonnull
-    public MessageBuilder mention(@Nonnull IMentionable... mentions)
-    {
+    public MessageBuilder mention(@Nonnull IMentionable... mentions) {
         Checks.noneNull(mentions, "Mentions");
 
-        for (IMentionable mention : mentions)
-        {
+        for (IMentionable mention : mentions) {
             if (mention instanceof User || mention instanceof Member)
                 mentionedUsers.add(mention.getId());
             else if (mention instanceof Role)
@@ -741,8 +692,7 @@ public class MessageBuilder implements Appendable
      * @see    MessageAction#mention(IMentionable...)
      */
     @Nonnull
-    public MessageBuilder mention(@Nonnull Collection<? extends IMentionable> mentions)
-    {
+    public MessageBuilder mention(@Nonnull Collection<? extends IMentionable> mentions) {
         Checks.noneNull(mentions, "Mentions");
         return mention(mentions.toArray(new IMentionable[0]));
     }
@@ -767,8 +717,7 @@ public class MessageBuilder implements Appendable
      * @see    MessageAction#mentionUsers(String...)
      */
     @Nonnull
-    public MessageBuilder mentionUsers(@Nonnull String... users)
-    {
+    public MessageBuilder mentionUsers(@Nonnull String... users) {
         Checks.noneNull(users, "Users");
         Collections.addAll(mentionedUsers, users);
         return this;
@@ -794,8 +743,7 @@ public class MessageBuilder implements Appendable
      * @see    MessageAction#mentionRoles(String...)
      */
     @Nonnull
-    public MessageBuilder mentionRoles(@Nonnull String... roles)
-    {
+    public MessageBuilder mentionRoles(@Nonnull String... roles) {
         Checks.noneNull(roles, "Roles");
         Collections.addAll(mentionedRoles, roles);
         return this;
@@ -821,8 +769,7 @@ public class MessageBuilder implements Appendable
      * @see    MessageAction#mentionUsers(long...)
      */
     @Nonnull
-    public MessageBuilder mentionUsers(@Nonnull long... users)
-    {
+    public MessageBuilder mentionUsers(@Nonnull long... users) {
         Checks.notNull(users, "Users");
         return mentionUsers(toStringArray(users));
     }
@@ -847,8 +794,7 @@ public class MessageBuilder implements Appendable
      * @see    MessageAction#mentionRoles(long...)
      */
     @Nonnull
-    public MessageBuilder mentionRoles(@Nonnull long... roles)
-    {
+    public MessageBuilder mentionRoles(@Nonnull long... roles) {
         Checks.notNull(roles, "Roles");
         return mentionRoles(toStringArray(roles));
     }
@@ -872,8 +818,7 @@ public class MessageBuilder implements Appendable
     @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("setAllowedMentions(Collections.emptyList())")
     @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull JDA jda)
-    {
+    public MessageBuilder stripMentions(@Nonnull JDA jda) {
         // Note: Users can rename to "everyone" or "here", so those
         // should be stripped after the USER mention is stripped.
         return this.stripMentions(jda, null, Message.MentionType.values());
@@ -899,8 +844,7 @@ public class MessageBuilder implements Appendable
     @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("setAllowedMentions(Collections.emptyList())")
     @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull Guild guild)
-    {
+    public MessageBuilder stripMentions(@Nonnull Guild guild) {
         // Note: Users can rename to "everyone" or "here", so those
         // should be stripped after the USER mention is stripped.
         return this.stripMentions(guild.getJDA(), guild, Message.MentionType.values());
@@ -928,8 +872,7 @@ public class MessageBuilder implements Appendable
     @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("denyMentions(types)")
     @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull Guild guild, @Nonnull Message.MentionType... types)
-    {
+    public MessageBuilder stripMentions(@Nonnull Guild guild, @Nonnull Message.MentionType... types) {
         return this.stripMentions(guild.getJDA(), guild, types);
     }
 
@@ -954,98 +897,81 @@ public class MessageBuilder implements Appendable
     @ForRemoval(deadline = "4.4.0")
     @ReplaceWith("denyMentions(types)")
     @DeprecatedSince("4.2.0")
-    public MessageBuilder stripMentions(@Nonnull JDA jda, @Nonnull Message.MentionType... types)
-    {
+    public MessageBuilder stripMentions(@Nonnull JDA jda, @Nonnull Message.MentionType... types) {
         return this.stripMentions(jda, null, types);
     }
 
     @Nonnull
-    private MessageBuilder stripMentions(JDA jda, Guild guild, Message.MentionType... types)
-    {
+    private MessageBuilder stripMentions(JDA jda, Guild guild, Message.MentionType... types) {
         if (types == null)
             return this;
 
         String string = null;
 
-        for (Message.MentionType mention : types)
-        {
-            if (mention != null)
-            {
-                switch (mention)
-                {
-                    case EVERYONE:
-                        replace("@everyone", "@\u0435veryone");
-                        break;
-                    case HERE:
-                        replace("@here", "@h\u0435re");
-                        break;
-                    case CHANNEL:
-                    {
-                        if (string == null)
-                        {
-                            string = builder.toString();
-                        }
+        for (Message.MentionType mention : types) {
+            if (mention != null) {
+                switch (mention) {
+                case EVERYONE:
+                    replace("@everyone", "@\u0435veryone");
+                    break;
+                case HERE:
+                    replace("@here", "@h\u0435re");
+                    break;
+                case CHANNEL: {
+                    if (string == null) {
+                        string = builder.toString();
+                    }
 
-                        Matcher matcher = Message.MentionType.CHANNEL.getPattern().matcher(string);
-                        while (matcher.find())
-                        {
-                            TextChannel channel = jda.getTextChannelById(matcher.group(1));
-                            if (channel != null)
-                            {
-                                replace(matcher.group(), "#" + channel.getName());
+                    Matcher matcher = Message.MentionType.CHANNEL.getPattern().matcher(string);
+                    while (matcher.find()) {
+                        TextChannel channel = jda.getTextChannelById(matcher.group(1));
+                        if (channel != null) {
+                            replace(matcher.group(), "#" + channel.getName());
+                        }
+                    }
+                    break;
+                }
+                case ROLE: {
+                    if (string == null) {
+                        string = builder.toString();
+                    }
+
+                    Matcher matcher = Message.MentionType.ROLE.getPattern().matcher(string);
+                    while (matcher.find()) {
+                        for (Guild g : jda.getGuilds()) {
+                            Role role = g.getRoleById(matcher.group(1));
+                            if (role != null) {
+                                replace(matcher.group(), "@" + role.getName());
+                                break;
                             }
                         }
-                        break;
                     }
-                    case ROLE:
-                    {
-                        if (string == null)
-                        {
-                            string = builder.toString();
-                        }
-
-                        Matcher matcher = Message.MentionType.ROLE.getPattern().matcher(string);
-                        while (matcher.find())
-                        {
-                            for (Guild g : jda.getGuilds())
-                            {
-                                Role role = g.getRoleById(matcher.group(1));
-                                if (role != null)
-                                {
-                                    replace(matcher.group(), "@"+role.getName());
-                                    break;
-                                }
-                            }
-                        }
-                        break;
+                    break;
+                }
+                case USER: {
+                    if (string == null) {
+                        string = builder.toString();
                     }
-                    case USER:
-                    {
-                        if (string == null)
-                        {
-                            string = builder.toString();
-                        }
 
-                        Matcher matcher = Message.MentionType.USER.getPattern().matcher(string);
-                        while (matcher.find())
-                        {
-                            User user = jda.getUserById(matcher.group(1));
-                            String replacement;
+                    Matcher matcher = Message.MentionType.USER.getPattern().matcher(string);
+                    while (matcher.find()) {
+                        User user = jda.getUserById(matcher.group(1));
+                        String replacement;
 
-                            if (user == null)
-                                continue;
+                        if (user == null)
+                            continue;
 
-                            Member member;
+                        Member member;
 
-                            if (guild != null && (member = guild.getMember(user)) != null)
-                                replacement = member.getEffectiveName();
-                            else
-                                replacement = user.getName();
+                        if (guild != null && (member = guild.getMember(user)) != null)
+                            replacement = member.getEffectiveName();
+                        else
+                            replacement = user.getName();
 
-                            replace(matcher.group(), "@" + replacement);
-                        }
-                        break;
+                        replace(matcher.group(), "@" + replacement);
                     }
+                    break;
+                }
                 }
             }
         }
@@ -1059,8 +985,7 @@ public class MessageBuilder implements Appendable
      * @return The {@link StringBuilder} used by this {@link MessageBuilder}
      */
     @Nonnull
-    public StringBuilder getStringBuilder()
-    {
+    public StringBuilder getStringBuilder() {
         return this.builder;
     }
 
@@ -1102,8 +1027,7 @@ public class MessageBuilder implements Appendable
      * @return the index of the first occurrence of the specified substring between
      *         the specified indices or {@code -1} if there is no such occurrence.
      */
-    public int indexOf(@Nonnull CharSequence target, int fromIndex, int endIndex)
-    {
+    public int indexOf(@Nonnull CharSequence target, int fromIndex, int endIndex) {
         if (fromIndex < 0)
             throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
         if (endIndex < 0)
@@ -1113,14 +1037,12 @@ public class MessageBuilder implements Appendable
         if (fromIndex > endIndex)
             throw new IndexOutOfBoundsException("fromIndex > endIndex");
 
-        if (endIndex >= builder.length())
-        {
+        if (endIndex >= builder.length()) {
             endIndex = builder.length() - 1;
         }
 
         int targetCount = target.length();
-        if (targetCount == 0)
-        {
+        if (targetCount == 0) {
             return fromIndex;
         }
 
@@ -1128,14 +1050,10 @@ public class MessageBuilder implements Appendable
         int max = endIndex + targetCount - 1;
 
         lastCharSearch:
-        for (int i = fromIndex; i <= max; i++)
-        {
-            if (builder.charAt(i) == strFirstChar)
-            {
-                for (int j = 1; j < targetCount; j++)
-                {
-                    if (builder.charAt(i + j) != target.charAt(j))
-                    {
+        for (int i = fromIndex; i <= max; i++) {
+            if (builder.charAt(i) == strFirstChar) {
+                for (int j = 1; j < targetCount; j++) {
+                    if (builder.charAt(i + j) != target.charAt(j)) {
                         continue lastCharSearch;
                     }
                 }
@@ -1168,8 +1086,7 @@ public class MessageBuilder implements Appendable
      * @return the index of the last occurrence of the specified substring between
      *         the specified indices or {@code -1} if there is no such occurrence.
      */
-    public int lastIndexOf(@Nonnull CharSequence target, int fromIndex, int endIndex)
-    {
+    public int lastIndexOf(@Nonnull CharSequence target, int fromIndex, int endIndex) {
         if (fromIndex < 0)
             throw new IndexOutOfBoundsException("index out of range: " + fromIndex);
         if (endIndex < 0)
@@ -1179,21 +1096,18 @@ public class MessageBuilder implements Appendable
         if (fromIndex > endIndex)
             throw new IndexOutOfBoundsException("fromIndex > endIndex");
 
-        if (endIndex >= builder.length())
-        {
+        if (endIndex >= builder.length()) {
             endIndex = builder.length() - 1;
         }
 
         int targetCount = target.length();
-        if (targetCount == 0)
-        {
+        if (targetCount == 0) {
             return endIndex;
         }
 
         int rightIndex = endIndex - targetCount;
 
-        if (fromIndex > rightIndex)
-        {
+        if (fromIndex > rightIndex) {
             fromIndex = rightIndex;
         }
 
@@ -1203,14 +1117,10 @@ public class MessageBuilder implements Appendable
         int min = fromIndex + targetCount - 1;
 
         lastCharSearch:
-        for (int i = endIndex; i >= min; i--)
-        {
-            if (builder.charAt(i) == strLastChar)
-            {
-                for (int j = strLastIndex - 1, k = 1; j >= 0; j--, k++)
-                {
-                    if (builder.charAt(i - k) != target.charAt(j))
-                    {
+        for (int i = endIndex; i >= min; i--) {
+            if (builder.charAt(i) == strLastChar) {
+                for (int j = strLastIndex - 1, k = 1; j >= 0; j--, k++) {
+                    if (builder.charAt(i - k) != target.charAt(j)) {
                         continue lastCharSearch;
                     }
                 }
@@ -1237,8 +1147,7 @@ public class MessageBuilder implements Appendable
      * @return the created {@link net.dv8tion.jda.api.entities.Message Message}
      */
     @Nonnull
-    public Message build()
-    {
+    public Message build() {
         String message = builder.toString();
         if (this.isEmpty())
             throw new IllegalStateException("Cannot build a Message with no content. (You never added any content to the message)");
@@ -1267,8 +1176,7 @@ public class MessageBuilder implements Appendable
      * @return the created {@link net.dv8tion.jda.api.entities.Message Messages}
      */
     @Nonnull
-    public Queue<Message> buildAll(@Nullable SplitPolicy... policy)
-    {
+    public Queue<Message> buildAll(@Nullable SplitPolicy... policy) {
         if (this.isEmpty())
             throw new UnsupportedOperationException("Cannot build a Message with no content. (You never added any content to the message)");
 
@@ -1279,21 +1187,17 @@ public class MessageBuilder implements Appendable
             return messages;
         }
 
-        if (policy == null || policy.length == 0)
-        {
-            policy = new SplitPolicy[]{ SplitPolicy.ANYWHERE };
+        if (policy == null || policy.length == 0) {
+            policy = new SplitPolicy[]{SplitPolicy.ANYWHERE};
         }
 
         int currentBeginIndex = 0;
 
         messageLoop:
-        while (currentBeginIndex < builder.length() - Message.MAX_CONTENT_LENGTH)
-        {
-            for (SplitPolicy splitPolicy : policy)
-            {
+        while (currentBeginIndex < builder.length() - Message.MAX_CONTENT_LENGTH) {
+            for (SplitPolicy splitPolicy : policy) {
                 int currentEndIndex = splitPolicy.nextMessage(currentBeginIndex, this);
-                if (currentEndIndex != -1)
-                {
+                if (currentEndIndex != -1) {
                     messages.add(build(currentBeginIndex, currentEndIndex));
                     currentBeginIndex = currentEndIndex;
                     continue messageLoop;
@@ -1302,13 +1206,11 @@ public class MessageBuilder implements Appendable
             throw new IllegalStateException("Failed to split the messages");
         }
 
-        if (currentBeginIndex < builder.length())
-        {
+        if (currentBeginIndex < builder.length()) {
             messages.add(build(currentBeginIndex, builder.length()));
         }
 
-        if (this.embeds != null)
-        {
+        if (this.embeds != null) {
             ((DataMessage) messages.get(messages.size() - 1)).setEmbeds(embeds);
         }
 
@@ -1316,15 +1218,13 @@ public class MessageBuilder implements Appendable
     }
 
     @Nonnull
-    protected DataMessage build(int beginIndex, int endIndex)
-    {
+    protected DataMessage build(int beginIndex, int endIndex) {
         String[] ids = new String[0];
         return new DataMessage(isTTS, builder.substring(beginIndex, endIndex), null, null,
                 allowedMentions, mentionedUsers.toArray(ids), mentionedRoles.toArray(ids), components.toArray(new ComponentLayout[0]));
     }
 
-    private String[] toStringArray(long[] users)
-    {
+    private String[] toStringArray(long[] users) {
         String[] ids = new String[users.length];
         for (int i = 0; i < ids.length; i++)
             ids[i] = Long.toUnsignedString(users[i]);
@@ -1335,8 +1235,7 @@ public class MessageBuilder implements Appendable
      * Interface to allow custom implementation of Splitting rules for
      * {@link #buildAll(net.dv8tion.jda.api.MessageBuilder.SplitPolicy...) MessageBuilder.buildAll(SplitPolicy...)}.
      */
-    public interface SplitPolicy
-    {
+    public interface SplitPolicy {
         /**
          * Splits on newline chars {@code `\n`}.
          */
@@ -1363,35 +1262,29 @@ public class MessageBuilder implements Appendable
          * @return a new {@link SplitPolicy}
          */
         @Nonnull
-        static SplitPolicy onChars(@Nonnull CharSequence chars, boolean remove)
-        {
+        static SplitPolicy onChars(@Nonnull CharSequence chars, boolean remove) {
             return new CharSequenceSplitPolicy(chars, remove);
         }
 
         /**
          * Default {@link SplitPolicy} implementation. Splits on a specified {@link CharSequence}.
          */
-        class CharSequenceSplitPolicy implements SplitPolicy
-        {
+        class CharSequenceSplitPolicy implements SplitPolicy {
             private final boolean remove;
             private final CharSequence chars;
 
-            private CharSequenceSplitPolicy(@Nonnull final CharSequence chars, final boolean remove)
-            {
+            private CharSequenceSplitPolicy(@Nonnull final CharSequence chars, final boolean remove) {
                 this.chars = chars;
                 this.remove = remove;
             }
 
             @Override
-            public int nextMessage(final int currentBeginIndex, final MessageBuilder builder)
-            {
+            public int nextMessage(final int currentBeginIndex, final MessageBuilder builder) {
                 int currentEndIndex = builder.lastIndexOf(this.chars, currentBeginIndex, currentBeginIndex + 2000 - (this.remove ? this.chars.length() : 0));
-                if (currentEndIndex < 0)
-                {
+                if (currentEndIndex < 0) {
                     return -1;
                 }
-                else
-                {
+                else {
                     return currentEndIndex + this.chars.length();
                 }
             }
@@ -1416,8 +1309,7 @@ public class MessageBuilder implements Appendable
     /**
      * Holds the available formatting used in {@link MessageBuilder#append(java.lang.CharSequence, net.dv8tion.jda.api.MessageBuilder.Formatting...)}
      */
-    public enum Formatting
-    {
+    public enum Formatting {
         ITALICS("*"),
         BOLD("**"),
         STRIKETHROUGH("~~"),
@@ -1426,14 +1318,12 @@ public class MessageBuilder implements Appendable
 
         private final String tag;
 
-        Formatting(String tag)
-        {
+        Formatting(String tag) {
             this.tag = tag;
         }
 
         @Nonnull
-        private String getTag()
-        {
+        private String getTag() {
             return tag;
         }
     }

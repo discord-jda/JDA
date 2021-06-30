@@ -78,7 +78,7 @@ import java.util.stream.Collectors;
  *  }
  * </code></pre>
  *
- * @since  3.4.0
+ * @since 3.4.0
  *
  * @see    Message#editMessage(Message)
  * @see    Message#editMessage(CharSequence)
@@ -93,8 +93,7 @@ import java.util.stream.Collectors;
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(InputStream, String, AttachmentOption...)
  * @see    net.dv8tion.jda.api.entities.MessageChannel#sendFile(byte[], String, AttachmentOption...)
  */
-public interface MessageAction extends RestAction<Message>, Appendable, AllowedMentions<MessageAction>
-{
+public interface MessageAction extends RestAction<Message>, Appendable, AllowedMentions<MessageAction> {
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed by default.
      * This just sets the default for all MessageActions and can be overridden on a per-action basis using {@link #allowedMentions(Collection)}.
@@ -114,8 +113,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @param  allowedMentions
      *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
      */
-    static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
+    static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         AllowedMentions.setDefaultMentions(allowedMentions);
     }
 
@@ -126,8 +124,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @return Default mentions set by MessageAction.setDefaultMentions(Collection)
      */
     @Nonnull
-    static EnumSet<Message.MentionType> getDefaultMentions()
-    {
+    static EnumSet<Message.MentionType> getDefaultMentions() {
         return AllowedMentions.getDefaultMentions();
     }
 
@@ -139,8 +136,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @param mention
      *        True, if replies should mention by default
      */
-    static void setDefaultMentionRepliedUser(boolean mention)
-    {
+    static void setDefaultMentionRepliedUser(boolean mention) {
         AllowedMentions.setDefaultMentionRepliedUser(mention);
     }
 
@@ -153,8 +149,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return True, if replies mention by default
      */
-    static boolean isDefaultMentionRepliedUser()
-    {
+    static boolean isDefaultMentionRepliedUser() {
         return AllowedMentions.isDefaultMentionRepliedUser();
     }
 
@@ -166,8 +161,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      * @param fail
      *        True, to throw a exception if the referenced message does not exist
      */
-    static void setDefaultFailOnInvalidReply(boolean fail)
-    {
+    static void setDefaultFailOnInvalidReply(boolean fail) {
         MessageActionImpl.setDefaultFailOnInvalidReply(fail);
     }
 
@@ -180,8 +174,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return True, to throw a exception if the referenced message does not exist
      */
-    static boolean isDefaultFailOnInvalidReply()
-    {
+    static boolean isDefaultFailOnInvalidReply() {
         return MessageActionImpl.isDefaultFailOnInvalidReply();
     }
 
@@ -263,7 +256,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -289,12 +282,11 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction referenceById(@Nonnull String messageId)
-    {
+    default MessageAction referenceById(@Nonnull String messageId) {
         return referenceById(MiscUtil.parseSnowflake(messageId));
     }
 
@@ -318,12 +310,11 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reference(@Nonnull Message message)
-    {
+    default MessageAction reference(@Nonnull Message message) {
         Checks.notNull(message, "Message");
         return referenceById(message.getIdLong());
     }
@@ -339,7 +330,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -356,7 +347,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      *
      * @return Updated MessageAction for chaining convenience
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -445,7 +436,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     @Nonnull
     @CheckReturnValue
     @Deprecated
-    @ForRemoval(deadline="5.0.0")
+    @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("setEmbeds(embed)")
     @DeprecatedSince("4.4.0")
     MessageAction embed(@Nullable final MessageEmbed embed);
@@ -488,8 +479,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default MessageAction setEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbeds");
         return setEmbeds(Arrays.asList(embeds));
     }
@@ -505,8 +495,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     @Nonnull
     @Override
     @CheckReturnValue
-    default MessageAction append(@Nonnull final CharSequence csq)
-    {
+    default MessageAction append(@Nonnull final CharSequence csq) {
         return append(csq, 0, csq.length());
     }
 
@@ -562,8 +551,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction appendFormat(@Nonnull final String format, final Object... args)
-    {
+    default MessageAction appendFormat(@Nonnull final String format, final Object... args) {
         return append(String.format(format, args));
     }
 
@@ -625,8 +613,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction addFile(@Nonnull final byte[] data, @Nonnull final String name, @Nonnull AttachmentOption... options)
-    {
+    default MessageAction addFile(@Nonnull final byte[] data, @Nonnull final String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(data, "Data");
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(data.length <= maxSize, "File may not exceed the maximum file length of %d bytes!", maxSize);
@@ -656,8 +643,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction addFile(@Nonnull final File file, @Nonnull AttachmentOption... options)
-    {
+    default MessageAction addFile(@Nonnull final File file, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
     }
@@ -773,8 +759,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction retainFilesById(@Nonnull String... ids)
-    {
+    default MessageAction retainFilesById(@Nonnull String... ids) {
         Checks.notNull(ids, "IDs");
         return retainFilesById(Arrays.asList(ids));
     }
@@ -795,13 +780,12 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction retainFilesById(long... ids)
-    {
+    default MessageAction retainFilesById(long... ids) {
         Checks.notNull(ids, "IDs");
         return retainFilesById(Arrays
-            .stream(ids)
-            .mapToObj(Long::toUnsignedString)
-            .collect(Collectors.toList())
+                .stream(ids)
+                .mapToObj(Long::toUnsignedString)
+                .collect(Collectors.toList())
         );
     }
 
@@ -821,13 +805,12 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
-    {
+    default MessageAction retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments) {
         Checks.noneNull(attachments, "Attachments");
         return retainFilesById(attachments
-            .stream()
-            .map(Message.Attachment::getId)
-            .collect(Collectors.toList())
+                .stream()
+                .map(Message.Attachment::getId)
+                .collect(Collectors.toList())
         );
     }
 
@@ -844,8 +827,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
-    {
+    default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows) {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
     }
@@ -879,8 +861,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull Collection<? extends Component> components)
-    {
+    default MessageAction setActionRow(@Nonnull Collection<? extends Component> components) {
         return setActionRows(ActionRow.of(components));
     }
 
@@ -898,8 +879,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRow(@Nonnull Component... components)
-    {
+    default MessageAction setActionRow(@Nonnull Component... components) {
         return setActionRows(ActionRow.of(components));
     }
 

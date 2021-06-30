@@ -34,61 +34,51 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-public class TriggerRestAction<T> extends RestActionImpl<T>
-{
+public class TriggerRestAction<T> extends RestActionImpl<T> {
     private final ReentrantLock mutex = new ReentrantLock();
     private final List<Runnable> callbacks = new LinkedList<>();
     private volatile boolean isReady;
     private volatile Throwable exception;
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route) {
         super(api, route);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, DataObject data)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, DataObject data) {
         super(api, route, data);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, RequestBody data)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, RequestBody data) {
         super(api, route, data);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, handler);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, DataObject data, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 
-    public TriggerRestAction(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler)
-    {
+    public TriggerRestAction(JDA api, Route.CompiledRoute route, RequestBody data, BiFunction<Response, Request<T>, T> handler) {
         super(api, route, data, handler);
     }
 
-    public void run()
-    {
+    public void run() {
         MiscUtil.locked(mutex, () -> {
             isReady = true;
             callbacks.forEach(Runnable::run);
         });
     }
 
-    public void fail(Throwable throwable)
-    {
+    public void fail(Throwable throwable) {
         MiscUtil.locked(mutex, () -> {
             exception = throwable;
             callbacks.forEach(Runnable::run);
         });
     }
 
-    public void onReady(Runnable callback)
-    {
+    public void onReady(Runnable callback) {
         MiscUtil.locked(mutex, () -> {
             if (isReady || exception != null)
                 callback.run();
@@ -98,20 +88,17 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
     }
 
     @Override
-    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure)
-    {
+    public void queue(Consumer<? super T> success, Consumer<? super Throwable> failure) {
         if (isReady)
             super.queue(success, failure);
         else onReady(() -> {
-            if (this.exception != null)
-            {
+            if (this.exception != null) {
                 if (failure != null)
                     failure.accept(this.exception);
                 else
                     RestAction.getDefaultFailure().accept(this.exception);
             }
-            else
-            {
+            else {
                 super.queue(success, failure);
             }
         });
@@ -119,15 +106,13 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
+    public CompletableFuture<T> submit(boolean shouldQueue) {
         if (isReady)
             return super.submit(shouldQueue);
         CompletableFuture<T> future = new CompletableFuture<>();
 
         onReady(() -> {
-            if (exception != null)
-            {
+            if (exception != null) {
                 future.completeExceptionally(exception);
                 return;
             }
@@ -142,7 +127,7 @@ public class TriggerRestAction<T> extends RestActionImpl<T>
             // Handle cancel forwarding
             future.whenComplete((r, e) -> {
                 if (future.isCancelled())
-                  handle.cancel(false);
+                    handle.cancel(false);
             });
         });
         return future;

@@ -38,8 +38,7 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.entities.templates.Template#getManager()
  */
-public interface TemplateManager extends Manager<TemplateManager>
-{
+public interface TemplateManager extends Manager<TemplateManager> {
     /** Used to reset the name field */
     long NAME = 0x1;
     /** Used to reset the description field */

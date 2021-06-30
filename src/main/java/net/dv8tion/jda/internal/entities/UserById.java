@@ -28,37 +28,31 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
 
-public class UserById implements User
-{
+public class UserById implements User {
     protected final long id;
 
-    public UserById(long id)
-    {
+    public UserById(long id) {
         this.id = id;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return this.id;
     }
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return "<@" + getId() + ">";
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof User))
@@ -67,113 +61,98 @@ public class UserById implements User
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "U:(" + getId() + ')';
     }
 
     @Contract("->fail")
-    private void unsupported()
-    {
+    private void unsupported() {
         throw new UnsupportedOperationException("This User instance only wraps an ID. Other operations are unsupported");
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         unsupported();
         return null;
     }
 
     @Nonnull
     @Override
-    public String getDiscriminator()
-    {
+    public String getDiscriminator() {
         unsupported();
         return null;
     }
 
     @Nullable
     @Override
-    public String getAvatarId()
-    {
+    public String getAvatarId() {
         unsupported();
         return null;
     }
 
     @Nonnull
     @Override
-    public String getDefaultAvatarId()
-    {
+    public String getDefaultAvatarId() {
         unsupported();
         return null;
     }
 
     @Nonnull
     @Override
-    public String getAsTag()
-    {
+    public String getAsTag() {
         unsupported();
         return null;
     }
 
     @Override
-    public boolean hasPrivateChannel()
-    {
+    public boolean hasPrivateChannel() {
         unsupported();
         return false;
     }
 
     @Nonnull
     @Override
-    public RestAction<PrivateChannel> openPrivateChannel()
-    {
+    public RestAction<PrivateChannel> openPrivateChannel() {
         unsupported();
         return null;
     }
 
     @Nonnull
     @Override
-    public List<Guild> getMutualGuilds()
-    {
+    public List<Guild> getMutualGuilds() {
         unsupported();
         return null;
     }
 
     @Override
-    public boolean isBot()
-    {
+    public boolean isBot() {
         unsupported();
         return false;
     }
 
     @Override
-    public boolean isSystem()
-    {
+    public boolean isSystem() {
         unsupported();
         return false;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         unsupported();
         return null;
     }
 
     @Nonnull
     @Override
-    public EnumSet<UserFlag> getFlags()
-    {
+    public EnumSet<UserFlag> getFlags() {
         unsupported();
         return null;
     }
 
     @Override
-    public int getFlagsRaw()
-    {
+    public int getFlagsRaw() {
         unsupported();
         return 0;
     }

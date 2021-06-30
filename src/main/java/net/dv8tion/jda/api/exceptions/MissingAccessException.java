@@ -29,15 +29,12 @@ import javax.annotation.Nonnull;
  *
  * @since 4.2.1
  */
-public class MissingAccessException extends InsufficientPermissionException
-{
-    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission)
-    {
+public class MissingAccessException extends InsufficientPermissionException {
+    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission) {
         super(channel, permission);
     }
 
-    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
-    {
+    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason) {
         super(channel, permission, reason);
     }
 }

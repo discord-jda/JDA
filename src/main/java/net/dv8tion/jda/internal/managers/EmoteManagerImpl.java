@@ -35,8 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements EmoteManager
-{
+public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements EmoteManager {
     protected final EmoteImpl emote;
 
     protected final List<String> roles = new ArrayList<>();
@@ -48,16 +47,14 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
      * @param  emote
      *         The target {@link net.dv8tion.jda.internal.entities.EmoteImpl EmoteImpl} to modify
      */
-    public EmoteManagerImpl(EmoteImpl emote)
-    {
+    public EmoteManagerImpl(EmoteImpl emote) {
         super(emote.getJDA(), Route.Emotes.MODIFY_EMOTE.compile(notNullGuild(emote).getId(), emote.getId()));
         this.emote = emote;
         if (isPermissionChecksEnabled())
             checkPermissions();
     }
 
-    private static Guild notNullGuild(EmoteImpl emote)
-    {
+    private static Guild notNullGuild(EmoteImpl emote) {
         Guild g = emote.getGuild();
         if (g == null)
             throw new IllegalStateException("Cannot modify an emote without shared guild");
@@ -66,16 +63,14 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
 
     @Nonnull
     @Override
-    public Emote getEmote()
-    {
+    public Emote getEmote() {
         return emote;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl reset(long fields)
-    {
+    public EmoteManagerImpl reset(long fields) {
         super.reset(fields);
         if ((fields & ROLES) == ROLES)
             withLock(this.roles, List::clear);
@@ -87,8 +82,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl reset(long... fields)
-    {
+    public EmoteManagerImpl reset(long... fields) {
         super.reset(fields);
         return this;
     }
@@ -96,8 +90,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl reset()
-    {
+    public EmoteManagerImpl reset() {
         super.reset();
         withLock(this.roles, List::clear);
         this.name = null;
@@ -107,8 +100,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl setName(@Nonnull String name)
-    {
+    public EmoteManagerImpl setName(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
@@ -121,14 +113,11 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     @Nonnull
     @Override
     @CheckReturnValue
-    public EmoteManagerImpl setRoles(Set<Role> roles)
-    {
-        if (roles == null)
-        {
+    public EmoteManagerImpl setRoles(Set<Role> roles) {
+        if (roles == null) {
             withLock(this.roles, List::clear);
         }
-        else
-        {
+        else {
             Checks.notNull(roles, "Roles");
             roles.forEach((role) ->
             {
@@ -146,8 +135,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
         if (shouldUpdate(NAME))
             object.put("name", name);
@@ -161,8 +149,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
     }
 
     @Override
-    protected boolean checkPermissions()
-    {
+    protected boolean checkPermissions() {
         if (!getGuild().getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
             throw new InsufficientPermissionException(getGuild(), Permission.MANAGE_EMOTES);
         return super.checkPermissions();

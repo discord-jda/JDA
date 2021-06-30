@@ -28,33 +28,28 @@ import net.dv8tion.jda.internal.entities.*;
 import net.dv8tion.jda.internal.utils.UnlockHook;
 import net.dv8tion.jda.internal.utils.cache.SnowflakeCacheViewImpl;
 
-public class GuildMemberRemoveHandler extends SocketHandler
-{
+public class GuildMemberRemoveHandler extends SocketHandler {
 
-    public GuildMemberRemoveHandler(JDAImpl api)
-    {
+    public GuildMemberRemoveHandler(JDAImpl api) {
         super(api);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         final long id = content.getLong("guild_id");
         boolean setup = getJDA().getGuildSetupController().onRemoveMember(id, content);
         if (setup)
             return null;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildsView().get(id);
-        if (guild == null)
-        {
+        if (guild == null) {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
         }
 
         final long userId = content.getObject("user").getUnsignedLong("id");
-        if (userId == getJDA().getSelfUser().getIdLong())
-        {
+        if (userId == getJDA().getSelfUser().getIdLong()) {
             //We probably just left the guild and this event is trying to remove us from the guild, therefore ignore
             return null;
         }
@@ -68,8 +63,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
         User user = api.getEntityBuilder().createUser(content.getObject("user"));
         MemberImpl member = (MemberImpl) guild.getMembersView().remove(userId);
 
-        if (member == null)
-        {
+        if (member == null) {
 //            WebSocketClient.LOG.debug("Received GUILD_MEMBER_REMOVE for a Member that does not exist in the specified Guild. UserId: {} GuildId: {}", userId, id);
             // Remove user from voice channel if applicable
             guild.getVoiceChannelsView().forEachUnordered((channel) -> {
@@ -78,17 +72,17 @@ public class GuildMemberRemoveHandler extends SocketHandler
                 if (connected != null) // user left channel!
                 {
                     getJDA().handleEvent(
-                        new GuildVoiceLeaveEvent(
-                            getJDA(), responseNumber,
-                            connected, channel));
+                            new GuildVoiceLeaveEvent(
+                                    getJDA(), responseNumber,
+                                    connected, channel));
                 }
             });
 
             // Fire cache independent event, we can still inform the library user about the member removal
             getJDA().handleEvent(
-                new GuildMemberRemoveEvent(
-                    getJDA(), responseNumber,
-                    guild, user, null));
+                    new GuildMemberRemoveEvent(
+                            getJDA(), responseNumber,
+                            guild, user, null));
             return null;
         }
 
@@ -99,33 +93,31 @@ public class GuildMemberRemoveHandler extends SocketHandler
             voiceState.setConnectedChannel(null);
             ((VoiceChannelImpl) channel).getConnectedMembersMap().remove(userId);
             getJDA().handleEvent(
-                new GuildVoiceLeaveEvent(
-                    getJDA(), responseNumber,
-                    member, channel));
+                    new GuildVoiceLeaveEvent(
+                            getJDA(), responseNumber,
+                            member, channel));
         }
 
         //The user is not in a different guild that we share
         SnowflakeCacheViewImpl<User> userView = getJDA().getUsersView();
-        try (UnlockHook hook = userView.writeLock())
-        {
+        try (UnlockHook hook = userView.writeLock()) {
             if (userId != getJDA().getSelfUser().getIdLong() // don't remove selfUser from cache
                     && getJDA().getGuildsView().stream()
-                               .noneMatch(g -> g.getMemberById(userId) != null))
-            {
+                    .noneMatch(g -> g.getMemberById(userId) != null)) {
                 userView.remove(userId);
                 getJDA().getEventCache().clear(EventCache.Type.USER, userId);
             }
         }
         // Cache dependent event
         getJDA().handleEvent(
-            new GuildMemberLeaveEvent(
-                getJDA(), responseNumber,
-                member));
+                new GuildMemberLeaveEvent(
+                        getJDA(), responseNumber,
+                        member));
         // Cache independent event
         getJDA().handleEvent(
-            new GuildMemberRemoveEvent(
-                getJDA(), responseNumber,
-                guild, user, member));
+                new GuildMemberRemoveEvent(
+                        getJDA(), responseNumber,
+                        guild, user, member));
         return null;
     }
 }

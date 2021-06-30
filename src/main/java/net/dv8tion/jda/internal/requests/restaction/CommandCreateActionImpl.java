@@ -35,20 +35,17 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
-{
+public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction {
     private final Guild guild;
     private CommandData data;
 
-    public CommandCreateActionImpl(JDAImpl api, CommandData command)
-    {
+    public CommandCreateActionImpl(JDAImpl api, CommandData command) {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
         this.data = command;
     }
 
-    public CommandCreateActionImpl(Guild guild, CommandData command)
-    {
+    public CommandCreateActionImpl(Guild guild, CommandData command) {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
         this.data = command;
@@ -56,44 +53,38 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction addCheck(@Nonnull BooleanSupplier checks)
-    {
+    public CommandCreateAction addCheck(@Nonnull BooleanSupplier checks) {
         return (CommandCreateAction) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setCheck(BooleanSupplier checks)
-    {
+    public CommandCreateAction setCheck(BooleanSupplier checks) {
         return (CommandCreateAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction deadline(long timestamp)
-    {
+    public CommandCreateAction deadline(long timestamp) {
         return (CommandCreateAction) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setDefaultEnabled(boolean enabled)
-    {
+    public CommandCreateAction setDefaultEnabled(boolean enabled) {
         data.setDefaultEnabled(enabled);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit) {
         return (CommandCreateAction) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setName(@Nonnull String name)
-    {
+    public CommandCreateAction setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
@@ -103,8 +94,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescription(@Nonnull String description)
-    {
+    public CommandCreateAction setDescription(@Nonnull String description) {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
@@ -113,37 +103,32 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction addOptions(@Nonnull OptionData... options)
-    {
+    public CommandCreateAction addOptions(@Nonnull OptionData... options) {
         data.addOptions(options);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommand)
-    {
+    public CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommand) {
         data.addSubcommands(subcommand);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData group)
-    {
+    public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData group) {
         data.addSubcommandGroups(group);
         return this;
     }
 
     @Override
-    public RequestBody finalizeData()
-    {
+    public RequestBody finalizeData() {
         return getRequestBody(data.toData());
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Command> request)
-    {
+    protected void handleSuccess(Response response, Request<Command> request) {
         DataObject json = response.getObject();
         request.onSuccess(new Command(api, guild, json));
     }

@@ -25,8 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-public class TimeUtil
-{
+public class TimeUtil {
     public static final long DISCORD_EPOCH = 1420070400000L;
     public static final long TIMESTAMP_OFFSET = 22;
     private static final DateTimeFormatter dtFormatter = DateTimeFormatter.RFC_1123_DATE_TIME;
@@ -40,8 +39,7 @@ public class TimeUtil
      *
      * @return Shifted epoch millis for Discord
      */
-    public static long getDiscordTimestamp(long millisTimestamp)
-    {
+    public static long getDiscordTimestamp(long millisTimestamp) {
         return (millisTimestamp - DISCORD_EPOCH) << TIMESTAMP_OFFSET;
     }
 
@@ -55,8 +53,7 @@ public class TimeUtil
      * @return The creation time of the JDA entity as OffsetDateTime
      */
     @Nonnull
-    public static OffsetDateTime getTimeCreated(long entityId)
-    {
+    public static OffsetDateTime getTimeCreated(long entityId) {
         long timestamp = (entityId >>> TIMESTAMP_OFFSET) + DISCORD_EPOCH;
         Calendar gmt = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         gmt.setTimeInMillis(timestamp);
@@ -76,8 +73,7 @@ public class TimeUtil
      * @return The creation time of the JDA entity as OffsetDateTime
      */
     @Nonnull
-    public static OffsetDateTime getTimeCreated(@Nonnull ISnowflake entity)
-    {
+    public static OffsetDateTime getTimeCreated(@Nonnull ISnowflake entity) {
         Checks.notNull(entity, "Entity");
         return getTimeCreated(entity.getIdLong());
     }
@@ -91,8 +87,7 @@ public class TimeUtil
      * @return The String of the formatted OffsetDateTime
      */
     @Nonnull
-    public static String getDateTimeString(@Nonnull OffsetDateTime time)
-    {
+    public static String getDateTimeString(@Nonnull OffsetDateTime time) {
         return time.format(dtFormatter);
     }
 }

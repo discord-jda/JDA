@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
 /**
  * Indicates that a Message was received in a {@link net.dv8tion.jda.api.entities.MessageChannel MessageChannel}.
  * <br>This includes {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}!
- * 
+ *
  * <p>Can be used to detect that a Message is received in either a guild- or private channel. Providing a MessageChannel and Message.
  *
  * <h2>Requirements</h2>
@@ -39,12 +39,10 @@ import javax.annotation.Nullable;
  * </ul>
 
  */
-public class MessageReceivedEvent extends GenericMessageEvent
-{
+public class MessageReceivedEvent extends GenericMessageEvent {
     private final Message message;
 
-    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
-    {
+    public MessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
         super(api, responseNumber, message.getIdLong(), message.getChannel());
         this.message = message;
     }
@@ -55,8 +53,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @return The received {@link net.dv8tion.jda.api.entities.Message Message} object.
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -70,8 +67,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see #isWebhookMessage()
      */
     @Nonnull
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return message.getAuthor();
     }
 
@@ -86,8 +82,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see    #isWebhookMessage()
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return message.getMember();
     }
 
@@ -97,8 +92,7 @@ public class MessageReceivedEvent extends GenericMessageEvent
      *
      * @return True, if the Message was sent via Webhook
      */
-    public boolean isWebhookMessage()
-    {
+    public boolean isWebhookMessage() {
         return getMessage().isWebhookMessage();
     }
 }

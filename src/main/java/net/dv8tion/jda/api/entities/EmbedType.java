@@ -22,8 +22,7 @@ import javax.annotation.Nonnull;
  * Represents the embedded resource type.
  * <br>These are typically either Images, Videos or Links.
  */
-public enum EmbedType
-{
+public enum EmbedType {
     IMAGE("image"),
     VIDEO("video"),
     LINK("link"),
@@ -31,8 +30,8 @@ public enum EmbedType
     UNKNOWN("");
 
     private final String key;
-    EmbedType(String key)
-    {
+
+    EmbedType(String key) {
         this.key = key;
     }
 
@@ -48,10 +47,8 @@ public enum EmbedType
      *         or {@link net.dv8tion.jda.api.entities.EmbedType#UNKNOWN UNKNOWN}.
      */
     @Nonnull
-    public static EmbedType fromKey(String key)
-    {
-        for (EmbedType type : values())
-        {
+    public static EmbedType fromKey(String key) {
+        for (EmbedType type : values()) {
             if (type.key.equals(key))
                 return type;
         }

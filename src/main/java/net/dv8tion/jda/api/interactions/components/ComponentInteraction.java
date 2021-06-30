@@ -38,8 +38,7 @@ import java.util.stream.Collectors;
  * <p>Instead of {@link #deferReply()} and {@link #reply(String)} you can use {@link #deferEdit()} and {@link #editMessage(String)} with these interactions!
  * <b>You can only acknowledge an interaction once!</b>
  */
-public interface ComponentInteraction extends Interaction
-{
+public interface ComponentInteraction extends Interaction {
     /**
      * The custom component Id provided to the component when it was originally created.
      * <br>This value should be used to determine what action to take in regards to this interaction.
@@ -82,8 +81,7 @@ public interface ComponentInteraction extends Interaction
      * @return The message id
      */
     @Nonnull
-    default String getMessageId()
-    {
+    default String getMessageId() {
         return Long.toUnsignedString(getMessageIdLong());
     }
 
@@ -140,8 +138,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessage(@Nonnull Message message)
-    {
+    default UpdateInteractionAction editMessage(@Nonnull Message message) {
         Checks.notNull(message, "Message");
         UpdateInteractionActionImpl action = (UpdateInteractionActionImpl) deferEdit();
         return action.applyMessage(message);
@@ -166,8 +163,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessage(@Nonnull String content)
-    {
+    default UpdateInteractionAction editMessage(@Nonnull String content) {
         Checks.notNull(content, "Content");
         return deferEdit().setContent(content);
     }
@@ -191,8 +187,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editComponents(@Nonnull Collection<? extends ComponentLayout> components)
-    {
+    default UpdateInteractionAction editComponents(@Nonnull Collection<? extends ComponentLayout> components) {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(it -> !(it instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
@@ -219,8 +214,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editComponents(@Nonnull ComponentLayout... components)
-    {
+    default UpdateInteractionAction editComponents(@Nonnull ComponentLayout... components) {
         Checks.noneNull(components, "ComponentLayouts");
         return editComponents(Arrays.asList(components));
     }
@@ -244,8 +238,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default UpdateInteractionAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
     }
@@ -269,8 +262,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default UpdateInteractionAction editMessageEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         return deferEdit().setEmbeds(embeds);
     }
@@ -296,8 +288,7 @@ public interface ComponentInteraction extends Interaction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default UpdateInteractionAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editMessage(String.format(format, args));
     }

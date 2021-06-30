@@ -28,8 +28,7 @@ import java.util.Set;
  *
  * @see Message#getStickers()
  */
-public class MessageSticker implements ISnowflake
-{
+public class MessageSticker implements ISnowflake {
     private final long id;
     private final String name;
     private final String description;
@@ -51,8 +50,7 @@ public class MessageSticker implements ISnowflake
     /** Template for {@link #getIconUrl()} */
     public static final String ICON_URL = "https://cdn.discordapp.com/stickers/%s.%s";
 
-    public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final StickerFormat formatType, final Set<String> tags)
-    {
+    public MessageSticker(final long id, final String name, final String description, final long packId, final String asset, final StickerFormat formatType, final Set<String> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -63,8 +61,7 @@ public class MessageSticker implements ISnowflake
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
@@ -74,8 +71,7 @@ public class MessageSticker implements ISnowflake
      * @return the name of the sticker
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -85,8 +81,7 @@ public class MessageSticker implements ISnowflake
      * @return Possibly-empty String containing the description of the sticker
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -98,8 +93,7 @@ public class MessageSticker implements ISnowflake
      * @return the ID of the pack the sticker is from
      */
     @Nonnull
-    public String getPackId()
-    {
+    public String getPackId() {
         return Long.toUnsignedString(getPackIdLong());
     }
 
@@ -110,8 +104,7 @@ public class MessageSticker implements ISnowflake
      *
      * @return the ID of the pack the sticker is from
      */
-    public long getPackIdLong()
-    {
+    public long getPackIdLong() {
         return packId;
     }
 
@@ -128,8 +121,7 @@ public class MessageSticker implements ISnowflake
     @ForRemoval
     @ReplaceWith("getIconUrl()")
     @DeprecatedSince("4.3.1")
-    public String getAssetHash()
-    {
+    public String getAssetHash() {
         return asset;
     }
 
@@ -148,8 +140,7 @@ public class MessageSticker implements ISnowflake
     @ForRemoval
     @ReplaceWith("getIconUrl()")
     @DeprecatedSince("4.3.1")
-    public String getAssetUrl()
-    {
+    public String getAssetUrl() {
         return String.format(ASSET_URL, id, asset, formatType.getExtension());
     }
 
@@ -162,8 +153,7 @@ public class MessageSticker implements ISnowflake
      * @return The image url of the sticker
      */
     @Nonnull
-    public String getIconUrl()
-    {
+    public String getIconUrl() {
         return Helpers.format(ICON_URL, getId(), formatType.getExtension());
     }
 
@@ -173,8 +163,7 @@ public class MessageSticker implements ISnowflake
      * @return the format of the sticker
      */
     @Nonnull
-    public StickerFormat getFormatType()
-    {
+    public StickerFormat getFormatType() {
         return formatType;
     }
 
@@ -184,13 +173,11 @@ public class MessageSticker implements ISnowflake
      * @return Possibly-empty unmodifiable Set of tags of the sticker
      */
     @Nonnull
-    public Set<String> getTags()
-    {
+    public Set<String> getTags() {
         return tags;
     }
 
-    public enum StickerFormat
-    {
+    public enum StickerFormat {
         /**
          * The PNG format.
          */
@@ -214,8 +201,7 @@ public class MessageSticker implements ISnowflake
         private final int id;
         private final String extension;
 
-        StickerFormat(final int id, final String extension)
-        {
+        StickerFormat(final int id, final String extension) {
             this.id = id;
             this.extension = extension;
         }
@@ -229,8 +215,7 @@ public class MessageSticker implements ISnowflake
          * @return The file extension for this format
          */
         @Nonnull
-        public String getExtension()
-        {
+        public String getExtension() {
             if (this == UNKNOWN)
                 throw new IllegalStateException("Can only get extension of a known format");
             return extension;
@@ -245,10 +230,8 @@ public class MessageSticker implements ISnowflake
          * @return The representative StickerFormat or UNKNOWN if it can't be resolved
          */
         @Nonnull
-        public static MessageSticker.StickerFormat fromId(int id)
-        {
-            for (MessageSticker.StickerFormat stickerFormat : values())
-            {
+        public static MessageSticker.StickerFormat fromId(int id) {
+            for (MessageSticker.StickerFormat stickerFormat : values()) {
                 if (stickerFormat.id == id)
                     return stickerFormat;
             }

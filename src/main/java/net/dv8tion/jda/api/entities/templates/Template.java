@@ -37,13 +37,12 @@ import java.time.OffsetDateTime;
  * Representation of a Discord Guild Template
  * <br>This class is immutable.
  *
- * @since  4.3.0
+ * @since 4.3.0
  *
  * @see    #resolve(JDA, String)
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveTemplates() Guild.retrieveTemplates()
  */
-public class Template
-{
+public class Template {
     private final JDAImpl api;
     private final String code;
     private final String name;
@@ -59,8 +58,7 @@ public class Template
 
     public Template(final JDAImpl api, final String code, final String name, final String description,
                     final int uses, final User creator, final OffsetDateTime createdAt, final OffsetDateTime updatedAt,
-                    final TemplateGuild guild, final boolean synced)
-    {
+                    final TemplateGuild guild, final boolean synced) {
         this.api = api;
         this.code = code;
         this.name = name;
@@ -98,8 +96,7 @@ public class Template
      *         <br>The Template object
      */
     @Nonnull
-    public static RestAction<Template> resolve(final JDA api, final String code)
-    {
+    public static RestAction<Template> resolve(final JDA api, final String code) {
         Checks.notEmpty(code, "code");
         Checks.noWhitespace(code, "code");
         Checks.notNull(api, "api");
@@ -126,8 +123,7 @@ public class Template
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Template> sync()
-    {
+    public RestAction<Template> sync() {
         checkInteraction();
         final Route.CompiledRoute route = Route.Templates.SYNC_TEMPLATE.compile(guild.getId(), this.code);
         return new RestActionImpl<>(api, route, (response, request) ->
@@ -148,8 +144,7 @@ public class Template
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> delete()
-    {
+    public RestAction<Void> delete() {
         checkInteraction();
         final Route.CompiledRoute route = Route.Templates.DELETE_TEMPLATE.compile(guild.getId(), this.code);
         return new RestActionImpl<>(api, route);
@@ -161,8 +156,7 @@ public class Template
      * @return The template code
      */
     @Nonnull
-    public String getCode()
-    {
+    public String getCode() {
         return this.code;
     }
 
@@ -172,8 +166,7 @@ public class Template
      * @return The template name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
@@ -183,8 +176,7 @@ public class Template
      * @return The template description
      */
     @Nullable
-    public String getDescription()
-    {
+    public String getDescription() {
         return this.description;
     }
 
@@ -193,8 +185,7 @@ public class Template
      *
      * @return The uses of this template
      */
-    public int getUses()
-    {
+    public int getUses() {
         return this.uses;
     }
 
@@ -204,8 +195,7 @@ public class Template
      * @return The user who created this template
      */
     @Nonnull
-    public User getCreator()
-    {
+    public User getCreator() {
         return this.creator;
     }
 
@@ -215,8 +205,7 @@ public class Template
      * @return The creation date of this template
      */
     @Nonnull
-    public OffsetDateTime getTimeCreated()
-    {
+    public OffsetDateTime getTimeCreated() {
         return this.createdAt;
     }
 
@@ -229,8 +218,7 @@ public class Template
      * @see    #getTimeCreated()
      */
     @Nonnull
-    public OffsetDateTime getTimeUpdated()
-    {
+    public OffsetDateTime getTimeUpdated() {
         return this.updatedAt;
     }
 
@@ -243,8 +231,7 @@ public class Template
      * @see    TemplateGuild
      */
     @Nonnull
-    public TemplateGuild getGuild()
-    {
+    public TemplateGuild getGuild() {
         return this.guild;
     }
 
@@ -253,8 +240,7 @@ public class Template
      *
      * @return True, if this template matches the current guild structure
      */
-    public boolean isSynced()
-    {
+    public boolean isSynced() {
         return this.synced;
     }
 
@@ -274,16 +260,14 @@ public class Template
      * @return The TemplateManager of this Template
      */
     @Nonnull
-    public TemplateManager getManager()
-    {
+    public TemplateManager getManager() {
         checkInteraction();
         if (manager == null)
             return manager = new TemplateManagerImpl(this);
         return manager;
     }
 
-    private void checkInteraction()
-    {
+    private void checkInteraction() {
         final net.dv8tion.jda.api.entities.Guild guild = this.api.getGuildById(this.guild.getIdLong());
 
         if (guild == null)
@@ -298,20 +282,17 @@ public class Template
      * @return The corresponding JDA instance
      */
     @Nonnull
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return this.api;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return code.hashCode();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof Template))
@@ -321,8 +302,7 @@ public class Template
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "Template(" + this.code + ")";
     }
 }

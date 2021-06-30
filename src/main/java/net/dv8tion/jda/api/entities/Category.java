@@ -42,8 +42,7 @@ import java.util.List;
  * @see   JDA#getCategoriesByName(String, boolean)
  * @see   JDA#getCategoryById(long)
  */
-public interface Category extends GuildChannel
-{
+public interface Category extends GuildChannel {
     /**
      * All {@link GuildChannel Channels} listed
      * for this Category
@@ -62,7 +61,7 @@ public interface Category extends GuildChannel
      *
      * @return Immutable list of all child StoreChannels
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     List<StoreChannel> getStoreChannels();

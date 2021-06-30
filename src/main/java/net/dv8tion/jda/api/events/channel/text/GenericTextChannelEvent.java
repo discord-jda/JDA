@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any TextChannelEvent.
  */
-public abstract class GenericTextChannelEvent extends Event
-{
+public abstract class GenericTextChannelEvent extends Event {
     private final TextChannel channel;
 
-    public GenericTextChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel)
-    {
+    public GenericTextChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel) {
         super(api, responseNumber);
         this.channel = channel;
     }
@@ -44,8 +42,7 @@ public abstract class GenericTextChannelEvent extends Event
      * @return The TextChannel
      */
     @Nonnull
-    public TextChannel getChannel()
-    {
+    public TextChannel getChannel() {
         return channel;
     }
 
@@ -56,8 +53,7 @@ public abstract class GenericTextChannelEvent extends Event
      * @return The Guild
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return channel.getGuild();
     }
 }

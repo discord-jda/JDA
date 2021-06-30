@@ -22,31 +22,26 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public class ActivityImpl implements Activity
-{
+public class ActivityImpl implements Activity {
     protected final String name;
     protected final String url;
     protected final ActivityType type;
     protected final Timestamps timestamps;
     protected final Emoji emoji;
 
-    protected ActivityImpl(String name)
-    {
+    protected ActivityImpl(String name) {
         this(name, null, ActivityType.DEFAULT);
     }
 
-    protected ActivityImpl(String name, String url)
-    {
+    protected ActivityImpl(String name, String url) {
         this(name, url, ActivityType.STREAMING);
     }
 
-    protected ActivityImpl(String name, String url, ActivityType type)
-    {
+    protected ActivityImpl(String name, String url, ActivityType type) {
         this(name, url, type, null, null);
     }
 
-    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, Emoji emoji)
-    {
+    protected ActivityImpl(String name, String url, ActivityType type, RichPresence.Timestamps timestamps, Emoji emoji) {
         this.name = name;
         this.url = url;
         this.type = type;
@@ -55,53 +50,45 @@ public class ActivityImpl implements Activity
     }
 
     @Override
-    public boolean isRich()
-    {
+    public boolean isRich() {
         return false;
     }
 
     @Override
-    public RichPresence asRichPresence()
-    {
+    public RichPresence asRichPresence() {
         return null;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return url;
     }
 
     @Nonnull
     @Override
-    public ActivityType getType()
-    {
+    public ActivityType getType() {
         return type;
     }
 
     @Nullable
-    public RichPresence.Timestamps getTimestamps()
-    {
+    public RichPresence.Timestamps getTimestamps() {
         return timestamps;
     }
 
     @Nullable
     @Override
-    public Emoji getEmoji()
-    {
+    public Emoji getEmoji() {
         return emoji;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (o == this)
             return true;
         if (!(o instanceof ActivityImpl))
@@ -109,20 +96,18 @@ public class ActivityImpl implements Activity
 
         ActivityImpl oGame = (ActivityImpl) o;
         return oGame.getType() == type
-               && Objects.equals(name, oGame.getName())
-               && Objects.equals(url, oGame.getUrl())
-               && Objects.equals(timestamps, oGame.timestamps);
+                && Objects.equals(name, oGame.getName())
+                && Objects.equals(url, oGame.getUrl())
+                && Objects.equals(timestamps, oGame.timestamps);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(name, type, url, timestamps);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         if (url != null)
             return String.format("Activity(%s | %s)", name, url);
         else

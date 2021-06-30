@@ -33,8 +33,7 @@ import java.util.stream.Stream;
  *
  * @see   CacheView CacheView for details on Efficient Memory Usage
  */
-public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISnowflake> extends SnowflakeCacheView<T>
-{
+public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISnowflake> extends SnowflakeCacheView<T> {
     /**
      * Behavior similar to {@link CacheView#forEach(Consumer)} but does not preserve order.
      * <br>This will not copy the data store as sorting is not needed.
@@ -45,7 +44,7 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      * @throws NullPointerException
      *         If provided with null
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     void forEachUnordered(@Nonnull final Consumer<? super T> action);
 
@@ -58,7 +57,7 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      *
      * @return Stream of the contained elements
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     Stream<T> streamUnordered();
@@ -68,7 +67,7 @@ public interface SortedSnowflakeCacheView<T extends Comparable<? super T> & ISno
      *
      * @return (Parallel) Stream of contained elements
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     Stream<T> parallelStreamUnordered();

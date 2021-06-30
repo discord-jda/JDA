@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
  *
  * @see Component
  */
-public class ActionRow implements ComponentLayout, Iterable<Component>
-{
+public class ActionRow implements ComponentLayout, Iterable<Component> {
     private final List<Component> components = new ArrayList<>();
 
-    private ActionRow() {}
+    private ActionRow() {
+    }
 
     /**
      * Load ActionRow from serialized representation.
@@ -51,25 +51,23 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return ActionRow instance
      */
     @Nonnull
-    public static ActionRow fromData(@Nonnull DataObject data)
-    {
+    public static ActionRow fromData(@Nonnull DataObject data) {
         Checks.notNull(data, "Data");
         ActionRow row = new ActionRow();
         if (data.getInt("type", 0) != 1)
             throw new IllegalArgumentException("Data has incorrect type. Expected: 1 Found: " + data.getInt("type"));
         data.getArray("components")
-            .stream(DataArray::getObject)
-            .map(obj -> {
-                switch (Component.Type.fromKey(obj.getInt("type")))
-                {
+                .stream(DataArray::getObject)
+                .map(obj -> {
+                    switch (Component.Type.fromKey(obj.getInt("type"))) {
                     case BUTTON:
                         return new ButtonImpl(obj);
                     default:
                         return null;
-                }
-            })
-            .filter(Objects::nonNull)
-            .forEach(row.components::add);
+                    }
+                })
+                .filter(Objects::nonNull)
+                .forEach(row.components::add);
         return row;
     }
 
@@ -85,8 +83,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return The action row
      */
     @Nonnull
-    public static ActionRow of(@Nonnull Collection<? extends Component> components)
-    {
+    public static ActionRow of(@Nonnull Collection<? extends Component> components) {
         Checks.noneNull(components, "Components");
         return of(components.toArray(new Component[0]));
     }
@@ -103,8 +100,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      * @return The action row
      */
     @Nonnull
-    public static ActionRow of(@Nonnull Component... components)
-    {
+    public static ActionRow of(@Nonnull Component... components) {
         Checks.noneNull(components, "Components");
         Checks.check(components.length <= 5, "Can only have 5 components per action row!");
         Checks.check(components.length > 0, "Cannot have empty row!");
@@ -121,8 +117,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      */
     @Nonnull
     @Override
-    public List<Component> getComponents()
-    {
+    public List<Component> getComponents() {
         return components;
     }
 
@@ -133,26 +128,23 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
      */
     @Nonnull
     @Override
-    public List<Button> getButtons()
-    {
+    public List<Button> getButtons() {
         return Collections.unmodifiableList(
-            getComponents().stream()
-                .filter(Button.class::isInstance)
-                .map(Button.class::cast)
-                .collect(Collectors.toList()));
+                getComponents().stream()
+                        .filter(Button.class::isInstance)
+                        .map(Button.class::cast)
+                        .collect(Collectors.toList()));
     }
 
     @Nonnull
     @Override
-    public Type getType()
-    {
+    public Type getType() {
         return Type.ACTION_ROW;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty()
                 .put("type", 1)
                 .put("components", DataArray.fromCollection(components));
@@ -160,8 +152,7 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
 
     @Nonnull
     @Override
-    public Iterator<Component> iterator()
-    {
+    public Iterator<Component> iterator() {
         return components.iterator();
     }
 }

@@ -34,8 +34,7 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
-public class UserImpl extends UserById implements User
-{
+public class UserImpl extends UserById implements User {
     protected final JDAImpl api;
 
     protected short discriminator;
@@ -47,56 +46,48 @@ public class UserImpl extends UserById implements User
     protected boolean fake = false;
     protected int flags;
 
-    public UserImpl(long id, JDAImpl api)
-    {
+    public UserImpl(long id, JDAImpl api) {
         super(id);
         this.api = api;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nonnull
     @Override
-    public String getDiscriminator()
-    {
+    public String getDiscriminator() {
         return Helpers.format("%04d", discriminator);
     }
 
     @Override
-    public String getAvatarId()
-    {
+    public String getAvatarId() {
         return avatarId;
     }
 
     @Nonnull
     @Override
-    public String getDefaultAvatarId()
-    {
+    public String getDefaultAvatarId() {
         return String.valueOf(discriminator % 5);
     }
 
     @Nonnull
     @Override
-    public String getAsTag()
-    {
+    public String getAsTag() {
         return getName() + '#' + getDiscriminator();
     }
 
     @Override
-    public boolean hasPrivateChannel()
-    {
+    public boolean hasPrivateChannel() {
         return privateChannel != 0;
     }
 
     @Nonnull
     @Override
-    public RestAction<PrivateChannel> openPrivateChannel()
-    {
+    public RestAction<PrivateChannel> openPrivateChannel() {
         return new DeferredRestAction<>(getJDA(), PrivateChannel.class, this::getPrivateChannel, () -> {
             Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
             DataObject body = DataObject.empty().put("recipient_id", getId());
@@ -109,8 +100,7 @@ public class UserImpl extends UserById implements User
         });
     }
 
-    public PrivateChannel getPrivateChannel()
-    {
+    public PrivateChannel getPrivateChannel() {
         if (!hasPrivateChannel())
             return null;
         PrivateChannel channel = getJDA().getPrivateChannelById(privateChannel);
@@ -119,103 +109,87 @@ public class UserImpl extends UserById implements User
 
     @Nonnull
     @Override
-    public List<Guild> getMutualGuilds()
-    {
+    public List<Guild> getMutualGuilds() {
         return getJDA().getMutualGuilds(this);
     }
 
     @Override
-    public boolean isBot()
-    {
+    public boolean isBot() {
         return bot;
     }
 
     @Override
-    public boolean isSystem()
-    {
+    public boolean isSystem() {
         return system;
     }
 
     @Nonnull
     @Override
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public EnumSet<UserFlag> getFlags()
-    {
+    public EnumSet<UserFlag> getFlags() {
         return UserFlag.getFlags(flags);
     }
-    
+
     @Override
-    public int getFlagsRaw()
-    {
+    public int getFlagsRaw() {
         return flags;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "U:" + getName() + '(' + getId() + ')';
     }
 
     // -- Setters --
 
-    public UserImpl setName(String name)
-    {
+    public UserImpl setName(String name) {
         this.name = name;
         return this;
     }
 
-    public UserImpl setDiscriminator(String discriminator)
-    {
+    public UserImpl setDiscriminator(String discriminator) {
         this.discriminator = Short.parseShort(discriminator);
         return this;
     }
 
-    public UserImpl setAvatarId(String avatarId)
-    {
+    public UserImpl setAvatarId(String avatarId) {
         this.avatarId = avatarId;
         return this;
     }
 
-    public UserImpl setPrivateChannel(PrivateChannel privateChannel)
-    {
+    public UserImpl setPrivateChannel(PrivateChannel privateChannel) {
         if (privateChannel != null)
             this.privateChannel = privateChannel.getIdLong();
         return this;
     }
 
-    public UserImpl setBot(boolean bot)
-    {
+    public UserImpl setBot(boolean bot) {
         this.bot = bot;
         return this;
     }
 
-    public UserImpl setSystem(boolean system)
-    {
+    public UserImpl setSystem(boolean system) {
         this.system = system;
         return this;
     }
 
-    public UserImpl setFake(boolean fake)
-    {
+    public UserImpl setFake(boolean fake) {
         this.fake = fake;
         return this;
     }
-    
-    public UserImpl setFlags(int flags)
-    {
+
+    public UserImpl setFlags(int flags) {
         this.flags = flags;
         return this;
     }
 
     @Override
-    public void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
+    public void formatTo(Formatter formatter, int flags, int width, int precision) {
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;

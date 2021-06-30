@@ -33,15 +33,14 @@ import java.util.function.BooleanSupplier;
  * specifically designed to allow bots to add {@link net.dv8tion.jda.api.entities.User Users} to Guilds.
  * <br>This requires an <b>OAuth2 Access Token</b> with the scope {@code guilds.join} to work!
  *
- * @since  3.7.0
+ * @since 3.7.0
  *
  * @see    Guild#addMember(String, User)
  * @see    Guild#addMember(String, long)
  * @see    Guild#addMember(String, String)
  * @see    <a href="https://discord.com/developers/docs/topics/oauth2" target="_blank">Discord OAuth2 Documentation</a>
  */
-public interface MemberAction extends RestAction<Void>
-{
+public interface MemberAction extends RestAction<Void> {
     @Nonnull
     @Override
     MemberAction setCheck(@Nullable BooleanSupplier checks);

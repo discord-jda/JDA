@@ -33,13 +33,11 @@ import javax.annotation.Nonnull;
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_INVITES GUILD_INVITES} intent to be enabled.
  * <br>These events will only fire for invite events that occur in channels where you can {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL}.
  */
-public class GenericGuildInviteEvent extends GenericGuildEvent
-{
+public class GenericGuildInviteEvent extends GenericGuildEvent {
     private final String code;
     private final GuildChannel channel;
 
-    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)
-    {
+    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel) {
         super(api, responseNumber, channel.getGuild());
         this.code = code;
         this.channel = channel;
@@ -52,8 +50,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return The invite code
      */
     @Nonnull
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
@@ -64,8 +61,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return The invite url
      */
     @Nonnull
-    public String getUrl()
-    {
+    public String getUrl() {
         return "https://discord.gg/" + code;
     }
 
@@ -75,8 +71,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return {@link GuildChannel}
      */
     @Nonnull
-    public GuildChannel getChannel()
-    {
+    public GuildChannel getChannel() {
         return channel;
     }
 
@@ -86,8 +81,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @return {@link ChannelType}
      */
     @Nonnull
-    public ChannelType getChannelType()
-    {
+    public ChannelType getChannelType() {
         return channel.getType();
     }
 
@@ -103,8 +97,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannelType()
      */
     @Nonnull
-    public TextChannel getTextChannel()
-    {
+    public TextChannel getTextChannel() {
         if (getChannelType() != ChannelType.TEXT)
             throw new IllegalStateException("The channel is not of type TEXT");
         return (TextChannel) getChannel();
@@ -122,8 +115,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannelType()
      */
     @Nonnull
-    public VoiceChannel getVoiceChannel()
-    {
+    public VoiceChannel getVoiceChannel() {
         if (!(channel instanceof VoiceChannel))
             throw new IllegalStateException("The channel is not of type VOICE or STAGE");
         return (VoiceChannel) getChannel();
@@ -141,8 +133,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannelType()
      */
     @Nonnull
-    public StageChannel getStageChannel()
-    {
+    public StageChannel getStageChannel() {
         if (getChannelType() != ChannelType.STAGE)
             throw new IllegalStateException("The channel is not of type STAGE");
         return (StageChannel) getChannel();
@@ -160,8 +151,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannelType()
      */
     @Nonnull
-    public StoreChannel getStoreChannel()
-    {
+    public StoreChannel getStoreChannel() {
         if (getChannelType() != ChannelType.STORE)
             throw new IllegalStateException("The channel is not of type STORE");
         return (StoreChannel) getChannel();
@@ -179,8 +169,7 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
      * @see    #getChannelType()
      */
     @Nonnull
-    public Category getCategory()
-    {
+    public Category getCategory() {
         if (getChannelType() != ChannelType.CATEGORY)
             throw new IllegalStateException("The channel is not of type CATEGORY");
         return (Category) getChannel();

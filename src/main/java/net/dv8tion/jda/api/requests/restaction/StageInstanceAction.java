@@ -30,8 +30,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see net.dv8tion.jda.api.entities.StageChannel#createStageInstance(String)
  */
-public interface StageInstanceAction extends RestAction<StageInstance>
-{
+public interface StageInstanceAction extends RestAction<StageInstance> {
     @Nonnull
     @Override
     StageInstanceAction setCheck(@Nullable BooleanSupplier checks);

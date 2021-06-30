@@ -42,12 +42,10 @@ import java.time.OffsetDateTime;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberUpdateBoostTimeEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime>
-{
+public class GuildMemberUpdateBoostTimeEvent extends GenericGuildMemberUpdateEvent<OffsetDateTime> {
     public static final String IDENTIFIER = "boost_time";
 
-    public GuildMemberUpdateBoostTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous)
-    {
+    public GuildMemberUpdateBoostTimeEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nullable OffsetDateTime previous) {
         super(api, responseNumber, member, previous, member.getTimeBoosted(), IDENTIFIER);
     }
 
@@ -57,8 +55,7 @@ public class GuildMemberUpdateBoostTimeEvent extends GenericGuildMemberUpdateEve
      * @return The old boost time
      */
     @Nullable
-    public OffsetDateTime getOldTimeBoosted()
-    {
+    public OffsetDateTime getOldTimeBoosted() {
         return getOldValue();
     }
 
@@ -68,8 +65,7 @@ public class GuildMemberUpdateBoostTimeEvent extends GenericGuildMemberUpdateEve
      * @return The new boost time
      */
     @Nullable
-    public OffsetDateTime getNewTimeBoosted()
-    {
+    public OffsetDateTime getNewTimeBoosted() {
         return getNewValue();
     }
 }

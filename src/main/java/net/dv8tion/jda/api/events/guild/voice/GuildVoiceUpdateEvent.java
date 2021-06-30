@@ -47,8 +47,7 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code voice-channel}
  */
-public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel>
-{
+public interface GuildVoiceUpdateEvent extends UpdateEvent<Member, VoiceChannel> {
     String IDENTIFIER = "voice-channel";
 
     /**

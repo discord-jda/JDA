@@ -23,19 +23,17 @@ import javax.annotation.Nonnull;
 
 /**
  * Indicates that a Message was sent in a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
- * 
+ *
  * <p>Can be used to retrieve affected PrivateChannel and Message.
  *
  * <h2>Requirements</h2>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled.
  */
-public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
-{
+public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent {
     private final Message message;
 
-    public PrivateMessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
-    {
+    public PrivateMessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
         super(api, responseNumber, message.getIdLong(), message.getPrivateChannel());
         this.message = message;
     }
@@ -46,8 +44,7 @@ public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
      * @return The Message
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -59,8 +56,7 @@ public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
      * @see    net.dv8tion.jda.api.entities.User User
      */
     @Nonnull
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return message.getAuthor();
     }
 }

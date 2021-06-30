@@ -23,8 +23,7 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.util.zip.DataFormatException;
 
-public interface Decompressor
-{
+public interface Decompressor {
     Logger LOG = JDALogger.getLog(Decompressor.class);
 
     Compression getType();
@@ -33,6 +32,7 @@ public interface Decompressor
 
     void shutdown();
 
-    @Nullable // returns null when the decompression isn't done, for example when no Z_SYNC_FLUSH was present
+    @Nullable
+        // returns null when the decompression isn't done, for example when no Z_SYNC_FLUSH was present
     byte[] decompress(byte[] data) throws DataFormatException;
 }

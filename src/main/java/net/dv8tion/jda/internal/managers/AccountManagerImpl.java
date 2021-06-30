@@ -29,8 +29,7 @@ import okhttp3.RequestBody;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
-public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager
-{
+public class AccountManagerImpl extends ManagerBase<AccountManager> implements AccountManager {
     protected final SelfUser selfUser;
 
     protected String name;
@@ -42,24 +41,21 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
      * @param selfUser
      *        The {@link net.dv8tion.jda.api.entities.SelfUser SelfUser} to manage
      */
-    public AccountManagerImpl(SelfUser selfUser)
-    {
+    public AccountManagerImpl(SelfUser selfUser) {
         super(selfUser.getJDA(), Route.Self.MODIFY_SELF.compile());
         this.selfUser = selfUser;
     }
 
     @Nonnull
     @Override
-    public SelfUser getSelfUser()
-    {
+    public SelfUser getSelfUser() {
         return selfUser;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl reset(long fields)
-    {
+    public AccountManagerImpl reset(long fields) {
         super.reset(fields);
         if ((fields & AVATAR) == AVATAR)
             avatar = null;
@@ -69,8 +65,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl reset(long... fields)
-    {
+    public AccountManagerImpl reset(long... fields) {
         super.reset(fields);
         return this;
     }
@@ -78,8 +73,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl reset()
-    {
+    public AccountManagerImpl reset() {
         super.reset();
         avatar = null;
         return this;
@@ -88,8 +82,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setName(@Nonnull String name)
-    {
+    public AccountManagerImpl setName(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
@@ -102,16 +95,14 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     @Nonnull
     @Override
     @CheckReturnValue
-    public AccountManagerImpl setAvatar(Icon avatar)
-    {
+    public AccountManagerImpl setAvatar(Icon avatar) {
         this.avatar = avatar;
         set |= AVATAR;
         return this;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
 
         //Required fields. Populate with current values..
@@ -128,8 +119,7 @@ public class AccountManagerImpl extends ManagerBase<AccountManager> implements A
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Void> request)
-    {
+    protected void handleSuccess(Response response, Request<Void> request) {
         String newToken = response.getObject().getString("token").replace("Bot ", "");
         api.setToken(newToken);
         request.onSuccess(null);

@@ -42,13 +42,12 @@ import java.util.Collections;
  * <p><u>When this RestAction has been executed all provided files will be closed.</u>
  * <br>Note that the garbage collector also frees opened file streams when it finalizes the stream object.
  *
- * @since  4.3.0
+ * @since 4.3.0
  *
  * @see    net.dv8tion.jda.api.entities.WebhookClient#sendMessage(String)
  */
 // TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<WebhookMessageAction<T>>
-{
+public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<WebhookMessageAction<T>> {
 //    /**
 //     * Set the apparent username for the message author.
 //     * <br>This changes the username that is shown for the message author.
@@ -160,8 +159,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
-    {
+    default WebhookMessageAction<T> addEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
         ArrayList<MessageEmbed> embeds = new ArrayList<>();
         embeds.add(embed);
         Collections.addAll(embeds, other);
@@ -222,8 +220,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageAction<T> addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
@@ -259,16 +256,13 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageAction<T> addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notEmpty(name, "Name");
         Checks.notNull(file, "File");
-        try
-        {
+        try {
             return addFile(new FileInputStream(file), name, options);
         }
-        catch (FileNotFoundException e)
-        {
+        catch (FileNotFoundException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -296,8 +290,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
     }
@@ -315,8 +308,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRow(@Nonnull Component... components)
-    {
+    default WebhookMessageAction<T> addActionRow(@Nonnull Component... components) {
         return addActionRows(ActionRow.of(components));
     }
 
@@ -333,8 +325,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRow(@Nonnull Collection<? extends Component> components)
-    {
+    default WebhookMessageAction<T> addActionRow(@Nonnull Collection<? extends Component> components) {
         return addActionRows(ActionRow.of(components));
     }
 
@@ -351,8 +342,7 @@ public interface WebhookMessageAction<T> extends RestAction<T>, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> addActionRows(@Nonnull Collection<? extends ActionRow> rows)
-    {
+    default WebhookMessageAction<T> addActionRows(@Nonnull Collection<? extends ActionRow> rows) {
         Checks.noneNull(rows, "ActionRows");
         return addActionRows(rows.toArray(new ActionRow[0]));
     }

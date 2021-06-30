@@ -41,12 +41,10 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire specific events like these we
  * need to have the old member cached to compare against.
  */
-public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
-{
+public abstract class GenericGuildVoiceEvent extends GenericGuildEvent {
     protected final Member member;
 
-    public GenericGuildVoiceEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+    public GenericGuildVoiceEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member.getGuild());
         this.member = member;
     }
@@ -57,8 +55,7 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
      * @return The affected Member
      */
     @Nonnull
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 
@@ -69,8 +66,7 @@ public abstract class GenericGuildVoiceEvent extends GenericGuildEvent
      * @return The {@link net.dv8tion.jda.api.entities.GuildVoiceState GuildVoiceState} of the member
      */
     @Nonnull
-    public GuildVoiceState getVoiceState()
-    {
+    public GuildVoiceState getVoiceState() {
         return member.getVoiceState();
     }
 }

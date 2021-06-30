@@ -33,7 +33,7 @@ import java.util.function.BooleanSupplier;
  * designed to create a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
- * @since  3.0
+ * @since 3.0
  *
  * @see    net.dv8tion.jda.api.entities.Guild
  * @see    net.dv8tion.jda.api.entities.Guild#createTextChannel(String)
@@ -45,8 +45,7 @@ import java.util.function.BooleanSupplier;
  * @param <T>
  *        The type of channel to create
  */
-public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
-{
+public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T> {
     @Nonnull
     @Override
     ChannelAction<T> setCheck(@Nullable BooleanSupplier checks);
@@ -206,7 +205,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      *
      * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -245,8 +244,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -294,8 +292,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny)
-    {
+    default ChannelAction<T> addPermissionOverride(@Nonnull IPermissionHolder target, long allow, long deny) {
         Checks.notNull(target, "Override Role/Member");
         if (target instanceof Role)
             return addRolePermissionOverride(target.getIdLong(), allow, deny);
@@ -335,8 +332,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default ChannelAction<T> addMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -374,8 +370,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> addRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-    {
+    default ChannelAction<T> addRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
         final long allowRaw = allow != null ? Permission.getRaw(allow) : 0;
         final long denyRaw = deny != null ? Permission.getRaw(deny) : 0;
 
@@ -485,8 +480,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> removePermissionOverride(@Nonnull String id)
-    {
+    default ChannelAction<T> removePermissionOverride(@Nonnull String id) {
         return removePermissionOverride(MiscUtil.parseSnowflake(id));
     }
 
@@ -504,8 +498,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<T> removePermissionOverride(@Nonnull IPermissionHolder holder)
-    {
+    default ChannelAction<T> removePermissionOverride(@Nonnull IPermissionHolder holder) {
         Checks.notNull(holder, "PermissionHolder");
         return removePermissionOverride(holder.getIdLong());
     }

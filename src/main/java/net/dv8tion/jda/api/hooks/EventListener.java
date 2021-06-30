@@ -36,8 +36,7 @@ import javax.annotation.Nonnull;
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
  */
 @FunctionalInterface
-public interface EventListener
-{
+public interface EventListener {
     /**
      * Handles any {@link net.dv8tion.jda.api.events.GenericEvent GenericEvent}.
      *

@@ -39,12 +39,10 @@ import java.util.stream.Collectors;
 @Deprecated
 @ForRemoval(deadline = "4.4.0")
 @DeprecatedSince("4.2.0")
-public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
-{
+public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent {
     private final List<IPermissionHolder> changed;
 
-    public TextChannelUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull List<IPermissionHolder> permHolders)
-    {
+    public TextChannelUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull List<IPermissionHolder> permHolders) {
         super(api, responseNumber, channel);
         this.changed = permHolders;
     }
@@ -58,8 +56,7 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
      * @see    #getChangedMembers()
      */
     @Nonnull
-    public List<IPermissionHolder> getChangedPermissionHolders()
-    {
+    public List<IPermissionHolder> getChangedPermissionHolders() {
         return changed;
     }
 
@@ -69,12 +66,11 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
      * @return List of affected roles
      */
     @Nonnull
-    public List<Role> getChangedRoles()
-    {
+    public List<Role> getChangedRoles() {
         return changed.stream()
-                      .filter(it -> it instanceof Role)
-                      .map(Role.class::cast)
-                      .collect(Collectors.toList());
+                .filter(it -> it instanceof Role)
+                .map(Role.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -83,11 +79,10 @@ public class TextChannelUpdatePermissionsEvent extends GenericTextChannelEvent
      * @return List of affected members
      */
     @Nonnull
-    public List<Member> getChangedMembers()
-    {
+    public List<Member> getChangedMembers() {
         return changed.stream()
-                      .filter(it -> it instanceof Member)
-                      .map(Member.class::cast)
-                      .collect(Collectors.toList());
+                .filter(it -> it instanceof Member)
+                .map(Member.class::cast)
+                .collect(Collectors.toList());
     }
 }

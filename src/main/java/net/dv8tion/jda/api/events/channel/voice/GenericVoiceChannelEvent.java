@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any VoiceChannelEvent.
  */
-public abstract class GenericVoiceChannelEvent extends Event
-{
+public abstract class GenericVoiceChannelEvent extends Event {
     private final VoiceChannel channel;
 
-    public GenericVoiceChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel)
-    {
+    public GenericVoiceChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel) {
         super(api, responseNumber);
         this.channel = channel;
     }
@@ -44,8 +42,7 @@ public abstract class GenericVoiceChannelEvent extends Event
      * @return The VoiceChannel
      */
     @Nonnull
-    public VoiceChannel getChannel()
-    {
+    public VoiceChannel getChannel() {
         return channel;
     }
 
@@ -56,8 +53,7 @@ public abstract class GenericVoiceChannelEvent extends Event
      * @return The Guild
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return channel.getGuild();
     }
 }

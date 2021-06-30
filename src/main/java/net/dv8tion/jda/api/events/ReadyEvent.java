@@ -28,13 +28,11 @@ import javax.annotation.Nonnull;
  * <p>Can be used to indicate when JDA finished populating internal objects and is ready to be used.
  * When this is fired all <b>available</b> entities are cached and accessible.
  */
-public class ReadyEvent extends Event
-{
+public class ReadyEvent extends Event {
     private final int availableGuilds;
     private final int unavailableGuilds;
 
-    public ReadyEvent(@Nonnull JDA api, long responseNumber)
-    {
+    public ReadyEvent(@Nonnull JDA api, long responseNumber) {
         super(api, responseNumber);
         this.availableGuilds = (int) getJDA().getGuildCache().size();
         GuildSetupController setupController = ((JDAImpl) getJDA()).getGuildSetupController();
@@ -51,8 +49,7 @@ public class ReadyEvent extends Event
      * @see    #getGuildTotalCount()
      * @see    #getGuildUnavailableCount()
      */
-    public int getGuildAvailableCount()
-    {
+    public int getGuildAvailableCount() {
         return availableGuilds;
     }
 
@@ -63,8 +60,7 @@ public class ReadyEvent extends Event
      *
      * @return Number of currently unavailable guilds
      */
-    public int getGuildUnavailableCount()
-    {
+    public int getGuildUnavailableCount() {
         return unavailableGuilds;
     }
 
@@ -73,8 +69,7 @@ public class ReadyEvent extends Event
      *
      * @return Total numbers of guilds known to this JDA session
      */
-    public int getGuildTotalCount()
-    {
+    public int getGuildTotalCount() {
         return getGuildAvailableCount() + getGuildUnavailableCount();
     }
 }

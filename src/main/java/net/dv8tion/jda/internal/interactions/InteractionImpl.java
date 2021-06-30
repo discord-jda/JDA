@@ -28,8 +28,7 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class InteractionImpl implements Interaction
-{
+public class InteractionImpl implements Interaction {
     protected final InteractionHookImpl hook;
     protected final long id;
     protected final int type;
@@ -40,32 +39,28 @@ public class InteractionImpl implements Interaction
     protected final AbstractChannel channel;
     protected final JDAImpl api;
 
-    public InteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public InteractionImpl(JDAImpl jda, DataObject data) {
         this.api = jda;
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
         this.type = data.getInt("type");
         this.guild = jda.getGuildById(data.getUnsignedLong("guild_id", 0L));
         this.hook = new InteractionHookImpl(this, jda);
-        if (guild != null)
-        {
+        if (guild != null) {
             member = jda.getEntityBuilder().createMember((GuildImpl) guild, data.getObject("member"));
             jda.getEntityBuilder().updateMemberCache((MemberImpl) member);
             user = member.getUser();
             channel = guild.getGuildChannelById(data.getUnsignedLong("channel_id"));
         }
-        else
-        {
+        else {
             member = null;
             long channelId = data.getUnsignedLong("channel_id");
             PrivateChannel channel = jda.getPrivateChannelById(channelId);
-            if (channel == null)
-            {
+            if (channel == null) {
                 channel = jda.getEntityBuilder().createPrivateChannel(
-                    DataObject.empty()
-                        .put("id", channelId)
-                        .put("recipient", data.getObject("user"))
+                        DataObject.empty()
+                                .put("id", channelId)
+                                .put("recipient", data.getObject("user"))
                 );
             }
             this.channel = channel;
@@ -73,8 +68,7 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, AbstractChannel channel)
-    {
+    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, AbstractChannel channel) {
         this.id = id;
         this.type = type;
         this.token = token;
@@ -87,69 +81,59 @@ public class InteractionImpl implements Interaction
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public int getTypeRaw()
-    {
+    public int getTypeRaw() {
         return type;
     }
 
     @Nonnull
     @Override
-    public String getToken()
-    {
+    public String getToken() {
         return token;
     }
 
     @Nullable
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Nullable
     @Override
-    public AbstractChannel getChannel()
-    {
+    public AbstractChannel getChannel() {
         return channel;
     }
 
     @Nonnull
     @Override
-    public InteractionHook getHook()
-    {
+    public InteractionHook getHook() {
         return hook;
     }
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 
     @Nullable
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 
     @Override
-    public boolean isAcknowledged()
-    {
+    public boolean isAcknowledged() {
         return hook.isAck();
     }
 
     @Nonnull
     @Override
-    public ReplyActionImpl deferReply()
-    {
+    public ReplyActionImpl deferReply() {
         return new ReplyActionImpl(this.hook);
     }
 }

@@ -42,8 +42,7 @@ import java.util.stream.Collectors;
  * @see   net.dv8tion.jda.api.entities.WebhookClient#editMessageById(long, String)
  */
 // TODO: WebhookMessage type (no channel/guild attached)
-public interface WebhookMessageUpdateAction<T> extends RestAction<T>
-{
+public interface WebhookMessageUpdateAction<T> extends RestAction<T> {
     /**
      * Set the new content for this message.
      *
@@ -87,8 +86,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> setEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default WebhookMessageUpdateAction<T> setEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbeds");
         return setEmbeds(Arrays.asList(embeds));
     }
@@ -106,8 +104,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Component... components)
-    {
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Component... components) {
         return setActionRows(ActionRow.of(components));
     }
 
@@ -124,8 +121,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Collection<? extends Component> components)
-    {
+    default WebhookMessageUpdateAction<T> setActionRow(@Nonnull Collection<? extends Component> components) {
         return setActionRows(ActionRow.of(components));
     }
 
@@ -142,8 +138,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> setActionRows(@Nonnull Collection<? extends ActionRow> rows)
-    {
+    default WebhookMessageUpdateAction<T> setActionRows(@Nonnull Collection<? extends ActionRow> rows) {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
     }
@@ -220,8 +215,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
@@ -258,16 +252,13 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notEmpty(name, "Name");
         Checks.notNull(file, "File");
-        try
-        {
+        try {
             return addFile(new FileInputStream(file), name, options);
         }
-        catch (FileNotFoundException e)
-        {
+        catch (FileNotFoundException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -289,8 +280,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> addFile(@Nonnull File file, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
     }
@@ -329,8 +319,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> retainFilesById(@Nonnull String... ids)
-    {
+    default WebhookMessageUpdateAction<T> retainFilesById(@Nonnull String... ids) {
         Checks.notNull(ids, "IDs");
         return retainFilesById(Arrays.asList(ids));
     }
@@ -351,8 +340,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> retainFilesById(long... ids)
-    {
+    default WebhookMessageUpdateAction<T> retainFilesById(long... ids) {
         Checks.notNull(ids, "IDs");
         return retainFilesById(Arrays
                 .stream(ids)
@@ -377,8 +365,7 @@ public interface WebhookMessageUpdateAction<T> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments)
-    {
+    default WebhookMessageUpdateAction<T> retainFiles(@Nonnull Collection<? extends Message.Attachment> attachments) {
         Checks.noneNull(attachments, "Attachments");
         return retainFilesById(attachments
                 .stream()

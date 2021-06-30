@@ -26,16 +26,13 @@ import net.dv8tion.jda.internal.audio.AudioConnection;
 import net.dv8tion.jda.internal.managers.AudioManagerImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class VoiceServerUpdateHandler extends SocketHandler
-{
-    public VoiceServerUpdateHandler(JDAImpl api)
-    {
+public class VoiceServerUpdateHandler extends SocketHandler {
+    public VoiceServerUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
@@ -45,8 +42,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
 
         getJDA().getDirectAudioController().update(guild, guild.getSelfMember().getVoiceState().getChannel());
 
-        if (content.isNull("endpoint"))
-        {
+        if (content.isNull("endpoint")) {
             //Discord did not provide an endpoint yet, we are to wait until discord has resources to provide
             // an endpoint, which will result in them sending another VOICE_SERVER_UPDATE which we will handle
             // to actually connect to the audio server.
@@ -61,19 +57,17 @@ public class VoiceServerUpdateHandler extends SocketHandler
             throw new IllegalArgumentException("Attempted to create audio connection without having a session ID. Did VOICE_STATE_UPDATED fail?");
 
         VoiceDispatchInterceptor voiceInterceptor = getJDA().getVoiceInterceptor();
-        if (voiceInterceptor != null)
-        {
+        if (voiceInterceptor != null) {
             voiceInterceptor.onVoiceServerUpdate(new VoiceDispatchInterceptor.VoiceServerUpdate(guild, endpoint, token, sessionId, allContent));
             return null;
         }
 
         AudioManagerImpl audioManager = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
-        if (audioManager == null)
-        {
+        if (audioManager == null) {
             WebSocketClient.LOG.debug(
-                "Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
-                "to a VoiceChannel. Assuming that this is caused by another client running on this account. " +
-                "Ignoring the event.");
+                    "Received a VOICE_SERVER_UPDATE but JDA is not currently connected nor attempted to connect " +
+                            "to a VoiceChannel. Assuming that this is caused by another client running on this account. " +
+                            "Ignoring the event.");
             return null;
         }
 
@@ -81,8 +75,7 @@ public class VoiceServerUpdateHandler extends SocketHandler
         {
             //Synchronized to prevent attempts to close while setting up initial objects.
             VoiceChannel target = guild.getSelfMember().getVoiceState().getChannel();
-            if (target == null)
-            {
+            if (target == null) {
                 WebSocketClient.LOG.warn("Ignoring VOICE_SERVER_UPDATE for unknown channel");
                 return;
             }

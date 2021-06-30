@@ -26,32 +26,27 @@ import okhttp3.RequestBody;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> implements StageInstanceManager
-{
+public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> implements StageInstanceManager {
     private final StageInstance instance;
 
     private String topic;
     private StageInstance.PrivacyLevel privacyLevel;
 
-    public StageInstanceManagerImpl(StageInstance instance)
-    {
+    public StageInstanceManagerImpl(StageInstance instance) {
         super(instance.getChannel().getJDA(), Route.StageInstances.UPDATE_INSTANCE.compile(instance.getChannel().getId()));
         this.instance = instance;
     }
 
     @Nonnull
     @Override
-    public StageInstance getStageInstance()
-    {
+    public StageInstance getStageInstance() {
         return instance;
     }
 
     @Nonnull
     @Override
-    public StageInstanceManager setTopic(@Nullable String topic)
-    {
-        if (topic != null)
-        {
+    public StageInstanceManager setTopic(@Nullable String topic) {
+        if (topic != null) {
             topic = topic.trim();
             Checks.notLonger(topic, 120, "Topic");
             if (topic.isEmpty())
@@ -64,8 +59,7 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
 
     @Nonnull
     @Override
-    public StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level)
-    {
+    public StageInstanceManager setPrivacyLevel(@Nonnull StageInstance.PrivacyLevel level) {
         Checks.notNull(level, "PrivacyLevel");
         Checks.check(level != StageInstance.PrivacyLevel.UNKNOWN, "PrivacyLevel must not be UNKNOWN!");
         this.privacyLevel = level;
@@ -74,8 +68,7 @@ public class StageInstanceManagerImpl extends ManagerBase<StageInstanceManager> 
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
         if (shouldUpdate(TOPIC) && topic != null)
             body.put("topic", topic);

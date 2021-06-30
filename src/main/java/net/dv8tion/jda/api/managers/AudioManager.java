@@ -44,8 +44,7 @@ import java.util.EnumSet;
  *
  * @see Guild#getAudioManager()
  */
-public interface AudioManager
-{
+public interface AudioManager {
     long DEFAULT_CONNECTION_TIMEOUT = 10000;
     Logger LOG = JDALogger.getLog(AudioManager.class);
 
@@ -123,8 +122,7 @@ public interface AudioManager
      * @see    #getSpeakingMode()
      */
     @Incubating
-    default void setSpeakingMode(@Nonnull SpeakingMode... mode)
-    {
+    default void setSpeakingMode(@Nonnull SpeakingMode... mode) {
         Checks.notNull(mode, "Speaking Mode");
         setSpeakingMode(Arrays.asList(mode));
     }

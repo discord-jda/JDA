@@ -34,8 +34,7 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class RoleActionImpl extends AuditableRestActionImpl<Role> implements RoleAction
-{
+public class RoleActionImpl extends AuditableRestActionImpl<Role> implements RoleAction {
     protected final Guild guild;
     protected Long permissions;
     protected String name = null;
@@ -49,47 +48,40 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
      * @param  guild
      *         The {@link net.dv8tion.jda.api.entities.Guild Guild} for which the Role should be created.
      */
-    public RoleActionImpl(Guild guild)
-    {
+    public RoleActionImpl(Guild guild) {
         super(guild.getJDA(), Route.Roles.CREATE_ROLE.compile(guild.getId()));
         this.guild = guild;
     }
 
     @Nonnull
     @Override
-    public RoleActionImpl setCheck(BooleanSupplier checks)
-    {
+    public RoleActionImpl setCheck(BooleanSupplier checks) {
         return (RoleActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public RoleActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public RoleActionImpl timeout(long timeout, @Nonnull TimeUnit unit) {
         return (RoleActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public RoleActionImpl deadline(long timestamp)
-    {
+    public RoleActionImpl deadline(long timestamp) {
         return (RoleActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleActionImpl setName(String name)
-    {
-        if (name != null)
-        {
+    public RoleActionImpl setName(String name) {
+        if (name != null) {
             Checks.notEmpty(name, "Name");
             Checks.notLonger(name, 100, "Name");
         }
@@ -100,8 +92,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleActionImpl setHoisted(Boolean hoisted)
-    {
+    public RoleActionImpl setHoisted(Boolean hoisted) {
         this.hoisted = hoisted;
         return this;
     }
@@ -109,8 +100,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleActionImpl setMentionable(Boolean mentionable)
-    {
+    public RoleActionImpl setMentionable(Boolean mentionable) {
         this.mentionable = mentionable;
         return this;
     }
@@ -118,8 +108,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleActionImpl setColor(Integer rgb)
-    {
+    public RoleActionImpl setColor(Integer rgb) {
         this.color = rgb;
         return this;
     }
@@ -127,10 +116,8 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleActionImpl setPermissions(Long permissions)
-    {
-        if (permissions != null)
-        {
+    public RoleActionImpl setPermissions(Long permissions) {
+        if (permissions != null) {
             for (Permission p : Permission.getPermissions(permissions))
                 checkPermission(p);
         }
@@ -139,8 +126,7 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
         if (name != null)
             object.put("name", name);
@@ -157,13 +143,11 @@ public class RoleActionImpl extends AuditableRestActionImpl<Role> implements Rol
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Role> request)
-    {
+    protected void handleSuccess(Response response, Request<Role> request) {
         request.onSuccess(api.getEntityBuilder().createRole((GuildImpl) guild, response.getObject(), guild.getIdLong()));
     }
 
-    private void checkPermission(Permission permission)
-    {
+    private void checkPermission(Permission permission) {
         if (!guild.getSelfMember().hasPermission(permission))
             throw new InsufficientPermissionException(guild, permission);
     }

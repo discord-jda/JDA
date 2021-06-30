@@ -27,8 +27,7 @@ import javax.annotation.Nullable;
  *
  * @see CacheView CacheView for details on Efficient Memory Usage
  */
-public interface ShardCacheView extends CacheView<JDA>
-{
+public interface ShardCacheView extends CacheView<JDA> {
     /**
      * Retrieves the JDA instance represented by the provided shard ID.
      *
@@ -54,8 +53,7 @@ public interface ShardCacheView extends CacheView<JDA>
      * @return Possibly-null entity for the specified shard ID
      */
     @Nullable
-    default JDA getElementById(@Nonnull String id)
-    {
+    default JDA getElementById(@Nonnull String id) {
         return getElementById(Integer.parseUnsignedInt(id));
     }
 }

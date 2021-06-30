@@ -39,12 +39,10 @@ import java.util.stream.Collectors;
 @Deprecated
 @ForRemoval(deadline = "4.4.0")
 @DeprecatedSince("4.2.0")
-public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent
-{
+public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent {
     private final List<IPermissionHolder> changedPermHolders;
 
-    public VoiceChannelUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nonnull List<IPermissionHolder> changed)
-    {
+    public VoiceChannelUpdatePermissionsEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nonnull List<IPermissionHolder> changed) {
         super(api, responseNumber, channel);
         this.changedPermHolders = changed;
     }
@@ -58,8 +56,7 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent
      * @see    #getChangedMembers()
      */
     @Nonnull
-    public List<IPermissionHolder> getChangedPermissionHolders()
-    {
+    public List<IPermissionHolder> getChangedPermissionHolders() {
         return changedPermHolders;
     }
 
@@ -69,8 +66,7 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent
      * @return List of affected roles
      */
     @Nonnull
-    public List<Role> getChangedRoles()
-    {
+    public List<Role> getChangedRoles() {
         return changedPermHolders.stream()
                 .filter(p -> p instanceof Role)
                 .map(Role.class::cast)
@@ -83,8 +79,7 @@ public class VoiceChannelUpdatePermissionsEvent extends GenericVoiceChannelEvent
      * @return List of affected members
      */
     @Nonnull
-    public List<Member> getChangedMembers()
-    {
+    public List<Member> getChangedMembers() {
         return changedPermHolders.stream()
                 .filter(p -> p instanceof Member)
                 .map(Member.class::cast)

@@ -20,8 +20,7 @@ import net.dv8tion.jda.api.JDA;
 
 import javax.annotation.Nonnull;
 
-public interface GenericEvent
-{
+public interface GenericEvent {
     /**
      * The current JDA instance corresponding to this Event
      *

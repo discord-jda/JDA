@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code position}
  */
-public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEvent<Integer>
-{
+public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEvent<Integer> {
     public static final String IDENTIFIER = "position";
 
-    public VoiceChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldPosition)
-    {
+    public VoiceChannelUpdatePositionEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldPosition) {
         super(api, responseNumber, channel, oldPosition, channel.getPositionRaw(), IDENTIFIER);
     }
 
@@ -41,8 +39,7 @@ public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEv
      *
      * @return The old position
      */
-    public int getOldPosition()
-    {
+    public int getOldPosition() {
         return getOldValue();
     }
 
@@ -51,8 +48,7 @@ public class VoiceChannelUpdatePositionEvent extends GenericVoiceChannelUpdateEv
      *
      * @return The new position
      */
-    public int getNewPosition()
-    {
+    public int getNewPosition() {
         return getNewValue();
     }
 }

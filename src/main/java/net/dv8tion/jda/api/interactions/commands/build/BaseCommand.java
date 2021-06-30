@@ -26,13 +26,11 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class BaseCommand<T extends BaseCommand<T>> implements SerializableData
-{
+public abstract class BaseCommand<T extends BaseCommand<T>> implements SerializableData {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
 
-    public BaseCommand(@Nonnull String name, @Nonnull String description)
-    {
+    public BaseCommand(@Nonnull String name, @Nonnull String description) {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(name, 32, "Name");
@@ -56,8 +54,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public T setName(@Nonnull String name)
-    {
+    public T setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
         Checks.isLowercase(name, "Name");
@@ -79,8 +76,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      */
     @Nonnull
     @SuppressWarnings("unchecked")
-    public T setDescription(@Nonnull String description)
-    {
+    public T setDescription(@Nonnull String description) {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;
@@ -93,8 +89,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -104,8 +99,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -115,8 +109,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      * @return Immutable list of {@link OptionData}
      */
     @Nonnull
-    public List<OptionData> getOptions()
-    {
+    public List<OptionData> getOptions() {
         return options.stream(DataArray::getObject)
                 .map(OptionData::fromData)
                 .filter(it -> it.getType().getKey() > OptionType.SUB_COMMAND_GROUP.getKey())
@@ -125,8 +118,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty()
                 .put("name", name)
                 .put("description", description)

@@ -29,12 +29,10 @@ import java.util.Set;
  *
  * <p>Identifier: {@code features}
  */
-public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String>>
-{
+public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String>> {
     public static final String IDENTIFIER = "features";
 
-    public GuildUpdateFeaturesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Set<String> oldFeatures)
-    {
+    public GuildUpdateFeaturesEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Set<String> oldFeatures) {
         super(api, responseNumber, guild, oldFeatures, guild.getFeatures(), IDENTIFIER);
     }
 
@@ -44,8 +42,7 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
      * @return Never-null, unmodifiable Set of the old features
      */
     @Nonnull
-    public Set<String> getOldFeatures()
-    {
+    public Set<String> getOldFeatures() {
         return getOldValue();
     }
 
@@ -55,22 +52,19 @@ public class GuildUpdateFeaturesEvent extends GenericGuildUpdateEvent<Set<String
      * @return Never-null, unmodifiable Set of the new features
      */
     @Nonnull
-    public Set<String> getNewFeatures()
-    {
+    public Set<String> getNewFeatures() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public Set<String> getOldValue()
-    {
+    public Set<String> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Set<String> getNewValue()
-    {
+    public Set<String> getNewValue() {
         return super.getNewValue();
     }
 }

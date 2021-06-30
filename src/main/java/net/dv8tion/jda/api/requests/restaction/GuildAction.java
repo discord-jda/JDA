@@ -45,12 +45,11 @@ import java.util.function.BooleanSupplier;
  * specifically designed to allow for the creation of {@link net.dv8tion.jda.api.entities.Guild Guilds}.
  * <br>This is available to all account types but may undergo certain restrictions by Discord.
  *
- * @since  3.4.0
+ * @since 3.4.0
  *
  * @see    net.dv8tion.jda.api.JDA#createGuild(String)
  */
-public interface GuildAction extends RestAction<Void>
-{
+public interface GuildAction extends RestAction<Void> {
     @Nonnull
     @Override
     GuildAction setCheck(@Nullable BooleanSupplier checks);
@@ -74,7 +73,7 @@ public interface GuildAction extends RestAction<Void>
      *         If the provided region is a VIP region as per {@link net.dv8tion.jda.api.Region#isVip() Region.isVip()}
      *
      * @return The current GuildAction for chaining convenience
-     * 
+     *
      * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link net.dv8tion.jda.api.managers.ChannelManager#setRegion(Region)} instead.
      */
     @Nonnull
@@ -286,8 +285,7 @@ public interface GuildAction extends RestAction<Void>
      *
      * <p>This may be used in {@link GuildAction.ChannelData#addPermissionOverride(GuildAction.RoleData, long, long)}  ChannelData.addPermissionOverride(...)}!
      */
-    class RoleData implements SerializableData
-    {
+    class RoleData implements SerializableData {
         protected final long id;
         protected final boolean isPublicRole;
 
@@ -297,8 +295,7 @@ public interface GuildAction extends RestAction<Void>
         protected Integer position;
         protected Boolean mentionable, hoisted;
 
-        public RoleData(long id)
-        {
+        public RoleData(long id) {
             this.id = id;
             this.isPublicRole = id == 0;
         }
@@ -312,8 +309,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData setPermissionsRaw(@Nullable Long rawPermissions)
-        {
+        public RoleData setPermissionsRaw(@Nullable Long rawPermissions) {
             this.permissions = rawPermissions;
             return this;
         }
@@ -330,8 +326,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData addPermissions(@Nonnull Permission... permissions)
-        {
+        public RoleData addPermissions(@Nonnull Permission... permissions) {
             Checks.notNull(permissions, "Permissions");
             for (Permission perm : permissions)
                 Checks.notNull(perm, "Permissions");
@@ -353,8 +348,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData addPermissions(@Nonnull Collection<Permission> permissions)
-        {
+        public RoleData addPermissions(@Nonnull Collection<Permission> permissions) {
             Checks.noneNull(permissions, "Permissions");
             if (this.permissions == null)
                 this.permissions = 0L;
@@ -374,8 +368,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData setName(@Nullable String name)
-        {
+        public RoleData setName(@Nullable String name) {
             checkPublic("name");
             this.name = name;
             return this;
@@ -393,8 +386,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData setColor(@Nullable Color color)
-        {
+        public RoleData setColor(@Nullable Color color) {
             checkPublic("color");
             this.color = color == null ? null : color.getRGB();
             return this;
@@ -412,8 +404,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData setColor(@Nullable Integer color)
-        {
+        public RoleData setColor(@Nullable Integer color) {
             checkPublic("color");
             this.color = color;
             return this;
@@ -431,8 +422,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData setPosition(@Nullable Integer position)
-        {
+        public RoleData setPosition(@Nullable Integer position) {
             checkPublic("position");
             this.position = position;
             return this;
@@ -450,8 +440,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData setMentionable(@Nullable Boolean mentionable)
-        {
+        public RoleData setMentionable(@Nullable Boolean mentionable) {
             checkPublic("mentionable");
             this.mentionable = mentionable;
             return this;
@@ -469,8 +458,7 @@ public interface GuildAction extends RestAction<Void>
          * @return The current RoleData instance for chaining convenience
          */
         @Nonnull
-        public RoleData setHoisted(@Nullable Boolean hoisted)
-        {
+        public RoleData setHoisted(@Nullable Boolean hoisted) {
             checkPublic("hoisted");
             this.hoisted = hoisted;
             return this;
@@ -478,8 +466,7 @@ public interface GuildAction extends RestAction<Void>
 
         @Nonnull
         @Override
-        public DataObject toData()
-        {
+        public DataObject toData() {
             final DataObject o = DataObject.empty().put("id", Long.toUnsignedString(id));
             if (permissions != null)
                 o.put("permissions", permissions);
@@ -496,8 +483,7 @@ public interface GuildAction extends RestAction<Void>
             return o;
         }
 
-        protected void checkPublic(String comment)
-        {
+        protected void checkPublic(String comment) {
             if (isPublicRole)
                 throw new IllegalStateException("Cannot modify " + comment + " for the public role!");
         }
@@ -509,8 +495,7 @@ public interface GuildAction extends RestAction<Void>
      *
      * <p>Use with {@link #addChannel(ChannelData) GuildAction.addChannel(ChannelData)}.
      */
-    class ChannelData implements SerializableData
-    {
+    class ChannelData implements SerializableData {
         protected final ChannelType type;
         protected final String name;
 
@@ -543,15 +528,14 @@ public interface GuildAction extends RestAction<Void>
          *             <li>If the type is TEXT and the provided name is not alphanumeric with underscores</li>
          *         </ul>
          */
-        public ChannelData(ChannelType type, String name)
-        {
+        public ChannelData(ChannelType type, String name) {
             Checks.notBlank(name, "Name");
             Checks.check(type == ChannelType.TEXT || type == ChannelType.VOICE || type == ChannelType.STAGE,
-                "Can only create channels of type TEXT, STAGE, or VOICE in GuildAction!");
+                    "Can only create channels of type TEXT, STAGE, or VOICE in GuildAction!");
             Checks.check(name.length() >= 2 && name.length() <= 100,
-                "Channel name has to be between 2-100 characters long!");
+                    "Channel name has to be between 2-100 characters long!");
             Checks.check(type == ChannelType.VOICE || type == ChannelType.STAGE || name.matches("[a-zA-Z0-9-_]+"),
-                "Channels of type TEXT must have a name in alphanumeric with underscores!");
+                    "Channels of type TEXT must have a name in alphanumeric with underscores!");
 
             this.type = type;
             this.name = name;
@@ -570,8 +554,7 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData setTopic(@Nullable String topic)
-        {
+        public ChannelData setTopic(@Nullable String topic) {
             if (topic != null && topic.length() > 1024)
                 throw new IllegalArgumentException("Channel Topic must not be greater than 1024 in length!");
             this.topic = topic;
@@ -588,8 +571,7 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData setNSFW(@Nullable Boolean nsfw)
-        {
+        public ChannelData setNSFW(@Nullable Boolean nsfw) {
             this.nsfw = nsfw;
             return this;
         }
@@ -607,10 +589,8 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData setBitrate(@Nullable Integer bitrate)
-        {
-            if (bitrate != null)
-            {
+        public ChannelData setBitrate(@Nullable Integer bitrate) {
+            if (bitrate != null) {
                 Checks.check(bitrate >= 8000, "Bitrate must be greater than 8000.");
                 Checks.check(bitrate <= 96000, "Bitrate must be less than 96000.");
             }
@@ -631,8 +611,7 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData setUserlimit(@Nullable Integer userlimit)
-        {
+        public ChannelData setUserlimit(@Nullable Integer userlimit) {
             if (userlimit != null && (userlimit < 0 || userlimit > 99))
                 throw new IllegalArgumentException("Userlimit must be between 0-99!");
             this.userlimit = userlimit;
@@ -648,8 +627,7 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData setPosition(@Nullable Integer position)
-        {
+        public ChannelData setPosition(@Nullable Integer position) {
             this.position = position;
             return this;
         }
@@ -672,8 +650,7 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData addPermissionOverride(@Nonnull GuildActionImpl.RoleData role, long allow, long deny)
-        {
+        public ChannelData addPermissionOverride(@Nonnull GuildActionImpl.RoleData role, long allow, long deny) {
             Checks.notNull(role, "Role");
             this.overrides.add(new PermOverrideData(PermOverrideData.ROLE_TYPE, role.id, allow, deny));
             return this;
@@ -700,17 +677,14 @@ public interface GuildAction extends RestAction<Void>
          * @return This ChannelData instance for chaining convenience
          */
         @Nonnull
-        public ChannelData addPermissionOverride(@Nonnull GuildActionImpl.RoleData role, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
-        {
+        public ChannelData addPermissionOverride(@Nonnull GuildActionImpl.RoleData role, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
             long allowRaw = 0;
             long denyRaw = 0;
-            if (allow != null)
-            {
+            if (allow != null) {
                 Checks.noneNull(allow, "Granted Permissions");
                 allowRaw = Permission.getRaw(allow);
             }
-            if (deny != null)
-            {
+            if (deny != null) {
                 Checks.noneNull(deny, "Denied Permissions");
                 denyRaw = Permission.getRaw(deny);
             }
@@ -719,8 +693,7 @@ public interface GuildAction extends RestAction<Void>
 
         @Nonnull
         @Override
-        public DataObject toData()
-        {
+        public DataObject toData() {
             final DataObject o = DataObject.empty();
             o.put("name", name);
             o.put("type", type.getId());

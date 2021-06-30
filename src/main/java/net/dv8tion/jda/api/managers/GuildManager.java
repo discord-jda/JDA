@@ -44,40 +44,39 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.entities.Guild#getManager()
  */
-public interface GuildManager extends Manager<GuildManager>
-{
+public interface GuildManager extends Manager<GuildManager> {
     /** Used to reset the name field */
-    long NAME   = 0x1;
+    long NAME = 0x1;
     /** Used to reset the region field */
     long REGION = 0x2;
     /** Used to reset the icon field */
-    long ICON   = 0x4;
+    long ICON = 0x4;
     /** Used to reset the splash field */
     long SPLASH = 0x8;
     /** Used to reset the afk channel field */
-    long AFK_CHANNEL    = 0x10;
+    long AFK_CHANNEL = 0x10;
     /** Used to reset the afk timeout field */
-    long AFK_TIMEOUT    = 0x20;
+    long AFK_TIMEOUT = 0x20;
     /** Used to reset the system channel field */
     long SYSTEM_CHANNEL = 0x40;
     /** Used to reset the mfa level field */
-    long MFA_LEVEL      = 0x80;
+    long MFA_LEVEL = 0x80;
     /** Used to reset the default notification level field */
-    long NOTIFICATION_LEVEL     = 0x100;
+    long NOTIFICATION_LEVEL = 0x100;
     /** Used to reset the explicit content level field */
     long EXPLICIT_CONTENT_LEVEL = 0x200;
     /** Used to reset the verification level field */
-    long VERIFICATION_LEVEL     = 0x400;
+    long VERIFICATION_LEVEL = 0x400;
     /** Used to reset the banner field */
-    long BANNER                 = 0x800;
+    long BANNER = 0x800;
     /** Used to reset the vanity code field */
-    long VANITY_URL                 = 0x1000;
+    long VANITY_URL = 0x1000;
     /** Used to reset the description field */
-    long DESCRIPTION                = 0x2000;
+    long DESCRIPTION = 0x2000;
     /** Used to reset the rules channel field */
-    long RULES_CHANNEL              = 0x4000;
+    long RULES_CHANNEL = 0x4000;
     /** Used to reset the community updates channel field */
-    long COMMUNITY_UPDATES_CHANNEL  = 0x8000;
+    long COMMUNITY_UPDATES_CHANNEL = 0x8000;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -179,7 +178,7 @@ public interface GuildManager extends Manager<GuildManager>
      *
      * @see    net.dv8tion.jda.api.Region#isVip()
      * @see    net.dv8tion.jda.api.entities.Guild#getFeatures()
-     * 
+     *
      * @deprecated Guilds no longer have the {@link net.dv8tion.jda.api.Region Region} option. Use {@link ChannelManager#setRegion(Region)} instead.
      */
     @Nonnull

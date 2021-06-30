@@ -57,8 +57,7 @@ import java.util.List;
  * @see   JDA#getTextChannelsByName(String, boolean)
  * @see   JDA#getTextChannelById(long)
  */
-public interface TextChannel extends GuildChannel, MessageChannel
-{
+public interface TextChannel extends GuildChannel, MessageChannel {
     /**
      * The maximum duration of slowmode in seconds
      */
@@ -86,7 +85,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return True, if this is considered a news channel
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     boolean isNews();
 
@@ -189,7 +188,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -219,12 +218,11 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Webhook.WebhookReference> follow(long targetChannelId)
-    {
+    default RestAction<Webhook.WebhookReference> follow(long targetChannelId) {
         return follow(Long.toUnsignedString(targetChannelId));
     }
 
@@ -256,12 +254,11 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Webhook.WebhookReference> follow(@Nonnull TextChannel targetChannel)
-    {
+    default RestAction<Webhook.WebhookReference> follow(@Nonnull TextChannel targetChannel) {
         Checks.notNull(targetChannel, "Target Channel");
         Member selfMember = targetChannel.getGuild().getSelfMember();
         if (!selfMember.hasAccess(targetChannel))
@@ -470,8 +467,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> clearReactionsById(long messageId)
-    {
+    default RestAction<Void> clearReactionsById(long messageId) {
         return clearReactionsById(Long.toUnsignedString(messageId));
     }
 
@@ -513,7 +509,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -547,7 +543,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -591,12 +587,11 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> clearReactionsById(long messageId, @Nonnull String unicode)
-    {
+    default RestAction<Void> clearReactionsById(long messageId, @Nonnull String unicode) {
         return clearReactionsById(Long.toUnsignedString(messageId), unicode);
     }
 
@@ -628,12 +623,11 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> clearReactionsById(long messageId, @Nonnull Emote emote)
-    {
+    default RestAction<Void> clearReactionsById(long messageId, @Nonnull Emote emote) {
         return clearReactionsById(Long.toUnsignedString(messageId), emote);
     }
 
@@ -761,8 +755,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, @Nonnull String unicode, @Nonnull User user)
-    {
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull String unicode, @Nonnull User user) {
         return removeReactionById(Long.toUnsignedString(messageId), unicode, user);
     }
 
@@ -821,8 +814,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emote emote, @Nonnull User user)
-    {
+    default RestAction<Void> removeReactionById(@Nonnull String messageId, @Nonnull Emote emote, @Nonnull User user) {
         Checks.notNull(emote, "Emote");
         return removeReactionById(messageId, emote.getName() + ":" + emote.getId(), user);
     }
@@ -882,8 +874,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote, @Nonnull User user)
-    {
+    default RestAction<Void> removeReactionById(long messageId, @Nonnull Emote emote, @Nonnull User user) {
         return removeReactionById(Long.toUnsignedString(messageId), emote, user);
     }
 
@@ -926,12 +917,11 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Message> crosspostMessageById(@Nonnull String messageId)
-    {
+    default RestAction<Message> crosspostMessageById(@Nonnull String messageId) {
         if (!isNews())
             throw new IllegalStateException("You can only crosspost messages in news channels!");
         Checks.isSnowflake(messageId);
@@ -939,7 +929,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
         Route.CompiledRoute route = Route.Messages.CROSSPOST_MESSAGE.compile(getId(), messageId);
         return new RestActionImpl<>(getJDA(), route,
-            (response, request) -> request.getJDA().getEntityBuilder().createMessage(response.getObject()));
+                (response, request) -> request.getJDA().getEntityBuilder().createMessage(response.getObject()));
     }
 
     /**
@@ -979,12 +969,11 @@ public interface TextChannel extends GuildChannel, MessageChannel
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Message> crosspostMessageById(long messageId)
-    {
+    default RestAction<Message> crosspostMessageById(long messageId) {
         return crosspostMessageById(Long.toUnsignedString(messageId));
     }
 
@@ -1012,8 +1001,7 @@ public interface TextChannel extends GuildChannel, MessageChannel
     boolean canTalk(@Nonnull Member member);
 
     @Override
-    default void formatTo(Formatter formatter, int flags, int width, int precision)
-    {
+    default void formatTo(Formatter formatter, int flags, int width, int precision) {
         boolean leftJustified = (flags & FormattableFlags.LEFT_JUSTIFY) == FormattableFlags.LEFT_JUSTIFY;
         boolean upper = (flags & FormattableFlags.UPPERCASE) == FormattableFlags.UPPERCASE;
         boolean alt = (flags & FormattableFlags.ALTERNATE) == FormattableFlags.ALTERNATE;

@@ -24,24 +24,20 @@ import net.dv8tion.jda.internal.entities.RoleImpl;
 
 import java.util.Objects;
 
-public class GuildRoleUpdateHandler extends SocketHandler
-{
-    public GuildRoleUpdateHandler(JDAImpl api)
-    {
+public class GuildRoleUpdateHandler extends SocketHandler {
+    public GuildRoleUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         final long guildId = content.getLong("guild_id");
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
         DataObject rolejson = content.getObject("role");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a Role Update for a Guild that is not yet cached: {}", content);
             return null;
@@ -49,8 +45,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
 
         final long roleId = rolejson.getLong("id");
         RoleImpl role = (RoleImpl) guild.getRolesView().get(roleId);
-        if (role == null)
-        {
+        if (role == null) {
             getJDA().getEventCache().cache(EventCache.Type.ROLE, roleId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a Role Update for Role that is not yet cached: {}", content);
             return null;
@@ -65,8 +60,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
         boolean hoisted = rolejson.getBoolean("hoist");
         boolean mentionable = rolejson.getBoolean("mentionable");
 
-        if (!Objects.equals(name, role.getName()))
-        {
+        if (!Objects.equals(name, role.getName())) {
             String oldName = role.getName();
             role.setName(name);
             getJDA().handleEvent(
@@ -74,8 +68,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             role, oldName));
         }
-        if (color != role.getColorRaw())
-        {
+        if (color != role.getColorRaw()) {
             int oldColor = role.getColorRaw();
             role.setColor(color);
             getJDA().handleEvent(
@@ -83,8 +76,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             role, oldColor));
         }
-        if (!Objects.equals(position, role.getPositionRaw()))
-        {
+        if (!Objects.equals(position, role.getPositionRaw())) {
             int oldPosition = role.getPosition();
             int oldPositionRaw = role.getPositionRaw();
             role.setRawPosition(position);
@@ -93,8 +85,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             role, oldPosition, oldPositionRaw));
         }
-        if (!Objects.equals(permissions, role.getPermissionsRaw()))
-        {
+        if (!Objects.equals(permissions, role.getPermissionsRaw())) {
             long oldPermissionsRaw = role.getPermissionsRaw();
             role.setRawPermissions(permissions);
             getJDA().handleEvent(
@@ -103,8 +94,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             role, oldPermissionsRaw));
         }
 
-        if (hoisted != role.isHoisted())
-        {
+        if (hoisted != role.isHoisted()) {
             boolean wasHoisted = role.isHoisted();
             role.setHoisted(hoisted);
             getJDA().handleEvent(
@@ -112,8 +102,7 @@ public class GuildRoleUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             role, wasHoisted));
         }
-        if (mentionable != role.isMentionable())
-        {
+        if (mentionable != role.isMentionable()) {
             boolean wasMentionable = role.isMentionable();
             role.setMentionable(mentionable);
             getJDA().handleEvent(

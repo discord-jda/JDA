@@ -38,10 +38,9 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Represents a Custom Emote. (Emoji in official Discord API terminology)
  *
- * @since  2.2
+ * @since 2.2
  */
-public class EmoteImpl implements ListedEmote
-{
+public class EmoteImpl implements ListedEmote {
     private final long id;
     private final JDAImpl api;
     private final Set<Role> roles;
@@ -55,16 +54,14 @@ public class EmoteImpl implements ListedEmote
     private String name;
     private User user;
 
-    public EmoteImpl(long id, GuildImpl guild)
-    {
+    public EmoteImpl(long id, GuildImpl guild) {
         this.id = id;
         this.api = guild.getJDA();
         this.guild = guild;
         this.roles = ConcurrentHashMap.newKeySet();
     }
 
-    public EmoteImpl(long id, JDAImpl api)
-    {
+    public EmoteImpl(long id, JDAImpl api) {
         this.id = id;
         this.api = api;
         this.guild = null;
@@ -72,8 +69,7 @@ public class EmoteImpl implements ListedEmote
     }
 
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         if (guild == null)
             return null;
         GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
@@ -84,85 +80,73 @@ public class EmoteImpl implements ListedEmote
 
     @Nonnull
     @Override
-    public List<Role> getRoles()
-    {
+    public List<Role> getRoles() {
         if (!canProvideRoles())
             throw new IllegalStateException("Unable to return roles because this emote is from a message. (We do not know the origin Guild of this emote)");
         return Collections.unmodifiableList(new LinkedList<>(roles));
     }
 
     @Override
-    public boolean canProvideRoles()
-    {
+    public boolean canProvideRoles() {
         return roles != null;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public boolean isManaged()
-    {
+    public boolean isManaged() {
         return managed;
     }
 
     @Override
-    public boolean isAvailable()
-    {
+    public boolean isAvailable() {
         return available;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         if (!hasUser())
             throw new IllegalStateException("This emote does not have a user");
         return user;
     }
 
     @Override
-    public boolean hasUser()
-    {
+    public boolean hasUser() {
         return user != null;
     }
 
     @Nonnull
     @Override
-    public EmoteManager getManager()
-    {
+    public EmoteManager getManager() {
         if (manager == null)
             return manager = new EmoteManagerImpl(this);
         return manager;
     }
 
     @Override
-    public boolean isAnimated()
-    {
+    public boolean isAnimated() {
         return animated;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
-    {
+    public AuditableRestAction<Void> delete() {
         if (getGuild() == null)
             throw new IllegalStateException("The emote you are trying to delete is not an actual emote we have access to (it is from a message)!");
         if (managed)
@@ -176,48 +160,41 @@ public class EmoteImpl implements ListedEmote
 
     // -- Setters --
 
-    public EmoteImpl setName(String name)
-    {
+    public EmoteImpl setName(String name) {
         this.name = name;
         return this;
     }
 
-    public EmoteImpl setAnimated(boolean animated)
-    {
+    public EmoteImpl setAnimated(boolean animated) {
         this.animated = animated;
         return this;
     }
 
-    public EmoteImpl setManaged(boolean val)
-    {
+    public EmoteImpl setManaged(boolean val) {
         this.managed = val;
         return this;
     }
 
-    public EmoteImpl setAvailable(boolean available)
-    {
+    public EmoteImpl setAvailable(boolean available) {
         this.available = available;
         return this;
     }
 
-    public EmoteImpl setUser(User user)
-    {
+    public EmoteImpl setUser(User user) {
         this.user = user;
         return this;
     }
 
     // -- Set Getter --
 
-    public Set<Role> getRoleSet()
-    {
+    public Set<Role> getRoleSet() {
         return this.roles;
     }
 
     // -- Object overrides --
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof EmoteImpl))
@@ -229,20 +206,17 @@ public class EmoteImpl implements ListedEmote
 
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "E:" + getName() + '(' + getIdLong() + ')';
     }
 
     @Override
-    public EmoteImpl clone()
-    {
+    public EmoteImpl clone() {
         EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);
         copy.roles.addAll(roles);
         return copy;

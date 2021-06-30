@@ -21,8 +21,7 @@ import javax.annotation.Nonnull;
 /**
  * The available types for {@link Command} options.
  */
-public enum OptionType
-{
+public enum OptionType {
     /** Placeholder for future option types */
     UNKNOWN(-1),
     SUB_COMMAND(1),
@@ -39,13 +38,11 @@ public enum OptionType
     private final int raw;
     private final boolean supportsChoices;
 
-    OptionType(int raw)
-    {
+    OptionType(int raw) {
         this(raw, false);
     }
 
-    OptionType(int raw, boolean supportsChoices)
-    {
+    OptionType(int raw, boolean supportsChoices) {
         this.raw = raw;
         this.supportsChoices = supportsChoices;
     }
@@ -55,8 +52,7 @@ public enum OptionType
      *
      * @return The raw value
      */
-    public int getKey()
-    {
+    public int getKey() {
         return raw;
     }
 
@@ -65,8 +61,7 @@ public enum OptionType
      *
      * @return True, if you can use choices for this type.
      */
-    public boolean canSupportChoices()
-    {
+    public boolean canSupportChoices() {
         return supportsChoices;
     }
 
@@ -79,10 +74,8 @@ public enum OptionType
      * @return The OptionType constant or {@link #UNKNOWN}
      */
     @Nonnull
-    public static OptionType fromKey(int key)
-    {
-        for (OptionType type : values())
-        {
+    public static OptionType fromKey(int key) {
+        for (OptionType type : values()) {
             if (type.raw == key)
                 return type;
         }

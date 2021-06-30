@@ -36,8 +36,7 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemberImpl implements Member
-{
+public class MemberImpl implements Member {
     private final JDAImpl api;
     private final Set<Role> roles = ConcurrentHashMap.newKeySet();
     private final GuildVoiceState voiceState;
@@ -48,8 +47,7 @@ public class MemberImpl implements Member
     private long joinDate, boostDate;
     private boolean pending = false;
 
-    public MemberImpl(GuildImpl guild, User user)
-    {
+    public MemberImpl(GuildImpl guild, User user) {
         this.api = (JDAImpl) user.getJDA();
         this.guild = guild;
         this.user = user;
@@ -58,16 +56,14 @@ public class MemberImpl implements Member
         this.voiceState = cacheState ? new GuildVoiceStateImpl(this) : null;
     }
 
-    public MemberPresenceImpl getPresence()
-    {
+    public MemberPresenceImpl getPresence() {
         CacheView.SimpleCacheView<MemberPresenceImpl> presences = guild.getPresenceView();
         return presences == null ? null : presences.get(getIdLong());
     }
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         // Load user from cache if one exists, ideally two members with the same id should wrap the same user object
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null)
@@ -77,8 +73,7 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
         if (realGuild != null)
             guild = realGuild;
@@ -87,59 +82,51 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public OffsetDateTime getTimeJoined()
-    {
+    public OffsetDateTime getTimeJoined() {
         if (hasTimeJoined())
             return Helpers.toOffset(joinDate);
         return getGuild().getTimeCreated();
     }
 
     @Override
-    public boolean hasTimeJoined()
-    {
+    public boolean hasTimeJoined() {
         return joinDate != 0;
     }
 
     @Nullable
     @Override
-    public OffsetDateTime getTimeBoosted()
-    {
+    public OffsetDateTime getTimeBoosted() {
         return boostDate != 0 ? Helpers.toOffset(boostDate) : null;
     }
 
     @Override
-    public GuildVoiceState getVoiceState()
-    {
+    public GuildVoiceState getVoiceState() {
         return voiceState;
     }
 
     @Nonnull
     @Override
-    public List<Activity> getActivities()
-    {
+    public List<Activity> getActivities() {
         MemberPresenceImpl presence = getPresence();
         return presence == null ? Collections.emptyList() : presence.getActivities();
     }
 
     @Nonnull
     @Override
-    public OnlineStatus getOnlineStatus()
-    {
+    public OnlineStatus getOnlineStatus() {
         MemberPresenceImpl presence = getPresence();
         return presence == null ? OnlineStatus.OFFLINE : presence.getOnlineStatus();
     }
 
     @Nonnull
     @Override
-    public OnlineStatus getOnlineStatus(@Nonnull ClientType type)
-    {
+    public OnlineStatus getOnlineStatus(@Nonnull ClientType type) {
         Checks.notNull(type, "Type");
         MemberPresenceImpl presence = getPresence();
         if (presence == null)
@@ -150,29 +137,25 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public EnumSet<ClientType> getActiveClients()
-    {
+    public EnumSet<ClientType> getActiveClients() {
         MemberPresenceImpl presence = getPresence();
         return presence == null ? EnumSet.noneOf(ClientType.class) : Helpers.copyEnumSet(ClientType.class, presence.getClientStatus().keySet());
     }
 
     @Override
-    public String getNickname()
-    {
+    public String getNickname() {
         return nickname;
     }
 
     @Nonnull
     @Override
-    public String getEffectiveName()
-    {
+    public String getEffectiveName() {
         return nickname != null ? nickname : getUser().getName();
     }
 
     @Nonnull
     @Override
-    public List<Role> getRoles()
-    {
+    public List<Role> getRoles() {
         List<Role> roleList = new ArrayList<>(roles);
         roleList.sort(Comparator.reverseOrder());
 
@@ -180,17 +163,14 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public Color getColor()
-    {
+    public Color getColor() {
         final int raw = getColorRaw();
         return raw != Role.DEFAULT_COLOR_RAW ? new Color(raw) : null;
     }
 
     @Override
-    public int getColorRaw()
-    {
-        for (Role r : getRoles())
-        {
+    public int getColorRaw() {
+        for (Role r : getRoles()) {
             final int colorRaw = r.getColorRaw();
             if (colorRaw != Role.DEFAULT_COLOR_RAW)
                 return colorRaw;
@@ -200,15 +180,13 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions()
-    {
+    public EnumSet<Permission> getPermissions() {
         return Permission.getPermissions(PermissionUtil.getEffectivePermission(this));
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
-    {
+    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel) {
         Checks.notNull(channel, "Channel");
         if (!getGuild().equals(channel.getGuild()))
             throw new IllegalArgumentException("Provided channel is not in the same guild as this member!");
@@ -218,49 +196,42 @@ public class MemberImpl implements Member
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit()
-    {
+    public EnumSet<Permission> getPermissionsExplicit() {
         return Permission.getPermissions(PermissionUtil.getExplicitPermission(this));
     }
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
-    {
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel) {
         return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Permission... permissions)
-    {
+    public boolean hasPermission(@Nonnull Permission... permissions) {
         return PermissionUtil.checkPermission(this, permissions);
     }
 
     @Override
-    public boolean hasPermission(@Nonnull Collection<Permission> permissions)
-    {
+    public boolean hasPermission(@Nonnull Collection<Permission> permissions) {
         Checks.notNull(permissions, "Permission Collection");
 
         return hasPermission(permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
-    {
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions) {
         return PermissionUtil.checkPermission(channel, this, permissions);
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
-    {
+    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions) {
         Checks.notNull(permissions, "Permission Collection");
 
         return hasPermission(channel, permissions.toArray(Permission.EMPTY_PERMISSIONS));
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource)
-    {
+    public boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource) {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
         Checks.check(targetChannel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
@@ -276,13 +247,11 @@ public class MemberImpl implements Member
             return true;
 
         TLongObjectMap<PermissionOverride> existingOverrides = ((AbstractChannelImpl<?, ?>) targetChannel).getOverrideMap();
-        for (PermissionOverride override : syncSource.getPermissionOverrides())
-        {
+        for (PermissionOverride override : syncSource.getPermissionOverrides()) {
             PermissionOverride existing = existingOverrides.get(override.getIdLong());
             long allow = override.getAllowedRaw();
             long deny = override.getDeniedRaw();
-            if (existing != null)
-            {
+            if (existing != null) {
                 allow ^= existing.getAllowedRaw();
                 deny ^= existing.getDeniedRaw();
             }
@@ -294,8 +263,7 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel channel)
-    {
+    public boolean canSync(@Nonnull GuildChannel channel) {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");
         long userPerms = PermissionUtil.getEffectivePermission(channel, this);
@@ -308,78 +276,65 @@ public class MemberImpl implements Member
     }
 
     @Override
-    public boolean canInteract(@Nonnull Member member)
-    {
+    public boolean canInteract(@Nonnull Member member) {
         return PermissionUtil.canInteract(this, member);
     }
 
     @Override
-    public boolean canInteract(@Nonnull Role role)
-    {
+    public boolean canInteract(@Nonnull Role role) {
         return PermissionUtil.canInteract(this, role);
     }
 
     @Override
-    public boolean canInteract(@Nonnull Emote emote)
-    {
+    public boolean canInteract(@Nonnull Emote emote) {
         return PermissionUtil.canInteract(this, emote);
     }
 
     @Override
-    public boolean isOwner()
-    {
+    public boolean isOwner() {
         return this.user.getIdLong() == getGuild().getOwnerIdLong();
     }
 
     @Override
-    public boolean isPending()
-    {
+    public boolean isPending() {
         return this.pending;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return user.getIdLong();
     }
 
-    public MemberImpl setNickname(String nickname)
-    {
+    public MemberImpl setNickname(String nickname) {
         this.nickname = nickname;
         return this;
     }
 
-    public MemberImpl setJoinDate(long joinDate)
-    {
+    public MemberImpl setJoinDate(long joinDate) {
         this.joinDate = joinDate;
         return this;
     }
 
-    public MemberImpl setBoostDate(long boostDate)
-    {
+    public MemberImpl setBoostDate(long boostDate) {
         this.boostDate = boostDate;
         return this;
     }
 
-    public MemberImpl setPending(boolean pending)
-    {
+    public MemberImpl setPending(boolean pending) {
         this.pending = pending;
         return this;
     }
 
-    public Set<Role> getRoleSet()
-    {
+    public Set<Role> getRoleSet() {
         return roles;
     }
 
-    public long getBoostDateRaw()
-    {
+    public long getBoostDateRaw() {
         return boostDate;
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         if (o == this)
             return true;
         if (!(o instanceof MemberImpl))
@@ -387,35 +342,31 @@ public class MemberImpl implements Member
 
         MemberImpl oMember = (MemberImpl) o;
         return oMember.user.getIdLong() == user.getIdLong()
-            && oMember.guild.getIdLong() == guild.getIdLong();
+                && oMember.guild.getIdLong() == guild.getIdLong();
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return (guild.getIdLong() + user.getId()).hashCode();
     }
 
     @Override
-    public String toString()
-    {
-        return "MB:" + getEffectiveName() + '(' + getUser().toString() + " / " + getGuild().toString() +')';
+    public String toString() {
+        return "MB:" + getEffectiveName() + '(' + getUser().toString() + " / " + getGuild().toString() + ')';
     }
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return (nickname == null ? "<@" : "<@!") + user.getId() + '>';
     }
 
     @Nullable
     @Override
-    public TextChannel getDefaultChannel()
-    {
+    public TextChannel getDefaultChannel() {
         return getGuild().getTextChannelsView().stream()
-                 .sorted(Comparator.reverseOrder())
-                 .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
-                 .findFirst().orElse(null);
+                .sorted(Comparator.reverseOrder())
+                .filter(c -> hasPermission(c, Permission.MESSAGE_READ))
+                .findFirst().orElse(null);
     }
 }

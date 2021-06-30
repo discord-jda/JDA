@@ -31,11 +31,10 @@ import java.util.EnumSet;
  * @see Role
  * @see Member
  */
-public interface IPermissionHolder extends ISnowflake
-{
+public interface IPermissionHolder extends ISnowflake {
     /**
      * The Guild to which this PermissionHolder is related
-     * 
+     *
      * @return A never-null Guild to which this PermissionHolder is linked
      */
     @Nonnull
@@ -170,8 +169,7 @@ public interface IPermissionHolder extends ISnowflake
      *
      * @return True, if the PermissionHolder has access
      */
-    default boolean hasAccess(@Nonnull GuildChannel channel)
-    {
+    default boolean hasAccess(@Nonnull GuildChannel channel) {
         Checks.notNull(channel, "Channel");
         return channel.getType() == ChannelType.VOICE || channel.getType() == ChannelType.STAGE
                 ? hasPermission(channel, Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL)

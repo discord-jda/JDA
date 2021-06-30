@@ -33,8 +33,7 @@ import javax.annotation.Nonnull;
  * @see    Category#modifyTextChannelPositions()
  * @see    Category#modifyVoiceChannelPositions()
  */
-public interface CategoryOrderAction extends ChannelOrderAction
-{
+public interface CategoryOrderAction extends ChannelOrderAction {
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.Category Category}
      * controlled by this CategoryOrderAction.

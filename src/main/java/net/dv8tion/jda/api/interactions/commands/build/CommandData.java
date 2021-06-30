@@ -30,8 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Builder for a Slash-Command.
  */
-public class CommandData extends BaseCommand<CommandData> implements SerializableData
-{
+public class CommandData extends BaseCommand<CommandData> implements SerializableData {
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
@@ -53,15 +52,13 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *             <li>The description must be 1-100 characters long</li>
      *         </ul>
      */
-    public CommandData(@Nonnull String name, @Nonnull String description)
-    {
+    public CommandData(@Nonnull String name, @Nonnull String description) {
         super(name, description);
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return super.toData().put("default_permission", defaultPermissions);
     }
 
@@ -71,8 +68,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return Immutable list of {@link SubcommandData}
      */
     @Nonnull
-    public List<SubcommandData> getSubcommands()
-    {
+    public List<SubcommandData> getSubcommands() {
         return options.stream(DataArray::getObject)
                 .filter(obj ->
                 {
@@ -89,8 +85,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return Immutable list of {@link SubcommandGroupData}
      */
     @Nonnull
-    public List<SubcommandGroupData> getSubcommandGroups()
-    {
+    public List<SubcommandGroupData> getSubcommandGroups() {
         return options.stream(DataArray::getObject)
                 .filter(obj ->
                 {
@@ -111,8 +106,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData setDefaultEnabled(boolean enabled)
-    {
+    public CommandData setDefaultEnabled(boolean enabled) {
         this.defaultPermissions = enabled;
         return this;
     }
@@ -137,14 +131,12 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addOptions(@Nonnull OptionData... options)
-    {
+    public CommandData addOptions(@Nonnull OptionData... options) {
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
         allowSubcommands = allowGroups = false;
-        for (OptionData option : options)
-        {
+        for (OptionData option : options) {
             Checks.check(option.getType() != OptionType.SUB_COMMAND, "Cannot add a subcommand with addOptions(...). Use addSubcommands(...) instead!");
             Checks.check(option.getType() != OptionType.SUB_COMMAND_GROUP, "Cannot add a subcommand group with addOptions(...). Use addSubcommandGroups(...) instead!");
             Checks.check(allowRequired || !option.isRequired(), "Cannot add required options after non-required options!");
@@ -174,8 +166,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addOptions(@Nonnull Collection<? extends OptionData> options)
-    {
+    public CommandData addOptions(@Nonnull Collection<? extends OptionData> options) {
         Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
     }
@@ -206,8 +197,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
-    {
+    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required) {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
 
@@ -236,8 +226,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
+    public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         return addOption(type, name, description, false);
     }
 
@@ -254,8 +243,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
-    {
+    public CommandData addSubcommands(@Nonnull SubcommandData... subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -279,8 +267,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
-    {
+    public CommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
@@ -298,8 +285,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
-    {
+    public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups) {
         Checks.noneNull(groups, "SubcommandGroups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -323,8 +309,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The CommandData instance, for chaining
      */
     @Nonnull
-    public CommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
-    {
+    public CommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups) {
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
     }
@@ -344,8 +329,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The parsed CommandData instance, which can be further configured through setters
      */
     @Nonnull
-    public static CommandData fromData(@Nonnull DataObject object)
-    {
+    public static CommandData fromData(@Nonnull DataObject object) {
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
         String description = object.getString("description");
@@ -354,8 +338,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
         options.stream(DataArray::getObject).forEach(opt ->
         {
             OptionType type = OptionType.fromKey(opt.getInt("type"));
-            switch (type)
-            {
+            switch (type) {
             case SUB_COMMAND:
                 command.addSubcommands(SubcommandData.fromData(opt));
                 break;
@@ -384,8 +367,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The parsed CommandData instances, which can be further configured through setters
      */
     @Nonnull
-    public static List<CommandData> fromList(@Nonnull DataArray array)
-    {
+    public static List<CommandData> fromList(@Nonnull DataArray array) {
         Checks.notNull(array, "DataArray");
         return array.stream(DataArray::getObject)
                 .map(CommandData::fromData)
@@ -407,8 +389,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @return The parsed CommandData instances, which can be further configured through setters
      */
     @Nonnull
-    public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection)
-    {
+    public static List<CommandData> fromList(@Nonnull Collection<? extends DataObject> collection) {
         Checks.noneNull(collection, "CommandData");
         return fromList(DataArray.fromCollection(collection));
     }

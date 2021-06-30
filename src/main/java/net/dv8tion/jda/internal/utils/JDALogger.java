@@ -32,37 +32,32 @@ import java.util.ServiceLoader;
  * <p>
  * It also has the utility method {@link #getLazyString(LazyEvaluation)} which is used to lazily construct Strings for Logging.
  */
-public class JDALogger
-{
+public class JDALogger {
     /**
      * Marks whether or not a SLF4J <code>StaticLoggerBinder</code> (pre 1.8.x) or
      * <code>SLF4JServiceProvider</code> implementation (1.8.x+) was found. If false, JDA will use its fallback logger.
      * <br>This variable is initialized during static class initialization.
      */
     public static final boolean SLF4J_ENABLED;
-    static
-    {
+
+    static {
         boolean tmp = false;
 
-        try
-        {
+        try {
             Class.forName("org.slf4j.impl.StaticLoggerBinder");
 
             tmp = true;
         }
-        catch (ClassNotFoundException eStatic)
-        {
+        catch (ClassNotFoundException eStatic) {
             // there was no static logger binder (SLF4J pre-1.8.x)
 
-            try
-            {
+            try {
                 Class<?> serviceProviderInterface = Class.forName("org.slf4j.spi.SLF4JServiceProvider");
 
                 // check if there is a service implementation for the service, indicating a provider for SLF4J 1.8.x+ is installed
                 tmp = ServiceLoader.load(serviceProviderInterface).iterator().hasNext();
             }
-            catch (ClassNotFoundException eService)
-            {
+            catch (ClassNotFoundException eService) {
                 // there was no service provider interface (SLF4J 1.8.x+)
 
                 //prints warning of missing implementation
@@ -77,7 +72,8 @@ public class JDALogger
 
     private static final Map<String, Logger> LOGS = new CaseInsensitiveMap<>();
 
-    private JDALogger() {}
+    private JDALogger() {
+    }
 
     /**
      * Will get the {@link org.slf4j.Logger} with the given log-name
@@ -90,10 +86,8 @@ public class JDALogger
      *
      * @return Logger with given log name
      */
-    public static Logger getLog(String name)
-    {
-        synchronized (LOGS)
-        {
+    public static Logger getLog(String name) {
+        synchronized (LOGS) {
             if (SLF4J_ENABLED)
                 return LoggerFactory.getLogger(name);
             return LOGS.computeIfAbsent(name, SimpleLogger::new);
@@ -111,10 +105,8 @@ public class JDALogger
      *
      * @return Logger for given Class
      */
-    public static Logger getLog(Class<?> clazz)
-    {
-        synchronized (LOGS)
-        {
+    public static Logger getLog(Class<?> clazz) {
+        synchronized (LOGS) {
             if (SLF4J_ENABLED)
                 return LoggerFactory.getLogger(clazz);
             return LOGS.computeIfAbsent(clazz.getName(), (n) -> new SimpleLogger(clazz.getSimpleName()));
@@ -129,19 +121,14 @@ public class JDALogger
      *
      * @return An Object that can be passed to SLF4J's logging methods as lazy parameter
      */
-    public static Object getLazyString(LazyEvaluation lazyLambda)
-    {
-        return new Object()
-        {
+    public static Object getLazyString(LazyEvaluation lazyLambda) {
+        return new Object() {
             @Override
-            public String toString()
-            {
-                try
-                {
+            public String toString() {
+                try {
                     return lazyLambda.getString();
                 }
-                catch (Exception ex)
-                {
+                catch (Exception ex) {
                     StringWriter sw = new StringWriter();
                     ex.printStackTrace(new PrintWriter(sw));
                     return "Error while evaluating lazy String... " + sw.toString();
@@ -154,8 +141,7 @@ public class JDALogger
      * Functional interface used for {@link #getLazyString(LazyEvaluation)} to lazily construct a String.
      */
     @FunctionalInterface
-    public interface LazyEvaluation
-    {
+    public interface LazyEvaluation {
         /**
          * This method is used by {@link #getLazyString(LazyEvaluation)}
          * when SLF4J requests String construction.

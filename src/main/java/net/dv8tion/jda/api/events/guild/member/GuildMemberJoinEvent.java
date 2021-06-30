@@ -31,10 +31,8 @@ import javax.annotation.Nonnull;
  * <br>{@link net.dv8tion.jda.api.JDABuilder#createDefault(String) createDefault(String)} and
  * {@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disable this by default!
  */
-public class GuildMemberJoinEvent extends GenericGuildMemberEvent
-{
-    public GuildMemberJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+public class GuildMemberJoinEvent extends GenericGuildMemberEvent {
+    public GuildMemberJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
     }
 }

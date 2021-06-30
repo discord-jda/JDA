@@ -36,8 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CommandInteractionImpl extends InteractionImpl implements CommandInteraction
-{
+public class CommandInteractionImpl extends InteractionImpl implements CommandInteraction {
     private final long commandId;
     private final List<OptionMapping> options = new ArrayList<>();
     private final TLongObjectMap<Object> resolved = new TLongObjectHashMap<>();
@@ -45,8 +44,7 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     private String subcommand;
     private String group;
 
-    public CommandInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public CommandInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         DataObject commandData = data.getObject("data");
         this.commandId = commandData.getUnsignedLong("id");
@@ -55,19 +53,17 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         DataArray options = commandData.optArray("options").orElseGet(DataArray::empty);
         DataObject resolveJson = commandData.optObject("resolved").orElseGet(DataObject::empty);
 
-        if (options.length() == 1)
-        {
+        if (options.length() == 1) {
             DataObject option = options.getObject(0);
-            switch (OptionType.fromKey(option.getInt("type")))
-            {
-                case SUB_COMMAND_GROUP:
-                    group = option.getString("name");
-                    options = option.getArray("options");
-                    option = options.getObject(0);
-                case SUB_COMMAND:
-                    subcommand = option.getString("name");
-                    options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
-                    break;
+            switch (OptionType.fromKey(option.getInt("type"))) {
+            case SUB_COMMAND_GROUP:
+                group = option.getString("name");
+                options = option.getArray("options");
+                option = options.getObject(0);
+            case SUB_COMMAND:
+                subcommand = option.getString("name");
+                options = option.optArray("options").orElseGet(DataArray::empty); // Flatten options
+                break;
             }
         }
 
@@ -75,43 +71,41 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         parseOptions(options);
     }
 
-    private void parseOptions(DataArray options)
-    {
+    private void parseOptions(DataArray options) {
         options.stream(DataArray::getObject)
-            .map(json -> new OptionMapping(json, resolved))
-            .forEach(this.options::add);
+                .map(json -> new OptionMapping(json, resolved))
+                .forEach(this.options::add);
     }
 
-    private void parseResolved(JDAImpl jda, DataObject resolveJson)
-    {
+    private void parseResolved(JDAImpl jda, DataObject resolveJson) {
         EntityBuilder entityBuilder = jda.getEntityBuilder();
 
         resolveJson.optObject("users").ifPresent(users ->
-            users.keys().forEach(userId -> {
-                DataObject userJson = users.getObject(userId);
-                UserImpl userArg = entityBuilder.createUser(userJson);
-                resolved.put(userArg.getIdLong(), userArg);
-            })
+                users.keys().forEach(userId -> {
+                    DataObject userJson = users.getObject(userId);
+                    UserImpl userArg = entityBuilder.createUser(userJson);
+                    resolved.put(userArg.getIdLong(), userArg);
+                })
         );
 
         if (guild != null) // Technically these can function in DMs too ...
         {
             resolveJson.optObject("members").ifPresent(members ->
-                members.keys().forEach(memberId -> {
-                    DataObject userJson = resolveJson.getObject("users").getObject(memberId);
-                    DataObject memberJson = members.getObject(memberId);
-                    memberJson.put("user", userJson);
-                    MemberImpl optionMember = entityBuilder.createMember((GuildImpl) guild, memberJson);
-                    entityBuilder.updateMemberCache(optionMember);
-                    resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
-                })
+                    members.keys().forEach(memberId -> {
+                        DataObject userJson = resolveJson.getObject("users").getObject(memberId);
+                        DataObject memberJson = members.getObject(memberId);
+                        memberJson.put("user", userJson);
+                        MemberImpl optionMember = entityBuilder.createMember((GuildImpl) guild, memberJson);
+                        entityBuilder.updateMemberCache(optionMember);
+                        resolved.put(optionMember.getIdLong(), optionMember); // This basically upgrades user to member
+                    })
             );
             resolveJson.optObject("roles").ifPresent(roles ->
-                roles.keys()
-                    .stream()
-                    .map(guild::getRoleById)
-                    .filter(Objects::nonNull)
-                    .forEach(role -> resolved.put(role.getIdLong(), role))
+                    roles.keys()
+                            .stream()
+                            .map(guild::getRoleById)
+                            .filter(Objects::nonNull)
+                            .forEach(role -> resolved.put(role.getIdLong(), role))
             );
             resolveJson.optObject("channels").ifPresent(channels -> {
                 channels.keys().forEach(id -> {
@@ -126,40 +120,34 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
-    {
+    public MessageChannel getChannel() {
         return (MessageChannel) super.getChannel();
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public String getSubcommandName()
-    {
+    public String getSubcommandName() {
         return subcommand;
     }
 
     @Override
-    public String getSubcommandGroup()
-    {
+    public String getSubcommandGroup() {
         return group;
     }
 
     @Override
-    public long getCommandIdLong()
-    {
+    public long getCommandIdLong() {
         return commandId;
     }
 
     @Nonnull
     @Override
-    public List<OptionMapping> getOptions()
-    {
+    public List<OptionMapping> getOptions() {
         return options;
     }
 }

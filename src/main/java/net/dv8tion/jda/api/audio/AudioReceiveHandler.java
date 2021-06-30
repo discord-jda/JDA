@@ -24,8 +24,7 @@ import javax.sound.sampled.AudioFormat;
 /**
  * Interface used to receive audio from Discord through JDA.
  */
-public interface AudioReceiveHandler
-{
+public interface AudioReceiveHandler {
     /**
      * Audio Output Format used by JDA. 48KHz 16bit stereo signed BigEndian PCM.
      */
@@ -37,8 +36,7 @@ public interface AudioReceiveHandler
      *
      * @return If true, JDA enables subsystems to combine all user audio into a single provided data packet.
      */
-    default boolean canReceiveCombined()
-    {
+    default boolean canReceiveCombined() {
         return false;
     }
 
@@ -47,8 +45,7 @@ public interface AudioReceiveHandler
      *
      * @return If true, JDA enables subsystems to provide user specific audio data.
      */
-    default boolean canReceiveUser()
-    {
+    default boolean canReceiveUser() {
         return false;
     }
 
@@ -61,10 +58,9 @@ public interface AudioReceiveHandler
      *
      * @return True, if {@link #handleEncodedAudio(OpusPacket)} should receive opus packets.
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
-    default boolean canReceiveEncoded()
-    {
+    default boolean canReceiveEncoded() {
         return false;
     }
 
@@ -79,9 +75,10 @@ public interface AudioReceiveHandler
      * @param packet
      *        The {@link net.dv8tion.jda.api.audio.OpusPacket}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
-    default void handleEncodedAudio(@Nonnull OpusPacket packet) {}
+    default void handleEncodedAudio(@Nonnull OpusPacket packet) {
+    }
 
     /**
      * If {@link #canReceiveCombined()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.CombinedAudio CombinedAudio}
@@ -102,7 +99,8 @@ public interface AudioReceiveHandler
      * @param  combinedAudio
      *         The combined audio data.
      */
-    default void handleCombinedAudio(@Nonnull CombinedAudio combinedAudio) {}
+    default void handleCombinedAudio(@Nonnull CombinedAudio combinedAudio) {
+    }
 
     /**
      * If {@link #canReceiveUser()} returns true, JDA will provide a {@link net.dv8tion.jda.api.audio.UserAudio UserAudio}
@@ -125,7 +123,8 @@ public interface AudioReceiveHandler
      * @param  userAudio
      *         The user audio data
      */
-    default void handleUserAudio(@Nonnull UserAudio userAudio) {}
+    default void handleUserAudio(@Nonnull UserAudio userAudio) {
+    }
 
     /**
      * This method is a filter predicate used by JDA to determine whether or not to include a
@@ -145,8 +144,7 @@ public interface AudioReceiveHandler
      * @return If true, JDA will include the user's audio when merging audio sources when created packets
      *         for {@link #handleCombinedAudio(CombinedAudio)}
      */
-    default boolean includeUserInCombinedAudio(@Nonnull User user)
-    {
+    default boolean includeUserInCombinedAudio(@Nonnull User user) {
         return true;
     }
 }

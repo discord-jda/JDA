@@ -33,8 +33,7 @@ import java.util.EnumSet;
  * @param <R>
  *        The entity that implements this interface, used for fluid interface returns
  */
-public interface AllowedMentions<R>
-{
+public interface AllowedMentions<R> {
     /**
      * Sets the {@link net.dv8tion.jda.api.entities.Message.MentionType MentionTypes} that should be parsed by default.
      * This just sets the default for all RestActions and can be overridden on a per-action basis using {@link #allowedMentions(Collection)}.
@@ -54,8 +53,7 @@ public interface AllowedMentions<R>
      * @param  allowedMentions
      *         MentionTypes that are allowed to being parsed and pinged. {@code null} to disable and allow all mentions.
      */
-    static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
+    static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         AllowedMentionsImpl.setDefaultMentions(allowedMentions);
     }
 
@@ -66,8 +64,7 @@ public interface AllowedMentions<R>
      * @return Default mentions set by AllowedMentions.setDefaultMentions(Collection)
      */
     @Nonnull
-    static EnumSet<Message.MentionType> getDefaultMentions()
-    {
+    static EnumSet<Message.MentionType> getDefaultMentions() {
         return AllowedMentionsImpl.getDefaultMentions();
     }
 
@@ -79,8 +76,7 @@ public interface AllowedMentions<R>
      * @param mention
      *        True, if replies should mention by default
      */
-    static void setDefaultMentionRepliedUser(boolean mention)
-    {
+    static void setDefaultMentionRepliedUser(boolean mention) {
         AllowedMentionsImpl.setDefaultMentionRepliedUser(mention);
     }
 
@@ -93,8 +89,7 @@ public interface AllowedMentions<R>
      *
      * @return True, if replies mention by default
      */
-    static boolean isDefaultMentionRepliedUser()
-    {
+    static boolean isDefaultMentionRepliedUser() {
         return AllowedMentionsImpl.isDefaultMentionRepliedUser();
     }
 
@@ -180,8 +175,7 @@ public interface AllowedMentions<R>
      */
     @Nonnull
     @CheckReturnValue
-    default R mention(@Nonnull Collection<? extends IMentionable> mentions)
-    {
+    default R mention(@Nonnull Collection<? extends IMentionable> mentions) {
         Checks.noneNull(mentions, "Mention");
         return mention(mentions.toArray(new IMentionable[0]));
     }
@@ -230,12 +224,10 @@ public interface AllowedMentions<R>
      */
     @Nonnull
     @CheckReturnValue
-    default R mentionUsers(@Nonnull long... userIds)
-    {
+    default R mentionUsers(@Nonnull long... userIds) {
         Checks.notNull(userIds, "UserId array");
         String[] stringIds = new String[userIds.length];
-        for (int i = 0; i < userIds.length; i++)
-        {
+        for (int i = 0; i < userIds.length; i++) {
             stringIds[i] = Long.toUnsignedString(userIds[i]);
         }
         return mentionUsers(stringIds);
@@ -285,12 +277,10 @@ public interface AllowedMentions<R>
      */
     @Nonnull
     @CheckReturnValue
-    default R mentionRoles(@Nonnull long... roleIds)
-    {
+    default R mentionRoles(@Nonnull long... roleIds) {
         Checks.notNull(roleIds, "RoleId array");
         String[] stringIds = new String[roleIds.length];
-        for (int i = 0; i < roleIds.length; i++)
-        {
+        for (int i = 0; i < roleIds.length; i++) {
             stringIds[i] = Long.toUnsignedString(roleIds[i]);
         }
         return mentionRoles(stringIds);

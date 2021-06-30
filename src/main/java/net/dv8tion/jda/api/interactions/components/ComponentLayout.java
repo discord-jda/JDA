@@ -28,8 +28,7 @@ import java.util.List;
  *
  * @see ActionRow
  */
-public interface ComponentLayout extends SerializableData, Iterable<Component>
-{
+public interface ComponentLayout extends SerializableData, Iterable<Component> {
     /**
      * List representation of this component layout.
      * <br>This list is modifiable. Note that empty action rows are not supported.
@@ -58,15 +57,12 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
     /**
      * The layout types
      */
-    enum Type
-    {
+    enum Type {
         UNKNOWN(-1),
-        ACTION_ROW(1)
-        ;
+        ACTION_ROW(1);
         private final int key;
 
-        Type(int key)
-        {
+        Type(int key) {
             this.key = key;
         }
 
@@ -75,8 +71,7 @@ public interface ComponentLayout extends SerializableData, Iterable<Component>
          *
          * @return The raw type value
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
     }

@@ -37,61 +37,54 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
-{
+public abstract class AbstractWebhookClient<T> implements WebhookClient<T> {
     protected final long id;
     protected final JDA api;
     protected String token;
 
-    protected AbstractWebhookClient(long webhookId, String webhookToken, JDA api)
-    {
+    protected AbstractWebhookClient(long webhookId, String webhookToken, JDA api) {
         this.id = webhookId;
         this.token = webhookToken;
         this.api = api;
     }
 
     public abstract WebhookMessageActionImpl<T> sendRequest();
+
     public abstract WebhookMessageUpdateActionImpl<T> editRequest(String messageId);
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull String content)
-    {
+    public WebhookMessageActionImpl<T> sendMessage(@Nonnull String content) {
         return sendRequest().setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public WebhookMessageActionImpl<T> sendMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return sendRequest().addEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendMessage(@Nonnull Message message)
-    {
+    public WebhookMessageActionImpl<T> sendMessage(@Nonnull Message message) {
         return sendRequest().applyMessage(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    public WebhookMessageActionImpl<T> sendFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return sendRequest().addFile(data, name, options);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content)
-    {
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull String content) {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setContent(content);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components)
-    {
+    public WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> components) {
         Checks.noneNull(components, "Components");
         if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
             throw new UnsupportedOperationException("The provided component layout is not supported");
@@ -101,29 +94,25 @@ public abstract class AbstractWebhookClient<T> implements WebhookClient<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public WebhookMessageUpdateActionImpl<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull Collection<? extends MessageEmbed> embeds) {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).setEmbeds(embeds);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message)
-    {
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull Message message) {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).applyMessage(message);
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    public WebhookMessageUpdateActionImpl<T> editMessageById(@Nonnull String messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return (WebhookMessageUpdateActionImpl<T>) editRequest(messageId).addFile(data, name, options);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
-    {
+    public RestAction<Void> deleteMessageById(@Nonnull String messageId) {
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_DELETE.compile(Long.toUnsignedString(id), token, messageId);
         return new RestActionImpl<>(api, route);

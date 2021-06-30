@@ -25,27 +25,23 @@ import javax.annotation.Nullable;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class RestActionOperator<I, O> implements RestAction<O>
-{
+public abstract class RestActionOperator<I, O> implements RestAction<O> {
     protected BooleanSupplier check;
     protected long deadline = -1;
     protected final RestAction<I> action;
 
-    public RestActionOperator(RestAction<I> action)
-    {
+    public RestActionOperator(RestAction<I> action) {
         this.action = action;
     }
 
-    protected static <E> void doSuccess(Consumer<? super E> callback, E value)
-    {
+    protected static <E> void doSuccess(Consumer<? super E> callback, E value) {
         if (callback == null)
             RestAction.getDefaultSuccess().accept(value);
         else
             callback.accept(value);
     }
 
-    protected static void doFailure(Consumer<? super Throwable> callback, Throwable throwable)
-    {
+    protected static void doFailure(Consumer<? super Throwable> callback, Throwable throwable) {
         if (callback == null)
             RestAction.getDefaultFailure().accept(throwable);
         else
@@ -56,15 +52,13 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return action.getJDA();
     }
 
     @Nonnull
     @Override
-    public RestAction<O> setCheck(@Nullable BooleanSupplier checks)
-    {
+    public RestAction<O> setCheck(@Nullable BooleanSupplier checks) {
         this.check = checks;
         action.setCheck(checks);
         return this;
@@ -72,22 +66,19 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
 
     @Nullable
     @Override
-    public BooleanSupplier getCheck()
-    {
+    public BooleanSupplier getCheck() {
         return action.getCheck();
     }
 
     @Nonnull
     @Override
-    public RestAction<O> deadline(long timestamp)
-    {
+    public RestAction<O> deadline(long timestamp) {
         this.deadline = timestamp;
         action.deadline(timestamp);
         return this;
     }
 
-    protected <T> RestAction<T> applyContext(RestAction<T> action)
-    {
+    protected <T> RestAction<T> applyContext(RestAction<T> action) {
         if (action == null)
             return null;
         if (check != null)
@@ -97,8 +88,7 @@ public abstract class RestActionOperator<I, O> implements RestAction<O>
         return action;
     }
 
-    protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback)
-    {
+    protected Consumer<? super Throwable> contextWrap(@Nullable Consumer<? super Throwable> callback) {
         if (callback instanceof ContextException.ContextConsumer)
             return callback;
         else if (RestAction.isPassContext())

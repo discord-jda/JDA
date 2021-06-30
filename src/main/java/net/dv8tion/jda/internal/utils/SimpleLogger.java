@@ -79,7 +79,8 @@ class SimpleLogger extends MarkerIgnoringBase {
         String prop = null;
         try {
             prop = System.getProperty(name);
-        } catch (SecurityException e) {
+        }
+        catch (SecurityException e) {
             ; // Ignore
         }
         return (prop == null) ? SIMPLE_LOGGER_PROPS.getProperty(name) : prop;
@@ -117,7 +118,8 @@ class SimpleLogger extends MarkerIgnoringBase {
         if (DATE_TIME_FORMAT_STR != null) {
             try {
                 DATE_FORMATTER = new SimpleDateFormat(DATE_TIME_FORMAT_STR);
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 Util.report("Bad date format in " + CONFIGURATION_FILE + "; will output relative time", e);
             }
         }
@@ -128,12 +130,14 @@ class SimpleLogger extends MarkerIgnoringBase {
             return System.err;
         else if ("System.out".equalsIgnoreCase(logFile)) {
             return System.out;
-        } else {
+        }
+        else {
             try {
                 FileOutputStream fos = new FileOutputStream(logFile);
                 PrintStream printStream = new PrintStream(fos);
                 return printStream;
-            } catch (FileNotFoundException e) {
+            }
+            catch (FileNotFoundException e) {
                 Util.report("Could not open [" + logFile + "]. Defaulting to System.err", e);
                 return System.err;
             }
@@ -147,7 +151,8 @@ class SimpleLogger extends MarkerIgnoringBase {
                 ClassLoader threadCL = Thread.currentThread().getContextClassLoader();
                 if (threadCL != null) {
                     return threadCL.getResourceAsStream(CONFIGURATION_FILE);
-                } else {
+                }
+                else {
                     return ClassLoader.getSystemResourceAsStream(CONFIGURATION_FILE);
                 }
             }
@@ -156,7 +161,8 @@ class SimpleLogger extends MarkerIgnoringBase {
             try {
                 SIMPLE_LOGGER_PROPS.load(in);
                 in.close();
-            } catch (java.io.IOException e) {
+            }
+            catch (java.io.IOException e) {
                 // ignored
             }
         }
@@ -174,7 +180,8 @@ class SimpleLogger extends MarkerIgnoringBase {
         String levelString = recursivelyComputeLevelString();
         if (levelString != null) {
             this.currentLogLevel = stringToLevel(levelString);
-        } else {
+        }
+        else {
             this.currentLogLevel = DEFAULT_LOG_LEVEL;
         }
     }
@@ -194,13 +201,17 @@ class SimpleLogger extends MarkerIgnoringBase {
     private static int stringToLevel(String levelStr) {
         if ("trace".equalsIgnoreCase(levelStr)) {
             return LOG_LEVEL_TRACE;
-        } else if ("debug".equalsIgnoreCase(levelStr)) {
+        }
+        else if ("debug".equalsIgnoreCase(levelStr)) {
             return LOG_LEVEL_DEBUG;
-        } else if ("info".equalsIgnoreCase(levelStr)) {
+        }
+        else if ("info".equalsIgnoreCase(levelStr)) {
             return LOG_LEVEL_INFO;
-        } else if ("warn".equalsIgnoreCase(levelStr)) {
+        }
+        else if ("warn".equalsIgnoreCase(levelStr)) {
             return LOG_LEVEL_WARN;
-        } else if ("error".equalsIgnoreCase(levelStr)) {
+        }
+        else if ("error".equalsIgnoreCase(levelStr)) {
             return LOG_LEVEL_ERROR;
         }
         // assume INFO by default
@@ -219,7 +230,8 @@ class SimpleLogger extends MarkerIgnoringBase {
             if (DATE_FORMATTER != null) {
                 buf.append(getFormattedDate());
                 buf.append(' ');
-            } else {
+            }
+            else {
                 buf.append(System.currentTimeMillis() - START_TIME);
                 buf.append(' ');
             }
@@ -237,21 +249,21 @@ class SimpleLogger extends MarkerIgnoringBase {
 
         // Append a readable representation of the log level
         switch (level) {
-            case LOG_LEVEL_TRACE:
-                buf.append("TRACE");
-                break;
-            case LOG_LEVEL_DEBUG:
-                buf.append("DEBUG");
-                break;
-            case LOG_LEVEL_INFO:
-                buf.append("INFO");
-                break;
-            case LOG_LEVEL_WARN:
-                buf.append(WARN_LEVEL_STRING);
-                break;
-            case LOG_LEVEL_ERROR:
-                buf.append("ERROR");
-                break;
+        case LOG_LEVEL_TRACE:
+            buf.append("TRACE");
+            break;
+        case LOG_LEVEL_DEBUG:
+            buf.append("DEBUG");
+            break;
+        case LOG_LEVEL_INFO:
+            buf.append("INFO");
+            break;
+        case LOG_LEVEL_WARN:
+            buf.append(WARN_LEVEL_STRING);
+            break;
+        case LOG_LEVEL_ERROR:
+            buf.append("ERROR");
+            break;
         }
         if (LEVEL_IN_BRACKETS)
             buf.append(']');
@@ -262,7 +274,8 @@ class SimpleLogger extends MarkerIgnoringBase {
             if (shortLogName == null)
                 shortLogName = computeShortName();
             buf.append(String.valueOf(shortLogName)).append(" - ");
-        } else if (SHOW_LOG_NAME) {
+        }
+        else if (SHOW_LOG_NAME) {
             buf.append(String.valueOf(name)).append(" - ");
         }
 

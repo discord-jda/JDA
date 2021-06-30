@@ -41,9 +41,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WebhookMessageUpdateActionImpl<T>
-    extends TriggerRestAction<T>
-    implements WebhookMessageUpdateAction<T>
-{
+        extends TriggerRestAction<T>
+        implements WebhookMessageUpdateAction<T> {
     private static final int CONTENT = 1 << 0;
     private static final int EMBEDS = 1 << 1;
     private static final int FILES = 1 << 2;
@@ -58,16 +57,14 @@ public class WebhookMessageUpdateActionImpl<T>
     private final Function<DataObject, T> transformer;
     private String content;
 
-    public WebhookMessageUpdateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer)
-    {
+    public WebhookMessageUpdateActionImpl(JDA api, Route.CompiledRoute route, Function<DataObject, T> transformer) {
         super(api, route);
         this.transformer = transformer;
     }
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> setContent(@Nullable String content)
-    {
+    public WebhookMessageUpdateAction<T> setContent(@Nullable String content) {
         if (content != null)
             Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
         this.content = content;
@@ -77,13 +74,12 @@ public class WebhookMessageUpdateActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public WebhookMessageUpdateAction<T> setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         Checks.noneNull(embeds, "MessageEmbeds");
         embeds.forEach(embed ->
-            Checks.check(embed.isSendable(),
-                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+                Checks.check(embed.isSendable(),
+                        "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                        MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
         Checks.check(embeds.stream().mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
@@ -95,8 +91,7 @@ public class WebhookMessageUpdateActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    public WebhookMessageUpdateAction<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(name, "File name");
         Checks.notNull(data, "File data");
         Checks.noneNull(options, "AttachmentOptions");
@@ -109,8 +104,7 @@ public class WebhookMessageUpdateActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> retainFilesById(@Nonnull Collection<String> ids)
-    {
+    public WebhookMessageUpdateAction<T> retainFilesById(@Nonnull Collection<String> ids) {
         Checks.noneNull(ids, "IDs");
         ids.forEach(Checks::isSnowflake);
         this.retainedFiles.clear();
@@ -121,8 +115,7 @@ public class WebhookMessageUpdateActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows)
-    {
+    public WebhookMessageUpdateAction<T> setActionRows(@Nonnull ActionRow... rows) {
         Checks.noneNull(rows, "ActionRows");
         this.components.clear();
         Collections.addAll(this.components, rows);
@@ -133,8 +126,7 @@ public class WebhookMessageUpdateActionImpl<T>
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageUpdateAction<T> applyMessage(@Nonnull Message message)
-    {
+    public WebhookMessageUpdateAction<T> applyMessage(@Nonnull Message message) {
         Checks.notNull(message, "Message");
         setContent(message.getContentRaw());
         setActionRows(message.getActionRows());
@@ -142,14 +134,12 @@ public class WebhookMessageUpdateActionImpl<T>
         return this;
     }
 
-    private boolean isUpdate(int flag)
-    {
+    private boolean isUpdate(int flag) {
         return (set & flag) == flag;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject json = DataObject.empty();
         if (isUpdate(CONTENT))
             json.put("content", content);
@@ -157,12 +147,11 @@ public class WebhookMessageUpdateActionImpl<T>
             json.put("embeds", DataArray.fromCollection(embeds));
         if (isUpdate(COMPONENTS))
             json.put("components", DataArray.fromCollection(components));
-        if (isUpdate(RETAINED_FILES))
-        {
+        if (isUpdate(RETAINED_FILES)) {
             json.put("attachments", DataArray.fromCollection(
-                retainedFiles.stream()
-                    .map(id -> DataObject.empty().put("id", id))
-                    .collect(Collectors.toList()))
+                    retainedFiles.stream()
+                            .map(id -> DataObject.empty().put("id", id))
+                            .collect(Collectors.toList()))
             );
         }
 
@@ -170,8 +159,7 @@ public class WebhookMessageUpdateActionImpl<T>
             return getRequestBody(json);
         MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
         int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
+        for (Map.Entry<String, InputStream> file : files.entrySet()) {
             RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
             body.addFormDataPart("file" + i++, file.getKey(), stream);
         }
@@ -181,8 +169,7 @@ public class WebhookMessageUpdateActionImpl<T>
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<T> request)
-    {
+    protected void handleSuccess(Response response, Request<T> request) {
         T message = transformer.apply(response.getObject());
         request.onSuccess(message);
     }

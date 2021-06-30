@@ -24,14 +24,12 @@ import java.util.EnumSet;
 /**
  * Flags representing the speaking modes used by discord users.
  */
-public enum SpeakingMode
-{
+public enum SpeakingMode {
     VOICE(1), SOUNDSHARE(2), PRIORITY(4);
 
     private final int raw;
 
-    SpeakingMode(int raw)
-    {
+    SpeakingMode(int raw) {
         this.raw = raw;
     }
 
@@ -40,8 +38,7 @@ public enum SpeakingMode
      *
      * @return bitmask
      */
-    public int getRaw()
-    {
+    public int getRaw() {
         return raw;
     }
 
@@ -54,14 +51,12 @@ public enum SpeakingMode
      * @return {@link EnumSet EnumSet} containing the speaking modes
      */
     @Nonnull
-    public static EnumSet<SpeakingMode> getModes(int mask)
-    {
+    public static EnumSet<SpeakingMode> getModes(int mask) {
         final EnumSet<SpeakingMode> modes = EnumSet.noneOf(SpeakingMode.class);
         if (mask == 0)
             return modes;
         final SpeakingMode[] values = SpeakingMode.values();
-        for (SpeakingMode mode : values)
-        {
+        for (SpeakingMode mode : values) {
             if ((mode.raw & mask) == mode.raw)
                 modes.add(mode);
         }
@@ -77,8 +72,7 @@ public enum SpeakingMode
      *
      * @return The bitmask for the provided speaking modes
      */
-    public static int getRaw(@Nullable SpeakingMode... modes)
-    {
+    public static int getRaw(@Nullable SpeakingMode... modes) {
         if (modes == null || modes.length == 0)
             return 0;
         int mask = 0;
@@ -96,8 +90,7 @@ public enum SpeakingMode
      *
      * @return The bitmask for the provided speaking modes
      */
-    public static int getRaw(@Nullable Collection<SpeakingMode> modes)
-    {
+    public static int getRaw(@Nullable Collection<SpeakingMode> modes) {
         if (modes == null)
             return 0;
         int raw = 0;

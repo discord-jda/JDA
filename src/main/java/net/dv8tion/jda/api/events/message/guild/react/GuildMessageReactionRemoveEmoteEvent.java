@@ -32,14 +32,12 @@ import javax.annotation.Nonnull;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  *
- * @since  4.2.0
+ * @since 4.2.0
  */
-public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEvent
-{
+public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEvent {
     private final MessageReaction reaction;
 
-    public GuildMessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull MessageReaction reaction, long messageId)
-    {
+    public GuildMessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull MessageReaction reaction, long messageId) {
         super(api, responseNumber, messageId, channel);
 
         this.reaction = reaction;
@@ -51,8 +49,7 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEve
      * @return The TextChannel
      */
     @Nonnull
-    public TextChannel getChannel()
-    {
+    public TextChannel getChannel() {
         return channel;
     }
 
@@ -62,8 +59,7 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEve
      * @return The removed MessageReaction
      */
     @Nonnull
-    public MessageReaction getReaction()
-    {
+    public MessageReaction getReaction() {
         return reaction;
     }
 
@@ -74,8 +70,7 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEve
      * @return The ReactionEmote
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
-    {
+    public MessageReaction.ReactionEmote getReactionEmote() {
         return reaction.getReactionEmote();
     }
 
@@ -84,8 +79,7 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEve
      *
      * @return The id of the message
      */
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 
@@ -95,8 +89,7 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEve
      * @return The id of the message
      */
     @Nonnull
-    public String getMessageId()
-    {
+    public String getMessageId() {
         return Long.toUnsignedString(messageId);
     }
 }

@@ -27,8 +27,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class AllowedMentionsImpl implements SerializableData, AllowedMentions<AllowedMentionsImpl>
-{
+public class AllowedMentionsImpl implements SerializableData, AllowedMentions<AllowedMentionsImpl> {
     private static EnumSet<Message.MentionType> defaultParse = EnumSet.allOf(Message.MentionType.class);
     private static boolean defaultMentionRepliedUser = true;
     private EnumSet<Message.MentionType> parse = getDefaultMentions();
@@ -36,52 +35,44 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
     private final Set<String> roles = new HashSet<>();
     private boolean mentionRepliedUser = defaultMentionRepliedUser;
 
-    public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
+    public static void setDefaultMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         defaultParse = allowedMentions == null
                 ? EnumSet.allOf(Message.MentionType.class) // Default to all mentions enabled
                 : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
     }
 
     @Nonnull
-    public static EnumSet<Message.MentionType> getDefaultMentions()
-    {
+    public static EnumSet<Message.MentionType> getDefaultMentions() {
         return defaultParse.clone();
     }
 
-    public static void setDefaultMentionRepliedUser(boolean mention)
-    {
+    public static void setDefaultMentionRepliedUser(boolean mention) {
         defaultMentionRepliedUser = mention;
     }
 
-    public static boolean isDefaultMentionRepliedUser()
-    {
+    public static boolean isDefaultMentionRepliedUser() {
         return defaultMentionRepliedUser;
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject allowedMentionsObj = DataObject.empty();
         DataArray parsable = DataArray.empty();
-        if (parse != null)
-        {
+        if (parse != null) {
             // Add parsing options
             parse.stream()
-                 .map(Message.MentionType::getParseKey)
-                 .filter(Objects::nonNull)
-                 .distinct()
-                 .forEach(parsable::add);
+                    .map(Message.MentionType::getParseKey)
+                    .filter(Objects::nonNull)
+                    .distinct()
+                    .forEach(parsable::add);
         }
-        if (!users.isEmpty())
-        {
+        if (!users.isEmpty()) {
             // Whitelist certain users
             parsable.remove(Message.MentionType.USER.getParseKey());
             allowedMentionsObj.put("users", DataArray.fromCollection(users));
         }
-        if (!roles.isEmpty())
-        {
+        if (!roles.isEmpty()) {
             // Whitelist certain roles
             parsable.remove(Message.MentionType.ROLE.getParseKey());
             allowedMentionsObj.put("roles", DataArray.fromCollection(roles));
@@ -91,11 +82,9 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public AllowedMentionsImpl applyMessage(Message message)
-    {
+    public AllowedMentionsImpl applyMessage(Message message) {
         // Insert allowed mentions
-        if (message instanceof DataMessage)
-        {
+        if (message instanceof DataMessage) {
             DataMessage data = (DataMessage) message;
             String[] mentionedRoles = data.getMentionedRolesWhitelist();
             String[] mentionedUsers = data.getMentionedUsersWhitelist();
@@ -105,11 +94,9 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
             mentionRoles(mentionedRoles);
             mentionUsers(mentionedUsers);
         }
-        else
-        {
+        else {
             // Only ping everyone if the message also did
-            if (message.mentionsEveryone())
-            {
+            if (message.mentionsEveryone()) {
                 String content = message.getContentRaw();
                 EnumSet<Message.MentionType> parse = EnumSet.noneOf(Message.MentionType.class);
                 if (content.contains("@everyone"))
@@ -118,29 +105,26 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
                     parse.add(Message.MentionType.HERE);
                 this.parse = parse;
             }
-            else
-            {
+            else {
                 this.parse = EnumSet.noneOf(Message.MentionType.class);
             }
 
             this.mention(message.getMentionedUsers())
-                .mention(message.getMentionedRoles());
+                    .mention(message.getMentionedRoles());
         }
         return this;
     }
 
     @Nonnull
     @Override
-    public AllowedMentionsImpl mentionRepliedUser(boolean mention)
-    {
+    public AllowedMentionsImpl mentionRepliedUser(boolean mention) {
         this.mentionRepliedUser = mention;
         return this;
     }
 
     @Nonnull
     @Override
-    public AllowedMentionsImpl allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
+    public AllowedMentionsImpl allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         this.parse = allowedMentions == null
                 ? EnumSet.allOf(Message.MentionType.class)
                 : Helpers.copyEnumSet(Message.MentionType.class, allowedMentions);
@@ -149,11 +133,9 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsImpl mention(@Nonnull IMentionable... mentions)
-    {
+    public AllowedMentionsImpl mention(@Nonnull IMentionable... mentions) {
         Checks.noneNull(mentions, "Mentionables");
-        for (IMentionable mentionable : mentions)
-        {
+        for (IMentionable mentionable : mentions) {
             if (mentionable instanceof User || mentionable instanceof Member)
                 users.add(mentionable.getId());
             else if (mentionable instanceof Role)
@@ -164,8 +146,7 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsImpl mentionUsers(@Nonnull String... userIds)
-    {
+    public AllowedMentionsImpl mentionUsers(@Nonnull String... userIds) {
         Checks.noneNull(userIds, "User Id");
         Collections.addAll(users, userIds);
         return this;
@@ -173,8 +154,7 @@ public class AllowedMentionsImpl implements SerializableData, AllowedMentions<Al
 
     @Nonnull
     @Override
-    public AllowedMentionsImpl mentionRoles(@Nonnull String... roleIds)
-    {
+    public AllowedMentionsImpl mentionRoles(@Nonnull String... roleIds) {
         Checks.noneNull(roleIds, "Role Id");
         Collections.addAll(roles, roleIds);
         return this;

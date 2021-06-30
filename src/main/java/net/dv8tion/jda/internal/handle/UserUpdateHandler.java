@@ -26,16 +26,13 @@ import net.dv8tion.jda.internal.entities.SelfUserImpl;
 
 import java.util.Objects;
 
-public class UserUpdateHandler extends SocketHandler
-{
-    public UserUpdateHandler(JDAImpl api)
-    {
+public class UserUpdateHandler extends SocketHandler {
+    public UserUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         SelfUserImpl self = (SelfUserImpl) getJDA().getSelfUser();
 
         String name = content.getString("username");
@@ -50,44 +47,40 @@ public class UserUpdateHandler extends SocketHandler
         Boolean nitro = content.hasKey("premium") ? content.getBoolean("premium") : null; // nitro
         String phoneNumber = content.getString("phone", null); // verified phone number (verification level !)
 
-        if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
-        {
+        if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator())) {
             String oldName = self.getName();
             self.setName(name);
             getJDA().handleEvent(
-                new SelfUpdateNameEvent(
-                    getJDA(), responseNumber,
-                    oldName));
+                    new SelfUpdateNameEvent(
+                            getJDA(), responseNumber,
+                            oldName));
         }
 
-        if (!Objects.equals(avatarId, self.getAvatarId()))
-        {
+        if (!Objects.equals(avatarId, self.getAvatarId())) {
             String oldAvatarId = self.getAvatarId();
             self.setAvatarId(avatarId);
             getJDA().handleEvent(
-                new SelfUpdateAvatarEvent(
-                    getJDA(), responseNumber,
-                    oldAvatarId));
+                    new SelfUpdateAvatarEvent(
+                            getJDA(), responseNumber,
+                            oldAvatarId));
         }
 
-        if (verified != null && verified != self.isVerified())
-        {
+        if (verified != null && verified != self.isVerified()) {
             boolean wasVerified = self.isVerified();
             self.setVerified(verified);
             getJDA().handleEvent(
-                new SelfUpdateVerifiedEvent(
-                    getJDA(), responseNumber,
-                    wasVerified));
+                    new SelfUpdateVerifiedEvent(
+                            getJDA(), responseNumber,
+                            wasVerified));
         }
 
-        if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled())
-        {
+        if (mfaEnabled != null && mfaEnabled != self.isMfaEnabled()) {
             boolean wasMfaEnabled = self.isMfaEnabled();
             self.setMfaEnabled(mfaEnabled);
             getJDA().handleEvent(
-                new SelfUpdateMFAEvent(
-                    getJDA(), responseNumber,
-                    wasMfaEnabled));
+                    new SelfUpdateMFAEvent(
+                            getJDA(), responseNumber,
+                            wasMfaEnabled));
         }
         return null;
     }

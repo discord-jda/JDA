@@ -29,29 +29,25 @@ import java.util.Locale;
  *
  * <p>Identifier: {@code locale}
  *
- * @since  4.2.1
+ * @since 4.2.1
  */
 @SuppressWarnings("ConstantConditions")
-public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<Locale>
-{
+public class GuildUpdateLocaleEvent extends GenericGuildUpdateEvent<Locale> {
     public static final String IDENTIFIER = "locale";
 
-    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Locale previous)
-    {
+    public GuildUpdateLocaleEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull Locale previous) {
         super(api, responseNumber, guild, previous, guild.getLocale(), IDENTIFIER);
     }
 
     @Nonnull
     @Override
-    public Locale getOldValue()
-    {
+    public Locale getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Locale getNewValue()
-    {
+    public Locale getNewValue() {
         return super.getNewValue();
     }
 }

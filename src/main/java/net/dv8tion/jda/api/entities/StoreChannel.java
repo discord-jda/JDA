@@ -21,7 +21,7 @@ import net.dv8tion.jda.api.JDA;
 /**
  * Represents a Discord Store GuildChannel.
  *
- * @since  4.0.0
+ * @since 4.0.0
  *
  * @see   Guild#getStoreChannelCache()
  * @see   Guild#getStoreChannels()
@@ -33,4 +33,5 @@ import net.dv8tion.jda.api.JDA;
  * @see   JDA#getStoreChannelsByName(String, boolean)
  * @see   JDA#getStoreChannelById(long)
  */
-public interface StoreChannel extends GuildChannel {}
+public interface StoreChannel extends GuildChannel {
+}

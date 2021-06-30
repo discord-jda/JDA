@@ -32,18 +32,16 @@ import java.time.OffsetDateTime;
  * <p>When reconnecting was successful either a {@link net.dv8tion.jda.api.events.ReconnectedEvent ReconnectEvent}
  * <b>or</b> {@link net.dv8tion.jda.api.events.ResumedEvent ResumedEvent} is fired.
  */
-public class DisconnectEvent extends Event
-{
+public class DisconnectEvent extends Event {
     protected final WebSocketFrame serverCloseFrame;
     protected final WebSocketFrame clientCloseFrame;
     protected final boolean closedByServer;
     protected final OffsetDateTime disconnectTime;
 
     public DisconnectEvent(
-        @Nonnull JDA api,
-        @Nullable WebSocketFrame serverCloseFrame, @Nullable WebSocketFrame clientCloseFrame,
-        boolean closedByServer, @Nonnull OffsetDateTime disconnectTime)
-    {
+            @Nonnull JDA api,
+            @Nullable WebSocketFrame serverCloseFrame, @Nullable WebSocketFrame clientCloseFrame,
+            boolean closedByServer, @Nonnull OffsetDateTime disconnectTime) {
         super(api);
         this.serverCloseFrame = serverCloseFrame;
         this.clientCloseFrame = clientCloseFrame;
@@ -61,8 +59,7 @@ public class DisconnectEvent extends Event
      * @return Possibly-null {@link net.dv8tion.jda.api.requests.CloseCode CloseCode}
      */
     @Nullable
-    public CloseCode getCloseCode()
-    {
+    public CloseCode getCloseCode() {
         return serverCloseFrame != null ? CloseCode.from(serverCloseFrame.getCloseCode()) : null;
     }
 
@@ -72,8 +69,7 @@ public class DisconnectEvent extends Event
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} discord sent as closing handshake
      */
     @Nullable
-    public WebSocketFrame getServiceCloseFrame()
-    {
+    public WebSocketFrame getServiceCloseFrame() {
         return serverCloseFrame;
     }
 
@@ -83,8 +79,7 @@ public class DisconnectEvent extends Event
      * @return The {@link com.neovisionaries.ws.client.WebSocketFrame WebSocketFrame} we sent as closing handshake
      */
     @Nullable
-    public WebSocketFrame getClientCloseFrame()
-    {
+    public WebSocketFrame getClientCloseFrame() {
         return clientCloseFrame;
     }
 
@@ -93,8 +88,7 @@ public class DisconnectEvent extends Event
      *
      * @return True, if discord closed our connection
      */
-    public boolean isClosedByServer()
-    {
+    public boolean isClosedByServer() {
         return closedByServer;
     }
 
@@ -104,8 +98,7 @@ public class DisconnectEvent extends Event
      * @return Time of closure
      */
     @Nonnull
-    public OffsetDateTime getTimeDisconnected()
-    {
+    public OffsetDateTime getTimeDisconnected() {
         return disconnectTime;
     }
 }

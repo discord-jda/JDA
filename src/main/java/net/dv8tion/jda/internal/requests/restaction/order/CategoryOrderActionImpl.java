@@ -26,9 +26,8 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class CategoryOrderActionImpl
-    extends ChannelOrderActionImpl
-    implements CategoryOrderAction
-{
+        extends ChannelOrderActionImpl
+        implements CategoryOrderAction {
     protected final Category category;
 
     /**
@@ -40,34 +39,30 @@ public class CategoryOrderActionImpl
      * @param  bucket
      *         The sorting bucket
      */
-    public CategoryOrderActionImpl(Category category, int bucket)
-    {
+    public CategoryOrderActionImpl(Category category, int bucket) {
         super(category.getGuild(), bucket, getChannelsOfType(category, bucket));
         this.category = category;
     }
 
     @Nonnull
     @Override
-    public Category getCategory()
-    {
+    public Category getCategory() {
         return category;
     }
 
     @Override
-    protected void validateInput(GuildChannel entity)
-    {
+    protected void validateInput(GuildChannel entity) {
         Checks.notNull(entity, "Provided channel");
         Checks.check(getCategory().equals(entity.getParent()), "Provided channel's Category is not this Category!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
     @Nonnull
-    private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket)
-    {
+    private static Collection<GuildChannel> getChannelsOfType(Category category, int bucket) {
         Checks.notNull(category, "Category");
         return ChannelOrderActionImpl.getChannelsOfType(category.getGuild(), bucket).stream()
-             .filter(it -> category.equals(it.getParent()))
-             .sorted()
-             .collect(Collectors.toList());
+                .filter(it -> category.equals(it.getParent()))
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

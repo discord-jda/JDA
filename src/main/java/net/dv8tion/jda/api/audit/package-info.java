@@ -24,6 +24,6 @@
  * <p>Each Entry contains a set of {@link net.dv8tion.jda.api.audit.AuditLogChange AuditLogChanges}.
  * <br>To identify what kind of entry is represented use {@link net.dv8tion.jda.api.audit.ActionType ActionType}!
  *
- * @since  3.1.1
+ * @since 3.1.1
  */
 package net.dv8tion.jda.api.audit;

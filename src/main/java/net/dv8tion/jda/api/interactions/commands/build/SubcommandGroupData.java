@@ -30,8 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Builder for a Slash-Command group.
  */
-public class SubcommandGroupData implements SerializableData
-{
+public class SubcommandGroupData implements SerializableData {
     private final DataArray options = DataArray.empty();
     private String name, description;
 
@@ -50,8 +49,7 @@ public class SubcommandGroupData implements SerializableData
      *             <li>The description must be 1-100 characters long</li>
      *         </ul>
      */
-    public SubcommandGroupData(@Nonnull String name, @Nonnull String description)
-    {
+    public SubcommandGroupData(@Nonnull String name, @Nonnull String description) {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(name, 32, "Name");
@@ -74,8 +72,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setName(@Nonnull String name)
-    {
+    public SubcommandGroupData setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
         Checks.isLowercase(name, "Name");
@@ -96,8 +93,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData setDescription(@Nonnull String description)
-    {
+    public SubcommandGroupData setDescription(@Nonnull String description) {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;
@@ -110,8 +106,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -121,8 +116,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -132,8 +126,7 @@ public class SubcommandGroupData implements SerializableData
      * @return Immutable list of {@link SubcommandData}
      */
     @Nonnull
-    public List<SubcommandData> getSubcommands()
-    {
+    public List<SubcommandData> getSubcommands() {
         return options.stream(DataArray::getObject)
                 .map(SubcommandData::fromData)
                 .collect(Collectors.toList());
@@ -151,8 +144,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData addSubcommands(@Nonnull SubcommandData... subcommands)
-    {
+    public SubcommandGroupData addSubcommands(@Nonnull SubcommandData... subcommands) {
         Checks.noneNull(subcommands, "Subcommand");
         Checks.check(subcommands.length + options.length() <= 25, "Cannot have more than 25 subcommands in one group!");
         for (SubcommandData subcommand : subcommands)
@@ -172,16 +164,14 @@ public class SubcommandGroupData implements SerializableData
      * @return The SubcommandGroupData instance, for chaining
      */
     @Nonnull
-    public SubcommandGroupData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
-    {
+    public SubcommandGroupData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands) {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         return DataObject.empty()
                 .put("type", OptionType.SUB_COMMAND_GROUP.getKey())
                 .put("name", name)
@@ -204,8 +194,7 @@ public class SubcommandGroupData implements SerializableData
      * @return The parsed SubcommandGroupData instance, which can be further configured through setters
      */
     @Nonnull
-    public static SubcommandGroupData fromData(@Nonnull DataObject json)
-    {
+    public static SubcommandGroupData fromData(@Nonnull DataObject json) {
         String name = json.getString("name");
         String description = json.getString("description");
         SubcommandGroupData group = new SubcommandGroupData(name, description);

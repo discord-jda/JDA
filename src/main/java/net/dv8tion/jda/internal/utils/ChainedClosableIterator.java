@@ -25,8 +25,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-public class ChainedClosableIterator<T> implements ClosableIterator<T>
-{
+public class ChainedClosableIterator<T> implements ClosableIterator<T> {
     private final static Logger log = JDALogger.getLog(ClosableIterator.class);
     private final Set<T> items;
     private final Iterator<? extends CacheView<T>> generator;
@@ -34,40 +33,33 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
 
     private T item;
 
-    public ChainedClosableIterator(Iterator<? extends CacheView<T>> generator)
-    {
+    public ChainedClosableIterator(Iterator<? extends CacheView<T>> generator) {
         this.items = new HashSet<>();
         this.generator = generator;
     }
 
-    public Set<T> getItems()
-    {
+    public Set<T> getItems() {
         return items;
     }
 
     @Override
-    public void close()
-    {
+    public void close() {
         if (currentIterator != null)
             currentIterator.close();
         currentIterator = null;
     }
 
     @Override
-    public boolean hasNext()
-    {
+    public boolean hasNext() {
         if (item != null)
             return true;
         // get next item from current iterator if exists
-        if (currentIterator != null)
-        {
-            if (!currentIterator.hasNext())
-            {
+        if (currentIterator != null) {
+            if (!currentIterator.hasNext()) {
                 currentIterator.close();
                 currentIterator = null;
             }
-            else
-            {
+            else {
                 if (findNext()) return true;
                 currentIterator.close();
                 currentIterator = null;
@@ -77,13 +69,10 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
         return processChain();
     }
 
-    private boolean processChain()
-    {
-        while (item == null)
-        {
+    private boolean processChain() {
+        while (item == null) {
             CacheView<T> view = null;
-            while (generator.hasNext())
-            {
+            while (generator.hasNext()) {
                 view = generator.next();
                 if (!view.isEmpty())
                     break;
@@ -99,10 +88,8 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
         return true;
     }
 
-    private boolean findNext()
-    {
-        while (currentIterator.hasNext())
-        {
+    private boolean findNext() {
+        while (currentIterator.hasNext()) {
             T next = currentIterator.next();
             if (items.contains(next))
                 continue;
@@ -114,8 +101,7 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
     }
 
     @Override
-    public T next()
-    {
+    public T next() {
         if (!hasNext())
             throw new NoSuchElementException();
         T tmp = item;
@@ -125,10 +111,8 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
 
     @Override
     @Deprecated
-    protected void finalize()
-    {
-        if (currentIterator != null)
-        {
+    protected void finalize() {
+        if (currentIterator != null) {
             log.error("Finalizing without closing, performing force close on lock");
             close();
         }

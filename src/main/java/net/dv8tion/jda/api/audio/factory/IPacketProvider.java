@@ -35,8 +35,7 @@ import java.nio.ByteBuffer;
  * <p><b>Note that this provider is not thread-safe!</b>
  */
 @NotThreadSafe
-public interface IPacketProvider
-{
+public interface IPacketProvider {
     /**
      * Provides a unique String identifier for the connection.
      * <br>Uses shard information and specific audio connection information to build string.

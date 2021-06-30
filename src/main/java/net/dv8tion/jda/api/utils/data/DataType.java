@@ -24,8 +24,7 @@ import java.util.Map;
 /**
  * Enum constants representing possible types for a {@link net.dv8tion.jda.api.utils.data.DataObject} value.
  */
-public enum DataType
-{
+public enum DataType {
     INT, FLOAT, STRING, OBJECT, ARRAY, BOOLEAN, NULL, UNKNOWN;
 
     /**
@@ -37,10 +36,8 @@ public enum DataType
      * @return The DataType constant or {@link #UNKNOWN}
      */
     @Nonnull
-    public static DataType getType(@Nullable Object value)
-    {
-        for (DataType type : values())
-        {
+    public static DataType getType(@Nullable Object value) {
+        for (DataType type : values()) {
             if (type.isType(value))
                 return type;
         }
@@ -56,26 +53,24 @@ public enum DataType
      *
      * @return True, if the value is of this type
      */
-    public boolean isType(@Nullable Object value)
-    {
-        switch (this)
-        {
-            case INT:
-                return value instanceof Integer ||value instanceof Long || value instanceof Short || value instanceof Byte;
-            case FLOAT:
-                return value instanceof Double || value instanceof Float;
-            case STRING:
-                return value instanceof String;
-            case BOOLEAN:
-                return value instanceof Boolean;
-            case ARRAY:
-                return value instanceof List;
-            case OBJECT:
-                return value instanceof Map;
-            case NULL:
-                return value == null;
-            default:
-                return false;
+    public boolean isType(@Nullable Object value) {
+        switch (this) {
+        case INT:
+            return value instanceof Integer || value instanceof Long || value instanceof Short || value instanceof Byte;
+        case FLOAT:
+            return value instanceof Double || value instanceof Float;
+        case STRING:
+            return value instanceof String;
+        case BOOLEAN:
+            return value instanceof Boolean;
+        case ARRAY:
+            return value instanceof List;
+        case OBJECT:
+            return value instanceof Map;
+        case NULL:
+            return value == null;
+        default:
+            return false;
         }
     }
 }

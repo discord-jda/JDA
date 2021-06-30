@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code name}
  */
-public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<String>
-{
+public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<String> {
     public static final String IDENTIFIER = "name";
 
-    public TextChannelUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull String oldName)
-    {
+    public TextChannelUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nonnull String oldName) {
         super(api, responseNumber, channel, oldName, channel.getName(), IDENTIFIER);
     }
 
@@ -42,8 +40,7 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
      * @return The old name
      */
     @Nonnull
-    public String getOldName()
-    {
+    public String getOldName() {
         return getOldValue();
     }
 
@@ -53,22 +50,19 @@ public class TextChannelUpdateNameEvent extends GenericTextChannelUpdateEvent<St
      * @return The new name
      */
     @Nonnull
-    public String getNewName()
-    {
+    public String getNewName() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

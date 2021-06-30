@@ -34,15 +34,14 @@ import java.util.function.BooleanSupplier;
  * designed to create a {@link net.dv8tion.jda.api.entities.Role Role}.
  * This extension allows setting properties before executing the action.
  *
- * @since  3.0
+ * @since 3.0
  *
  * @see    net.dv8tion.jda.api.entities.Guild
  * @see    net.dv8tion.jda.api.entities.Guild#createRole()
  * @see    Role#createCopy()
  * @see    Role#createCopy(Guild)
  */
-public interface RoleAction extends AuditableRestAction<Role>
-{
+public interface RoleAction extends AuditableRestAction<Role> {
     @Nonnull
     @Override
     RoleAction setCheck(@Nullable BooleanSupplier checks);
@@ -113,8 +112,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction setColor(@Nullable Color color)
-    {
+    default RoleAction setColor(@Nullable Color color) {
         return this.setColor(color != null ? color.getRGB() : null);
     }
 
@@ -151,8 +149,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction setPermissions(@Nullable Permission... permissions)
-    {
+    default RoleAction setPermissions(@Nullable Permission... permissions) {
         if (permissions != null)
             Checks.noneNull(permissions, "Permissions");
 
@@ -179,8 +176,7 @@ public interface RoleAction extends AuditableRestAction<Role>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleAction setPermissions(@Nullable Collection<Permission> permissions)
-    {
+    default RoleAction setPermissions(@Nullable Collection<Permission> permissions) {
         if (permissions != null)
             Checks.noneNull(permissions, "Permissions");
 

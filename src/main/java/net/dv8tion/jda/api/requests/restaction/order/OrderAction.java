@@ -43,8 +43,7 @@ import java.util.function.BooleanSupplier;
  *
  * @since 3.0
  */
-public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void>
-{
+public interface OrderAction<T, M extends OrderAction<T, M>> extends RestAction<Void> {
     @Nonnull
     @Override
     M setCheck(@Nullable BooleanSupplier checks);

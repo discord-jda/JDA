@@ -39,12 +39,10 @@ import java.util.List;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
-{
+public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent {
     private final List<Role> removedRoles;
 
-    public GuildMemberRoleRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull List<Role> removedRoles)
-    {
+    public GuildMemberRoleRemoveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull List<Role> removedRoles) {
         super(api, responseNumber, member);
         this.removedRoles = Collections.unmodifiableList(removedRoles);
     }
@@ -54,8 +52,7 @@ public class GuildMemberRoleRemoveEvent extends GenericGuildMemberEvent
      *
      * @return The removed roles
      */
-    public List<Role> getRoles()
-    {
+    public List<Role> getRoles() {
         return removedRoles;
     }
 }

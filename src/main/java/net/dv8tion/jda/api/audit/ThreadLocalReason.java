@@ -59,12 +59,10 @@ import java.util.function.Consumer;
  * @see net.dv8tion.jda.api.requests.restaction.AuditableRestAction#reason(String) AuditableRestAction.reason(String)
  * @see ThreadLocal
  */
-public final class ThreadLocalReason
-{
+public final class ThreadLocalReason {
     private static ThreadLocal<String> currentReason;
 
-    private ThreadLocalReason()
-    {
+    private ThreadLocalReason() {
         throw new UnsupportedOperationException();
     }
 
@@ -74,16 +72,13 @@ public final class ThreadLocalReason
      * @param reason
      *        The reason to use, or {@code null} to reset
      */
-    public static void setCurrent(@Nullable String reason)
-    {
-        if (reason != null)
-        {
+    public static void setCurrent(@Nullable String reason) {
+        if (reason != null) {
             if (currentReason == null)
                 currentReason = new ThreadLocal<>();
             currentReason.set(reason);
         }
-        else if (currentReason != null)
-        {
+        else if (currentReason != null) {
             currentReason.remove();
         }
     }
@@ -91,8 +86,7 @@ public final class ThreadLocalReason
     /**
      * Resets the currently set thread-local reason, if present.
      */
-    public static void resetCurrent()
-    {
+    public static void resetCurrent() {
         if (currentReason != null)
             currentReason.remove();
     }
@@ -103,8 +97,7 @@ public final class ThreadLocalReason
      * @return The current thread-local reason, or null
      */
     @Nullable
-    public static String getCurrent()
-    {
+    public static String getCurrent() {
         return currentReason == null ? null : currentReason.get();
     }
 
@@ -118,8 +111,7 @@ public final class ThreadLocalReason
      * @return The closable instance
      */
     @Nonnull
-    public static Closable closable(@Nullable String reason)
-    {
+    public static Closable closable(@Nullable String reason) {
         return new ThreadLocalReason.Closable(reason);
     }
 
@@ -137,19 +129,16 @@ public final class ThreadLocalReason
      * } // calls resetCurrent()
      * </code></pre>
      */
-    public static class Closable implements AutoCloseable
-    {
+    public static class Closable implements AutoCloseable {
         private final String previous;
 
-        public Closable(@Nullable String reason)
-        {
+        public Closable(@Nullable String reason) {
             this.previous = getCurrent();
             setCurrent(reason);
         }
 
         @Override
-        public void close()
-        {
+        public void close() {
             setCurrent(previous);
         }
     }

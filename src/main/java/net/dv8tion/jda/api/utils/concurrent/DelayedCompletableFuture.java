@@ -26,16 +26,16 @@ import java.util.function.Function;
  * @param <T>
  *        The result type
  *
- * @since  4.0.0
+ * @since 4.0.0
  *
  * @see    CompletableFuture
  * @see    Delayed
  */
-public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements ScheduledFuture<T>
-{
+public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements ScheduledFuture<T> {
     private ScheduledFuture<?> future;
 
-    private DelayedCompletableFuture() {}
+    private DelayedCompletableFuture() {
+    }
 
     /**
      * Creates a new DelayedCompletableFuture scheduled on the supplied executor.
@@ -54,8 +54,7 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      * @return DelayedCompletableFuture for the specified runnable
      */
     @Nonnull
-    public static <E> DelayedCompletableFuture<E> make(@Nonnull ScheduledExecutorService executor, long delay, @Nonnull TimeUnit unit, @Nonnull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping)
-    {
+    public static <E> DelayedCompletableFuture<E> make(@Nonnull ScheduledExecutorService executor, long delay, @Nonnull TimeUnit unit, @Nonnull Function<? super DelayedCompletableFuture<E>, ? extends Runnable> mapping) {
         DelayedCompletableFuture<E> handle = new DelayedCompletableFuture<>();
         ScheduledFuture<?> future = executor.schedule(mapping.apply(handle), delay, unit);
         handle.initProxy(future);
@@ -74,8 +73,7 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
      * @throws IllegalStateException
      *         If this was already initialized
      */
-    private void initProxy(ScheduledFuture<?> future)
-    {
+    private void initProxy(ScheduledFuture<?> future) {
         if (this.future == null)
             this.future = future;
         else
@@ -83,22 +81,19 @@ public class DelayedCompletableFuture<T> extends CompletableFuture<T> implements
     }
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning)
-    {
+    public boolean cancel(boolean mayInterruptIfRunning) {
         if (future != null && !future.isDone())
             future.cancel(mayInterruptIfRunning);
         return super.cancel(mayInterruptIfRunning);
     }
 
     @Override
-    public long getDelay(@Nonnull TimeUnit unit)
-    {
+    public long getDelay(@Nonnull TimeUnit unit) {
         return future.getDelay(unit);
     }
 
     @Override
-    public int compareTo(@Nonnull Delayed o)
-    {
+    public int compareTo(@Nonnull Delayed o) {
         return future.compareTo(o);
     }
 }

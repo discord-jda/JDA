@@ -39,10 +39,8 @@ import javax.annotation.Nonnull;
 @Deprecated
 @DeprecatedSince("4.2.0")
 @ReplaceWith("GuildMemberRemoveEvent")
-public class GuildMemberLeaveEvent extends GenericGuildMemberEvent
-{
-    public GuildMemberLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+public class GuildMemberLeaveEvent extends GenericGuildMemberEvent {
+    public GuildMemberLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
     }
 }

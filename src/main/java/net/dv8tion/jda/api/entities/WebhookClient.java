@@ -37,8 +37,7 @@ import java.util.*;
  * @see Webhook
  * @see net.dv8tion.jda.api.interactions.InteractionHook
  */
-public interface WebhookClient<T>
-{
+public interface WebhookClient<T> {
     /**
      * Send a message to this webhook.
      *
@@ -108,8 +107,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendMessageFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default WebhookMessageAction<T> sendMessageFormat(@Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return sendMessage(String.format(format, args));
     }
@@ -160,8 +158,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds)
-    {
+    default WebhookMessageAction<T> sendMessageEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... embeds) {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(embeds, "MessageEmbeds");
         List<MessageEmbed> embedList = new ArrayList<>();
@@ -254,8 +251,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendFile(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageAction<T> sendFile(@Nonnull File file, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         return sendFile(file, file.getName(), options);
     }
@@ -312,19 +308,16 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageAction<T> sendFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(),
                 "Provided file doesn't exist or cannot be read!");
         Checks.notNull(name, "Name");
 
-        try
-        {
+        try {
             return sendFile(new FileInputStream(file), name, options);
         }
-        catch (FileNotFoundException ex)
-        {
+        catch (FileNotFoundException ex) {
             throw new IllegalArgumentException(ex);
         }
     }
@@ -370,8 +363,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageAction<T> sendFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageAction<T> sendFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
         return sendFile(new ByteArrayInputStream(data), name, options);
@@ -429,8 +421,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull String content)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull String content) {
         return editMessageById(Long.toUnsignedString(messageId), content);
     }
 
@@ -486,8 +477,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, Message message)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(long messageId, Message message) {
         return editMessageById(Long.toUnsignedString(messageId), message);
     }
 
@@ -518,8 +508,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args)
-    {
+    default WebhookMessageUpdateAction<T> editMessageFormatById(@Nonnull String messageId, @Nonnull String format, @Nonnull Object... args) {
         Checks.notNull(format, "Format String");
         return editMessageById(messageId, String.format(format, args));
     }
@@ -551,8 +540,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args)
-    {
+    default WebhookMessageUpdateAction<T> editMessageFormatById(long messageId, @Nonnull String format, @Nonnull Object... args) {
         return editMessageFormatById(Long.toUnsignedString(messageId), format, args);
     }
 
@@ -608,8 +596,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull Collection<? extends MessageEmbed> embeds) {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), embeds);
     }
 
@@ -638,8 +625,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... embeds)
-    {
+    default WebhookMessageUpdateAction<T> editMessageEmbedsById(@Nonnull String messageId, @Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbeds");
         return editMessageEmbedsById(messageId, Arrays.asList(embeds));
     }
@@ -669,8 +655,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... embeds)
-    {
+    default WebhookMessageUpdateAction<T> editMessageEmbedsById(long messageId, @Nonnull MessageEmbed... embeds) {
         return editMessageEmbedsById(Long.toUnsignedString(messageId), embeds);
     }
 
@@ -726,8 +711,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends ComponentLayout> components)
-    {
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull Collection<? extends ComponentLayout> components) {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
 
@@ -756,8 +740,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentLayout... components)
-    {
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(@Nonnull String messageId, @Nonnull ComponentLayout... components) {
         Checks.noneNull(components, "ComponentLayouts");
         return editMessageComponentsById(messageId, Arrays.asList(components));
     }
@@ -787,8 +770,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentLayout... components)
-    {
+    default WebhookMessageUpdateAction<T> editMessageComponentsById(long messageId, @Nonnull ComponentLayout... components) {
         return editMessageComponentsById(Long.toUnsignedString(messageId), components);
     }
 
@@ -883,8 +865,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         return editMessageById(messageId, file, file.getName(), options);
     }
@@ -933,19 +914,16 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         Checks.check(file.exists() && file.canRead(),
                 "Provided file doesn't exist or cannot be read!");
         Checks.notNull(name, "Name");
 
-        try
-        {
+        try {
             return editMessageById(messageId, new FileInputStream(file), name, options);
         }
-        catch (FileNotFoundException ex)
-        {
+        catch (FileNotFoundException ex) {
             throw new IllegalArgumentException(ex);
         }
     }
@@ -994,8 +972,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(@Nonnull String messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(data, "Data");
         Checks.notNull(name, "Name");
 
@@ -1046,8 +1023,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return editMessageById(Long.toUnsignedString(messageId), data, name, options);
     }
 
@@ -1095,8 +1071,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull AttachmentOption... options) {
         return editMessageById(Long.toUnsignedString(messageId), file, options);
     }
 
@@ -1144,8 +1119,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return editMessageById(Long.toUnsignedString(messageId), file, name, options);
     }
 
@@ -1193,8 +1167,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default WebhookMessageUpdateAction<T> editMessageById(long messageId, @Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return editMessageById(Long.toUnsignedString(messageId), data, name, options);
     }
 
@@ -1244,8 +1217,7 @@ public interface WebhookClient<T>
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> deleteMessageById(long messageId)
-    {
+    default RestAction<Void> deleteMessageById(long messageId) {
         return deleteMessageById(Long.toUnsignedString(messageId));
     }
 

@@ -18,8 +18,7 @@ package net.dv8tion.jda.api;
 /**
  * Contains information to this specific build of JDA.
  */
-public class JDAInfo
-{
+public class JDAInfo {
     public static final int DISCORD_GATEWAY_VERSION = 8;
     public static final int DISCORD_REST_VERSION = 8;
     public static final int AUDIO_GATEWAY_VERSION = 4;

@@ -28,55 +28,47 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestActionImpl<Void> implements Manager<M>
-{
+public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestActionImpl<Void> implements Manager<M> {
     private static boolean enablePermissionChecks = true;
     protected long set = 0;
 
-    public static void setPermissionChecksEnabled(boolean enable)
-    {
+    public static void setPermissionChecksEnabled(boolean enable) {
         enablePermissionChecks = enable;
     }
 
-    public static boolean isPermissionChecksEnabled()
-    {
+    public static boolean isPermissionChecksEnabled() {
         return enablePermissionChecks;
     }
 
-    protected ManagerBase(JDA api, Route.CompiledRoute route)
-    {
+    protected ManagerBase(JDA api, Route.CompiledRoute route) {
         super(api, route);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M setCheck(BooleanSupplier checks)
-    {
+    public M setCheck(BooleanSupplier checks) {
         return (M) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public M timeout(long timeout, @Nonnull TimeUnit unit) {
         return (M) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M deadline(long timestamp)
-    {
+    public M deadline(long timestamp) {
         return (M) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M reset(long fields)
-    {
+    public M reset(long fields) {
         //logic explanation:
         //0101 = fields
         //1010 = ~fields
@@ -89,8 +81,7 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M reset(long... fields)
-    {
+    public M reset(long... fields) {
         Checks.notNull(fields, "Fields");
         //trivial case
         if (fields.length == 0)
@@ -108,15 +99,13 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M reset()
-    {
+    public M reset() {
         set = 0;
         return (M) this;
     }
 
     @Override
-    public void queue(Consumer<? super Void> success, Consumer<? super Throwable> failure)
-    {
+    public void queue(Consumer<? super Void> success, Consumer<? super Throwable> failure) {
         if (shouldUpdate())
             super.queue(success, failure);
         else if (success != null)
@@ -126,39 +115,32 @@ public abstract class ManagerBase<M extends Manager<M>> extends AuditableRestAct
     }
 
     @Override
-    public Void complete(boolean shouldQueue) throws RateLimitedException
-    {
+    public Void complete(boolean shouldQueue) throws RateLimitedException {
         if (shouldUpdate())
             return super.complete(shouldQueue);
         return null;
     }
 
     @Override
-    protected BooleanSupplier finalizeChecks()
-    {
+    protected BooleanSupplier finalizeChecks() {
         return enablePermissionChecks ? this::checkPermissions : super.finalizeChecks();
     }
 
-    protected boolean shouldUpdate()
-    {
+    protected boolean shouldUpdate() {
         return set != 0;
     }
 
-    protected boolean shouldUpdate(long bit)
-    {
+    protected boolean shouldUpdate(long bit) {
         return (set & bit) == bit;
     }
 
-    protected <E> void withLock(E object, Consumer<? super E> consumer)
-    {
-        synchronized (object)
-        {
+    protected <E> void withLock(E object, Consumer<? super E> consumer) {
+        synchronized (object) {
             consumer.accept(object);
         }
     }
 
-    protected boolean checkPermissions()
-    {
+    protected boolean checkPermissions() {
         return true;
     }
 }

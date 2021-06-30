@@ -27,36 +27,30 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-public class BufferedRequestBody extends RequestBody
-{
+public class BufferedRequestBody extends RequestBody {
     private final Source source;
     private final MediaType type;
     private byte[] data;
 
-    public BufferedRequestBody(Source source, MediaType type)
-    {
+    public BufferedRequestBody(Source source, MediaType type) {
         this.source = source;
         this.type = type;
     }
 
     @Nullable
     @Override
-    public MediaType contentType()
-    {
+    public MediaType contentType() {
         return type;
     }
 
     @Override
-    public void writeTo(@Nonnull BufferedSink sink) throws IOException
-    {
-        if (data != null)
-        {
+    public void writeTo(@Nonnull BufferedSink sink) throws IOException {
+        if (data != null) {
             sink.write(data);
             return;
         }
 
-        try (BufferedSource s = Okio.buffer(source))
-        {
+        try (BufferedSource s = Okio.buffer(source)) {
             data = s.readByteArray();
             sink.write(data);
         }

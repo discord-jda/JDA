@@ -46,8 +46,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
-{
+public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel {
     protected final long id;
     protected final JDAImpl api;
 
@@ -60,16 +59,14 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     protected String name;
     protected int rawPosition;
 
-    public AbstractChannelImpl(long id, GuildImpl guild)
-    {
+    public AbstractChannelImpl(long id, GuildImpl guild) {
         this.id = id;
         this.api = guild.getJDA();
         this.guild = guild;
     }
 
     @Override
-    public int compareTo(@Nonnull GuildChannel o)
-    {
+    public int compareTo(@Nonnull GuildChannel o) {
         Checks.notNull(o, "Channel");
         if (getType().getSortBucket() != o.getType().getSortBucket()) // if bucket matters
             return Integer.compare(getType().getSortBucket(), o.getType().getSortBucket());
@@ -80,8 +77,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return "<#" + id + '>';
     }
 
@@ -91,22 +87,19 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public ChannelAction<T> createCopy()
-    {
+    public ChannelAction<T> createCopy() {
         return createCopy(getGuild());
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Nonnull
     @Override
-    public GuildImpl getGuild()
-    {
+    public GuildImpl getGuild() {
         GuildImpl realGuild = (GuildImpl) api.getGuildById(guild.getIdLong());
         if (realGuild != null)
             guild = realGuild;
@@ -114,27 +107,23 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public Category getParent()
-    {
+    public Category getParent() {
         return getGuild().getCategoriesView().get(parentId);
     }
 
     @Override
-    public int getPositionRaw()
-    {
+    public int getPositionRaw() {
         return rawPosition;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Override
-    public PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
+    public PermissionOverride getPermissionOverride(@Nonnull IPermissionHolder permissionHolder) {
         Checks.notNull(permissionHolder, "Permission Holder");
         Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
         return overrides.get(permissionHolder.getIdLong());
@@ -142,15 +131,13 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public List<PermissionOverride> getPermissionOverrides()
-    {
+    public List<PermissionOverride> getPermissionOverrides() {
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
 
     @Nonnull
     @Override
-    public List<PermissionOverride> getMemberPermissionOverrides()
-    {
+    public List<PermissionOverride> getMemberPermissionOverrides() {
         return Collections.unmodifiableList(getPermissionOverrides().stream()
                 .filter(PermissionOverride::isMemberOverride)
                 .collect(Collectors.toList()));
@@ -158,16 +145,14 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public List<PermissionOverride> getRolePermissionOverrides()
-    {
+    public List<PermissionOverride> getRolePermissionOverrides() {
         return Collections.unmodifiableList(getPermissionOverrides().stream()
                 .filter(PermissionOverride::isRoleOverride)
                 .collect(Collectors.toList()));
     }
 
     @Override
-    public boolean isSynced()
-    {
+    public boolean isSynced() {
         AbstractChannelImpl<?, ?> parent = (AbstractChannelImpl<?, ?>) getParent(); // We accept the unchecked cast here
         if (parent == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
@@ -175,8 +160,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         if (parentOverrides.size() != overrides.size())
             return false;
         // Check that each override matches with the parent override
-        for (PermissionOverride override : parentOverrides.valueCollection())
-        {
+        for (PermissionOverride override : parentOverrides.valueCollection()) {
             PermissionOverride ourOverride = overrides.get(override.getIdLong());
             if (ourOverride == null) // this means we don't have the parent override => not synced
                 return false;
@@ -191,8 +175,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public ChannelManager getManager()
-    {
+    public ChannelManager getManager() {
         if (manager == null)
             return manager = new ChannelManagerImpl(this);
         return manager;
@@ -200,8 +183,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
-    {
+    public AuditableRestAction<Void> delete() {
         checkPermission(Permission.MANAGE_CHANNEL);
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
@@ -210,8 +192,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
+    public PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder) {
         Checks.notNull(permissionHolder, "PermissionHolder");
         if (getPermissionOverride(permissionHolder) != null)
             throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
@@ -221,8 +202,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
+    public PermissionOverrideAction putPermissionOverride(@Nonnull IPermissionHolder permissionHolder) {
         checkPermission(Permission.MANAGE_PERMISSIONS);
         Checks.notNull(permissionHolder, "PermissionHolder");
         Checks.check(permissionHolder.getGuild().equals(getGuild()), "Provided permission holder is not from the same guild as this channel!");
@@ -231,8 +211,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public InviteAction createInvite()
-    {
+    public InviteAction createInvite() {
         checkPermission(Permission.CREATE_INSTANT_INVITE);
 
         return new InviteActionImpl(this.getJDA(), this.getId());
@@ -240,8 +219,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public RestAction<List<Invite>> retrieveInvites()
-    {
+    public RestAction<List<Invite>> retrieveInvites() {
         checkPermission(Permission.MANAGE_CHANNEL);
 
         final Route.CompiledRoute route = Route.Invites.GET_CHANNEL_INVITES.compile(getId());
@@ -259,20 +237,17 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof GuildChannel))
@@ -281,34 +256,29 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return channel.getIdLong() == getIdLong();
     }
 
-    public TLongObjectMap<PermissionOverride> getOverrideMap()
-    {
+    public TLongObjectMap<PermissionOverride> getOverrideMap() {
         return overrides;
     }
 
     @SuppressWarnings("unchecked")
-    public M setName(String name)
-    {
+    public M setName(String name) {
         this.name = name;
         return (M) this;
     }
 
     @SuppressWarnings("unchecked")
-    public M setParent(long parentId)
-    {
+    public M setParent(long parentId) {
         this.parentId = parentId;
         return (M) this;
     }
 
     @SuppressWarnings("unchecked")
-    public M setPosition(int rawPosition)
-    {
+    public M setPosition(int rawPosition) {
         this.rawPosition = rawPosition;
         return (M) this;
     }
 
-    protected void checkAccess()
-    {
+    protected void checkAccess() {
         Member selfMember = getGuild().getSelfMember();
         if (!selfMember.hasPermission(this, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(this, Permission.VIEW_CHANNEL);
@@ -317,12 +287,13 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
             throw new MissingAccessException(this, Permission.VOICE_CONNECT);
     }
 
-    protected void checkPermission(Permission permission) {checkPermission(permission, null);}
-    protected void checkPermission(Permission permission, String message)
-    {
+    protected void checkPermission(Permission permission) {
+        checkPermission(permission, null);
+    }
+
+    protected void checkPermission(Permission permission, String message) {
         checkAccess();
-        if (!getGuild().getSelfMember().hasPermission(this, permission))
-        {
+        if (!getGuild().getSelfMember().hasPermission(this, permission)) {
             if (message != null)
                 throw new InsufficientPermissionException(this, permission, message);
             else

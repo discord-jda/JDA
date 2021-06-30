@@ -32,14 +32,12 @@ import javax.annotation.Nonnull;
  * @deprecated This event is no longer supported by discord
  */
 @Deprecated
-@ForRemoval(deadline="4.4.0")
+@ForRemoval(deadline = "4.4.0")
 @DeprecatedSince("4.3.0")
-public class PrivateChannelCreateEvent extends Event
-{
+public class PrivateChannelCreateEvent extends Event {
     private final PrivateChannel channel;
 
-    public PrivateChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull PrivateChannel channel)
-    {
+    public PrivateChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull PrivateChannel channel) {
         super(api, responseNumber);
         this.channel = channel;
     }
@@ -51,8 +49,7 @@ public class PrivateChannelCreateEvent extends Event
      * @return The User
      */
     @Nonnull
-    public User getUser()
-    {
+    public User getUser() {
         return channel.getUser();
     }
 
@@ -62,8 +59,7 @@ public class PrivateChannelCreateEvent extends Event
      * @return The PrivateChannel
      */
     @Nonnull
-    public PrivateChannel getChannel()
-    {
+    public PrivateChannel getChannel() {
         return channel;
     }
 }

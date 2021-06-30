@@ -50,14 +50,13 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class AudioConnection
-{
+public class AudioConnection {
     public static final Logger LOG = JDALogger.getLog(AudioConnection.class);
 
     public static final long MAX_UINT_32 = 4294967295L;
 
     private static final int NOT_SPEAKING = 0;
-    private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[] {(byte)0xF8, (byte)0xFF, (byte)0xFE});
+    private static final ByteBuffer silenceBytes = ByteBuffer.wrap(new byte[]{(byte) 0xF8, (byte) 0xFF, (byte) 0xFE});
     private static boolean printedError = false;
 
     protected volatile DatagramSocket udpSocket;
@@ -86,8 +85,7 @@ public class AudioConnection
     private volatile int speakingMode = SpeakingMode.VOICE.getRaw();
     private volatile int silenceCounter = 0;
 
-    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token, VoiceChannel channel)
-    {
+    public AudioConnection(AudioManagerImpl manager, String endpoint, String sessionId, String token, VoiceChannel channel) {
         this.api = (JDAImpl) channel.getJDA();
         this.channel = channel;
         final JDAImpl api = (JDAImpl) channel.getJDA();
@@ -97,98 +95,80 @@ public class AudioConnection
 
     /* Used by AudioManagerImpl */
 
-    public void startConnection()
-    {
+    public void startConnection() {
         webSocket.startConnection();
     }
 
-    public ConnectionStatus getConnectionStatus()
-    {
+    public ConnectionStatus getConnectionStatus() {
         return webSocket.getConnectionStatus();
     }
 
-    public void setAutoReconnect(boolean shouldReconnect)
-    {
+    public void setAutoReconnect(boolean shouldReconnect) {
         webSocket.setAutoReconnect(shouldReconnect);
     }
 
-    public void setSpeakingDelay(int millis)
-    {
+    public void setSpeakingDelay(int millis) {
         speakingDelay = Math.max(millis / 20, 10); // max { millis / frame-length, 200 millis }
     }
 
-    public void setSendingHandler(AudioSendHandler handler)
-    {
+    public void setSendingHandler(AudioSendHandler handler) {
         this.sendHandler = handler;
         if (webSocket.isReady())
             setupSendSystem();
     }
 
-    public void setReceivingHandler(AudioReceiveHandler handler)
-    {
+    public void setReceivingHandler(AudioReceiveHandler handler) {
         this.receiveHandler = handler;
         if (webSocket.isReady())
             setupReceiveSystem();
     }
 
-    public void setSpeakingMode(EnumSet<SpeakingMode> mode)
-    {
+    public void setSpeakingMode(EnumSet<SpeakingMode> mode) {
         int raw = SpeakingMode.getRaw(mode);
         if (raw != this.speakingMode && speaking)
             setSpeaking(raw);
         this.speakingMode = raw;
     }
 
-    public void setQueueTimeout(long queueTimeout)
-    {
+    public void setQueueTimeout(long queueTimeout) {
         this.queueTimeout = queueTimeout;
     }
 
-    public VoiceChannel getChannel()
-    {
+    public VoiceChannel getChannel() {
         return channel;
     }
 
-    public void setChannel(VoiceChannel channel)
-    {
+    public void setChannel(VoiceChannel channel) {
         this.channel = channel;
     }
 
-    public JDAImpl getJDA()
-    {
+    public JDAImpl getJDA() {
         return api;
     }
 
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return getChannel().getGuild();
     }
 
-    public void close(ConnectionStatus closeStatus)
-    {
+    public void close(ConnectionStatus closeStatus) {
         shutdown();
         webSocket.close(closeStatus);
     }
 
-    public synchronized void shutdown()
-    {
-        if (sendSystem != null)
-        {
+    public synchronized void shutdown() {
+        if (sendSystem != null) {
             sendSystem.shutdown();
             sendSystem = null;
         }
-        if (receiveThread != null)
-        {
+        if (receiveThread != null) {
             receiveThread.interrupt();
             receiveThread = null;
         }
-        if (combinedAudioExecutor != null)
-        {
+        if (combinedAudioExecutor != null) {
             combinedAudioExecutor.shutdownNow();
             combinedAudioExecutor = null;
         }
-        if (opusEncoder != null)
-        {
+        if (opusEncoder != null) {
             Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
             opusEncoder = null;
         }
@@ -197,43 +177,36 @@ public class AudioConnection
         opusDecoders.clear();
     }
 
-    public WebSocket getWebSocket()
-    {
+    public WebSocket getWebSocket() {
         return webSocket.socket;
     }
 
     /* Used by AudioWebSocket */
 
-    protected void prepareReady()
-    {
+    protected void prepareReady() {
         Thread readyThread = new Thread(() ->
         {
             getJDA().setContext();
             final long timeout = getGuild().getAudioManager().getConnectTimeout();
 
             final long started = System.currentTimeMillis();
-            while (!webSocket.isReady())
-            {
+            while (!webSocket.isReady()) {
                 if (timeout > 0 && System.currentTimeMillis() - started > timeout)
                     break;
 
-                try
-                {
+                try {
                     Thread.sleep(10);
                 }
-                catch (InterruptedException e)
-                {
+                catch (InterruptedException e) {
                     LOG.error("AudioConnection ready thread got interrupted while sleeping", e);
                     Thread.currentThread().interrupt();
                 }
             }
-            if (webSocket.isReady())
-            {
+            if (webSocket.isReady()) {
                 setupSendSystem();
                 setupReceiveSystem();
             }
-            else
-            {
+            else {
                 webSocket.close(ConnectionStatus.ERROR_CONNECTION_TIMEOUT);
             }
         });
@@ -248,8 +221,7 @@ public class AudioConnection
         readyThread.start();
     }
 
-    protected void removeUserSSRC(long userId)
-    {
+    protected void removeUserSSRC(long userId) {
         final AtomicInteger ssrcRef = new AtomicInteger(0);
         final boolean modified = ssrcMap.retainEntries((ssrc, id) ->
         {
@@ -266,21 +238,17 @@ public class AudioConnection
             decoder.close();
     }
 
-    protected void updateUserSSRC(int ssrc, long userId)
-    {
-        if (ssrcMap.containsKey(ssrc))
-        {
+    protected void updateUserSSRC(int ssrc, long userId) {
+        if (ssrcMap.containsKey(ssrc)) {
             long previousId = ssrcMap.get(ssrc);
-            if (previousId != userId)
-            {
+            if (previousId != userId) {
                 //Different User already existed with this ssrc. What should we do? Just replace? Probably should nuke the old opusDecoder.
                 //Log for now and see if any user report the error.
                 LOG.error("Yeah.. So.. JDA received a UserSSRC update for an ssrc that already had a User set. Inform DV8FromTheWorld.\nChannelId: {} SSRC: {} oldId: {} newId: {}",
-                      channel.getId(), ssrc, previousId, userId);
+                        channel.getId(), ssrc, previousId, userId);
             }
         }
-        else
-        {
+        else {
             ssrcMap.put(ssrc, userId);
 
             //Only create a decoder if we are actively handling received audio.
@@ -291,41 +259,33 @@ public class AudioConnection
 
     /* Internals */
 
-    private synchronized void setupSendSystem()
-    {
-        if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null)
-        {
+    private synchronized void setupSendSystem() {
+        if (udpSocket != null && !udpSocket.isClosed() && sendHandler != null && sendSystem == null) {
             IAudioSendFactory factory = getJDA().getAudioSendFactory();
             sendSystem = factory.createSendSystem(new PacketProvider(new TweetNaclFast.SecretBox(webSocket.getSecretKey())));
             sendSystem.setContextMap(getJDA().getContextMap());
             sendSystem.start();
         }
-        else if (sendHandler == null && sendSystem != null)
-        {
+        else if (sendHandler == null && sendSystem != null) {
             sendSystem.shutdown();
             sendSystem = null;
 
-            if (opusEncoder != null)
-            {
+            if (opusEncoder != null) {
                 Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
                 opusEncoder = null;
             }
         }
     }
 
-    private synchronized void setupReceiveSystem()
-    {
-        if (udpSocket != null && !udpSocket.isClosed() && receiveHandler != null && receiveThread == null)
-        {
+    private synchronized void setupReceiveSystem() {
+        if (udpSocket != null && !udpSocket.isClosed() && receiveHandler != null && receiveThread == null) {
             setupReceiveThread();
         }
-        else if (receiveHandler == null && receiveThread != null)
-        {
+        else if (receiveHandler == null && receiveThread != null) {
             receiveThread.interrupt();
             receiveThread = null;
 
-            if (combinedAudioExecutor != null)
-            {
+            if (combinedAudioExecutor != null) {
                 combinedAudioExecutor.shutdownNow();
                 combinedAudioExecutor = null;
             }
@@ -333,41 +293,32 @@ public class AudioConnection
             opusDecoders.valueCollection().forEach(Decoder::close);
             opusDecoders.clear();
         }
-        else if (receiveHandler != null && !receiveHandler.canReceiveCombined() && combinedAudioExecutor != null)
-        {
+        else if (receiveHandler != null && !receiveHandler.canReceiveCombined() && combinedAudioExecutor != null) {
             combinedAudioExecutor.shutdownNow();
             combinedAudioExecutor = null;
         }
     }
 
-    private synchronized void setupReceiveThread()
-    {
-        if (receiveThread == null)
-        {
+    private synchronized void setupReceiveThread() {
+        if (receiveThread == null) {
             receiveThread = new Thread(() ->
             {
                 getJDA().setContext();
-                try
-                {
+                try {
                     udpSocket.setSoTimeout(1000);
                 }
-                catch (SocketException e)
-                {
+                catch (SocketException e) {
                     LOG.error("Couldn't set SO_TIMEOUT for UDP socket", e);
                 }
-                while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted())
-                {
+                while (!udpSocket.isClosed() && !Thread.currentThread().isInterrupted()) {
                     DatagramPacket receivedPacket = new DatagramPacket(new byte[1920], 1920);
-                    try
-                    {
+                    try {
                         udpSocket.receive(receivedPacket);
 
                         boolean shouldDecode = receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined());
                         boolean canReceive = receiveHandler != null && (receiveHandler.canReceiveUser() || receiveHandler.canReceiveCombined() || receiveHandler.canReceiveEncoded());
-                        if (canReceive && webSocket.getSecretKey() != null)
-                        {
-                            if (!couldReceive)
-                            {
+                        if (canReceive && webSocket.getSecretKey() != null) {
+                            if (!couldReceive) {
                                 couldReceive = true;
                                 sendSilentPackets();
                             }
@@ -378,8 +329,7 @@ public class AudioConnection
                             int ssrc = decryptedPacket.getSSRC();
                             final long userId = ssrcMap.get(ssrc);
                             Decoder decoder = opusDecoders.get(ssrc);
-                            if (userId == ssrcMap.getNoEntryValue())
-                            {
+                            if (userId == ssrcMap.getNoEntryValue()) {
                                 ByteBuffer audio = decryptedPacket.getEncodedAudio();
 
                                 //If the bytes are silence, then this was caused by a User joining the voice channel,
@@ -389,14 +339,11 @@ public class AudioConnection
 
                                 continue;
                             }
-                            if (decoder == null)
-                            {
-                                if (AudioNatives.ensureOpus())
-                                {
+                            if (decoder == null) {
+                                if (AudioNatives.ensureOpus()) {
                                     opusDecoders.put(ssrc, decoder = new Decoder(ssrc));
                                 }
-                                else if (!receiveHandler.canReceiveEncoded())
-                                {
+                                else if (!receiveHandler.canReceiveEncoded()) {
                                     LOG.error("Unable to decode audio due to missing opus binaries!");
                                     break;
                                 }
@@ -408,51 +355,42 @@ public class AudioConnection
                                 continue;
 
                             User user = getJDA().getUserById(userId);
-                            if (user == null)
-                            {
+                            if (user == null) {
                                 LOG.warn("Received audio data with a known SSRC, but the userId associate with the SSRC is unknown to JDA!");
                                 continue;
                             }
                             short[] decodedAudio = opusPacket.decode();
                             //If decodedAudio is null, then the Opus decode failed, so throw away the packet.
-                            if (decodedAudio == null)
-                            {
+                            if (decodedAudio == null) {
                                 //decoder error logged in method
                                 continue;
                             }
-                            if (receiveHandler.canReceiveUser())
-                            {
+                            if (receiveHandler.canReceiveUser()) {
                                 receiveHandler.handleUserAudio(new UserAudio(user, decodedAudio));
                             }
-                            if (receiveHandler.canReceiveCombined() && receiveHandler.includeUserInCombinedAudio(user))
-                            {
+                            if (receiveHandler.canReceiveCombined() && receiveHandler.includeUserInCombinedAudio(user)) {
                                 Queue<AudioData> queue = combinedQueue.get(user);
-                                if (queue == null)
-                                {
+                                if (queue == null) {
                                     queue = new ConcurrentLinkedQueue<>();
                                     combinedQueue.put(user, queue);
                                 }
                                 queue.add(new AudioData(decodedAudio));
                             }
                         }
-                        else if (couldReceive)
-                        {
+                        else if (couldReceive) {
                             couldReceive = false;
                             sendSilentPackets();
                         }
                     }
-                    catch (SocketTimeoutException e)
-                    {
+                    catch (SocketTimeoutException e) {
                         //Ignore. We set a low timeout so that we wont block forever so we can properly shutdown the loop.
                     }
-                    catch (SocketException e)
-                    {
+                    catch (SocketException e) {
                         //The socket was closed while we were listening for the next packet.
                         //This is expected. Ignore the exception. The thread will exit during the next while
                         // iteration because the udpSocket.isClosed() will return true.
                     }
-                    catch (Exception e)
-                    {
+                    catch (Exception e) {
                         LOG.error("There was some random exception while waiting for udp packets", e);
                     }
                 }
@@ -468,16 +406,13 @@ public class AudioConnection
             receiveThread.start();
         }
 
-        if (receiveHandler.canReceiveCombined())
-        {
+        if (receiveHandler.canReceiveCombined()) {
             setupCombinedExecutor();
         }
     }
 
-    private synchronized void setupCombinedExecutor()
-    {
-        if (combinedAudioExecutor == null)
-        {
+    private synchronized void setupCombinedExecutor() {
+        if (combinedAudioExecutor == null) {
             combinedAudioExecutor = Executors.newSingleThreadScheduledExecutor((task) ->
             {
                 final Thread t = new Thread(task, threadIdentifier + " Combined Thread");
@@ -493,15 +428,12 @@ public class AudioConnection
             combinedAudioExecutor.scheduleAtFixedRate(() ->
             {
                 getJDA().setContext();
-                try
-                {
+                try {
                     List<User> users = new LinkedList<>();
                     List<short[]> audioParts = new LinkedList<>();
-                    if (receiveHandler != null && receiveHandler.canReceiveCombined())
-                    {
+                    if (receiveHandler != null && receiveHandler.canReceiveCombined()) {
                         long currentTime = System.currentTimeMillis();
-                        for (Map.Entry<User, Queue<AudioData>> entry : combinedQueue.entrySet())
-                        {
+                        for (Map.Entry<User, Queue<AudioData>> entry : combinedQueue.entrySet()) {
                             User user = entry.getKey();
                             Queue<AudioData> queue = entry.getValue();
 
@@ -510,30 +442,25 @@ public class AudioConnection
 
                             AudioData audioData = queue.poll();
                             //Make sure the audio packet is younger than 100ms
-                            while (audioData != null && currentTime - audioData.time > queueTimeout)
-                            {
+                            while (audioData != null && currentTime - audioData.time > queueTimeout) {
                                 audioData = queue.poll();
                             }
 
                             //If none of the audio packets were younger than 100ms, then there is nothing to add.
-                            if (audioData == null)
-                            {
+                            if (audioData == null) {
                                 continue;
                             }
                             users.add(user);
                             audioParts.add(audioData.data);
                         }
 
-                        if (!audioParts.isEmpty())
-                        {
+                        if (!audioParts.isEmpty()) {
                             int audioLength = audioParts.stream().mapToInt(it -> it.length).max().getAsInt();
                             short[] mix = new short[1920];  //960 PCM samples for each channel
                             int sample;
-                            for (int i = 0; i < audioLength; i++)
-                            {
+                            for (int i = 0; i < audioLength; i++) {
                                 sample = 0;
-                                for (Iterator<short[]> iterator = audioParts.iterator(); iterator.hasNext(); )
-                                {
+                                for (Iterator<short[]> iterator = audioParts.iterator(); iterator.hasNext(); ) {
                                     short[] audio = iterator.next();
                                     if (i < audio.length)
                                         sample += audio[i];
@@ -549,28 +476,24 @@ public class AudioConnection
                             }
                             receiveHandler.handleCombinedAudio(new CombinedAudio(users, mix));
                         }
-                        else
-                        {
+                        else {
                             //No audio to mix, provide 20 MS of silence. (960 PCM samples for each channel)
                             receiveHandler.handleCombinedAudio(new CombinedAudio(Collections.emptyList(), new short[1920]));
                         }
                     }
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     LOG.error("There was some unexpected exception in the combinedAudioExecutor!", e);
                 }
             }, 0, 20, TimeUnit.MILLISECONDS);
         }
     }
 
-    private ByteBuffer encodeToOpus(ByteBuffer rawAudio)
-    {
+    private ByteBuffer encodeToOpus(ByteBuffer rawAudio) {
         ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
         ByteBuffer encoded = ByteBuffer.allocate(4096);
-        for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2)
-        {
-            int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
+        for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2) {
+            int firstByte = (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
             int secondByte = (0x000000FF & rawAudio.get(i + 1));
 
             //Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
@@ -581,8 +504,7 @@ public class AudioConnection
         ((Buffer) nonEncodedBuffer).flip();
 
         int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
-        if (result <= 0)
-        {
+        if (result <= 0) {
             LOG.error("Received error code from opus_encode(...): {}", result);
             return null;
         }
@@ -591,8 +513,7 @@ public class AudioConnection
         return encoded;
     }
 
-    private void setSpeaking(int raw)
-    {
+    private void setSpeaking(int raw) {
         this.speaking = raw != 0;
         DataObject obj = DataObject.empty()
                 .put("speaking", raw)
@@ -601,20 +522,17 @@ public class AudioConnection
         webSocket.send(VoiceCode.USER_SPEAKING_UPDATE, obj);
     }
 
-    private void sendSilentPackets()
-    {
+    private void sendSilentPackets() {
         silenceCounter = 0;
     }
 
     @Override
     @SuppressWarnings("deprecation")
-    protected void finalize()
-    {
+    protected void finalize() {
         shutdown();
     }
 
-    private class PacketProvider implements IPacketProvider
-    {
+    private class PacketProvider implements IPacketProvider {
         private char seq = 0;           //Sequence of audio packets. Used to determine the order of the packets.
         private int timestamp = 0;      //Used to sync up our packets within the same timeframe of other people talking.
         private TweetNaclFast.SecretBox boxer;
@@ -623,70 +541,58 @@ public class AudioConnection
         private ByteBuffer encryptionBuffer = ByteBuffer.allocate(512);
         private final byte[] nonceBuffer = new byte[TweetNaclFast.SecretBox.nonceLength];
 
-        public PacketProvider(TweetNaclFast.SecretBox boxer)
-        {
+        public PacketProvider(TweetNaclFast.SecretBox boxer) {
             this.boxer = boxer;
         }
 
         @Nonnull
         @Override
-        public String getIdentifier()
-        {
+        public String getIdentifier() {
             return threadIdentifier;
         }
 
         @Nonnull
         @Override
-        public VoiceChannel getConnectedChannel()
-        {
+        public VoiceChannel getConnectedChannel() {
             return getChannel();
         }
 
         @Nonnull
         @Override
-        public DatagramSocket getUdpSocket()
-        {
+        public DatagramSocket getUdpSocket() {
             return udpSocket;
         }
 
         @Nonnull
         @Override
-        public InetSocketAddress getSocketAddress()
-        {
+        public InetSocketAddress getSocketAddress() {
             return webSocket.getAddress();
         }
 
         @Override
-        public DatagramPacket getNextPacket(boolean changeTalking)
-        {
+        public DatagramPacket getNextPacket(boolean changeTalking) {
             ByteBuffer buffer = getNextPacketRaw(changeTalking);
             return buffer == null ? null : getDatagramPacket(buffer);
         }
 
         @Override
-        public ByteBuffer getNextPacketRaw(boolean changeTalking)
-        {
+        public ByteBuffer getNextPacketRaw(boolean changeTalking) {
             ByteBuffer nextPacket = null;
-            try
-            {
-                cond: if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide())
-                {
+            try {
+                cond:
+                if (sentSilenceOnConnect && sendHandler != null && sendHandler.canProvide()) {
                     silenceCounter = -1;
                     ByteBuffer rawAudio = sendHandler.provide20MsAudio();
-                    if (rawAudio != null && !rawAudio.hasArray())
-                    {
+                    if (rawAudio != null && !rawAudio.hasArray()) {
                         // we can't use the boxer without an array so encryption would not work
                         LOG.error("AudioSendHandler provided ByteBuffer without a backing array! This is unsupported.");
                     }
-                    if (rawAudio == null || !rawAudio.hasRemaining() || !rawAudio.hasArray())
-                    {
+                    if (rawAudio == null || !rawAudio.hasRemaining() || !rawAudio.hasArray()) {
                         if (speaking && changeTalking)
                             sendSilentPackets();
                     }
-                    else
-                    {
-                        if (!sendHandler.isOpus())
-                        {
+                    else {
+                        if (!sendHandler.isOpus()) {
                             rawAudio = encodeAudio(rawAudio);
                             if (rawAudio == null)
                                 break cond;
@@ -702,8 +608,7 @@ public class AudioConnection
                             seq++;
                     }
                 }
-                else if (silenceCounter > -1)
-                {
+                else if (silenceCounter > -1) {
                     nextPacket = getPacketData(silenceBytes);
                     if (seq + 1 > Character.MAX_VALUE)
                         seq = 0;
@@ -713,21 +618,18 @@ public class AudioConnection
                     silenceCounter++;
                     //If we have sent our 10 silent packets on initial connect, or if we have sent enough silent packets
                     // to satisfy the speaking delay, stop transmitting silence.
-                    if ((!sentSilenceOnConnect && silenceCounter > 10) || silenceCounter > speakingDelay)
-                    {
+                    if ((!sentSilenceOnConnect && silenceCounter > 10) || silenceCounter > speakingDelay) {
                         if (sentSilenceOnConnect)
                             setSpeaking(NOT_SPEAKING);
                         silenceCounter = -1;
                         sentSilenceOnConnect = true;
                     }
                 }
-                else if (speaking && changeTalking)
-                {
+                else if (speaking && changeTalking) {
                     sendSilentPackets();
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 LOG.error("There was an error while getting next audio packet", e);
             }
 
@@ -737,12 +639,9 @@ public class AudioConnection
             return nextPacket;
         }
 
-        private ByteBuffer encodeAudio(ByteBuffer rawAudio)
-        {
-            if (opusEncoder == null)
-            {
-                if (!AudioNatives.ensureOpus())
-                {
+        private ByteBuffer encodeAudio(ByteBuffer rawAudio) {
+            if (opusEncoder == null) {
+                if (!AudioNatives.ensureOpus()) {
                     if (!printedError)
                         LOG.error("Unable to process PCM audio without opus binaries!");
                     printedError = true;
@@ -750,8 +649,7 @@ public class AudioConnection
                 }
                 IntBuffer error = IntBuffer.allocate(1);
                 opusEncoder = Opus.INSTANCE.opus_encoder_create(OpusPacket.OPUS_SAMPLE_RATE, OpusPacket.OPUS_CHANNEL_COUNT, Opus.OPUS_APPLICATION_AUDIO, error);
-                if (error.get() != Opus.OPUS_OK && opusEncoder == null)
-                {
+                if (error.get() != Opus.OPUS_OK && opusEncoder == null) {
                     LOG.error("Received error status from opus_encoder_create(...): {}", error.get());
                     return null;
                 }
@@ -759,43 +657,39 @@ public class AudioConnection
             return encodeToOpus(rawAudio);
         }
 
-        private DatagramPacket getDatagramPacket(ByteBuffer b)
-        {
+        private DatagramPacket getDatagramPacket(ByteBuffer b) {
             byte[] data = b.array();
             int offset = b.arrayOffset() + b.position();
             int length = b.remaining();
             return new DatagramPacket(data, offset, length, webSocket.getAddress());
         }
 
-        private ByteBuffer getPacketData(ByteBuffer rawAudio)
-        {
+        private ByteBuffer getPacketData(ByteBuffer rawAudio) {
             ensureEncryptionBuffer(rawAudio);
             AudioPacket packet = new AudioPacket(encryptionBuffer, seq, timestamp, webSocket.getSSRC(), rawAudio);
             int nlen;
-            switch (webSocket.encryption)
-            {
-                case XSALSA20_POLY1305:
-                    nlen = 0;
-                    break;
-                case XSALSA20_POLY1305_LITE:
-                    if (nonce >= MAX_UINT_32)
-                        loadNextNonce(nonce = 0);
-                    else
-                        loadNextNonce(++nonce);
-                    nlen = 4;
-                    break;
-                case XSALSA20_POLY1305_SUFFIX:
-                    ThreadLocalRandom.current().nextBytes(nonceBuffer);
-                    nlen = TweetNaclFast.SecretBox.nonceLength;
-                    break;
-                default:
-                    throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
+            switch (webSocket.encryption) {
+            case XSALSA20_POLY1305:
+                nlen = 0;
+                break;
+            case XSALSA20_POLY1305_LITE:
+                if (nonce >= MAX_UINT_32)
+                    loadNextNonce(nonce = 0);
+                else
+                    loadNextNonce(++nonce);
+                nlen = 4;
+                break;
+            case XSALSA20_POLY1305_SUFFIX:
+                ThreadLocalRandom.current().nextBytes(nonceBuffer);
+                nlen = TweetNaclFast.SecretBox.nonceLength;
+                break;
+            default:
+                throw new IllegalStateException("Encryption mode [" + webSocket.encryption + "] is not supported!");
             }
             return buffer = packet.asEncryptedPacket(boxer, buffer, nonceBuffer, nlen);
         }
 
-        private void ensureEncryptionBuffer(ByteBuffer data)
-        {
+        private void ensureEncryptionBuffer(ByteBuffer data) {
             ((Buffer) encryptionBuffer).clear();
             int currentCapacity = encryptionBuffer.remaining();
             int requiredCapacity = AudioPacket.RTP_HEADER_BYTE_LENGTH + data.remaining();
@@ -803,36 +697,31 @@ public class AudioConnection
                 encryptionBuffer = ByteBuffer.allocate(requiredCapacity);
         }
 
-        private void loadNextNonce(long nonce)
-        {
+        private void loadNextNonce(long nonce) {
             IOUtil.setIntBigEndian(nonceBuffer, 0, (int) nonce);
         }
 
         @Override
-        public void onConnectionError(@Nonnull ConnectionStatus status)
-        {
+        public void onConnectionError(@Nonnull ConnectionStatus status) {
             LOG.warn("IAudioSendSystem reported a connection error of: {}", status);
             LOG.warn("Shutting down AudioConnection.");
             webSocket.close(status);
         }
 
         @Override
-        public void onConnectionLost()
-        {
+        public void onConnectionLost() {
             LOG.warn("Closing AudioConnection due to inability to send audio packets.");
             LOG.warn("Cannot send audio packet because JDA cannot navigate the route to Discord.\n" +
-                "Are you sure you have internet connection? It is likely that you've lost connection.");
+                    "Are you sure you have internet connection? It is likely that you've lost connection.");
             webSocket.close(ConnectionStatus.ERROR_LOST_CONNECTION);
         }
     }
 
-    private static class AudioData
-    {
+    private static class AudioData {
         private final long time;
         private final short[] data;
 
-        public AudioData(short[] data)
-        {
+        public AudioData(short[] data) {
             this.time = System.currentTimeMillis();
             this.data = data;
         }

@@ -19,8 +19,7 @@ package net.dv8tion.jda.api;
 /**
  * Encoding mode used by the gateway for incoming and outgoing payloads.
  */
-public enum GatewayEncoding
-{
+public enum GatewayEncoding {
     /**
      * Standard JSON format. This format uses a human-readable string encoding.
      *

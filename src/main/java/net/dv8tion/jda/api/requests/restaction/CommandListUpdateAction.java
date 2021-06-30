@@ -34,8 +34,7 @@ import java.util.function.BooleanSupplier;
  * Specialized {@link RestAction} used to replace existing commands of a guild or globally.
  * <br>Any commands that currently exist and are not listed through {@link #addCommands(CommandData...)} will be <b>DELETED</b>!
  */
-public interface CommandListUpdateAction extends RestAction<List<Command>>
-{
+public interface CommandListUpdateAction extends RestAction<List<Command>> {
     @Nonnull
     @Override
     CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit);
@@ -82,8 +81,7 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandListUpdateAction addCommands(@Nonnull CommandData... commands)
-    {
+    default CommandListUpdateAction addCommands(@Nonnull CommandData... commands) {
         Checks.noneNull(commands, "Command");
         return addCommands(Arrays.asList(commands));
     }

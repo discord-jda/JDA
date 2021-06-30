@@ -45,20 +45,19 @@ import java.util.List;
  * The WidgetUtil is a class for interacting with various facets of Discord's
  * guild widgets
  *
- * @since  3.0
+ * @since 3.0
  * @author John A. Grosh
  */
-public class WidgetUtil 
-{
+public class WidgetUtil {
     public static final String WIDGET_PNG = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.png?style=%s";
     public static final String WIDGET_URL = Requester.DISCORD_API_PREFIX + "guilds/%s/widget.json";
     public static final String WIDGET_HTML = "<iframe src=\"https://discord.com/widget?id=%s&theme=%s\" width=\"%d\" height=\"%d\" allowtransparency=\"true\" frameborder=\"0\"></iframe>";
-    
+
     /**
      * Gets the banner image for the specified guild of the specified type.
      * <br>This banner will only be available if the guild in question has the
      * Widget enabled.
-     * 
+     *
      * @param  guild
      *         The guild
      * @param  type
@@ -67,18 +66,17 @@ public class WidgetUtil
      * @return A String containing the URL of the banner image
      */
     @Nonnull
-    public static String getWidgetBanner(@Nonnull Guild guild, @Nonnull BannerType type)
-    {
+    public static String getWidgetBanner(@Nonnull Guild guild, @Nonnull BannerType type) {
         Checks.notNull(guild, "Guild");
         return getWidgetBanner(guild.getId(), type);
     }
-    
+
     /**
      * Gets the banner image for the specified guild of the specified type.
      * <br>This banner will only be available if the guild in question has the
      * Widget enabled. Additionally, this method can be used independently of
      * being on the guild in question.
-     * 
+     *
      * @param  guildId
      *         the guild ID
      * @param  type
@@ -87,18 +85,17 @@ public class WidgetUtil
      * @return A String containing the URL of the banner image
      */
     @Nonnull
-    public static String getWidgetBanner(@Nonnull String guildId, @Nonnull BannerType type)
-    {
+    public static String getWidgetBanner(@Nonnull String guildId, @Nonnull BannerType type) {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(type, "BannerType");
         return String.format(WIDGET_PNG, guildId, type.name().toLowerCase());
     }
-    
+
     /**
      * Gets the pre-made HTML Widget for the specified guild using the specified
      * settings. The widget will only display correctly if the guild in question
      * has the Widget enabled.
-     * 
+     *
      * @param  guild
      *         the guild
      * @param  theme
@@ -111,18 +108,17 @@ public class WidgetUtil
      * @return a String containing the pre-made widget with the supplied settings
      */
     @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height)
-    {
+    public static String getPremadeWidgetHtml(@Nonnull Guild guild, @Nonnull WidgetTheme theme, int width, int height) {
         Checks.notNull(guild, "Guild");
         return getPremadeWidgetHtml(guild.getId(), theme, width, height);
     }
-    
+
     /**
      * Gets the pre-made HTML Widget for the specified guild using the specified
      * settings. The widget will only display correctly if the guild in question
      * has the Widget enabled. Additionally, this method can be used independently
      * of being on the guild in question.
-     * 
+     *
      * @param  guildId
      *         the guild ID
      * @param  theme
@@ -135,15 +131,14 @@ public class WidgetUtil
      * @return a String containing the pre-made widget with the supplied settings
      */
     @Nonnull
-    public static String getPremadeWidgetHtml(@Nonnull String guildId, @Nonnull WidgetTheme theme, int width, int height)
-    {
+    public static String getPremadeWidgetHtml(@Nonnull String guildId, @Nonnull WidgetTheme theme, int width, int height) {
         Checks.notNull(guildId, "GuildId");
         Checks.notNull(theme, "WidgetTheme");
         Checks.notNegative(width, "Width");
         Checks.notNegative(height, "Height");
         return Helpers.format(WIDGET_HTML, guildId, theme.name().toLowerCase(), width, height);
     }
-    
+
     /**
      * Makes a GET request to get the information for a Guild's widget. This
      * widget (if available) contains information about the guild, including the
@@ -153,7 +148,7 @@ public class WidgetUtil
      *
      * <p>This Widget can be obtained from any valid guild ID that has
      * it enabled; no accounts need to be on the server to access this information.
-     * 
+     *
      * @param  guildId
      *         The id of the Guild
      *
@@ -170,8 +165,7 @@ public class WidgetUtil
      *         in question has the widget enabled.
      */
     @Nullable
-    public static Widget getWidget(@Nonnull String guildId) throws RateLimitedException
-    {
+    public static Widget getWidget(@Nonnull String guildId) throws RateLimitedException {
         return getWidget(MiscUtil.parseSnowflake(guildId));
     }
 
@@ -201,65 +195,57 @@ public class WidgetUtil
      *         in question has the widget enabled.
      */
     @Nullable
-    public static Widget getWidget(long guildId) throws RateLimitedException
-    {
+    public static Widget getWidget(long guildId) throws RateLimitedException {
         Checks.notNull(guildId, "GuildId");
 
         HttpURLConnection connection;
         OkHttpClient client = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
-                    .url(String.format(WIDGET_URL, guildId))
-                    .method("GET", null)
-                    .header("user-agent", Requester.USER_AGENT)
-                    .header("accept-encoding", "gzip")
-                    .build();
+                .url(String.format(WIDGET_URL, guildId))
+                .method("GET", null)
+                .header("user-agent", Requester.USER_AGENT)
+                .header("accept-encoding", "gzip")
+                .build();
 
-        try (Response response = client.newCall(request).execute())
-        {
+        try (Response response = client.newCall(request).execute()) {
             final int code = response.code();
             InputStream data = IOUtil.getBody(response);
 
-            switch (code)
+            switch (code) {
+            case 200: // ok
             {
-                case 200: // ok
-                {
-                    try (InputStream stream = data)
-                    {
-                        return new Widget(DataObject.fromJson(stream));
-                    }
-                    catch (IOException e)
-                    {
-                        throw new UncheckedIOException(e);
-                    }
+                try (InputStream stream = data) {
+                    return new Widget(DataObject.fromJson(stream));
                 }
-                case 400: // not valid snowflake
-                case 404: // guild not found
-                    return null;
-                case 403: // widget disabled
-                    return new Widget(guildId);
-                case 429: // ratelimited
-                {
-                    long retryAfter;
-                    try (InputStream stream = data)
-                    {
-                        retryAfter = DataObject.fromJson(stream).getLong("retry_after");
-                    }
-                    catch (Exception e)
-                    {
-                        retryAfter = 0;
-                    }
-                    throw new RateLimitedException(WIDGET_URL, retryAfter);
+                catch (IOException e) {
+                    throw new UncheckedIOException(e);
                 }
-                default:
-                    throw new IllegalStateException("An unknown status was returned: " + code + " " + response.message());
+            }
+            case 400: // not valid snowflake
+            case 404: // guild not found
+                return null;
+            case 403: // widget disabled
+                return new Widget(guildId);
+            case 429: // ratelimited
+            {
+                long retryAfter;
+                try (InputStream stream = data) {
+                    retryAfter = DataObject.fromJson(stream).getLong("retry_after");
+                }
+                catch (Exception e) {
+                    retryAfter = 0;
+                }
+                throw new RateLimitedException(WIDGET_URL, retryAfter);
+            }
+            default:
+                throw new IllegalStateException("An unknown status was returned: " + code + " " + response.message());
             }
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
-    
+
     /**
      * Represents the available banner types
      * <br>Each of these has a different appearance:
@@ -271,34 +257,30 @@ public class WidgetUtil
      * <br><b>Banner3</b> - medium, contains server name, icon, and online count, and a Discord logo with a "Chat Now" bar on the bottom
      * <br><b>Banner4</b> - large, contains a very big Discord logo, server name, icon, and online count, and a big "Join My Server" button
      */
-    public enum BannerType
-    {
+    public enum BannerType {
         SHIELD, BANNER1, BANNER2, BANNER3, BANNER4
     }
-    
+
     /**
      * Represents the color scheme of the widget
      * <br>These color themes match Discord's dark and light themes
      */
-    public enum WidgetTheme
-    {
+    public enum WidgetTheme {
         LIGHT, DARK
     }
-    
-    public static class Widget implements ISnowflake
-    {
+
+    public static class Widget implements ISnowflake {
         private final boolean isAvailable;
         private final long id;
         private final String name;
         private final String invite;
         private final TLongObjectMap<VoiceChannel> channels;
         private final TLongObjectMap<Member> members;
-        
+
         /**
          * Constructs an unavailable Widget
          */
-        private Widget(long guildId)
-        {
+        private Widget(long guildId) {
             isAvailable = false;
             id = guildId;
             name = null;
@@ -306,46 +288,43 @@ public class WidgetUtil
             channels = new TLongObjectHashMap<>();
             members = new TLongObjectHashMap<>();
         }
-        
+
         /**
          * Constructs an available Widget
          *
          * @param json
          *        The {@link net.dv8tion.jda.api.utils.data.DataObject DataObject} to construct the Widget from
          */
-        private Widget(@Nonnull DataObject json)
-        {
+        private Widget(@Nonnull DataObject json) {
             String inviteCode = json.getString("instant_invite", null);
             if (inviteCode != null)
                 inviteCode = inviteCode.substring(inviteCode.lastIndexOf("/") + 1);
-            
+
             isAvailable = true;
             id = json.getLong("id");
             name = json.getString("name");
             invite = inviteCode;
             channels = MiscUtil.newLongMap();
             members = MiscUtil.newLongMap();
-            
+
             DataArray channelsJson = json.getArray("channels");
-            for (int i = 0; i < channelsJson.length(); i++)
-            {
+            for (int i = 0; i < channelsJson.length(); i++) {
                 DataObject channel = channelsJson.getObject(i);
                 channels.put(channel.getLong("id"), new VoiceChannel(channel, this));
             }
-            
+
             DataArray membersJson = json.getArray("members");
-            for (int i = 0; i<membersJson.length(); i++)
-            {
+            for (int i = 0; i < membersJson.length(); i++) {
                 DataObject memberJson = membersJson.getObject(i);
                 Member member = new Member(memberJson, this);
                 if (!memberJson.isNull("channel_id")) // voice state
                 {
                     VoiceChannel channel = channels.get(memberJson.getLong("channel_id"));
-                    member.setVoiceState(new VoiceState(channel, 
-                            memberJson.getBoolean("mute"), 
-                            memberJson.getBoolean("deaf"), 
-                            memberJson.getBoolean("suppress"), 
-                            memberJson.getBoolean("self_mute"), 
+                    member.setVoiceState(new VoiceState(channel,
+                            memberJson.getBoolean("mute"),
+                            memberJson.getBoolean("deaf"),
+                            memberJson.getBoolean("suppress"),
+                            memberJson.getBoolean("self_mute"),
                             memberJson.getBoolean("self_deaf"),
                             member,
                             this));
@@ -354,24 +333,22 @@ public class WidgetUtil
                 members.put(member.getIdLong(), member);
             }
         }
-        
+
         /**
          * Shows whether or not the widget for a guild is available. If this
          * method returns false, all other values will be null
-         * 
+         *
          * @return True, if the widget is available, false otherwise
          */
-        public boolean isAvailable()
-        {
+        public boolean isAvailable() {
             return isAvailable;
         }
 
         @Override
-        public long getIdLong()
-        {
+        public long getIdLong() {
             return id;
         }
-        
+
         /**
          * Gets the name of the guild
          *
@@ -381,13 +358,12 @@ public class WidgetUtil
          * @return the name of the guild
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             checkAvailable();
 
             return name;
         }
-        
+
         /**
          * Gets an invite code for the guild, or null if no invite channel is
          * enabled in the widget
@@ -398,13 +374,12 @@ public class WidgetUtil
          * @return an invite code for the guild, if widget invites are enabled
          */
         @Nullable
-        public String getInviteCode()
-        {
+        public String getInviteCode() {
             checkAvailable();
 
             return invite;
         }
-        
+
         /**
          * Gets the list of voice channels in the guild
          *
@@ -414,16 +389,15 @@ public class WidgetUtil
          * @return the list of voice channels in the guild
          */
         @Nonnull
-        public List<VoiceChannel> getVoiceChannels()
-        {
+        public List<VoiceChannel> getVoiceChannels() {
             checkAvailable();
 
             return Collections.unmodifiableList(new ArrayList<>(channels.valueCollection()));
         }
-        
+
         /**
          * Gets a voice channel with the given ID, or null if the voice channel is not found
-         * 
+         *
          * @param  id
          *         the ID of the voice channel
          *
@@ -435,8 +409,7 @@ public class WidgetUtil
          * @return possibly-null VoiceChannel with the given ID. 
          */
         @Nullable
-        public VoiceChannel getVoiceChannelById(String id)
-        {
+        public VoiceChannel getVoiceChannelById(String id) {
             checkAvailable();
 
             return channels.get(MiscUtil.parseSnowflake(id));
@@ -454,13 +427,12 @@ public class WidgetUtil
          * @return possibly-null VoiceChannel with the given ID.
          */
         @Nullable
-        public VoiceChannel getVoiceChannelById(long id)
-        {
+        public VoiceChannel getVoiceChannelById(long id) {
             checkAvailable();
 
             return channels.get(id);
         }
-        
+
         /**
          * Gets a list of online members in the guild
          *
@@ -470,16 +442,15 @@ public class WidgetUtil
          * @return the list of members
          */
         @Nonnull
-        public List<Member> getMembers()
-        {
+        public List<Member> getMembers() {
             checkAvailable();
 
             return Collections.unmodifiableList(new ArrayList<>(members.valueCollection()));
         }
-        
+
         /**
          * Gets a member with the given ID, or null if the member is not found
-         * 
+         *
          * @param  id
          *         the ID of the member
          *
@@ -491,8 +462,7 @@ public class WidgetUtil
          * @return possibly-null Member with the given ID. 
          */
         @Nullable
-        public Member getMemberById(String id)
-        {
+        public Member getMemberById(String id) {
             checkAvailable();
 
             return members.get(MiscUtil.parseSnowflake(id));
@@ -510,8 +480,7 @@ public class WidgetUtil
          * @return possibly-null Member with the given ID.
          */
         @Nullable
-        public Member getMemberById(long id)
-        {
+        public Member getMemberById(long id) {
             checkAvailable();
 
             return members.get(id);
@@ -529,21 +498,18 @@ public class WidgetUtil
             Widget oWidget = (Widget) obj;
             return this == oWidget || this.id == oWidget.getIdLong();
         }
-        
+
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "W:" + (isAvailable() ? getName() : "") + '(' + id + ')';
         }
 
-        private void checkAvailable()
-        {
+        private void checkAvailable() {
             if (!isAvailable)
                 throw new IllegalStateException("The widget for this Guild is unavailable!");
         }
 
-        public static class Member implements IMentionable
-        {
+        public static class Member implements IMentionable {
             private final boolean bot;
             private final long id;
             private final String username;
@@ -554,9 +520,8 @@ public class WidgetUtil
             private final Activity game;
             private final Widget widget;
             private VoiceState state;
-            
-            private Member(@Nonnull DataObject json, @Nonnull Widget widget)
-            {
+
+            private Member(@Nonnull DataObject json, @Nonnull Widget widget) {
                 this.widget = widget;
                 this.bot = json.getBoolean("bot");
                 this.id = json.getLong("id");
@@ -567,192 +532,175 @@ public class WidgetUtil
                 this.status = OnlineStatus.fromKey(json.getString("status"));
                 this.game = json.isNull("game") ? null : EntityBuilder.createActivity(json.getObject("game"));
             }
-            
-            private void setVoiceState(VoiceState voiceState)
-            {
+
+            private void setVoiceState(VoiceState voiceState) {
                 state = voiceState;
             }
-            
+
             /**
              * Returns whether or not the given member is a bot account
-             * 
+             *
              * @return true if the member is a bot, false otherwise
              */
-            public boolean isBot()
-            {
+            public boolean isBot() {
                 return bot;
             }
-            
+
             /**
              * Returns the username of the member
-             * 
+             *
              * @return the username of the member
              */
             @Nonnull
-            public String getName()
-            {
+            public String getName() {
                 return username;
             }
 
             @Override
-            public long getIdLong()
-            {
+            public long getIdLong() {
                 return id;
             }
 
             @Nonnull
             @Override
-            public String getAsMention()
-            {
+            public String getAsMention() {
                 return "<@" + getId() + ">";
             }
-            
+
             /**
              * Gets the discriminator of the member
-             * 
+             *
              * @return the never-null discriminator of the member
              */
             @Nonnull
-            public String getDiscriminator()
-            {
+            public String getDiscriminator() {
                 return discriminator;
             }
-            
+
             /**
              * Gets the avatar hash of the member, or null if they do not have
              * an avatar set.
-             * 
+             *
              * @return possibly-null String containing the avatar hash of the
              *         member
              */
             @Nullable
-            public String getAvatarId()
-            {
+            public String getAvatarId() {
                 return avatar;
             }
-            
+
             /**
              * Gets the avatar url of the member, or null if they do not have
              * an avatar set.
-             * 
+             *
              * @return possibly-null String containing the avatar url of the
              *         member
              */
             @Nullable
-            public String getAvatarUrl()
-            {
+            public String getAvatarUrl() {
                 String avatarId = getAvatarId();
                 return avatarId == null ? null : String.format(User.AVATAR_URL, getId(), avatarId, avatarId.startsWith("a_") ? ".gif" : ".png");
             }
 
             /**
              * Gets the asset id of the member's default avatar
-             * 
+             *
              * @return never-null String containing the asset id of the member's
              *         default avatar
              */
             @Nonnull
-            public String getDefaultAvatarId()
-            {
+            public String getDefaultAvatarId() {
                 return String.valueOf(Integer.parseInt(getDiscriminator()) % 5);
             }
 
             /**
              * Gets the url of the member's default avatar
-             * 
+             *
              * @return never-null String containing the url of the member's
              *         default avatar
              */
             @Nonnull
-            public String getDefaultAvatarUrl()
-            {
+            public String getDefaultAvatarUrl() {
                 return String.format(User.DEFAULT_AVATAR_URL, getDefaultAvatarId());
             }
 
             /**
-            * The URL for the user's avatar image
-            * <br>If they do not have an avatar set, this will return the URL of their
-            * default avatar
-            * 
-            * @return Never-null String containing the member's effective avatar url.
-            */
+             * The URL for the user's avatar image
+             * <br>If they do not have an avatar set, this will return the URL of their
+             * default avatar
+             *
+             * @return Never-null String containing the member's effective avatar url.
+             */
             @Nonnull
-            public String getEffectiveAvatarUrl()
-            {
+            public String getEffectiveAvatarUrl() {
                 String avatarUrl = getAvatarUrl();
                 return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
             }
-            
+
             /**
              * Gets the nickname of the member. If they do not have a nickname on
              * the guild, this will return null;
-             * 
+             *
              * @return possibly-null String containing the nickname of the member
              */
             @Nullable
-            public String getNickname()
-            {
+            public String getNickname() {
                 return nickname;
             }
-            
+
             /**
              * Gets the visible name of the member. If they have a nickname set,
              * this will be their nickname. Otherwise, it will be their username.
-             * 
+             *
              * @return never-null String containing the member's effective (visible) name
              */
             @Nonnull
-            public String getEffectiveName()
-            {
+            public String getEffectiveName() {
                 return nickname == null ? username : nickname;
             }
-            
+
             /**
              * Gets the online status of the member. The widget does not show
              * offline members, so this status should never be offline
-             * 
+             *
              * @return the {@link net.dv8tion.jda.api.OnlineStatus OnlineStatus} of the member
              */
             @Nonnull
-            public OnlineStatus getOnlineStatus()
-            {
+            public OnlineStatus getOnlineStatus() {
                 return status;
             }
-            
+
             /**
-            * The game that the member is currently playing.
-            * <br>This game cannot be a stream.
-            * If the user is not currently playing a game, this will return null.
-            *
-            * @return Possibly-null {@link net.dv8tion.jda.api.entities.Activity Activity} containing the game
-            *         that the member is currently playing.
-            */
+             * The game that the member is currently playing.
+             * <br>This game cannot be a stream.
+             * If the user is not currently playing a game, this will return null.
+             *
+             * @return Possibly-null {@link net.dv8tion.jda.api.entities.Activity Activity} containing the game
+             *         that the member is currently playing.
+             */
             @Nullable
-            public Activity getActivity()
-            {
+            public Activity getActivity() {
                 return game;
             }
-            
+
             /**
              * The current voice state of the member.
              * <br>If the user is not in voice, this will return a VoiceState with a null channel.
-             * 
+             *
              * @return never-null VoiceState of the member
              */
             @Nonnull
-            public VoiceState getVoiceState()
-            {
+            public VoiceState getVoiceState() {
                 return state == null ? new VoiceState(this, widget) : state;
             }
 
             /**
              * Gets the widget that to which this member belongs
-             * 
+             *
              * @return the Widget that holds this member
              */
             @Nonnull
-            public Widget getWidget()
-            {
+            public Widget getWidget() {
                 return widget;
             }
 
@@ -768,82 +716,73 @@ public class WidgetUtil
                 Member oMember = (Member) obj;
                 return this == oMember || (this.id == oMember.getIdLong() && this.widget.getIdLong() == oMember.getWidget().getIdLong());
             }
-            
+
             @Override
-            public String toString()
-            {
+            public String toString() {
                 return "W.M:" + getName() + '(' + id + ')';
             }
         }
 
-        public static class VoiceChannel implements ISnowflake
-        {
+        public static class VoiceChannel implements ISnowflake {
             private final int position;
             private final long id;
             private final String name;
             private final List<Member> members;
             private final Widget widget;
-            
-            private VoiceChannel(@Nonnull DataObject json, @Nonnull Widget widget)
-            {
+
+            private VoiceChannel(@Nonnull DataObject json, @Nonnull Widget widget) {
                 this.widget = widget;
                 this.position = json.getInt("position");
                 this.id = json.getLong("id");
                 this.name = json.getString("name");
                 this.members = new ArrayList<>();
             }
-            
-            private void addMember(@Nonnull Member member)
-            {
+
+            private void addMember(@Nonnull Member member) {
                 members.add(member);
             }
-            
+
             /**
              * Gets the integer position of the channel
-             * 
+             *
              * @return integer position of the channel
              */
-            public int getPosition()
-            {
+            public int getPosition() {
                 return position;
             }
 
             @Override
-            public long getIdLong()
-            {
+            public long getIdLong() {
                 return id;
             }
-            
+
             /**
              * Gets the name of the channel
-             * 
+             *
              * @return name of the channel
              */
             @Nonnull
-            public String getName()
-            {
+            public String getName() {
                 return name;
             }
-            
+
             /**
              * Gets a list of all members in the channel
-             * 
+             *
              * @return never-null, possibly-empty list of members in the channel
              */
             @Nonnull
-            public List<Member> getMembers()
-            {
+            public List<Member> getMembers() {
                 return members;
             }
 
             /**
              * Gets the Widget to which this voice channel belongs
-             * 
+             *
              * @return the Widget object that holds this voice channel
              */
             @Nonnull
-            public Widget getWidget()
-            {
+            public Widget getWidget() {
                 return widget;
             }
 
@@ -859,16 +798,14 @@ public class WidgetUtil
                 VoiceChannel oVChannel = (VoiceChannel) obj;
                 return this == oVChannel || this.id == oVChannel.getIdLong();
             }
-            
+
             @Override
-            public String toString()
-            {
+            public String toString() {
                 return "W.VC:" + getName() + '(' + id + ')';
             }
         }
-        
-        public static class VoiceState
-        {
+
+        public static class VoiceState {
             private final VoiceChannel channel;
             private final boolean muted;
             private final boolean deafened;
@@ -877,14 +814,12 @@ public class WidgetUtil
             private final boolean selfDeaf;
             private final Member member;
             private final Widget widget;
-            
-            private VoiceState(@Nonnull Member member, @Nonnull Widget widget)
-            {
+
+            private VoiceState(@Nonnull Member member, @Nonnull Widget widget) {
                 this(null, false, false, false, false, false, member, widget);
             }
-            
-            private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, @Nonnull Member member, @Nonnull Widget widget)
-            {
+
+            private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, @Nonnull Member member, @Nonnull Widget widget) {
                 this.channel = channel;
                 this.muted = muted;
                 this.deafened = deafened;
@@ -894,108 +829,97 @@ public class WidgetUtil
                 this.member = member;
                 this.widget = widget;
             }
-            
+
             /**
              * Gets the channel the member is in
-             * 
+             *
              * @return never-null VoiceChannel
              */
             @Nullable
-            public VoiceChannel getChannel()
-            {
+            public VoiceChannel getChannel() {
                 return channel;
             }
-            
+
             /**
              * Used to determine if the member is currently in a voice channel.
              * <br>If this is false, getChannel() will return null
-             * 
+             *
              * @return True, if the member is in a voice channel
              */
-            public boolean inVoiceChannel()
-            {
+            public boolean inVoiceChannel() {
                 return channel != null;
             }
-            
+
             /**
              * Whether the member is muted by an admin
-             * 
+             *
              * @return True, if the member is muted
              */
-            public boolean isGuildMuted()
-            {
+            public boolean isGuildMuted() {
                 return muted;
             }
-            
+
             /**
              * Whether the member is deafened by an admin
-             * 
+             *
              * @return True, if the member is deafened
              */
-            public boolean isGuildDeafened()
-            {
+            public boolean isGuildDeafened() {
                 return deafened;
             }
-            
+
             /**
              * Whether the member is suppressed
-             * 
+             *
              * @return True, if the member is suppressed
              */
-            public boolean isSuppressed()
-            {
+            public boolean isSuppressed() {
                 return suppress;
             }
-            
+
             /**
              * Whether the member is self-muted
-             * 
+             *
              * @return True, if the member is self-muted
              */
-            public boolean isSelfMuted()
-            {
+            public boolean isSelfMuted() {
                 return selfMute;
             }
-            
+
             /**
              * Whether the member is self-deafened
-             * 
+             *
              * @return True, if the member is self-deafened
              */
-            public boolean isSelfDeafened()
-            {
+            public boolean isSelfDeafened() {
                 return selfDeaf;
             }
-            
+
             /**
              * Whether the member is muted, either by an admin or self-muted
-             * 
+             *
              * @return True, if the member is self-muted or guild-muted
              */
-            public boolean isMuted()
-            {
+            public boolean isMuted() {
                 return selfMute || muted;
             }
-            
+
             /**
              * Whether the member is deafened, either by an admin or self-deafened
-             * 
+             *
              * @return True, if the member is self-deafened or guild-deafened
              */
-            public boolean isDeafened()
-            {
+            public boolean isDeafened() {
                 return selfDeaf || deafened;
             }
 
             @Nonnull
-            public Member getMember()
-            {
+            public Member getMember() {
                 return member;
             }
 
             @Nonnull
-            public Widget getWidget()
-            {
+            public Widget getWidget() {
                 return widget;
             }
 
@@ -1003,7 +927,7 @@ public class WidgetUtil
             public int hashCode() {
                 return member.hashCode();
             }
-            
+
             @Override
             public boolean equals(Object obj) {
                 if (!(obj instanceof VoiceState))
@@ -1011,7 +935,7 @@ public class WidgetUtil
                 VoiceState oState = (VoiceState) obj;
                 return this == oState || (this.member.equals(oState.getMember()) && this.widget.equals(oState.getWidget()));
             }
-            
+
             @Override
             public String toString() {
                 return "VS:" + widget.getName() + ':' + member.getEffectiveName();

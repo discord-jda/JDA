@@ -26,8 +26,7 @@ import java.util.Set;
  * <br>This is used by {@link net.dv8tion.jda.api.entities.Guild Guild} to where the server that hosts the
  * {@link net.dv8tion.jda.api.entities.Guild Guild} is located.
  */
-public enum Region
-{
+public enum Region {
     AMSTERDAM("amsterdam", "Amsterdam", "\uD83C\uDDF3\uD83C\uDDF1", false),
     BRAZIL("brazil", "Brazil", "\uD83C\uDDE7\uD83C\uDDF7", false),
     EUROPE("europe", "Europe", "\uD83C\uDDEA\uD83C\uDDFA", false),
@@ -79,8 +78,7 @@ public enum Region
     private final String emoji;
     private final boolean vip;
 
-    Region(String key, String name, String emoji, boolean vip)
-    {
+    Region(String key, String name, String emoji, boolean vip) {
         this.key = key;
         this.name = name;
         this.emoji = emoji;
@@ -93,8 +91,7 @@ public enum Region
      * @return The name of this region
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -104,19 +101,17 @@ public enum Region
      * @return The key (internal name) of this region
      */
     @Nonnull
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
-    
+
     /**
      * The unicode flag representative of this Region.
-     * 
+     *
      * @return Possibly-null unicode for the region's flag
      */
     @Nonnull
-    public String getEmoji()
-    {
+    public String getEmoji() {
         return emoji;
     }
 
@@ -127,8 +122,7 @@ public enum Region
      *
      * @return True if this region is a VIP audio region.
      */
-    public boolean isVip()
-    {
+    public boolean isVip() {
         return vip;
     }
 
@@ -142,12 +136,9 @@ public enum Region
      *         returns {@link net.dv8tion.jda.api.Region#UNKNOWN UNKNOWN}.
      */
     @Nonnull
-    public static Region fromKey(@Nullable String key)
-    {
-        for (Region region : values())
-        {
-            if (region.getKey().equals(key))
-            {
+    public static Region fromKey(@Nullable String key) {
+        for (Region region : values()) {
+            if (region.getKey().equals(key)) {
                 return region;
             }
         }
@@ -155,8 +146,7 @@ public enum Region
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return getName();
     }
 }

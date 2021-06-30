@@ -28,12 +28,10 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code topic}
  */
-public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<String>
-{
+public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<String> {
     public static final String IDENTIFIER = "topic";
 
-    public TextChannelUpdateTopicEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nullable String oldTopic)
-    {
+    public TextChannelUpdateTopicEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nullable String oldTopic) {
         super(api, responseNumber, channel, oldTopic, channel.getTopic(), IDENTIFIER);
     }
 
@@ -43,8 +41,7 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
      * @return The old topic, or null
      */
     @Nullable
-    public String getOldTopic()
-    {
+    public String getOldTopic() {
         return getOldValue();
     }
 
@@ -54,8 +51,7 @@ public class TextChannelUpdateTopicEvent extends GenericTextChannelUpdateEvent<S
      * @return The new topic, or null
      */
     @Nullable
-    public String getNewTopic()
-    {
+    public String getNewTopic() {
         return getNewValue();
     }
 }

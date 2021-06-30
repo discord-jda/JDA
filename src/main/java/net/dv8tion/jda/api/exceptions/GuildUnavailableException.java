@@ -27,13 +27,11 @@ import net.dv8tion.jda.annotations.ForRemoval;
 @Deprecated
 @ForRemoval(deadline = "4.4.0")
 @DeprecatedSince("4.1.0")
-public class GuildUnavailableException extends RuntimeException
-{
+public class GuildUnavailableException extends RuntimeException {
     /**
      * Creates a new GuildUnavailableException instance
      */
-    public GuildUnavailableException()
-    {
+    public GuildUnavailableException() {
         this("This operation is not possible due to the Guild being temporarily unavailable");
     }
 
@@ -43,8 +41,7 @@ public class GuildUnavailableException extends RuntimeException
      * @param reason
      *        The reason for this Exception
      */
-    public GuildUnavailableException(String reason)
-    {
+    public GuildUnavailableException(String reason) {
         super(reason);
     }
 }

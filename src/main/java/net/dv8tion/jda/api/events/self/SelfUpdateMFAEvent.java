@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code mfa_enabled}
  */
-public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
-{
+public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean> {
     public static final String IDENTIFIER = "mfa_enabled";
 
-    public SelfUpdateMFAEvent(@Nonnull JDA api, long responseNumber, boolean wasMfaEnabled)
-    {
+    public SelfUpdateMFAEvent(@Nonnull JDA api, long responseNumber, boolean wasMfaEnabled) {
         super(api, responseNumber, wasMfaEnabled, !wasMfaEnabled, IDENTIFIER);
     }
 
@@ -42,22 +40,19 @@ public class SelfUpdateMFAEvent extends GenericSelfUpdateEvent<Boolean>
      *
      * @return True, if the account had MFA enabled prior to this event
      */
-    public boolean wasMfaEnabled()
-    {
+    public boolean wasMfaEnabled() {
         return getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getOldValue()
-    {
+    public Boolean getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public Boolean getNewValue()
-    {
+    public Boolean getNewValue() {
         return super.getNewValue();
     }
 }

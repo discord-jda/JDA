@@ -26,23 +26,19 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 
 import java.util.Objects;
 
-public class StageInstanceUpdateHandler extends SocketHandler
-{
-    public StageInstanceUpdateHandler(JDAImpl api)
-    {
+public class StageInstanceUpdateHandler extends SocketHandler {
+    public StageInstanceUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         long guildId = content.getUnsignedLong("guild_id", 0L);
         if (getJDA().getGuildSetupController().isLocked(guildId))
             return guildId;
 
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             EventCache.LOG.debug("Caching STAGE_INSTANCE_UPDATE for uncached guild with id {}", guildId);
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;

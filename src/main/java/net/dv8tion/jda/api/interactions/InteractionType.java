@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
  *
  * @see Interaction#getType()
  */
-public enum InteractionType
-{
+public enum InteractionType {
     UNKNOWN(-1),
     PING(1),
     SLASH_COMMAND(2),
@@ -34,22 +33,18 @@ public enum InteractionType
 
     private final int key;
 
-    InteractionType(int key)
-    {
+    InteractionType(int key) {
         this.key = key;
     }
 
-    public int getKey()
-    {
+    public int getKey() {
         return key;
     }
 
     @Nonnull
     @CheckReturnValue
-    public static InteractionType fromKey(int key)
-    {
-        switch (key)
-        {
+    public static InteractionType fromKey(int key) {
+        switch (key) {
         case 1:
             return PING;
         case 2:

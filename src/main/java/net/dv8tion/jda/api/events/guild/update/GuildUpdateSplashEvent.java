@@ -29,12 +29,10 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code splash}
  */
-public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "splash";
 
-    public GuildUpdateSplashEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldSplashId)
-    {
+    public GuildUpdateSplashEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldSplashId) {
         super(api, responseNumber, guild, oldSplashId, guild.getSplashId(), IDENTIFIER);
     }
 
@@ -44,8 +42,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The old splash id, or null
      */
     @Nullable
-    public String getOldSplashId()
-    {
+    public String getOldSplashId() {
         return getOldValue();
     }
 
@@ -55,8 +52,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The url of the old splash, or null
      */
     @Nullable
-    public String getOldSplashUrl()
-    {
+    public String getOldSplashUrl() {
         return previous == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), previous);
     }
 
@@ -66,8 +62,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The new splash id, or null
      */
     @Nullable
-    public String getNewSplashId()
-    {
+    public String getNewSplashId() {
         return getNewValue();
     }
 
@@ -77,8 +72,7 @@ public class GuildUpdateSplashEvent extends GenericGuildUpdateEvent<String>
      * @return The url of the new splash, or null
      */
     @Nullable
-    public String getNewSplashUrl()
-    {
+    public String getNewSplashUrl() {
         return next == null ? null : String.format(Guild.SPLASH_URL, guild.getId(), next);
     }
 }

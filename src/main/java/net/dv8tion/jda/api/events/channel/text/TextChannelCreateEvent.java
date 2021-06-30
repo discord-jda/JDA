@@ -25,10 +25,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect new TextChannel creation.
  */
-public class TextChannelCreateEvent extends GenericTextChannelEvent
-{
-    public TextChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel)
-    {
+public class TextChannelCreateEvent extends GenericTextChannelEvent {
+    public TextChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel) {
         super(api, responseNumber, channel);
     }
 }

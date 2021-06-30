@@ -26,64 +26,55 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 
-public class SystemMessage extends ReceivedMessage
-{
+public class SystemMessage extends ReceivedMessage {
     public SystemMessage(
-        long id, MessageChannel channel, MessageType type,
-        boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles,
-        boolean tts, boolean pinned,
-        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags)
-    {
+            long id, MessageChannel channel, MessageType type,
+            boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles,
+            boolean tts, boolean pinned,
+            String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
+            List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, int flags) {
         super(id, channel, type, null, fromWebhook, mentionsEveryone, mentionedUsers, mentionedRoles,
-            tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, stickers, Collections.emptyList(), flags);
+                tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, stickers, Collections.emptyList(), flags);
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> pin()
-    {
+    public RestAction<Void> pin() {
         throw new UnsupportedOperationException("Cannot pin message of this Message Type. MessageType: " + getType());
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> unpin()
-    {
+    public RestAction<Void> unpin() {
         throw new UnsupportedOperationException("Cannot unpin message of this Message Type. MessageType: " + getType());
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull CharSequence newContent)
-    {
+    public MessageAction editMessage(@Nonnull CharSequence newContent) {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull MessageEmbed newContent)
-    {
+    public MessageAction editMessage(@Nonnull MessageEmbed newContent) {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args) {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessage(@Nonnull Message newContent)
-    {
+    public MessageAction editMessage(@Nonnull Message newContent) {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "M:[" + type + ']' + author + '(' + id + ')';
     }
 }

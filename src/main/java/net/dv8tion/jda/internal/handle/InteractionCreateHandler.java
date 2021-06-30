@@ -27,19 +27,15 @@ import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class InteractionCreateHandler extends SocketHandler
-{
-    public InteractionCreateHandler(JDAImpl api)
-    {
+public class InteractionCreateHandler extends SocketHandler {
+    public InteractionCreateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         int type = content.getInt("type");
-        if (content.getInt("version", 1) != 1)
-        {
+        if (content.getInt("version", 1) != 1) {
             WebSocketClient.LOG.debug("Received interaction with version {}. This version is currently unsupported by this version of JDA. Consider updating!", content.getInt("version", 1));
             return null;
         }
@@ -50,35 +46,32 @@ public class InteractionCreateHandler extends SocketHandler
         if (guildId != 0 && api.getGuildById(guildId) == null)
             return null; // discard event if its not from a guild we are currently in
 
-        switch (InteractionType.fromKey(type))
-        {
-            case SLASH_COMMAND: // slash commands
-                handleCommand(content);
-                break;
-            case COMPONENT: // buttons/components
-                handleAction(content);
-            default:
-                api.handleEvent(
+        switch (InteractionType.fromKey(type)) {
+        case SLASH_COMMAND: // slash commands
+            handleCommand(content);
+            break;
+        case COMPONENT: // buttons/components
+            handleAction(content);
+        default:
+            api.handleEvent(
                     new GenericInteractionCreateEvent(api, responseNumber,
-                        new InteractionImpl(api, content)));
+                            new InteractionImpl(api, content)));
         }
 
         return null;
     }
 
-    private void handleCommand(DataObject content)
-    {
+    private void handleCommand(DataObject content) {
         api.handleEvent(
-            new SlashCommandEvent(api, responseNumber,
-                new CommandInteractionImpl(api, content)));
+                new SlashCommandEvent(api, responseNumber,
+                        new CommandInteractionImpl(api, content)));
     }
 
-    private void handleAction(DataObject content)
-    {
+    private void handleAction(DataObject content) {
         if (content.getObject("data").getInt("component_type") != 2)
             return;
         api.handleEvent(
-            new ButtonClickEvent(api, responseNumber,
-                new ButtonInteractionImpl(api, content)));
+                new ButtonClickEvent(api, responseNumber,
+                        new ButtonInteractionImpl(api, content)));
     }
 }

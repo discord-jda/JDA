@@ -36,10 +36,9 @@ import javax.annotation.Nonnull;
 /**
  * The implementation for {@link net.dv8tion.jda.api.entities.Webhook Webhook}
  *
- * @since  3.0
+ * @since 3.0
  */
-public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
-{
+public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook {
     private final TextChannel channel;
     private final WebhookType type;
     private WebhookManager manager;
@@ -49,13 +48,11 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     private ChannelReference sourceChannel;
     private GuildReference sourceGuild;
 
-    public WebhookImpl(TextChannel channel, long id, WebhookType type)
-    {
+    public WebhookImpl(TextChannel channel, long id, WebhookType type) {
         this(channel, channel.getJDA(), id, type);
     }
 
-    public WebhookImpl(TextChannel channel, JDA api, long id, WebhookType type)
-    {
+    public WebhookImpl(TextChannel channel, JDA api, long id, WebhookType type) {
         super(id, null, api);
         this.channel = channel;
         this.type = type;
@@ -63,28 +60,24 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public WebhookType getType()
-    {
+    public WebhookType getType() {
         return type;
     }
 
     @Override
-    public boolean isPartial()
-    {
+    public boolean isPartial() {
         return channel == null;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         if (channel == null)
             throw new IllegalStateException("Cannot provide guild for this Webhook instance because it does not belong to this shard");
         return getChannel().getGuild();
@@ -92,70 +85,60 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public TextChannel getChannel()
-    {
+    public TextChannel getChannel() {
         if (channel == null)
             throw new IllegalStateException("Cannot provide channel for this Webhook instance because it does not belong to this shard");
         return channel;
     }
 
     @Override
-    public Member getOwner()
-    {
+    public Member getOwner() {
         if (owner == null && channel != null && ownerUser != null)
             return getGuild().getMember(ownerUser); // maybe it exists later?
         return owner;
     }
 
     @Override
-    public User getOwnerAsUser()
-    {
+    public User getOwnerAsUser() {
         return ownerUser;
     }
 
     @Nonnull
     @Override
-    public User getDefaultUser()
-    {
+    public User getDefaultUser() {
         return user;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return user.getName();
     }
 
     @Override
-    public String getToken()
-    {
+    public String getToken() {
         return token;
     }
 
     @Nonnull
     @Override
-    public String getUrl()
-    {
+    public String getUrl() {
         return Requester.DISCORD_API_PREFIX + "webhooks/" + getId() + (getToken() == null ? "" : "/" + getToken());
     }
 
     @Override
-    public ChannelReference getSourceChannel()
-    {
+    public ChannelReference getSourceChannel() {
         return sourceChannel;
     }
 
     @Override
-    public GuildReference getSourceGuild()
-    {
+    public GuildReference getSourceGuild() {
         return sourceGuild;
     }
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete()
-    {
+    public AuditableRestAction<Void> delete() {
         if (token != null)
             return delete(token);
 
@@ -168,8 +151,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public AuditableRestAction<Void> delete(@Nonnull String token)
-    {
+    public AuditableRestAction<Void> delete(@Nonnull String token) {
         Checks.notNull(token, "Token");
         Route.CompiledRoute route = Route.Webhooks.DELETE_TOKEN_WEBHOOK.compile(getId(), token);
         return new AuditableRestActionImpl<>(getJDA(), route);
@@ -177,48 +159,41 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public WebhookManager getManager()
-    {
+    public WebhookManager getManager() {
         if (manager == null)
             return manager = new WebhookManagerImpl(this);
         return manager;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     /* -- Impl Setters -- */
 
-    public WebhookImpl setOwner(Member member, User user)
-    {
+    public WebhookImpl setOwner(Member member, User user) {
         this.owner = member;
         this.ownerUser = user;
         return this;
     }
 
-    public WebhookImpl setToken(String token)
-    {
+    public WebhookImpl setToken(String token) {
         this.token = token;
         return this;
     }
 
-    public WebhookImpl setUser(User user)
-    {
+    public WebhookImpl setUser(User user) {
         this.user = user;
         return this;
     }
 
-    public WebhookImpl setSourceGuild(GuildReference reference)
-    {
+    public WebhookImpl setSourceGuild(GuildReference reference) {
         this.sourceGuild = reference;
         return this;
     }
 
-    public WebhookImpl setSourceChannel(ChannelReference reference)
-    {
+    public WebhookImpl setSourceChannel(ChannelReference reference) {
         this.sourceChannel = reference;
         return this;
     }
@@ -226,14 +201,12 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     /* -- Object Overrides -- */
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof WebhookImpl))
@@ -243,16 +216,14 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "WH:" + getName() + "(" + id + ")";
     }
 
     // TODO: Implement WebhookMessage
 
     @Override
-    public WebhookMessageActionImpl<Void> sendRequest()
-    {
+    public WebhookMessageActionImpl<Void> sendRequest() {
         checkToken();
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK.compile(getId(), token);
         WebhookMessageActionImpl<Void> action = new WebhookMessageActionImpl<>(api, channel, route, (json) -> null);
@@ -261,8 +232,7 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
     }
 
     @Override
-    public WebhookMessageUpdateActionImpl<Void> editRequest(String messageId)
-    {
+    public WebhookMessageUpdateActionImpl<Void> editRequest(String messageId) {
         checkToken();
         Checks.isSnowflake(messageId);
         Route.CompiledRoute route = Route.Webhooks.EXECUTE_WEBHOOK_EDIT.compile(getId(), token, messageId);
@@ -273,14 +243,12 @@ public class WebhookImpl extends AbstractWebhookClient<Void> implements Webhook
 
     @Nonnull
     @Override
-    public RestAction<Void> deleteMessageById(@Nonnull String messageId)
-    {
+    public RestAction<Void> deleteMessageById(@Nonnull String messageId) {
         checkToken();
         return super.deleteMessageById(messageId);
     }
 
-    private void checkToken()
-    {
+    private void checkToken() {
         if (token == null)
             throw new UnsupportedOperationException("Cannot execute webhook without a token!");
     }

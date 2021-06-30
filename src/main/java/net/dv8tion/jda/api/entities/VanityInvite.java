@@ -22,15 +22,13 @@ import java.util.Objects;
 /**
  * Meta data for the vanity invite of a guild
  *
- * @since  4.2.1
+ * @since 4.2.1
  */
-public class VanityInvite
-{
+public class VanityInvite {
     private final String code;
     private final int uses;
 
-    public VanityInvite(@Nonnull String code, int uses)
-    {
+    public VanityInvite(@Nonnull String code, int uses) {
         this.code = code;
         this.uses = uses;
     }
@@ -41,8 +39,7 @@ public class VanityInvite
      * @return The code
      */
     @Nonnull
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
@@ -52,8 +49,7 @@ public class VanityInvite
      *
      * @return The invite uses
      */
-    public int getUses()
-    {
+    public int getUses() {
         return uses;
     }
 
@@ -63,14 +59,12 @@ public class VanityInvite
      * @return The invite url
      */
     @Nonnull
-    public String getUrl()
-    {
+    public String getUrl() {
         return "https://discord.gg/" + getCode();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (!(obj instanceof VanityInvite))
@@ -80,14 +74,12 @@ public class VanityInvite
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(code, uses);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "VanityInvite(" + code + ")";
     }
 }

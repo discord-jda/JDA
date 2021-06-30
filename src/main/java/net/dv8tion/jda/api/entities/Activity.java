@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * Represents a Discord {@link Activity Activity}.
  * <br>This should contain all information provided from Discord about a Activity.
  *
- * @since  2.1
+ * @since 2.1
  * @author John A. Grosh
  *
  * @see    #of(ActivityType, String)
@@ -43,8 +43,7 @@ import java.util.regex.Pattern;
  * @see    #streaming(String, String)
  * @see    #competing(String)
  */
-public interface Activity
-{
+public interface Activity {
     /** The Pattern used for {@link #isValidStreamingUrl(String)} */
     Pattern STREAMING_URL = Pattern.compile("https?://(www\\.)?(twitch\\.tv/|youtube\\.com/watch\\?v=).+", Pattern.CASE_INSENSITIVE);
 
@@ -121,8 +120,7 @@ public interface Activity
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#DEFAULT}
      */
     @Nonnull
-    static Activity playing(@Nonnull String name)
-    {
+    static Activity playing(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notLonger(name, 128, "Name");
@@ -147,8 +145,7 @@ public interface Activity
      * @see    #isValidStreamingUrl(String)
      */
     @Nonnull
-    static Activity streaming(@Nonnull String name, @Nullable String url)
-    {
+    static Activity streaming(@Nonnull String name, @Nullable String url) {
         Checks.notEmpty(name, "Provided game name");
         name = Helpers.isBlank(name) ? name : name.trim();
         Checks.notLonger(name, 128, "Name");
@@ -173,8 +170,7 @@ public interface Activity
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#LISTENING}
      */
     @Nonnull
-    static Activity listening(@Nonnull String name)
-    {
+    static Activity listening(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notLonger(name, 128, "Name");
@@ -197,8 +193,7 @@ public interface Activity
      */
     @Nonnull
     @Incubating
-    static Activity watching(@Nonnull String name)
-    {
+    static Activity watching(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notLonger(name, 128, "Name");
@@ -208,20 +203,19 @@ public interface Activity
     /**
      * Creates a new Activity instance with the specified name.
      * <br>This will display as {@code Competing in name} in the official client
-     * 
+     *
      * @param  name
      *         The not-null name of the newly created game
-     * 
+     *
      * @throws IllegalArgumentException
      *         If the specified name is null, empty, blank or longer than 128 characters
-     * 
+     *
      * @return A valid Activity instance with the provided name with {@link net.dv8tion.jda.api.entities.Activity.ActivityType#COMPETING}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
-    static Activity competing(@Nonnull String name)
-    {
+    static Activity competing(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notLonger(name, 128, "Name");
@@ -245,8 +239,7 @@ public interface Activity
      * @return A valid Activity instance with the provided name
      */
     @Nonnull
-    static Activity of(@Nonnull ActivityType type, @Nonnull String name)
-    {
+    static Activity of(@Nonnull ActivityType type, @Nonnull String name) {
         return of(type, name, null);
     }
 
@@ -273,23 +266,21 @@ public interface Activity
      * @see    #isValidStreamingUrl(String)
      */
     @Nonnull
-    static Activity of(@Nonnull ActivityType type, @Nonnull String name, @Nullable String url)
-    {
+    static Activity of(@Nonnull ActivityType type, @Nonnull String name, @Nullable String url) {
         Checks.notNull(type, "Type");
-        switch (type)
-        {
-            case DEFAULT:
-                return playing(name);
-            case STREAMING:
-                return streaming(name, url);
-            case LISTENING:
-                return listening(name);
-            case WATCHING:
-                return watching(name);
-            case COMPETING:
-                return competing(name);
-            default:
-                throw new IllegalArgumentException("ActivityType " + type + " is not supported!");
+        switch (type) {
+        case DEFAULT:
+            return playing(name);
+        case STREAMING:
+            return streaming(name, url);
+        case LISTENING:
+            return listening(name);
+        case WATCHING:
+            return watching(name);
+        case COMPETING:
+            return competing(name);
+        default:
+            throw new IllegalArgumentException("ActivityType " + type + " is not supported!");
         }
     }
 
@@ -301,16 +292,14 @@ public interface Activity
      *
      * @return True if the provided url is valid for triggering Discord's streaming status
      */
-    static boolean isValidStreamingUrl(@Nullable String url)
-    {
+    static boolean isValidStreamingUrl(@Nullable String url) {
         return url != null && STREAMING_URL.matcher(url).matches();
     }
 
     /**
      * The type game being played, differentiating between a game and stream types.
      */
-    enum ActivityType
-    {
+    enum ActivityType {
         /**
          * The ActivityType used to represent a normal {@link Activity Activity} status.
          */
@@ -346,14 +335,13 @@ public interface Activity
          * Used to indicate that the {@link Activity Activity} should display
          * as {@code Competing in...} in the official client.
          *
-         * @since  4.2.1
+         * @since 4.2.1
          */
         COMPETING(5);
 
         private final int key;
 
-        ActivityType(int key)
-        {
+        ActivityType(int key) {
             this.key = key;
         }
 
@@ -362,8 +350,7 @@ public interface Activity
          *
          * @return the id key.
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -377,23 +364,21 @@ public interface Activity
          * @return The ActivityType that has the key provided, or {@link #DEFAULT} for unknown key.
          */
         @Nonnull
-        public static ActivityType fromKey(int key)
-        {
-            switch (key)
-            {
-                case 0:
-                default:
-                    return DEFAULT;
-                case 1:
-                    return STREAMING;
-                case 2:
-                    return LISTENING;
-                case 3:
-                    return WATCHING;
-                case 4:
-                    return CUSTOM_STATUS;
-                case 5:
-                    return COMPETING;
+        public static ActivityType fromKey(int key) {
+            switch (key) {
+            case 0:
+            default:
+                return DEFAULT;
+            case 1:
+                return STREAMING;
+            case 2:
+                return LISTENING;
+            case 3:
+                return WATCHING;
+            case 4:
+                return CUSTOM_STATUS;
+            case 5:
+                return COMPETING;
             }
         }
     }
@@ -401,14 +386,12 @@ public interface Activity
     /**
      * Represents the start and end timestamps for a running match
      */
-    class Timestamps
-    {
+    class Timestamps {
         protected final long start;
 
         protected final long end;
 
-        public Timestamps(long start, long end)
-        {
+        public Timestamps(long start, long end) {
             this.start = start;
             this.end = end;
         }
@@ -418,8 +401,7 @@ public interface Activity
          *
          * @return Epoch second timestamp of match start, or {@code 0} of unset.
          */
-        public long getStart()
-        {
+        public long getStart() {
             return start;
         }
 
@@ -429,8 +411,7 @@ public interface Activity
          * @return Instant of match start, or {@code null} if unset
          */
         @Nullable
-        public Instant getStartTime()
-        {
+        public Instant getStartTime() {
             return start <= 0 ? null : Instant.ofEpochMilli(start);
         }
 
@@ -439,8 +420,7 @@ public interface Activity
          *
          * @return Epoch second timestamp of match end, or {@code 0} of unset.
          */
-        public long getEnd()
-        {
+        public long getEnd() {
             return end;
         }
 
@@ -450,8 +430,7 @@ public interface Activity
          * @return Instant of match start, or {@code null} if unset
          */
         @Nullable
-        public Instant getEndTime()
-        {
+        public Instant getEndTime() {
             return end <= 0 ? null : Instant.ofEpochMilli(end);
         }
 
@@ -476,8 +455,7 @@ public interface Activity
          * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
          * @see    java.time.temporal.TemporalUnit
          */
-        public long getRemainingTime(TemporalUnit unit)
-        {
+        public long getRemainingTime(TemporalUnit unit) {
             Checks.notNull(unit, "TemporalUnit");
             Instant end = getEndTime();
             return end != null ? Instant.now().until(end, unit) : -1;
@@ -504,22 +482,19 @@ public interface Activity
          * @see    java.time.Instant#until(java.time.temporal.Temporal, java.time.temporal.TemporalUnit) Instant.until(Temporal, TemporalUnit)
          * @see    java.time.temporal.TemporalUnit
          */
-        public long getElapsedTime(TemporalUnit unit)
-        {
+        public long getElapsedTime(TemporalUnit unit) {
             Checks.notNull(unit, "TemporalUnit");
             Instant start = getStartTime();
             return start != null ? start.until(Instant.now(), unit) : -1;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return Helpers.format("RichPresenceTimestamp(%d-%d)", start, end);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             if (!(obj instanceof Timestamps))
                 return false;
             Timestamps t = (Timestamps) obj;
@@ -527,8 +502,7 @@ public interface Activity
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(start, end);
         }
     }
@@ -537,21 +511,18 @@ public interface Activity
      * Emoji for a custom status.
      * <br>This can be a unicode emoji or a custom emoji (Emote).
      */
-    class Emoji implements ISnowflake, IMentionable
-    {
+    class Emoji implements ISnowflake, IMentionable {
         private final String name;
         private final long id;
         private final boolean animated;
 
-        public Emoji(String name, long id, boolean animated)
-        {
+        public Emoji(String name, long id, boolean animated) {
             this.name = name;
             this.id = id;
             this.animated = animated;
         }
 
-        public Emoji(String name)
-        {
+        public Emoji(String name) {
             this(name, 0, false);
         }
 
@@ -564,8 +535,7 @@ public interface Activity
          * @see    #getAsCodepoints()
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -581,8 +551,7 @@ public interface Activity
          * @see    #getName()
          */
         @Nonnull
-        public String getAsCodepoints()
-        {
+        public String getAsCodepoints() {
             if (!isEmoji())
                 throw new IllegalStateException("Cannot convert custom emote to codepoints");
             return EncodingUtil.encodeCodepoints(name);
@@ -597,8 +566,7 @@ public interface Activity
          * @return The emoji id
          */
         @Override
-        public long getIdLong()
-        {
+        public long getIdLong() {
             if (!isEmote())
                 throw new IllegalStateException("Cannot get id for unicode emoji");
             return id;
@@ -610,8 +578,7 @@ public interface Activity
          *
          * @return True, if this emoji is animated
          */
-        public boolean isAnimated()
-        {
+        public boolean isAnimated() {
             return animated;
         }
 
@@ -620,8 +587,7 @@ public interface Activity
          *
          * @return True, if this is a unicode emoji
          */
-        public boolean isEmoji()
-        {
+        public boolean isEmoji() {
             return id == 0;
         }
 
@@ -630,15 +596,13 @@ public interface Activity
          *
          * @return True, if this is a custom emoji
          */
-        public boolean isEmote()
-        {
+        public boolean isEmote() {
             return id != 0;
         }
 
         @Nonnull
         @Override
-        public String getAsMention()
-        {
+        public String getAsMention() {
             if (isEmoji())
                 return name; // unicode name
             // custom emoji format (for messages)
@@ -646,26 +610,23 @@ public interface Activity
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return id == 0 ? name.hashCode() : Long.hashCode(id);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             if (obj == this)
                 return true;
             if (!(obj instanceof Emoji))
                 return false;
             Emoji other = (Emoji) obj;
             return id == 0 ? other.name.equals(this.name)
-                           : other.id == this.id;
+                    : other.id == this.id;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             if (isEmoji())
                 return "ActivityEmoji(" + getAsCodepoints() + ')';
             return "ActivityEmoji(" + Long.toUnsignedString(id) + " / " + name + ')';

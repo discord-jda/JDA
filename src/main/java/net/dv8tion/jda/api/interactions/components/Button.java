@@ -66,8 +66,7 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRow(Component...) ReplyAction.addActionRow(Component...)
  * @see net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction#addActionRows(ActionRow...) ReplyAction.addActionRows(ActionRow...)
  */
-public interface Button extends Component
-{
+public interface Button extends Component {
     /**
      * The visible text on the button.
      *
@@ -119,8 +118,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button asDisabled()
-    {
+    default Button asDisabled() {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), true, getEmoji());
     }
 
@@ -131,8 +129,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button asEnabled()
-    {
+    default Button asEnabled() {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), false, getEmoji());
     }
 
@@ -146,8 +143,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button withDisabled(boolean disabled)
-    {
+    default Button withDisabled(boolean disabled) {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), disabled, getEmoji());
     }
 
@@ -161,8 +157,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button withEmoji(@Nullable Emoji emoji)
-    {
+    default Button withEmoji(@Nullable Emoji emoji) {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
     }
 
@@ -179,8 +174,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button withLabel(@Nonnull String label)
-    {
+    default Button withLabel(@Nonnull String label) {
         Checks.notEmpty(label, "Label");
         Checks.notLonger(label, 80, "Label");
         return new ButtonImpl(getId(), label, getStyle(), getUrl(), isDisabled(), getEmoji());
@@ -199,8 +193,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button withId(@Nonnull String id)
-    {
+    default Button withId(@Nonnull String id) {
         Checks.notEmpty(id, "ID");
         Checks.notLonger(id, 100, "ID");
         return new ButtonImpl(id, getLabel(), getStyle(), null, isDisabled(), getEmoji());
@@ -219,8 +212,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button withUrl(@Nonnull String url)
-    {
+    default Button withUrl(@Nonnull String url) {
         Checks.notEmpty(url, "URL");
         Checks.notLonger(url, 512, "URL");
         return new ButtonImpl(null, getLabel(), ButtonStyle.LINK, url, isDisabled(), getEmoji());
@@ -241,8 +233,7 @@ public interface Button extends Component
      */
     @Nonnull
     @CheckReturnValue
-    default Button withStyle(@Nonnull ButtonStyle style)
-    {
+    default Button withStyle(@Nonnull ButtonStyle style) {
         Checks.notNull(style, "Style");
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
         if (getStyle() == ButtonStyle.LINK && style != ButtonStyle.LINK)
@@ -268,8 +259,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button primary(@Nonnull String id, @Nonnull String label)
-    {
+    static Button primary(@Nonnull String id, @Nonnull String label) {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
         Checks.notLonger(id, 100, "Id");
@@ -295,8 +285,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button primary(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button primary(@Nonnull String id, @Nonnull Emoji emoji) {
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, 100, "Id");
@@ -319,8 +308,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button secondary(@Nonnull String id, @Nonnull String label)
-    {
+    static Button secondary(@Nonnull String id, @Nonnull String label) {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
         Checks.notLonger(id, 100, "Id");
@@ -346,8 +334,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button secondary(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button secondary(@Nonnull String id, @Nonnull Emoji emoji) {
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, 100, "Id");
@@ -370,8 +357,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button success(@Nonnull String id, @Nonnull String label)
-    {
+    static Button success(@Nonnull String id, @Nonnull String label) {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
         Checks.notLonger(id, 100, "Id");
@@ -397,8 +383,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button success(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button success(@Nonnull String id, @Nonnull Emoji emoji) {
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, 100, "Id");
@@ -421,8 +406,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button danger(@Nonnull String id, @Nonnull String label)
-    {
+    static Button danger(@Nonnull String id, @Nonnull String label) {
         Checks.notEmpty(id, "Id");
         Checks.notEmpty(label, "Label");
         Checks.notLonger(id, 100, "Id");
@@ -448,8 +432,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button danger(@Nonnull String id, @Nonnull Emoji emoji)
-    {
+    static Button danger(@Nonnull String id, @Nonnull Emoji emoji) {
         Checks.notEmpty(id, "Id");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(id, 100, "Id");
@@ -475,8 +458,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button link(@Nonnull String url, @Nonnull String label)
-    {
+    static Button link(@Nonnull String url, @Nonnull String label) {
         Checks.notEmpty(url, "URL");
         Checks.notEmpty(label, "Label");
         Checks.notLonger(url, 512, "URL");
@@ -505,8 +487,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button link(@Nonnull String url, @Nonnull Emoji emoji)
-    {
+    static Button link(@Nonnull String url, @Nonnull Emoji emoji) {
         Checks.notEmpty(url, "URL");
         Checks.notNull(emoji, "Emoji");
         Checks.notLonger(url, 512, "URL");
@@ -533,8 +514,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label)
-    {
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull String label) {
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
         Checks.notNull(style, "Style");
         Checks.notNull(label, "Label");
@@ -566,8 +546,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji)
-    {
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nonnull Emoji emoji) {
         Checks.check(style != ButtonStyle.UNKNOWN, "Cannot make button with unknown style!");
         Checks.notNull(style, "Style");
         Checks.notNull(emoji, "Emoji");
@@ -606,8 +585,7 @@ public interface Button extends Component
      * @return The button instance
      */
     @Nonnull
-    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nullable String label, @Nullable Emoji emoji)
-    {
+    static Button of(@Nonnull ButtonStyle style, @Nonnull String idOrUrl, @Nullable String label, @Nullable Emoji emoji) {
         if (label != null)
             return of(style, idOrUrl, label).withEmoji(emoji);
         else if (emoji != null)

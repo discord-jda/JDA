@@ -33,10 +33,9 @@ import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
  *
  * @see #pack(Object)
  *
- * @since  4.2.1
+ * @since 4.2.1
  */
-public class ExTermEncoder
-{
+public class ExTermEncoder {
     /**
      * Encodes the provided object into an ETF buffer.
      *
@@ -61,8 +60,7 @@ public class ExTermEncoder
      *
      * @return {@link ByteBuffer} with the encoded ETF term
      */
-    public static ByteBuffer pack(Object data)
-    {
+    public static ByteBuffer pack(Object data) {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         buffer.put((byte) 131);
 
@@ -73,8 +71,7 @@ public class ExTermEncoder
     }
 
     @SuppressWarnings("unchecked")
-    private static ByteBuffer pack(ByteBuffer buffer, Object value)
-    {
+    private static ByteBuffer pack(ByteBuffer buffer, Object value) {
         if (value instanceof String)
             return packBinary(buffer, (String) value);
         if (value instanceof Map)
@@ -113,8 +110,7 @@ public class ExTermEncoder
         throw new UnsupportedOperationException("Cannot pack value of type " + value.getClass().getName());
     }
 
-    private static ByteBuffer realloc(ByteBuffer buffer, int length)
-    {
+    private static ByteBuffer realloc(ByteBuffer buffer, int length) {
         if (buffer.remaining() >= length)
             return buffer;
 
@@ -125,14 +121,12 @@ public class ExTermEncoder
         return allocated;
     }
 
-    private static ByteBuffer packMap(ByteBuffer buffer, Map<String, Object> data)
-    {
+    private static ByteBuffer packMap(ByteBuffer buffer, Map<String, Object> data) {
         buffer = realloc(buffer, data.size() + 5);
         buffer.put(MAP);
         buffer.putInt(data.size());
 
-        for (Map.Entry<String, Object> entry : data.entrySet())
-        {
+        for (Map.Entry<String, Object> entry : data.entrySet()) {
             buffer = packBinary(buffer, entry.getKey());
             buffer = pack(buffer, entry.getValue());
         }
@@ -140,10 +134,8 @@ public class ExTermEncoder
         return buffer;
     }
 
-    private static ByteBuffer packList(ByteBuffer buffer, Collection<Object> data)
-    {
-        if (data.isEmpty())
-        {
+    private static ByteBuffer packList(ByteBuffer buffer, Collection<Object> data) {
+        if (data.isEmpty()) {
             // NIL is for empty lists
             return packNil(buffer);
         }
@@ -156,8 +148,7 @@ public class ExTermEncoder
         return packNil(buffer);
     }
 
-    private static ByteBuffer packBinary(ByteBuffer buffer, String value)
-    {
+    private static ByteBuffer packBinary(ByteBuffer buffer, String value) {
         byte[] encoded = value.getBytes(StandardCharsets.UTF_8);
         buffer = realloc(buffer, encoded.length * 4 + 5);
         buffer.put(BINARY);
@@ -166,16 +157,14 @@ public class ExTermEncoder
         return buffer;
     }
 
-    private static ByteBuffer packSmallInt(ByteBuffer buffer, byte value)
-    {
+    private static ByteBuffer packSmallInt(ByteBuffer buffer, byte value) {
         buffer = realloc(buffer, 2);
         buffer.put(SMALL_INT);
         buffer.put(value);
         return buffer;
     }
 
-    private static ByteBuffer packInt(ByteBuffer buffer, int value)
-    {
+    private static ByteBuffer packInt(ByteBuffer buffer, int value) {
         if (countBytes(value) <= 1 && value >= 0)
             return packSmallInt(buffer, (byte) value);
         buffer = realloc(buffer, 5);
@@ -184,13 +173,11 @@ public class ExTermEncoder
         return buffer;
     }
 
-    private static ByteBuffer packLong(ByteBuffer buffer, long value)
-    {
+    private static ByteBuffer packLong(ByteBuffer buffer, long value) {
         byte bytes = countBytes(value);
         if (bytes <= 1) // Use optimized small int encoding
             return packSmallInt(buffer, (byte) value);
-        if (bytes <= 4 && value >= 0)
-        {
+        if (bytes <= 4 && value >= 0) {
             // Use int to encode it
             buffer = realloc(buffer, 5);
             buffer.put(INT);
@@ -203,8 +190,7 @@ public class ExTermEncoder
         buffer.put(bytes);
         // We only use "unsigned" value so the sign is always positive
         buffer.put((byte) 0);
-        while (value > 0)
-        {
+        while (value > 0) {
             buffer.put((byte) value);
             value >>>= 8;
         }
@@ -212,16 +198,14 @@ public class ExTermEncoder
         return buffer;
     }
 
-    private static ByteBuffer packFloat(ByteBuffer buffer, double value)
-    {
+    private static ByteBuffer packFloat(ByteBuffer buffer, double value) {
         buffer = realloc(buffer, 9);
         buffer.put(NEW_FLOAT);
         buffer.putDouble(value);
         return buffer;
     }
 
-    private static ByteBuffer packAtom(ByteBuffer buffer, String value)
-    {
+    private static ByteBuffer packAtom(ByteBuffer buffer, String value) {
         byte[] array = value.getBytes(StandardCharsets.ISO_8859_1);
         buffer = realloc(buffer, array.length + 3);
         buffer.put(ATOM);
@@ -230,8 +214,7 @@ public class ExTermEncoder
         return buffer;
     }
 
-    private static ByteBuffer packArray(ByteBuffer buffer, long[] array)
-    {
+    private static ByteBuffer packArray(ByteBuffer buffer, long[] array) {
         if (array.length == 0)
             return packNil(buffer);
 
@@ -243,8 +226,7 @@ public class ExTermEncoder
         return packNil(buffer);
     }
 
-    private static ByteBuffer packArray(ByteBuffer buffer, int[] array)
-    {
+    private static ByteBuffer packArray(ByteBuffer buffer, int[] array) {
         if (array.length == 0)
             return packNil(buffer);
 
@@ -256,8 +238,7 @@ public class ExTermEncoder
         return packNil(buffer);
     }
 
-    private static ByteBuffer packArray(ByteBuffer buffer, short[] array)
-    {
+    private static ByteBuffer packArray(ByteBuffer buffer, short[] array) {
         if (array.length == 0)
             return packNil(buffer);
 
@@ -269,8 +250,7 @@ public class ExTermEncoder
         return packNil(buffer);
     }
 
-    private static ByteBuffer packArray(ByteBuffer buffer, byte[] array)
-    {
+    private static ByteBuffer packArray(ByteBuffer buffer, byte[] array) {
         if (array.length == 0)
             return packNil(buffer);
 
@@ -282,15 +262,13 @@ public class ExTermEncoder
         return packNil(buffer);
     }
 
-    private static ByteBuffer packNil(ByteBuffer buffer)
-    {
+    private static ByteBuffer packNil(ByteBuffer buffer) {
         buffer = realloc(buffer, 1);
         buffer.put(NIL);
         return buffer;
     }
 
-    private static byte countBytes(long value)
-    {
+    private static byte countBytes(long value) {
         int leadingZeros = Long.numberOfLeadingZeros(value);
         return (byte) Math.ceil((64 - leadingZeros) / 8.);
     }

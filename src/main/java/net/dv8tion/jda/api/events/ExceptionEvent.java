@@ -28,13 +28,11 @@ import javax.annotation.Nonnull;
  * <p>It is not recommended to simply use this and print each event as some throwables were already logged
  * by JDA. See {@link #isLogged()}.
  */
-public class ExceptionEvent extends Event
-{
+public class ExceptionEvent extends Event {
     protected final Throwable throwable;
     protected final boolean logged;
 
-    public ExceptionEvent(@Nonnull JDA api, @Nonnull Throwable throwable, boolean logged)
-    {
+    public ExceptionEvent(@Nonnull JDA api, @Nonnull Throwable throwable, boolean logged) {
         super(api);
         this.throwable = throwable;
         this.logged = logged;
@@ -45,8 +43,7 @@ public class ExceptionEvent extends Event
      *
      * @return True, if this throwable was already logged
      */
-    public boolean isLogged()
-    {
+    public boolean isLogged() {
         return logged;
     }
 
@@ -56,8 +53,7 @@ public class ExceptionEvent extends Event
      * @return The cause
      */
     @Nonnull
-    public Throwable getCause()
-    {
+    public Throwable getCause() {
         return throwable;
     }
 }

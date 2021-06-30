@@ -24,8 +24,7 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
-{
+public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void> {
     /**
      * Enables internal checks for missing permissions
      * <br>When this is disabled the chances of hitting a
@@ -39,8 +38,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
      *
      * @see   #isPermissionChecksEnabled()
      */
-    static void setPermissionChecksEnabled(boolean enable)
-    {
+    static void setPermissionChecksEnabled(boolean enable) {
         ManagerBase.setPermissionChecksEnabled(enable);
     }
 
@@ -55,8 +53,7 @@ public interface Manager<M extends Manager<M>> extends AuditableRestAction<Void>
      *
      * @see    #setPermissionChecksEnabled(boolean)
      */
-    static boolean isPermissionChecksEnabled()
-    {
+    static boolean isPermissionChecksEnabled() {
         return ManagerBase.isPermissionChecksEnabled();
     }
 

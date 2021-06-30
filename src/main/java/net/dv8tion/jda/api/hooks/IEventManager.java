@@ -43,8 +43,7 @@ import java.util.List;
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager
  * @see net.dv8tion.jda.api.hooks.AnnotatedEventManager
  */
-public interface IEventManager
-{
+public interface IEventManager {
     /**
      * Registers the specified listener
      * <br>Accepted types may be specified by implementations

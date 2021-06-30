@@ -35,8 +35,7 @@ import java.util.function.BooleanSupplier;
  * Specialized {@link RestAction} used to create or update commands.
  * <br>If a command with the specified name already exists, it will be replaced!
  */
-public interface CommandCreateAction extends RestAction<Command>
-{
+public interface CommandCreateAction extends RestAction<Command> {
     @Nonnull
     @Override
     CommandCreateAction setCheck(@Nullable BooleanSupplier checks);
@@ -141,8 +140,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addOptions(@Nonnull Collection<? extends OptionData> options)
-    {
+    default CommandCreateAction addOptions(@Nonnull Collection<? extends OptionData> options) {
         Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
     }
@@ -174,8 +172,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
-    {
+    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required) {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
 
@@ -205,8 +202,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
+    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         return addOption(type, name, description, false);
     }
 

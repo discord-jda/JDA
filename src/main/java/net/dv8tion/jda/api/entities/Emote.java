@@ -36,7 +36,7 @@ import java.util.List;
  *
  * <p><b>This does not represent unicode emojis like they are used in the official client! (:smiley: is not a custom emoji)</b>
  *
- * @since  2.2
+ * @since 2.2
  *
  * @see    net.dv8tion.jda.api.entities.ListedEmote ListedEmote
  *
@@ -50,8 +50,7 @@ import java.util.List;
  * @see    JDA#getEmotesByName(String, boolean)
  * @see    JDA#getEmotes()
  */
-public interface Emote extends IMentionable
-{
+public interface Emote extends IMentionable {
     /** Template for {@link #getImageUrl()} */
     String ICON_URL = "https://cdn.discordapp.com/emojis/%s.%s";
 
@@ -92,8 +91,7 @@ public interface Emote extends IMentionable
     @Deprecated
     @DeprecatedSince("3.8.0")
     @ReplaceWith("canProvideRoles()")
-    default boolean hasRoles()
-    {
+    default boolean hasRoles() {
         return canProvideRoles();
     }
 
@@ -129,17 +127,17 @@ public interface Emote extends IMentionable
      * Whether this emote is available. When an emote becomes unavailable, it cannot be used in messages. An emote becomes
      * unavailable when the {@link net.dv8tion.jda.api.entities.Guild.BoostTier BoostTier} of the guild drops such that
      * the maximum allowed emotes is lower than the total amount of emotes added to the guild.
-     * 
+     *
      * <p>If an emote is added to the guild when the boost tier allows for more than 50 normal and 50 animated emotes
      * (BoostTier is at least {@link net.dv8tion.jda.api.entities.Guild.BoostTier#TIER_1 TIER_1}) and the emote is at least
      * the 51st one added, then the emote becomes unavaiable when the BoostTier drops below a level that allows those emotes
      * to be used.
      * <br>Emotes that where added as part of a lower BoostTier (i.e. the 51st emote on BoostTier 2) will remain available,
      * as long as the BoostTier stays above the required level.
-     * 
+     *
      * @return True, if this emote is available
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     boolean isAvailable();
 
@@ -212,8 +210,7 @@ public interface Emote extends IMentionable
      * @return Discord CDN link to the Emote's image
      */
     @Nonnull
-    default String getImageUrl()
-    {
+    default String getImageUrl() {
         return String.format(ICON_URL, getId(), isAnimated() ? "gif" : "png");
     }
 
@@ -227,8 +224,7 @@ public interface Emote extends IMentionable
      */
     @Nonnull
     @Override
-    default String getAsMention()
-    {
+    default String getAsMention() {
         return (isAnimated() ? "<a:" : "<:") + getName() + ":" + getId() + ">";
     }
 
@@ -240,8 +236,7 @@ public interface Emote extends IMentionable
      *
      * @return True, if the provided Member can use this Emote
      */
-    default boolean canInteract(Member issuer)
-    {
+    default boolean canInteract(Member issuer) {
         return PermissionUtil.canInteract(issuer, this);
     }
 
@@ -256,8 +251,7 @@ public interface Emote extends IMentionable
      *
      * @return True, if the provided Member can use this Emote
      */
-    default boolean canInteract(User issuer, MessageChannel channel)
-    {
+    default boolean canInteract(User issuer, MessageChannel channel) {
         return PermissionUtil.canInteract(issuer, this, channel);
     }
 
@@ -274,8 +268,7 @@ public interface Emote extends IMentionable
      *
      * @return True, if the provided Member can use this Emote
      */
-    default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride)
-    {
+    default boolean canInteract(User issuer, MessageChannel channel, boolean botOverride) {
         return PermissionUtil.canInteract(issuer, this, channel, botOverride);
     }
 }

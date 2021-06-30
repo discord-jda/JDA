@@ -24,20 +24,18 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} event is fired from a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
  * <br>Every GuildMessageEvent is derived from this event and can be casted.
- * 
+ *
  * <p>Can be used to detect any GuildMessageEvent.
  *
  * <h2>Requirements</h2>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled.
  */
-public abstract class GenericGuildMessageEvent extends GenericGuildEvent
-{
+public abstract class GenericGuildMessageEvent extends GenericGuildEvent {
     protected final long messageId;
     protected final TextChannel channel;
 
-    public GenericGuildMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel)
-    {
+    public GenericGuildMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel) {
         super(api, responseNumber, channel.getGuild());
         this.messageId = messageId;
         this.channel = channel;
@@ -49,8 +47,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
      * @return The message id
      */
     @Nonnull
-    public String getMessageId()
-    {
+    public String getMessageId() {
         return Long.toUnsignedString(messageId);
     }
 
@@ -59,8 +56,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
      *
      * @return The message id
      */
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 
@@ -70,8 +66,7 @@ public abstract class GenericGuildMessageEvent extends GenericGuildEvent
      * @return The TextChannel for this message
      */
     @Nonnull
-    public TextChannel getChannel()
-    {
+    public TextChannel getChannel() {
         return channel;
     }
 }

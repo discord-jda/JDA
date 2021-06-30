@@ -39,12 +39,10 @@ import javax.annotation.Nullable;
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
 @Incubating
-public class GenericInteractionCreateEvent extends Event implements Interaction
-{
+public class GenericInteractionCreateEvent extends Event implements Interaction {
     private final Interaction interaction;
 
-    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
-    {
+    public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction) {
         super(api, responseNumber);
         this.interaction = interaction;
     }
@@ -56,75 +54,64 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
      * @return The {@link Interaction}
      */
     @Nonnull
-    public Interaction getInteraction()
-    {
+    public Interaction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public String getToken()
-    {
+    public String getToken() {
         return interaction.getToken();
     }
 
     @Override
-    public int getTypeRaw()
-    {
+    public int getTypeRaw() {
         return interaction.getTypeRaw();
     }
 
     @Nullable
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return interaction.getGuild();
     }
 
     @Nullable
     @Override
-    public AbstractChannel getChannel()
-    {
+    public AbstractChannel getChannel() {
         return interaction.getChannel();
     }
 
     @Nonnull
     @Override
-    public InteractionHook getHook()
-    {
+    public InteractionHook getHook() {
         return interaction.getHook();
     }
 
     @Nullable
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         return interaction.getMember();
     }
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         return interaction.getUser();
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return interaction.getIdLong();
     }
 
     @Override
-    public boolean isAcknowledged()
-    {
+    public boolean isAcknowledged() {
         return interaction.isAcknowledged();
     }
 
     @Nonnull
     @Override
-    public ReplyAction deferReply()
-    {
+    public ReplyAction deferReply() {
         return interaction.deferReply();
     }
 }

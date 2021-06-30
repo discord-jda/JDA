@@ -36,14 +36,12 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
  * </ul>
  *
- * @since  4.2.0
+ * @since 4.2.0
  */
-public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
-{
+public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent {
     private final MessageReaction reaction;
 
-    public MessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel, @Nonnull MessageReaction reaction)
-    {
+    public MessageReactionRemoveEmoteEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel, @Nonnull MessageReaction reaction) {
         super(api, responseNumber, messageId, channel);
         this.reaction = reaction;
     }
@@ -54,8 +52,7 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
      * @return The removed MessageReaction
      */
     @Nonnull
-    public MessageReaction getReaction()
-    {
+    public MessageReaction getReaction() {
         return reaction;
     }
 
@@ -66,8 +63,7 @@ public class MessageReactionRemoveEmoteEvent extends GenericMessageEvent
      * @return The ReactionEmote
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
-    {
+    public MessageReaction.ReactionEmote getReactionEmote() {
         return reaction.getReactionEmote();
     }
 }

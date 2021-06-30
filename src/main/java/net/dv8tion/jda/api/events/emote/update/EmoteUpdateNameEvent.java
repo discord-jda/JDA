@@ -35,12 +35,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code name}
  */
-public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
-{
+public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String> {
     public static final String IDENTIFIER = "name";
 
-    public EmoteUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote, @Nonnull String oldName)
-    {
+    public EmoteUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull Emote emote, @Nonnull String oldName) {
         super(api, responseNumber, emote, oldName, emote.getName(), IDENTIFIER);
     }
 
@@ -50,8 +48,7 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
      * @return The old name
      */
     @Nonnull
-    public String getOldName()
-    {
+    public String getOldName() {
         return getOldValue();
     }
 
@@ -61,22 +58,19 @@ public class EmoteUpdateNameEvent extends GenericEmoteUpdateEvent<String>
      * @return The new name
      */
     @Nonnull
-    public String getNewName()
-    {
+    public String getNewName() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

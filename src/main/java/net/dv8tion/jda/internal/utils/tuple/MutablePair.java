@@ -27,8 +27,7 @@ package net.dv8tion.jda.internal.utils.tuple;
  *
  * @since Lang 3.0
  */
-public class MutablePair<L, R> extends Pair<L, R>
-{
+public class MutablePair<L, R> extends Pair<L, R> {
     /** Left object */
     public L left;
     /** Right object */

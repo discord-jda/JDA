@@ -41,8 +41,7 @@ import java.util.Set;
  *
  * @see net.dv8tion.jda.api.entities.Emote#getManager()
  */
-public interface EmoteManager extends Manager<EmoteManager>
-{
+public interface EmoteManager extends Manager<EmoteManager> {
     /** Used to reset the name field */
     long NAME = 0x1;
     /** Used to reset the roles field */
@@ -96,8 +95,7 @@ public interface EmoteManager extends Manager<EmoteManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getEmote().getGuild();
     }
 

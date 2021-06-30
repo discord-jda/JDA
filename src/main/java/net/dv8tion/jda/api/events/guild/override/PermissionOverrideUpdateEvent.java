@@ -29,12 +29,10 @@ import java.util.EnumSet;
  *
  * <p>Can be used to retrieve the updated override and old {@link #getOldAllow() allow} and {@link #getOldDeny() deny}.
  */
-public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEvent
-{
+public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEvent {
     private final long oldAllow, oldDeny;
 
-    public PermissionOverrideUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny)
-    {
+    public PermissionOverrideUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override, long oldAllow, long oldDeny) {
         super(api, responseNumber, channel, override);
         this.oldAllow = oldAllow;
         this.oldDeny = oldDeny;
@@ -45,8 +43,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
      *
      * @return The old allowed permissions
      */
-    public long getOldAllowRaw()
-    {
+    public long getOldAllowRaw() {
         return oldAllow;
     }
 
@@ -55,8 +52,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
      *
      * @return The old denied permissions
      */
-    public long getOldDenyRaw()
-    {
+    public long getOldDenyRaw() {
         return oldDeny;
     }
 
@@ -65,8 +61,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
      *
      * @return The old inherited permissions
      */
-    public long getOldInheritedRaw()
-    {
+    public long getOldInheritedRaw() {
         return ~(oldAllow | oldDeny);
     }
 
@@ -76,8 +71,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
      * @return The old allowed permissions
      */
     @Nonnull
-    public EnumSet<Permission> getOldAllow()
-    {
+    public EnumSet<Permission> getOldAllow() {
         return Permission.getPermissions(oldAllow);
     }
 
@@ -87,8 +81,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
      * @return The old denied permissions
      */
     @Nonnull
-    public EnumSet<Permission> getOldDeny()
-    {
+    public EnumSet<Permission> getOldDeny() {
         return Permission.getPermissions(oldDeny);
     }
 
@@ -98,8 +91,7 @@ public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEven
      * @return The old inherited permissions
      */
     @Nonnull
-    public EnumSet<Permission> getOldInherited()
-    {
+    public EnumSet<Permission> getOldInherited() {
         return Permission.getPermissions(getOldInheritedRaw());
     }
 }

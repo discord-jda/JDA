@@ -25,23 +25,19 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implements MemberCacheView
-{
-    public MemberCacheViewImpl()
-    {
+public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implements MemberCacheView {
+    public MemberCacheViewImpl() {
         super(Member.class, Member::getEffectiveName);
     }
 
     @Override
-    public Member getElementById(long id)
-    {
+    public Member getElementById(long id) {
         return get(id);
     }
 
     @Nonnull
     @Override
-    public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase)
-    {
+    public List<Member> getElementsByUsername(@Nonnull String name, boolean ignoreCase) {
         Checks.notEmpty(name, "Name");
         if (isEmpty())
             return Collections.emptyList();
@@ -57,16 +53,14 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
 
     @Nonnull
     @Override
-    public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase)
-    {
+    public List<Member> getElementsByNickname(@Nullable String name, boolean ignoreCase) {
         if (isEmpty())
             return Collections.emptyList();
         List<Member> members = new ArrayList<>();
         forEach(member ->
         {
             final String nick = member.getNickname();
-            if (nick == null)
-            {
+            if (nick == null) {
                 if (name == null)
                     members.add(member);
                 return;
@@ -80,16 +74,14 @@ public class MemberCacheViewImpl extends SnowflakeCacheViewImpl<Member> implemen
 
     @Nonnull
     @Override
-    public List<Member> getElementsWithRoles(@Nonnull Role... roles)
-    {
+    public List<Member> getElementsWithRoles(@Nonnull Role... roles) {
         Checks.notNull(roles, "Roles");
         return getElementsWithRoles(Arrays.asList(roles));
     }
 
     @Nonnull
     @Override
-    public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles)
-    {
+    public List<Member> getElementsWithRoles(@Nonnull Collection<Role> roles) {
         Checks.noneNull(roles, "Roles");
         if (isEmpty())
             return Collections.emptyList();

@@ -27,37 +27,31 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public class GatewayTask<T> implements Task<T>
-{
+public class GatewayTask<T> implements Task<T> {
     private static final Logger log = JDALogger.getLog(Task.class);
     private final Runnable onCancel;
     private final CompletableFuture<T> future;
 
-    public GatewayTask(CompletableFuture<T> future, Runnable onCancel)
-    {
+    public GatewayTask(CompletableFuture<T> future, Runnable onCancel) {
         this.future = future;
         this.onCancel = onCancel;
     }
 
     @Override
-    public boolean isStarted()
-    {
+    public boolean isStarted() {
         return true;
     }
 
     @Nonnull
     @Override
-    public Task<T> onError(@Nonnull Consumer<? super Throwable> callback)
-    {
+    public Task<T> onError(@Nonnull Consumer<? super Throwable> callback) {
         Checks.notNull(callback, "Callback");
         Consumer<Throwable> failureHandler = ContextException.here((error) -> log.error("Task Failure callback threw error", error));
         future.exceptionally(error -> {
-            try
-            {
+            try {
                 callback.accept(error);
             }
-            catch (Throwable e)
-            {
+            catch (Throwable e) {
                 failureHandler.accept(e);
                 if (e instanceof Error)
                     throw e;
@@ -69,17 +63,14 @@ public class GatewayTask<T> implements Task<T>
 
     @Nonnull
     @Override
-    public Task<T> onSuccess(@Nonnull Consumer<? super T> callback)
-    {
+    public Task<T> onSuccess(@Nonnull Consumer<? super T> callback) {
         Checks.notNull(callback, "Callback");
         Consumer<Throwable> failureHandler = ContextException.here((error) -> log.error("Task Success callback threw error", error));
         future.thenAccept(result -> {
-            try
-            {
+            try {
                 callback.accept(result);
             }
-            catch (Throwable error)
-            {
+            catch (Throwable error) {
                 failureHandler.accept(error);
                 if (error instanceof Error)
                     throw error;
@@ -90,16 +81,14 @@ public class GatewayTask<T> implements Task<T>
 
     @Nonnull
     @Override
-    public T get()
-    {
+    public T get() {
         if (WebSocketClient.WS_THREAD.get())
             throw new UnsupportedOperationException("Blocking operations are not permitted on the gateway thread");
         return future.join();
     }
 
     @Override
-    public void cancel()
-    {
+    public void cancel() {
         onCancel.run();
     }
 }

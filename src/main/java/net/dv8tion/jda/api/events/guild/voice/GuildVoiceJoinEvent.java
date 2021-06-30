@@ -41,24 +41,20 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildVoiceJoinEvent extends GenericGuildVoiceUpdateEvent
-{
-    public GuildVoiceJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+public class GuildVoiceJoinEvent extends GenericGuildVoiceUpdateEvent {
+    public GuildVoiceJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member, null, member.getVoiceState().getChannel());
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getChannelJoined()
-    {
+    public VoiceChannel getChannelJoined() {
         return super.getChannelJoined();
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getNewValue()
-    {
+    public VoiceChannel getNewValue() {
         return super.getNewValue();
     }
 }

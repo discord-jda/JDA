@@ -27,15 +27,13 @@ import java.nio.ShortBuffer;
 /**
  * Class that wraps functionality around the Opus decoder.
  */
-public class Decoder
-{
+public class Decoder {
     protected int ssrc;
     protected char lastSeq;
     protected int lastTimestamp;
     protected PointerByReference opusDecoder;
 
-    protected Decoder(int ssrc)
-    {
+    protected Decoder(int ssrc) {
         this.ssrc = ssrc;
         this.lastSeq = (char) -1;
         this.lastTimestamp = -1;
@@ -46,18 +44,15 @@ public class Decoder
             throw new IllegalStateException("Received error code from opus_decoder_create(...): " + error.get());
     }
 
-    public boolean isInOrder(char newSeq)
-    {
+    public boolean isInOrder(char newSeq) {
         return lastSeq == (char) -1 || newSeq > lastSeq || lastSeq - newSeq > 10;
     }
 
-    public boolean wasPacketLost(char newSeq)
-    {
+    public boolean wasPacketLost(char newSeq) {
         return newSeq > lastSeq + 1;
     }
 
-    public short[] decodeFromOpus(AudioPacket decryptedPacket)
-    {
+    public short[] decodeFromOpus(AudioPacket decryptedPacket) {
         int result;
         ShortBuffer decoded = ShortBuffer.allocate(4096);
         if (decryptedPacket == null)    //Flag for packet-loss
@@ -66,8 +61,7 @@ public class Decoder
             lastSeq = (char) -1;
             lastTimestamp = -1;
         }
-        else
-        {
+        else {
             this.lastSeq = decryptedPacket.getSequence();
             this.lastTimestamp = decryptedPacket.getTimestamp();
 
@@ -81,8 +75,7 @@ public class Decoder
         }
 
         //If we get a result that is less than 0, then there was an error. Return null as a signifier.
-        if (result < 0)
-        {
+        if (result < 0) {
             handleDecodeError(result);
             return null;
         }
@@ -92,42 +85,38 @@ public class Decoder
         return audio;
     }
 
-    private void handleDecodeError(int result)
-    {
+    private void handleDecodeError(int result) {
         StringBuilder b = new StringBuilder("Decoder failed to decode audio from user with code ");
-        switch (result)
-        {
-            case Opus.OPUS_BAD_ARG: //-1
-                b.append("OPUS_BAD_ARG");
-                break;
-            case Opus.OPUS_BUFFER_TOO_SMALL: //-2
-                b.append("OPUS_BUFFER_TOO_SMALL");
-                break;
-            case Opus.OPUS_INTERNAL_ERROR: //-3
-                b.append("OPUS_INTERNAL_ERROR");
-                break;
-            case Opus.OPUS_INVALID_PACKET: //-4
-                b.append("OPUS_INVALID_PACKET");
-                break;
-            case Opus.OPUS_UNIMPLEMENTED: //-5
-                b.append("OPUS_UNIMPLEMENTED");
-                break;
-            case Opus.OPUS_INVALID_STATE: //-6
-                b.append("OPUS_INVALID_STATE");
-                break;
-            case Opus.OPUS_ALLOC_FAIL: //-7
-                b.append("OPUS_ALLOC_FAIL");
-                break;
-            default:
-                b.append(result);
+        switch (result) {
+        case Opus.OPUS_BAD_ARG: //-1
+            b.append("OPUS_BAD_ARG");
+            break;
+        case Opus.OPUS_BUFFER_TOO_SMALL: //-2
+            b.append("OPUS_BUFFER_TOO_SMALL");
+            break;
+        case Opus.OPUS_INTERNAL_ERROR: //-3
+            b.append("OPUS_INTERNAL_ERROR");
+            break;
+        case Opus.OPUS_INVALID_PACKET: //-4
+            b.append("OPUS_INVALID_PACKET");
+            break;
+        case Opus.OPUS_UNIMPLEMENTED: //-5
+            b.append("OPUS_UNIMPLEMENTED");
+            break;
+        case Opus.OPUS_INVALID_STATE: //-6
+            b.append("OPUS_INVALID_STATE");
+            break;
+        case Opus.OPUS_ALLOC_FAIL: //-7
+            b.append("OPUS_ALLOC_FAIL");
+            break;
+        default:
+            b.append(result);
         }
         AudioConnection.LOG.debug("{}", b);
     }
 
-    protected synchronized void close()
-    {
-        if (opusDecoder != null)
-        {
+    protected synchronized void close() {
+        if (opusDecoder != null) {
             Opus.INSTANCE.opus_decoder_destroy(opusDecoder);
             opusDecoder = null;
         }
@@ -135,8 +124,7 @@ public class Decoder
 
     @Override
     @SuppressWarnings("deprecation")
-    protected void finalize() throws Throwable
-    {
+    protected void finalize() throws Throwable {
         super.finalize();
         close();
     }

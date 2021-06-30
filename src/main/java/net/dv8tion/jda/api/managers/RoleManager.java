@@ -44,16 +44,15 @@ import java.util.Collection;
  *
  * @see net.dv8tion.jda.api.entities.Role#getManager()
  */
-public interface RoleManager extends Manager<RoleManager>
-{
+public interface RoleManager extends Manager<RoleManager> {
     /** Used to reset the name field */
-    long NAME        = 0x1;
+    long NAME = 0x1;
     /** Used to reset the color field */
-    long COLOR       = 0x2;
+    long COLOR = 0x2;
     /** Used to reset the permission field */
-    long PERMISSION  = 0x4;
+    long PERMISSION = 0x4;
     /** Used to reset the hoisted field */
-    long HOIST       = 0x8;
+    long HOIST = 0x8;
     /** Used to reset the mentionable field */
     long MENTIONABLE = 0x10;
 
@@ -120,8 +119,7 @@ public interface RoleManager extends Manager<RoleManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getRole().getGuild();
     }
 
@@ -185,8 +183,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setPermissions(@Nonnull Permission... permissions)
-    {
+    default RoleManager setPermissions(@Nonnull Permission... permissions) {
         Checks.notNull(permissions, "Permissions");
         return setPermissions(Arrays.asList(permissions));
     }
@@ -214,8 +211,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setPermissions(@Nonnull Collection<Permission> permissions)
-    {
+    default RoleManager setPermissions(@Nonnull Collection<Permission> permissions) {
         Checks.noneNull(permissions, "Permissions");
         return setPermissions(Permission.getRaw(permissions));
     }
@@ -230,8 +226,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager setColor(@Nullable Color color)
-    {
+    default RoleManager setColor(@Nullable Color color) {
         return setColor(color == null ? Role.DEFAULT_COLOR_RAW : color.getRGB());
     }
 
@@ -293,8 +288,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager givePermissions(@Nonnull Permission... perms)
-    {
+    default RoleManager givePermissions(@Nonnull Permission... perms) {
         Checks.notNull(perms, "Permissions");
         return givePermissions(Arrays.asList(perms));
     }
@@ -342,8 +336,7 @@ public interface RoleManager extends Manager<RoleManager>
      */
     @Nonnull
     @CheckReturnValue
-    default RoleManager revokePermissions(@Nonnull Permission... perms)
-    {
+    default RoleManager revokePermissions(@Nonnull Permission... perms) {
         Checks.notNull(perms, "Permissions");
         return revokePermissions(Arrays.asList(perms));
     }

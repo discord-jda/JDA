@@ -48,8 +48,7 @@ import java.util.List;
  * @see   Guild#getMembersWithRoles(Role...)
  * @see   Guild#getMembers()
  */
-public interface Member extends IMentionable, IPermissionHolder
-{
+public interface Member extends IMentionable, IPermissionHolder {
     /**
      * The user wrapped by this Entity.
      *
@@ -106,7 +105,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The boosting time, or null if the member is not boosting
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nullable
     OffsetDateTime getTimeBoosted();
@@ -164,7 +163,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return The status for that specific client or OFFLINE
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     OnlineStatus getOnlineStatus(@Nonnull ClientType type);
@@ -183,7 +182,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return EnumSet of all active {@link net.dv8tion.jda.api.entities.ClientType ClientTypes}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     EnumSet<ClientType> getActiveClients();
@@ -314,7 +313,7 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return True, if this member hasn't passed the guild's Membership Screening requirements
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Incubating
     boolean isPending();
@@ -369,12 +368,11 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(int delDays)
-    {
+    default AuditableRestAction<Void> ban(int delDays) {
         return getGuild().ban(this, delDays);
     }
 
@@ -418,12 +416,11 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> ban(int delDays, @Nullable String reason)
-    {
+    default AuditableRestAction<Void> ban(int delDays, @Nullable String reason) {
         return getGuild().ban(this, delDays, reason);
     }
 
@@ -452,12 +449,11 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick()
-    {
+    default AuditableRestAction<Void> kick() {
         return getGuild().kick(this);
     }
 
@@ -491,12 +487,11 @@ public interface Member extends IMentionable, IPermissionHolder
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *         Kicks the provided Member from the current Guild
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> kick(@Nullable String reason)
-    {
+    default AuditableRestAction<Void> kick(@Nullable String reason) {
         return getGuild().kick(this, reason);
     }
 
@@ -530,12 +525,11 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> mute(boolean mute)
-    {
+    default AuditableRestAction<Void> mute(boolean mute) {
         return getGuild().mute(this, mute);
     }
 
@@ -568,12 +562,11 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> deafen(boolean deafen)
-    {
+    default AuditableRestAction<Void> deafen(boolean deafen) {
         return getGuild().deafen(this, deafen);
     }
 
@@ -612,12 +605,11 @@ public interface Member extends IMentionable, IPermissionHolder
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
-     * @since  4.0.0
+     * @since 4.0.0
      */
     @Nonnull
     @CheckReturnValue
-    default AuditableRestAction<Void> modifyNickname(@Nullable String nickname)
-    {
+    default AuditableRestAction<Void> modifyNickname(@Nullable String nickname) {
         return getGuild().modifyNickname(this, nickname);
     }
 }

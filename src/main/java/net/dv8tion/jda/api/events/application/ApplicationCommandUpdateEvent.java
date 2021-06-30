@@ -30,10 +30,8 @@ import javax.annotation.Nullable;
  *
  * <p>This is fired for commands from any application.
  */
-public class ApplicationCommandUpdateEvent extends GenericApplicationCommandEvent
-{
-    public ApplicationCommandUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)
-    {
+public class ApplicationCommandUpdateEvent extends GenericApplicationCommandEvent {
+    public ApplicationCommandUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild) {
         super(api, responseNumber, command, guild);
     }
 }

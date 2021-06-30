@@ -21,8 +21,7 @@ import javax.annotation.Nonnull;
  * Represents the different types of {@link net.dv8tion.jda.api.entities.Message Messages} that can be received from Discord.
  * <br>A normal text based message is {@link #DEFAULT}.
  */
-public enum MessageType
-{
+public enum MessageType {
     /**
      * The normal text messages received when a user or bot sends a Message.
      */
@@ -127,13 +126,11 @@ public enum MessageType
     private final int id;
     private final boolean system;
 
-    MessageType(int id)
-    {
+    MessageType(int id) {
         this(id, true); // true as default because the majority are system
     }
 
-    MessageType(int id, boolean system)
-    {
+    MessageType(int id, boolean system) {
         this.id = id;
         this.system = system;
     }
@@ -143,8 +140,7 @@ public enum MessageType
      *
      * @return the Discord id key.
      */
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
@@ -155,8 +151,7 @@ public enum MessageType
      *
      * @return True, if this type is for a system message
      */
-    public boolean isSystem()
-    {
+    public boolean isSystem() {
         return system;
     }
 
@@ -170,10 +165,8 @@ public enum MessageType
      * @return A MessageType with the same Discord id key as the one provided, or {@link #UNKNOWN}.
      */
     @Nonnull
-    public static MessageType fromId(int id)
-    {
-        for (MessageType type : values())
-        {
+    public static MessageType fromId(int id) {
+        for (MessageType type : values()) {
             if (type.id == id)
                 return type;
         }

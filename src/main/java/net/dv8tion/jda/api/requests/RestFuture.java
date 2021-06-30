@@ -25,34 +25,29 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
 
-public class RestFuture<T> extends CompletableFuture<T>
-{
+public class RestFuture<T> extends CompletableFuture<T> {
     final Request<T> request;
 
     public RestFuture(final RestActionImpl<T> restAction, final boolean shouldQueue,
                       final BooleanSupplier checks, final RequestBody data, final Object rawData, final long deadline, final boolean priority,
-                      final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers)
-    {
+                      final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers) {
         this.request = new Request<>(restAction, this::complete, this::completeExceptionally,
-                                     checks, shouldQueue, data, rawData, deadline, priority, route, headers);
+                checks, shouldQueue, data, rawData, deadline, priority, route, headers);
         ((JDAImpl) restAction.getJDA()).getRequester().request(this.request);
     }
 
-    public RestFuture(final T t)
-    {
+    public RestFuture(final T t) {
         complete(t);
         this.request = null;
     }
 
-    public RestFuture(final Throwable t)
-    {
+    public RestFuture(final Throwable t) {
         completeExceptionally(t);
         this.request = null;
     }
 
     @Override
-    public boolean cancel(final boolean mayInterrupt)
-    {
+    public boolean cancel(final boolean mayInterrupt) {
         if (this.request != null)
             this.request.cancel();
 

@@ -35,26 +35,22 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl implements UpdateInteractionAction
-{
+public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl implements UpdateInteractionAction {
     private List<String> retainedFiles = null;
     private List<MessageEmbed> embeds = null;
     private List<ActionRow> components = null;
     private String content = null;
 
-    public UpdateInteractionActionImpl(InteractionHookImpl hook)
-    {
+    public UpdateInteractionActionImpl(InteractionHookImpl hook) {
         super(hook);
     }
 
-    private boolean isEmpty()
-    {
+    private boolean isEmpty() {
         return content == null && embeds == null && components == null && files.isEmpty();
     }
 
     @Override
-    protected DataObject toData()
-    {
+    protected DataObject toData() {
         DataObject json = DataObject.empty();
         if (isEmpty())
             return json.put("type", ResponseType.DEFERRED_MESSAGE_UPDATE.getRaw());
@@ -66,20 +62,18 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
             data.put("embeds", DataArray.fromCollection(embeds));
         if (components != null)
             data.put("components", DataArray.fromCollection(components));
-        if (retainedFiles != null)
-        {
+        if (retainedFiles != null) {
             json.put("attachments", DataArray.fromCollection(
-                retainedFiles.stream()
-                    .map(id -> DataObject.empty().put("id", id))
-                    .collect(Collectors.toList()))
+                    retainedFiles.stream()
+                            .map(id -> DataObject.empty().put("id", id))
+                            .collect(Collectors.toList()))
             );
         }
         json.put("data", data);
         return json;
     }
 
-    public UpdateInteractionAction applyMessage(Message message)
-    {
+    public UpdateInteractionAction applyMessage(Message message) {
         this.content = message.getContentRaw();
         this.embeds = new ArrayList<>(message.getEmbeds());
         this.components = new ArrayList<>(message.getActionRows());
@@ -88,12 +82,10 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
 
     @Nonnull
     @Override
-    public UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public UpdateInteractionAction setEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         Checks.check(embeds.size() <= 10, "Cannot have more than 10 embeds per message!");
-        for (MessageEmbed embed : embeds)
-        {
+        for (MessageEmbed embed : embeds) {
             Checks.check(embed.isSendable(),
                     "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
                     MessageEmbed.EMBED_MAX_LENGTH_BOT);
@@ -107,8 +99,7 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
 
     @Nonnull
     @Override
-    public UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows)
-    {
+    public UpdateInteractionAction setActionRows(@Nonnull ActionRow... rows) {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length <= 5, "Can only have 5 action rows per message!");
         this.components = new ArrayList<>();
@@ -118,8 +109,7 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
 
     @Nonnull
     @Override
-    public UpdateInteractionAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    public UpdateInteractionAction addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(data, "Data");
         Checks.notEmpty(name, "Name");
         Checks.noneNull(options, "Options");
@@ -143,8 +133,7 @@ public class UpdateInteractionActionImpl extends InteractionCallbackActionImpl i
 
     @Nonnull
     @Override
-    public UpdateInteractionAction setContent(@Nullable String content)
-    {
+    public UpdateInteractionAction setContent(@Nullable String content) {
         if (content != null)
             Checks.notLonger(content, Message.MAX_CONTENT_LENGTH, "Content");
         this.content = content == null ? "" : content;

@@ -26,10 +26,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the old Category
  */
-public class CategoryDeleteEvent extends GenericCategoryEvent
-{
-    public CategoryDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category)
-    {
+public class CategoryDeleteEvent extends GenericCategoryEvent {
+    public CategoryDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category) {
         super(api, responseNumber, category);
     }
 }

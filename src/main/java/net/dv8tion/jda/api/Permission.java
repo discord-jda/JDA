@@ -26,52 +26,51 @@ import java.util.stream.Collectors;
 /**
  * Represents the bit offsets used by Discord for Permissions.
  */
-public enum Permission
-{
+public enum Permission {
     CREATE_INSTANT_INVITE(0, true, true, "Create Instant Invite"),
-    KICK_MEMBERS(         1, true, false, "Kick Members"),
-    BAN_MEMBERS(          2, true, false, "Ban Members"),
-    ADMINISTRATOR(        3, true, false, "Administrator"),
-    MANAGE_CHANNEL(       4, true, true, "Manage Channels"),
-    MANAGE_SERVER(        5, true, false, "Manage Server"),
-    MESSAGE_ADD_REACTION( 6, true, true, "Add Reactions"),
-    VIEW_AUDIT_LOGS(      7, true, false, "View Audit Logs"),
-    PRIORITY_SPEAKER(     8, true, true, "Priority Speaker"),
+    KICK_MEMBERS(1, true, false, "Kick Members"),
+    BAN_MEMBERS(2, true, false, "Ban Members"),
+    ADMINISTRATOR(3, true, false, "Administrator"),
+    MANAGE_CHANNEL(4, true, true, "Manage Channels"),
+    MANAGE_SERVER(5, true, false, "Manage Server"),
+    MESSAGE_ADD_REACTION(6, true, true, "Add Reactions"),
+    VIEW_AUDIT_LOGS(7, true, false, "View Audit Logs"),
+    PRIORITY_SPEAKER(8, true, true, "Priority Speaker"),
     VIEW_GUILD_INSIGHTS(19, true, false, "View Server Insights"),
 
     // Applicable to all channel types
-    VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
+    VIEW_CHANNEL(10, true, true, "Read Text Channels & See Voice Channels"),
 
     // Text Permissions
-    MESSAGE_READ(            10, true, true, "Read Messages"),
-    MESSAGE_WRITE(           11, true, true, "Send Messages"),
-    MESSAGE_TTS(             12, true, true, "Send TTS Messages"),
-    MESSAGE_MANAGE(          13, true, true, "Manage Messages"),
-    MESSAGE_EMBED_LINKS(     14, true, true, "Embed Links"),
-    MESSAGE_ATTACH_FILES(    15, true, true, "Attach Files"),
-    MESSAGE_HISTORY(         16, true, true, "Read History"),
+    MESSAGE_READ(10, true, true, "Read Messages"),
+    MESSAGE_WRITE(11, true, true, "Send Messages"),
+    MESSAGE_TTS(12, true, true, "Send TTS Messages"),
+    MESSAGE_MANAGE(13, true, true, "Manage Messages"),
+    MESSAGE_EMBED_LINKS(14, true, true, "Embed Links"),
+    MESSAGE_ATTACH_FILES(15, true, true, "Attach Files"),
+    MESSAGE_HISTORY(16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
-    MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
-    USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
+    MESSAGE_EXT_EMOJI(18, true, true, "Use External Emojis"),
+    USE_SLASH_COMMANDS(31, true, true, "Use Slash Commands"),
 
     // Voice Permissions
-    VOICE_STREAM(      9, true, true, "Video"),
-    VOICE_CONNECT(    20, true, true, "Connect"),
-    VOICE_SPEAK(      21, true, true, "Speak"),
+    VOICE_STREAM(9, true, true, "Video"),
+    VOICE_CONNECT(20, true, true, "Connect"),
+    VOICE_SPEAK(21, true, true, "Speak"),
     VOICE_MUTE_OTHERS(22, true, true, "Mute Members"),
     VOICE_DEAF_OTHERS(23, true, true, "Deafen Members"),
     VOICE_MOVE_OTHERS(24, true, true, "Move Members"),
-    VOICE_USE_VAD(    25, true, true, "Use Voice Activity"),
+    VOICE_USE_VAD(25, true, true, "Use Voice Activity"),
 
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
 
-    MANAGE_ROLES(      28, true, false, "Manage Roles"),
+    MANAGE_ROLES(28, true, false, "Manage Roles"),
     MANAGE_PERMISSIONS(28, false, true, "Manage Permissions"),
-    MANAGE_WEBHOOKS(   29, true, true, "Manage Webhooks"),
-    MANAGE_EMOTES(     30, true, false, "Manage Emojis"),
+    MANAGE_WEBHOOKS(29, true, true, "Manage Webhooks"),
+    MANAGE_EMOTES(30, true, false, "Manage Emojis"),
 
-    REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
+    REQUEST_TO_SPEAK(32, true, true, "Request to Speak"),
 
     UNKNOWN(-1, false, false, "Unknown");
 
@@ -103,23 +102,22 @@ public enum Permission
      */
     public static final long ALL_TEXT_PERMISSIONS
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS,
-                                MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_SLASH_COMMANDS);
+            MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
+            MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_SLASH_COMMANDS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
      */
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER, REQUEST_TO_SPEAK);
+            VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER, REQUEST_TO_SPEAK);
 
     private final int offset;
     private final long raw;
     private final boolean isGuild, isChannel;
     private final String name;
 
-    Permission(int offset, boolean isGuild, boolean isChannel, @Nonnull String name)
-    {
+    Permission(int offset, boolean isGuild, boolean isChannel, @Nonnull String name) {
         this.offset = offset;
         this.raw = 1L << offset;
         this.isGuild = isGuild;
@@ -133,8 +131,7 @@ public enum Permission
      * @return The readable name of this {@link net.dv8tion.jda.api.Permission Permission}.
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
@@ -145,8 +142,7 @@ public enum Permission
      *
      * @return The offset that represents this {@link net.dv8tion.jda.api.Permission Permission}.
      */
-    public int getOffset()
-    {
+    public int getOffset() {
         return offset;
     }
 
@@ -156,8 +152,7 @@ public enum Permission
      *
      * @return The raw value of this specific permission.
      */
-    public long getRawValue()
-    {
+    public long getRawValue() {
         return raw;
     }
 
@@ -167,8 +162,7 @@ public enum Permission
      *
      * @return True if this permission is present at the Guild level.
      */
-    public boolean isGuild()
-    {
+    public boolean isGuild() {
         return isGuild;
     }
 
@@ -178,8 +172,7 @@ public enum Permission
      *
      * @return True if this permission is present at the Channel level.
      */
-    public boolean isChannel()
-    {
+    public boolean isChannel() {
         return isChannel;
     }
 
@@ -188,8 +181,7 @@ public enum Permission
      *
      * @return True, if and only if this permission can only be applied to text channels
      */
-    public boolean isText()
-    {
+    public boolean isText() {
         return (raw & ALL_TEXT_PERMISSIONS) == raw;
     }
 
@@ -198,8 +190,7 @@ public enum Permission
      *
      * @return True, if and only if this permission can only be applied to voice channels
      */
-    public boolean isVoice()
-    {
+    public boolean isVoice() {
         return (raw & ALL_VOICE_PERMISSIONS) == raw;
     }
 
@@ -214,10 +205,8 @@ public enum Permission
      * @return {@link net.dv8tion.jda.api.Permission Permission} relating to the provided offset.
      */
     @Nonnull
-    public static Permission getFromOffset(int offset)
-    {
-        for (Permission perm : values())
-        {
+    public static Permission getFromOffset(int offset) {
+        for (Permission perm : values()) {
             if (perm.offset == offset)
                 return perm;
         }
@@ -238,13 +227,11 @@ public enum Permission
      *
      */
     @Nonnull
-    public static EnumSet<Permission> getPermissions(long permissions)
-    {
+    public static EnumSet<Permission> getPermissions(long permissions) {
         if (permissions == 0)
             return EnumSet.noneOf(Permission.class);
         EnumSet<Permission> perms = EnumSet.noneOf(Permission.class);
-        for (Permission perm : Permission.values())
-        {
+        for (Permission perm : Permission.values()) {
             if (perm != UNKNOWN && (permissions & perm.raw) == perm.raw)
                 perms.add(perm);
         }
@@ -260,11 +247,9 @@ public enum Permission
      *
      * @return Unsigned long representing the provided permissions.
      */
-    public static long getRaw(@Nonnull Permission... permissions)
-    {
+    public static long getRaw(@Nonnull Permission... permissions) {
         long raw = 0;
-        for (Permission perm : permissions)
-        {
+        for (Permission perm : permissions) {
             if (perm != null && perm != UNKNOWN)
                 raw |= perm.raw;
         }
@@ -284,8 +269,7 @@ public enum Permission
      *
      * @see    java.util.EnumSet EnumSet
      */
-    public static long getRaw(@Nonnull Collection<Permission> permissions)
-    {
+    public static long getRaw(@Nonnull Collection<Permission> permissions) {
         Checks.notNull(permissions, "Permission Collection");
 
         return getRaw(permissions.toArray(EMPTY_PERMISSIONS));

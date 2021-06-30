@@ -37,68 +37,58 @@ import javax.annotation.Nullable;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class ButtonClickEvent extends GenericInteractionCreateEvent implements ButtonInteraction
-{
+public class ButtonClickEvent extends GenericInteractionCreateEvent implements ButtonInteraction {
     private final ButtonInteraction interaction;
 
-    public ButtonClickEvent(@Nonnull JDA api, long responseNumber, @Nonnull ButtonInteraction interaction)
-    {
+    public ButtonClickEvent(@Nonnull JDA api, long responseNumber, @Nonnull ButtonInteraction interaction) {
         super(api, responseNumber, interaction);
         this.interaction = interaction;
     }
 
     @Nonnull
     @Override
-    public MessageChannel getChannel()
-    {
+    public MessageChannel getChannel() {
         return interaction.getChannel();
     }
 
     @Nonnull
     @Override
-    public UpdateInteractionAction deferEdit()
-    {
+    public UpdateInteractionAction deferEdit() {
         return interaction.deferEdit();
     }
 
     @Nonnull
     @Override
-    public ButtonInteraction getInteraction()
-    {
+    public ButtonInteraction getInteraction() {
         return interaction;
     }
 
     @Nonnull
     @Override
-    public String getComponentId()
-    {
+    public String getComponentId() {
         return interaction.getComponentId();
     }
 
     @Nullable
     @Override
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return interaction.getMessage();
     }
 
     @Override
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return interaction.getMessageIdLong();
     }
 
     @Nonnull
     @Override
-    public Component.Type getComponentType()
-    {
+    public Component.Type getComponentType() {
         return interaction.getComponentType();
     }
 
     @Nullable
     @Override
-    public Button getButton()
-    {
+    public Button getButton() {
         return interaction.getButton();
     }
 }

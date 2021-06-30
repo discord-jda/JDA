@@ -32,8 +32,7 @@ import java.util.Collection;
 /**
  * A {@link InteractionCallbackAction} which can be used to edit the message for an interaction.
  */
-public interface UpdateInteractionAction extends InteractionCallbackAction
-{
+public interface UpdateInteractionAction extends InteractionCallbackAction {
     /**
      * Set the new content for this message.
      *
@@ -61,8 +60,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default UpdateInteractionAction setEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         return setEmbeds(Arrays.asList(embeds));
     }
@@ -95,8 +93,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
-    {
+    default UpdateInteractionAction setActionRows(@Nonnull Collection<? extends ActionRow> rows) {
         Checks.noneNull(rows, "ActionRows");
         return setActionRows(rows.toArray(new ActionRow[0]));
     }
@@ -129,8 +126,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRow(@Nonnull Component... components)
-    {
+    default UpdateInteractionAction setActionRow(@Nonnull Component... components) {
         return setActionRows(ActionRow.of(components));
     }
 
@@ -147,8 +143,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction setActionRow(@Nonnull Collection<? extends Component> components)
-    {
+    default UpdateInteractionAction setActionRow(@Nonnull Collection<? extends Component> components) {
         return setActionRows(ActionRow.of(components));
     }
 
@@ -169,8 +164,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
     }
@@ -206,16 +200,13 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        try
-        {
+    default UpdateInteractionAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
+        try {
             Checks.notNull(file, "File");
             Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
             return addFile(new FileInputStream(file), name, options);
         }
-        catch (FileNotFoundException e)
-        {
+        catch (FileNotFoundException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -240,8 +231,7 @@ public interface UpdateInteractionAction extends InteractionCallbackAction
      */
     @Nonnull
     @CheckReturnValue
-    default UpdateInteractionAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default UpdateInteractionAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
     }

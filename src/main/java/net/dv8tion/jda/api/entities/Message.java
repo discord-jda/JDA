@@ -115,8 +115,7 @@ import java.util.stream.Collectors;
  * @see MessageChannel#deleteMessageById(String)
  * @see MessageChannel#editMessageById(String, CharSequence)
  */
-public interface Message extends ISnowflake, Formattable
-{
+public interface Message extends ISnowflake, Formattable {
     /**
      * The maximum sendable file size (8 MiB)
      *
@@ -145,13 +144,13 @@ public interface Message extends ISnowflake, Formattable
      * @see MessageAction#append(CharSequence) MessageAction.append(...)
      */
     int MAX_CONTENT_LENGTH = 2000;
-    
-   /**
-    * The maximum amount of reactions that can be added to one message ({@value})
-    * 
-    * @see Message#addReaction(String)
-    * @see Message#addReaction(net.dv8tion.jda.api.entities.Emote)
-    */
+
+    /**
+     * The maximum amount of reactions that can be added to one message ({@value})
+     *
+     * @see Message#addReaction(String)
+     * @see Message#addReaction(net.dv8tion.jda.api.entities.Emote)
+     */
     int MAX_REACTIONS = 20;
 
     /**
@@ -163,10 +162,10 @@ public interface Message extends ISnowflake, Formattable
      */
     Pattern INVITE_PATTERN = Pattern.compile(
             "(?:https?://)?" +                     // Scheme
-            "(?:\\w+\\.)?" +                       // Subdomain
-            "discord(?:(?:app)?\\.com" +           // Discord domain
-            "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
-            "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
+                    "(?:\\w+\\.)?" +                       // Subdomain
+                    "discord(?:(?:app)?\\.com" +           // Discord domain
+                    "/invite|\\.gg)/(?<code>[a-z0-9-]+)" + // Path
+                    "(?:\\?\\S*)?(?:#\\S*)?",              // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
     /**
@@ -208,10 +207,10 @@ public interface Message extends ISnowflake, Formattable
      */
     Pattern JUMP_URL_PATTERN = Pattern.compile(
             "(?:https?://)?" +                                             // Scheme
-            "(?:\\w+\\.)?" +                                               // Subdomain
-            "discord(?:app)?\\.com" +                                      // Discord domain
-            "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
-            "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
+                    "(?:\\w+\\.)?" +                                               // Subdomain
+                    "discord(?:app)?\\.com" +                                      // Discord domain
+                    "/channels/(?<guild>\\d+)/(?<channel>\\d+)/(?<message>\\d+)" + // Path
+                    "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
     /**
@@ -386,7 +385,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of mentioned Members
      *
-     * @since  3.4.0
+     * @since 3.4.0
      */
     @Nonnull
     List<Member> getMentionedMembers(@Nonnull Guild guild);
@@ -405,7 +404,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of mentioned Members
      *
-     * @since  3.4.0
+     * @since 3.4.0
      */
     @Nonnull
     List<Member> getMentionedMembers();
@@ -428,7 +427,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return Immutable list of filtered {@link net.dv8tion.jda.api.entities.IMentionable IMentionable} instances
      *
-     * @since  3.4.0
+     * @since 3.4.0
      */
     @Nonnull
     List<IMentionable> getMentions(@Nonnull MentionType... types);
@@ -604,7 +603,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The validation nonce
      *
-     * @since  3.4.0
+     * @since 3.4.0
      *
      * @see    net.dv8tion.jda.api.MessageBuilder#setNonce(String)
      * @see    <a href="https://en.wikipedia.org/wiki/Cryptographic_nonce" target="_blank">Cryptographic Nonce - Wikipedia</a>
@@ -637,8 +636,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
      */
-    default boolean isFromGuild()
-    {
+    default boolean isFromGuild() {
         return getChannelType().isGuild();
     }
 
@@ -797,8 +795,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons}
      */
     @Nonnull
-    default List<Button> getButtons()
-    {
+    default List<Button> getButtons() {
         return getActionRows().stream()
                 .map(ActionRow::getButtons)
                 .flatMap(List::stream)
@@ -817,8 +814,7 @@ public interface Message extends ISnowflake, Formattable
      * @return The {@link Button} or null of no button with that ID is present on this message
      */
     @Nullable
-    default Button getButtonById(@Nonnull String id)
-    {
+    default Button getButtonById(@Nonnull String id) {
         Checks.notNull(id, "Button ID");
         return getButtons().stream()
                 .filter(it -> id.equals(it.getId()))
@@ -839,8 +835,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Immutable {@link List} of {@link Button Buttons} with the specified label
      */
     @Nonnull
-    default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase)
-    {
+    default List<Button> getButtonsByLabel(@Nonnull String label, boolean ignoreCase) {
         Checks.notNull(label, "Label");
         Predicate<Button> filter;
         if (ignoreCase)
@@ -1014,8 +1009,7 @@ public interface Message extends ISnowflake, Formattable
     @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("editMessageEmbeds(newEmbed)")
     @DeprecatedSince("4.4.0")
-    default MessageAction editMessage(@Nonnull MessageEmbed newContent)
-    {
+    default MessageAction editMessage(@Nonnull MessageEmbed newContent) {
         return editMessageEmbeds(newContent);
     }
 
@@ -1091,8 +1085,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editMessageEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default MessageAction editMessageEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbeds");
         return editMessageEmbeds(Arrays.asList(embeds));
     }
@@ -1199,12 +1192,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull CharSequence content)
-    {
+    default MessageAction reply(@Nonnull CharSequence content) {
         return getChannel().sendMessage(content).reference(this);
     }
 
@@ -1222,7 +1214,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      *
      * @deprecated Use {@link #replyEmbeds(MessageEmbed, MessageEmbed...)} instead
      */
@@ -1232,8 +1224,7 @@ public interface Message extends ISnowflake, Formattable
     @ForRemoval(deadline = "5.0.0")
     @ReplaceWith("replyEmbeds(content)")
     @DeprecatedSince("4.4.0")
-    default MessageAction reply(@Nonnull MessageEmbed content)
-    {
+    default MessageAction reply(@Nonnull MessageEmbed content) {
         return getChannel().sendMessage(content).reference(this);
     }
 
@@ -1259,8 +1250,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other)
-    {
+    default MessageAction replyEmbeds(@Nonnull MessageEmbed embed, @Nonnull MessageEmbed... other) {
         Checks.notNull(embed, "MessageEmbeds");
         Checks.noneNull(other, "MessageEmbeds");
         List<MessageEmbed> embeds = new ArrayList<>(1 + other.length);
@@ -1289,8 +1279,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    default MessageAction replyEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         return getChannel().sendMessageEmbeds(embeds).reference(this);
     }
 
@@ -1308,12 +1297,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull Message content)
-    {
+    default MessageAction reply(@Nonnull Message content) {
         return getChannel().sendMessage(content).reference(this);
     }
 
@@ -1333,12 +1321,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction replyFormat(@Nonnull String format, @Nonnull Object... args)
-    {
+    default MessageAction replyFormat(@Nonnull String format, @Nonnull Object... args) {
         return getChannel().sendMessageFormat(format, args).reference(this);
     }
 
@@ -1358,12 +1345,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default MessageAction reply(@Nonnull File file, @Nonnull AttachmentOption... options) {
         return getChannel().sendFile(file, options).reference(this);
     }
 
@@ -1385,12 +1371,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull File data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default MessageAction reply(@Nonnull File data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return getChannel().sendFile(data, name, options).reference(this);
     }
 
@@ -1412,12 +1397,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default MessageAction reply(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return getChannel().sendFile(data, name, options).reference(this);
     }
 
@@ -1439,12 +1423,11 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link MessageAction} Providing the {@link Message} created from this upload.
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default MessageAction reply(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         return getChannel().sendFile(data, name, options).reference(this);
     }
 
@@ -1500,7 +1483,7 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
      *
-     * @return  the corresponding JDA instance
+     * @return the corresponding JDA instance
      */
     @Nonnull
     JDA getJDA();
@@ -1809,7 +1792,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1848,7 +1831,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link RestAction}
      *
-     * @since  4.2.0
+     * @since 4.2.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1897,7 +1880,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -1959,7 +1942,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2016,7 +1999,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2079,7 +2062,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2120,7 +2103,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2163,7 +2146,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nonnull
     @CheckReturnValue
@@ -2187,7 +2170,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nullable
     @CheckReturnValue
@@ -2211,7 +2194,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nullable
     @CheckReturnValue
@@ -2233,7 +2216,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return The {@link net.dv8tion.jda.api.entities.MessageReaction.ReactionEmote ReactionEmote} of this message or null if not present.
      *
-     * @since  4.1.0
+     * @since 4.1.0
      */
     @Nullable
     @CheckReturnValue
@@ -2314,7 +2297,7 @@ public interface Message extends ISnowflake, Formattable
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction} - Type: {@link Message}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
@@ -2362,8 +2345,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
      */
-    enum MentionType
-    {
+    enum MentionType {
         /**
          * Represents a mention for a {@link net.dv8tion.jda.api.entities.User User}/{@link net.dv8tion.jda.api.entities.Member Member}
          * <br>The first and only group matches the id of the mention.
@@ -2396,15 +2378,13 @@ public interface Message extends ISnowflake, Formattable
         private final Pattern pattern;
         private final String parseKey;
 
-        MentionType(String regex, String parseKey)
-        {
+        MentionType(String regex, String parseKey) {
             this.pattern = Pattern.compile(regex);
             this.parseKey = parseKey;
         }
 
         @Nonnull
-        public Pattern getPattern()
-        {
+        public Pattern getPattern() {
             return pattern;
         }
 
@@ -2417,8 +2397,7 @@ public interface Message extends ISnowflake, Formattable
          * @return Nullable group key for mention parsing
          */
         @Nullable
-        public String getParseKey()
-        {
+        public String getParseKey() {
             return parseKey;
         }
     }
@@ -2428,8 +2407,7 @@ public interface Message extends ISnowflake, Formattable
      * <p>
      * Note: The Values defined in this Enum are not considered final and only represent the current State of <i>known</i> Flags.
      */
-    enum MessageFlag
-    {
+    enum MessageFlag {
         /**
          * The Message has been published to subscribed Channels (via Channel Following)
          */
@@ -2455,8 +2433,7 @@ public interface Message extends ISnowflake, Formattable
 
         private final int value;
 
-        MessageFlag(int offset)
-        {
+        MessageFlag(int offset) {
             this.value = 1 << offset;
         }
 
@@ -2464,8 +2441,7 @@ public interface Message extends ISnowflake, Formattable
          * Returns the value of the MessageFlag as represented in the bitfield. It is always a power of 2 (single bit)
          * @return Non-Zero bit value of the field
          */
-        public int getValue()
-        {
+        public int getValue() {
             return value;
         }
 
@@ -2477,11 +2453,10 @@ public interface Message extends ISnowflake, Formattable
          * @return Never-Null EnumSet of MessageFlags being found in the bitfield
          */
         @Nonnull
-        public static EnumSet<MessageFlag> fromBitField(int bitfield)
-        {
+        public static EnumSet<MessageFlag> fromBitField(int bitfield) {
             Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
-                .filter(e -> (e.value & bitfield) > 0)
-                .collect(Collectors.toSet());
+                    .filter(e -> (e.value & bitfield) > 0)
+                    .collect(Collectors.toSet());
             return set.isEmpty() ? EnumSet.noneOf(MessageFlag.class) : EnumSet.copyOf(set);
         }
 
@@ -2494,12 +2469,10 @@ public interface Message extends ISnowflake, Formattable
          *         If the provided Collection is {@code null}
          * @return Integer value of the bitfield representing the given MessageFlags
          */
-        public static int toBitField(@Nonnull Collection<MessageFlag> coll)
-        {
+        public static int toBitField(@Nonnull Collection<MessageFlag> coll) {
             Checks.notNull(coll, "Collection");
             int flags = 0;
-            for (MessageFlag messageFlag : coll)
-            {
+            for (MessageFlag messageFlag : coll) {
                 flags |= messageFlag.value;
             }
             return flags;
@@ -2509,8 +2482,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Represents a {@link net.dv8tion.jda.api.entities.Message Message} file attachment.
      */
-    class Attachment implements ISnowflake
-    {
+    class Attachment implements ISnowflake {
         private static final Set<String> IMAGE_EXTENSIONS = new HashSet<>(Arrays.asList("jpg",
                 "jpeg", "png", "gif", "webp", "tiff", "svg", "apng"));
         private static final Set<String> VIDEO_EXTENSIONS = new HashSet<>(Arrays.asList("webm",
@@ -2526,8 +2498,7 @@ public interface Message extends ISnowflake, Formattable
 
         private final JDAImpl jda;
 
-        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, JDAImpl jda)
-        {
+        public Attachment(long id, String url, String proxyUrl, String fileName, String contentType, int size, int height, int width, JDAImpl jda) {
             this.id = id;
             this.url = url;
             this.proxyUrl = proxyUrl;
@@ -2545,14 +2516,12 @@ public interface Message extends ISnowflake, Formattable
          * @return The corresponding JDA instance for this Attachment
          */
         @Nonnull
-        public JDA getJDA()
-        {
+        public JDA getJDA() {
             return jda;
         }
 
         @Override
-        public long getIdLong()
-        {
+        public long getIdLong() {
             return id;
         }
 
@@ -2562,8 +2531,7 @@ public interface Message extends ISnowflake, Formattable
          * @return Non-null String containing the Attachment URL.
          */
         @Nonnull
-        public String getUrl()
-        {
+        public String getUrl() {
             return url;
         }
 
@@ -2573,8 +2541,7 @@ public interface Message extends ISnowflake, Formattable
          * @return Non-null String containing the proxied Attachment url.
          */
         @Nonnull
-        public String getProxyUrl()
-        {
+        public String getProxyUrl() {
             return proxyUrl;
         }
 
@@ -2584,8 +2551,7 @@ public interface Message extends ISnowflake, Formattable
          * @return Non-null String containing the Attachment file name.
          */
         @Nonnull
-        public String getFileName()
-        {
+        public String getFileName() {
             return fileName;
         }
 
@@ -2597,8 +2563,7 @@ public interface Message extends ISnowflake, Formattable
          * @return Non-null String containing the Attachment file extension, or null if it can't be determined.
          */
         @Nullable
-        public String getFileExtension()
-        {
+        public String getFileExtension() {
             int index = fileName.lastIndexOf('.') + 1;
             return index == 0 || index == fileName.length() ? null : fileName.substring(index);
         }
@@ -2610,8 +2575,7 @@ public interface Message extends ISnowflake, Formattable
          * @return The content-type, or null if this isn't provided
          */
         @Nullable
-        public String getContentType()
-        {
+        public String getContentType() {
             return contentType;
         }
 
@@ -2649,20 +2613,18 @@ public interface Message extends ISnowflake, Formattable
             Request req = getRequest();
             OkHttpClient httpClient = getJDA().getHttpClient();
             httpClient.newCall(req).enqueue(FunctionalCallback
-                .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
-                .onSuccess((call, response) -> {
-                    if (response.isSuccessful())
-                    {
-                        InputStream body = IOUtil.getBody(response);
-                        if (!future.complete(body))
+                    .onFailure((call, e) -> future.completeExceptionally(new UncheckedIOException(e)))
+                    .onSuccess((call, response) -> {
+                        if (response.isSuccessful()) {
+                            InputStream body = IOUtil.getBody(response);
+                            if (!future.complete(body))
+                                IOUtil.silentClose(response);
+                        }
+                        else {
+                            future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
                             IOUtil.silentClose(response);
-                    }
-                    else
-                    {
-                        future.completeExceptionally(new HttpException(response.code() + ": " + response.message()));
-                        IOUtil.silentClose(response);
-                    }
-                }).build());
+                        }
+                    }).build());
             return future;
         }
 
@@ -2721,8 +2683,7 @@ public interface Message extends ISnowflake, Formattable
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
         @Nonnull
-        public CompletableFuture<File> downloadToFile(String path)
-        {
+        public CompletableFuture<File> downloadToFile(String path) {
             Checks.notNull(path, "Path");
             return downloadToFile(new File(path));
         }
@@ -2756,38 +2717,31 @@ public interface Message extends ISnowflake, Formattable
          */
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
-        public CompletableFuture<File> downloadToFile(File file)
-        {
+        public CompletableFuture<File> downloadToFile(File file) {
             Checks.notNull(file, "File");
-            try
-            {
+            try {
                 if (!file.exists())
                     file.createNewFile();
                 else
                     Checks.check(file.canWrite(), "Cannot write to file %s", file.getName());
             }
-            catch (IOException e)
-            {
+            catch (IOException e) {
                 throw new IllegalArgumentException("Cannot create file", e);
             }
 
             return retrieveInputStream().thenApplyAsync((stream) -> {
-                try (FileOutputStream out = new FileOutputStream(file))
-                {
+                try (FileOutputStream out = new FileOutputStream(file)) {
                     byte[] buf = new byte[1024];
                     int count;
-                    while ((count = stream.read(buf)) > 0)
-                    {
+                    while ((count = stream.read(buf)) > 0) {
                         out.write(buf, 0, count);
                     }
                     return file;
                 }
-                catch (IOException e)
-                {
+                catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
-                finally
-                {
+                finally {
                     IOUtil.silentClose(stream);
                 }
             }, getJDA().getCallbackPool());
@@ -2820,34 +2774,29 @@ public interface Message extends ISnowflake, Formattable
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link net.dv8tion.jda.api.entities.Icon}
          */
         @Nonnull
-        public CompletableFuture<Icon> retrieveAsIcon()
-        {
+        public CompletableFuture<Icon> retrieveAsIcon() {
             if (!isImage())
                 throw new IllegalStateException("Cannot create an Icon out of this attachment. This is not an image.");
             return retrieveInputStream().thenApplyAsync((stream) ->
             {
-                try
-                {
+                try {
                     return Icon.from(stream);
                 }
-                catch (IOException e)
-                {
+                catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
-                finally
-                {
+                finally {
                     IOUtil.silentClose(stream);
                 }
             }, getJDA().getCallbackPool());
         }
 
-        protected Request getRequest()
-        {
+        protected Request getRequest() {
             return new Request.Builder()
-                .url(getUrl())
-                .addHeader("user-agent", Requester.USER_AGENT)
-                .addHeader("accept-encoding", "gzip, deflate")
-                .build();
+                    .url(getUrl())
+                    .addHeader("user-agent", Requester.USER_AGENT)
+                    .addHeader("accept-encoding", "gzip, deflate")
+                    .build();
         }
 
         /**
@@ -2856,8 +2805,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return Positive int containing the size of the Attachment.
          */
-        public int getSize()
-        {
+        public int getSize() {
             return size;
         }
 
@@ -2867,8 +2815,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return int containing image/video Attachment height, or -1 if attachment is neither image nor video.
          */
-        public int getHeight()
-        {
+        public int getHeight() {
             return height;
         }
 
@@ -2878,8 +2825,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return int containing image/video Attachment width, or -1 if attachment is neither image nor video.
          */
-        public int getWidth()
-        {
+        public int getWidth() {
             return width;
         }
 
@@ -2889,8 +2835,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return True if this attachment is an image
          */
-        public boolean isImage()
-        {
+        public boolean isImage() {
             if (width < 0) return false; //if width is -1, so is height
             String extension = getFileExtension();
             return extension != null && IMAGE_EXTENSIONS.contains(extension.toLowerCase());
@@ -2902,8 +2847,7 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return True if this attachment is a video
          */
-        public boolean isVideo()
-        {
+        public boolean isVideo() {
             if (width < 0) return false; //if width is -1, so is height
             String extension = getFileExtension();
             return extension != null && VIDEO_EXTENSIONS.contains(extension.toLowerCase());
@@ -2915,10 +2859,9 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return True if this attachment is marked as spoiler
          *
-         * @since  4.2.1
+         * @since 4.2.1
          */
-        public boolean isSpoiler()
-        {
+        public boolean isSpoiler() {
             return getFileName().startsWith("SPOILER_");
         }
 

@@ -38,11 +38,9 @@ import javax.annotation.Nullable;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
  * </ul>
  */
-public class MessageReactionAddEvent extends GenericMessageReactionEvent
-{
+public class MessageReactionAddEvent extends GenericMessageReactionEvent {
     public MessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user,
-                                   @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
-    {
+                                   @Nullable Member member, @Nonnull MessageReaction reaction, long userId) {
         super(api, responseNumber, user, member, reaction, userId);
     }
 }

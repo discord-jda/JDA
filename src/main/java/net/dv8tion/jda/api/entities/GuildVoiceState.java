@@ -30,8 +30,7 @@ import java.time.OffsetDateTime;
  *
  * @see Member#getVoiceState()
  */
-public interface GuildVoiceState extends ISnowflake
-{
+public interface GuildVoiceState extends ISnowflake {
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this VoiceState
      *

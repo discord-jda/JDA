@@ -31,8 +31,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see GuildChannel#createInvite()
  */
-public interface InviteAction extends AuditableRestAction<Invite>
-{
+public interface InviteAction extends AuditableRestAction<Invite> {
     @Nonnull
     @Override
     InviteAction setCheck(@Nullable BooleanSupplier checks);

@@ -22,8 +22,7 @@ import net.dv8tion.jda.api.entities.Member;
  * ActionTypes for {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntry} instances
  * <br>Found via {@link net.dv8tion.jda.api.audit.AuditLogEntry#getType() AuditLogEntry.getType()}
  */
-public enum ActionType
-{
+public enum ActionType {
     /**
      * An Administrator updated {@link net.dv8tion.jda.api.entities.Guild Guild} information.
      *
@@ -152,7 +151,7 @@ public enum ActionType
     /**
      * An Administrator has kicked a member.
      */
-    KICK( 20, TargetType.MEMBER),
+    KICK(20, TargetType.MEMBER),
 
     /**
      * An Administrator has pruned members for inactivity.
@@ -168,7 +167,7 @@ public enum ActionType
     /**
      * An Administrator has banned a user.
      */
-    BAN(  22, TargetType.MEMBER),
+    BAN(22, TargetType.MEMBER),
 
     /**
      * An Administrator has unbanned a user.
@@ -185,7 +184,7 @@ public enum ActionType
      *     <li>{@link net.dv8tion.jda.api.audit.AuditLogKey#MEMBER_NICK MEMBER_NICK}</li>
      * </ul>
      */
-    MEMBER_UPDATE(     24, TargetType.MEMBER),
+    MEMBER_UPDATE(24, TargetType.MEMBER),
 
     /**
      * An Administrator updated the roles of a member.
@@ -499,8 +498,7 @@ public enum ActionType
     private final int key;
     private final TargetType target;
 
-    ActionType(int key, TargetType target)
-    {
+    ActionType(int key, TargetType target) {
         this.key = key;
         this.target = target;
     }
@@ -510,8 +508,7 @@ public enum ActionType
      *
      * @return Raw key for this ActionType
      */
-    public int getKey()
-    {
+    public int getKey() {
         return key;
     }
 
@@ -521,15 +518,12 @@ public enum ActionType
      *
      * @return {@link net.dv8tion.jda.api.audit.TargetType TargetType}
      */
-    public TargetType getTargetType()
-    {
+    public TargetType getTargetType() {
         return target;
     }
 
-    public static ActionType from(int key)
-    {
-        for (ActionType type : values())
-        {
+    public static ActionType from(int key) {
+        for (ActionType type : values()) {
             if (type.key == key)
                 return type;
         }

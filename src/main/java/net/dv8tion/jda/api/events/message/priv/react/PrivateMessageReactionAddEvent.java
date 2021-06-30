@@ -30,10 +30,8 @@ import javax.annotation.Nonnull;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled.
  */
-public class PrivateMessageReactionAddEvent extends GenericPrivateMessageReactionEvent
-{
-    public PrivateMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
-    {
+public class PrivateMessageReactionAddEvent extends GenericPrivateMessageReactionEvent {
+    public PrivateMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId) {
         super(api, responseNumber, reaction, userId);
     }
 }

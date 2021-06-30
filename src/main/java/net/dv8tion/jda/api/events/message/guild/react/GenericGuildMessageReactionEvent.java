@@ -35,14 +35,12 @@ import javax.annotation.Nullable;
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  */
-public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent
-{
+public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessageEvent {
     protected final long userId;
     protected final Member issuer;
     protected final MessageReaction reaction;
 
-    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable Member user, @Nonnull MessageReaction reaction, long userId)
-    {
+    public GenericGuildMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable Member user, @Nonnull MessageReaction reaction, long userId) {
         super(api, responseNumber, reaction.getMessageIdLong(), (TextChannel) reaction.getChannel());
         this.issuer = user;
         this.reaction = reaction;
@@ -55,8 +53,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      * @return The user id
      */
     @Nonnull
-    public String getUserId()
-    {
+    public String getUserId() {
         return Long.toUnsignedString(userId);
     }
 
@@ -65,8 +62,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return The user id
      */
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return userId;
     }
 
@@ -80,8 +76,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      * @see    #getUserIdLong()
      */
     @Nullable
-    public User getUser()
-    {
+    public User getUser() {
         return issuer == null ? getJDA().getUserById(userId) : issuer.getUser();
     }
 
@@ -93,8 +88,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      * @return The member instance for the reacting user or null if this information is missing
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return issuer;
     }
 
@@ -104,8 +98,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      * @return The message reaction
      */
     @Nonnull
-    public MessageReaction getReaction()
-    {
+    public MessageReaction getReaction() {
         return reaction;
     }
 
@@ -116,8 +109,7 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      * @return The reaction emote
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
-    {
+    public MessageReaction.ReactionEmote getReactionEmote() {
         return reaction.getReactionEmote();
     }
 
@@ -127,12 +119,11 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return {@link RestAction} - Type: {@link User}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<User> retrieveUser()
-    {
+    public RestAction<User> retrieveUser() {
         if (issuer != null)
             return new CompletedRestAction<>(getJDA(), issuer.getUser());
         return getJDA().retrieveUserById(getUserIdLong());
@@ -148,12 +139,11 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return {@link RestAction} - Type: {@link Member}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Member> retrieveMember()
-    {
+    public RestAction<Member> retrieveMember() {
         if (issuer != null)
             return new CompletedRestAction<>(getJDA(), issuer);
         return getGuild().retrieveMemberById(getUserIdLong());
@@ -168,12 +158,11 @@ public abstract class GenericGuildMessageReactionEvent extends GenericGuildMessa
      *
      * @return {@link RestAction} - Type: {@link Message}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Message> retrieveMessage()
-    {
+    public RestAction<Message> retrieveMessage() {
         return getChannel().retrieveMessageById(getMessageId());
     }
 }

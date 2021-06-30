@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  *
  * @see JDA#getSelfUser()
  */
-public interface SelfUser extends User
-{
+public interface SelfUser extends User {
     /**
      * The associated application id for the bot account.
      * <br>For most bots this is identical to the user id.
@@ -42,8 +41,7 @@ public interface SelfUser extends User
      * @return The application id
      */
     @Nonnull
-    default String getApplicationId()
-    {
+    default String getApplicationId() {
         return Long.toUnsignedString(getApplicationIdLong());
     }
 
@@ -68,9 +66,9 @@ public interface SelfUser extends User
     /**
      * Returns the maximum size for files that can be uploaded with this account.
      * <br>Returns {@value net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE} for bots.
-     * 
+     *
      * @return The maximum size for files that can be uploaded with this account
-     * 
+     *
      * @see net.dv8tion.jda.api.entities.Message#MAX_FILE_SIZE
      */
     long getAllowedFileSize();

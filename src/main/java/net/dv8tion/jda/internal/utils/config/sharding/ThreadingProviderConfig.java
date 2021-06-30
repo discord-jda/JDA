@@ -24,8 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 
-public class ThreadingProviderConfig
-{
+public class ThreadingProviderConfig {
     private final ThreadPoolProvider<? extends ScheduledExecutorService> rateLimitPoolProvider;
     private final ThreadPoolProvider<? extends ScheduledExecutorService> gatewayPoolProvider;
     private final ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider;
@@ -39,8 +38,7 @@ public class ThreadingProviderConfig
             @Nullable ThreadPoolProvider<? extends ExecutorService> callbackPoolProvider,
             @Nullable ThreadPoolProvider<? extends ExecutorService> eventPoolProvider,
             @Nullable ThreadPoolProvider<? extends ScheduledExecutorService> audioPoolProvider,
-            @Nullable ThreadFactory threadFactory)
-    {
+            @Nullable ThreadFactory threadFactory) {
         this.rateLimitPoolProvider = rateLimitPoolProvider;
         this.gatewayPoolProvider = gatewayPoolProvider;
         this.callbackPoolProvider = callbackPoolProvider;
@@ -50,44 +48,37 @@ public class ThreadingProviderConfig
     }
 
     @Nullable
-    public ThreadFactory getThreadFactory()
-    {
+    public ThreadFactory getThreadFactory() {
         return threadFactory;
     }
 
     @Nullable
-    public ThreadPoolProvider<? extends ScheduledExecutorService> getRateLimitPoolProvider()
-    {
+    public ThreadPoolProvider<? extends ScheduledExecutorService> getRateLimitPoolProvider() {
         return rateLimitPoolProvider;
     }
 
     @Nullable
-    public ThreadPoolProvider<? extends ScheduledExecutorService> getGatewayPoolProvider()
-    {
+    public ThreadPoolProvider<? extends ScheduledExecutorService> getGatewayPoolProvider() {
         return gatewayPoolProvider;
     }
 
     @Nullable
-    public ThreadPoolProvider<? extends ExecutorService> getCallbackPoolProvider()
-    {
+    public ThreadPoolProvider<? extends ExecutorService> getCallbackPoolProvider() {
         return callbackPoolProvider;
     }
 
     @Nullable
-    public ThreadPoolProvider<? extends ExecutorService> getEventPoolProvider()
-    {
+    public ThreadPoolProvider<? extends ExecutorService> getEventPoolProvider() {
         return eventPoolProvider;
     }
 
     @Nullable
-    public ThreadPoolProvider<? extends ScheduledExecutorService> getAudioPoolProvider()
-    {
+    public ThreadPoolProvider<? extends ScheduledExecutorService> getAudioPoolProvider() {
         return audioPoolProvider;
     }
 
     @Nonnull
-    public static ThreadingProviderConfig getDefault()
-    {
+    public static ThreadingProviderConfig getDefault() {
         return new ThreadingProviderConfig(null, null, null, null, null, null);
     }
 }

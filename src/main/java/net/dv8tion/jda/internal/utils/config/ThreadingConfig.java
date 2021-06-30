@@ -23,8 +23,7 @@ import javax.annotation.Nullable;
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
-public class ThreadingConfig
-{
+public class ThreadingConfig {
     private final Object audioLock = new Object();
 
     private ScheduledExecutorService rateLimitPool;
@@ -39,8 +38,7 @@ public class ThreadingConfig
     private boolean shutdownEventPool;
     private boolean shutdownAudioPool;
 
-    public ThreadingConfig()
-    {
+    public ThreadingConfig() {
         this.callbackPool = ForkJoinPool.commonPool();
 
         this.shutdownRateLimitPool = true;
@@ -49,46 +47,39 @@ public class ThreadingConfig
         this.shutdownAudioPool = true;
     }
 
-    public void setRateLimitPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
-    {
+    public void setRateLimitPool(@Nullable ScheduledExecutorService executor, boolean shutdown) {
         this.rateLimitPool = executor;
         this.shutdownRateLimitPool = shutdown;
     }
 
-    public void setGatewayPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
-    {
+    public void setGatewayPool(@Nullable ScheduledExecutorService executor, boolean shutdown) {
         this.gatewayPool = executor;
         this.shutdownGatewayPool = shutdown;
     }
 
-    public void setCallbackPool(@Nullable ExecutorService executor, boolean shutdown)
-    {
+    public void setCallbackPool(@Nullable ExecutorService executor, boolean shutdown) {
         this.callbackPool = executor == null ? ForkJoinPool.commonPool() : executor;
         this.shutdownCallbackPool = shutdown;
     }
 
-    public void setEventPool(@Nullable ExecutorService executor, boolean shutdown)
-    {
+    public void setEventPool(@Nullable ExecutorService executor, boolean shutdown) {
         this.eventPool = executor;
         this.shutdownEventPool = shutdown;
     }
 
-    public void setAudioPool(@Nullable ScheduledExecutorService executor, boolean shutdown)
-    {
+    public void setAudioPool(@Nullable ScheduledExecutorService executor, boolean shutdown) {
         this.audioPool = executor;
         this.shutdownAudioPool = shutdown;
     }
 
-    public void init(@Nonnull Supplier<String> identifier)
-    {
+    public void init(@Nonnull Supplier<String> identifier) {
         if (this.rateLimitPool == null)
             this.rateLimitPool = newScheduler(5, identifier, "RateLimit", false);
         if (this.gatewayPool == null)
             this.gatewayPool = newScheduler(1, identifier, "Gateway");
     }
 
-    public void shutdown()
-    {
+    public void shutdown() {
         if (shutdownCallbackPool)
             callbackPool.shutdown();
         if (shutdownGatewayPool)
@@ -97,29 +88,24 @@ public class ThreadingConfig
             eventPool.shutdown();
         if (shutdownAudioPool && audioPool != null)
             audioPool.shutdown();
-        if (shutdownRateLimitPool)
-        {
-            if (rateLimitPool instanceof ScheduledThreadPoolExecutor)
-            {
+        if (shutdownRateLimitPool) {
+            if (rateLimitPool instanceof ScheduledThreadPoolExecutor) {
                 ScheduledThreadPoolExecutor executor = (ScheduledThreadPoolExecutor) rateLimitPool;
                 executor.setKeepAliveTime(5L, TimeUnit.SECONDS);
                 executor.allowCoreThreadTimeOut(true);
             }
-            else
-            {
+            else {
                 rateLimitPool.shutdown();
             }
         }
     }
 
-    public void shutdownRequester()
-    {
+    public void shutdownRequester() {
         if (shutdownRateLimitPool)
             rateLimitPool.shutdown();
     }
 
-    public void shutdownNow()
-    {
+    public void shutdownNow() {
         if (shutdownCallbackPool)
             callbackPool.shutdownNow();
         if (shutdownGatewayPool)
@@ -133,37 +119,30 @@ public class ThreadingConfig
     }
 
     @Nonnull
-    public ScheduledExecutorService getRateLimitPool()
-    {
+    public ScheduledExecutorService getRateLimitPool() {
         return rateLimitPool;
     }
 
     @Nonnull
-    public ScheduledExecutorService getGatewayPool()
-    {
+    public ScheduledExecutorService getGatewayPool() {
         return gatewayPool;
     }
 
     @Nonnull
-    public ExecutorService getCallbackPool()
-    {
+    public ExecutorService getCallbackPool() {
         return callbackPool;
     }
 
     @Nullable
-    public ExecutorService getEventPool()
-    {
+    public ExecutorService getEventPool() {
         return eventPool;
     }
 
     @Nullable
-    public ScheduledExecutorService getAudioPool(@Nonnull Supplier<String> identifier)
-    {
+    public ScheduledExecutorService getAudioPool(@Nonnull Supplier<String> identifier) {
         ScheduledExecutorService pool = audioPool;
-        if (pool == null)
-        {
-            synchronized (audioLock)
-            {
+        if (pool == null) {
+            synchronized (audioLock) {
                 pool = audioPool;
                 if (pool == null)
                     pool = audioPool = ThreadingConfig.newScheduler(1, identifier, "AudioLifeCycle");
@@ -172,46 +151,38 @@ public class ThreadingConfig
         return pool;
     }
 
-    public boolean isShutdownRateLimitPool()
-    {
+    public boolean isShutdownRateLimitPool() {
         return shutdownRateLimitPool;
     }
 
-    public boolean isShutdownGatewayPool()
-    {
+    public boolean isShutdownGatewayPool() {
         return shutdownGatewayPool;
     }
 
-    public boolean isShutdownCallbackPool()
-    {
+    public boolean isShutdownCallbackPool() {
         return shutdownCallbackPool;
     }
 
-    public boolean isShutdownEventPool()
-    {
+    public boolean isShutdownEventPool() {
         return shutdownEventPool;
     }
 
-    public boolean isShutdownAudioPool()
-    {
+    public boolean isShutdownAudioPool() {
         return shutdownAudioPool;
     }
 
     @Nonnull
-    public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName)
-    {
+    public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName) {
         return newScheduler(coreSize, identifier, baseName, true);
     }
 
     @Nonnull
-    public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName, boolean daemon)
-    {
+    public static ScheduledThreadPoolExecutor newScheduler(int coreSize, Supplier<String> identifier, String baseName, boolean daemon) {
         return new ScheduledThreadPoolExecutor(coreSize, new CountingThreadFactory(identifier, baseName, daemon));
     }
 
     @Nonnull
-    public static ThreadingConfig getDefault()
-    {
+    public static ThreadingConfig getDefault() {
         return new ThreadingConfig();
     }
 }

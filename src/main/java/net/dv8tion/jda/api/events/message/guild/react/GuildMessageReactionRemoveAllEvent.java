@@ -31,10 +31,8 @@ import javax.annotation.Nonnull;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  */
-public class GuildMessageReactionRemoveAllEvent extends GenericGuildMessageEvent
-{
-    public GuildMessageReactionRemoveAllEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel)
-    {
+public class GuildMessageReactionRemoveAllEvent extends GenericGuildMessageEvent {
+    public GuildMessageReactionRemoveAllEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull TextChannel channel) {
         super(api, responseNumber, messageId, channel);
     }
 }

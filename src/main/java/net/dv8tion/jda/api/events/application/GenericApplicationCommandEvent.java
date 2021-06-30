@@ -32,13 +32,11 @@ import javax.annotation.Nullable;
  *
  * <p>Can be used to detect changes for commands.
  */
-public abstract class GenericApplicationCommandEvent extends Event
-{
+public abstract class GenericApplicationCommandEvent extends Event {
     private final Command command;
     private final Guild guild;
 
-    public GenericApplicationCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)
-    {
+    public GenericApplicationCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild) {
         super(api, responseNumber);
         this.command = command;
         this.guild = guild;
@@ -50,8 +48,7 @@ public abstract class GenericApplicationCommandEvent extends Event
      * @return The {@link Command}
      */
     @Nonnull
-    public Command getCommand()
-    {
+    public Command getCommand() {
         return command;
     }
 
@@ -61,8 +58,7 @@ public abstract class GenericApplicationCommandEvent extends Event
      * @return The {@link Guild}, or null for global commands
      */
     @Nullable
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 }

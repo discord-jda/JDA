@@ -25,19 +25,17 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that a Message was edited in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
- * 
+ *
  * <p>Can be used to retrieve affected TextChannel and Message.
  *
  * <h2>Requirements</h2>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled.
  */
-public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
-{
+public class GuildMessageUpdateEvent extends GenericGuildMessageEvent {
     private final Message message;
 
-    public GuildMessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
-    {
+    public GuildMessageUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
         super(api, responseNumber, message.getIdLong(), message.getTextChannel());
         this.message = message;
     }
@@ -48,8 +46,7 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
      * @return The Message
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -61,8 +58,7 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
      * @see    net.dv8tion.jda.api.entities.User User
      */
     @Nonnull
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return message.getAuthor();
     }
 
@@ -72,8 +68,7 @@ public class GuildMessageUpdateEvent extends GenericGuildMessageEvent
      * @return The member instance for the author
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return message.getMember();
     }
 }

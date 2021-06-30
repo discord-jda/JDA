@@ -19,6 +19,6 @@
  *
  * @see <a href="https://erlang.org/doc/apps/erts/erl_ext_dist.html" target="_blank">Erlang -- External Term Format</a>
  *
- * @since  4.2.1
+ * @since 4.2.1
  */
 package net.dv8tion.jda.api.utils.data.etf;

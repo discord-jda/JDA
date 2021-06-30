@@ -30,8 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Builder for a Slash-Command option.
  */
-public class OptionData implements SerializableData
-{
+public class OptionData implements SerializableData {
     private final OptionType type;
     private String name, description;
     private boolean isRequired;
@@ -56,8 +55,7 @@ public class OptionData implements SerializableData
      *             <li>The type must not be null</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
-    {
+    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description) {
         this(type, name, description, false);
     }
 
@@ -81,8 +79,7 @@ public class OptionData implements SerializableData
      *             <li>The type must not be null</li>
      *         </ul>
      */
-    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired)
-    {
+    public OptionData(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean isRequired) {
         Checks.notNull(type, "Type");
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(description, "Description");
@@ -104,8 +101,7 @@ public class OptionData implements SerializableData
      * @return The {@link OptionType}
      */
     @Nonnull
-    public OptionType getType()
-    {
+    public OptionType getType() {
         return type;
     }
 
@@ -115,8 +111,7 @@ public class OptionData implements SerializableData
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -126,8 +121,7 @@ public class OptionData implements SerializableData
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -139,8 +133,7 @@ public class OptionData implements SerializableData
      *
      * @return True, if this option is required
      */
-    public boolean isRequired()
-    {
+    public boolean isRequired() {
         return isRequired;
     }
 
@@ -154,8 +147,7 @@ public class OptionData implements SerializableData
      * @see #addChoice(String, String)
      */
     @Nonnull
-    public List<Command.Choice> getChoices()
-    {
+    public List<Command.Choice> getChoices() {
         if (choices == null || choices.isEmpty())
             return Collections.emptyList();
         return choices.entrySet().stream()
@@ -180,8 +172,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setName(@Nonnull String name)
-    {
+    public OptionData setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
         Checks.isLowercase(name, "Name");
@@ -202,8 +193,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setDescription(@Nonnull String description)
-    {
+    public OptionData setDescription(@Nonnull String description) {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;
@@ -220,8 +210,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData setRequired(boolean required)
-    {
+    public OptionData setRequired(boolean required) {
         this.isRequired = required;
         return this;
     }
@@ -242,8 +231,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoice(@Nonnull String name, int value)
-    {
+    public OptionData addChoice(@Nonnull String name, int value) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
         Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
@@ -269,8 +257,7 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoice(@Nonnull String name, @Nonnull String value)
-    {
+    public OptionData addChoice(@Nonnull String name, @Nonnull String value) {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, 100, "Name");
@@ -296,14 +283,12 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoices(@Nonnull Command.Choice... choices)
-    {
+    public OptionData addChoices(@Nonnull Command.Choice... choices) {
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
         Checks.check(choices.length + this.choices.size() <= 25, "Cannot have more than 25 choices for one option!");
-        for (Command.Choice choice : choices)
-        {
+        for (Command.Choice choice : choices) {
             if (type == OptionType.INTEGER)
                 addChoice(choice.getName(), (int) choice.getAsLong());
             else if (type == OptionType.STRING)
@@ -328,24 +313,21 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices)
-    {
+    public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices) {
         Checks.noneNull(choices, "Choices");
         return addChoices(choices.toArray(new Command.Choice[0]));
     }
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject json = DataObject.empty()
                 .put("type", type.getKey())
                 .put("name", name)
                 .put("description", description);
         if (type != OptionType.SUB_COMMAND && type != OptionType.SUB_COMMAND_GROUP)
             json.put("required", isRequired);
-        if (choices != null && !choices.isEmpty())
-        {
+        if (choices != null && !choices.isEmpty()) {
             json.put("choices", DataArray.fromCollection(choices.entrySet()
                     .stream()
                     .map(entry -> DataObject.empty().put("name", entry.getKey()).put("value", entry.getValue()))
@@ -369,8 +351,7 @@ public class OptionData implements SerializableData
      * @return The parsed OptionData instance, which can be further configured through setters
      */
     @Nonnull
-    public static OptionData fromData(@Nonnull DataObject json)
-    {
+    public static OptionData fromData(@Nonnull DataObject json) {
         String name = json.getString("name");
         String description = json.getString("description");
         OptionType type = OptionType.fromKey(json.getInt("type"));

@@ -42,43 +42,37 @@ import java.util.List;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent
-{
+public class UserUpdateActivityOrderEvent extends GenericUserUpdateEvent<List<Activity>> implements GenericUserPresenceEvent {
     public static final String IDENTIFIER = "activity_order";
 
     private final Member member;
 
-    public UserUpdateActivityOrderEvent(@Nonnull JDAImpl api, long responseNumber, @Nonnull List<Activity> previous, @Nonnull Member member)
-    {
+    public UserUpdateActivityOrderEvent(@Nonnull JDAImpl api, long responseNumber, @Nonnull List<Activity> previous, @Nonnull Member member) {
         super(api, responseNumber, member.getUser(), previous, member.getActivities(), IDENTIFIER);
         this.member = member;
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return member.getGuild();
     }
 
     @Nonnull
     @Override
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 
     @Nonnull
     @Override
-    public List<Activity> getOldValue()
-    {
+    public List<Activity> getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public List<Activity> getNewValue()
-    {
+    public List<Activity> getNewValue() {
         return super.getNewValue();
     }
 }

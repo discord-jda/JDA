@@ -41,8 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("WeakerAccess")
-public class GuildSetupController
-{
+public class GuildSetupController {
     protected static final Logger log = JDALogger.getLog(GuildSetupController.class);
 
     private static final long timeoutDuration = 75; // seconds
@@ -60,23 +59,18 @@ public class GuildSetupController
 
     protected StatusListener listener = (id, oldStatus, newStatus) -> log.trace("[{}] Updated status {}->{}", id, oldStatus, newStatus);
 
-    public GuildSetupController(JDAImpl api)
-    {
+    public GuildSetupController(JDAImpl api) {
         this.api = api;
     }
 
-    JDAImpl getJDA()
-    {
+    JDAImpl getJDA() {
         return api;
     }
 
-    void addGuildForChunking(long id, boolean join)
-    {
+    void addGuildForChunking(long id, boolean join) {
         log.trace("Adding guild for chunking ID: {}", id);
-        if (join || incompleteCount <= 0)
-        {
-            if (incompleteCount <= 0)
-            {
+        if (join || incompleteCount <= 0) {
+            if (incompleteCount <= 0) {
                 // this happens during runtime -> chunk right away
                 sendChunkRequest(id);
                 return;
@@ -87,82 +81,70 @@ public class GuildSetupController
         tryChunking();
     }
 
-    void remove(long id)
-    {
+    void remove(long id) {
         unavailableGuilds.remove(id);
         setupNodes.remove(id);
         chunkingGuilds.remove(id);
         checkReady();
     }
 
-    public void ready(long id)
-    {
+    public void ready(long id) {
         remove(id);
         incompleteCount--;
         checkReady();
     }
 
     // Check if we can send a ready event
-    private void checkReady()
-    {
+    private void checkReady() {
         WebSocketClient client = getJDA().getClient();
         // If no guilds are marked as incomplete we can fire a ready
-        if (incompleteCount < 1 && !client.isReady())
-        {
+        if (incompleteCount < 1 && !client.isReady()) {
             if (timeoutHandle != null)
                 timeoutHandle.cancel(false);
             timeoutHandle = null;
             client.ready();
         }
-        else if (incompleteCount <= timeoutThreshold)
-        {
+        else if (incompleteCount <= timeoutThreshold) {
             startTimeout(); // try to timeout the other guilds
         }
     }
 
-    public boolean setIncompleteCount(int count)
-    {
+    public boolean setIncompleteCount(int count) {
         this.incompleteCount = count;
         log.debug("Setting incomplete count to {}", incompleteCount);
         checkReady();
         return count != 0;
     }
 
-    public void onReady(long id, DataObject obj)
-    {
+    public void onReady(long id, DataObject obj) {
         log.trace("Adding id to setup cache {}", id);
         GuildSetupNode node = new GuildSetupNode(id, this, GuildSetupNode.Type.INIT);
         setupNodes.put(id, node);
         node.handleReady(obj);
-        if (node.markedUnavailable)
-        {
+        if (node.markedUnavailable) {
             incompleteCount--;
             tryChunking();
         }
     }
 
-    public void onCreate(long id, DataObject obj)
-    {
+    public void onCreate(long id, DataObject obj) {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
         log.trace("Received guild create for id: {} available: {}", id, available);
 
-        if (available && unavailableGuilds.contains(id) && !setupNodes.containsKey(id))
-        {
+        if (available && unavailableGuilds.contains(id) && !setupNodes.containsKey(id)) {
             // Guild was unavailable for a moment, its back now so initialize it again!
             unavailableGuilds.remove(id);
             setupNodes.put(id, new GuildSetupNode(id, this, GuildSetupNode.Type.AVAILABLE));
         }
 
         GuildSetupNode node = setupNodes.get(id);
-        if (node == null)
-        {
+        if (node == null) {
             // this is a join event
             node = new GuildSetupNode(id, this, GuildSetupNode.Type.JOIN);
             setupNodes.put(id, node);
             // do not increment incomplete counter, it is only relevant to init guilds
         }
-        else if (node.markedUnavailable && available && incompleteCount > 0)
-        {
+        else if (node.markedUnavailable && available && incompleteCount > 0) {
             //Looks like this guild decided to become available again during startup
             // that means we can now consider it for ReadyEvent status again!
             incompleteCount++;
@@ -170,11 +152,9 @@ public class GuildSetupController
         node.handleCreate(obj);
     }
 
-    public boolean onDelete(long id, DataObject obj)
-    {
+    public boolean onDelete(long id, DataObject obj) {
         boolean available = obj.isNull("unavailable") || !obj.getBoolean("unavailable");
-        if (isUnavailable(id) && available)
-        {
+        if (isUnavailable(id) && available) {
             log.debug("Leaving unavailable guild with id {}", id);
             remove(id);
             api.getEventManager().handle(new UnavailableGuildLeaveEvent(api, api.getResponseTotal(), id));
@@ -185,14 +165,11 @@ public class GuildSetupController
         if (node == null)
             return false;
         log.debug("Received guild delete for id: {} available: {}", id, available);
-        if (!available)
-        {
+        if (!available) {
             // The guild is currently unavailable and should be ignored for chunking requests
-            if (!node.markedUnavailable)
-            {
+            if (!node.markedUnavailable) {
                 node.markedUnavailable = true; // this prevents repeated decrements from duplicate events
-                if (incompleteCount > 0)
-                {
+                if (incompleteCount > 0) {
                     // Allow other guilds to start chunking
                     chunkingGuilds.remove(id);
                     incompleteCount--;
@@ -200,8 +177,7 @@ public class GuildSetupController
             }
             node.reset();
         }
-        else
-        {
+        else {
             // This guild was deleted
             node.cleanup(); // clear EventCache
             if (node.isJoin() && !node.requestedChunk)
@@ -215,8 +191,7 @@ public class GuildSetupController
         return true;
     }
 
-    public void onMemberChunk(long id, DataObject chunk)
-    {
+    public void onMemberChunk(long id, DataObject chunk) {
         DataArray members = chunk.getArray("members");
         int index = chunk.getInt("chunk_index");
         int count = chunk.getInt("chunk_count");
@@ -226,8 +201,7 @@ public class GuildSetupController
             node.handleMemberChunk(MemberChunkManager.isLastChunk(chunk), members);
     }
 
-    public boolean onAddMember(long id, DataObject member)
-    {
+    public boolean onAddMember(long id, DataObject member) {
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
             return false;
@@ -236,8 +210,7 @@ public class GuildSetupController
         return true;
     }
 
-    public boolean onRemoveMember(long id, DataObject member)
-    {
+    public boolean onRemoveMember(long id, DataObject member) {
         GuildSetupNode node = setupNodes.get(id);
         if (node == null)
             return false;
@@ -246,31 +219,26 @@ public class GuildSetupController
         return true;
     }
 
-    public void onSync(long id, DataObject obj)
-    {
+    public void onSync(long id, DataObject obj) {
         GuildSetupNode node = setupNodes.get(id);
         if (node != null)
             node.handleSync(obj);
     }
 
-    public boolean isLocked(long id)
-    {
+    public boolean isLocked(long id) {
         return setupNodes.containsKey(id);
     }
 
-    public boolean isUnavailable(long id)
-    {
+    public boolean isUnavailable(long id) {
         return unavailableGuilds.contains(id);
     }
 
-    public boolean isKnown(long id)
-    {
+    public boolean isKnown(long id) {
         // Whether we know this guild at all
         return isLocked(id) || isUnavailable(id);
     }
 
-    public void cacheEvent(long guildId, DataObject event)
-    {
+    public void cacheEvent(long guildId, DataObject event) {
         GuildSetupNode node = setupNodes.get(guildId);
         if (node != null)
             node.cacheEvent(event);
@@ -278,8 +246,7 @@ public class GuildSetupController
             log.warn("Attempted to cache event for a guild that is not locked. {}", event, new IllegalStateException());
     }
 
-    public void clearCache()
-    {
+    public void clearCache() {
         setupNodes.clear();
         chunkingGuilds.clear();
         unavailableGuilds.clear();
@@ -287,17 +254,14 @@ public class GuildSetupController
         close();
     }
 
-    public void close()
-    {
+    public void close() {
         if (timeoutHandle != null)
             timeoutHandle.cancel(false);
         timeoutHandle = null;
     }
 
-    public boolean containsMember(long userId, @Nullable GuildSetupNode excludedNode)
-    {
-        for (TLongObjectIterator<GuildSetupNode> it = setupNodes.iterator(); it.hasNext();)
-        {
+    public boolean containsMember(long userId, @Nullable GuildSetupNode excludedNode) {
+        for (TLongObjectIterator<GuildSetupNode> it = setupNodes.iterator(); it.hasNext(); ) {
             it.advance();
             GuildSetupNode node = it.value();
             if (node != excludedNode && node.containsMember(userId))
@@ -306,62 +270,52 @@ public class GuildSetupController
         return false;
     }
 
-    public TLongSet getUnavailableGuilds()
-    {
+    public TLongSet getUnavailableGuilds() {
         return unavailableGuilds;
     }
 
-    public Set<GuildSetupNode> getSetupNodes()
-    {
+    public Set<GuildSetupNode> getSetupNodes() {
         return new HashSet<>(setupNodes.valueCollection());
     }
 
-    public Set<GuildSetupNode> getSetupNodes(Status status)
-    {
+    public Set<GuildSetupNode> getSetupNodes(Status status) {
         return getSetupNodes().stream().filter((node) -> node.status == status).collect(Collectors.toSet());
     }
 
-    public GuildSetupNode getSetupNodeById(long id)
-    {
+    public GuildSetupNode getSetupNodeById(long id) {
         return setupNodes.get(id);
     }
 
-    public GuildSetupNode getSetupNodeById(String id)
-    {
+    public GuildSetupNode getSetupNodeById(String id) {
         return getSetupNodeById(MiscUtil.parseSnowflake(id));
     }
 
-    public void setStatusListener(StatusListener listener)
-    {
+    public void setStatusListener(StatusListener listener) {
         this.listener = Objects.requireNonNull(listener);
     }
 
     // Chunking
 
-    int getIncompleteCount()
-    {
+    int getIncompleteCount() {
         return incompleteCount;
     }
 
-    int getChunkingCount()
-    {
+    int getChunkingCount() {
         return chunkingGuilds.size();
     }
 
-    void sendChunkRequest(Object obj)
-    {
+    void sendChunkRequest(Object obj) {
         log.debug("Sending chunking requests for {} guilds", obj instanceof DataArray ? ((DataArray) obj).length() : 1);
 
         getJDA().getClient().sendChunkRequest(
-            DataObject.empty()
-                .put("guild_id", obj)
-                .put("query", "")
-                .put("limit", 0)
+                DataObject.empty()
+                        .put("guild_id", obj)
+                        .put("query", "")
+                        .put("limit", 0)
         );
     }
 
-    private void tryChunking()
-    {
+    private void tryChunking() {
         chunkingGuilds.forEach((id) -> {
             sendChunkRequest(id);
             return true;
@@ -369,8 +323,7 @@ public class GuildSetupController
         chunkingGuilds.clear();
     }
 
-    private void startTimeout()
-    {
+    private void startTimeout() {
         if (timeoutHandle != null || incompleteCount < 1) // We don't need to start a timeout for 0 guilds
             return;
 
@@ -378,20 +331,17 @@ public class GuildSetupController
         timeoutHandle = getJDA().getGatewayPool().schedule(this::onTimeout, timeoutDuration, TimeUnit.SECONDS);
     }
 
-    public void onUnavailable(long id)
-    {
+    public void onUnavailable(long id) {
         unavailableGuilds.add(id);
         log.debug("Guild with id {} is now marked unavailable. Total: {}", id, unavailableGuilds.size());
     }
 
-    public void onTimeout()
-    {
+    public void onTimeout() {
         if (incompleteCount < 1)
             return;
         log.warn("Automatically marking {} guilds as unavailable due to timeout!", incompleteCount);
         TLongObjectIterator<GuildSetupNode> iterator = setupNodes.iterator();
-        while (iterator.hasNext())
-        {
+        while (iterator.hasNext()) {
             iterator.advance();
             GuildSetupNode node = iterator.value();
             iterator.remove();
@@ -403,8 +353,7 @@ public class GuildSetupController
         checkReady();
     }
 
-    public enum Status
-    {
+    public enum Status {
         INIT,
         CHUNKING,
         BUILDING,
@@ -414,8 +363,7 @@ public class GuildSetupController
     }
 
     @FunctionalInterface
-    public interface StatusListener
-    {
+    public interface StatusListener {
         void onStatusChange(long guildId, Status oldStatus, Status newStatus);
     }
 }

@@ -28,8 +28,7 @@ import net.dv8tion.jda.api.entities.Guild;
  *
  * @see <a href="https://discord.com/developers/docs/resources/audit-log#audit-log-change-object-audit-log-change-key" target="_blank">Audit Log Change Key</a>
  */
-public enum AuditLogKey
-{
+public enum AuditLogKey {
     /**
      * This is sometimes visible for {@link ActionType ActionTypes}
      * which create a new entity.
@@ -500,19 +499,16 @@ public enum AuditLogKey
 
     private final String key;
 
-    AuditLogKey(String key)
-    {
+    AuditLogKey(String key) {
         this.key = key;
     }
 
-    public String getKey()
-    {
+    public String getKey() {
         return key;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name() + '(' + key + ')';
     }
 }

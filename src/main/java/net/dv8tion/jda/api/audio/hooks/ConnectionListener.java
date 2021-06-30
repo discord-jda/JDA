@@ -26,8 +26,7 @@ import java.util.EnumSet;
  * Used to monitor an audio connection, ping, and speaking users.
  * <br>This provides functionality similar to the functionalities present in the Discord client related to an audio connection.
  */
-public interface ConnectionListener
-{
+public interface ConnectionListener {
     /**
      * Called when JDA send a heartbeat packet to Discord and Discord sends an acknowledgement. The time difference
      * between sending and receiving the acknowledgement is calculated as the ping.
@@ -96,7 +95,8 @@ public interface ConnectionListener
      * @see    java.util.EnumSet EnumSet
      * @see    net.dv8tion.jda.api.audio.SpeakingMode SpeakingMode
      */
-    default void onUserSpeaking(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes) {}
+    default void onUserSpeaking(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes) {
+    }
 
 
     /**
@@ -123,5 +123,6 @@ public interface ConnectionListener
      * @param  soundshare
      *         If true, the user is using soundshare
      */
-    default void onUserSpeaking(@Nonnull User user, boolean speaking, boolean soundshare) {}
+    default void onUserSpeaking(@Nonnull User user, boolean speaking, boolean soundshare) {
+    }
 }

@@ -30,8 +30,7 @@ import java.util.stream.Collectors;
  *
  * @see net.dv8tion.jda.api.events.interaction.SlashCommandEvent
  */
-public interface CommandInteraction extends Interaction
-{
+public interface CommandInteraction extends Interaction {
     /**
      * The command name.
      * <br>This can be useful for abstractions.
@@ -100,8 +99,7 @@ public interface CommandInteraction extends Interaction
      * @return The command path
      */
     @Nonnull
-    default String getCommandPath()
-    {
+    default String getCommandPath() {
         StringBuilder builder = new StringBuilder(getName());
         if (getSubcommandGroup() != null)
             builder.append('/').append(getSubcommandGroup());
@@ -127,8 +125,7 @@ public interface CommandInteraction extends Interaction
      * @return The command id
      */
     @Nonnull
-    default String getCommandId()
-    {
+    default String getCommandId() {
         return Long.toUnsignedString(getCommandIdLong());
     }
 
@@ -155,8 +152,7 @@ public interface CommandInteraction extends Interaction
      * @see   #getOption(String)
      */
     @Nonnull
-    default List<OptionMapping> getOptionsByName(@Nonnull String name)
-    {
+    default List<OptionMapping> getOptionsByName(@Nonnull String name) {
         Checks.notNull(name, "Name");
         return getOptions().stream()
                 .filter(opt -> opt.getName().equals(name))
@@ -175,8 +171,7 @@ public interface CommandInteraction extends Interaction
      * @return The list of options
      */
     @Nonnull
-    default List<OptionMapping> getOptionsByType(@Nonnull OptionType type)
-    {
+    default List<OptionMapping> getOptionsByType(@Nonnull OptionType type) {
         Checks.notNull(type, "Type");
         return getOptions().stream()
                 .filter(it -> it.getType() == type)
@@ -195,8 +190,7 @@ public interface CommandInteraction extends Interaction
      * @return The option with the provided name, or null if that option is not provided
      */
     @Nullable
-    default OptionMapping getOption(@Nonnull String name)
-    {
+    default OptionMapping getOption(@Nonnull String name) {
         List<OptionMapping> options = getOptionsByName(name);
         return options.isEmpty() ? null : options.get(0);
     }

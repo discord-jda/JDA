@@ -37,8 +37,7 @@ import javax.annotation.Nonnull;
  * @see   net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#setChunkingFilter(ChunkingFilter) DefaultShardManagerBuilder.setChunkingFilter(ChunkingFilter)
  */
 @FunctionalInterface
-public interface ChunkingFilter
-{
+public interface ChunkingFilter {
     /** Chunk all guilds */
     ChunkingFilter ALL = (x) -> true;
     /** Do not chunk any guilds (lazy loading) */
@@ -66,14 +65,12 @@ public interface ChunkingFilter
      * @return The resulting filter
      */
     @Nonnull
-    static ChunkingFilter include(@Nonnull long... ids)
-    {
+    static ChunkingFilter include(@Nonnull long... ids) {
         Checks.notNull(ids, "ID array");
         if (ids.length == 0)
             return NONE;
         return (guild) -> {
-            for (long id : ids)
-            {
+            for (long id : ids) {
                 if (id == guild)
                     return true;
             }
@@ -94,14 +91,12 @@ public interface ChunkingFilter
      * @return The resulting filter
      */
     @Nonnull
-    static ChunkingFilter exclude(@Nonnull long... ids)
-    {
+    static ChunkingFilter exclude(@Nonnull long... ids) {
         Checks.notNull(ids, "ID array");
         if (ids.length == 0)
             return ALL;
         return (guild) -> {
-            for (long id : ids)
-            {
+            for (long id : ids) {
                 if (id == guild)
                     return false;
             }

@@ -29,45 +29,44 @@ import java.util.regex.Pattern;
  *
  * @see #sanitize(String, net.dv8tion.jda.api.utils.MarkdownSanitizer.SanitizationStrategy)
  *
- * @since  4.0.0
+ * @since 4.0.0
  */
-public class MarkdownSanitizer
-{
+public class MarkdownSanitizer {
     /** Normal characters that are not special for markdown, ignoring this has no effect */
-    public static final int NORMAL      = 0;
+    public static final int NORMAL = 0;
     /** Bold region such as "**Hello**" */
-    public static final int BOLD        = 1 << 0;
+    public static final int BOLD = 1 << 0;
     /** Italics region for underline such as "_Hello_" */
-    public static final int ITALICS_U   = 1 << 1;
+    public static final int ITALICS_U = 1 << 1;
     /** Italics region for asterisks such as "*Hello*" */
-    public static final int ITALICS_A   = 1 << 2;
+    public static final int ITALICS_A = 1 << 2;
     /** Monospace region such as "`Hello`" */
-    public static final int MONO        = 1 << 3;
+    public static final int MONO = 1 << 3;
     /** Monospace region such as "``Hello``" */
-    public static final int MONO_TWO    = 1 << 4;
+    public static final int MONO_TWO = 1 << 4;
     /** Codeblock region such as "```Hello```" */
-    public static final int BLOCK       = 1 << 5;
+    public static final int BLOCK = 1 << 5;
     /** Spoiler region such as "||Hello||" */
-    public static final int SPOILER     = 1 << 6;
+    public static final int SPOILER = 1 << 6;
     /** Underline region such as "__Hello__" */
-    public static final int UNDERLINE   = 1 << 7;
+    public static final int UNDERLINE = 1 << 7;
     /** Strikethrough region such as "~~Hello~~" */
-    public static final int STRIKE      = 1 << 8;
+    public static final int STRIKE = 1 << 8;
     /** Quote region such as {@code "> text here"} */
-    public static final int QUOTE       = 1 << 9;
+    public static final int QUOTE = 1 << 9;
     /** Quote block region such as {@code ">>> text here"} */
     public static final int QUOTE_BLOCK = 1 << 10;
 
-    private static final int ESCAPED_BOLD        = Integer.MIN_VALUE | BOLD;
-    private static final int ESCAPED_ITALICS_U   = Integer.MIN_VALUE | ITALICS_U;
-    private static final int ESCAPED_ITALICS_A   = Integer.MIN_VALUE | ITALICS_A;
-    private static final int ESCAPED_MONO        = Integer.MIN_VALUE | MONO;
-    private static final int ESCAPED_MONO_TWO    = Integer.MIN_VALUE | MONO_TWO;
-    private static final int ESCAPED_BLOCK       = Integer.MIN_VALUE | BLOCK;
-    private static final int ESCAPED_SPOILER     = Integer.MIN_VALUE | SPOILER;
-    private static final int ESCAPED_UNDERLINE   = Integer.MIN_VALUE | UNDERLINE;
-    private static final int ESCAPED_STRIKE      = Integer.MIN_VALUE | STRIKE;
-    private static final int ESCAPED_QUOTE       = Integer.MIN_VALUE | QUOTE;
+    private static final int ESCAPED_BOLD = Integer.MIN_VALUE | BOLD;
+    private static final int ESCAPED_ITALICS_U = Integer.MIN_VALUE | ITALICS_U;
+    private static final int ESCAPED_ITALICS_A = Integer.MIN_VALUE | ITALICS_A;
+    private static final int ESCAPED_MONO = Integer.MIN_VALUE | MONO;
+    private static final int ESCAPED_MONO_TWO = Integer.MIN_VALUE | MONO_TWO;
+    private static final int ESCAPED_BLOCK = Integer.MIN_VALUE | BLOCK;
+    private static final int ESCAPED_SPOILER = Integer.MIN_VALUE | SPOILER;
+    private static final int ESCAPED_UNDERLINE = Integer.MIN_VALUE | UNDERLINE;
+    private static final int ESCAPED_STRIKE = Integer.MIN_VALUE | STRIKE;
+    private static final int ESCAPED_QUOTE = Integer.MIN_VALUE | QUOTE;
     private static final int ESCAPED_QUOTE_BLOCK = Integer.MIN_VALUE | QUOTE_BLOCK;
 
     private static final Pattern codeLanguage = Pattern.compile("^\\w+\n.*", Pattern.MULTILINE | Pattern.DOTALL);
@@ -76,8 +75,7 @@ public class MarkdownSanitizer
 
     private static final TIntObjectMap<String> tokens;
 
-    static
-    {
+    static {
         tokens = new TIntObjectHashMap<>();
         tokens.put(NORMAL, "");
         tokens.put(BOLD, "**");
@@ -95,14 +93,12 @@ public class MarkdownSanitizer
     private int ignored;
     private SanitizationStrategy strategy;
 
-    public MarkdownSanitizer()
-    {
+    public MarkdownSanitizer() {
         this.ignored = NORMAL;
         this.strategy = SanitizationStrategy.REMOVE;
     }
 
-    public MarkdownSanitizer(int ignored, @Nullable SanitizationStrategy strategy)
-    {
+    public MarkdownSanitizer(int ignored, @Nullable SanitizationStrategy strategy) {
         this.ignored = ignored;
         this.strategy = strategy == null ? SanitizationStrategy.REMOVE : strategy;
     }
@@ -117,8 +113,7 @@ public class MarkdownSanitizer
      * @return The sanitized string
      */
     @Nonnull
-    public static String sanitize(@Nonnull String sequence)
-    {
+    public static String sanitize(@Nonnull String sequence) {
         return sanitize(sequence, SanitizationStrategy.REMOVE);
     }
 
@@ -139,8 +134,7 @@ public class MarkdownSanitizer
      * @see    #withIgnored(int)
      */
     @Nonnull
-    public static String sanitize(@Nonnull String sequence, @Nonnull SanitizationStrategy strategy)
-    {
+    public static String sanitize(@Nonnull String sequence, @Nonnull SanitizationStrategy strategy) {
         Checks.notNull(sequence, "String");
         Checks.notNull(strategy, "Strategy");
         return new MarkdownSanitizer().withStrategy(strategy).compute(sequence);
@@ -160,8 +154,7 @@ public class MarkdownSanitizer
      * @see    #escape(String, int)
      */
     @Nonnull
-    public static String escape(@Nonnull String sequence)
-    {
+    public static String escape(@Nonnull String sequence) {
         return escape(sequence, NORMAL);
     }
 
@@ -180,8 +173,7 @@ public class MarkdownSanitizer
      * @return The string with escaped markdown
      */
     @Nonnull
-    public static String escape(@Nonnull String sequence, int ignored)
-    {
+    public static String escape(@Nonnull String sequence, int ignored) {
         return new MarkdownSanitizer()
                 .withIgnored(ignored)
                 .withStrategy(SanitizationStrategy.ESCAPE)
@@ -200,8 +192,7 @@ public class MarkdownSanitizer
      * @return The current sanitizer instance with the new strategy
      */
     @Nonnull
-    public MarkdownSanitizer withStrategy(@Nonnull SanitizationStrategy strategy)
-    {
+    public MarkdownSanitizer withStrategy(@Nonnull SanitizationStrategy strategy) {
         Checks.notNull(strategy, "Strategy");
         this.strategy = strategy;
         return this;
@@ -217,134 +208,123 @@ public class MarkdownSanitizer
      * @return The current sanitizer instance with the new ignored regions
      */
     @Nonnull
-    public MarkdownSanitizer withIgnored(int ignored)
-    {
+    public MarkdownSanitizer withIgnored(int ignored) {
         this.ignored |= ignored;
         return this;
     }
 
-    private int getRegion(int index, @Nonnull String sequence)
-    {
-        if (sequence.length() - index >= 3)
-        {
+    private int getRegion(int index, @Nonnull String sequence) {
+        if (sequence.length() - index >= 3) {
             String threeChars = sequence.substring(index, index + 3);
-            switch (threeChars)
-            {
-                case "```":
-                    return doesEscape(index, sequence) ? ESCAPED_BLOCK : BLOCK;
-                case "***":
-                    return doesEscape(index, sequence) ? ESCAPED_BOLD | ITALICS_A : BOLD | ITALICS_A;
+            switch (threeChars) {
+            case "```":
+                return doesEscape(index, sequence) ? ESCAPED_BLOCK : BLOCK;
+            case "***":
+                return doesEscape(index, sequence) ? ESCAPED_BOLD | ITALICS_A : BOLD | ITALICS_A;
             }
         }
-        if (sequence.length() - index >= 2)
-        {
+        if (sequence.length() - index >= 2) {
             String twoChars = sequence.substring(index, index + 2);
-            switch (twoChars)
-            {
-                case "**":
-                    return doesEscape(index, sequence) ? ESCAPED_BOLD : BOLD;
-                case "__":
-                    return doesEscape(index, sequence) ? ESCAPED_UNDERLINE : UNDERLINE;
-                case "~~":
-                    return doesEscape(index, sequence) ? ESCAPED_STRIKE : STRIKE;
-                case "``":
-                    return doesEscape(index, sequence) ? ESCAPED_MONO_TWO : MONO_TWO;
-                case "||":
-                    return doesEscape(index, sequence) ? ESCAPED_SPOILER : SPOILER;
+            switch (twoChars) {
+            case "**":
+                return doesEscape(index, sequence) ? ESCAPED_BOLD : BOLD;
+            case "__":
+                return doesEscape(index, sequence) ? ESCAPED_UNDERLINE : UNDERLINE;
+            case "~~":
+                return doesEscape(index, sequence) ? ESCAPED_STRIKE : STRIKE;
+            case "``":
+                return doesEscape(index, sequence) ? ESCAPED_MONO_TWO : MONO_TWO;
+            case "||":
+                return doesEscape(index, sequence) ? ESCAPED_SPOILER : SPOILER;
             }
         }
         char current = sequence.charAt(index);
-        switch (current)
-        {
-            case '*':
-                return doesEscape(index, sequence) ? ESCAPED_ITALICS_A : ITALICS_A;
-            case '_':
-                return doesEscape(index, sequence) ? ESCAPED_ITALICS_U : ITALICS_U;
-            case '`':
-                return doesEscape(index, sequence) ? ESCAPED_MONO : MONO;
+        switch (current) {
+        case '*':
+            return doesEscape(index, sequence) ? ESCAPED_ITALICS_A : ITALICS_A;
+        case '_':
+            return doesEscape(index, sequence) ? ESCAPED_ITALICS_U : ITALICS_U;
+        case '`':
+            return doesEscape(index, sequence) ? ESCAPED_MONO : MONO;
         }
         return NORMAL;
     }
 
-    private boolean hasCollision(int index, @Nonnull String sequence, char c)
-    {
+    private boolean hasCollision(int index, @Nonnull String sequence, char c) {
         if (index < 0)
             return false;
         return index < sequence.length() - 1 && sequence.charAt(index + 1) == c;
     }
 
-    private int findEndIndex(int afterIndex, int region, @Nonnull String sequence)
-    {
+    private int findEndIndex(int afterIndex, int region, @Nonnull String sequence) {
         if (isEscape(region))
             return -1;
         int lastMatch = afterIndex + getDelta(region) + 1;
-        while (lastMatch != -1)
-        {
-            switch (region)
-            {
-                case BOLD | ITALICS_A:
-                    lastMatch = sequence.indexOf("***", lastMatch);
-                    break;
-                case BOLD:
-                    lastMatch = sequence.indexOf("**", lastMatch);
-                    if (lastMatch != -1 && hasCollision(lastMatch + 1, sequence, '*')) // did we find a bold italics tag?
-                    {
+        while (lastMatch != -1) {
+            switch (region) {
+            case BOLD | ITALICS_A:
+                lastMatch = sequence.indexOf("***", lastMatch);
+                break;
+            case BOLD:
+                lastMatch = sequence.indexOf("**", lastMatch);
+                if (lastMatch != -1 && hasCollision(lastMatch + 1, sequence, '*')) // did we find a bold italics tag?
+                {
+                    lastMatch += 3;
+                    continue;
+                }
+                break;
+            case ITALICS_A:
+                lastMatch = sequence.indexOf('*', lastMatch);
+                if (lastMatch != -1 && hasCollision(lastMatch, sequence, '*')) // did we find a bold tag?
+                {
+                    if (hasCollision(lastMatch + 1, sequence, '*'))
                         lastMatch += 3;
-                        continue;
-                    }
-                    break;
-                case ITALICS_A:
-                    lastMatch = sequence.indexOf('*', lastMatch);
-                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '*')) // did we find a bold tag?
-                    {
-                        if (hasCollision(lastMatch + 1, sequence, '*'))
-                            lastMatch += 3;
-                        else
-                            lastMatch += 2;
-                        continue;
-                    }
-                    break;
-                case UNDERLINE:
-                    lastMatch = sequence.indexOf("__", lastMatch);
-                    break;
-                case ITALICS_U:
-                    lastMatch = sequence.indexOf('_', lastMatch);
-                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '_')) // did we find an underline tag?
-                    {
+                    else
                         lastMatch += 2;
-                        continue;
-                    }
-                    break;
-                case SPOILER:
-                    lastMatch = sequence.indexOf("||", lastMatch);
-                    break;
-                case BLOCK:
-                    lastMatch = sequence.indexOf("```", lastMatch);
-                    break;
-                case MONO_TWO:
-                    lastMatch = sequence.indexOf("``", lastMatch);
-                    if (lastMatch != -1 && hasCollision(lastMatch + 1, sequence, '`')) // did we find a codeblock?
-                    {
+                    continue;
+                }
+                break;
+            case UNDERLINE:
+                lastMatch = sequence.indexOf("__", lastMatch);
+                break;
+            case ITALICS_U:
+                lastMatch = sequence.indexOf('_', lastMatch);
+                if (lastMatch != -1 && hasCollision(lastMatch, sequence, '_')) // did we find an underline tag?
+                {
+                    lastMatch += 2;
+                    continue;
+                }
+                break;
+            case SPOILER:
+                lastMatch = sequence.indexOf("||", lastMatch);
+                break;
+            case BLOCK:
+                lastMatch = sequence.indexOf("```", lastMatch);
+                break;
+            case MONO_TWO:
+                lastMatch = sequence.indexOf("``", lastMatch);
+                if (lastMatch != -1 && hasCollision(lastMatch + 1, sequence, '`')) // did we find a codeblock?
+                {
+                    lastMatch += 3;
+                    continue;
+                }
+                break;
+            case MONO:
+                lastMatch = sequence.indexOf('`', lastMatch);
+                if (lastMatch != -1 && hasCollision(lastMatch, sequence, '`')) // did we find a codeblock?
+                {
+                    if (hasCollision(lastMatch + 1, sequence, '`'))
                         lastMatch += 3;
-                        continue;
-                    }
-                    break;
-                case MONO:
-                    lastMatch = sequence.indexOf('`', lastMatch);
-                    if (lastMatch != -1 && hasCollision(lastMatch, sequence, '`')) // did we find a codeblock?
-                    {
-                        if (hasCollision(lastMatch + 1, sequence, '`'))
-                            lastMatch += 3;
-                        else
-                            lastMatch += 2;
-                        continue;
-                    }
-                    break;
-                case STRIKE:
-                    lastMatch = sequence.indexOf("~~", lastMatch);
-                    break;
-                default:
-                    return -1;
+                    else
+                        lastMatch += 2;
+                    continue;
+                }
+                break;
+            case STRIKE:
+                lastMatch = sequence.indexOf("~~", lastMatch);
+                break;
+            default:
+                return -1;
             }
             if (lastMatch == -1 || !doesEscape(lastMatch, sequence))
                 return lastMatch;
@@ -354,57 +334,51 @@ public class MarkdownSanitizer
     }
 
     @Nonnull
-    private String handleRegion(int start, int end, @Nonnull String sequence, int region)
-    {
+    private String handleRegion(int start, int end, @Nonnull String sequence, int region) {
         String resolved = sequence.substring(start, end);
-        switch (region)
-        {
-            case BLOCK:
-            case MONO:
-            case MONO_TWO:
-                return resolved;
-            default:
-                return new MarkdownSanitizer(ignored, strategy).compute(resolved);
+        switch (region) {
+        case BLOCK:
+        case MONO:
+        case MONO_TWO:
+            return resolved;
+        default:
+            return new MarkdownSanitizer(ignored, strategy).compute(resolved);
         }
     }
 
-    private int getDelta(int region)
-    {
-        switch (region)
-        {
-            case ESCAPED_BLOCK:
-            case ESCAPED_BOLD | ITALICS_A:
-            case BLOCK:
-            case BOLD | ITALICS_A:
-                return 3;
-            case ESCAPED_MONO_TWO:
-            case ESCAPED_BOLD:
-            case ESCAPED_UNDERLINE:
-            case ESCAPED_SPOILER:
-            case ESCAPED_STRIKE:
-            case MONO_TWO:
-            case BOLD:
-            case UNDERLINE:
-            case SPOILER:
-            case STRIKE:
-                return 2;
-            case ESCAPED_ITALICS_A:
-            case ESCAPED_ITALICS_U:
-            case ESCAPED_MONO:
-            case ESCAPED_QUOTE:
-            case ITALICS_A:
-            case ITALICS_U:
-            case MONO:
-                return 1;
-            default:
-                return 0;
+    private int getDelta(int region) {
+        switch (region) {
+        case ESCAPED_BLOCK:
+        case ESCAPED_BOLD | ITALICS_A:
+        case BLOCK:
+        case BOLD | ITALICS_A:
+            return 3;
+        case ESCAPED_MONO_TWO:
+        case ESCAPED_BOLD:
+        case ESCAPED_UNDERLINE:
+        case ESCAPED_SPOILER:
+        case ESCAPED_STRIKE:
+        case MONO_TWO:
+        case BOLD:
+        case UNDERLINE:
+        case SPOILER:
+        case STRIKE:
+            return 2;
+        case ESCAPED_ITALICS_A:
+        case ESCAPED_ITALICS_U:
+        case ESCAPED_MONO:
+        case ESCAPED_QUOTE:
+        case ITALICS_A:
+        case ITALICS_U:
+        case MONO:
+            return 1;
+        default:
+            return 0;
         }
     }
 
-    private void applyStrategy(int region, @Nonnull String seq, @Nonnull StringBuilder builder)
-    {
-        if (strategy == SanitizationStrategy.REMOVE)
-        {
+    private void applyStrategy(int region, @Nonnull String seq, @Nonnull StringBuilder builder) {
+        if (strategy == SanitizationStrategy.REMOVE) {
             if (codeLanguage.matcher(seq).matches())
                 builder.append(seq.substring(seq.indexOf("\n") + 1));
             else
@@ -421,15 +395,13 @@ public class MarkdownSanitizer
         else if (region == (BOLD | ITALICS_A))
             token = "*\\*\\*"; // BOLD | ITALICS_A needs special handling because the client thinks its BOLD if you only escape once
         builder.append("\\").append(token)
-               .append(seq)
-               .append("\\").append(token);
+                .append(seq)
+                .append("\\").append(token);
     }
 
-    private boolean doesEscape(int index, @Nonnull String seq)
-    {
+    private boolean doesEscape(int index, @Nonnull String seq) {
         int backslashes = 0;
-        for (int i = index - 1; i > -1; i--)
-        {
+        for (int i = index - 1; i > -1; i--) {
             if (seq.charAt(i) != '\\')
                 break;
             backslashes++;
@@ -437,13 +409,11 @@ public class MarkdownSanitizer
         return backslashes % 2 != 0;
     }
 
-    private boolean isEscape(int region)
-    {
+    private boolean isEscape(int region) {
         return (Integer.MIN_VALUE & region) != 0;
     }
 
-    private boolean isIgnored(int nextRegion)
-    {
+    private boolean isIgnored(int nextRegion) {
         return (nextRegion & ignored) == nextRegion;
     }
 
@@ -461,20 +431,16 @@ public class MarkdownSanitizer
      * @return The resulting string after applying the computation
      */
     @Nonnull
-    public String compute(@Nonnull String sequence)
-    {
+    public String compute(@Nonnull String sequence) {
         Checks.notNull(sequence, "Input");
         StringBuilder builder = new StringBuilder();
         String end = handleQuote(sequence, false);
         if (end != null) return end;
 
-        for (int i = 0; i < sequence.length();)
-        {
+        for (int i = 0; i < sequence.length(); ) {
             int nextRegion = getRegion(i, sequence);
-            if (nextRegion == NORMAL)
-            {
-                if (sequence.charAt(i) == '\n' && i + 1 < sequence.length())
-                {
+            if (nextRegion == NORMAL) {
+                if (sequence.charAt(i) == '\n' && i + 1 < sequence.length()) {
                     String result = handleQuote(sequence.substring(i + 1), true);
                     if (result != null)
                         return builder.append(result).toString();
@@ -485,8 +451,7 @@ public class MarkdownSanitizer
             }
 
             int endRegion = findEndIndex(i, nextRegion, sequence);
-            if (isIgnored(nextRegion) || endRegion == -1)
-            {
+            if (isIgnored(nextRegion) || endRegion == -1) {
                 int delta = getDelta(nextRegion);
                 for (int j = 0; j < delta; j++)
                     builder.append(sequence.charAt(i++));
@@ -499,11 +464,9 @@ public class MarkdownSanitizer
         return builder.toString();
     }
 
-    private String handleQuote(@Nonnull String sequence, boolean newline)
-    {
+    private String handleQuote(@Nonnull String sequence, boolean newline) {
         // Special handling for quote
-        if (!isIgnored(QUOTE) && quote.matcher(sequence).matches())
-        {
+        if (!isIgnored(QUOTE) && quote.matcher(sequence).matches()) {
             int start = sequence.indexOf('>');
             if (start < 0)
                 start = 0;
@@ -515,8 +478,7 @@ public class MarkdownSanitizer
             return builder.toString();
 
         }
-        else if (!isIgnored(QUOTE_BLOCK) && quoteBlock.matcher(sequence).matches())
-        {
+        else if (!isIgnored(QUOTE_BLOCK) && quoteBlock.matcher(sequence).matches()) {
             if (strategy == SanitizationStrategy.ESCAPE)
                 return compute("\\".concat(sequence));
             return compute(sequence.substring(4));
@@ -524,8 +486,7 @@ public class MarkdownSanitizer
         return null;
     }
 
-    public enum SanitizationStrategy
-    {
+    public enum SanitizationStrategy {
         /**
          * Remove any format tokens that are not escaped or within a special region.
          * <br>{@code "**Hello** World!" -> "Hello World!"}

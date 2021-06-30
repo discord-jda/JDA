@@ -27,8 +27,7 @@ import java.util.concurrent.ExecutorService;
  * @param <T>
  *        The type of executor
  */
-public interface ThreadPoolProvider<T extends ExecutorService>
-{
+public interface ThreadPoolProvider<T extends ExecutorService> {
     /**
      * Provides an instance of the specified executor, or null
      *
@@ -48,8 +47,7 @@ public interface ThreadPoolProvider<T extends ExecutorService>
      *
      * @return True, if the executor should be shutdown by JDA
      */
-    default boolean shouldShutdownAutomatically(int shardId)
-    {
+    default boolean shouldShutdownAutomatically(int shardId) {
         return false;
     }
 }

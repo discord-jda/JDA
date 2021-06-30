@@ -23,8 +23,7 @@ import java.nio.ByteBuffer;
 /**
  * Interface used to send audio to Discord through JDA.
  */
-public interface AudioSendHandler
-{
+public interface AudioSendHandler {
     /**
      * Audio Input Format expected by JDA if {@link #isOpus()} returns false. 48KHz 16bit stereo signed BigEndian PCM.
      */
@@ -71,8 +70,7 @@ public interface AudioSendHandler
      * @return If true, JDA will not attempt to encode the provided audio data as Opus.
      *         <br>Default - False.
      */
-    default boolean isOpus()
-    {
+    default boolean isOpus() {
         return false;
     }
 }

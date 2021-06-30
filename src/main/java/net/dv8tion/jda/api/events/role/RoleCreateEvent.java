@@ -26,10 +26,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the created Role and its Guild.
  */
-public class RoleCreateEvent extends GenericRoleEvent
-{
-    public RoleCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role createdRole)
-    {
+public class RoleCreateEvent extends GenericRoleEvent {
+    public RoleCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Role createdRole) {
         super(api, responseNumber, createdRole);
     }
 }

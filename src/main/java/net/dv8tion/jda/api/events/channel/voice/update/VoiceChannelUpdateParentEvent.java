@@ -30,12 +30,10 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code parent}
  */
-public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEvent<Category>
-{
+public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEvent<Category> {
     public static final String IDENTIFIER = "parent";
 
-    public VoiceChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nullable Category oldParent)
-    {
+    public VoiceChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, @Nullable Category oldParent) {
         super(api, responseNumber, channel, oldParent, channel.getParent(), IDENTIFIER);
     }
 
@@ -45,8 +43,7 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
      * @return The old parent, or null
      */
     @Nullable
-    public Category getOldParent()
-    {
+    public Category getOldParent() {
         return getOldValue();
     }
 
@@ -56,8 +53,7 @@ public class VoiceChannelUpdateParentEvent extends GenericVoiceChannelUpdateEven
      * @return The new parent, or null
      */
     @Nullable
-    public Category getNewParent()
-    {
+    public Category getNewParent() {
         return getNewValue();
     }
 }

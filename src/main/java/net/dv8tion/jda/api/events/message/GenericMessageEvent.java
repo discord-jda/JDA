@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} was created/deleted/changed.
  * <br>Every MessageEvent is an instance of this event and can be casted.
- * 
+ *
  * <p>Can be used to detect any MessageEvent.
  *
  * <h2>Requirements</h2>
@@ -35,13 +35,11 @@ import javax.annotation.Nonnull;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} to work in private channels</li>
  * </ul>
  */
-public abstract class GenericMessageEvent extends Event
-{
+public abstract class GenericMessageEvent extends Event {
     protected final long messageId;
     protected final MessageChannel channel;
 
-    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel)
-    {
+    public GenericMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull MessageChannel channel) {
         super(api, responseNumber);
         this.messageId = messageId;
         this.channel = channel;
@@ -53,8 +51,7 @@ public abstract class GenericMessageEvent extends Event
      * @return The MessageChannel
      */
     @Nonnull
-    public MessageChannel getChannel()
-    {
+    public MessageChannel getChannel() {
         return channel;
     }
 
@@ -64,8 +61,7 @@ public abstract class GenericMessageEvent extends Event
      * @return The id for this message
      */
     @Nonnull
-    public String getMessageId()
-    {
+    public String getMessageId() {
         return Long.toUnsignedString(messageId);
     }
 
@@ -74,8 +70,7 @@ public abstract class GenericMessageEvent extends Event
      *
      * @return The id for this message
      */
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 
@@ -87,8 +82,7 @@ public abstract class GenericMessageEvent extends Event
      *
      * @return True, if the message is from the specified channel type
      */
-    public boolean isFromType(@Nonnull ChannelType type)
-    {
+    public boolean isFromType(@Nonnull ChannelType type) {
         return channel.getType() == type;
     }
 
@@ -98,8 +92,7 @@ public abstract class GenericMessageEvent extends Event
      *
      * @return True, if {@link #getChannelType()}.{@link ChannelType#isGuild() isGuild()} is true.
      */
-    public boolean isFromGuild()
-    {
+    public boolean isFromGuild() {
         return getChannelType().isGuild();
     }
 
@@ -109,8 +102,7 @@ public abstract class GenericMessageEvent extends Event
      * @return The ChannelType
      */
     @Nonnull
-    public ChannelType getChannelType()
-    {
+    public ChannelType getChannelType() {
         return channel.getType();
     }
 
@@ -129,8 +121,7 @@ public abstract class GenericMessageEvent extends Event
      * @see    #getChannelType()
      */
     @Nonnull
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return getTextChannel().getGuild();
     }
 
@@ -149,8 +140,7 @@ public abstract class GenericMessageEvent extends Event
      * @see    #getChannelType()
      */
     @Nonnull
-    public TextChannel getTextChannel()
-    {
+    public TextChannel getTextChannel() {
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("This message event did not happen in a text channel");
         return (TextChannel) channel;
@@ -171,8 +161,7 @@ public abstract class GenericMessageEvent extends Event
      * @see    #getChannelType()
      */
     @Nonnull
-    public PrivateChannel getPrivateChannel()
-    {
+    public PrivateChannel getPrivateChannel() {
         if (!isFromType(ChannelType.PRIVATE))
             throw new IllegalStateException("This message event did not happen in a private channel");
         return (PrivateChannel) channel;

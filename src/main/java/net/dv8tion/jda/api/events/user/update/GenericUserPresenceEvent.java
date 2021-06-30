@@ -40,8 +40,7 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public interface GenericUserPresenceEvent extends GenericEvent
-{
+public interface GenericUserPresenceEvent extends GenericEvent {
     /**
      * Guild in which the presence has changed.
      *

@@ -30,8 +30,7 @@ import javax.annotation.Nullable;
  * <p>This is a more advanced version of a {@link VoiceChannel}
  * that can be used to host events with speakers and listeners.
  */
-public interface StageChannel extends VoiceChannel
-{
+public interface StageChannel extends VoiceChannel {
     /**
      * {@link StageInstance} attached to this stage channel.
      *
@@ -88,8 +87,7 @@ public interface StageChannel extends VoiceChannel
      *
      * @return True, if the provided member is a stage moderator
      */
-    default boolean isModerator(@Nonnull Member member)
-    {
+    default boolean isModerator(@Nonnull Member member) {
         Checks.notNull(member, "Member");
         return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
     }

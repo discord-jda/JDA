@@ -28,12 +28,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect any StoreChannelEvent.
  */
-public abstract class GenericStoreChannelEvent extends Event
-{
+public abstract class GenericStoreChannelEvent extends Event {
     protected final StoreChannel channel;
 
-    public GenericStoreChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel)
-    {
+    public GenericStoreChannelEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel) {
         super(api, responseNumber);
         this.channel = channel;
     }
@@ -44,8 +42,7 @@ public abstract class GenericStoreChannelEvent extends Event
      * @return The channel
      */
     @Nonnull
-    public StoreChannel getChannel()
-    {
+    public StoreChannel getChannel() {
         return channel;
     }
 }

@@ -54,6 +54,7 @@ public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L
     }
 
     //-----------------------------------------------------------------------
+
     /**
      * <p>Gets the left element from this pair.</p>
      *
@@ -87,7 +88,7 @@ public abstract class Pair<L, R> implements /*Map.Entry<L, R>, Comparable<Pair<L
         if (obj instanceof Pair<?, ?>) {
             final Pair<?, ?> other = (Pair<?, ?>) obj;
             return Objects.equals(getLeft(), other.getLeft())
-                && Objects.equals(getRight(), other.getRight());
+                    && Objects.equals(getRight(), other.getRight());
         }
         return false;
     }

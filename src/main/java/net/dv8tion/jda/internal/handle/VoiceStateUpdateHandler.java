@@ -31,16 +31,13 @@ import net.dv8tion.jda.internal.requests.WebSocketClient;
 import java.time.OffsetDateTime;
 import java.util.Objects;
 
-public class VoiceStateUpdateHandler extends SocketHandler
-{
-    public VoiceStateUpdateHandler(JDAImpl api)
-    {
+public class VoiceStateUpdateHandler extends SocketHandler {
+    public VoiceStateUpdateHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         final Long guildId = content.isNull("guild_id") ? null : content.getLong("guild_id");
         if (guildId == null)
             return null; //unhandled for calls
@@ -48,8 +45,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             return guildId;
 
         // TODO: Handle these voice states properly
-        if (content.isNull("member"))
-        {
+        if (content.isNull("member")) {
             WebSocketClient.LOG.debug("Discarding VOICE_STATE_UPDATE with missing member. JSON: {}", content);
             return null;
         }
@@ -58,8 +54,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         return null;
     }
 
-    private void handleGuildVoiceState(DataObject content)
-    {
+    private void handleGuildVoiceState(DataObject content) {
         final long userId = content.getLong("user_id");
         final long guildId = content.getLong("guild_id");
         final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;
@@ -73,23 +68,20 @@ public class VoiceStateUpdateHandler extends SocketHandler
         String requestToSpeak = content.getString("request_to_speak_timestamp", null);
         OffsetDateTime requestToSpeakTime = null;
         long requestToSpeakTimestamp = 0L;
-        if (requestToSpeak != null)
-        {
+        if (requestToSpeak != null) {
             requestToSpeakTime = OffsetDateTime.parse(requestToSpeak);
             requestToSpeakTimestamp = requestToSpeakTime.toInstant().toEpochMilli();
         }
 
         Guild guild = getJDA().getGuildById(guildId);
-        if (guild == null)
-        {
+        if (guild == null) {
             getJDA().getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received a VOICE_STATE_UPDATE for a Guild that has yet to be cached. JSON: {}", content);
             return;
         }
 
         VoiceChannelImpl channel = channelId != null ? (VoiceChannelImpl) guild.getVoiceChannelById(channelId) : null;
-        if (channel == null && channelId != null)
-        {
+        if (channel == null && channelId != null) {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Received VOICE_STATE_UPDATE for a VoiceChannel that has yet to be cached. JSON: {}", content);
             return;
@@ -110,38 +102,32 @@ public class VoiceStateUpdateHandler extends SocketHandler
         boolean wasMute = vState.isMuted();
         boolean wasDeaf = vState.isDeafened();
 
-        if (selfMuted != vState.isSelfMuted())
-        {
+        if (selfMuted != vState.isSelfMuted()) {
             vState.setSelfMuted(selfMuted);
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceSelfMuteEvent(getJDA(), responseNumber, member));
         }
-        if (selfDeafened != vState.isSelfDeafened())
-        {
+        if (selfDeafened != vState.isSelfDeafened()) {
             vState.setSelfDeafened(selfDeafened);
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceSelfDeafenEvent(getJDA(), responseNumber, member));
         }
-        if (guildMuted != vState.isGuildMuted())
-        {
+        if (guildMuted != vState.isGuildMuted()) {
             vState.setGuildMuted(guildMuted);
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceGuildMuteEvent(getJDA(), responseNumber, member));
         }
-        if (guildDeafened != vState.isGuildDeafened())
-        {
+        if (guildDeafened != vState.isGuildDeafened()) {
             vState.setGuildDeafened(guildDeafened);
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceGuildDeafenEvent(getJDA(), responseNumber, member));
         }
-        if (suppressed != vState.isSuppressed())
-        {
+        if (suppressed != vState.isSuppressed()) {
             vState.setSuppressed(suppressed);
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceSuppressEvent(getJDA(), responseNumber, member));
         }
-        if (stream != vState.isStream())
-        {
+        if (stream != vState.isStream()) {
             vState.setStream(stream);
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceStreamEvent(getJDA(), responseNumber, member, stream));
@@ -150,44 +136,38 @@ public class VoiceStateUpdateHandler extends SocketHandler
             getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
         if (wasDeaf != vState.isDeafened())
             getJDA().handleEvent(new GuildVoiceDeafenEvent(getJDA(), responseNumber, member));
-        if (requestToSpeakTimestamp != vState.getRequestToSpeak())
-        {
+        if (requestToSpeakTimestamp != vState.getRequestToSpeak()) {
             OffsetDateTime oldRequestToSpeak = vState.getRequestToSpeakTimestamp();
             vState.setRequestToSpeak(requestToSpeakTime);
             getJDA().handleEvent(new GuildVoiceRequestToSpeakEvent(getJDA(), responseNumber, member, oldRequestToSpeak, requestToSpeakTime));
         }
 
-        if (!Objects.equals(channel, vState.getChannel()))
-        {
+        if (!Objects.equals(channel, vState.getChannel())) {
             VoiceChannelImpl oldChannel = (VoiceChannelImpl) vState.getChannel();
             vState.setConnectedChannel(channel);
 
-            if (oldChannel == null)
-            {
+            if (oldChannel == null) {
                 channel.getConnectedMembersMap().put(userId, member);
                 getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
-                    new GuildVoiceJoinEvent(
-                        getJDA(), responseNumber,
-                        member));
+                        new GuildVoiceJoinEvent(
+                                getJDA(), responseNumber,
+                                member));
             }
-            else if (channel == null)
-            {
+            else if (channel == null) {
                 oldChannel.getConnectedMembersMap().remove(userId);
                 if (isSelf)
                     getJDA().getDirectAudioController().update(guild, null);
                 getJDA().getEntityBuilder().updateMemberCache(member, memberJson.isNull("joined_at"));
                 getJDA().handleEvent(
-                    new GuildVoiceLeaveEvent(
-                        getJDA(), responseNumber,
-                        member, oldChannel));
+                        new GuildVoiceLeaveEvent(
+                                getJDA(), responseNumber,
+                                member, oldChannel));
             }
-            else
-            {
+            else {
                 AudioManagerImpl mng = (AudioManagerImpl) getJDA().getAudioManagersView().get(guildId);
                 //If the currently connected account is the one that is being moved
-                if (isSelf && mng != null && voiceInterceptor == null)
-                {
+                if (isSelf && mng != null && voiceInterceptor == null) {
                     //And this instance of JDA is connected or attempting to connect,
                     // then change the channel we expect to be connected to.
                     if (mng.isConnected())
@@ -206,14 +186,13 @@ public class VoiceStateUpdateHandler extends SocketHandler
                 oldChannel.getConnectedMembersMap().remove(userId);
                 getJDA().getEntityBuilder().updateMemberCache(member);
                 getJDA().handleEvent(
-                    new GuildVoiceMoveEvent(
-                        getJDA(), responseNumber,
-                        member, oldChannel));
+                        new GuildVoiceMoveEvent(
+                                getJDA(), responseNumber,
+                                member, oldChannel));
             }
         }
 
-        if (isSelf && voiceInterceptor != null)
-        {
+        if (isSelf && voiceInterceptor != null) {
             if (voiceInterceptor.onVoiceStateUpdate(new VoiceDispatchInterceptor.VoiceStateUpdate(channel, vState, allContent)))
                 getJDA().getDirectAudioController().update(guild, channel);
         }

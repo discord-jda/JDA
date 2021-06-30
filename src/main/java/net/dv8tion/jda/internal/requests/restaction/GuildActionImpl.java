@@ -36,8 +36,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
-{
+public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction {
     protected String name;
     protected Region region;
     protected Icon icon;
@@ -48,8 +47,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     protected final List<RoleData> roles;
     protected final List<ChannelData> channels;
 
-    public GuildActionImpl(JDA api, String name)
-    {
+    public GuildActionImpl(JDA api, String name) {
         super(api, Route.Guilds.CREATE_GUILD.compile());
         this.setName(name);
 
@@ -61,30 +59,26 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
 
     @Nonnull
     @Override
-    public GuildActionImpl setCheck(BooleanSupplier checks)
-    {
+    public GuildActionImpl setCheck(BooleanSupplier checks) {
         return (GuildActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public GuildActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public GuildActionImpl timeout(long timeout, @Nonnull TimeUnit unit) {
         return (GuildActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public GuildActionImpl deadline(long timestamp)
-    {
+    public GuildActionImpl deadline(long timestamp) {
         return (GuildActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl setRegion(Region region)
-    {
+    public GuildActionImpl setRegion(Region region) {
         Checks.check(region == null || !region.isVip(), "Cannot create a Guild with a VIP voice region!");
         this.region = region;
         return this;
@@ -93,8 +87,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl setIcon(Icon icon)
-    {
+    public GuildActionImpl setIcon(Icon icon) {
         this.icon = icon;
         return this;
     }
@@ -102,8 +95,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl setName(@Nonnull String name)
-    {
+    public GuildActionImpl setName(@Nonnull String name) {
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
@@ -115,8 +107,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl setVerificationLevel(Guild.VerificationLevel level)
-    {
+    public GuildActionImpl setVerificationLevel(Guild.VerificationLevel level) {
         this.verificationLevel = level;
         return this;
     }
@@ -124,8 +115,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl setNotificationLevel(Guild.NotificationLevel level)
-    {
+    public GuildActionImpl setNotificationLevel(Guild.NotificationLevel level) {
         this.notificationLevel = level;
         return this;
     }
@@ -133,8 +123,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl setExplicitContentLevel(Guild.ExplicitContentLevel level)
-    {
+    public GuildActionImpl setExplicitContentLevel(Guild.ExplicitContentLevel level) {
         this.explicitContentLevel = level;
         return this;
     }
@@ -144,8 +133,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl addChannel(@Nonnull ChannelData channel)
-    {
+    public GuildActionImpl addChannel(@Nonnull ChannelData channel) {
         Checks.notNull(channel, "Channel");
         this.channels.add(channel);
         return this;
@@ -154,24 +142,21 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelData getChannel(int index)
-    {
+    public ChannelData getChannel(int index) {
         return this.channels.get(index);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelData removeChannel(int index)
-    {
+    public ChannelData removeChannel(int index) {
         return this.channels.remove(index);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public GuildActionImpl removeChannel(@Nonnull ChannelData data)
-    {
+    public GuildActionImpl removeChannel(@Nonnull ChannelData data) {
         this.channels.remove(data);
         return this;
     }
@@ -179,8 +164,7 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelData newChannel(@Nonnull ChannelType type, @Nonnull String name)
-    {
+    public ChannelData newChannel(@Nonnull ChannelType type, @Nonnull String name) {
         ChannelData data = new ChannelData(type, name);
         addChannel(data);
         return data;
@@ -191,32 +175,28 @@ public class GuildActionImpl extends RestActionImpl<Void> implements GuildAction
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleData getPublicRole()
-    {
+    public RoleData getPublicRole() {
         return this.roles.get(0);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleData getRole(int index)
-    {
+    public RoleData getRole(int index) {
         return this.roles.get(index);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public RoleData newRole()
-    {
+    public RoleData newRole() {
         final RoleData role = new RoleData(roles.size());
         this.roles.add(role);
         return role;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         final DataObject object = DataObject.empty();
         object.put("name", name);
         object.put("roles", DataArray.fromCollection(roles));

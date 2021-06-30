@@ -31,12 +31,10 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code banner}
  */
-public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "banner";
 
-    public GuildUpdateBannerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous)
-    {
+    public GuildUpdateBannerEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String previous) {
         super(api, responseNumber, guild, previous, guild.getBannerId(), IDENTIFIER);
     }
 
@@ -46,8 +44,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The new banner id, or null if the banner was removed
      */
     @Nullable
-    public String getNewBannerId()
-    {
+    public String getNewBannerId() {
         return getNewValue();
     }
 
@@ -57,8 +54,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The new banner url, or null if the banner was removed
      */
     @Nullable
-    public String getNewBannerUrl()
-    {
+    public String getNewBannerUrl() {
         return next == null ? null : String.format(Guild.BANNER_URL, guild.getId(), next);
     }
 
@@ -73,8 +69,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
     @Deprecated
     @DeprecatedSince("4.2.0")
     @ReplaceWith("getNewBannerUrl()")
-    public String getNewBannerIdUrl()
-    {
+    public String getNewBannerIdUrl() {
         return getNewBannerUrl();
     }
 
@@ -84,8 +79,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The old banner id, or null if the banner didn't exist
      */
     @Nullable
-    public String getOldBannerId()
-    {
+    public String getOldBannerId() {
         return getOldValue();
     }
 
@@ -95,8 +89,7 @@ public class GuildUpdateBannerEvent extends GenericGuildUpdateEvent<String>
      * @return The old banner url, or null if the banner didn't exist
      */
     @Nullable
-    public String getOldBannerUrl()
-    {
+    public String getOldBannerUrl() {
         return previous == null ? null : String.format(Guild.BANNER_URL, guild.getId(), previous);
     }
 }

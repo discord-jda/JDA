@@ -26,21 +26,17 @@ import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
-public class GuildMembersChunkHandler extends SocketHandler
-{
-    public GuildMembersChunkHandler(JDAImpl api)
-    {
+public class GuildMembersChunkHandler extends SocketHandler {
+    public GuildMembersChunkHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         final long guildId = content.getLong("guild_id");
         DataArray members = content.getArray("members");
         GuildImpl guild = (GuildImpl) getJDA().getGuildById(guildId);
-        if (guild != null)
-        {
+        if (guild != null) {
             if (api.getClient().getChunkManager().handleChunk(guildId, content))
                 return null;
             WebSocketClient.LOG.debug("Received member chunk for guild that is already in cache. GuildId: {} Count: {} Index: {}/{}",
@@ -48,10 +44,9 @@ public class GuildMembersChunkHandler extends SocketHandler
             // Chunk handling
             EntityBuilder builder = getJDA().getEntityBuilder();
             TLongObjectMap<DataObject> presences = content.optArray("presences").map(it ->
-                builder.convertToUserMap(o -> o.getObject("user").getUnsignedLong("id"), it)
+                    builder.convertToUserMap(o -> o.getObject("user").getUnsignedLong("id"), it)
             ).orElseGet(TLongObjectHashMap::new);
-            for (int i = 0; i < members.length(); i++)
-            {
+            for (int i = 0; i < members.length(); i++) {
                 DataObject object = members.getObject(i);
                 long userId = object.getObject("user").getUnsignedLong("id");
                 DataObject presence = presences.get(userId);

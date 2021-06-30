@@ -28,10 +28,8 @@ import javax.annotation.Nonnull;
  *
  * @see UnavailableGuildJoinedEvent
  */
-public class GuildJoinEvent extends GenericGuildEvent
-{
-    public GuildJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild)
-    {
+public class GuildJoinEvent extends GenericGuildEvent {
+    public GuildJoinEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild) {
         super(api, responseNumber, guild);
     }
 }

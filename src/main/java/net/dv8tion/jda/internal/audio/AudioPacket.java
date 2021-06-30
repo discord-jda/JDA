@@ -30,8 +30,7 @@ import java.util.Arrays;
  *
  * @see <a href="https://tools.ietf.org/html/rfc3550" target="_blank">RFC 3350 - RTP: A Transport Protocol for Real-Time Applications</a>
  */
-public class AudioPacket
-{
+public class AudioPacket {
     public static final int RTP_HEADER_BYTE_LENGTH = 12;
 
     /**
@@ -53,10 +52,10 @@ public class AudioPacket
      */
     public static final short RTP_DISCORD_EXTENSION = (short) 0xBEDE;
 
-    public static final int PT_INDEX =                      1;
-    public static final int SEQ_INDEX =                     2;
-    public static final int TIMESTAMP_INDEX =               4;
-    public static final int SSRC_INDEX =                    8;
+    public static final int PT_INDEX = 1;
+    public static final int SEQ_INDEX = 2;
+    public static final int TIMESTAMP_INDEX = 4;
+    public static final int SSRC_INDEX = 8;
 
     private final byte type;
     private final char seq;
@@ -65,13 +64,11 @@ public class AudioPacket
     private final byte[] rawPacket;
     private final ByteBuffer encodedAudio;
 
-    public AudioPacket(DatagramPacket packet)
-    {
+    public AudioPacket(DatagramPacket packet) {
         this(Arrays.copyOf(packet.getData(), packet.getLength()));
     }
 
-    public AudioPacket(byte[] rawPacket)
-    {
+    public AudioPacket(byte[] rawPacket) {
         this.rawPacket = rawPacket;
 
         ByteBuffer buffer = ByteBuffer.wrap(rawPacket);
@@ -97,8 +94,7 @@ public class AudioPacket
         ((Buffer) this.encodedAudio).flip();
     }
 
-    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio)
-    {
+    public AudioPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer encodedAudio) {
         this.seq = seq;
         this.ssrc = ssrc;
         this.timestamp = timestamp;
@@ -107,8 +103,7 @@ public class AudioPacket
         this.rawPacket = generateRawPacket(buffer, seq, timestamp, ssrc, encodedAudio);
     }
 
-    private int getPayloadOffset(byte[] data, int csrcLength)
-    {
+    private int getPayloadOffset(byte[] data, int csrcLength) {
         // headerLength defines number of 4-byte words in the extension
         final short headerLength = IOUtil.getShortBigEndian(data, RTP_HEADER_BYTE_LENGTH + 2 + csrcLength);
         int i = RTP_HEADER_BYTE_LENGTH // RTP header = 12 bytes
@@ -123,47 +118,39 @@ public class AudioPacket
     }
 
     @SuppressWarnings("unused")
-    public byte[] getHeader()
-    {
+    public byte[] getHeader() {
         //The first 12 bytes of the rawPacket are the RTP Discord Nonce.
         return Arrays.copyOf(rawPacket, RTP_HEADER_BYTE_LENGTH);
     }
 
-    public byte[] getNoncePadded()
-    {
+    public byte[] getNoncePadded() {
         byte[] nonce = new byte[TweetNaclFast.SecretBox.nonceLength];
         //The first 12 bytes are the rawPacket are the RTP Discord Nonce.
         System.arraycopy(rawPacket, 0, nonce, 0, RTP_HEADER_BYTE_LENGTH);
         return nonce;
     }
 
-    public byte[] getRawPacket()
-    {
+    public byte[] getRawPacket() {
         return rawPacket;
     }
 
-    public ByteBuffer getEncodedAudio()
-    {
+    public ByteBuffer getEncodedAudio() {
         return encodedAudio;
     }
 
-    public char getSequence()
-    {
+    public char getSequence() {
         return seq;
     }
 
-    public int getSSRC()
-    {
+    public int getSSRC() {
         return ssrc;
     }
 
-    public int getTimestamp()
-    {
+    public int getTimestamp() {
         return timestamp;
     }
 
-    protected ByteBuffer asEncryptedPacket(TweetNaclFast.SecretBox boxer, ByteBuffer buffer, byte[] nonce, int nlen)
-    {
+    protected ByteBuffer asEncryptedPacket(TweetNaclFast.SecretBox boxer, ByteBuffer buffer, byte[] nonce, int nlen) {
         //Xsalsa20's Nonce is 24 bytes long, however RTP (and consequently Discord)'s nonce is a different length
         // so we need to create a 24 byte array, and copy the nonce into it.
         // we will leave the extra bytes as nulls. (Java sets non-populated bytes as 0).
@@ -189,8 +176,7 @@ public class AudioPacket
         return buffer;
     }
 
-    protected static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey)
-    {
+    protected static AudioPacket decryptAudioPacket(AudioEncryption encryption, DatagramPacket packet, byte[] secretKey) {
         TweetNaclFast.SecretBox boxer = new TweetNaclFast.SecretBox(secretKey);
         AudioPacket encryptedPacket = new AudioPacket(packet);
         if (encryptedPacket.type != RTP_PAYLOAD_TYPE)
@@ -198,46 +184,43 @@ public class AudioPacket
 
         byte[] extendedNonce;
         byte[] rawPacket = encryptedPacket.getRawPacket();
-        switch (encryption)
-        {
-            case XSALSA20_POLY1305:
-                extendedNonce = encryptedPacket.getNoncePadded();
-                break;
-            case XSALSA20_POLY1305_SUFFIX:
-                extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-                System.arraycopy(rawPacket, rawPacket.length - extendedNonce.length, extendedNonce, 0, extendedNonce.length);
-                break;
-            case XSALSA20_POLY1305_LITE:
-                extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
-                System.arraycopy(rawPacket, rawPacket.length - 4, extendedNonce, 0, 4);
-                break;
-            default:
-                AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
-                return null;
+        switch (encryption) {
+        case XSALSA20_POLY1305:
+            extendedNonce = encryptedPacket.getNoncePadded();
+            break;
+        case XSALSA20_POLY1305_SUFFIX:
+            extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
+            System.arraycopy(rawPacket, rawPacket.length - extendedNonce.length, extendedNonce, 0, extendedNonce.length);
+            break;
+        case XSALSA20_POLY1305_LITE:
+            extendedNonce = new byte[TweetNaclFast.SecretBox.nonceLength];
+            System.arraycopy(rawPacket, rawPacket.length - 4, extendedNonce, 0, 4);
+            break;
+        default:
+            AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
+            return null;
         }
 
         ByteBuffer encodedAudio = encryptedPacket.encodedAudio;
         int length = encodedAudio.remaining();
         int offset = encodedAudio.arrayOffset() + encodedAudio.position();
-        switch (encryption)
-        {
-            case XSALSA20_POLY1305:
+        switch (encryption) {
+        case XSALSA20_POLY1305:
 //                length = encodedAudio.remaining();
-                break;
-            case XSALSA20_POLY1305_LITE:
-                length -= 4;
-                break;
-            case XSALSA20_POLY1305_SUFFIX:
-                length -= TweetNaclFast.SecretBox.nonceLength;
-                break;
-            default:
-                AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
-                return null;
+            break;
+        case XSALSA20_POLY1305_LITE:
+            length -= 4;
+            break;
+        case XSALSA20_POLY1305_SUFFIX:
+            length -= TweetNaclFast.SecretBox.nonceLength;
+            break;
+        default:
+            AudioConnection.LOG.debug("Failed to decrypt audio packet, unsupported encryption mode!");
+            return null;
         }
 
         final byte[] decryptedAudio = boxer.open(encodedAudio.array(), offset, length, extendedNonce);
-        if (decryptedAudio == null)
-        {
+        if (decryptedAudio == null) {
             AudioConnection.LOG.trace("Failed to decrypt audio packet");
             return null;
         }
@@ -251,16 +234,14 @@ public class AudioPacket
         return new AudioPacket(decryptedRawPacket);
     }
 
-    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data)
-    {
+    private static byte[] generateRawPacket(ByteBuffer buffer, char seq, int timestamp, int ssrc, ByteBuffer data) {
         if (buffer == null)
             buffer = ByteBuffer.allocate(RTP_HEADER_BYTE_LENGTH + data.remaining());
         populateBuffer(seq, timestamp, ssrc, data, buffer);
         return buffer.array();
     }
 
-    private static void populateBuffer(char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer)
-    {
+    private static void populateBuffer(char seq, int timestamp, int ssrc, ByteBuffer data, ByteBuffer buffer) {
         buffer.put(RTP_VERSION_PAD_EXTEND);
         buffer.put(RTP_PAYLOAD_TYPE);
         buffer.putChar(seq);

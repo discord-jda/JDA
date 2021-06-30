@@ -29,12 +29,10 @@ import java.util.*;
  *
  * @see net.dv8tion.jda.api.events.interaction.ButtonClickEvent
  */
-public interface ButtonInteraction extends ComponentInteraction
-{
+public interface ButtonInteraction extends ComponentInteraction {
     @Nullable
     @Override
-    default Button getComponent()
-    {
+    default Button getComponent() {
         return getButton();
     }
 
@@ -66,21 +64,18 @@ public interface ButtonInteraction extends ComponentInteraction
      */
     @Nonnull
     @CheckReturnValue
-    default RestAction<Void> editButton(@Nullable Button newButton)
-    {
+    default RestAction<Void> editButton(@Nullable Button newButton) {
         Message message = getMessage();
         if (message == null)
             throw new IllegalStateException("Cannot update button for ephemeral messages! Discord does not provide enough information to perform the update.");
         List<ActionRow> components = new ArrayList<>(message.getActionRows());
         String id = getComponentId();
-        find: for (Iterator<ActionRow> rows = components.iterator(); rows.hasNext();)
-        {
+        find:
+        for (Iterator<ActionRow> rows = components.iterator(); rows.hasNext(); ) {
             List<Component> row = rows.next().getComponents();
-            for (ListIterator<Component> it = row.listIterator(); it.hasNext();)
-            {
+            for (ListIterator<Component> it = row.listIterator(); it.hasNext(); ) {
                 Component component = it.next();
-                if (id.equals(component.getId()))
-                {
+                if (id.equals(component.getId())) {
                     if (newButton == null)
                         it.remove();
                     else

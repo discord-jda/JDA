@@ -28,8 +28,7 @@ import javax.annotation.Nullable;
  *
  * @see CacheView CacheView for details on Efficient Memory Usage
  */
-public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T>
-{
+public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T> {
     /**
      * Retrieves the entity represented by the provided ID.
      *
@@ -54,8 +53,7 @@ public interface SnowflakeCacheView<T extends ISnowflake> extends CacheView<T>
      * @return Possibly-null entity for the specified ID
      */
     @Nullable
-    default T getElementById(@Nonnull String id)
-    {
+    default T getElementById(@Nonnull String id) {
         return getElementById(MiscUtil.parseSnowflake(id));
     }
 }

@@ -27,12 +27,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code userlimit}
  */
-public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent<Integer>
-{
+public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateEvent<Integer> {
     public static final String IDENTIFIER = "userlimit";
 
-    public VoiceChannelUpdateUserLimitEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldUserLimit)
-    {
+    public VoiceChannelUpdateUserLimitEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel, int oldUserLimit) {
         super(api, responseNumber, channel, oldUserLimit, channel.getUserLimit(), IDENTIFIER);
     }
 
@@ -41,8 +39,7 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
      *
      * @return The old userlimit
      */
-    public int getOldUserLimit()
-    {
+    public int getOldUserLimit() {
         return getOldValue();
     }
 
@@ -51,8 +48,7 @@ public class VoiceChannelUpdateUserLimitEvent extends GenericVoiceChannelUpdateE
      *
      * @return The new userlimit
      */
-    public int getNewUserLimit()
-    {
+    public int getNewUserLimit() {
         return getNewValue();
     }
 }

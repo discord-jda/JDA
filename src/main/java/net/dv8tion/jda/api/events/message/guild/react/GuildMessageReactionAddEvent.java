@@ -32,10 +32,8 @@ import javax.annotation.Nonnull;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGE_REACTIONS GUILD_MESSAGE_REACTIONS} intent to be enabled.
  */
-public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEvent
-{
-    public GuildMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull MessageReaction reaction)
-    {
+public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEvent {
+    public GuildMessageReactionAddEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull MessageReaction reaction) {
         super(api, responseNumber, member, reaction, member.getIdLong());
     }
 
@@ -49,8 +47,7 @@ public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEve
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public User getUser()
-    {
+    public User getUser() {
         return super.getUser();
     }
 
@@ -62,8 +59,7 @@ public class GuildMessageReactionAddEvent extends GenericGuildMessageReactionEve
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public Member getMember()
-    {
+    public Member getMember() {
         return super.getMember();
     }
 }

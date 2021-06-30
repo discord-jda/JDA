@@ -34,9 +34,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
 public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
-    extends RestActionImpl<List<T>>
-    implements PaginationAction<T, M>
-{
+        extends RestActionImpl<List<T>>
+        implements PaginationAction<T, M> {
     protected final List<T> cached = new CopyOnWriteArrayList<>();
     protected final int maxLimit;
     protected final int minLimit;
@@ -61,8 +60,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
      * @param initialLimit
      *        The initial limit to use on the pagination endpoint
      */
-    public PaginationActionImpl(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit)
-    {
+    public PaginationActionImpl(JDA api, Route.CompiledRoute route, int minLimit, int maxLimit, int initialLimit) {
         super(api, route);
         this.maxLimit = maxLimit;
         this.minLimit = minLimit;
@@ -77,8 +75,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
      * @param api
      *        The current JDA instance
      */
-    public PaginationActionImpl(JDA api)
-    {
+    public PaginationActionImpl(JDA api) {
         super(api, null);
         this.maxLimit = 0;
         this.minLimit = 0;
@@ -88,10 +85,8 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M skipTo(long id)
-    {
-        if (!cached.isEmpty())
-        {
+    public M skipTo(long id) {
+        if (!cached.isEmpty()) {
             int cmp = Long.compareUnsigned(this.lastKey, id);
             if (cmp < 0) // old - new < 0 => old < new
                 throw new IllegalArgumentException("Cannot jump to that id, it is newer than the current oldest element.");
@@ -104,58 +99,50 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     }
 
     @Override
-    public long getLastKey()
-    {
+    public long getLastKey() {
         return lastKey;
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M setCheck(BooleanSupplier checks)
-    {
+    public M setCheck(BooleanSupplier checks) {
         return (M) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public M timeout(long timeout, @Nonnull TimeUnit unit) {
         return (M) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M deadline(long timestamp)
-    {
+    public M deadline(long timestamp) {
         return (M) super.deadline(timestamp);
     }
 
     @Override
-    public int cacheSize()
-    {
+    public int cacheSize() {
         return cached.size();
     }
 
     @Override
-    public boolean isEmpty()
-    {
+    public boolean isEmpty() {
         return cached.isEmpty();
     }
 
     @Nonnull
     @Override
-    public List<T> getCached()
-    {
+    public List<T> getCached() {
         return Collections.unmodifiableList(cached);
     }
 
     @Nonnull
     @Override
-    public T getLast()
-    {
+    public T getLast() {
         final T last = this.last;
         if (last == null)
             throw new NoSuchElementException("No entities have been retrieved yet.");
@@ -164,8 +151,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     @Nonnull
     @Override
-    public T getFirst()
-    {
+    public T getFirst() {
         if (cached.isEmpty())
             throw new NoSuchElementException("No entities have been retrieved yet.");
         return cached.get(0);
@@ -174,8 +160,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M limit(final int limit)
-    {
+    public M limit(final int limit) {
         Checks.check(maxLimit == 0 || limit <= maxLimit, "Limit must not exceed %d!", maxLimit);
         Checks.check(minLimit == 0 || limit >= minLimit, "Limit must be greater or equal to %d", minLimit);
         this.limit.set(limit);
@@ -185,40 +170,34 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     @Nonnull
     @Override
     @SuppressWarnings("unchecked")
-    public M cache(final boolean enableCache)
-    {
+    public M cache(final boolean enableCache) {
         this.useCache = enableCache;
         return (M) this;
     }
 
     @Override
-    public boolean isCacheEnabled()
-    {
+    public boolean isCacheEnabled() {
         return useCache;
     }
 
     @Override
-    public final int getMaxLimit()
-    {
+    public final int getMaxLimit() {
         return maxLimit;
     }
 
     @Override
-    public final int getMinLimit()
-    {
+    public final int getMinLimit() {
         return minLimit;
     }
 
     @Override
-    public final int getLimit()
-    {
+    public final int getLimit() {
         return limit.get();
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<List<T>> takeAsync(int amount)
-    {
+    public CompletableFuture<List<T>> takeAsync(int amount) {
         return takeAsync0(amount, (task, list) -> forEachAsync(val -> {
             list.add(val);
             return list.size() < amount;
@@ -227,16 +206,14 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     @Nonnull
     @Override
-    public CompletableFuture<List<T>> takeRemainingAsync(int amount)
-    {
+    public CompletableFuture<List<T>> takeRemainingAsync(int amount) {
         return takeAsync0(amount, (task, list) -> forEachRemainingAsync(val -> {
             list.add(val);
             return list.size() < amount;
         }, task::completeExceptionally));
     }
 
-    private CompletableFuture<List<T>> takeAsync0(int amount, BiFunction<CompletableFuture<?>, List<T>, CompletableFuture<?>> converter)
-    {
+    private CompletableFuture<List<T>> takeAsync0(int amount, BiFunction<CompletableFuture<?>, List<T>, CompletableFuture<?>> converter) {
         CompletableFuture<List<T>> task = new CompletableFuture<>();
         List<T> list = new ArrayList<>(amount);
         CompletableFuture<?> promise = converter.apply(task, list);
@@ -246,15 +223,13 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     @Nonnull
     @Override
-    public PaginationIterator<T> iterator()
-    {
+    public PaginationIterator<T> iterator() {
         return new PaginationIterator<>(cached, this::getNextChunk);
     }
 
     @Nonnull
     @Override
-    public CompletableFuture<?> forEachAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure)
-    {
+    public CompletableFuture<?> forEachAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure) {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
 
@@ -264,12 +239,10 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
             task.completeExceptionally(throwable);
             failure.accept(throwable);
         });
-        try
-        {
+        try {
             acceptor.accept(cached);
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             failure.accept(ex);
             task.completeExceptionally(ex);
         }
@@ -278,8 +251,7 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     @Nonnull
     @Override
-    public CompletableFuture<?> forEachRemainingAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure)
-    {
+    public CompletableFuture<?> forEachRemainingAsync(@Nonnull final Procedure<? super T> action, @Nonnull final Consumer<? super Throwable> failure) {
         Checks.notNull(action, "Procedure");
         Checks.notNull(failure, "Failure Consumer");
 
@@ -289,12 +261,10 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
             task.completeExceptionally(throwable);
             failure.accept(throwable);
         });
-        try
-        {
+        try {
             acceptor.accept(getRemainingCache());
         }
-        catch (Exception ex)
-        {
+        catch (Exception ex) {
             failure.accept(ex);
             task.completeExceptionally(ex);
         }
@@ -302,17 +272,13 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
     }
 
     @Override
-    public void forEachRemaining(@Nonnull final Procedure<? super T> action)
-    {
+    public void forEachRemaining(@Nonnull final Procedure<? super T> action) {
         Checks.notNull(action, "Procedure");
         Queue<T> queue = new LinkedList<>();
-        while (queue.addAll(getNextChunk()))
-        {
-            while (!queue.isEmpty())
-            {
+        while (queue.addAll(getNextChunk())) {
+            while (!queue.isEmpty()) {
                 T it = queue.poll();
-                if (!action.execute(it))
-                {
+                if (!action.execute(it)) {
                     // set the iterator index for next call of remaining
                     updateIndex(it);
                     return;
@@ -321,16 +287,14 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
         }
     }
 
-    protected List<T> getRemainingCache()
-    {
+    protected List<T> getRemainingCache() {
         int index = getIteratorIndex();
         if (useCache && index > -1 && index < cached.size())
             return cached.subList(index, cached.size());
         return Collections.emptyList();
     }
 
-    public List<T> getNextChunk()
-    {
+    public List<T> getNextChunk() {
         List<T> list = getRemainingCache();
         if (!list.isEmpty())
             return list;
@@ -343,63 +307,52 @@ public abstract class PaginationActionImpl<T, M extends PaginationAction<T, M>>
 
     protected abstract long getKey(T it);
 
-    protected int getIteratorIndex()
-    {
-        for (int i = 0; i < cached.size(); i++)
-        {
+    protected int getIteratorIndex() {
+        for (int i = 0; i < cached.size(); i++) {
             if (getKey(cached.get(i)) == iteratorIndex)
                 return i + 1;
         }
         return -1;
     }
 
-    protected void updateIndex(T it)
-    {
+    protected void updateIndex(T it) {
         long key = getKey(it);
         iteratorIndex = key;
-        if (!useCache)
-        {
+        if (!useCache) {
             lastKey = key;
             last = it;
         }
     }
 
-    protected class ChainedConsumer implements Consumer<List<T>>
-    {
+    protected class ChainedConsumer implements Consumer<List<T>> {
         protected final CompletableFuture<?> task;
         protected final Procedure<? super T> action;
         protected final Consumer<Throwable> throwableConsumer;
         protected boolean initial = true;
 
         protected ChainedConsumer(final CompletableFuture<?> task, final Procedure<? super T> action,
-                                  final Consumer<Throwable> throwableConsumer)
-        {
+                                  final Consumer<Throwable> throwableConsumer) {
             this.task = task;
             this.action = action;
             this.throwableConsumer = throwableConsumer;
         }
 
         @Override
-        public void accept(final List<T> list)
-        {
-            if (list.isEmpty() && !initial)
-            {
+        public void accept(final List<T> list) {
+            if (list.isEmpty() && !initial) {
                 task.complete(null);
                 return;
             }
             initial = false;
 
             T previous = null;
-            for (T it : list)
-            {
-                if (task.isCancelled())
-                {
+            for (T it : list) {
+                if (task.isCancelled()) {
                     if (previous != null)
                         updateIndex(previous);
                     return;
                 }
-                if (action.execute(it))
-                {
+                if (action.execute(it)) {
                     previous = it;
                     continue;
                 }

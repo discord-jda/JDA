@@ -30,12 +30,10 @@ import javax.annotation.Nonnull;
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_BANS GUILD_BANS} intent to be enabled.
  */
-public class GuildUnbanEvent extends GenericGuildEvent
-{
+public class GuildUnbanEvent extends GenericGuildEvent {
     private final User user;
 
-    public GuildUnbanEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user)
-    {
+    public GuildUnbanEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nonnull User user) {
         super(api, responseNumber, guild);
         this.user = user;
     }
@@ -46,8 +44,7 @@ public class GuildUnbanEvent extends GenericGuildEvent
      * @return The unbanned user
      */
     @Nonnull
-    public User getUser()
-    {
+    public User getUser() {
         return user;
     }
 }

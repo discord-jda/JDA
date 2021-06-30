@@ -29,12 +29,10 @@ import javax.annotation.Nullable;
  *
  * <p>Identifier: {@code icon}
  */
-public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
-{
+public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String> {
     public static final String IDENTIFIER = "icon";
 
-    public GuildUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldIconId)
-    {
+    public GuildUpdateIconEvent(@Nonnull JDA api, long responseNumber, @Nonnull Guild guild, @Nullable String oldIconId) {
         super(api, responseNumber, guild, oldIconId, guild.getIconId(), IDENTIFIER);
     }
 
@@ -44,8 +42,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      * @return The old icon id, or null
      */
     @Nullable
-    public String getOldIconId()
-    {
+    public String getOldIconId() {
         return getOldValue();
     }
 
@@ -55,8 +52,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      * @return The url of the old icon, or null
      */
     @Nullable
-    public String getOldIconUrl()
-    {
+    public String getOldIconUrl() {
         return previous == null ? null : String.format(Guild.ICON_URL, guild.getId(), previous, previous.startsWith("a_") ? "gif" : "png");
     }
 
@@ -66,8 +62,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      * @return The old icon id, or null
      */
     @Nullable
-    public String getNewIconId()
-    {
+    public String getNewIconId() {
         return getNewValue();
     }
 
@@ -77,8 +72,7 @@ public class GuildUpdateIconEvent extends GenericGuildUpdateEvent<String>
      * @return The url of the new icon, or null
      */
     @Nullable
-    public String getNewIconUrl()
-    {
+    public String getNewIconUrl() {
         return next == null ? null : String.format(Guild.ICON_URL, guild.getId(), next, next.startsWith("a_") ? "gif" : "png");
     }
 }

@@ -78,8 +78,7 @@ import java.util.EnumSet;
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#disableIntents(GatewayIntent, GatewayIntent...)
  * @see net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder#enableIntents(GatewayIntent, GatewayIntent...)
  */
-public enum GatewayIntent
-{
+public enum GatewayIntent {
     //GUILDS(0), we currently don't support to disable this one as its required to get a good base cache
     /**
      * <b>PRIVILEGED INTENT</b> Events which inform us about member update/leave/join of a guild.
@@ -175,8 +174,7 @@ public enum GatewayIntent
     private final int rawValue;
     private final int offset;
 
-    GatewayIntent(int offset)
-    {
+    GatewayIntent(int offset) {
         this.offset = offset;
         this.rawValue = 1 << offset;
     }
@@ -186,8 +184,7 @@ public enum GatewayIntent
      *
      * @return The raw bitmask value
      */
-    public int getRawValue()
-    {
+    public int getRawValue() {
         return rawValue;
     }
 
@@ -197,8 +194,7 @@ public enum GatewayIntent
      *
      * @return The offset
      */
-    public int getOffset()
-    {
+    public int getOffset() {
         return offset;
     }
 
@@ -211,11 +207,9 @@ public enum GatewayIntent
      * @return {@link EnumSet} of intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> getIntents(int raw)
-    {
+    public static EnumSet<GatewayIntent> getIntents(int raw) {
         EnumSet<GatewayIntent> set = EnumSet.noneOf(GatewayIntent.class);
-        for (GatewayIntent intent : values())
-        {
+        for (GatewayIntent intent : values()) {
             if ((intent.getRawValue() & raw) != 0)
                 set.add(intent);
         }
@@ -233,8 +227,7 @@ public enum GatewayIntent
      *
      * @return The bitmask for this set of intents
      */
-    public static int getRaw(@Nonnull Collection<GatewayIntent> set)
-    {
+    public static int getRaw(@Nonnull Collection<GatewayIntent> set) {
         int raw = 0;
         for (GatewayIntent intent : set)
             raw |= intent.rawValue;
@@ -254,10 +247,9 @@ public enum GatewayIntent
      *
      * @return The bitmask for this set of intents
      */
-    public static int getRaw(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... set)
-    {
+    public static int getRaw(@Nonnull GatewayIntent intent, @Nonnull GatewayIntent... set) {
         Checks.notNull(intent, "Intent");
-        Checks.notNull(set,    "Intent");
+        Checks.notNull(set, "Intent");
         return getRaw(EnumSet.of(intent, set));
     }
 
@@ -276,8 +268,7 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull CacheFlag flag, @Nonnull CacheFlag... other)
-    {
+    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull CacheFlag flag, @Nonnull CacheFlag... other) {
         Checks.notNull(flag, "CacheFlag");
         Checks.noneNull(other, "CacheFlag");
         return fromCacheFlags(EnumSet.of(flag, other));
@@ -296,11 +287,9 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull Collection<CacheFlag> flags)
-    {
+    public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull Collection<CacheFlag> flags) {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
-        for (CacheFlag flag : flags)
-        {
+        for (CacheFlag flag : flags) {
             Checks.notNull(flag, "CacheFlag");
             GatewayIntent intent = flag.getRequiredIntent();
             if (intent != null)
@@ -323,8 +312,7 @@ public enum GatewayIntent
      */
     @Nonnull
     @SafeVarargs
-    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Class<? extends GenericEvent>... events)
-    {
+    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Class<? extends GenericEvent>... events) {
         Checks.noneNull(events, "Event");
         return fromEvents(Arrays.asList(events));
     }
@@ -341,11 +329,9 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events)
-    {
+    public static EnumSet<GatewayIntent> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events) {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
-        for (Class<? extends GenericEvent> event : events)
-        {
+        for (Class<? extends GenericEvent> event : events) {
             Checks.notNull(event, "Event");
 
             if (GenericUserPresenceEvent.class.isAssignableFrom(event))
@@ -398,8 +384,7 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
-    public static EnumSet<GatewayIntent> from(@Nonnull Collection<Class<? extends GenericEvent>> events, @Nonnull Collection<CacheFlag> flags)
-    {
+    public static EnumSet<GatewayIntent> from(@Nonnull Collection<Class<? extends GenericEvent>> events, @Nonnull Collection<CacheFlag> flags) {
         EnumSet<GatewayIntent> intents = fromEvents(events);
         intents.addAll(fromCacheFlags(flags));
         return intents;

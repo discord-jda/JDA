@@ -26,10 +26,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the newly created Category
  */
-public class CategoryCreateEvent extends GenericCategoryEvent
-{
-    public CategoryCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category)
-    {
+public class CategoryCreateEvent extends GenericCategoryEvent {
+    public CategoryCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Category category) {
         super(api, responseNumber, category);
     }
 }

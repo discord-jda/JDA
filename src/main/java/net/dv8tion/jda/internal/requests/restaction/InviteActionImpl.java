@@ -31,44 +31,38 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements InviteAction
-{
+public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements InviteAction {
     private Integer maxAge = null;
     private Integer maxUses = null;
     private Boolean temporary = null;
     private Boolean unique = null;
 
-    public InviteActionImpl(final JDA api, final String channelId)
-    {
+    public InviteActionImpl(final JDA api, final String channelId) {
         super(api, Route.Invites.CREATE_INVITE.compile(channelId));
     }
 
     @Nonnull
     @Override
-    public InviteActionImpl setCheck(BooleanSupplier checks)
-    {
+    public InviteActionImpl setCheck(BooleanSupplier checks) {
         return (InviteActionImpl) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public InviteActionImpl timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public InviteActionImpl timeout(long timeout, @Nonnull TimeUnit unit) {
         return (InviteActionImpl) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public InviteActionImpl deadline(long timestamp)
-    {
+    public InviteActionImpl deadline(long timestamp) {
         return (InviteActionImpl) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public InviteActionImpl setMaxAge(final Integer maxAge)
-    {
+    public InviteActionImpl setMaxAge(final Integer maxAge) {
         if (maxAge != null)
             Checks.notNegative(maxAge, "maxAge");
 
@@ -79,8 +73,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public InviteActionImpl setMaxAge(final Long maxAge, @Nonnull final TimeUnit timeUnit)
-    {
+    public InviteActionImpl setMaxAge(final Long maxAge, @Nonnull final TimeUnit timeUnit) {
         if (maxAge == null)
             return this.setMaxAge(null);
 
@@ -93,8 +86,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public InviteActionImpl setMaxUses(final Integer maxUses)
-    {
+    public InviteActionImpl setMaxUses(final Integer maxUses) {
         if (maxUses != null)
             Checks.notNegative(maxUses, "maxUses");
 
@@ -105,8 +97,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public InviteActionImpl setTemporary(final Boolean temporary)
-    {
+    public InviteActionImpl setTemporary(final Boolean temporary) {
         this.temporary = temporary;
         return this;
     }
@@ -114,15 +105,13 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public InviteActionImpl setUnique(final Boolean unique)
-    {
+    public InviteActionImpl setUnique(final Boolean unique) {
         this.unique = unique;
         return this;
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
 
         if (this.maxAge != null)
@@ -138,8 +127,7 @@ public class InviteActionImpl extends AuditableRestActionImpl<Invite> implements
     }
 
     @Override
-    protected void handleSuccess(final Response response, final Request<Invite> request)
-    {
+    protected void handleSuccess(final Response response, final Request<Invite> request) {
         request.onSuccess(this.api.getEntityBuilder().createInvite(response.getObject()));
     }
 }

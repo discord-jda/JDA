@@ -38,13 +38,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
-public abstract class InteractionCallbackActionImpl extends RestActionImpl<InteractionHook> implements InteractionCallbackAction
-{
+public abstract class InteractionCallbackActionImpl extends RestActionImpl<InteractionHook> implements InteractionCallbackAction {
     protected final InteractionHookImpl hook;
     protected final Map<String, InputStream> files = new HashMap<>();
 
-    public InteractionCallbackActionImpl(InteractionHookImpl hook)
-    {
+    public InteractionCallbackActionImpl(InteractionHookImpl hook) {
         super(hook.getJDA(), Route.Interactions.CALLBACK.compile(hook.getInteraction().getId(), hook.getInteraction().getToken()));
         this.hook = hook;
     }
@@ -52,16 +50,14 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
     protected abstract DataObject toData();
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject json = toData();
         if (files.isEmpty())
             return getRequestBody(json);
 
         MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
         int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
+        for (Map.Entry<String, InputStream> file : files.entrySet()) {
             RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
             body.addFormDataPart("file" + i++, file.getKey(), stream);
         }
@@ -71,15 +67,13 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<InteractionHook> request)
-    {
+    protected void handleSuccess(Response response, Request<InteractionHook> request) {
         hook.ready();
         request.onSuccess(hook);
     }
 
     @Override
-    public void handleResponse(Response response, Request<InteractionHook> request)
-    {
+    public void handleResponse(Response response, Request<InteractionHook> request) {
         if (!response.isOk())
             hook.fail(new InteractionFailureException());
         super.handleResponse(response, request);
@@ -98,11 +92,9 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
     }
 
     @Override
-    public void queue(Consumer<? super InteractionHook> success, Consumer<? super Throwable> failure)
-    {
+    public void queue(Consumer<? super InteractionHook> success, Consumer<? super Throwable> failure) {
         IllegalStateException exception = tryAck();
-        if (exception != null)
-        {
+        if (exception != null) {
             if (failure != null)
                 failure.accept(exception); // if the failure callback throws that will just bubble up, which is acceptable
             else
@@ -115,11 +107,9 @@ public abstract class InteractionCallbackActionImpl extends RestActionImpl<Inter
 
     @Nonnull
     @Override
-    public CompletableFuture<InteractionHook> submit(boolean shouldQueue)
-    {
+    public CompletableFuture<InteractionHook> submit(boolean shouldQueue) {
         IllegalStateException exception = tryAck();
-        if (exception != null)
-        {
+        if (exception != null) {
             CompletableFuture<InteractionHook> future = new CompletableFuture<>();
             future.completeExceptionally(exception);
             return future;

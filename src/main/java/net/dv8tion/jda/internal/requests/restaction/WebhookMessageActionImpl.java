@@ -44,9 +44,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class WebhookMessageActionImpl<T>
-    extends TriggerRestAction<T>
-    implements WebhookMessageAction<T>
-{
+        extends TriggerRestAction<T>
+        implements WebhookMessageAction<T> {
     private final StringBuilder content = new StringBuilder();
     private final List<MessageEmbed> embeds = new ArrayList<>();
     private final Map<String, InputStream> files = new HashMap<>();
@@ -58,16 +57,14 @@ public class WebhookMessageActionImpl<T>
     private boolean ephemeral, tts;
     private String username, avatarUrl;
 
-    public WebhookMessageActionImpl(JDA api, MessageChannel channel, Route.CompiledRoute route, Function<DataObject, T> transformer)
-    {
+    public WebhookMessageActionImpl(JDA api, MessageChannel channel, Route.CompiledRoute route, Function<DataObject, T> transformer) {
         super(api, route);
         this.channel = channel;
         this.transformer = transformer;
     }
 
     @Nonnull
-    public WebhookMessageActionImpl<T> applyMessage(@Nonnull Message message)
-    {
+    public WebhookMessageActionImpl<T> applyMessage(@Nonnull Message message) {
         Checks.notNull(message, "Message");
         this.tts = message.isTTS();
         this.embeds.addAll(message.getEmbeds());
@@ -78,16 +75,14 @@ public class WebhookMessageActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> setEphemeral(boolean ephemeral)
-    {
+    public WebhookMessageActionImpl<T> setEphemeral(boolean ephemeral) {
         this.ephemeral = ephemeral;
         return this;
     }
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> setContent(@Nullable String content)
-    {
+    public WebhookMessageActionImpl<T> setContent(@Nullable String content) {
         this.content.setLength(0);
         if (content != null)
             this.content.append(content);
@@ -96,8 +91,7 @@ public class WebhookMessageActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> setTTS(boolean tts)
-    {
+    public WebhookMessageActionImpl<T> setTTS(boolean tts) {
         this.tts = tts;
         return this;
     }
@@ -127,13 +121,12 @@ public class WebhookMessageActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
-    {
+    public WebhookMessageActionImpl<T> addEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds) {
         Checks.noneNull(embeds, "MessageEmbeds");
         embeds.forEach(embed ->
-            Checks.check(embed.isSendable(),
-                "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
-                MessageEmbed.EMBED_MAX_LENGTH_BOT)
+                Checks.check(embed.isSendable(),
+                        "Provided Message contains an empty embed or an embed with a length greater than %d characters, which is the max for bot accounts!",
+                        MessageEmbed.EMBED_MAX_LENGTH_BOT)
         );
         Checks.check(this.embeds.size() + embeds.size() <= 10, "Cannot have more than 10 embeds in a message!");
         Checks.check(Stream.concat(embeds.stream(), this.embeds.stream()).mapToInt(MessageEmbed::getLength).sum() <= MessageEmbed.EMBED_MAX_LENGTH_BOT, "The sum of all MessageEmbeds may not exceed %d!", MessageEmbed.EMBED_MAX_LENGTH_BOT);
@@ -143,8 +136,7 @@ public class WebhookMessageActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    public WebhookMessageActionImpl<T> addFile(@Nonnull InputStream data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(name, "Name");
         Checks.notNull(data, "Data");
         Checks.notNull(options, "AttachmentOption");
@@ -158,16 +150,14 @@ public class WebhookMessageActionImpl<T>
 
     @Nonnull
     @Override
-    public WebhookMessageActionImpl<T> addActionRows(@Nonnull ActionRow... rows)
-    {
+    public WebhookMessageActionImpl<T> addActionRows(@Nonnull ActionRow... rows) {
         Checks.noneNull(rows, "ActionRows");
         Checks.check(rows.length + components.size() <= 5, "Can only have 5 action rows per message!");
         Collections.addAll(components, rows);
         return this;
     }
 
-    private DataObject toData()
-    {
+    private DataObject toData() {
         DataObject data = DataObject.empty();
         data.put("content", content.toString());
         data.put("tts", tts);
@@ -187,16 +177,14 @@ public class WebhookMessageActionImpl<T>
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject data = toData();
         if (files.isEmpty())
             return getRequestBody(data);
 
         MultipartBody.Builder body = new MultipartBody.Builder().setType(MultipartBody.FORM);
         int i = 0;
-        for (Map.Entry<String, InputStream> file : files.entrySet())
-        {
+        for (Map.Entry<String, InputStream> file : files.entrySet()) {
             RequestBody stream = IOUtil.createRequestBody(Requester.MEDIA_TYPE_OCTET, file.getValue());
             body.addFormDataPart("file" + i++, file.getKey(), stream);
         }
@@ -207,8 +195,7 @@ public class WebhookMessageActionImpl<T>
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<T> request)
-    {
+    protected void handleSuccess(Response response, Request<T> request) {
         T message = transformer.apply(response.getObject());
         request.onSuccess(message);
     }
@@ -216,8 +203,7 @@ public class WebhookMessageActionImpl<T>
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> mentionRepliedUser(boolean mention)
-    {
+    public WebhookMessageActionImpl<T> mentionRepliedUser(boolean mention) {
         allowedMentions.mentionRepliedUser(mention);
         return this;
     }
@@ -225,8 +211,7 @@ public class WebhookMessageActionImpl<T>
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions)
-    {
+    public WebhookMessageActionImpl<T> allowedMentions(@Nullable Collection<Message.MentionType> allowedMentions) {
         this.allowedMentions.allowedMentions(allowedMentions);
         return this;
     }
@@ -234,8 +219,7 @@ public class WebhookMessageActionImpl<T>
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> mention(@Nonnull IMentionable... mentions)
-    {
+    public WebhookMessageActionImpl<T> mention(@Nonnull IMentionable... mentions) {
         allowedMentions.mention(mentions);
         return this;
     }
@@ -243,8 +227,7 @@ public class WebhookMessageActionImpl<T>
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> mentionUsers(@Nonnull String... userIds)
-    {
+    public WebhookMessageActionImpl<T> mentionUsers(@Nonnull String... userIds) {
         allowedMentions.mentionUsers(userIds);
         return this;
     }
@@ -252,8 +235,7 @@ public class WebhookMessageActionImpl<T>
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public WebhookMessageActionImpl<T> mentionRoles(@Nonnull String... roleIds)
-    {
+    public WebhookMessageActionImpl<T> mentionRoles(@Nonnull String... roleIds) {
         allowedMentions.mentionRoles(roleIds);
         return this;
     }

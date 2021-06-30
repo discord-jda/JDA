@@ -30,12 +30,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code region}
  */
-public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEvent<String>
-{
+public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEvent<String> {
     public static final String IDENTIFIER = "region";
 
-    public VoiceChannelUpdateRegionEvent(@NotNull JDA api, long responseNumber, @NotNull VoiceChannel channel, @Nullable String oldRegion)
-    {
+    public VoiceChannelUpdateRegionEvent(@NotNull JDA api, long responseNumber, @NotNull VoiceChannel channel, @Nullable String oldRegion) {
         super(api, responseNumber, channel, oldRegion, channel.getRegionRaw(), IDENTIFIER);
     }
 
@@ -45,8 +43,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      * @return The old region
      */
     @Nonnull
-    public Region getOldRegion()
-    {
+    public Region getOldRegion() {
         return getOldValue() == null ? Region.AUTOMATIC : Region.fromKey(getOldValue());
     }
 
@@ -56,8 +53,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      * @return The new region
      */
     @Nonnull
-    public Region getNewRegion()
-    {
+    public Region getNewRegion() {
         return getNewValue() == null ? Region.AUTOMATIC : Region.fromKey(getNewValue());
     }
 
@@ -67,8 +63,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      * @return The old raw region String or null if the Region is set to Automatic.
      */
     @Nullable
-    public String getOldRegionRaw()
-    {
+    public String getOldRegionRaw() {
         return getOldValue();
     }
 
@@ -78,8 +73,7 @@ public class VoiceChannelUpdateRegionEvent extends GenericVoiceChannelUpdateEven
      * @return The new raw region String or null if the Region is set to Automatic.
      */
     @Nullable
-    public String getNewRegionRaw()
-    {
+    public String getNewRegionRaw() {
         return getNewValue();
     }
 }

@@ -38,12 +38,10 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildVoiceGuildMuteEvent extends GenericGuildVoiceEvent
-{
+public class GuildVoiceGuildMuteEvent extends GenericGuildVoiceEvent {
     protected final boolean guildMuted;
 
-    public GuildVoiceGuildMuteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+    public GuildVoiceGuildMuteEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
         this.guildMuted = member.getVoiceState().isGuildMuted();
     }
@@ -54,8 +52,7 @@ public class GuildVoiceGuildMuteEvent extends GenericGuildVoiceEvent
      * @return True, if a moderator muted this member,
      *         <br>False, if a moderator un-muted this member
      */
-    public boolean isGuildMuted()
-    {
+    public boolean isGuildMuted() {
         return guildMuted;
     }
 }

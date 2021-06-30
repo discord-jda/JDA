@@ -34,13 +34,11 @@ import javax.annotation.Nullable;
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} intent to be enabled.
  */
-public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent
-{
+public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEvent {
     protected final long userId;
     protected final MessageReaction reaction;
 
-    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId)
-    {
+    public GenericPrivateMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageReaction reaction, long userId) {
         super(api, responseNumber, reaction.getMessageIdLong(), (PrivateChannel) reaction.getChannel());
         this.userId = userId;
         this.reaction = reaction;
@@ -52,8 +50,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      * @return The user id
      */
     @Nonnull
-    public String getUserId()
-    {
+    public String getUserId() {
         return Long.toUnsignedString(userId);
     }
 
@@ -62,8 +59,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      *
      * @return The user id
      */
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return userId;
     }
 
@@ -74,8 +70,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      * @return The reacting user
      */
     @Nullable
-    public User getUser()
-    {
+    public User getUser() {
         return userId == getJDA().getSelfUser().getIdLong()
                 ? getJDA().getSelfUser()
                 : getChannel().getUser();
@@ -87,8 +82,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      * @return The message reaction
      */
     @Nonnull
-    public MessageReaction getReaction()
-    {
+    public MessageReaction getReaction() {
         return reaction;
     }
 
@@ -99,8 +93,7 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      * @return The message reaction emote
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
-    {
+    public MessageReaction.ReactionEmote getReactionEmote() {
         return reaction.getReactionEmote();
     }
 }

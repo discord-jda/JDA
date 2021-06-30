@@ -41,14 +41,13 @@ import javax.annotation.Nullable;
  *
  * @see net.dv8tion.jda.api.entities.Webhook#getManager()
  */
-public interface WebhookManager extends Manager<WebhookManager>
-{
+public interface WebhookManager extends Manager<WebhookManager> {
     /** Used to reset the name field */
-    long NAME    = 0x1;
+    long NAME = 0x1;
     /** Used to reset the channel field */
     long CHANNEL = 0x2;
     /** Used to reset the avatar field */
-    long AVATAR  = 0x4;
+    long AVATAR = 0x4;
 
     /**
      * Resets the fields specified by the provided bit-flag pattern.
@@ -109,8 +108,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
     @Nonnull
-    default TextChannel getChannel()
-    {
+    default TextChannel getChannel() {
         return getWebhook().getChannel();
     }
 
@@ -122,8 +120,7 @@ public interface WebhookManager extends Manager<WebhookManager>
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
      */
     @Nonnull
-    default Guild getGuild()
-    {
+    default Guild getGuild() {
         return getWebhook().getGuild();
     }
 

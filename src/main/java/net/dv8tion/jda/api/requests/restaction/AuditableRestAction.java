@@ -34,10 +34,9 @@ import java.util.function.BooleanSupplier;
  * @param  <T>
  *         The return type
  *
- * @since  3.3.0
+ * @since 3.3.0
  */
-public interface AuditableRestAction<T> extends RestAction<T>
-{
+public interface AuditableRestAction<T> extends RestAction<T> {
     /**
      * Applies the specified reason as audit-log reason field.
      * <br>When the provided reason is empty or {@code null} it will be treated as not set.

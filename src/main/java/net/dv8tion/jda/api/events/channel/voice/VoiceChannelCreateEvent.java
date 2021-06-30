@@ -25,10 +25,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to get affected VoiceChannel.
  */
-public class VoiceChannelCreateEvent extends GenericVoiceChannelEvent
-{
-    public VoiceChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel)
-    {
+public class VoiceChannelCreateEvent extends GenericVoiceChannelEvent {
+    public VoiceChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull VoiceChannel channel) {
         super(api, responseNumber, channel);
     }
 }

@@ -27,10 +27,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to retrieve the old override.
  */
-public class PermissionOverrideDeleteEvent extends GenericPermissionOverrideEvent
-{
-    public PermissionOverrideDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
-    {
+public class PermissionOverrideDeleteEvent extends GenericPermissionOverrideEvent {
+    public PermissionOverrideDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override) {
         super(api, responseNumber, channel, override);
     }
 }

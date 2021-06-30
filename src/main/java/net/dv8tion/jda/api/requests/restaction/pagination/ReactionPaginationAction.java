@@ -45,7 +45,7 @@ import javax.annotation.Nonnull;
  * }
  * }</pre>
  *
- * @since  3.1
+ * @since 3.1
  *
  * @see    MessageReaction#retrieveUsers()
  * @see    Message#retrieveReactionUsers(String)
@@ -55,8 +55,7 @@ import javax.annotation.Nonnull;
  * @see    MessageChannel#retrieveReactionUsersById(long, String)
  * @see    MessageChannel#retrieveReactionUsersById(String, String)
  */
-public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction>
-{
+public interface ReactionPaginationAction extends PaginationAction<User, ReactionPaginationAction> {
     /**
      * The current target {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction}
      *

@@ -36,8 +36,7 @@ import java.util.function.BooleanSupplier;
  * A {@link InteractionCallbackAction} which can be used to send a message reply for an interaction.
  * <br>You can use {@link #setEphemeral(boolean)} to hide this message from other users.
  */
-public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<ReplyAction>
-{
+public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<ReplyAction> {
     @Nonnull
     @Override
     ReplyAction setCheck(@Nullable BooleanSupplier checks);
@@ -63,8 +62,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addEmbeds(@Nonnull MessageEmbed... embeds)
-    {
+    default ReplyAction addEmbeds(@Nonnull MessageEmbed... embeds) {
         Checks.noneNull(embeds, "MessageEmbed");
         return addEmbeds(Arrays.asList(embeds));
     }
@@ -97,8 +95,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addActionRow(@Nonnull Component... components)
-    {
+    default ReplyAction addActionRow(@Nonnull Component... components) {
         return addActionRows(ActionRow.of(components));
     }
 
@@ -115,8 +112,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addActionRows(@Nonnull Collection<? extends ActionRow> rows)
-    {
+    default ReplyAction addActionRows(@Nonnull Collection<? extends ActionRow> rows) {
         Checks.noneNull(rows, "ActionRows");
         return addActionRows(rows.toArray(new ActionRow[0]));
     }
@@ -201,8 +197,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options)
-    {
+    default ReplyAction addFile(@Nonnull File file, @Nonnull AttachmentOption... options) {
         Checks.notNull(file, "File");
         return addFile(file, file.getName(), options);
     }
@@ -238,16 +233,13 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
-        try
-        {
+    default ReplyAction addFile(@Nonnull File file, @Nonnull String name, @Nonnull AttachmentOption... options) {
+        try {
             Checks.notNull(file, "File");
             Checks.check(file.exists() && file.canRead(), "Provided file either does not exist or cannot be read from!");
             return addFile(new FileInputStream(file), name, options);
         }
-        catch (FileNotFoundException e)
-        {
+        catch (FileNotFoundException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -272,8 +264,7 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      */
     @Nonnull
     @CheckReturnValue
-    default ReplyAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options)
-    {
+    default ReplyAction addFile(@Nonnull byte[] data, @Nonnull String name, @Nonnull AttachmentOption... options) {
         Checks.notNull(data, "Data");
         return addFile(new ByteArrayInputStream(data), name, options);
     }

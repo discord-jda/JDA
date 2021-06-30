@@ -29,53 +29,43 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class MapErrorRestAction<T> extends RestActionOperator<T, T>
-{
+public class MapErrorRestAction<T> extends RestActionOperator<T, T> {
     private final Predicate<? super Throwable> check;
     private final Function<? super Throwable, ? extends T> map;
 
-    public MapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends T> map)
-    {
+    public MapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends T> map) {
         super(action);
         this.check = check;
         this.map = map;
     }
 
     @Override
-    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure)
-    {
+    public void queue(@Nullable Consumer<? super T> success, @Nullable Consumer<? super Throwable> failure) {
         action.queue(success, contextWrap((error) -> // Use contextWrap so error has a context cause
         {
-            try
-            {
+            try {
                 if (check.test(error)) // Check condition
                     doSuccess(success, map.apply(error)); // Then apply fallback function
                 else // Fallback downstream
                     doFailure(failure, error); // error already has context so no contextWrap needed
             }
-            catch (Throwable e)
-            {
+            catch (Throwable e) {
                 doFailure(failure, Helpers.appendCause(e, error)); // error already has context so no contextWrap needed
             }
         }));
     }
 
     @Override
-    public T complete(boolean shouldQueue) throws RateLimitedException
-    {
-        try
-        {
+    public T complete(boolean shouldQueue) throws RateLimitedException {
+        try {
             return action.complete(shouldQueue);
         }
-        catch (Throwable error)
-        {
-            try
-            {
+        catch (Throwable error) {
+            try {
                 if (check.test(error))
                     return map.apply(error);
             }
-            catch (Throwable e)
-            {
+            catch (Throwable e) {
                 fail(Helpers.appendCause(e, error));
             }
             if (error instanceof RateLimitedException)
@@ -88,12 +78,10 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
 
     @Nonnull
     @Override
-    public CompletableFuture<T> submit(boolean shouldQueue)
-    {
+    public CompletableFuture<T> submit(boolean shouldQueue) {
         return action.submit(shouldQueue).handle((value, error) -> {
             T result = value;
-            if (error != null)
-            {
+            if (error != null) {
                 error = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
                 if (check.test(error))
                     result = map.apply(error);
@@ -105,10 +93,8 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
     }
 
 
-
     @Contract("_ -> fail")
-    private void fail(Throwable error)
-    {
+    private void fail(Throwable error) {
         if (error instanceof RuntimeException)
             throw (RuntimeException) error;
         else if (error instanceof Error)

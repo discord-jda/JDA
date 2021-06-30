@@ -43,24 +43,20 @@ import javax.annotation.Nonnull;
  *
  * @see net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent GuildVoiceUpdateEvent
  */
-public class GuildVoiceLeaveEvent extends GenericGuildVoiceUpdateEvent
-{
-    public GuildVoiceLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull VoiceChannel channelLeft)
-    {
+public class GuildVoiceLeaveEvent extends GenericGuildVoiceUpdateEvent {
+    public GuildVoiceLeaveEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member, @Nonnull VoiceChannel channelLeft) {
         super(api, responseNumber, member, channelLeft, null);
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getChannelLeft()
-    {
+    public VoiceChannel getChannelLeft() {
         return super.getChannelLeft();
     }
 
     @Nonnull
     @Override
-    public VoiceChannel getOldValue()
-    {
+    public VoiceChannel getOldValue() {
         return super.getOldValue();
     }
 }

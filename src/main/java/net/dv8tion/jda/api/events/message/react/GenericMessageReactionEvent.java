@@ -40,16 +40,14 @@ import javax.annotation.Nullable;
  *     <li>{@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGE_REACTIONS DIRECT_MESSAGE_REACTIONS} to work in private channels</li>
  * </ul>
  */
-public class GenericMessageReactionEvent extends GenericMessageEvent
-{
+public class GenericMessageReactionEvent extends GenericMessageEvent {
     protected final long userId;
     protected User issuer;
     protected Member member;
     protected MessageReaction reaction;
 
     public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,
-                                       @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
-    {
+                                       @Nullable Member member, @Nonnull MessageReaction reaction, long userId) {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());
         this.userId = userId;
         this.issuer = user;
@@ -63,8 +61,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * @return The user id
      */
     @Nonnull
-    public String getUserId()
-    {
+    public String getUserId() {
         return Long.toUnsignedString(userId);
     }
 
@@ -73,8 +70,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return The user id
      */
-    public long getUserIdLong()
-    {
+    public long getUserIdLong() {
         return userId;
     }
 
@@ -86,8 +82,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * @return The reacting user or null if this information is missing
      */
     @Nullable
-    public User getUser()
-    {
+    public User getUser() {
         return issuer == null && isFromType(ChannelType.PRIVATE)
                 ? getPrivateChannel().getUser() // this can't be the self user because then issuer would be nonnull
                 : issuer;
@@ -108,8 +103,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * @see    #getChannelType()
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return member;
     }
 
@@ -119,8 +113,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * @return The MessageReaction
      */
     @Nonnull
-    public MessageReaction getReaction()
-    {
+    public MessageReaction getReaction() {
         return reaction;
     }
 
@@ -131,8 +124,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      * @return The ReactionEmote instance
      */
     @Nonnull
-    public MessageReaction.ReactionEmote getReactionEmote()
-    {
+    public MessageReaction.ReactionEmote getReactionEmote() {
         return reaction.getReactionEmote();
     }
 
@@ -142,12 +134,11 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return {@link RestAction} - Type: {@link User}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<User> retrieveUser()
-    {
+    public RestAction<User> retrieveUser() {
         User user = getUser();
         if (user != null)
             return new CompletedRestAction<>(getJDA(), user);
@@ -167,12 +158,11 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return {@link RestAction} - Type: {@link Member}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Member> retrieveMember()
-    {
+    public RestAction<Member> retrieveMember() {
         if (member != null)
             return new CompletedRestAction<>(getJDA(), member);
         return getGuild().retrieveMemberById(getUserIdLong());
@@ -187,12 +177,11 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
      *
      * @return {@link RestAction} - Type: {@link Message}
      *
-     * @since  4.2.1
+     * @since 4.2.1
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Message> retrieveMessage()
-    {
+    public RestAction<Message> retrieveMessage() {
         return getChannel().retrieveMessageById(getMessageId());
     }
 }

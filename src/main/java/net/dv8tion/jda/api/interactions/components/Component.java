@@ -28,8 +28,7 @@ import javax.annotation.Nullable;
  * @see net.dv8tion.jda.api.interactions.components.Button Button
  * @see ActionRow
  */
-public interface Component extends SerializableData
-{
+public interface Component extends SerializableData {
     /**
      * The type of component.
      *
@@ -52,19 +51,16 @@ public interface Component extends SerializableData
     /**
      * The component types
      */
-    enum Type
-    {
+    enum Type {
         UNKNOWN(-1),
         /** A row of interactive components on a message */
         ACTION_ROW(1),
         /** A button */
-        BUTTON(2)
-        ;
+        BUTTON(2);
 
         private final int key;
 
-        Type(int key)
-        {
+        Type(int key) {
             this.key = key;
         }
 
@@ -77,10 +73,8 @@ public interface Component extends SerializableData
          * @return The Type or {@link #UNKNOWN}
          */
         @Nonnull
-        public static Type fromKey(int type)
-        {
-            for (Type t : values())
-            {
+        public static Type fromKey(int type) {
+            for (Type t : values()) {
                 if (t.key == type)
                     return t;
             }

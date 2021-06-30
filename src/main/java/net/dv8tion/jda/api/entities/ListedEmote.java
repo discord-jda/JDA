@@ -28,8 +28,7 @@ import javax.annotation.Nonnull;
  * @see   Guild#retrieveEmoteById(String)
  * @see   Guild#retrieveEmotes()
  */
-public interface ListedEmote extends Emote
-{
+public interface ListedEmote extends Emote {
     /**
      * The user who created this Emote
      *

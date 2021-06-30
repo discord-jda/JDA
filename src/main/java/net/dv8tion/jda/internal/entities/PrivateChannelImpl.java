@@ -33,20 +33,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class PrivateChannelImpl implements PrivateChannel
-{
+public class PrivateChannelImpl implements PrivateChannel {
     private final long id;
     private User user;
     private long lastMessageId;
 
-    public PrivateChannelImpl(long id, User user)
-    {
+    public PrivateChannelImpl(long id, User user) {
         this.id = id;
         this.user = user;
     }
 
-    private void updateUser()
-    {
+    private void updateUser() {
         // Load user from cache if one exists, otherwise we might have an outdated user instance
         User realUser = getJDA().getUserById(user.getIdLong());
         if (realUser != null)
@@ -55,15 +52,13 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
-    public User getUser()
-    {
+    public User getUser() {
         updateUser();
         return user;
     }
 
     @Override
-    public long getLatestMessageIdLong()
-    {
+    public long getLatestMessageIdLong() {
         final long messageId = lastMessageId;
         if (messageId < 0)
             throw new IllegalStateException("No last message id found.");
@@ -71,48 +66,41 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public boolean hasLatestMessage()
-    {
+    public boolean hasLatestMessage() {
         return lastMessageId > 0;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return getUser().getName();
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.PRIVATE;
     }
 
     @Nonnull
     @Override
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return user.getJDA();
     }
 
     @Nonnull
     @Override
-    public RestAction<Void> close()
-    {
+    public RestAction<Void> close() {
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new RestActionImpl<>(getJDA(), route);
     }
 
     @Nonnull
     @Override
-    public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
-    {
+    public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages) {
         if (messages == null || messages.isEmpty())
             return Collections.emptyList();
-        for (Message m : messages)
-        {
+        for (Message m : messages) {
             if (m.getAuthor().equals(getJDA().getSelfUser()))
                 continue;
             throw new IllegalArgumentException("Cannot delete messages of other users in a private channel");
@@ -121,66 +109,58 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Nonnull
     @Override
-    public MessageAction sendMessage(@Nonnull CharSequence text)
-    {
+    public MessageAction sendMessage(@Nonnull CharSequence text) {
         checkBot();
         return PrivateChannel.super.sendMessage(text);
     }
 
     @Nonnull
     @Override
-    public MessageAction sendMessage(@Nonnull MessageEmbed embed)
-    {
+    public MessageAction sendMessage(@Nonnull MessageEmbed embed) {
         checkBot();
         return PrivateChannel.super.sendMessage(embed);
     }
 
     @Nonnull
     @Override
-    public MessageAction sendMessage(@Nonnull Message msg)
-    {
+    public MessageAction sendMessage(@Nonnull Message msg) {
         checkBot();
         return PrivateChannel.super.sendMessage(msg);
     }
 
     @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
-    {
+    public MessageAction sendFile(@Nonnull InputStream data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
         checkBot();
         return PrivateChannel.super.sendFile(data, fileName, options);
     }
 
     @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
-    {
+    public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
         checkBot();
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(file == null || file.length() <= maxSize,
-                    "File may not exceed the maximum file length of %d bytes!", maxSize);
+                "File may not exceed the maximum file length of %d bytes!", maxSize);
         return PrivateChannel.super.sendFile(file, fileName, options);
     }
 
     @Nonnull
     @Override
-    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
-    {
+    public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options) {
         checkBot();
         final long maxSize = getJDA().getSelfUser().getAllowedFileSize();
         Checks.check(data == null || data.length <= maxSize, "File is too big! Max file-size is %d bytes", maxSize);
         return PrivateChannel.super.sendFile(data, fileName, options);
     }
 
-    public PrivateChannelImpl setLastMessageId(long id)
-    {
+    public PrivateChannelImpl setLastMessageId(long id) {
         this.lastMessageId = id;
         return this;
     }
@@ -189,14 +169,12 @@ public class PrivateChannelImpl implements PrivateChannel
 
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof PrivateChannelImpl))
@@ -206,13 +184,11 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "PC:" + getUser().getName() + '(' + getId() + ')';
     }
 
-    private void checkBot()
-    {
+    private void checkBot() {
         if (getUser().isBot() && getJDA().getAccountType() == AccountType.BOT)
             throw new UnsupportedOperationException("Cannot send a private message between bots.");
     }

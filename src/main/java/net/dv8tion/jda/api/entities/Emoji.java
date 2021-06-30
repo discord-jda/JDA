@@ -34,14 +34,12 @@ import java.util.regex.Matcher;
  * @see #getName()
  * @see #getAsMention()
  */
-public class Emoji implements SerializableData, IMentionable
-{
+public class Emoji implements SerializableData, IMentionable {
     private final String name;
     private final long id;
     private final boolean animated;
 
-    private Emoji(String name, long id, boolean animated)
-    {
+    private Emoji(String name, long id, boolean animated) {
         this.name = name;
         this.id = id;
         this.animated = animated;
@@ -54,14 +52,12 @@ public class Emoji implements SerializableData, IMentionable
      * @return The unicode or custom name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
@@ -70,8 +66,7 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return True, if this emote is animated
      */
-    public boolean isAnimated()
-    {
+    public boolean isAnimated() {
         return animated;
     }
 
@@ -82,8 +77,7 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return True, if this emoji is standard unicode
      */
-    public boolean isUnicode()
-    {
+    public boolean isUnicode() {
         return id == 0L;
     }
 
@@ -92,8 +86,7 @@ public class Emoji implements SerializableData, IMentionable
      *
      * @return True, if this is a custom emote
      */
-    public boolean isCustom()
-    {
+    public boolean isCustom() {
         return !isUnicode();
     }
 
@@ -110,11 +103,9 @@ public class Emoji implements SerializableData, IMentionable
      * @return The new emoji instance
      */
     @Nonnull
-    public static Emoji fromUnicode(@Nonnull String code)
-    {
+    public static Emoji fromUnicode(@Nonnull String code) {
         Checks.notEmpty(code, "Unicode");
-        if (code.startsWith("U+") || code.startsWith("u+"))
-        {
+        if (code.startsWith("U+") || code.startsWith("u+")) {
             StringBuilder emoji = new StringBuilder();
             String[] codepoints = code.trim().split("\\s*[uU]\\+");
             for (String codepoint : codepoints)
@@ -140,8 +131,7 @@ public class Emoji implements SerializableData, IMentionable
      * @return The new emoji instance
      */
     @Nonnull
-    public static Emoji fromEmote(@Nonnull String name, long id, boolean animated)
-    {
+    public static Emoji fromEmote(@Nonnull String name, long id, boolean animated) {
         Checks.notEmpty(name, "Name");
         return new Emoji(name, id, animated);
     }
@@ -158,8 +148,7 @@ public class Emoji implements SerializableData, IMentionable
      * @return The new emoji instance
      */
     @Nonnull
-    public static Emoji fromEmote(@Nonnull Emote emote)
-    {
+    public static Emoji fromEmote(@Nonnull Emote emote) {
         Checks.notNull(emote, "Emote");
         return fromEmote(emote.getName(), emote.getIdLong(), emote.isAnimated());
     }
@@ -189,8 +178,7 @@ public class Emoji implements SerializableData, IMentionable
      * @return The emoji instance
      */
     @Nonnull
-    public static Emoji fromMarkdown(@Nonnull String code)
-    {
+    public static Emoji fromMarkdown(@Nonnull String code) {
         Matcher matcher = Message.MentionType.EMOTE.getPattern().matcher(code);
         if (matcher.matches())
             return fromEmote(matcher.group(1), Long.parseUnsignedLong(matcher.group(2)), code.startsWith("<a"));
@@ -209,8 +197,7 @@ public class Emoji implements SerializableData, IMentionable
      * @return The emoji instance
      */
     @Nonnull
-    public static Emoji fromData(@Nonnull DataObject emoji)
-    {
+    public static Emoji fromData(@Nonnull DataObject emoji) {
         return new Emoji(emoji.getString("name"),
                 emoji.getUnsignedLong("id", 0),
                 emoji.getBoolean("animated"));
@@ -218,11 +205,9 @@ public class Emoji implements SerializableData, IMentionable
 
     @Nonnull
     @Override
-    public DataObject toData()
-    {
+    public DataObject toData() {
         DataObject json = DataObject.empty().put("name", name);
-        if (id != 0)
-        {
+        if (id != 0) {
             json.put("id", id)
                     .put("animated", animated);
         }
@@ -231,20 +216,17 @@ public class Emoji implements SerializableData, IMentionable
 
     @Nonnull
     @Override
-    public String getAsMention()
-    {
+    public String getAsMention() {
         return id == 0L ? name : String.format("<%s:%s:%s>", animated ? "a" : "", name, Long.toUnsignedString(id));
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(name, id, animated);
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this) return true;
         if (!(obj instanceof Emoji)) return false;
         Emoji other = (Emoji) obj;
@@ -252,8 +234,7 @@ public class Emoji implements SerializableData, IMentionable
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "E:" + name + "(" + id + ")";
     }
 }

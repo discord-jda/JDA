@@ -16,8 +16,7 @@
 
 package net.dv8tion.jda.internal.requests;
 
-public enum Method
-{
+public enum Method {
     DELETE,
     GET,
     HEAD,

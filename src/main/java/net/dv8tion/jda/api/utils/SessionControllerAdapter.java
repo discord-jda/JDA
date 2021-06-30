@@ -36,8 +36,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class SessionControllerAdapter implements SessionController
-{
+public class SessionControllerAdapter implements SessionController {
     protected static final Logger log = JDALogger.getLog(SessionControllerAdapter.class);
     protected final Object lock = new Object();
     protected Queue<SessionConnectNode> connectQueue;
@@ -45,42 +44,36 @@ public class SessionControllerAdapter implements SessionController
     protected Thread workerHandle;
     protected long lastConnect = 0;
 
-    public SessionControllerAdapter()
-    {
+    public SessionControllerAdapter() {
         connectQueue = new ConcurrentLinkedQueue<>();
         globalRatelimit = new AtomicLong(Long.MIN_VALUE);
     }
 
     @Override
-    public void appendSession(@Nonnull SessionConnectNode node)
-    {
+    public void appendSession(@Nonnull SessionConnectNode node) {
         removeSession(node);
         connectQueue.add(node);
         runWorker();
     }
 
     @Override
-    public void removeSession(@Nonnull SessionConnectNode node)
-    {
+    public void removeSession(@Nonnull SessionConnectNode node) {
         connectQueue.remove(node);
     }
 
     @Override
-    public long getGlobalRatelimit()
-    {
+    public long getGlobalRatelimit() {
         return globalRatelimit.get();
     }
 
     @Override
-    public void setGlobalRatelimit(long ratelimit)
-    {
+    public void setGlobalRatelimit(long ratelimit) {
         globalRatelimit.set(ratelimit);
     }
 
     @Nonnull
     @Override
-    public String getGateway(@Nonnull JDA api)
-    {
+    public String getGateway(@Nonnull JDA api) {
         Route.CompiledRoute route = Route.Misc.GATEWAY.compile();
         return new RestActionImpl<String>(api, route,
                 (response, request) -> response.getObject().getString("url")).priority().complete();
@@ -88,16 +81,12 @@ public class SessionControllerAdapter implements SessionController
 
     @Nonnull
     @Override
-    public ShardedGateway getShardedGateway(@Nonnull JDA api)
-    {
+    public ShardedGateway getShardedGateway(@Nonnull JDA api) {
         AccountTypeException.check(api.getAccountType(), AccountType.BOT);
-        return new RestActionImpl<ShardedGateway>(api, Route.Misc.GATEWAY_BOT.compile())
-        {
+        return new RestActionImpl<ShardedGateway>(api, Route.Misc.GATEWAY_BOT.compile()) {
             @Override
-            public void handleResponse(Response response, Request<ShardedGateway> request)
-            {
-                if (response.isOk())
-                {
+            public void handleResponse(Response response, Request<ShardedGateway> request) {
+                if (response.isOk()) {
                     DataObject object = response.getObject();
 
                     String url = object.getString("url");
@@ -106,13 +95,11 @@ public class SessionControllerAdapter implements SessionController
 
                     request.onSuccess(new ShardedGateway(url, shards, concurrency));
                 }
-                else if (response.code == 401)
-                {
+                else if (response.code == 401) {
                     api.shutdownNow();
                     request.onFailure(new LoginException("The provided token is invalid!"));
                 }
-                else
-                {
+                else {
                     request.onFailure(response);
                 }
             }
@@ -122,31 +109,25 @@ public class SessionControllerAdapter implements SessionController
     @Nonnull
     @Override
     @SuppressWarnings({"deprecation", "RedundantSuppression"})
-    public Pair<String, Integer> getGatewayBot(@Nonnull JDA api)
-    {
+    public Pair<String, Integer> getGatewayBot(@Nonnull JDA api) {
         ShardedGateway bot = getShardedGateway(api);
         return Pair.of(bot.getUrl(), bot.getShardTotal());
     }
 
-    protected void runWorker()
-    {
-        synchronized (lock)
-        {
-            if (workerHandle == null)
-            {
+    protected void runWorker() {
+        synchronized (lock) {
+            if (workerHandle == null) {
                 workerHandle = new QueueWorker();
                 workerHandle.start();
             }
         }
     }
 
-    protected class QueueWorker extends Thread
-    {
+    protected class QueueWorker extends Thread {
         /** Delay (in milliseconds) to sleep between connecting sessions */
         protected final long delay;
 
-        public QueueWorker()
-        {
+        public QueueWorker() {
             this(IDENTIFY_DELAY);
         }
 
@@ -156,8 +137,7 @@ public class SessionControllerAdapter implements SessionController
          * @param delay
          *        delay (in seconds) to wait between starting sessions
          */
-        public QueueWorker(int delay)
-        {
+        public QueueWorker(int delay) {
             this(TimeUnit.SECONDS.toMillis(delay));
         }
 
@@ -167,51 +147,41 @@ public class SessionControllerAdapter implements SessionController
          * @param delay
          *        delay (in milliseconds) to wait between starting sessions
          */
-        public QueueWorker(long delay)
-        {
+        public QueueWorker(long delay) {
             super("SessionControllerAdapter-Worker");
             this.delay = delay;
             super.setUncaughtExceptionHandler(this::handleFailure);
         }
 
-        protected void handleFailure(Thread thread, Throwable exception)
-        {
+        protected void handleFailure(Thread thread, Throwable exception) {
             log.error("Worker has failed with throwable!", exception);
         }
 
         @Override
-        public void run()
-        {
-            try
-            {
-                if (this.delay > 0)
-                {
+        public void run() {
+            try {
+                if (this.delay > 0) {
                     final long interval = System.currentTimeMillis() - lastConnect;
                     if (interval < this.delay)
                         Thread.sleep(this.delay - interval);
                 }
             }
-            catch (InterruptedException ex)
-            {
+            catch (InterruptedException ex) {
                 log.error("Unable to backoff", ex);
             }
             processQueue();
-            synchronized (lock)
-            {
+            synchronized (lock) {
                 workerHandle = null;
                 if (!connectQueue.isEmpty())
                     runWorker();
             }
         }
 
-        protected void processQueue()
-        {
+        protected void processQueue() {
             boolean isMultiple = connectQueue.size() > 1;
-            while (!connectQueue.isEmpty())
-            {
+            while (!connectQueue.isEmpty()) {
                 SessionConnectNode node = connectQueue.poll();
-                try
-                {
+                try {
                     node.run(isMultiple && connectQueue.isEmpty());
                     isMultiple = true;
                     lastConnect = System.currentTimeMillis();
@@ -220,8 +190,7 @@ public class SessionControllerAdapter implements SessionController
                     if (this.delay > 0)
                         Thread.sleep(this.delay);
                 }
-                catch (IllegalStateException e)
-                {
+                catch (IllegalStateException e) {
                     Throwable t = e.getCause();
                     if (t instanceof OpeningHandshakeException)
                         log.error("Failed opening handshake, appending to queue. Message: {}", e.getMessage());
@@ -231,8 +200,7 @@ public class SessionControllerAdapter implements SessionController
                         log.error("Unexpected exception when running connect node", e);
                     appendSession(node);
                 }
-                catch (InterruptedException e)
-                {
+                catch (InterruptedException e) {
                     log.error("Failed to run node", e);
                     appendSession(node);
                     return; // caller should start a new thread

@@ -28,17 +28,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EventCache
-{
+public class EventCache {
     public static final Logger LOG = JDALogger.getLog(EventCache.class);
     /** Sequence difference after which events will be removed from cache */
     public static final long TIMEOUT_AMOUNT = 100;
     private final EnumMap<Type, TLongObjectMap<List<CacheNode>>> eventCache = new EnumMap<>(Type.class);
 
-    public EventCache() {}
+    public EventCache() {
+    }
 
-    public synchronized void timeout(final long responseTotal)
-    {
+    public synchronized void timeout(final long responseTotal) {
         if (eventCache.isEmpty())
             return;
         AtomicInteger count = new AtomicInteger();
@@ -47,8 +46,7 @@ public class EventCache
             if (map.isEmpty())
                 return;
             TLongObjectIterator<List<CacheNode>> iterator = map.iterator();
-            while (iterator.hasNext())
-            {
+            while (iterator.hasNext()) {
                 iterator.advance();
                 long triggerId = iterator.key();
                 List<CacheNode> cache = iterator.value();
@@ -56,8 +54,7 @@ public class EventCache
                 cache.removeIf(node ->
                 {
                     boolean remove = responseTotal - node.responseTotal > TIMEOUT_AMOUNT;
-                    if (remove)
-                    {
+                    if (remove) {
                         count.incrementAndGet();
                         LOG.trace("Removing type {}/{} from event cache with payload {}", type, triggerId, node.event);
                     }
@@ -72,14 +69,12 @@ public class EventCache
             LOG.debug("Removed {} events from cache that were too old to be recycled", amount);
     }
 
-    public synchronized void cache(Type type, long triggerId, long responseTotal, DataObject event, CacheConsumer handler)
-    {
+    public synchronized void cache(Type type, long triggerId, long responseTotal, DataObject event, CacheConsumer handler) {
         TLongObjectMap<List<CacheNode>> triggerCache =
                 eventCache.computeIfAbsent(type, k -> new TLongObjectHashMap<>());
 
         List<CacheNode> items = triggerCache.get(triggerId);
-        if (items == null)
-        {
+        if (items == null) {
             items = new LinkedList<>();
             triggerCache.put(triggerId, items);
         }
@@ -87,37 +82,32 @@ public class EventCache
         items.add(new CacheNode(responseTotal, event, handler));
     }
 
-    public synchronized void playbackCache(Type type, long triggerId)
-    {
+    public synchronized void playbackCache(Type type, long triggerId) {
         TLongObjectMap<List<CacheNode>> typeCache = this.eventCache.get(type);
         if (typeCache == null)
             return;
 
         List<CacheNode> items = typeCache.remove(triggerId);
-        if (items != null && !items.isEmpty())
-        {
+        if (items != null && !items.isEmpty()) {
             EventCache.LOG.debug("Replaying {} events from the EventCache for type {} with id: {}",
-                items.size(), type, triggerId);
+                    items.size(), type, triggerId);
             for (CacheNode item : items)
                 item.execute();
         }
     }
 
-    public synchronized int size()
-    {
+    public synchronized int size() {
         return (int) eventCache.values().stream()
                 .mapToLong(typeMap ->
-                    typeMap.valueCollection().stream().mapToLong(List::size).sum())
+                        typeMap.valueCollection().stream().mapToLong(List::size).sum())
                 .sum();
     }
 
-    public synchronized void clear()
-    {
+    public synchronized void clear() {
         eventCache.clear();
     }
 
-    public synchronized void clear(Type type, long id)
-    {
+    public synchronized void clear(Type type, long id) {
         TLongObjectMap<List<CacheNode>> typeCache = this.eventCache.get(type);
         if (typeCache == null)
             return;
@@ -127,26 +117,22 @@ public class EventCache
             LOG.debug("Clearing cache for type {} with ID {} (Size: {})", type, id, events.size());
     }
 
-    public enum Type
-    {
+    public enum Type {
         USER, MEMBER, GUILD, CHANNEL, ROLE, RELATIONSHIP, CALL
     }
 
-    private class CacheNode
-    {
+    private class CacheNode {
         private final long responseTotal;
         private final DataObject event;
         private final CacheConsumer callback;
 
-        public CacheNode(long responseTotal, DataObject event, CacheConsumer callback)
-        {
+        public CacheNode(long responseTotal, DataObject event, CacheConsumer callback) {
             this.responseTotal = responseTotal;
             this.event = event;
             this.callback = callback;
         }
 
-        void execute()
-        {
+        void execute() {
             callback.execute(responseTotal, event);
         }
     }

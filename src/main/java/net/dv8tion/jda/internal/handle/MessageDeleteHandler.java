@@ -25,34 +25,28 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.PrivateChannelImpl;
 import net.dv8tion.jda.internal.entities.TextChannelImpl;
 
-public class MessageDeleteHandler extends SocketHandler
-{
+public class MessageDeleteHandler extends SocketHandler {
 
-    public MessageDeleteHandler(JDAImpl api)
-    {
+    public MessageDeleteHandler(JDAImpl api) {
         super(api);
     }
 
     @Override
-    protected Long handleInternally(DataObject content)
-    {
+    protected Long handleInternally(DataObject content) {
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");
 
         MessageChannel channel = getJDA().getTextChannelById(channelId);
-        if (channel == null)
-        {
+        if (channel == null) {
             channel = getJDA().getPrivateChannelById(channelId);
         }
-        if (channel == null)
-        {
+        if (channel == null) {
             getJDA().getEventCache().cache(EventCache.Type.CHANNEL, channelId, responseNumber, allContent, this::handle);
             EventCache.LOG.debug("Got message delete for a channel/group that is not yet cached. ChannelId: {}", channelId);
             return null;
         }
 
-        if (channel instanceof TextChannel)
-        {
+        if (channel instanceof TextChannel) {
             TextChannelImpl tChan = (TextChannelImpl) channel;
             if (getJDA().getGuildSetupController().isLocked(tChan.getGuild().getIdLong()))
                 return tChan.getGuild().getIdLong();
@@ -63,8 +57,7 @@ public class MessageDeleteHandler extends SocketHandler
                             getJDA(), responseNumber,
                             messageId, tChan));
         }
-        else
-        {
+        else {
             PrivateChannelImpl pChan = (PrivateChannelImpl) channel;
             if (channel.hasLatestMessage() && messageId == channel.getLatestMessageIdLong())
                 pChan.setLastMessageId(0); // Reset latest message id as it was deleted.

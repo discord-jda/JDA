@@ -31,52 +31,44 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> implements Category
-{
-    public CategoryImpl(long id, GuildImpl guild)
-    {
+public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> implements Category {
+    public CategoryImpl(long id, GuildImpl guild) {
         super(id, guild);
     }
 
     @Override
-    public CategoryImpl setPosition(int rawPosition)
-    {
+    public CategoryImpl setPosition(int rawPosition) {
         getGuild().getCategoriesView().clearCachedLists();
         return super.setPosition(rawPosition);
     }
 
     @Override
-    public Category getParent()
-    {
+    public Category getParent() {
         return null;
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return ChannelType.CATEGORY;
     }
 
     @Nonnull
     @Override
-    public List<Member> getMembers()
-    {
+    public List<Member> getMembers() {
         return Collections.unmodifiableList(getChannels().stream()
-                    .map(GuildChannel::getMembers)
-                    .flatMap(List::stream)
-                    .distinct()
-                    .collect(Collectors.toList()));
+                .map(GuildChannel::getMembers)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList()));
     }
 
     @Override
-    public int getPosition()
-    {
+    public int getPosition() {
         //We call getCategories instead of directly accessing the GuildImpl.getCategories because
         // getCategories does the sorting logic.
         List<Category> channels = getGuild().getCategories();
-        for (int i = 0; i < channels.size(); i++)
-        {
+        for (int i = 0; i < channels.size(); i++) {
             if (equals(channels.get(i)))
                 return i;
         }
@@ -85,14 +77,11 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
-    public ChannelAction<Category> createCopy(@Nonnull Guild guild)
-    {
+    public ChannelAction<Category> createCopy(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
         ChannelAction<Category> action = guild.createCategory(name);
-        if (guild.equals(getGuild()))
-        {
-            for (PermissionOverride o : overrides.valueCollection())
-            {
+        if (guild.equals(getGuild())) {
+            for (PermissionOverride o : overrides.valueCollection()) {
                 if (o.isMemberOverride())
                     action.addMemberPermissionOverride(o.getIdLong(), o.getAllowedRaw(), o.getDeniedRaw());
                 else
@@ -104,22 +93,19 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
-    public InviteAction createInvite()
-    {
+    public InviteAction createInvite() {
         throw new UnsupportedOperationException("Cannot create invites for category!");
     }
 
     @Nonnull
     @Override
-    public RestAction<List<Invite>> retrieveInvites()
-    {
+    public RestAction<List<Invite>> retrieveInvites() {
         return new CompletedRestAction<>(getJDA(), Collections.emptyList());
     }
 
     @Nonnull
     @Override
-    public List<GuildChannel> getChannels()
-    {
+    public List<GuildChannel> getChannels() {
         List<GuildChannel> channels = new ArrayList<>();
         channels.addAll(getStoreChannels());
         channels.addAll(getTextChannels());
@@ -130,63 +116,54 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
-    public List<StoreChannel> getStoreChannels()
-    {
+    public List<StoreChannel> getStoreChannels() {
         return Collections.unmodifiableList(getGuild().getStoreChannelCache().stream()
-                    .filter(channel -> equals(channel.getParent()))
-                    .sorted().collect(Collectors.toList()));
+                .filter(channel -> equals(channel.getParent()))
+                .sorted().collect(Collectors.toList()));
     }
 
     @Nonnull
     @Override
-    public List<TextChannel> getTextChannels()
-    {
+    public List<TextChannel> getTextChannels() {
         return Collections.unmodifiableList(getGuild().getTextChannels().stream()
-                    .filter(channel -> equals(channel.getParent()))
-                    .sorted().collect(Collectors.toList()));
+                .filter(channel -> equals(channel.getParent()))
+                .sorted().collect(Collectors.toList()));
     }
 
     @Nonnull
     @Override
-    public List<VoiceChannel> getVoiceChannels()
-    {
+    public List<VoiceChannel> getVoiceChannels() {
         return Collections.unmodifiableList(getGuild().getVoiceChannels().stream()
-                    .filter(channel -> equals(channel.getParent()))
-                    .sorted().collect(Collectors.toList()));
+                .filter(channel -> equals(channel.getParent()))
+                .sorted().collect(Collectors.toList()));
     }
 
     @Nonnull
     @Override
-    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name)
-    {
+    public ChannelAction<TextChannel> createTextChannel(@Nonnull String name) {
         ChannelAction<TextChannel> action = getGuild().createTextChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name)
-    {
+    public ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name) {
         ChannelAction<VoiceChannel> action = getGuild().createVoiceChannel(name, this);
         return trySync(action);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
-    {
+    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name) {
         ChannelAction<StageChannel> action = getGuild().createStageChannel(name, this);
         return trySync(action);
     }
 
-    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
-    {
+    private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action) {
         Member selfMember = getGuild().getSelfMember();
-        if (!selfMember.canSync(this))
-        {
+        if (!selfMember.canSync(this)) {
             long botPerms = PermissionUtil.getEffectivePermission(this, selfMember);
-            for (PermissionOverride override : getPermissionOverrides())
-            {
+            for (PermissionOverride override : getPermissionOverrides()) {
                 long perms = override.getDeniedRaw() | override.getAllowedRaw();
                 if ((perms & ~botPerms) != 0)
                     return action;
@@ -197,21 +174,18 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyTextChannelPositions()
-    {
+    public CategoryOrderAction modifyTextChannelPositions() {
         return getGuild().modifyTextChannelPositions(this);
     }
 
     @Nonnull
     @Override
-    public CategoryOrderAction modifyVoiceChannelPositions()
-    {
+    public CategoryOrderAction modifyVoiceChannelPositions() {
         return getGuild().modifyVoiceChannelPositions(this);
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "GC:" + getName() + '(' + id + ')';
     }
 }

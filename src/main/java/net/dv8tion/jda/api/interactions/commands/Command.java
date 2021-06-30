@@ -45,8 +45,7 @@ import java.util.stream.Collectors;
  * @see Guild#retrieveCommandById(String)
  * @see Guild#retrieveCommands()
  */
-public class Command implements ISnowflake
-{
+public class Command implements ISnowflake {
     private static final EnumSet<OptionType> OPTIONS = EnumSet.complementOf(EnumSet.of(OptionType.SUB_COMMAND, OptionType.SUB_COMMAND_GROUP));
     private static final Predicate<DataObject> OPTION_TEST = it -> OPTIONS.contains(OptionType.fromKey(it.getInt("type")));
     private static final Predicate<DataObject> SUBCOMMAND_TEST = it -> OptionType.fromKey(it.getInt("type")) == OptionType.SUB_COMMAND;
@@ -61,8 +60,7 @@ public class Command implements ISnowflake
     private final long id, guildId, applicationId;
     private final boolean defaultEnabled;
 
-    public Command(JDAImpl api, Guild guild, DataObject json)
-    {
+    public Command(JDAImpl api, Guild guild, DataObject json) {
         this.api = api;
         this.guild = guild;
         this.name = json.getString("name");
@@ -76,13 +74,12 @@ public class Command implements ISnowflake
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
     }
 
-    protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
-    {
+    protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform) {
         return json.optArray("options").map(arr ->
-            arr.stream(DataArray::getObject)
-               .filter(test)
-               .map(transform)
-               .collect(Collectors.toList())
+                arr.stream(DataArray::getObject)
+                        .filter(test)
+                        .map(transform)
+                        .collect(Collectors.toList())
         ).orElse(Collections.emptyList());
     }
 
@@ -97,8 +94,7 @@ public class Command implements ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<Void> delete()
-    {
+    public RestAction<Void> delete() {
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot delete a command from another bot!");
         Route.CompiledRoute route;
@@ -121,8 +117,7 @@ public class Command implements ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    public CommandEditAction editCommand()
-    {
+    public CommandEditAction editCommand() {
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot edit a command from another bot!");
         return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
@@ -147,8 +142,7 @@ public class Command implements ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild)
-    {
+    public RestAction<List<CommandPrivilege>> retrievePrivileges(@Nonnull Guild guild) {
         Checks.notNull(guild, "Guild");
         return guild.retrieveCommandPrivilegesById(id);
     }
@@ -176,8 +170,7 @@ public class Command implements ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges)
-    {
+    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull Collection<? extends CommandPrivilege> privileges) {
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot update privileges for a command from another bot!");
         Checks.notNull(guild, "Guild");
@@ -207,8 +200,7 @@ public class Command implements ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges)
-    {
+    public RestAction<List<CommandPrivilege>> updatePrivileges(@Nonnull Guild guild, @Nonnull CommandPrivilege... privileges) {
         Checks.noneNull(privileges, "CommandPrivileges");
         return updatePrivileges(guild, Arrays.asList(privileges));
     }
@@ -219,8 +211,7 @@ public class Command implements ISnowflake
      * @return the corresponding JDA instance
      */
     @Nonnull
-    public JDA getJDA()
-    {
+    public JDA getJDA() {
         return api;
     }
 
@@ -230,8 +221,7 @@ public class Command implements ISnowflake
      * @return The name
      */
     @Nonnull
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -241,8 +231,7 @@ public class Command implements ISnowflake
      * @return The description
      */
     @Nonnull
-    public String getDescription()
-    {
+    public String getDescription() {
         return description;
     }
 
@@ -251,8 +240,7 @@ public class Command implements ISnowflake
      *
      * @return True, if everyone can use this command by default.
      */
-    public boolean isDefaultEnabled()
-    {
+    public boolean isDefaultEnabled() {
         return defaultEnabled;
     }
 
@@ -262,8 +250,7 @@ public class Command implements ISnowflake
      * @return Immutable list of command options
      */
     @Nonnull
-    public List<Option> getOptions()
-    {
+    public List<Option> getOptions() {
         return options;
     }
 
@@ -273,8 +260,7 @@ public class Command implements ISnowflake
      * @return Immutable list of subcommands
      */
     @Nonnull
-    public List<Subcommand> getSubcommands()
-    {
+    public List<Subcommand> getSubcommands() {
         return subcommands;
     }
 
@@ -284,8 +270,7 @@ public class Command implements ISnowflake
      * @return Immutable list of subcommand groups
      */
     @Nonnull
-    public List<SubcommandGroup> getSubcommandGroups()
-    {
+    public List<SubcommandGroup> getSubcommandGroups() {
         return groups;
     }
 
@@ -294,8 +279,7 @@ public class Command implements ISnowflake
      *
      * @return The application id
      */
-    public long getApplicationIdLong()
-    {
+    public long getApplicationIdLong() {
         return applicationId;
     }
 
@@ -305,26 +289,22 @@ public class Command implements ISnowflake
      * @return The application id
      */
     @Nonnull
-    public String getApplicationId()
-    {
+    public String getApplicationId() {
         return Long.toUnsignedString(applicationId);
     }
 
     @Override
-    public long getIdLong()
-    {
+    public long getIdLong() {
         return id;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "C:" + getName() + "(" + getId() + ")";
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (obj == this)
             return true;
         if (!(obj instanceof Command))
@@ -333,19 +313,17 @@ public class Command implements ISnowflake
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Long.hashCode(id);
     }
 
     /**
      * Predefined choice used for options.
-     * 
+     *
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Command.Choice...)
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
-    public static class Choice
-    {
+    public static class Choice {
         private final String name;
         private final long intValue;
         private final String stringValue;
@@ -358,8 +336,7 @@ public class Command implements ISnowflake
          * @param value
          *        The integer value you receive in a command option
          */
-        public Choice(@Nonnull String name, long value)
-        {
+        public Choice(@Nonnull String name, long value) {
             this.name = name;
             this.intValue = value;
             this.stringValue = Long.toString(value);
@@ -373,8 +350,7 @@ public class Command implements ISnowflake
          * @param value
          *        The string value you receive in a command option
          */
-        public Choice(@Nonnull String name, @Nonnull String value)
-        {
+        public Choice(@Nonnull String name, @Nonnull String value) {
             this.name = name;
             this.intValue = 0;
             this.stringValue = value;
@@ -391,17 +367,14 @@ public class Command implements ISnowflake
          * @throws net.dv8tion.jda.api.exceptions.ParsingException
          *         If the data is not formatted correctly or missing required parameters
          */
-        public Choice(@Nonnull DataObject json)
-        {
+        public Choice(@Nonnull DataObject json) {
             Checks.notNull(json, "DataObject");
             this.name = json.getString("name");
-            if (json.isType("value", DataType.INT))
-            {
+            if (json.isType("value", DataType.INT)) {
                 this.intValue = json.getLong("value");
                 this.stringValue = Long.toString(intValue); // does this make sense?
             }
-            else
-            {
+            else {
                 this.intValue = 0;
                 this.stringValue = json.getString("value");
             }
@@ -414,8 +387,7 @@ public class Command implements ISnowflake
          * @return The choice name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -424,8 +396,7 @@ public class Command implements ISnowflake
          *
          * @return The long value
          */
-        public long getAsLong()
-        {
+        public long getAsLong() {
             return intValue;
         }
 
@@ -435,20 +406,17 @@ public class Command implements ISnowflake
          * @return The String value
          */
         @Nonnull
-        public String getAsString()
-        {
+        public String getAsString() {
             return stringValue;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(name, stringValue);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             if (obj == this) return true;
             if (!(obj instanceof Choice)) return false;
             Choice other = (Choice) obj;
@@ -456,8 +424,7 @@ public class Command implements ISnowflake
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "Choice(" + name + "," + stringValue + ")";
         }
     }
@@ -465,20 +432,18 @@ public class Command implements ISnowflake
     /**
      * An Option for a command.
      */
-    public static class Option
-    {
+    public static class Option {
         private final String name, description;
         private final int type;
         private final List<Choice> choices;
 
-        public Option(@Nonnull DataObject json)
-        {
+        public Option(@Nonnull DataObject json) {
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.type = json.getInt("type");
             this.choices = json.optArray("choices")
-                .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
+                    .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
         }
 
         /**
@@ -487,8 +452,7 @@ public class Command implements ISnowflake
          * @return The name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -498,8 +462,7 @@ public class Command implements ISnowflake
          * @return The description
          */
         @Nonnull
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
@@ -508,8 +471,7 @@ public class Command implements ISnowflake
          *
          * @return The type
          */
-        public int getTypeRaw()
-        {
+        public int getTypeRaw() {
             return type;
         }
 
@@ -519,8 +481,7 @@ public class Command implements ISnowflake
          * @return The type
          */
         @Nonnull
-        public OptionType getType()
-        {
+        public OptionType getType() {
             return OptionType.fromKey(type);
         }
 
@@ -531,32 +492,28 @@ public class Command implements ISnowflake
          * @return Immutable {@link List} of {@link Choice}
          */
         @Nonnull
-        public List<Choice> getChoices()
-        {
+        public List<Choice> getChoices() {
             return choices;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(name, description, type, choices);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             if (obj == this) return true;
             if (!(obj instanceof Option)) return false;
             Option other = (Option) obj;
             return Objects.equals(other.name, name)
-                && Objects.equals(other.description, description)
-                && Objects.equals(other.choices, choices)
-                && other.type == type;
+                    && Objects.equals(other.description, description)
+                    && Objects.equals(other.choices, choices)
+                    && other.type == type;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "Option[" + getType() + "](" + name + ")";
         }
     }
@@ -564,13 +521,11 @@ public class Command implements ISnowflake
     /**
      * An Subcommand for a command.
      */
-    public static class Subcommand
-    {
+    public static class Subcommand {
         private final String name, description;
         private final List<Option> options;
 
-        public Subcommand(DataObject json)
-        {
+        public Subcommand(DataObject json) {
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.options = parseOptions(json, OPTION_TEST, Option::new);
@@ -582,8 +537,7 @@ public class Command implements ISnowflake
          * @return The name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -593,8 +547,7 @@ public class Command implements ISnowflake
          * @return The description
          */
         @Nonnull
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
@@ -604,31 +557,27 @@ public class Command implements ISnowflake
          * @return Immutable list of Options
          */
         @Nonnull
-        public List<Option> getOptions()
-        {
+        public List<Option> getOptions() {
             return options;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(name, description, options);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             if (obj == this) return true;
             if (!(obj instanceof Subcommand)) return false;
             Subcommand other = (Subcommand) obj;
             return Objects.equals(other.name, name)
-                && Objects.equals(other.description, description)
-                && Objects.equals(other.options, options);
+                    && Objects.equals(other.description, description)
+                    && Objects.equals(other.options, options);
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "Subcommand(" + name + ")";
         }
     }
@@ -636,13 +585,11 @@ public class Command implements ISnowflake
     /**
      * An Subcommand Group for a command.
      */
-    public static class SubcommandGroup
-    {
+    public static class SubcommandGroup {
         private final String name, description;
         private final List<Subcommand> subcommands;
 
-        public SubcommandGroup(DataObject json)
-        {
+        public SubcommandGroup(DataObject json) {
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
@@ -654,8 +601,7 @@ public class Command implements ISnowflake
          * @return The name
          */
         @Nonnull
-        public String getName()
-        {
+        public String getName() {
             return name;
         }
 
@@ -665,8 +611,7 @@ public class Command implements ISnowflake
          * @return The description
          */
         @Nonnull
-        public String getDescription()
-        {
+        public String getDescription() {
             return description;
         }
 
@@ -676,20 +621,17 @@ public class Command implements ISnowflake
          * @return Immutable {@link List} of {@link Subcommand}
          */
         @Nonnull
-        public List<Subcommand> getSubcommands()
-        {
+        public List<Subcommand> getSubcommands() {
             return subcommands;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             return Objects.hash(name, description, subcommands);
         }
 
         @Override
-        public boolean equals(Object obj)
-        {
+        public boolean equals(Object obj) {
             if (obj == this) return true;
             if (!(obj instanceof SubcommandGroup)) return false;
             SubcommandGroup other = (SubcommandGroup) obj;
@@ -699,8 +641,7 @@ public class Command implements ISnowflake
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return "SubcommandGroup(" + name + ")";
         }
     }

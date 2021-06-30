@@ -26,19 +26,17 @@ import javax.annotation.Nullable;
 
 /**
  * Indicates that a Message is received in a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
- * 
+ *
  * <p>Can be used to retrieve the affected TextChannel and Message.
  *
  * <h2>Requirements</h2>
  *
  * <p>This event requires the {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MESSAGES GUILD_MESSAGES} intent to be enabled.
  */
-public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
-{
+public class GuildMessageReceivedEvent extends GenericGuildMessageEvent {
     private final Message message;
 
-    public GuildMessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message)
-    {
+    public GuildMessageReceivedEvent(@Nonnull JDA api, long responseNumber, @Nonnull Message message) {
         super(api, responseNumber, message.getIdLong(), message.getTextChannel());
         this.message = message;
     }
@@ -49,8 +47,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      * @return The received {@link net.dv8tion.jda.api.entities.Message Message} object.
      */
     @Nonnull
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
@@ -64,8 +61,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      * @see    #isWebhookMessage()
      */
     @Nonnull
-    public User getAuthor()
-    {
+    public User getAuthor() {
         return message.getAuthor();
     }
 
@@ -78,8 +74,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      * @see    #isWebhookMessage()
      */
     @Nullable
-    public Member getMember()
-    {
+    public Member getMember() {
         return message.getMember();
     }
 
@@ -89,8 +84,7 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      *
      * @return Whether or not the Message was sent via Webhook
      */
-    public boolean isWebhookMessage()
-    {
+    public boolean isWebhookMessage() {
         return getMessage().isWebhookMessage();
     }
 }

@@ -24,20 +24,18 @@ import javax.annotation.Nonnull;
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.Message Message} event is fired from a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}.
  * <br>Every PrivateMessageEvent is an instance of this event and can be casted.
- * 
+ *
  * <p>Can be used to detect any PrivateMessageEvent.
  *
  * <h2>Requirements</h2>
  *
  * <p>These events require the {@link net.dv8tion.jda.api.requests.GatewayIntent#DIRECT_MESSAGES DIRECT_MESSAGES} intent to be enabled.
  */
-public abstract class GenericPrivateMessageEvent extends Event
-{
+public abstract class GenericPrivateMessageEvent extends Event {
     protected final long messageId;
     protected final PrivateChannel channel;
 
-    public GenericPrivateMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull PrivateChannel channel)
-    {
+    public GenericPrivateMessageEvent(@Nonnull JDA api, long responseNumber, long messageId, @Nonnull PrivateChannel channel) {
         super(api, responseNumber);
         this.messageId = messageId;
         this.channel = channel;
@@ -49,8 +47,7 @@ public abstract class GenericPrivateMessageEvent extends Event
      * @return The PrivateChannel
      */
     @Nonnull
-    public PrivateChannel getChannel()
-    {
+    public PrivateChannel getChannel() {
         return channel;
     }
 
@@ -60,8 +57,7 @@ public abstract class GenericPrivateMessageEvent extends Event
      * @return The id for this message
      */
     @Nonnull
-    public String getMessageId()
-    {
+    public String getMessageId() {
         return Long.toUnsignedString(messageId);
     }
 
@@ -70,8 +66,7 @@ public abstract class GenericPrivateMessageEvent extends Event
      *
      * @return The id for this message
      */
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 }

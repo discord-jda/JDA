@@ -38,8 +38,7 @@ import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
-{
+public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T> {
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
     protected final ChannelType type;
@@ -58,8 +57,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected Integer bitrate = null;
     protected Integer userlimit = null;
 
-    public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type)
-    {
+    public ChannelActionImpl(Class<T> clazz, String name, Guild guild, ChannelType type) {
         super(guild.getJDA(), Route.Guilds.CREATE_CHANNEL.compile(guild.getId()));
         this.clazz = clazz;
         this.guild = guild;
@@ -69,44 +67,38 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
 
     @Nonnull
     @Override
-    public ChannelActionImpl<T> setCheck(BooleanSupplier checks)
-    {
+    public ChannelActionImpl<T> setCheck(BooleanSupplier checks) {
         return (ChannelActionImpl<T>) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public ChannelActionImpl<T> timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public ChannelActionImpl<T> timeout(long timeout, @Nonnull TimeUnit unit) {
         return (ChannelActionImpl<T>) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public ChannelActionImpl<T> deadline(long timestamp)
-    {
+    public ChannelActionImpl<T> deadline(long timestamp) {
         return (ChannelActionImpl<T>) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public Guild getGuild()
-    {
+    public Guild getGuild() {
         return guild;
     }
 
     @Nonnull
     @Override
-    public ChannelType getType()
-    {
+    public ChannelType getType() {
         return type;
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setName(@Nonnull String name)
-    {
+    public ChannelActionImpl<T> setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
         this.name = name;
@@ -116,8 +108,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setParent(Category category)
-    {
+    public ChannelActionImpl<T> setParent(Category category) {
         Checks.check(category == null || category.getGuild().equals(guild), "Category is not from same guild!");
         this.parent = category;
         return this;
@@ -126,8 +117,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setPosition(Integer position)
-    {
+    public ChannelActionImpl<T> setPosition(Integer position) {
         Checks.check(position == null || position >= 0, "Position must be >= 0!");
         this.position = position;
         return this;
@@ -136,8 +126,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setTopic(String topic)
-    {
+    public ChannelActionImpl<T> setTopic(String topic) {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set the topic for a TextChannel!");
         if (topic != null && topic.length() > 1024)
@@ -149,8 +138,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setNSFW(boolean nsfw)
-    {
+    public ChannelActionImpl<T> setNSFW(boolean nsfw) {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set nsfw for a TextChannel!");
         this.nsfw = nsfw;
@@ -160,8 +148,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setSlowmode(int slowmode)
-    {
+    public ChannelActionImpl<T> setSlowmode(int slowmode) {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set slowmode on text channels");
         Checks.check(slowmode <= TextChannel.MAX_SLOWMODE && slowmode >= 0, "Slowmode must be between 0 and %d (seconds)!", TextChannel.MAX_SLOWMODE);
@@ -172,8 +159,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setNews(boolean news)
-    {
+    public ChannelActionImpl<T> setNews(boolean news) {
         if (type != ChannelType.TEXT)
             throw new UnsupportedOperationException("Can only set news for a TextChannel!");
         if (news && !getGuild().getFeatures().contains("NEWS"))
@@ -185,31 +171,27 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> addMemberPermissionOverride(long userId, long allow, long deny)
-    {
+    public ChannelActionImpl<T> addMemberPermissionOverride(long userId, long allow, long deny) {
         return addOverride(userId, PermOverrideData.MEMBER_TYPE, allow, deny);
     }
 
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> addRolePermissionOverride(long roleId, long allow, long deny)
-    {
+    public ChannelActionImpl<T> addRolePermissionOverride(long roleId, long allow, long deny) {
         return addOverride(roleId, PermOverrideData.ROLE_TYPE, allow, deny);
     }
 
     @Nonnull
     @Override
-    public ChannelAction<T> removePermissionOverride(long id)
-    {
+    public ChannelAction<T> removePermissionOverride(long id) {
         overrides.remove(id);
         return this;
     }
 
     @Nonnull
     @Override
-    public ChannelAction<T> clearPermissionOverrides()
-    {
+    public ChannelAction<T> clearPermissionOverrides() {
         overrides.clear();
         return this;
     }
@@ -217,8 +199,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public ChannelAction<T> syncPermissionOverrides()
-    {
+    public ChannelAction<T> syncPermissionOverrides() {
         if (parent == null)
             throw new IllegalStateException("Cannot sync overrides without parent category! Use setParent(category) first!");
         clearPermissionOverrides();
@@ -232,8 +213,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         parent.getRolePermissionOverrides().forEach(override -> {
             long allow = override.getAllowedRaw();
             long deny = override.getDeniedRaw();
-            if (!canSetRoles)
-            {
+            if (!canSetRoles) {
                 allow &= botPerms;
                 deny &= botPerms;
             }
@@ -243,8 +223,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         parent.getMemberPermissionOverrides().forEach(override -> {
             long allow = override.getAllowedRaw();
             long deny = override.getDeniedRaw();
-            if (!canSetRoles)
-            {
+            if (!canSetRoles) {
                 allow &= botPerms;
                 deny &= botPerms;
             }
@@ -253,14 +232,12 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
         return this;
     }
 
-    private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny)
-    {
+    private ChannelActionImpl<T> addOverride(long targetId, int type, long allow, long deny) {
         Member selfMember = getGuild().getSelfMember();
         boolean canSetRoles = selfMember.hasPermission(Permission.ADMINISTRATOR);
         if (!canSetRoles && parent != null) // You can also set MANAGE_ROLES if you have it on the category (apparently?)
             canSetRoles = selfMember.hasPermission(parent, Permission.MANAGE_ROLES);
-        if (!canSetRoles)
-        {
+        if (!canSetRoles) {
             // Prevent permission escalation
             //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
             // That is why we explicitly exclude it here!
@@ -280,12 +257,10 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setBitrate(Integer bitrate)
-    {
+    public ChannelActionImpl<T> setBitrate(Integer bitrate) {
         if (!type.isAudio())
             throw new UnsupportedOperationException("Can only set the bitrate for an Audio Channel!");
-        if (bitrate != null)
-        {
+        if (bitrate != null) {
             int maxBitrate = getGuild().getMaxBitrate();
             if (bitrate < 8000)
                 throw new IllegalArgumentException("Bitrate must be greater than 8000.");
@@ -300,8 +275,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelActionImpl<T> setUserlimit(Integer userlimit)
-    {
+    public ChannelActionImpl<T> setUserlimit(Integer userlimit) {
         if (type != ChannelType.VOICE)
             throw new UnsupportedOperationException("Can only set the userlimit for a VoiceChannel!");
         if (userlimit != null && (userlimit < 0 || userlimit > 99))
@@ -311,34 +285,32 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject object = DataObject.empty();
         object.put("name", name);
         object.put("type", type.getId());
         object.put("permission_overwrites", DataArray.fromCollection(overrides.valueCollection()));
         if (position != null)
             object.put("position", position);
-        switch (type)
-        {
-            case VOICE:
-                if (bitrate != null)
-                    object.put("bitrate", bitrate);
-                if (userlimit != null)
-                    object.put("user_limit", userlimit);
-                break;
-            case TEXT:
-                if (nsfw != null)
-                    object.put("nsfw", nsfw);
-                if (slowmode != null)
-                    object.put("rate_limit_per_user", slowmode);
-                if (news != null)
-                    object.put("type", news ? 5 : 0);
-                break;
-            case STAGE:
-                if (bitrate != null)
-                    object.put("bitrate", bitrate);
-                break;
+        switch (type) {
+        case VOICE:
+            if (bitrate != null)
+                object.put("bitrate", bitrate);
+            if (userlimit != null)
+                object.put("user_limit", userlimit);
+            break;
+        case TEXT:
+            if (nsfw != null)
+                object.put("nsfw", nsfw);
+            if (slowmode != null)
+                object.put("rate_limit_per_user", slowmode);
+            if (news != null)
+                object.put("type", news ? 5 : 0);
+            break;
+        case STAGE:
+            if (bitrate != null)
+                object.put("bitrate", bitrate);
+            break;
         }
         if (type != ChannelType.CATEGORY && parent != null)
             object.put("parent_id", parent.getId());
@@ -347,25 +319,23 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<T> request)
-    {
+    protected void handleSuccess(Response response, Request<T> request) {
         EntityBuilder builder = api.getEntityBuilder();
         GuildChannel channel;
-        switch (type)
-        {
-            case STAGE:
-            case VOICE:
-                channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
-                break;
-            case TEXT:
-                channel = builder.createTextChannel(response.getObject(), guild.getIdLong());
-                break;
-            case CATEGORY:
-                channel = builder.createCategory(response.getObject(), guild.getIdLong());
-                break;
-            default:
-                request.onFailure(new IllegalStateException("Created channel of unknown type!"));
-                return;
+        switch (type) {
+        case STAGE:
+        case VOICE:
+            channel = builder.createVoiceChannel(response.getObject(), guild.getIdLong());
+            break;
+        case TEXT:
+            channel = builder.createTextChannel(response.getObject(), guild.getIdLong());
+            break;
+        case CATEGORY:
+            channel = builder.createCategory(response.getObject(), guild.getIdLong());
+            break;
+        default:
+            request.onFailure(new IllegalStateException("Created channel of unknown type!"));
+            return;
         }
         request.onSuccess(clazz.cast(channel));
     }

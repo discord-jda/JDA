@@ -37,49 +37,42 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
-public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandListUpdateAction
-{
+public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> implements CommandListUpdateAction {
     private final List<CommandData> commands = new ArrayList<>();
     private final GuildImpl guild;
 
-    public CommandListUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route)
-    {
+    public CommandListUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route) {
         super(api, route);
         this.guild = guild;
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit)
-    {
+    public CommandListUpdateAction timeout(long timeout, @Nonnull TimeUnit unit) {
         return (CommandListUpdateAction) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks)
-    {
+    public CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks) {
         return (CommandListUpdateAction) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction setCheck(BooleanSupplier checks)
-    {
+    public CommandListUpdateAction setCheck(BooleanSupplier checks) {
         return (CommandListUpdateAction) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction deadline(long timestamp)
-    {
+    public CommandListUpdateAction deadline(long timestamp) {
         return (CommandListUpdateAction) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
-    {
+    public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands) {
         Checks.noneNull(commands, "Command");
         Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");
         this.commands.addAll(commands);
@@ -87,16 +80,14 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataArray json = DataArray.empty();
         json.addAll(commands);
         return getRequestBody(json);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<List<Command>> request)
-    {
+    protected void handleSuccess(Response response, Request<List<Command>> request) {
         List<Command> commands = response.getArray().stream(DataArray::getObject)
                 .map(obj -> new Command(api, guild, obj))
                 .collect(Collectors.toList());

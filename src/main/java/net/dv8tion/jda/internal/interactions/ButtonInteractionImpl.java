@@ -28,15 +28,13 @@ import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteracti
 
 import javax.annotation.Nonnull;
 
-public class ButtonInteractionImpl extends InteractionImpl implements ButtonInteraction
-{
+public class ButtonInteractionImpl extends InteractionImpl implements ButtonInteraction {
     private final String customId;
     private final Message message;
     private final long messageId;
     private final Button button;
 
-    public ButtonInteractionImpl(JDAImpl jda, DataObject data)
-    {
+    public ButtonInteractionImpl(JDAImpl jda, DataObject data) {
         super(jda, data);
         customId = data.getObject("data").getString("custom_id");
 
@@ -51,48 +49,41 @@ public class ButtonInteractionImpl extends InteractionImpl implements ButtonInte
     @Nonnull
     @Override
     @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
-    {
+    public MessageChannel getChannel() {
         return (MessageChannel) super.getChannel();
     }
 
     @Nonnull
     @Override
-    public UpdateInteractionAction deferEdit()
-    {
+    public UpdateInteractionAction deferEdit() {
         return new UpdateInteractionActionImpl(this.hook);
     }
 
     @Nonnull
     @Override
-    public String getComponentId()
-    {
+    public String getComponentId() {
         return customId;
     }
 
     @Override
-    public Message getMessage()
-    {
+    public Message getMessage() {
         return message;
     }
 
     @Override
-    public long getMessageIdLong()
-    {
+    public long getMessageIdLong() {
         return messageId;
     }
 
     @Nonnull
     @Override
-    public Component.Type getComponentType()
-    {
+    public Component.Type getComponentType() {
         return Component.Type.BUTTON;
     }
 
     @Nonnull
     @Override
-    public Button getButton()
-    {
+    public Button getButton() {
         return button;
     }
 }

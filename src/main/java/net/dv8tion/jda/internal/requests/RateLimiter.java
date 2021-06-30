@@ -23,61 +23,56 @@ import org.slf4j.Logger;
 import java.util.Iterator;
 
 @SuppressWarnings("rawtypes")
-public abstract class RateLimiter
-{
+public abstract class RateLimiter {
     //Implementations of this class exist in the net.dv8tion.jda.api.requests.ratelimit package.
     protected static final Logger log = JDALogger.getLog(RateLimiter.class);
     protected final Requester requester;
     protected volatile boolean isShutdown = false, isStopped = false;
 
-    protected RateLimiter(Requester requester)
-    {
+    protected RateLimiter(Requester requester) {
         this.requester = requester;
     }
 
-    protected boolean isSkipped(Iterator<Request> it, Request request)
-    {
-        if (request.isSkipped())
-        {
+    protected boolean isSkipped(Iterator<Request> it, Request request) {
+        if (request.isSkipped()) {
             cancel(it, request);
             return true;
         }
         return false;
     }
 
-    private void cancel(Iterator<Request> it, Request request)
-    {
+    private void cancel(Iterator<Request> it, Request request) {
         request.onCancelled();
         it.remove();
     }
 
     // -- Required Implementations --
     public abstract Long getRateLimit(Route.CompiledRoute route);
+
     protected abstract void queueRequest(Request request);
+
     protected abstract Long handleResponse(Route.CompiledRoute route, okhttp3.Response response);
 
 
     // --- Default Implementations --
 
-    public boolean isRateLimited(Route.CompiledRoute route)
-    {
+    public boolean isRateLimited(Route.CompiledRoute route) {
         Long rateLimit = getRateLimit(route);
         return rateLimit != null && rateLimit > 0L;
     }
 
     public abstract int cancelRequests();
 
-    public void init() {}
+    public void init() {
+    }
 
     // Return true if no more requests will be processed
-    protected boolean stop()
-    {
+    protected boolean stop() {
         isStopped = true;
         return true;
     }
 
-    protected void shutdown()
-    {
+    protected void shutdown() {
         isShutdown = true;
         stop();
     }

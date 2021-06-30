@@ -25,8 +25,7 @@ import javax.annotation.Nonnull;
  * @see ApplicationTeam#getMember(User)
  * @see ApplicationTeam#getMemberById(long)
  */
-public interface TeamMember
-{
+public interface TeamMember {
     /**
      * User for the team member.
      *
@@ -51,8 +50,7 @@ public interface TeamMember
      * @return The team id.
      */
     @Nonnull
-    default String getTeamId()
-    {
+    default String getTeamId() {
         return Long.toUnsignedString(getTeamIdLong());
     }
 
@@ -66,8 +64,7 @@ public interface TeamMember
     /**
      * The membership state on the team.
      */
-    enum MembershipState
-    {
+    enum MembershipState {
         /** The user has a pending invite */
         INVITED(1),
         /** The user has accepted an invite as is a member of this team */
@@ -77,8 +74,7 @@ public interface TeamMember
 
         private final int key;
 
-        MembershipState(int key)
-        {
+        MembershipState(int key) {
             this.key = key;
         }
 
@@ -87,8 +83,7 @@ public interface TeamMember
          *
          * @return The key for this state
          */
-        public int getKey()
-        {
+        public int getKey() {
             return key;
         }
 
@@ -101,10 +96,8 @@ public interface TeamMember
          * @return The MembershipState, or {@link #UNKNOWN}
          */
         @Nonnull
-        public static MembershipState fromKey(int key)
-        {
-            for (MembershipState state : values())
-            {
+        public static MembershipState fromKey(int key) {
+            for (MembershipState state : values()) {
                 if (state.key == key)
                     return state;
             }

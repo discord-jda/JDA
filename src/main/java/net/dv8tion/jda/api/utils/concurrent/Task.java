@@ -26,8 +26,7 @@ import java.util.function.Consumer;
  * @param <T>
  *        The result type
  */
-public interface Task<T>
-{
+public interface Task<T> {
     /**
      * Whether this task has started.
      *

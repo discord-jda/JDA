@@ -25,8 +25,7 @@ import net.dv8tion.jda.internal.managers.AccountManagerImpl;
 
 import javax.annotation.Nonnull;
 
-public class SelfUserImpl extends UserImpl implements SelfUser
-{
+public class SelfUserImpl extends UserImpl implements SelfUser {
     protected AccountManager manager;
 
     private boolean verified;
@@ -39,52 +38,44 @@ public class SelfUserImpl extends UserImpl implements SelfUser
     private boolean mobile;
     private boolean nitro;
 
-    public SelfUserImpl(long id, JDAImpl api)
-    {
+    public SelfUserImpl(long id, JDAImpl api) {
         super(id, api);
         this.applicationId = id; // configured later by EntityBuilder#createSelfUser when handling the ready event payload
     }
 
     @Override
-    public boolean hasPrivateChannel()
-    {
+    public boolean hasPrivateChannel() {
         return false;
     }
 
     @Override
-    public PrivateChannel getPrivateChannel()
-    {
+    public PrivateChannel getPrivateChannel() {
         throw new UnsupportedOperationException("You cannot get a PrivateChannel with yourself (SelfUser)");
     }
 
     @Nonnull
     @Override
-    public RestAction<PrivateChannel> openPrivateChannel()
-    {
+    public RestAction<PrivateChannel> openPrivateChannel() {
         throw new UnsupportedOperationException("You cannot open a PrivateChannel with yourself (SelfUser)");
     }
 
     @Override
-    public long getApplicationIdLong()
-    {
+    public long getApplicationIdLong() {
         return applicationId;
     }
 
     @Override
-    public boolean isVerified()
-    {
+    public boolean isVerified() {
         return verified;
     }
 
     @Override
-    public boolean isMfaEnabled()
-    {
+    public boolean isMfaEnabled() {
         return mfaEnabled;
     }
 
     @Override
-    public long getAllowedFileSize()
-    {
+    public long getAllowedFileSize() {
         if (this.nitro) // by directly accessing the field we don't need to check the account type
             return Message.MAX_FILE_SIZE_NITRO;
         else
@@ -93,57 +84,48 @@ public class SelfUserImpl extends UserImpl implements SelfUser
 
     @Nonnull
     @Override
-    public AccountManager getManager()
-    {
+    public AccountManager getManager() {
         if (manager == null)
             return manager = new AccountManagerImpl(this);
         return manager;
     }
 
-    public SelfUserImpl setVerified(boolean verified)
-    {
+    public SelfUserImpl setVerified(boolean verified) {
         this.verified = verified;
         return this;
     }
 
-    public SelfUserImpl setMfaEnabled(boolean enabled)
-    {
+    public SelfUserImpl setMfaEnabled(boolean enabled) {
         this.mfaEnabled = enabled;
         return this;
     }
 
-    public SelfUserImpl setEmail(String email)
-    {
+    public SelfUserImpl setEmail(String email) {
         this.email = email;
         return this;
     }
 
-    public SelfUserImpl setPhoneNumber(String phoneNumber)
-    {
+    public SelfUserImpl setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
         return this;
     }
 
-    public SelfUserImpl setMobile(boolean mobile)
-    {
+    public SelfUserImpl setMobile(boolean mobile) {
         this.mobile = mobile;
         return this;
     }
 
-    public SelfUserImpl setNitro(boolean nitro)
-    {
+    public SelfUserImpl setNitro(boolean nitro) {
         this.nitro = nitro;
         return this;
     }
 
-    public SelfUserImpl setApplicationId(long id)
-    {
+    public SelfUserImpl setApplicationId(long id) {
         this.applicationId = id;
         return this;
     }
 
-    public static SelfUserImpl copyOf(SelfUserImpl other, JDAImpl jda)
-    {
+    public static SelfUserImpl copyOf(SelfUserImpl other, JDAImpl jda) {
         SelfUserImpl selfUser = new SelfUserImpl(other.id, jda);
         selfUser.setName(other.name)
                 .setAvatarId(other.avatarId)

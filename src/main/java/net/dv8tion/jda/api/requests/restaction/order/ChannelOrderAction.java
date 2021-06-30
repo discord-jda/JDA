@@ -39,8 +39,7 @@ import java.util.EnumSet;
  * @see   net.dv8tion.jda.api.entities.Guild#modifyCategoryPositions()
  * @see   CategoryOrderAction
  */
-public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrderAction>
-{
+public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrderAction> {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} which holds
      * the channels from {@link #getCurrentOrder()}
@@ -67,8 +66,7 @@ public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrd
      * @see    net.dv8tion.jda.api.entities.ChannelType#fromSortBucket(int)
      */
     @Nonnull
-    default EnumSet<ChannelType> getChannelTypes()
-    {
+    default EnumSet<ChannelType> getChannelTypes() {
         return ChannelType.fromSortBucket(getSortBucket());
     }
 }

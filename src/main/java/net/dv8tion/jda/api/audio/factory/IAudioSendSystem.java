@@ -27,8 +27,7 @@ import java.util.concurrent.ConcurrentMap;
  * <br>JDA, by default, uses {@link net.dv8tion.jda.api.audio.factory.DefaultSendSystem DefaultSendSystem} for its
  * UDP audio packet sending loop.
  */
-public interface IAudioSendSystem
-{
+public interface IAudioSendSystem {
     /**
      * This represents the start of the loop, similar to {@link Thread#start()}, and after a call to this method JDA
      * assumes that the instance will be sending UDP audio packets in a loop.
@@ -55,5 +54,6 @@ public interface IAudioSendSystem
      * @param contextMap
      *        The JDA internal MDC context map, or {@code null} if disabled
      */
-    default void setContextMap(@CheckForNull ConcurrentMap<String, String> contextMap) {}
+    default void setContextMap(@CheckForNull ConcurrentMap<String, String> contextMap) {
+    }
 }

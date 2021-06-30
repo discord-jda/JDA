@@ -28,13 +28,11 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code name}
  */
-public class StoreChannelUpdateNameEvent extends GenericStoreChannelUpdateEvent<String>
-{
+public class StoreChannelUpdateNameEvent extends GenericStoreChannelUpdateEvent<String> {
     public static final String IDENTIFIER = "name";
 
     public StoreChannelUpdateNameEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel,
-                                       @Nonnull String prev)
-    {
+                                       @Nonnull String prev) {
         super(api, responseNumber, channel, prev, channel.getName(), IDENTIFIER);
     }
 
@@ -44,8 +42,7 @@ public class StoreChannelUpdateNameEvent extends GenericStoreChannelUpdateEvent<
      * @return The old name
      */
     @Nonnull
-    public String getOldName()
-    {
+    public String getOldName() {
         return getOldValue();
     }
 
@@ -55,22 +52,19 @@ public class StoreChannelUpdateNameEvent extends GenericStoreChannelUpdateEvent<
      * @return The new name
      */
     @Nonnull
-    public String getNewName()
-    {
+    public String getNewName() {
         return getNewValue();
     }
 
     @Nonnull
     @Override
-    public String getOldValue()
-    {
+    public String getOldValue() {
         return super.getOldValue();
     }
 
     @Nonnull
     @Override
-    public String getNewValue()
-    {
+    public String getNewValue() {
         return super.getNewValue();
     }
 }

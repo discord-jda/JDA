@@ -40,12 +40,10 @@ import javax.annotation.Nonnull;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
-public class GuildVoiceDeafenEvent extends GenericGuildVoiceEvent
-{
+public class GuildVoiceDeafenEvent extends GenericGuildVoiceEvent {
     protected final boolean deafened;
 
-    public GuildVoiceDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member)
-    {
+    public GuildVoiceDeafenEvent(@Nonnull JDA api, long responseNumber, @Nonnull Member member) {
         super(api, responseNumber, member);
         this.deafened = member.getVoiceState().isDeafened();
     }
@@ -56,8 +54,7 @@ public class GuildVoiceDeafenEvent extends GenericGuildVoiceEvent
      * @return True, if the member was deafened with this event
      *         <br>False, if the member was un-deafened in this event
      */
-    public boolean isDeafened()
-    {
+    public boolean isDeafened() {
         return deafened;
     }
 }

@@ -26,10 +26,8 @@ import javax.annotation.Nonnull;
  *
  * <p>Can be used to detect new StoreChannel creation.
  */
-public class StoreChannelCreateEvent extends GenericStoreChannelEvent
-{
-    public StoreChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel)
-    {
+public class StoreChannelCreateEvent extends GenericStoreChannelEvent {
+    public StoreChannelCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StoreChannel channel) {
         super(api, responseNumber, channel);
     }
 }

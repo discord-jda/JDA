@@ -19,8 +19,7 @@ package net.dv8tion.jda.api.audio.hooks;
 /**
  * Represents the connection status of an audio connection.
  */
-public enum ConnectionStatus
-{
+public enum ConnectionStatus {
     /** Indicates that there is no open connection or that the connection was closed by choice, not by error.*/
     NOT_CONNECTED(false),
     /** Indicates that JDA was shutdown and no further connections should be established */
@@ -117,18 +116,15 @@ public enum ConnectionStatus
 
     private final boolean shouldReconnect;
 
-    ConnectionStatus()
-    {
+    ConnectionStatus() {
         this(true);
     }
 
-    ConnectionStatus(boolean shouldReconnect)
-    {
+    ConnectionStatus(boolean shouldReconnect) {
         this.shouldReconnect = shouldReconnect;
     }
 
-    public boolean shouldReconnect()
-    {
+    public boolean shouldReconnect() {
         return shouldReconnect;
     }
 }

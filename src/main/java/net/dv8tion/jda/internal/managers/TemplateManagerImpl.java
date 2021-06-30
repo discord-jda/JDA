@@ -31,8 +31,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements TemplateManager
-{
+public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements TemplateManager {
     protected final Template template;
     protected final JDA api;
 
@@ -45,8 +44,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
      * @param template
      *        {@link Template Template} that should be modified
      */
-    public TemplateManagerImpl(Template template)
-    {
+    public TemplateManagerImpl(Template template) {
         super(template.getJDA(), Route.Templates.MODIFY_TEMPLATE.compile(template.getGuild().getId(), template.getCode()));
         this.template = template;
         this.api = template.getJDA();
@@ -57,8 +55,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public TemplateManagerImpl reset(long fields)
-    {
+    public TemplateManagerImpl reset(long fields) {
         super.reset(fields);
         if ((fields & NAME) == NAME)
             this.name = null;
@@ -70,8 +67,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public TemplateManagerImpl reset(long... fields)
-    {
+    public TemplateManagerImpl reset(long... fields) {
         super.reset(fields);
         return this;
     }
@@ -79,8 +75,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public TemplateManagerImpl reset()
-    {
+    public TemplateManagerImpl reset() {
         super.reset();
         this.name = null;
         this.description = null;
@@ -90,8 +85,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public TemplateManagerImpl setName(@Nonnull String name)
-    {
+    public TemplateManagerImpl setName(@Nonnull String name) {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
         this.name = name;
@@ -102,8 +96,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     @Nonnull
     @Override
     @CheckReturnValue
-    public TemplateManagerImpl setDescription(@Nullable String description)
-    {
+    public TemplateManagerImpl setDescription(@Nullable String description) {
         if (description != null)
             Checks.notLonger(name, 120, "Description");
         this.description = description;
@@ -112,8 +105,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     }
 
     @Override
-    protected RequestBody finalizeData()
-    {
+    protected RequestBody finalizeData() {
         DataObject body = DataObject.empty();
         if (shouldUpdate(NAME))
             body.put("name", name);
@@ -125,8 +117,7 @@ public class TemplateManagerImpl extends ManagerBase<TemplateManager> implements
     }
 
     @Override
-    protected boolean checkPermissions()
-    {
+    protected boolean checkPermissions() {
         final Guild guild = api.getGuildById(template.getGuild().getIdLong());
 
         if (guild == null)
