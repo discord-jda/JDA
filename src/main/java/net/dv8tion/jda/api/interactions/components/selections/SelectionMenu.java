@@ -215,14 +215,15 @@ public interface SelectionMenu extends Component
          *         The min values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is less than 1
+         *         If the provided amount is negative or greater than 25
          *
          * @return The same builder instance for chaining
          */
         @Nonnull
         public Builder setMinValues(int minValues)
         {
-            Checks.positive(minValues, "Min Values");
+            Checks.notNegative(minValues, "Min Values");
+            Checks.check(minValues <= 25, "Min Values may not be greater than 25! Provided: %d", minValues);
             this.minValues = minValues;
             return this;
         }
@@ -237,7 +238,7 @@ public interface SelectionMenu extends Component
          *         The max values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is less than 1
+         *         If the provided amount is less than 1 or greater than 25
          *
          * @return The same builder instance for chaining
          */
@@ -245,6 +246,7 @@ public interface SelectionMenu extends Component
         public Builder setMaxValues(int maxValues)
         {
             Checks.positive(maxValues, "Max Values");
+            Checks.check(maxValues <= 25, "Min Values may not be greater than 25! Provided: %d", maxValues);
             this.maxValues = maxValues;
             return this;
         }
@@ -261,7 +263,7 @@ public interface SelectionMenu extends Component
          *         The max values
          *
          * @throws IllegalArgumentException
-         *         If the provided amount is not a valid range ({@code 1 <= min <= max})
+         *         If the provided amount is not a valid range ({@code 0 <= min <= max})
          *
          * @return The same builder instance for chaining
          */
@@ -269,11 +271,7 @@ public interface SelectionMenu extends Component
         public Builder setRequiredRange(int min, int max)
         {
             Checks.check(min <= max, "Min Values should be less than or equal to Max Values! Provided: [%d, %d]", min, max);
-            Checks.notNegative(min, "Min Values");
-            Checks.positive(max, "Max Values");
-            this.minValues = min;
-            this.maxValues = max;
-            return this;
+            return setMinValues(min).setMaxValues(max);
         }
 
         /**
@@ -461,9 +459,11 @@ public interface SelectionMenu extends Component
          * Creates a new {@link SelectionMenu} instance if all requirements are satisfied.
          * <br>A selection menu may not have more than 25 options at once.
          *
+         * <p>The values for {@link #setMinValues(int)} and {@link #setMaxValues(int)} are bounded by the length of {@link #getOptions()}.
+         * This means they will automatically be adjusted to not be greater than {@code getOptions().size()}.
+         *
          * @throws IllegalArgumentException
-         *         If the number of options is greater than {@link #getMaxValues()}, less than {@link #getMinValues()}, or greater than 25.
-         *         Also throws is {@link #getMinValues()} is greater than {@link #getMaxValues()}.
+         *         Throws if {@link #getMinValues()} is greater than {@link #getMaxValues()} or more than 25 options are provided
          *
          * @return The new {@link SelectionMenu} instance
          */
@@ -471,10 +471,10 @@ public interface SelectionMenu extends Component
         public SelectionMenu build()
         {
             Checks.check(minValues <= maxValues, "Min values cannot be greater than max values!");
-            Checks.check(maxValues <= options.size(), "The max values should be less than or equal to the amount of available options");
-            Checks.check(minValues <= options.size(), "The min values should be less than or equal to the amount of available options");
             Checks.check(options.size() <= 25, "Cannot build a selection menu with more than 25 options.");
-            return new SelectionMenuImpl(customId, placeholder, minValues, maxValues, options);
+            int min = Math.min(minValues, options.size());
+            int max = Math.min(maxValues, options.size());
+            return new SelectionMenuImpl(customId, placeholder, min, max, options);
         }
     }
 }
