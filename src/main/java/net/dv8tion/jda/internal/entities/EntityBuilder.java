@@ -190,6 +190,7 @@ public class EntityBuilder
         final int maxMembers = guildJson.getInt("max_members", 0);
         final int maxPresences = guildJson.getInt("max_presences", 5000);
         final int mfaLevel = guildJson.getInt("mfa_level", 0);
+        final int nsfwLevel = guildJson.getInt("nsfw_level", 0);
         final int afkTimeout = guildJson.getInt("afk_timeout", 0);
         final int verificationLevel = guildJson.getInt("verification_level", 0);
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
@@ -211,6 +212,7 @@ public class EntityBuilder
                 .setDefaultNotificationLevel(Guild.NotificationLevel.fromKey(notificationLevel))
                 .setExplicitContentLevel(Guild.ExplicitContentLevel.fromKey(explicitContentLevel))
                 .setRequiredMFALevel(Guild.MFALevel.fromKey(mfaLevel))
+                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel))
                 .setLocale(locale)
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
