@@ -69,7 +69,7 @@ public class StageInstanceActionImpl extends RestActionImpl<StageInstance> imple
     @Override
     public StageInstanceAction setTopic(@Nonnull String topic)
     {
-        Checks.notEmpty(topic, "Topic");
+        Checks.notBlank(topic, "Topic");
         Checks.notLonger(topic, 120, "Topic");
         this.topic = topic;
         return this;
