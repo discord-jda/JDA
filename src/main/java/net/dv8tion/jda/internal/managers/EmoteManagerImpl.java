@@ -112,6 +112,7 @@ public class EmoteManagerImpl extends ManagerBase<EmoteManager> implements Emote
         Checks.notBlank(name, "Name");
         name = name.trim();
         Checks.notEmpty(name, "Name");
+        Checks.notShorter(name, 2, "Name");
         Checks.notLonger(name, 32, "Name");
         this.name = name;
         set |= NAME;

@@ -146,6 +146,12 @@ public class Checks
         argument.forEach(it -> noWhitespace(it, name));
     }
 
+    public static void notShorter(final String input, final int length, final String name)
+    {
+        notNull(input, name);
+        check(Helpers.codePointLength(input) >= length, "%s may not be shorter than %d characters! Provided: \"%s\"", name, length, input);
+    }
+
     public static void notLonger(final String input, final int length, final String name)
     {
         notNull(input, name);

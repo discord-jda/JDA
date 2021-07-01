@@ -1654,6 +1654,8 @@ public class GuildImpl implements Guild
     {
         checkPermission(Permission.MANAGE_EMOTES);
         Checks.notBlank(name, "Emote name");
+        Checks.notShorter(name, 2, "Emote name");
+        Checks.notLonger(name, 32, "Emote name");
         Checks.notNull(icon, "Emote icon");
         Checks.notNull(roles, "Roles");
 
