@@ -66,12 +66,18 @@ public class MessageEmbed implements SerializableData
     public static final int VALUE_MAX_LENGTH = 1024;
 
     /**
-     * The maximum length the description and footer of an embed can have
+     * The maximum length the description of an embed can have
      *
-     * @see net.dv8tion.jda.api.EmbedBuilder#setFooter(String, String) EmbedBuilder.setFooter(text, iconUrl)
      * @see net.dv8tion.jda.api.EmbedBuilder#setDescription(CharSequence) EmbedBuilder.setDescription(text)
      */
     public static final int TEXT_MAX_LENGTH = 4096;
+    
+    /**
+     * The maximum length the footer of an embed can have
+     *
+     * @see net.dv8tion.jda.api.EmbedBuilder#setFooter(String, String) EmbedBuilder.setFooter(text, iconUrl)
+     */
+    public static final int FOOTER_MAX_LENGTH = 2048;
 
     /**
      * The maximum length any URL can have inside an embed
