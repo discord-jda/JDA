@@ -15,6 +15,8 @@
  */
 package net.dv8tion.jda.api.entities;
 
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.Nonnull;
@@ -40,56 +42,202 @@ public interface GuildThread extends GuildChannel, MessageChannel
     //TODO pick a better name (or use getParent once we break from GuildChannel interface?)
     GuildChannel getParentChannel();
 
-    //TODO docs | Max returned amount is capped at 50 regardless of actual count
+    /**
+     * The message count for this Thread
+     *
+     * <br><br><b>The message count stops after 50 messages, after this the variable won't change.</b>
+     *
+     * @return The expected message count for this guild
+     */
     int getMessageCount();
 
-    //TODO docs | Max returned amount is capped at 50 regardless of actual count
+    /**
+     * The member count for this Thread
+     *
+     * <br><br><b>The member count stops after 50 members, after this the variable won't change.</b>
+     *
+     * @return The expected member count for this guild
+     */
     int getMemberCount();
 
     //TODO | This name is bad. Looking for alternatives.
     boolean isSubscribedToThread();
 
+    /**
+     * Gets the {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object of the currently logged in account in this thread.
+     * <br>This is basically {@link JDA#getSelfUser() JDA.getSelfUser()} being provided to {@link #getThreadMember(User) getThreadMember(User)}.
+     *
+     * @return The Member object of the currently logged in account.
+     */
     @Nullable
     GuildThreadMember getSelfThreadMember();
 
-    //Only have access to this with GUILD_MEMBERS
+    /**
+     *  Collects all the {@link GuildThreadMember GuildThreadMembers} of this thread into a list
+     *
+     * <p><b>This requires the privileged {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} to be enabled!</b>
+     *
+     * @return All the cached {@link GuildThreadMember GuildThreadMembers} of this thread.
+     */
     List<GuildThreadMember> getThreadMembers();
 
+    /**
+     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided {@link Member Member}
+     * <br>If the member is not in this thread, null is returned.
+     *
+     * <p>This will only check cached members!
+     * @param member
+     *        The {@link Member Member} which to get a related GuildThreadMember object for
+     *
+     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related {@link Member Member}
+     */
     default GuildThreadMember getThreadMember(Member member)
     {
         return getThreadMemberById(member.getId());
     }
 
+    /**
+     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided {@link User User}
+     * <br>If the user is not in this thread, null is returned.
+     *
+     * <p>This will only check cached members!
+     * @param user - the {@link User User} which to get a related GuildThreadMember object for
+     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related {@link User User}
+     */
     default GuildThreadMember getThreadMember(User user)
     {
         return getThreadMemberById(user.getId());
     }
 
+    /**
+     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided id}
+     * <br>If the user is not in this thread, null is returned.
+     *
+     * <p>This will only check cached members!
+     * @param id
+     *        The id which to get a related {@link GuildThreadMember GuildThreadMember} object for
+     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related id
+     */
     default GuildThreadMember getThreadMemberById(String id)
     {
         return getThreadMemberById(MiscUtil.parseSnowflake(id));
     }
 
+    /**
+     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided id}
+     * <br>If the user is not in this thread, null is returned.
+     *
+     * <p>This will only check cached members!
+     * @param id
+     *        The id which to get a related {@link GuildThreadMember GuildThreadMember} object for
+     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related id
+     */
     GuildThreadMember getThreadMemberById(long id);
 
     //Should we provide a getter for the ThreadMember of the thread owner?
+
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this thread.
+     * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
+     * Sometimes owners of guilds delete their account or get banned by Discord.
+     *
+     *
+     * <p>This only works when the member was added to cache.
+     * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     *
+     * @return Possibly-null Member object for the Guild owner.
+     *
+     * @see    #getOwnerId()
+     * @see    #getOwnerIdLong()
+     */
     Member getOwner();
 
+    /**
+     * The ID for the current owner of this thread.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     * @see    #getOwnerIdLong()
+     */
     String getOwnerId();
 
+    /**
+     * The ID for the current owner of this guild.
+     * <br>This is useful for debugging purposes or as a shortcut.
+     *
+     * @return The ID for the current owner
+     *
+     * @see    #getOwner()
+     * @see    #getOwnerId()
+     */
     long getOwnerIdLong();
 
+    /**
+     * Whenever this thread is archived
+     * @return True if the thread is archived
+     *
+     * @see #getTimeArchive()
+     * @see #getArchivingMember()
+     */
     boolean isArchived();
 
+    /**
+     * The timestamp of when this thread got archived
+     *
+     * <br>This is null when the thread hasn't been archived.
+     * <br>check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     *
+     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp thread got archived
+     *
+     * @see #isArchived()
+     */
     //TODO This name sucks.
     OffsetDateTime getTimeArchive();
 
+    /**
+     * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this thread.
+     *
+     * <br>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     *
+     * <br>This is null when the thread hasn't been archived, the archiver is no longer in this guild or not yet loaded (lazy loading).
+     *
+     * <p>This only works when the member was added to cache.
+     * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} object for the Thread archiver.
+     *
+     * @see    #isArchived()
+     */
     @Nullable
     Member getArchivingMember();
 
+    /**
+     * The member that archived this thread's ID
+     *
+     * <br>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     *
+     * <br>This is null when the thread hasn't been archived.
+     *
+     * @return the id of the member that archived this thread
+     *
+     * @see    #isArchived()
+     */
     @Nullable
     String getArchivingMemberId();
 
+    /**
+     * The member that archived this thread's ID
+     *
+     * <br>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     *
+     * <br>This is null when the thread hasn't been archived..
+     *
+     * @return the id of the member that archived this thread
+     *
+     * @see    #isArchived()
+     */
     long getArchivingMemberIdLong();
 
     //TODO We should consider making this an enum. The only allowed values are: 60(1 hour), 1440(24 hours), 4320(3 days), 10080(1 week)
