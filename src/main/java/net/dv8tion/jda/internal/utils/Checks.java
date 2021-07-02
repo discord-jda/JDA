@@ -151,7 +151,7 @@ public class Checks
         notNull(input, name);
         int length = Helpers.codePointLength(input);
         check(length >= min && (max < 1 || length <= max),
-                "%s is not in bounds! A minimum length of %d characters, and a maximum length of %d characters is required! Provided: \"%s\"",
+                "%s must be between %d and %d characters long! Provided: \"%s\"",
                 name, min, max, input);
     }
 
