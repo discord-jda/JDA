@@ -17,12 +17,8 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
 import net.dv8tion.jda.api.interactions.components.selections.SelectionMenuInteraction;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,7 +33,7 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SelectionMenuEvent extends GenericInteractionCreateEvent implements SelectionMenuInteraction
+public class SelectionMenuEvent extends GenericComponentInteractionCreateEvent implements SelectionMenuInteraction
 {
     private final SelectionMenuInteraction menuInteraction;
 
@@ -45,47 +41,6 @@ public class SelectionMenuEvent extends GenericInteractionCreateEvent implements
     {
         super(api, responseNumber, interaction);
         this.menuInteraction = interaction;
-    }
-
-    @Nonnull
-    @Override
-    public MessageChannel getChannel()
-    {
-        return menuInteraction.getChannel();
-    }
-
-    @Nonnull
-    @Override
-    public String getComponentId()
-    {
-        return menuInteraction.getComponentId();
-    }
-
-    @Nullable
-    @Override
-    public Message getMessage()
-    {
-        return menuInteraction.getMessage();
-    }
-
-    @Override
-    public long getMessageIdLong()
-    {
-        return menuInteraction.getMessageIdLong();
-    }
-
-    @Nonnull
-    @Override
-    public Component.Type getComponentType()
-    {
-        return menuInteraction.getComponentType();
-    }
-
-    @Nonnull
-    @Override
-    public UpdateInteractionAction deferEdit()
-    {
-        return menuInteraction.deferEdit();
     }
 
     @Nullable
