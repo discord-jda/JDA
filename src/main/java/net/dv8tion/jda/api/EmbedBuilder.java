@@ -690,7 +690,7 @@ public class EmbedBuilder
         }
         else
         {
-            Checks.check(text.length() <= MessageEmbed.TEXT_MAX_LENGTH, "Text cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
+            Checks.check(text.length() <= MessageEmbed.FOOTER_MAX_LENGTH, "Text cannot be longer than %d characters.", MessageEmbed.FOOTER_MAX_LENGTH);
             urlCheck(iconUrl);
             this.footer = new MessageEmbed.Footer(text, iconUrl, null);
         }
