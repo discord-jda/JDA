@@ -84,6 +84,7 @@ public class ChannelDeleteHandler extends SocketHandler
                         channel));
                 break;
             }
+            case STAGE:
             case VOICE:
             {
                 VoiceChannel channel = getJDA().getVoiceChannelsView().remove(channelId);

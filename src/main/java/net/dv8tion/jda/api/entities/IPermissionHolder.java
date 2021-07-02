@@ -173,7 +173,7 @@ public interface IPermissionHolder extends ISnowflake
     default boolean hasAccess(@Nonnull GuildChannel channel)
     {
         Checks.notNull(channel, "Channel");
-        return channel.getType() == ChannelType.VOICE
+        return channel.getType() == ChannelType.VOICE || channel.getType() == ChannelType.STAGE
                 ? hasPermission(channel, Permission.VOICE_CONNECT, Permission.VIEW_CHANNEL)
                 : hasPermission(channel, Permission.VIEW_CHANNEL);
     }

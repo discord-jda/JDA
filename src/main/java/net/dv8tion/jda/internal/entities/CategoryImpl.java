@@ -171,6 +171,14 @@ public class CategoryImpl extends AbstractChannelImpl<Category, CategoryImpl> im
         return trySync(action);
     }
 
+    @Nonnull
+    @Override
+    public ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
+    {
+        ChannelAction<StageChannel> action = getGuild().createStageChannel(name, this);
+        return trySync(action);
+    }
+
     private <T extends GuildChannel> ChannelAction<T> trySync(ChannelAction<T> action)
     {
         Member selfMember = getGuild().getSelfMember();

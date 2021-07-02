@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.entities.Emoji;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
+import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -117,6 +118,7 @@ public interface Button extends Component
      * @return New disabled button instance
      */
     @Nonnull
+    @CheckReturnValue
     default Button asDisabled()
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), true, getEmoji());
@@ -128,6 +130,7 @@ public interface Button extends Component
      * @return New enabled button instance
      */
     @Nonnull
+    @CheckReturnValue
     default Button asEnabled()
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), false, getEmoji());
@@ -142,6 +145,7 @@ public interface Button extends Component
      * @return New enabled/disabled button instance
      */
     @Nonnull
+    @CheckReturnValue
     default Button withDisabled(boolean disabled)
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), disabled, getEmoji());
@@ -156,6 +160,7 @@ public interface Button extends Component
      * @return New button with emoji
      */
     @Nonnull
+    @CheckReturnValue
     default Button withEmoji(@Nullable Emoji emoji)
     {
         return new ButtonImpl(getId(), getLabel(), getStyle(), getUrl(), isDisabled(), emoji);
@@ -173,6 +178,7 @@ public interface Button extends Component
      * @return New button with the changed label
      */
     @Nonnull
+    @CheckReturnValue
     default Button withLabel(@Nonnull String label)
     {
         Checks.notEmpty(label, "Label");
@@ -192,6 +198,7 @@ public interface Button extends Component
      * @return New button with the changed id
      */
     @Nonnull
+    @CheckReturnValue
     default Button withId(@Nonnull String id)
     {
         Checks.notEmpty(id, "ID");
@@ -211,6 +218,7 @@ public interface Button extends Component
      * @return New button with the changed url
      */
     @Nonnull
+    @CheckReturnValue
     default Button withUrl(@Nonnull String url)
     {
         Checks.notEmpty(url, "URL");
@@ -232,6 +240,7 @@ public interface Button extends Component
      * @return New button with the changed style
      */
     @Nonnull
+    @CheckReturnValue
     default Button withStyle(@Nonnull ButtonStyle style)
     {
         Checks.notNull(style, "Style");

@@ -546,9 +546,12 @@ public interface GuildAction extends RestAction<Void>
         public ChannelData(ChannelType type, String name)
         {
             Checks.notBlank(name, "Name");
-            Checks.check(type == ChannelType.TEXT || type == ChannelType.VOICE, "Can only create channels of type TEXT or VOICE in GuildAction!");
-            Checks.check(name.length() >= 2 && name.length() <= 100, "Channel name has to be between 2-100 characters long!");
-            Checks.check(type == ChannelType.VOICE || name.matches("[a-zA-Z0-9-_]+"), "Channels of type TEXT must have a name in alphanumeric with underscores!");
+            Checks.check(type == ChannelType.TEXT || type == ChannelType.VOICE || type == ChannelType.STAGE,
+                "Can only create channels of type TEXT, STAGE, or VOICE in GuildAction!");
+            Checks.check(name.length() >= 2 && name.length() <= 100,
+                "Channel name has to be between 2-100 characters long!");
+            Checks.check(type == ChannelType.VOICE || type == ChannelType.STAGE || name.matches("[a-zA-Z0-9-_]+"),
+                "Channels of type TEXT must have a name in alphanumeric with underscores!");
 
             this.type = type;
             this.name = name;

@@ -71,6 +71,8 @@ public enum Permission
     MANAGE_WEBHOOKS(   29, true, true, "Manage Webhooks"),
     MANAGE_EMOTES(     30, true, false, "Manage Emojis"),
 
+    REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
+
     UNKNOWN(-1, false, false, "Unknown");
 
     /**
@@ -109,7 +111,7 @@ public enum Permission
      */
     public static final long ALL_VOICE_PERMISSIONS
             = Permission.getRaw(VOICE_STREAM, VOICE_CONNECT, VOICE_SPEAK, VOICE_MUTE_OTHERS,
-                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER);
+                                VOICE_DEAF_OTHERS, VOICE_MOVE_OTHERS, VOICE_USE_VAD, PRIORITY_SPEAKER, REQUEST_TO_SPEAK);
 
     private final int offset;
     private final long raw;

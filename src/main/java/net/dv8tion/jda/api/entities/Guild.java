@@ -57,6 +57,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.api.entities.Guild Guild}.
@@ -1525,12 +1526,95 @@ public interface Guild extends ISnowflake
                 return getTextChannelById(id);
             case VOICE:
                 return getVoiceChannelById(id);
+            case STAGE:
+                return getStageChannelById(id);
             case STORE:
                 return getStoreChannelById(id);
             case CATEGORY:
                 return getCategoryById(id);
         }
         return null;
+    }
+
+    /**
+     * Gets a list of all {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild that have the same
+     * name as the one provided.
+     * <br>If there are no {@link net.dv8tion.jda.api.entities.StageChannel StageChannels} with the provided name, then this returns an empty list.
+     *
+     * @param  name
+     *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
+     * @param  ignoreCase
+     *         Determines if the comparison ignores case when comparing. True - case insensitive.
+     *
+     * @return Possibly-empty immutable list of all StageChannel names that match the provided name.
+     */
+    @Nonnull
+    default List<StageChannel> getStageChannelsByName(@Nonnull String name, boolean ignoreCase)
+    {
+        return getVoiceChannelsByName(name, ignoreCase)
+                .stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getStageChannelById(String)}, but it only
+     * checks this specific Guild for a StageChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
+     *
+     * @throws java.lang.NumberFormatException
+     *         If the provided {@code id} cannot be parsed by {@link Long#parseLong(String)}
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
+     */
+    @Nullable
+    default StageChannel getStageChannelById(@Nonnull String id)
+    {
+        return getStageChannelById(MiscUtil.parseSnowflake(id));
+    }
+
+    /**
+     * Gets a {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} from this guild that has the same id as the
+     * one provided. This method is similar to {@link net.dv8tion.jda.api.JDA#getStageChannelById(long)}, but it only
+     * checks this specific Guild for a StageChannel.
+     * <br>If there is no {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with an id that matches the provided
+     * one, then this returns {@code null}.
+     *
+     * @param  id
+     *         The id of the {@link net.dv8tion.jda.api.entities.StageChannel StageChannel}.
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} with matching id.
+     */
+    @Nullable
+    default StageChannel getStageChannelById(long id)
+    {
+        VoiceChannel channel = getVoiceChannelById(id);
+        return channel instanceof StageChannel ? (StageChannel) channel : null;
+    }
+
+    /**
+     * Gets all {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     * <br>The channels returned will be sorted according to their position.
+     *
+     * <p>This copies the backing store into a list. This means every call
+     * creates a new list with O(n) complexity.
+     *
+     * @return An immutable List of {@link net.dv8tion.jda.api.entities.StageChannel StageChannels}.
+     */
+    @Nonnull
+    default List<StageChannel> getStageChannels()
+    {
+        return getVoiceChannels()
+                .stream()
+                .filter(StageChannel.class::isInstance)
+                .map(StageChannel.class::cast)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -1802,6 +1886,8 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p>This may also contain {@link StageChannel StageChannels}!
+     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1823,6 +1909,8 @@ public interface Guild extends ISnowflake
      * <br>If there is no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} with an id that matches the provided
      * one, then this returns {@code null}.
      *
+     * <p>This may also contain {@link StageChannel StageChannels}!
+     *
      * @param  id
      *         The id of the {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
      *
@@ -1843,6 +1931,8 @@ public interface Guild extends ISnowflake
      * a local variable or use {@link #getVoiceChannelCache()} and use its more efficient
      * versions of handling these values.
      *
+     * <p>This may also contain {@link StageChannel StageChannels}!
+     *
      * @return An immutable List of {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
      */
     @Nonnull
@@ -1855,6 +1945,8 @@ public interface Guild extends ISnowflake
      * Gets a list of all {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} in this Guild that have the same
      * name as the one provided.
      * <br>If there are no {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} with the provided name, then this returns an empty list.
+     *
+     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @param  name
      *         The name used to filter the returned {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels}.
@@ -1873,6 +1965,8 @@ public interface Guild extends ISnowflake
      * Sorted {@link net.dv8tion.jda.api.utils.cache.SnowflakeCacheView SnowflakeCacheView} of
      * all cached {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels} of this Guild.
      * <br>VoiceChannels are sorted according to their position.
+     *
+     * <p>This may also contain {@link StageChannel StageChannels}!
      *
      * @return {@link net.dv8tion.jda.api.utils.cache.SortedSnowflakeCacheView SortedSnowflakeCacheView}
      */
@@ -2630,6 +2724,44 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     AudioManager getAudioManager();
+
+    /**
+     * Once the currently logged in account is connected to a {@link StageChannel} with an active {@link StageInstance},
+     * this will trigger a {@link GuildVoiceState#getRequestToSpeakTimestamp() Request-to-Speak} (aka raise your hand).
+     *
+     * <p>This will set an internal flag to automatically request to speak once the bot joins a stage channel.
+     * <br>You can use {@link #cancelRequestToSpeak()} to move back to the audience or cancel your pending request.
+     *
+     * <p>If the self member has {@link Permission#VOICE_MUTE_OTHERS} this will immediately promote them to speaker.
+     *
+     * <p>Example:
+     * <pre>{@code
+     * stageChannel.createStageInstance("Talent Show").queue()
+     * guild.requestToSpeak(); // Set request to speak flag
+     * guild.getAudioManager().openAudioConnection(stageChannel); // join the channel
+     * }</pre>
+     *
+     * @return {@link Task} representing the request to speak.
+     *         Calling {@link Task#get()} can result in deadlocks and should be avoided at all times.
+     *
+     * @see    #cancelRequestToSpeak()
+     */
+    @Nonnull
+    Task<Void> requestToSpeak();
+
+    /**
+     * Cancels the {@link #requestToSpeak() Request-to-Speak}.
+     * <br>This can also be used to move back to the audience if you are currently a speaker.
+     *
+     * <p>If there is no request to speak or the member is not currently connected to an active {@link StageInstance}, this does nothing.
+     *
+     * @return {@link Task} representing the request to speak cancellation.
+     *         Calling {@link Task#get()} can result in deadlocks and should be avoided at all times.
+     *
+     * @see    #requestToSpeak()
+     */
+    @Nonnull
+    Task<Void> cancelRequestToSpeak();
 
     /**
      * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this Guild
@@ -5037,6 +5169,70 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     ChannelAction<VoiceChannel> createVoiceChannel(@Nonnull String name, @Nullable Category parent);
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the StageChannel to create
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new StageChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ChannelAction<StageChannel> createStageChannel(@Nonnull String name)
+    {
+        return createStageChannel(name, null);
+    }
+
+    /**
+     * Creates a new {@link net.dv8tion.jda.api.entities.StageChannel StageChannel} in this Guild.
+     * For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL MANAGE_CHANNEL} Permission.
+     *
+     * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
+     * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The channel could not be created due to a permission discrepancy</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MAX_CHANNELS MAX_CHANNELS}
+     *     <br>The maximum number of channels were exceeded</li>
+     * </ul>
+     *
+     * @param  name
+     *         The name of the StageChannel to create
+     * @param  parent
+     *         The optional parent category for this channel, or null
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL} permission
+     * @throws IllegalArgumentException
+     *         If the provided name is {@code null} or empty or greater than 100 characters in length;
+     *         or the provided parent is not in the same guild.
+     *
+     * @return A specific {@link ChannelAction ChannelAction}
+     *         <br>This action allows to set fields for the new StageChannel before creating it
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<StageChannel> createStageChannel(@Nonnull String name, @Nullable Category parent);
 
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Category Category} in this Guild.
