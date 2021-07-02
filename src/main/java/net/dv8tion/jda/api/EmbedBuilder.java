@@ -635,7 +635,7 @@ public class EmbedBuilder
      *         the text of the footer of the embed. If this is not set or set to null, the footer will not appear in the embed.
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the length of {@code text} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.
+     *         If the length of {@code text} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#FOOTER_MAX_LENGTH}.
      *
      * @return the builder after the footer has been set
      */
@@ -672,7 +672,7 @@ public class EmbedBuilder
      *
      * @throws java.lang.IllegalArgumentException
      *         <ul>
-     *             <li>If the length of {@code text} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code text} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#FOOTER_MAX_LENGTH}.</li>
      *             <li>If the length of {@code iconUrl} is longer than {@link net.dv8tion.jda.api.entities.MessageEmbed#URL_MAX_LENGTH}.</li>
      *             <li>If the provided {@code iconUrl} is not a properly formatted http or https url.</li>
      *         </ul>
