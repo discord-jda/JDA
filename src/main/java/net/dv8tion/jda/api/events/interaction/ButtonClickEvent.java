@@ -42,6 +42,13 @@ public class ButtonClickEvent extends GenericComponentInteractionCreateEvent imp
         this.interaction = interaction;
     }
 
+    @Nonnull
+    @Override
+    public ButtonInteraction getInteraction()
+    {
+        return interaction;
+    }
+
     @Nullable
     @Override
     public Button getComponent()

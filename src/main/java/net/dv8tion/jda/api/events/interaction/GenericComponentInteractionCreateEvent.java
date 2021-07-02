@@ -46,6 +46,13 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
 
     @Nonnull
     @Override
+    public ComponentInteraction getInteraction()
+    {
+        return interaction;
+    }
+
+    @Nonnull
+    @Override
     public MessageChannel getChannel()
     {
         return interaction.getChannel();

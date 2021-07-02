@@ -43,6 +43,13 @@ public class SelectionMenuEvent extends GenericComponentInteractionCreateEvent i
         this.menuInteraction = interaction;
     }
 
+    @Nonnull
+    @Override
+    public SelectionMenuInteraction getInteraction()
+    {
+        return menuInteraction;
+    }
+
     @Nullable
     @Override
     public SelectionMenu getComponent()
