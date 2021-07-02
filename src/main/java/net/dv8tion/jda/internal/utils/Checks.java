@@ -146,10 +146,13 @@ public class Checks
         argument.forEach(it -> noWhitespace(it, name));
     }
 
-    public static void notShorter(final String input, final int length, final String name)
+    public static void inRange(final String input, final int min, final int max, final String name)
     {
         notNull(input, name);
-        check(Helpers.codePointLength(input) >= length, "%s may not be shorter than %d characters! Provided: \"%s\"", name, length, input);
+        int length = Helpers.codePointLength(input);
+        check(length >= min && (max < 1 || length <= max),
+                "%s is not in bounds! A minimum length of %d characters, and a maximum length of %d characters is required! Provided: \"%s\"",
+                name, min, max, input);
     }
 
     public static void notLonger(final String input, final int length, final String name)
