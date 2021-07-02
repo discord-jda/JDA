@@ -150,7 +150,7 @@ public class Checks
     {
         notNull(input, name);
         int length = Helpers.codePointLength(input);
-        check(length >= min && (max < 1 || length <= max),
+        check(min <= length && length <= max,
                 "%s must be between %d and %d characters long! Provided: \"%s\"",
                 name, min, max, input);
     }
