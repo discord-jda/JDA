@@ -154,19 +154,19 @@ public class PermissionOverrideActionImpl
     @Override
     public long getAllow()
     {
-        return allow;
+        return getCurrentAllow();
     }
 
     @Override
     public long getDeny()
     {
-        return deny;
+        return getCurrentDeny();
     }
 
     @Override
     public long getInherited()
     {
-        return ~allow & ~deny;
+        return ~getAllow() & ~getDeny();
     }
 
     @Override
@@ -188,7 +188,7 @@ public class PermissionOverrideActionImpl
     {
         checkPermissions(getOriginalAllow() ^ allowBits);
         this.allow = allowBits;
-        this.deny &= ~allowBits;
+        this.deny = getCurrentDeny() & ~allowBits;
         allowSet = denySet = true;
         return this;
     }
@@ -207,7 +207,7 @@ public class PermissionOverrideActionImpl
     {
         checkPermissions(getOriginalDeny() ^ denyBits);
         this.deny = denyBits;
-        this.allow &= ~denyBits;
+        this.allow = getCurrentAllow() & ~denyBits;
         allowSet = denySet = true;
         return this;
     }
