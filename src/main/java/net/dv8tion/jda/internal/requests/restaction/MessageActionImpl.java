@@ -171,7 +171,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             return this;
         final List<MessageEmbed> embeds = message.getEmbeds();
         if (embeds != null && !embeds.isEmpty())
-            setEmbeds(embeds.stream().filter(e -> e.getType() == EmbedType.RICH).collect(Collectors.toList()));
+            setEmbeds(embeds.stream().filter(e -> e != null && e.getType() == EmbedType.RICH).collect(Collectors.toList()));
         files.clear();
 
         components = new ArrayList<>();
@@ -612,6 +612,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             return asMultipart();
         else if (!isEmpty())
             return asJSON();
+        else if (embeds != null && !embeds.isEmpty() && channel instanceof GuildChannel)
+            throw new InsufficientPermissionException((GuildChannel) channel, Permission.MESSAGE_EMBED_LINKS, "Cannot send message with only embeds without Permission.MESSAGE_EMBED_LINKS!");
         throw new IllegalStateException("Cannot build a message without content!");
     }
 
