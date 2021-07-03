@@ -158,6 +158,7 @@ public interface SelectionMenu extends Component
         builder.setRequiredRange(getMinValues(), getMaxValues());
         builder.setPlaceholder(getPlaceholder());
         builder.addOptions(getOptions());
+        builder.setDisabled(isDisabled());
         return builder;
     }
 
@@ -566,6 +567,16 @@ public interface SelectionMenu extends Component
         public int getMaxValues()
         {
             return maxValues;
+        }
+        
+        /**
+         * Whether the menu is disabled
+         *
+         * @return True if this menu is disabled
+         */
+        public boolean isDisabled()
+        {
+            return disabled;
         }
 
         /**
