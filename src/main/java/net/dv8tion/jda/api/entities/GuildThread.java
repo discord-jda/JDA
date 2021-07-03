@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MiscUtil;
 
 import javax.annotation.Nonnull;
@@ -45,7 +43,7 @@ public interface GuildThread extends GuildChannel, MessageChannel
     /**
      * The message count for this Thread
      *
-     * <br><br><b>The message count stops after 50 messages, after this the variable won't change.</b>
+     * <p><b>The message count stops after 50 messages, after this the variable won't change.</b>
      *
      * @return The expected message count for this guild
      */
@@ -54,7 +52,7 @@ public interface GuildThread extends GuildChannel, MessageChannel
     /**
      * The member count for this Thread
      *
-     * <br><br><b>The member count stops after 50 members, after this the variable won't change.</b>
+     * <p><b>The member count stops after 50 members, after this the variable won't change.</b>
      *
      * @return The expected member count for this guild
      */
@@ -65,7 +63,7 @@ public interface GuildThread extends GuildChannel, MessageChannel
 
     /**
      * Gets the {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object of the currently logged in account in this thread.
-     * <br>This is basically {@link JDA#getSelfUser() JDA.getSelfUser()} being provided to {@link #getThreadMember(User) getThreadMember(User)}.
+     * <br>This is basically {@link net.dv8tion.jda.api.JDA#getSelfUser() JDA.getSelfUser()} being provided to {@link #getThreadMember(User) getThreadMember(User)}.
      *
      * @return The Member object of the currently logged in account.
      */
@@ -73,23 +71,23 @@ public interface GuildThread extends GuildChannel, MessageChannel
     GuildThreadMember getSelfThreadMember();
 
     /**
-     *  Collects all the {@link GuildThreadMember GuildThreadMembers} of this thread into a list
+     *  Collects all the {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMembers} of this thread into a list
      *
-     * <p><b>This requires the privileged {@link GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} to be enabled!</b>
+     * <p><b>This requires the privileged {@link net.dv8tion.jda.api.requests.GatewayIntent#GUILD_MEMBERS GatewayIntent.GUILD_MEMBERS} to be enabled!</b>
      *
-     * @return All the cached {@link GuildThreadMember GuildThreadMembers} of this thread.
+     * @return All the cached {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMembers} of this thread.
      */
     List<GuildThreadMember> getThreadMembers();
 
     /**
-     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided {@link Member Member}
+     * Gets the Thread specified {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object for the provided {@link net.dv8tion.jda.api.entities.Member Member}
      * <br>If the member is not in this thread, null is returned.
      *
      * <p>This will only check cached members!
      * @param member
-     *        The {@link Member Member} which to get a related GuildThreadMember object for
+     *        The {@link net.dv8tion.jda.api.entities.Member Member} which to get a related GuildThreadMember object for
      *
-     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related {@link Member Member}
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} for the related {@link net.dv8tion.jda.api.entities.Member Member}
      */
     default GuildThreadMember getThreadMember(Member member)
     {
@@ -97,12 +95,14 @@ public interface GuildThread extends GuildChannel, MessageChannel
     }
 
     /**
-     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided {@link User User}
+     * Gets the Thread specified {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object for the provided {@link net.dv8tion.jda.api.entities.User User}
      * <br>If the user is not in this thread, null is returned.
      *
      * <p>This will only check cached members!
-     * @param user - the {@link User User} which to get a related GuildThreadMember object for
-     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related {@link User User}
+     * @param user
+     *        The {@link net.dv8tion.jda.api.entities.User User} which to get a related GuildThreadMember object for
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} for the related {@link net.dv8tion.jda.api.entities.User User}
      */
     default GuildThreadMember getThreadMember(User user)
     {
@@ -110,13 +110,14 @@ public interface GuildThread extends GuildChannel, MessageChannel
     }
 
     /**
-     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided id}
+     * Gets the Thread specified {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object for the provided id}
      * <br>If the user is not in this thread, null is returned.
      *
      * <p>This will only check cached members!
      * @param id
-     *        The id which to get a related {@link GuildThreadMember GuildThreadMember} object for
-     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related id
+     *        The id which to get a related {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object for
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} for the related id
      */
     default GuildThreadMember getThreadMemberById(String id)
     {
@@ -124,13 +125,14 @@ public interface GuildThread extends GuildChannel, MessageChannel
     }
 
     /**
-     * Gets the Thread specified {@link GuildThreadMember GuildThreadMember} object for the provided id}
+     * Gets the Thread specified {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object for the provided id}
      * <br>If the user is not in this thread, null is returned.
      *
      * <p>This will only check cached members!
      * @param id
-     *        The id which to get a related {@link GuildThreadMember GuildThreadMember} object for
-     * @return Possibly-null {@link GuildThreadMember GuildThreadMember} for the related id
+     *        The id which to get a related {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} object for
+     *
+     * @return Possibly-null {@link net.dv8tion.jda.api.entities.GuildThreadMember GuildThreadMember} for the related id
      */
     GuildThreadMember getThreadMemberById(long id);
 
@@ -138,12 +140,12 @@ public interface GuildThread extends GuildChannel, MessageChannel
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this thread.
-     * <br>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
+     * <p>This is null when the owner is no longer in this guild or not yet loaded (lazy loading).
      * Sometimes owners of guilds delete their account or get banned by Discord.
      *
      *
      * <p>This only works when the member was added to cache.
-     * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @return Possibly-null Member object for the Guild owner.
      *
@@ -186,10 +188,10 @@ public interface GuildThread extends GuildChannel, MessageChannel
     /**
      * The timestamp of when this thread got archived
      *
-     * <br>This is null when the thread hasn't been archived.
-     * <br>check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     * <p>This is null when the thread hasn't been archived.
+     * check using {@link #isArchived() isArchived()} whenever the channel has been archived or not.
      *
-     * @return Possibly-null {@link OffsetDateTime} object representing the timestamp thread got archived
+     * @return Possibly-null {@link java.time.OffsetDateTime} object representing the timestamp thread got archived
      *
      * @see #isArchived()
      */
@@ -199,12 +201,12 @@ public interface GuildThread extends GuildChannel, MessageChannel
     /**
      * The {@link net.dv8tion.jda.api.entities.Member Member} object for the owner of this thread.
      *
-     * <br>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     * <p>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
      *
-     * <br>This is null when the thread hasn't been archived, the archiver is no longer in this guild or not yet loaded (lazy loading).
+     * <p>This is null when the thread hasn't been archived, the archiver is no longer in this guild or not yet loaded (lazy loading).
      *
      * <p>This only works when the member was added to cache.
-     * <br>See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
+     * See {@link net.dv8tion.jda.api.utils.MemberCachePolicy MemberCachePolicy}
      *
      * @return Possibly-null {@link net.dv8tion.jda.api.entities.Member Member} object for the Thread archiver.
      *
@@ -216,9 +218,9 @@ public interface GuildThread extends GuildChannel, MessageChannel
     /**
      * The member that archived this thread's ID
      *
-     * <br>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     * <p>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
      *
-     * <br>This is null when the thread hasn't been archived.
+     * <p>This is null when the thread hasn't been archived.
      *
      * @return the id of the member that archived this thread
      *
@@ -230,9 +232,9 @@ public interface GuildThread extends GuildChannel, MessageChannel
     /**
      * The member that archived this thread's ID
      *
-     * <br>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
+     * <p>Check using {@link #isArchived() isArchived()} whenever the channel has been archived.
      *
-     * <br>This is null when the thread hasn't been archived..
+     * <p>This is null when the thread hasn't been archived..
      *
      * @return the id of the member that archived this thread
      *
