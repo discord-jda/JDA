@@ -16,70 +16,22 @@
 
 package net.dv8tion.jda.internal.interactions;
 
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ButtonInteraction;
 import net.dv8tion.jda.api.interactions.components.Component;
-import net.dv8tion.jda.api.requests.restaction.interactions.UpdateInteractionAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.restaction.interactions.UpdateInteractionActionImpl;
 
 import javax.annotation.Nonnull;
 
-public class ButtonInteractionImpl extends InteractionImpl implements ButtonInteraction
+public class ButtonInteractionImpl extends ComponentInteractionImpl implements ButtonInteraction
 {
-    private final String customId;
-    private final Message message;
-    private final long messageId;
     private final Button button;
 
     public ButtonInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
-        customId = data.getObject("data").getString("custom_id");
-
-        // message might be just id and flags for ephemeral messages in which case our "message" is null
-        DataObject messageJson = data.getObject("message");
-        messageId = messageJson.getUnsignedLong("id");
-
-        message = messageJson.isNull("type") ? null : jda.getEntityBuilder().createMessage(messageJson);
         button = message != null ? this.message.getButtonById(customId) : null;
-    }
-
-    @Nonnull
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public MessageChannel getChannel()
-    {
-        return (MessageChannel) super.getChannel();
-    }
-
-    @Nonnull
-    @Override
-    public UpdateInteractionAction deferEdit()
-    {
-        return new UpdateInteractionActionImpl(this.hook);
-    }
-
-    @Nonnull
-    @Override
-    public String getComponentId()
-    {
-        return customId;
-    }
-
-    @Override
-    public Message getMessage()
-    {
-        return message;
-    }
-
-    @Override
-    public long getMessageIdLong()
-    {
-        return messageId;
     }
 
     @Nonnull

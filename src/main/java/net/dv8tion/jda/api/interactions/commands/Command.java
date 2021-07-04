@@ -469,6 +469,7 @@ public class Command implements ISnowflake
     {
         private final String name, description;
         private final int type;
+        private final boolean required;
         private final List<Choice> choices;
 
         public Option(@Nonnull DataObject json)
@@ -476,6 +477,7 @@ public class Command implements ISnowflake
             this.name = json.getString("name");
             this.description = json.getString("description");
             this.type = json.getInt("type");
+            this.required = json.getBoolean("required");
             this.choices = json.optArray("choices")
                 .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
                 .orElse(Collections.emptyList());
@@ -511,6 +513,16 @@ public class Command implements ISnowflake
         public int getTypeRaw()
         {
             return type;
+        }
+
+        /**
+         * Whether this option is required
+         *
+         * @return True if this option is required
+         */
+        public boolean isRequired()
+        {
+            return required;
         }
 
         /**

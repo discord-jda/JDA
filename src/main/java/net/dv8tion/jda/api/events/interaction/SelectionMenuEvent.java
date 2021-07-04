@@ -17,49 +17,50 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.components.Button;
-import net.dv8tion.jda.api.interactions.components.ButtonInteraction;
+import net.dv8tion.jda.api.interactions.components.selections.SelectionMenu;
+import net.dv8tion.jda.api.interactions.components.selections.SelectionMenuInteraction;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
- * Indicates that a custom {@link Button} on one of the bots messages was clicked by a user.
+ * Indicates that a custom {@link SelectionMenu} on one of the bots messages was used by a user.
  *
- * <p>This fires when a user clicks one of the custom buttons attached to a bot or webhook message.
+ * <p>This fires when a user selects the options on one of the custom selection menus attached to a bot or webhook message.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class ButtonClickEvent extends GenericComponentInteractionCreateEvent implements ButtonInteraction
+public class SelectionMenuEvent extends GenericComponentInteractionCreateEvent implements SelectionMenuInteraction
 {
-    private final ButtonInteraction interaction;
+    private final SelectionMenuInteraction menuInteraction;
 
-    public ButtonClickEvent(@Nonnull JDA api, long responseNumber, @Nonnull ButtonInteraction interaction)
+    public SelectionMenuEvent(@Nonnull JDA api, long responseNumber, @Nonnull SelectionMenuInteraction interaction)
     {
         super(api, responseNumber, interaction);
-        this.interaction = interaction;
+        this.menuInteraction = interaction;
     }
 
     @Nonnull
     @Override
-    public ButtonInteraction getInteraction()
+    public SelectionMenuInteraction getInteraction()
     {
-        return interaction;
+        return menuInteraction;
     }
 
     @Nullable
     @Override
-    public Button getComponent()
+    public SelectionMenu getComponent()
     {
-        return interaction.getComponent();
+        return menuInteraction.getComponent();
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public Button getButton()
+    public List<String> getValues()
     {
-        return interaction.getButton();
+        return menuInteraction.getValues();
     }
 }
