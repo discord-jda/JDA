@@ -328,6 +328,8 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
                     object.put("user_limit", userlimit);
                 break;
             case TEXT:
+                if (topic != null && !topic.isEmpty())
+                    object.put("topic", topic);
                 if (nsfw != null)
                     object.put("nsfw", nsfw);
                 if (slowmode != null)
