@@ -46,9 +46,9 @@ public class MessageBuilder implements Appendable
     protected final StringBuilder builder = new StringBuilder();
 
     protected final List<MessageEmbed> embeds = new ArrayList<>();
+    protected final List<ComponentLayout> components = new ArrayList<>();
     protected boolean isTTS = false;
     protected String nonce;
-    protected List<ComponentLayout> components = new ArrayList<>();
     protected EnumSet<Message.MentionType> allowedMentions = null;
     protected Set<String> mentionedUsers = new HashSet<>();
     protected Set<String> mentionedRoles = new HashSet<>();
@@ -106,7 +106,8 @@ public class MessageBuilder implements Appendable
 
     public MessageBuilder(@Nullable MessageEmbed embed)
     {
-        this.embeds.add(embed);
+        if (embed != null)
+            this.embeds.add(embed);
     }
 
     /**
@@ -1274,15 +1275,14 @@ public class MessageBuilder implements Appendable
 
         LinkedList<Message> messages = new LinkedList<>();
 
-        if (builder.length() <= Message.MAX_CONTENT_LENGTH) {
+        if (builder.length() <= Message.MAX_CONTENT_LENGTH)
+        {
             messages.add(this.build());
             return messages;
         }
 
         if (policy == null || policy.length == 0)
-        {
             policy = new SplitPolicy[]{ SplitPolicy.ANYWHERE };
-        }
 
         int currentBeginIndex = 0;
 
@@ -1303,14 +1303,10 @@ public class MessageBuilder implements Appendable
         }
 
         if (currentBeginIndex < builder.length())
-        {
             messages.add(build(currentBeginIndex, builder.length()));
-        }
 
-        if (this.embeds != null)
-        {
+        if (!this.embeds.isEmpty())
             ((DataMessage) messages.get(messages.size() - 1)).setEmbeds(embeds);
-        }
 
         return messages;
     }

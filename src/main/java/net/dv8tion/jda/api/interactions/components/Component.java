@@ -50,22 +50,46 @@ public interface Component extends SerializableData
     String getId();
 
     /**
+     * How many of these components can be added to one {@link ActionRow}.
+     *
+     * @return The maximum amount an action row can contain
+     */
+    default int getMaxPerRow()
+    {
+        return getType().getMaxPerRow();
+    }
+
+    /**
      * The component types
      */
     enum Type
     {
-        UNKNOWN(-1),
+        UNKNOWN(-1, 0),
         /** A row of interactive components on a message */
-        ACTION_ROW(1),
+        ACTION_ROW(1, 0),
         /** A button */
-        BUTTON(2)
+        BUTTON(2, 5),
+        /** A selection menu */
+        SELECTION_MENU(3, 1),
         ;
 
         private final int key;
+        private final int maxPerRow;
 
-        Type(int key)
+        Type(int key, int maxPerRow)
         {
             this.key = key;
+            this.maxPerRow = maxPerRow;
+        }
+
+        /**
+         * How many of these components can be added to one {@link ActionRow}.
+         *
+         * @return The maximum amount an action row can contain
+         */
+        public int getMaxPerRow()
+        {
+            return maxPerRow;
         }
 
         /**
