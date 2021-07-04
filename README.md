@@ -562,7 +562,7 @@ to understand a proper implementation.
 <br>Sedmelluq provided a demo in his repository which presents an example implementation for JDA:
 https://github.com/sedmelluq/lavaplayer/tree/master/demo-jda
 
-### [Lavalink](https://github.com/freyacodes/)
+### [Lavalink](https://github.com/freyacodes/Lavalink)
 
 Maintained by [Freya Arbjerg](https://github.com/freyacodes).
 
