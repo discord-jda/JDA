@@ -106,11 +106,12 @@ public interface GuildVoiceState extends ISnowflake
     boolean isStream();
 
     /**
-     * Returns true if this {@link net.dv8tion.jda.api.entities.Member Member} is currently sending video.
+     * Returns true if this {@link net.dv8tion.jda.api.entities.Member Member} has their camera turned on.
+     * <br>This does not include streams! See {@link #isStream()}
      *
-     * @return True, if this member is sending video.
+     * @return True, if this member has their camera turned on.
      */
-    boolean isVideo();
+    boolean isSendingVideo();
 
     /**
      * Returns the current {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.api.entities.Member Member}

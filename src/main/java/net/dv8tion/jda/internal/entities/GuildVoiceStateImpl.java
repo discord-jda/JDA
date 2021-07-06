@@ -174,7 +174,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
-    public boolean isVideo()
+    public boolean isSendingVideo()
     {
         return video;
     }

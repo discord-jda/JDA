@@ -22,9 +22,10 @@ import net.dv8tion.jda.api.entities.Member;
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} started or ended a video.
+ * Indicates that a {@link net.dv8tion.jda.api.entities.Member Member} turned on their camera.
  *
  * <p>Can be used to detect when a user starts/stops sending video.
+ * <br>This does not include streams! Use {@link net.dv8tion.jda.api.events.guild.voice.GuildVoiceStreamEvent GuildVoiceStreamEvent} for that!
  *
  * <h2>Requirements</h2>
  *
@@ -53,7 +54,7 @@ public class GuildVoiceVideoEvent extends GenericGuildVoiceEvent
      *
      * @return True, if the user started sending video
      */
-    public boolean isVideo()
+    public boolean isSendingVideo()
     {
         return video;
     }

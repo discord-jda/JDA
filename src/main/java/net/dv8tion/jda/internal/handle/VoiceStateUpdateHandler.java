@@ -147,7 +147,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceStreamEvent(getJDA(), responseNumber, member, stream));
         }
-        if (video != vState.isVideo())
+        if (video != vState.isSendingVideo())
         {
             vState.setVideo(video);
             getJDA().getEntityBuilder().updateMemberCache(member);
