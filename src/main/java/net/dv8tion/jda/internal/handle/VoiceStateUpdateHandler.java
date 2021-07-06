@@ -70,7 +70,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         boolean guildDeafened = content.getBoolean("deaf");
         boolean suppressed = content.getBoolean("suppress");
         boolean stream = content.getBoolean("self_stream");
-        boolean video = content.getBoolean("self_video");
+        boolean video = content.getBoolean("self_video", false);
         String requestToSpeak = content.getString("request_to_speak_timestamp", null);
         OffsetDateTime requestToSpeakTime = null;
         long requestToSpeakTimestamp = 0L;
