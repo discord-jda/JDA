@@ -293,6 +293,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     public GuildVoiceStateImpl setVideo(boolean video)
     {
         this.video = video;
+        return this;
     }
     
     public GuildVoiceStateImpl setRequestToSpeak(OffsetDateTime timestamp)
