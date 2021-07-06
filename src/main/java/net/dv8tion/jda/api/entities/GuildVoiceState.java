@@ -100,6 +100,13 @@ public interface GuildVoiceState
     boolean isStream();
 
     /**
+     * Returns true if this {@link net.dv8tion.jda.api.entities.Member Member} is currently sending video.
+     *
+     * @return True, if this member is sending video.
+     */
+    boolean isVideo();
+
+    /**
      * Returns the current {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} that the {@link net.dv8tion.jda.api.entities.Member Member}
      * is in. If the {@link net.dv8tion.jda.api.entities.Member Member} is currently not in a
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}, this returns null.

@@ -60,6 +60,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         boolean guildDeafened = content.getBoolean("deaf");
         boolean suppressed = content.getBoolean("suppress");
         boolean stream = content.getBoolean("self_stream");
+        boolean video = content.getBoolean("self_video");
 
         Guild guild = getJDA().getGuildById(guildId);
         if (guild == null)
@@ -127,6 +128,12 @@ public class VoiceStateUpdateHandler extends SocketHandler
             vState.setStream(stream);
             getJDA().getEntityBuilder().updateMemberCache(member);
             getJDA().handleEvent(new GuildVoiceStreamEvent(getJDA(), responseNumber, member, stream));
+        }
+        if (video != vState.isVideo())
+        {
+            vState.setVideo(video);
+            getJDA().getEntityBuilder().updateMemberCache(member);
+            getJDA().handleEvent(new GuildVoiceVideoEvent(getJDA(), responseNumber, member, video));
         }
         if (wasMute != vState.isMuted())
             getJDA().handleEvent(new GuildVoiceMuteEvent(getJDA(), responseNumber, member));
