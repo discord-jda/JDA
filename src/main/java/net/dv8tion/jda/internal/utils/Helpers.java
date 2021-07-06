@@ -16,6 +16,9 @@
 
 package net.dv8tion.jda.internal.utils;
 
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -26,6 +29,7 @@ import java.util.function.Consumer;
  */
 public final class Helpers
 {
+    private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");
     @SuppressWarnings("rawtypes")
     private static final Consumer EMPTY_CONSUMER = (v) -> {};
 
@@ -33,6 +37,11 @@ public final class Helpers
     public static <T> Consumer<T> emptyConsumer()
     {
         return (Consumer<T>) EMPTY_CONSUMER;
+    }
+
+    public static OffsetDateTime toOffset(long instant)
+    {
+        return OffsetDateTime.ofInstant(Instant.ofEpochMilli(instant), OFFSET);
     }
 
     // locale-safe String#format

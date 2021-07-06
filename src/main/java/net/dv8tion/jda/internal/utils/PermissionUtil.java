@@ -368,7 +368,7 @@ public class PermissionUtil
 
         //When the permission to view the channel or to connect to the channel is not applied it is not granted
         // This means that we have no access to this channel at all
-        final boolean hasConnect = channel.getType() != ChannelType.VOICE || isApplied(permission, connectChannel);
+        final boolean hasConnect = (channel.getType() != ChannelType.VOICE && channel.getType() != ChannelType.STAGE) || isApplied(permission, connectChannel);
         final boolean hasView = isApplied(permission, viewChannel);
         return hasView && hasConnect ? permission : 0;
     }

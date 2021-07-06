@@ -91,13 +91,35 @@ public interface ReplyAction extends InteractionCallbackAction, AllowedMentions<
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If null is provided or more than 5 components are provided
+     *         If null is provided or an invalid number of components are provided
      *
      * @return The same reply action, for chaining convenience
+     *
+     * @see    ActionRow#of(Component...)
      */
     @Nonnull
     @CheckReturnValue
     default ReplyAction addActionRow(@Nonnull Component... components)
+    {
+        return addActionRows(ActionRow.of(components));
+    }
+
+    /**
+     * Add a single {@link ActionRow} to the message.
+     *
+     * @param  components
+     *         The components for this action row
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or an invalid number of components are provided
+     *
+     * @return The same reply action, for chaining convenience
+     *
+     * @see    ActionRow#of(Collection)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default ReplyAction addActionRow(@Nonnull Collection<? extends Component> components)
     {
         return addActionRows(ActionRow.of(components));
     }

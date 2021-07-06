@@ -146,6 +146,15 @@ public class Checks
         argument.forEach(it -> noWhitespace(it, name));
     }
 
+    public static void inRange(final String input, final int min, final int max, final String name)
+    {
+        notNull(input, name);
+        int length = Helpers.codePointLength(input);
+        check(min <= length && length <= max,
+                "%s must be between %d and %d characters long! Provided: \"%s\"",
+                name, min, max, input);
+    }
+
     public static void notLonger(final String input, final int length, final String name)
     {
         notNull(input, name);

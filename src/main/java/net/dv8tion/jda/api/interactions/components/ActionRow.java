@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions.components;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.interactions.ButtonImpl;
+import net.dv8tion.jda.internal.interactions.SelectionMenuImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -62,10 +63,12 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
             .map(obj -> {
                 switch (Component.Type.fromKey(obj.getInt("type")))
                 {
-                    case BUTTON:
-                        return new ButtonImpl(obj);
-                    default:
-                        return null;
+                case BUTTON:
+                    return new ButtonImpl(obj);
+                case SELECTION_MENU:
+                    return new SelectionMenuImpl(obj);
+                default:
+                    return null;
                 }
             })
             .filter(Objects::nonNull)
@@ -74,13 +77,14 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     }
 
     /**
-     * Create one row of up to 5 interactive message {@link Component components}.
+     * Create one row of interactive message {@link Component components}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or more than 5 components are provided
+     *         If anything is null, empty, or an invalid number of components are provided
      *
      * @return The action row
      */
@@ -92,13 +96,14 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     }
 
     /**
-     * Create one row of up to 5 interactive message {@link Component components}.
+     * Create one row of interactive message {@link Component components}.
+     * <br>You cannot currently mix different types of components and each type has its own maximum defined by {@link Component.Type#getMaxPerRow()}.
      *
      * @param  components
      *         The components for this action row
      *
      * @throws IllegalArgumentException
-     *         If anything is null, empty, or more than 5 components are provided
+     *         If anything is null, empty, or an invalid number of components are provided
      *
      * @return The action row
      */
@@ -106,10 +111,18 @@ public class ActionRow implements ComponentLayout, Iterable<Component>
     public static ActionRow of(@Nonnull Component... components)
     {
         Checks.noneNull(components, "Components");
-        Checks.check(components.length <= 5, "Can only have 5 components per action row!");
         Checks.check(components.length > 0, "Cannot have empty row!");
         ActionRow row = new ActionRow();
         Collections.addAll(row.components, components);
+        if (!row.isValid())
+        {
+            Map<Component.Type, List<Component>> grouped = Arrays.stream(components).collect(Collectors.groupingBy(Component::getType));
+            String provided = grouped.entrySet()
+                .stream()
+                .map(entry -> entry.getValue().size() + "/" + entry.getKey().getMaxPerRow() + " of " + entry.getKey())
+                .collect(Collectors.joining(", "));
+            throw new IllegalArgumentException("Cannot create action row with invalid component combinations. Provided: " + provided);
+        }
         return row;
     }
 

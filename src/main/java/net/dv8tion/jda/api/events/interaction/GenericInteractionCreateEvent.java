@@ -31,7 +31,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that an interaction was created in a channel.
+ * Indicates that an {@link Interaction} was created in a channel.
  * <br>Every interaction event is derived from this event.
  *
  * <h2>Requirements</h2>
