@@ -212,7 +212,7 @@ public interface SelectionMenu extends Component
         private boolean disabled = false;
         private final List<SelectOption> options = new ArrayList<>();
 
-        private Builder(@Nonnull String customId)
+        protected Builder(@Nonnull String customId)
         {
             setId(customId);
         }
