@@ -16,9 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands;
 
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -237,8 +235,13 @@ public interface CommandInteraction extends Interaction
             case ROLE:
                 builder.append("@").append(o.getAsRole().getName()).append(" ");
                 break;
-            case MENTIONABLE:
-                builder.append("M:").append(o.getAsMentionable().getIdLong()).append(" ");
+            case MENTIONABLE: //client only allows user or role mentionable
+                if (o instanceof Role)
+                    builder.append("@").append(o.getAsRole().getName()).append(" ");
+                else if (o instanceof User)
+                    builder.append("@").append(o.getAsUser().getName()).append(" ");
+                else
+                    builder.append("@").append(o.getAsMentionable().getIdLong()).append(" ");
                 break;
             default:
                 builder.append(o.getAsString()).append(" ");
