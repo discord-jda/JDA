@@ -117,8 +117,8 @@ public class EmbedBuilder
     {
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty embed!");
-        if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
-            throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
+        if (description.length() > MessageEmbed.DESCRIPTION_MAX_LENGTH)
+            throw new IllegalStateException(Helpers.format("Description is longer than %d! Please limit your input!", MessageEmbed.DESCRIPTION_MAX_LENGTH));
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
             throw new IllegalStateException("Cannot build an embed with more than " + MessageEmbed.EMBED_MAX_LENGTH_BOT + " characters!");
         final String description = this.description.length() < 1 ? null : this.description.toString();
@@ -291,7 +291,7 @@ public class EmbedBuilder
      *         the description of the embed, {@code null} to reset
      *
      * @throws java.lang.IllegalArgumentException
-     *         If the length of {@code description} is greater than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}
+     *         If the length of {@code description} is greater than {@link net.dv8tion.jda.api.entities.MessageEmbed#DESCRIPTION_MAX_LENGTH}
      *
      * @return the builder after the description has been set
      */
@@ -315,7 +315,7 @@ public class EmbedBuilder
      * @throws java.lang.IllegalArgumentException
      *         <ul>
      *             <li>If the provided {@code description} String is null</li>
-     *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.api.entities.MessageEmbed#TEXT_MAX_LENGTH}.</li>
+     *             <li>If the length of {@code description} is greater than {@link net.dv8tion.jda.api.entities.MessageEmbed#DESCRIPTION_MAX_LENGTH}.</li>
      *         </ul>
      *
      * @return the builder after the description has been set
@@ -324,8 +324,8 @@ public class EmbedBuilder
     public EmbedBuilder appendDescription(@Nonnull CharSequence description)
     {
         Checks.notNull(description, "description");
-        Checks.check(this.description.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
-                "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
+        Checks.check(this.description.length() + description.length() <= MessageEmbed.DESCRIPTION_MAX_LENGTH,
+                "Description cannot be longer than %d characters.", MessageEmbed.DESCRIPTION_MAX_LENGTH);
         this.description.append(description);
         return this;
     }
