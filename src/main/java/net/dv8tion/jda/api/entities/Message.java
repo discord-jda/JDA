@@ -30,6 +30,7 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.entities.MessageReference;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -214,17 +215,8 @@ public interface Message extends ISnowflake, Formattable
             "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
-    /**
-     * Referenced message.
-     *
-     * <p>This will have different meaning depending on the {@link #getType() type} of message.
-     * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
-     * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
-     *
-     * @return The referenced message, or null
-     */
     @Nullable
-    Message getReferencedMessage();
+    MessageReference getMessageReference();
 
     /**
      * This returns the id of the referenced message, never null
@@ -237,16 +229,6 @@ public interface Message extends ISnowflake, Formattable
     long getReferencedMessageIdLong();
 
     /**
-     * Retrieves the referenced message for this message. If one is already present, it will be returned.
-     *
-     * @throws java.lang.IllegalStateException
-     *         If this message does not have a reference
-     *
-     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
-     */
-    RestAction<Message> retrieveReferencedMessage();
-
-    /**
      * This returns the id of the referenced message, never null
      *
      * @throws java.lang.IllegalStateException
@@ -256,13 +238,6 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     String getReferencedMessageId();
-
-    /**
-     * This determines whether a message has a reference, for use with {@link Message#retrieveReferencedMessage()}
-     *
-     * @return Whether this message has a reference attached to it
-     */
-    boolean hasReferencedMessage();
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.

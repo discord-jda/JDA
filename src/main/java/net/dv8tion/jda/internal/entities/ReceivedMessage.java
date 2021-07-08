@@ -59,7 +59,6 @@ public class ReceivedMessage extends AbstractMessage
     protected final MessageType type;
     protected final MessageChannel channel;
     protected final MessageReference messageReference;
-    protected final Message referencedMessage;
     protected final boolean fromWebhook;
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
@@ -99,7 +98,6 @@ public class ReceivedMessage extends AbstractMessage
         this.id = id;
         this.channel = channel;
         this.messageReference = messageReference;
-        this.referencedMessage = (messageReference != null) ? messageReference.getReferencedMessage() : null;
 
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
@@ -133,56 +131,15 @@ public class ReceivedMessage extends AbstractMessage
         return api;
     }
 
+    /**
+     * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
+     * @return The message reference.
+     */
+    @Nullable
     @Override
-    public Message getReferencedMessage()
+    public MessageReference getMessageReference()
     {
-        return referencedMessage;
-    }
-
-    @Override
-    public long getReferencedMessageIdLong()
-    {
-        if (messageReference == null)
-        {
-            throw new IllegalStateException("Cannot get an id for a non-existent reference.");
-        }
-        return messageReference.getMessageIdLong();
-    }
-
-
-    @Nonnull
-    @Override
-    public String getReferencedMessageId()
-    {
-        if (messageReference == null)
-        {
-            throw new IllegalStateException("Cannot get an id for a non-existent reference.");
-        }
-
-        return Long.toUnsignedString(getReferencedMessageIdLong());
-    }
-
-    @Override
-    public boolean hasReferencedMessage()
-    {
-        return messageReference != null;
-    }
-
-    @Override
-    public RestAction<Message> retrieveReferencedMessage()
-    {
-        if (messageReference == null) {
-            throw new IllegalStateException("Cannot get a retrieve a message for a non-existent reference.");
-        }
-
-        if (referencedMessage != null) {
-            return new CompletedRestAction<>(getJDA(), referencedMessage);
-        }
-
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(messageReference.getChannelId(), getReferencedMessageId());
-        JDAImpl jda = (JDAImpl) getJDA();
-        return new RestActionImpl<>(jda, route,
-                (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false));
+        return messageReference;
     }
 
     @Override

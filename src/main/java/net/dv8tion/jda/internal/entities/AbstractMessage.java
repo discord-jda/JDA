@@ -33,6 +33,7 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractMessage implements Message
 {
@@ -106,11 +107,6 @@ public abstract class AbstractMessage implements Message
         }
     }
 
-    @Override
-    public Message getReferencedMessage()
-    {
-        return null;
-    }
 
     @NotNull
     @Override
@@ -127,17 +123,12 @@ public abstract class AbstractMessage implements Message
         return 0;
     }
 
+    @Nullable
     @Override
-    public RestAction<Message> retrieveReferencedMessage()
+    public MessageReference getMessageReference()
     {
         unsupported();
         return null;
-    }
-
-    @Override
-    public boolean hasReferencedMessage()
-    {
-        return false;
     }
 
     @Nonnull

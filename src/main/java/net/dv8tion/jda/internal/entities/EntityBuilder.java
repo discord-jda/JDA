@@ -1219,6 +1219,20 @@ public class EntityBuilder
             }
         }
 
+        MessageReference messageReference = null;
+
+        if (!jsonObject.isNull("message_reference")) // always contains the channel + message id for a referenced message
+        {                                                // used for when referenced_message is not provided
+            DataObject messageReferenceJson = jsonObject.getObject("message_reference");
+
+            messageReference = new MessageReference(
+                    messageReferenceJson.getLong("message_id"),
+                    messageReferenceJson.getLong("channel_id"),
+                    referencedMessage,
+                    api
+            );
+        }
+
         List<ActionRow> components = Collections.emptyList();
         Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
         if (componentsArrayOpt.isPresent())
@@ -1232,19 +1246,6 @@ public class EntityBuilder
 
         if (type == MessageType.UNKNOWN)
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
-
-        MessageReference messageReference = null;
-
-        if (!jsonObject.isNull("message_reference"))
-        {
-            DataObject messageReferenceJson = jsonObject.getObject("message_reference");
-
-            messageReference = new MessageReference(
-                    messageReferenceJson.getLong("message_id"),
-                    messageReferenceJson.getLong("channel_id"),
-                    referencedMessage
-            );
-        }
 
         if (!type.isSystem())
         {
