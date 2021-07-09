@@ -15,18 +15,18 @@
  */
 package net.dv8tion.jda.api.entities;
 
-import javax.annotation.Nullable;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.TextChannelImpl;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * An object representing a reference in a Discord message.
@@ -40,7 +40,7 @@ public class MessageReference
 
     private final MessageChannel channel;
     private final Guild guild;
-    private final Message referencedMessage;
+    private Message referencedMessage;
     private final JDA api;
 
     public MessageReference(long messageId, long channelId, long guildId, @Nullable Message referencedMessage, JDA api)
@@ -68,6 +68,7 @@ public class MessageReference
 
     /**
      * Retrieves the referenced message for this message.
+     * If the message already exists, it will be returned immediately.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -102,11 +103,24 @@ public class MessageReference
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_HISTORY);
 
-        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
         JDAImpl jda = (JDAImpl) getJDA();
+        Message referenced = getMessage();
+
+        if (referenced != null)
+        {
+            return new CompletedRestAction<>(jda, referenced);
+        }
+
+        Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
+
 
         return new RestActionImpl<>(jda, route,
-                (response, request) -> jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false));
+                (response, request) ->
+                {
+                    Message created = jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false);
+                    this.referencedMessage = created;
+                    return created;
+                });
     }
 
     /**
@@ -115,6 +129,7 @@ public class MessageReference
      * <p>This will have different meaning depending on the {@link Message#getType() type} of message.
      * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
      * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
+     * @see #resolve()
      *
      * @return The referenced message, or null
      */
@@ -130,7 +145,7 @@ public class MessageReference
      *
      * @return The origin channel for this message reference.
      */
-    @Nonnull
+    @Nullable
     public MessageChannel getChannel()
     {
         return channel;
@@ -226,13 +241,15 @@ public class MessageReference
 
     private void checkPermission(Permission permission)
     {
-        if (guild == null)
-        {
-            return;
-        }
+        if (guild == null) return;
 
         Member selfMember = guild.getSelfMember();
+        GuildChannel guildChannel = (GuildChannel) channel;
+
+        if (!selfMember.hasPermission(guildChannel, Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(guildChannel, Permission.VIEW_CHANNEL);
+
         if (!selfMember.hasPermission(permission))
-            throw new InsufficientPermissionException((GuildChannel) channel, permission);
+            throw new InsufficientPermissionException(guildChannel, permission);
     }
 }
