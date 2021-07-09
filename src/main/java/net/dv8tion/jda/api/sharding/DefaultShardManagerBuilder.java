@@ -95,7 +95,7 @@ public class  DefaultShardManagerBuilder
     protected ChunkingFilter chunkingFilter;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
-    private DefaultShardManagerBuilder(@Nullable String token, int intents)
+    protected DefaultShardManagerBuilder(@Nullable String token, int intents)
     {
         this.token = token;
         this.intents = 1 | intents;
