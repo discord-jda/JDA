@@ -98,7 +98,6 @@ public class ReceivedMessage extends AbstractMessage
         this.id = id;
         this.channel = channel;
         this.messageReference = messageReference;
-
         this.type = type;
         this.api = (channel != null) ? (JDAImpl) channel.getJDA() : null;
         this.fromWebhook = fromWebhook;
@@ -133,6 +132,7 @@ public class ReceivedMessage extends AbstractMessage
 
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
+     *
      * @return The message reference.
      */
     @Nullable

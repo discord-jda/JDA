@@ -1246,7 +1246,6 @@ public class EntityBuilder
 
         if (type == MessageType.UNKNOWN)
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
-
         if (!type.isSystem())
         {
             message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,

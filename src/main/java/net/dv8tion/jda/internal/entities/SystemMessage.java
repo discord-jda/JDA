@@ -39,7 +39,6 @@ public class SystemMessage extends ReceivedMessage
             tts, pinned, content, nonce, author, member, activity, editTime, reactions, attachments, embeds, stickers, Collections.emptyList(), flags);
     }
 
-
     @Nonnull
     @Override
     public RestAction<Void> pin()

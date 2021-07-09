@@ -36,7 +36,8 @@ public class MessageReference
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
      */
     @Nonnull
-    public RestAction<Message> retrieveReferencedMessage() {
+    public RestAction<Message> retrieveReferencedMessage()
+    {
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
         JDAImpl jda = (JDAImpl) getJDA();
 
@@ -60,19 +61,20 @@ public class MessageReference
     }
 
     /**
-     * This will return the channel from which this message originates.
-     * <br>
-     * Messages from other servers can be referenced, in which case JDA may not have the channel cached.
+     * The channel from which this message originates.
+     * <br>Messages from other guilds can be referenced, in which case JDA may not have the channel cached.
      *
-     * @return The channel for this message reference, or null
+     * @return The origin channel for this message reference, or null
      */
     @Nullable
-    public TextChannel getChannel() {
+    public TextChannel getChannel()
+    {
         return api.getTextChannelById(getChannelIdLong());
     }
 
     /**
      * Returns the message id for this reference.
+     *
      * @return The message id
      */
     public long getMessageIdLong()
@@ -82,6 +84,7 @@ public class MessageReference
 
     /**
      * Returns the channel id for this reference.
+     *
      * @return The channel id
      */
     public long getChannelIdLong()
@@ -91,6 +94,7 @@ public class MessageReference
 
     /**
      * Returns the message id for this reference.
+     *
      * @return The message id
      */
     public String getMessageId()
@@ -100,6 +104,7 @@ public class MessageReference
 
     /**
      * Returns the channel id for this reference.
+     *
      * @return The channel id
      */
     public String getChannelId()
@@ -109,9 +114,11 @@ public class MessageReference
 
     /**
      * Returns the JDA instance related to this message reference.
+     *
      * @return The corresponding JDA instance
      */
-    public JDA getJDA() {
+    public JDA getJDA()
+    {
         return api;
     }
 }
