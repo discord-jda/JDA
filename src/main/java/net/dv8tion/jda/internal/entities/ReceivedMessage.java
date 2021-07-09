@@ -33,7 +33,6 @@ import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.CompletedRestAction;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.requests.restaction.AuditableRestActionImpl;
 import net.dv8tion.jda.internal.requests.restaction.MessageActionImpl;
@@ -130,16 +129,19 @@ public class ReceivedMessage extends AbstractMessage
         return api;
     }
 
-    /**
-     * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
-     *
-     * @return The message reference.
-     */
     @Nullable
     @Override
     public MessageReference getMessageReference()
     {
         return messageReference;
+    }
+
+    @Nullable
+    @Override
+    public Message getReferencedMessage() {
+       return messageReference != null
+               ? messageReference.getMessage()
+               : null;
     }
 
     @Override

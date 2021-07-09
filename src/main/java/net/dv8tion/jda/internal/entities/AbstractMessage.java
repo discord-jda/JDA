@@ -16,6 +16,8 @@
 
 package net.dv8tion.jda.internal.entities;
 
+import javax.annotation.Nullable;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -31,9 +33,6 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
 import java.util.*;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractMessage implements Message
 {
@@ -107,27 +106,17 @@ public abstract class AbstractMessage implements Message
         }
     }
 
-
-    @NotNull
+    @Nullable
     @Override
-    public String getReferencedMessageId()
+    public MessageReference getMessageReference()
     {
         unsupported();
         return null;
     }
 
     @Override
-    public long getReferencedMessageIdLong()
+    public Message getReferencedMessage()
     {
-        unsupported();
-        return 0;
-    }
-
-    @Nullable
-    @Override
-    public MessageReference getMessageReference()
-    {
-        unsupported();
         return null;
     }
 

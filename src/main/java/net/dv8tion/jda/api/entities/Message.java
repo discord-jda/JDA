@@ -30,7 +30,6 @@ import net.dv8tion.jda.api.requests.restaction.MessageAction;
 import net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction;
 import net.dv8tion.jda.api.utils.AttachmentOption;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.MessageReference;
 import net.dv8tion.jda.internal.requests.FunctionalCallback;
 import net.dv8tion.jda.internal.requests.Requester;
 import net.dv8tion.jda.internal.utils.Checks;
@@ -215,29 +214,25 @@ public interface Message extends ISnowflake, Formattable
             "(?:\\?\\S*)?(?:#\\S*)?",                                      // Useless query or URN appendix
             Pattern.CASE_INSENSITIVE);
 
+    /**
+     * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
+     *
+     * @return The message reference, or null.
+     */
     @Nullable
     MessageReference getMessageReference();
 
     /**
-     * This returns the id of the referenced message, never null
+     * Referenced message.
      *
-     * @throws java.lang.IllegalStateException
-     *         If this message does not have a reference
+     * <p>This will have different meaning depending on the {@link #getType() type} of message.
+     * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
+     * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
-     * @return The referenced message id
+     * @return The referenced message, or null
      */
-    long getReferencedMessageIdLong();
-
-    /**
-     * This returns the id of the referenced message, never null
-     *
-     * @throws java.lang.IllegalStateException
-     *         If this message does not have a reference
-     *
-     * @return The referenced message id
-     */
-    @Nonnull
-    String getReferencedMessageId();
+    @Nullable
+    Message getReferencedMessage();
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.

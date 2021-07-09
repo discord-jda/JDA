@@ -1228,6 +1228,7 @@ public class EntityBuilder
             messageReference = new MessageReference(
                     messageReferenceJson.getLong("message_id"),
                     messageReferenceJson.getLong("channel_id"),
+                    messageReferenceJson.getLong("guild_id"),
                     referencedMessage,
                     api
             );
