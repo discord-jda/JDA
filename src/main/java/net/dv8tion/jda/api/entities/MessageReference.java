@@ -52,11 +52,13 @@ public class MessageReference
 
         TextChannel tc = api.getTextChannelById(channelId);
 
-        if (tc == null) {
+        if (tc == null)
+        {
             this.channel = api.getPrivateChannelById(channelId);
             this.guild = null;
         }
-        else {
+        else
+        {
             this.channel = tc;
             this.guild = api.getGuildById(guildId);
         }
@@ -170,6 +172,7 @@ public class MessageReference
 
     /**
      * Returns the guild id for this reference.
+     *
      * @return The guild id
      */
     public long getGuildIdLong()
@@ -201,10 +204,12 @@ public class MessageReference
 
     /**
      * Returns the guild id for this reference.
+     *
      * @return The guild id
      */
     @Nonnull
-    public String getGuildId() {
+    public String getGuildId()
+    {
         return Long.toUnsignedString(getGuildIdLong());
     }
 
@@ -219,7 +224,8 @@ public class MessageReference
         return api;
     }
 
-    private void checkPermission(Permission permission) {
+    private void checkPermission(Permission permission)
+    {
         if (guild == null)
         {
             return;
@@ -227,8 +233,6 @@ public class MessageReference
 
         Member selfMember = guild.getSelfMember();
         if (!selfMember.hasPermission(permission))
-        {
-            throw new InsufficientPermissionException(guild, permission);
-        }
+            throw new InsufficientPermissionException((GuildChannel) channel, permission);
     }
 }
