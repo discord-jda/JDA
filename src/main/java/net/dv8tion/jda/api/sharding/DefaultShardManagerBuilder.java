@@ -209,7 +209,7 @@ public class  DefaultShardManagerBuilder
         return create(token, intents).applyDefault();
     }
 
-    private DefaultShardManagerBuilder applyDefault()
+    protected DefaultShardManagerBuilder applyDefault()
     {
         return this.setMemberCachePolicy(MemberCachePolicy.DEFAULT)
                    .setChunkingFilter(ChunkingFilter.NONE)
@@ -319,7 +319,7 @@ public class  DefaultShardManagerBuilder
         return create(token, intents).applyLight();
     }
 
-    private DefaultShardManagerBuilder applyLight()
+    protected DefaultShardManagerBuilder applyLight()
     {
         return this.setMemberCachePolicy(MemberCachePolicy.NONE)
                    .setChunkingFilter(ChunkingFilter.NONE)
