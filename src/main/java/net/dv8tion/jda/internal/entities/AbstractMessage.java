@@ -392,7 +392,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull Collection<? extends ActionRow> components)
+    public MessageAction editActionRows(@Nonnull Collection<? extends ActionRow> actionRows)
     {
         unsupported();
         return null;
@@ -400,7 +400,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull ActionRow... components)
+    public MessageAction editActionRows(@Nonnull ActionRow... actionRows)
     {
         unsupported();
         return null;

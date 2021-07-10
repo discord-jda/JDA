@@ -822,18 +822,18 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull Collection<? extends ActionRow> components)
+    public MessageAction editActionRows(@Nonnull Collection<? extends ActionRow> actionRows)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageComponentsById(getId(), components)).withHook(interactionHook);
+        return ((MessageActionImpl) channel.editActionRowsById(getId(), actionRows)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageAction editMessageComponents(@Nonnull ActionRow... components)
+    public MessageAction editActionRows(@Nonnull ActionRow... actionRows)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageComponentsById(getId(), components)).withHook(interactionHook);
+        return ((MessageActionImpl) channel.editActionRowsById(getId(), actionRows)).withHook(interactionHook);
     }
 
     @Nonnull
