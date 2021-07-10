@@ -21,6 +21,7 @@ import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -3298,7 +3299,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editActionRowsById(@Nonnull String messageId, @Nonnull Collection<? extends ActionRow> newActionRows)
+    default MessageAction editComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ComponentLayout> newActionRows)
     {
         Checks.isSnowflake(messageId, "Message ID");
         return new MessageActionImpl(getJDA(), messageId, this).setActionRows(newActionRows);
@@ -3344,7 +3345,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editActionRowsById(long messageId, @Nonnull Collection<? extends ActionRow> newActionRows)
+    default MessageAction editComponentsById(long messageId, @Nonnull Collection<? extends ActionRow> newActionRows)
     {
         return new MessageActionImpl(getJDA(), Long.toUnsignedString(messageId), this).setActionRows(newActionRows);
     }
@@ -3389,7 +3390,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editActionRowsById(@Nonnull String messageId, @Nonnull ActionRow... newActionRows)
+    default MessageAction editComponentsById(@Nonnull String messageId, @Nonnull ActionRow... newActionRows)
     {
         Checks.isSnowflake(messageId, "Message ID");
         return new MessageActionImpl(getJDA(), messageId, this).setActionRows(newActionRows);
@@ -3435,7 +3436,7 @@ public interface MessageChannel extends AbstractChannel, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction editActionRowsById(long messageId, @Nonnull ActionRow... newActionRows)
+    default MessageAction editComponentsById(long messageId, @Nonnull ActionRow... newActionRows)
     {
         return new MessageActionImpl(getJDA(), Long.toUnsignedString(messageId), this).setActionRows(newActionRows);
     }

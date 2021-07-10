@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -1090,7 +1091,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editActionRows(@Nonnull Collection<? extends ActionRow> actionRows);
+    MessageAction editComponents(@Nonnull Collection<? extends ComponentLayout> actionRows);
 
     /**
      * Edits this Message's ActionRows to the provided {@link net.dv8tion.jda.api.interactions.components.ActionRow ActionRows}.
@@ -1126,7 +1127,7 @@ public interface Message extends ISnowflake, Formattable
      */
     @Nonnull
     @CheckReturnValue
-    MessageAction editActionRows(@Nonnull ActionRow... actionRows);
+    MessageAction editComponents(@Nonnull ActionRow... actionRows);
 
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.

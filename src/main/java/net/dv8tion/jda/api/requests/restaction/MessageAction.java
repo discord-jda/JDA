@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Component;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.AllowedMentions;
 import net.dv8tion.jda.api.utils.AttachmentOption;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
@@ -834,7 +836,7 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
     /**
      * Set the action rows for the message.
      *
-     * @param  rows
+     * @param  components
      *         The new action rows
      *
      * @throws IllegalArgumentException
@@ -844,10 +846,13 @@ public interface MessageAction extends RestAction<Message>, Appendable, AllowedM
      */
     @Nonnull
     @CheckReturnValue
-    default MessageAction setActionRows(@Nonnull Collection<? extends ActionRow> rows)
+    default MessageAction setActionRows(@Nonnull Collection<? extends ComponentLayout> components)
     {
-        Checks.noneNull(rows, "ActionRows");
-        return setActionRows(rows.toArray(new ActionRow[0]));
+        Checks.noneNull(components, "ActionRows");
+        if (components.stream().anyMatch(x -> !(x instanceof ActionRow)))
+            throw new UnsupportedOperationException("The provided component layout is not supported");
+        List<ActionRow> actionRows = components.stream().map(ActionRow.class::cast).collect(Collectors.toList());
+        return setActionRows(actionRows.toArray(new ActionRow[0]));
     }
 
     /**

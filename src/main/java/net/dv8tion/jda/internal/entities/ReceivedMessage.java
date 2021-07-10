@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -822,18 +823,18 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public MessageAction editActionRows(@Nonnull Collection<? extends ActionRow> actionRows)
+    public MessageAction editComponents(@Nonnull Collection<? extends ComponentLayout> actionRows)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editActionRowsById(getId(), actionRows)).withHook(interactionHook);
+        return ((MessageActionImpl) channel.editComponentsById(getId(), actionRows)).withHook(interactionHook);
     }
 
     @Nonnull
     @Override
-    public MessageAction editActionRows(@Nonnull ActionRow... actionRows)
+    public MessageAction editComponents(@Nonnull ActionRow... actionRows)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editActionRowsById(getId(), actionRows)).withHook(interactionHook);
+        return ((MessageActionImpl) channel.editComponentsById(getId(), actionRows)).withHook(interactionHook);
     }
 
     @Nonnull
