@@ -1056,6 +1056,14 @@ public interface Message extends ISnowflake, Formattable
     @CheckReturnValue
     MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds);
 
+    @Nonnull
+    @CheckReturnValue
+    MessageAction editMessageComponents(@Nonnull Collection<? extends ActionRow> components);
+
+    @Nonnull
+    @CheckReturnValue
+    MessageAction editMessageComponents(@Nonnull ActionRow... components);
+
     /**
      * Edits this Message's content to the provided {@link net.dv8tion.jda.api.entities.MessageEmbed MessageEmbeds}.
      * <br><b>Messages can only be edited by the account that sent them!</b>.

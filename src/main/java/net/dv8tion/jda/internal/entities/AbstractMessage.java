@@ -392,6 +392,22 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
+    public MessageAction editMessageComponents(@Nonnull Collection<? extends ActionRow> components)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction editMessageComponents(@Nonnull ActionRow... components)
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nonnull
+    @Override
     public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         unsupported();

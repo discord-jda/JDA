@@ -20,6 +20,7 @@ import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.annotations.ReplaceWith;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.exceptions.AccountTypeException;
+import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -3255,6 +3256,36 @@ public interface MessageChannel extends AbstractChannel, Formattable
     {
         Checks.isSnowflake(messageId, "Message ID");
         return new MessageActionImpl(getJDA(), messageId, this).setEmbeds(newEmbeds);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageComponentsById(@Nonnull String messageId, @Nonnull Collection<? extends ActionRow> newComponents)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        return new MessageActionImpl(getJDA(), messageId, this).setActionRows(newComponents);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageComponentsById(long messageId, @Nonnull Collection<? extends ActionRow> newComponents)
+    {
+        return new MessageActionImpl(getJDA(), Long.toUnsignedString(messageId), this).setActionRows(newComponents);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageComponentsById(@Nonnull String messageId, @Nonnull ActionRow... newComponents)
+    {
+        Checks.isSnowflake(messageId, "Message ID");
+        return new MessageActionImpl(getJDA(), messageId, this).setActionRows(newComponents);
+    }
+
+    @Nonnull
+    @CheckReturnValue
+    default MessageAction editMessageComponentsById(long messageId, @Nonnull ActionRow... newComponents)
+    {
+        return new MessageActionImpl(getJDA(), Long.toUnsignedString(messageId), this).setActionRows(newComponents);
     }
 
     /**
