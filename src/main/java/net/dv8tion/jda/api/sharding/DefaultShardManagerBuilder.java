@@ -95,10 +95,16 @@ public class  DefaultShardManagerBuilder
     protected ChunkingFilter chunkingFilter;
     protected MemberCachePolicy memberCachePolicy = MemberCachePolicy.ALL;
 
-    protected DefaultShardManagerBuilder(@Nullable String token, int intents)
+    private DefaultShardManagerBuilder(@Nullable String token, int intents)
     {
         this.token = token;
         this.intents = 1 | intents;
+    }
+    
+    protected DefaultShardManagerBuilder(@Nullable String token, EnumSet<GatewayIntent> intents)
+    {
+        this.token = token;
+        this.intents = 1 | GatewayIntent.getRaw(intents);
     }
 
     /**
