@@ -156,7 +156,7 @@ public class MessageReference
 
     /**
      * The guild for this reference.
-     * <br>This will be null if the message did not come from a guild, or JDA did not have the guild cached
+     * <br>This will be null if the message did not come from a guild, the guild was not provided, or JDA did not have the guild cached
      *
      * @return The guild, or null if this is not available
      *
@@ -169,9 +169,9 @@ public class MessageReference
     }
 
     /**
-     * Returns the message id for this reference.
+     * Returns the message id for this reference, or 0 if no message id was provided.
      *
-     * @return The message id
+     * @return The message id, or 0.
      */
     public long getMessageIdLong()
     {
@@ -179,9 +179,9 @@ public class MessageReference
     }
 
     /**
-     * Returns the channel id for this reference.
+     * Returns the channel id for this reference, or 0 if no channel id was provided.
      *
-     * @return The channel id
+     * @return The channel id, or 0.
      */
     public long getChannelIdLong()
     {
@@ -189,9 +189,9 @@ public class MessageReference
     }
 
     /**
-     * Returns the guild id for this reference.
+     * Returns the guild id for this reference, or 0 if no guild id was provided.
      *
-     * @return The guild id
+     * @return The guild id, or 0.
      */
     public long getGuildIdLong()
     {
@@ -199,9 +199,9 @@ public class MessageReference
     }
 
     /**
-     * Returns the message id for this reference.
+     * Returns the message id for this reference, or 0 if no message id was provided.
      *
-     * @return The message id
+     * @return The message id, or 0.
      */
     @Nonnull
     public String getMessageId()
@@ -210,9 +210,9 @@ public class MessageReference
     }
 
     /**
-     * Returns the channel id for this reference.
+     * Returns the channel id for this reference, or 0 if no channel id was provided.
      *
-     * @return The channel id
+     * @return The channel id, or 0.
      */
     @Nonnull
     public String getChannelId()
@@ -221,9 +221,9 @@ public class MessageReference
     }
 
     /**
-     * Returns the guild id for this reference.
+     * Returns the guild id for this reference, or 0 if no guild id was provided.
      *
-     * @return The guild id
+     * @return The guild id, or 0.
      */
     @Nonnull
     public String getGuildId()

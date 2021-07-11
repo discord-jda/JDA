@@ -16,8 +16,6 @@
 
 package net.dv8tion.jda.internal.entities;
 
-import javax.annotation.Nullable;
-
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -29,6 +27,8 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;

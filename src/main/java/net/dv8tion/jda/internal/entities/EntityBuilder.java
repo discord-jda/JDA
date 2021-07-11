@@ -1226,9 +1226,9 @@ public class EntityBuilder
             DataObject messageReferenceJson = jsonObject.getObject("message_reference");
 
             messageReference = new MessageReference(
-                    messageReferenceJson.getLong("message_id"),
-                    messageReferenceJson.getLong("channel_id"),
-                    messageReferenceJson.getLong("guild_id"),
+                    messageReferenceJson.getLong("message_id", 0),
+                    messageReferenceJson.getLong("channel_id", 0),
+                    messageReferenceJson.getLong("guild_id", 0),
                     referencedMessage,
                     api
             );

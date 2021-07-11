@@ -138,7 +138,8 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nullable
     @Override
-    public Message getReferencedMessage() {
+    public Message getReferencedMessage()
+    {
        return messageReference != null
                ? messageReference.getMessage()
                : null;
