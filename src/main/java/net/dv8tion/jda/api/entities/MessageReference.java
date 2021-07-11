@@ -38,10 +38,10 @@ public class MessageReference
     private final long channelId;
     private final long guildId;
 
+    private final JDA api;
     private final MessageChannel channel;
     private final Guild guild;
     private Message referencedMessage;
-    private final JDA api;
 
     public MessageReference(long messageId, long channelId, long guildId, @Nullable Message referencedMessage, JDA api)
     {
@@ -107,9 +107,7 @@ public class MessageReference
         Message referenced = getMessage();
 
         if (referenced != null)
-        {
             return new CompletedRestAction<>(jda, referenced);
-        }
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
 
@@ -124,14 +122,16 @@ public class MessageReference
     }
 
     /**
-     * Referenced message.
+     * The resolved message, if available.
      *
      * <p>This will have different meaning depending on the {@link Message#getType() type} of message.
      * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
      * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      * @see #resolve()
      *
-     * @return The referenced message, or null
+     * @return The referenced message, or null if this is not available
+     *
+     * @see    #resolve()
      */
     @Nullable
     public Message getMessage()
@@ -143,7 +143,9 @@ public class MessageReference
      * The channel from which this message originates.
      * <br>Messages from other guilds can be referenced, in which case JDA may not have the channel cached.
      *
-     * @return The origin channel for this message reference.
+     * @return The origin channel for this message reference, or null if this is not available
+     *
+     * @see    #getChannelId()
      */
     @Nullable
     public MessageChannel getChannel()
@@ -154,10 +156,11 @@ public class MessageReference
 
     /**
      * The guild for this reference.
-     * <br>
-     * This will be null if the message did not come from a guild, or JDA did not have the guild cached
+     * <br>This will be null if the message did not come from a guild, or JDA did not have the guild cached
      *
-     * @return The guild, or null.
+     * @return The guild, or null if this is not available
+     *
+     * @see    #getGuildId()
      */
     @Nullable
     public Guild getGuild()
@@ -248,7 +251,6 @@ public class MessageReference
 
         if (!selfMember.hasPermission(guildChannel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(guildChannel, Permission.VIEW_CHANNEL);
-
         if (!selfMember.hasPermission(permission))
             throw new InsufficientPermissionException(guildChannel, permission);
     }
