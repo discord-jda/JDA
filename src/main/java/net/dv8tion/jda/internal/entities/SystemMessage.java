@@ -18,11 +18,13 @@ package net.dv8tion.jda.internal.entities;
 
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import javax.annotation.Nonnull;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -63,6 +65,20 @@ public class SystemMessage extends ReceivedMessage
     @Nonnull
     @Override
     public MessageAction editMessage(@Nonnull MessageEmbed newContent)
+    {
+        throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
+    {
+        throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components)
     {
         throw new UnsupportedOperationException("Cannot edit message of this Message Type. MessageType: " + getType());
     }
