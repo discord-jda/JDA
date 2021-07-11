@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
+import net.dv8tion.jda.api.interactions.components.ComponentLayout;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.MessageAction;
@@ -818,6 +819,14 @@ public class ReceivedMessage extends AbstractMessage
     {
         checkUser();
         return ((MessageActionImpl) channel.editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
+    }
+
+    @Nonnull
+    @Override
+    public MessageAction editMessageComponents(@Nonnull Collection<? extends ComponentLayout> components)
+    {
+        checkUser();
+        return ((MessageActionImpl) channel.editMessageComponentsById(getId(), components)).withHook(interactionHook);
     }
 
     @Nonnull
