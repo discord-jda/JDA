@@ -112,13 +112,11 @@ public class MessageReference
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
 
 
-        return new RestActionImpl<>(jda, route,
-                (response, request) ->
-                {
-                    Message created = jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false);
-                    this.referencedMessage = created;
-                    return created;
-                });
+        return new RestActionImpl<>(jda, route, (response, request) -> {
+            Message created = jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false);
+            this.referencedMessage = created;
+            return created;
+        });
     }
 
     /**
