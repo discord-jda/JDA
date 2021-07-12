@@ -136,15 +136,6 @@ public class ReceivedMessage extends AbstractMessage
         return messageReference;
     }
 
-    @Nullable
-    @Override
-    public Message getReferencedMessage()
-    {
-       return messageReference != null
-               ? messageReference.getMessage()
-               : null;
-    }
-
     @Override
     public boolean isPinned()
     {

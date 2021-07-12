@@ -235,7 +235,12 @@ public interface Message extends ISnowflake, Formattable
      * @return The referenced message, or null
      */
     @Nullable
-    Message getReferencedMessage();
+    default Message getReferencedMessage()
+    {
+        return getMessageReference() != null
+                ? getMessageReference().getMessage()
+                : null;
+    }
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
