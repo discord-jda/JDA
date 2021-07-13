@@ -217,8 +217,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
      *
-     * You can access all the information about a reference through this object.
-     * Additionally you can retrieve the referenced Message if discord did not load it in time.
+     * <p>You can access all the information about a reference through this object.
+     * Additionally, you can retrieve the referenced Message if discord did not load it in time. This can be done with {@link MessageReference#resolve()}.
      *
      * @return The message reference, or null.
      */

@@ -60,7 +60,7 @@ public class MessageReference
         else
         {
             this.channel = tc;
-            this.guild = api.getGuildById(guildId);
+            this.guild = tc.getGuild();
         }
 
         this.api = api;
@@ -110,8 +110,6 @@ public class MessageReference
             return new CompletedRestAction<>(jda, referenced);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
-
-
         return new RestActionImpl<>(jda, route, (response, request) -> {
             Message created = jda.getEntityBuilder().createMessage(response.getObject(), getChannel(), false);
             this.referencedMessage = created;
