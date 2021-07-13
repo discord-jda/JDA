@@ -232,6 +232,9 @@ public interface Message extends ISnowflake, Formattable
      * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
      * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
+     * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
+     *
+     * @see #getMessageReference()
      * @return The referenced message, or null
      */
     @Nullable
