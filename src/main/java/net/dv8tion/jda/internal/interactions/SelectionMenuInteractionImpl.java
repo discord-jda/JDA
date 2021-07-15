@@ -37,9 +37,16 @@ public class SelectionMenuInteractionImpl extends ComponentInteractionImpl imple
     public SelectionMenuInteractionImpl(JDAImpl jda, DataObject data)
     {
         super(jda, data);
-        values = Collections.unmodifiableList(data.getObject("data").getArray("values")
-            .stream(DataArray::getString)
-            .collect(Collectors.toList()));
+        if (!data.getObject("data").hasKey("values"))
+        {
+            values = Collections.emptyList();
+        }
+        else
+        {
+            values = Collections.unmodifiableList(data.getObject("data").getArray("values")
+                    .stream(DataArray::getString)
+                    .collect(Collectors.toList()));
+        }
         if (message != null)
         {
             menu = (SelectionMenu) message.getActionRows()
