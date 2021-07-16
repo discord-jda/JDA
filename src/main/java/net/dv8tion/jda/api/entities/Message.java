@@ -914,6 +914,7 @@ public interface Message extends ISnowflake, Formattable
 
     /**
      * All {@link net.dv8tion.jda.api.entities.MessageSticker MessageStickers} that are in this Message.
+     * <br>The MessageStickers returns may only contain necessary information such as id, format type and name.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is not a Received Message from {@link net.dv8tion.jda.api.entities.MessageType#DEFAULT MessageType.DEFAULT}
