@@ -1281,10 +1281,10 @@ public class EntityBuilder
         final int flags = jsonObject.getInt("flags", 0);
 
         MessageChannel tmpChannel = channel; // because java
-        final List<Message.Attachment> attachments = map(jsonObject, "attachments", this::createMessageAttachment);
-        final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",      this::createMessageEmbed);
-        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",   (obj) -> createMessageReaction(tmpChannel, id, obj));
-        final List<MessageSticker>     stickers    = map(jsonObject, "stickers",    this::createSticker);
+        final List<Message.Attachment> attachments = map(jsonObject, "attachments",   this::createMessageAttachment);
+        final List<MessageEmbed>       embeds      = map(jsonObject, "embeds",        this::createMessageEmbed);
+        final List<MessageReaction>    reactions   = map(jsonObject, "reactions",     (obj) -> createMessageReaction(tmpChannel, id, obj));
+        final List<MessageSticker>     stickers    = map(jsonObject, "sticker_items", this::createSticker);
 
         MessageActivity activity = null;
 
