@@ -1120,10 +1120,8 @@ public class EntityBuilder
                     .put("recipient", author);
             channel = createPrivateChannel(channelData);
         }
-        else if (channel == null)
-            throw new IllegalArgumentException(MISSING_CHANNEL);
 
-        if (channel.getType().isGuild() && !jsonObject.isNull("member"))
+        if (channel != null && channel.getType().isGuild() && !jsonObject.isNull("member"))
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
@@ -1157,9 +1155,11 @@ public class EntityBuilder
         if (!jsonObject.isNull("activity"))
             activity = createMessageActivity(jsonObject);
 
-        User user;
-        switch (channel.getType())
-        {
+        User user = null;
+        if (channel != null) {
+
+            switch (channel.getType())
+            {
             case PRIVATE:
                 if (authorId == getJDA().getSelfUser().getIdLong())
                     user = getJDA().getSelfUser();
@@ -1173,15 +1173,18 @@ public class EntityBuilder
                 if (member == null)
                     member = (MemberImpl) guild.getMemberById(authorId);
                 user = member != null ? member.getUser() : null;
-                if (user == null)
-                {
-                    if (fromWebhook || !modifyCache)
-                        user = createUser(author);
-                    else
-                        throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
-                }
                 break;
-            default: throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
+            default:
+                throw new IllegalArgumentException("Invalid Channel for creating a Message [" + channel.getType() + ']');
+            }
+        }
+
+        if (user == null)
+        {
+            if (fromWebhook || !modifyCache)
+                user = createUser(author);
+            else
+                throw new IllegalArgumentException(MISSING_USER); // Specifically for MESSAGE_CREATE
         }
 
         if (modifyCache && !fromWebhook) // update the user information on message receive

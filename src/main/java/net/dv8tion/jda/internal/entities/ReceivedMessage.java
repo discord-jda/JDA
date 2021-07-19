@@ -146,14 +146,14 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> pin()
     {
-        return channel.pinMessageById(getId());
+        return getChannel().pinMessageById(getId());
     }
 
     @Nonnull
     @Override
     public RestAction<Void> unpin()
     {
-        return channel.unpinMessageById(getId());
+        return getChannel().unpinMessageById(getId());
     }
 
     @Nonnull
@@ -169,17 +169,17 @@ public class ReceivedMessage extends AbstractMessage
 
         if (missingReaction)
         {
-            Checks.check(emote.canInteract(getJDA().getSelfUser(), channel),
+            Checks.check(emote.canInteract(getJDA().getSelfUser(), getChannel()),
                          "Cannot react with the provided emote because it is not available in the current channel.");
         }
-        return channel.addReactionById(getId(), emote);
+        return getChannel().addReactionById(getId(), emote);
     }
 
     @Nonnull
     @Override
     public RestAction<Void> addReaction(@Nonnull String unicode)
     {
-        return channel.addReactionById(getId(), unicode);
+        return getChannel().addReactionById(getId(), unicode);
     }
 
     @Nonnull
@@ -213,7 +213,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
-        return channel.removeReactionById(getId(), emote);
+        return getChannel().removeReactionById(getId(), emote);
     }
 
     @Nonnull
@@ -224,7 +224,7 @@ public class ReceivedMessage extends AbstractMessage
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), emote);
+            return getChannel().removeReactionById(getIdLong(), emote);
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
@@ -235,7 +235,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public RestAction<Void> removeReaction(@Nonnull String unicode)
     {
-        return channel.removeReactionById(getId(), unicode);
+        return getChannel().removeReactionById(getId(), unicode);
     }
 
     @Nonnull
@@ -244,7 +244,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(user, "User");
         if (user.equals(getJDA().getSelfUser()))
-            return channel.removeReactionById(getIdLong(), unicode);
+            return getChannel().removeReactionById(getIdLong(), unicode);
 
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
@@ -255,14 +255,14 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
     {
-        return channel.retrieveReactionUsersById(id, emote);
+        return getChannel().retrieveReactionUsersById(id, emote);
     }
 
     @Nonnull
     @Override
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
     {
-        return channel.retrieveReactionUsersById(id, unicode);
+        return getChannel().retrieveReactionUsersById(id, unicode);
     }
 
     @Override
@@ -680,13 +680,15 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public ChannelType getChannelType()
     {
-        return channel.getType();
+        return getChannel().getType();
     }
 
     @Nonnull
     @Override
     public MessageChannel getChannel()
     {
+        if (channel == null)
+            throw new IllegalStateException("This message was not send in a channel JDA has cached");
         return channel;
     }
 
@@ -696,7 +698,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (!isFromType(ChannelType.PRIVATE))
             throw new IllegalStateException("This message was not sent in a private channel");
-        return (PrivateChannel) channel;
+        return (PrivateChannel) getChannel();
     }
 
     @Nonnull
@@ -707,7 +709,7 @@ public class ReceivedMessage extends AbstractMessage
         // in case of other GuildChannels being able to receive messages in the future
         if (!isFromType(ChannelType.TEXT))
             throw new IllegalStateException("This message was not sent in a text channel");
-        return (TextChannel) channel;
+        return (TextChannel) getChannel();
     }
 
     @Override
@@ -809,7 +811,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageAction editMessage(@Nonnull CharSequence newContent)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
+        return ((MessageActionImpl) getChannel().editMessageById(getId(), newContent)).withHook(interactionHook);
     }
 
     @Nonnull
@@ -817,7 +819,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageAction editMessageEmbeds(@Nonnull Collection<? extends MessageEmbed> embeds)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
+        return ((MessageActionImpl) getChannel().editMessageEmbedsById(getId(), embeds)).withHook(interactionHook);
     }
 
     @Nonnull
@@ -825,7 +827,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageAction editMessageFormat(@Nonnull String format, @Nonnull Object... args)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageFormatById(getId(), format, args)).withHook(interactionHook);
+        return ((MessageActionImpl) getChannel().editMessageFormatById(getId(), format, args)).withHook(interactionHook);
     }
 
     @Nonnull
@@ -833,7 +835,7 @@ public class ReceivedMessage extends AbstractMessage
     public MessageAction editMessage(@Nonnull Message newContent)
     {
         checkUser();
-        return ((MessageActionImpl) channel.editMessageById(getId(), newContent)).withHook(interactionHook);
+        return ((MessageActionImpl) getChannel().editMessageById(getId(), newContent)).withHook(interactionHook);
     }
 
     private void checkUser()
@@ -856,7 +858,7 @@ public class ReceivedMessage extends AbstractMessage
                     .hasPermission((TextChannel) getChannel(), Permission.MESSAGE_MANAGE))
                 throw new InsufficientPermissionException(getTextChannel(), Permission.MESSAGE_MANAGE);
         }
-        return channel.deleteMessageById(getIdLong());
+        return getChannel().deleteMessageById(getIdLong());
     }
 
     @Nonnull
