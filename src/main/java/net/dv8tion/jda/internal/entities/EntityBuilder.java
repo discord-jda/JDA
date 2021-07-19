@@ -40,10 +40,7 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent;
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdatePendingEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateDiscriminatorEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateFlagsEvent;
-import net.dv8tion.jda.api.events.user.update.UserUpdateNameEvent;
+import net.dv8tion.jda.api.events.user.update.*;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.dv8tion.jda.api.utils.cache.CacheView;
@@ -60,11 +57,13 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAccessor;
 import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
@@ -363,10 +362,10 @@ public class EntityBuilder
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
         String oldBanner = userObj.getBannerId();
-        String newBanner = user.getString("banner", "");
+        String newBanner = user.hasKey("banner") ? user.getString("banner", null) : "";
         // will be replaced later with the getter once it's changed to an int
         String oldBannerColor = userObj.bannerColor;
-        String newBannerColor = user.getString("banner_color", "");
+        String newBannerColor = user.hasKey("banner_color") ? user.getString("banner_color", null) : "";
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
 
@@ -399,16 +398,24 @@ public class EntityBuilder
                     userObj, oldAvatar));
         }
 
-        if (!newBanner.equals("") && !Objects.equals(oldBanner, newBanner))
+        if (!Objects.equals(oldBanner, newBanner) && !Objects.equals(newBanner, ""))
         {
             userObj.setBannerId(newBanner);
-            // TODO - event
+            jda.handleEvent(
+                    new UserUpdateBannerEvent(
+                            jda, responseNumber,
+                            userObj, oldBanner));
         }
 
-        if (!newBannerColor.equals("") && !Objects.equals(oldBannerColor, newBannerColor))
+        if (!Objects.equals(oldBannerColor, newBannerColor) && !Objects.equals(newBanner, ""))
         {
+            // TODO - replace w/ int
+            Color awtColor = oldBannerColor == null ? null : new Color(Integer.parseInt(oldBannerColor.substring(1), 16));
             userObj.setBannerColor(newBannerColor);
-            // TODO - event
+            jda.handleEvent(
+                    new UserUpdateBannerColorEvent(
+                            jda, responseNumber,
+                            userObj, awtColor));
         }
 
         if (oldFlags != newFlags)

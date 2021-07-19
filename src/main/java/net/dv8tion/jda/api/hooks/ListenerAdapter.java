@@ -204,6 +204,8 @@ public abstract class ListenerAdapter implements EventListener
     public void onUserUpdateName(@Nonnull UserUpdateNameEvent event) {}
     public void onUserUpdateDiscriminator(@Nonnull UserUpdateDiscriminatorEvent event) {}
     public void onUserUpdateAvatar(@Nonnull UserUpdateAvatarEvent event) {}
+    public void onUserUpdateBanner(@Nonnull UserUpdateBannerEvent event) {}
+    public void onUserUpdateBannerColor(@Nonnull UserUpdateBannerColorEvent event) {}
     public void onUserUpdateOnlineStatus(@Nonnull UserUpdateOnlineStatusEvent event) {}
     public void onUserUpdateActivityOrder(@Nonnull UserUpdateActivityOrderEvent event) {}
     public void onUserUpdateFlags(@Nonnull UserUpdateFlagsEvent event) {}
