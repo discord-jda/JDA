@@ -415,17 +415,6 @@ public class EntityBuilder
                             userObj, oldAccentColor == -1 ? null : new Color(oldAccentColor)));
         }
 
-//        if (!Objects.equals(oldBannerColor, newBannerColor) && !Objects.equals(newBanner, ""))
-//        {
-//            // TODO - replace w/ int
-//            Color awtColor = oldBannerColor == null ? null : new Color(Integer.parseInt(oldBannerColor.substring(1), 16));
-//            userObj.setBannerColor(newBannerColor);
-//            jda.handleEvent(
-//                    new UserUpdateAccentColorEvent(
-//                            jda, responseNumber,
-//                            userObj, awtColor));
-//        }
-
         if (oldFlags != newFlags)
         {
             userObj.setFlags(newFlags);
