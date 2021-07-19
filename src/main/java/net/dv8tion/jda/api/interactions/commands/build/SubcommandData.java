@@ -115,7 +115,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      * <p>Required options must be added before non-required options!
      *
      * @param  type
-     *         The {@link OptionData}
+     *         The {@link OptionType}
      * @param  name
      *         The lowercase option name, 1-32 characters
      * @param  description
@@ -145,7 +145,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      * <p>Required options must be added before non-required options!
      *
      * @param  type
-     *         The {@link OptionData}
+     *         The {@link OptionType}
      * @param  name
      *         The lowercase option name, 1-32 characters
      * @param  description

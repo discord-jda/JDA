@@ -611,7 +611,7 @@ public class Command implements ISnowflake
         }
 
         /**
-         * The options for this subcommand, or the subcommands whtin this group.
+         * The options for this subcommand, or the subcommands within this group.
          *
          * @return Immutable list of Options
          */
