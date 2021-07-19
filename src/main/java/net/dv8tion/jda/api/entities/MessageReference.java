@@ -97,18 +97,66 @@ public class MessageReference
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
      *         </ul>
      *
+     * @throws java.lang.IllegalStateException
+     *         If this message reference does not have a channel
+     *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
      */
     @Nonnull
     public RestAction<Message> resolve()
     {
+        return resolve(true);
+    }
+
+    /**
+     * Retrieves the referenced message for this message.
+     * If the message already exists, it will be returned immediately.
+     *
+     * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
+     * <ul>
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_ACCESS MISSING_ACCESS}
+     *     <br>The request was attempted after the account lost access to the {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *         typically due to being kicked or removed, or after {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}
+     *         was revoked in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#MISSING_PERMISSIONS MISSING_PERMISSIONS}
+     *     <br>The request was attempted after the account lost {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
+     *         in the {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_MESSAGE UNKNOWN_MESSAGE}
+     *     <br>The message has already been deleted.</li>
+     *
+     *     <li>{@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_CHANNEL UNKNOWN_CHANNEL}
+     *     <br>The request was attempted after the channel was deleted.</li>
+     * </ul>
+     *
+     * @param update Whether to update the already stored message
+     *
+     * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+     *          If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
+     *         <ul>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
+     *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
+     *         </ul>
+     *
+     * @throws java.lang.IllegalStateException
+     *         If this message reference does not have a channel
+     *
+     * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
+     */
+    @Nonnull
+    public RestAction<Message> resolve(boolean update)
+    {
         checkPermission(Permission.MESSAGE_READ);
         checkPermission(Permission.MESSAGE_HISTORY);
+
+        if (channel == null)
+            throw new IllegalStateException("Cannot resolve a message without a channel present.");
 
         JDAImpl jda = (JDAImpl) getJDA();
         Message referenced = getMessage();
 
-        if (referenced != null)
+        if (referenced != null && !update)
             return new CompletedRestAction<>(jda, referenced);
 
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE.compile(getChannelId(), getMessageId());
