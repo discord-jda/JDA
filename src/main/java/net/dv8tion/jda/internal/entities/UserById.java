@@ -113,7 +113,7 @@ public class UserById implements User
 
     @Nullable
     @Override
-    public Color getBannerColor()
+    public Color getAccentColor()
     {
         unsupported();
         return null;

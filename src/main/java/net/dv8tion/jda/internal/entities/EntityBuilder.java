@@ -128,7 +128,7 @@ public class EntityBuilder
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
                 .setBannerId(self.getString("banner", null))
-                .setBannerColor(self.getString("banner_color", null))
+                .setAccentColor(self.getInt("accent_color", -1))
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
 
@@ -339,7 +339,7 @@ public class EntityBuilder
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
                    .setBannerId(user.getString("banner", null))
-                   .setBannerColor(user.getString("banner_color", null))
+                   .setAccentColor(user.getInt("accent_color", -1))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0));
@@ -363,9 +363,9 @@ public class EntityBuilder
         String newAvatar = user.getString("avatar", null);
         String oldBanner = userObj.getBannerId();
         String newBanner = user.hasKey("banner") ? user.getString("banner", null) : "";
-        // will be replaced later with the getter once it's changed to an int
-        String oldBannerColor = userObj.bannerColor;
-        String newBannerColor = user.hasKey("banner_color") ? user.getString("banner_color", null) : "";
+        // -1 = unset, -2 = unknown
+        int oldAccentColor = userObj.getAccentColor() == null ? -1 : userObj.getAccentColor().getRGB();
+        int newAccentColor = user.hasKey("accent_color") ? user.getInt("accent_color", -1) : -2;
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
 
@@ -406,17 +406,25 @@ public class EntityBuilder
                             jda, responseNumber,
                             userObj, oldBanner));
         }
-
-        if (!Objects.equals(oldBannerColor, newBannerColor) && !Objects.equals(newBanner, ""))
+        if (oldAccentColor != newAccentColor && newAccentColor != -2)
         {
-            // TODO - replace w/ int
-            Color awtColor = oldBannerColor == null ? null : new Color(Integer.parseInt(oldBannerColor.substring(1), 16));
-            userObj.setBannerColor(newBannerColor);
+            userObj.setAccentColor(newAccentColor);
             jda.handleEvent(
-                    new UserUpdateBannerColorEvent(
+                    new UserUpdateAccentColorEvent(
                             jda, responseNumber,
-                            userObj, awtColor));
+                            userObj, oldAccentColor == -1 ? null : new Color(oldAccentColor)));
         }
+
+//        if (!Objects.equals(oldBannerColor, newBannerColor) && !Objects.equals(newBanner, ""))
+//        {
+//            // TODO - replace w/ int
+//            Color awtColor = oldBannerColor == null ? null : new Color(Integer.parseInt(oldBannerColor.substring(1), 16));
+//            userObj.setBannerColor(newBannerColor);
+//            jda.handleEvent(
+//                    new UserUpdateAccentColorEvent(
+//                            jda, responseNumber,
+//                            userObj, awtColor));
+//        }
 
         if (oldFlags != newFlags)
         {

@@ -44,8 +44,7 @@ public class UserImpl extends UserById implements User
     protected String name;
     protected String avatarId;
     protected String bannerId;
-    // TODO – This will be handled as an int by the API in the future
-    protected String bannerColor;
+    protected int accentColor;
     protected long privateChannel = 0L;
     protected boolean bot;
     protected boolean system;
@@ -87,10 +86,9 @@ public class UserImpl extends UserById implements User
 
     @Nullable
     @Override
-    public Color getBannerColor()
+    public Color getAccentColor()
     {
-        // TODO - replace w/ int
-        return bannerColor == null ? null : new Color(Integer.parseInt(bannerColor.substring(1), 16));
+        return accentColor == -1 ? null : new Color(accentColor);
     }
 
     @Nonnull
@@ -208,9 +206,9 @@ public class UserImpl extends UserById implements User
         return this;
     }
 
-    public UserImpl setBannerColor(String bannerColor)
+    public UserImpl setAccentColor(int accentColor)
     {
-        this.bannerColor = bannerColor;
+        this.accentColor = accentColor;
         return this;
     }
 

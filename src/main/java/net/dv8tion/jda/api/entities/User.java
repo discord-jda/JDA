@@ -254,18 +254,18 @@ public interface User extends IMentionable
     }
 
     /**
-     * The Color for this user's banner.
-     * If the user has not set a banner color, this will return null. The automatically calculated color is not returned.
-     * If the user has set a banner, this color will not be shown.
+     * The user's accent color.
+     * If the user has not set an accent color, this will return null. The automatically calculated color is not returned.
+     * If the user has set a banner, this accent color will not be shown.
      * If the user has not been retrieved using {@link JDA#retrieveUserById(long)}, this will return null.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
      *
-     * @return Possibly-null {@link java.awt.Color} containing the {@link net.dv8tion.jda.api.entities.User User} banner color.
+     * @return Possibly-null {@link java.awt.Color} containing the {@link net.dv8tion.jda.api.entities.User User} accent color.
      */
     @Nullable
-    Color getBannerColor();
+    Color getAccentColor();
 
     /**
      * The "tag" for this user
