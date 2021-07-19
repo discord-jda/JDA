@@ -128,6 +128,8 @@ public class EntityBuilder
                 .setName(self.getString("username"))
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
+                .setBannerId(self.getString("banner", null))
+                .setBannerColor(self.getString("banner_color", null))
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
 
@@ -337,6 +339,8 @@ public class EntityBuilder
             userObj.setName(user.getString("username"))
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
+                   .setBannerId(user.getString("banner", null))
+                   .setBannerColor(user.getString("banner_color", null))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0));
@@ -358,6 +362,11 @@ public class EntityBuilder
         String newDiscriminator = user.get("discriminator").toString();
         String oldAvatar = userObj.getAvatarId();
         String newAvatar = user.getString("avatar", null);
+        String oldBanner = userObj.getBannerId();
+        String newBanner = user.getString("banner", "");
+        // will be replaced later with the getter once it's changed to an int
+        String oldBannerColor = userObj.bannerColor;
+        String newBannerColor = user.getString("banner_color", "");
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
 
@@ -388,6 +397,18 @@ public class EntityBuilder
                 new UserUpdateAvatarEvent(
                     jda, responseNumber,
                     userObj, oldAvatar));
+        }
+
+        if (!newBanner.equals("") && !Objects.equals(oldBanner, newBanner))
+        {
+            userObj.setBannerId(newBanner);
+            // TODO - event
+        }
+
+        if (!newBannerColor.equals("") && !Objects.equals(oldBannerColor, newBannerColor))
+        {
+            userObj.setBannerColor(newBannerColor);
+            // TODO - event
         }
 
         if (oldFlags != newFlags)

@@ -27,8 +27,10 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -41,6 +43,9 @@ public class UserImpl extends UserById implements User
     protected short discriminator;
     protected String name;
     protected String avatarId;
+    protected String bannerId;
+    // TODO – This will be handled as an int by the API in the future
+    protected String bannerColor;
     protected long privateChannel = 0L;
     protected boolean bot;
     protected boolean system;
@@ -71,6 +76,21 @@ public class UserImpl extends UserById implements User
     public String getAvatarId()
     {
         return avatarId;
+    }
+
+    @Nullable
+    @Override
+    public String getBannerId()
+    {
+        return bannerId;
+    }
+
+    @Nullable
+    @Override
+    public Color getBannerColor()
+    {
+        // TODO - replace w/ int
+        return bannerColor == null ? null : new Color(Integer.parseInt(bannerColor.substring(1), 16));
     }
 
     @Nonnull
@@ -179,6 +199,18 @@ public class UserImpl extends UserById implements User
     public UserImpl setAvatarId(String avatarId)
     {
         this.avatarId = avatarId;
+        return this;
+    }
+
+    public UserImpl setBannerId(String bannerId)
+    {
+        this.bannerId = bannerId;
+        return this;
+    }
+
+    public UserImpl setBannerColor(String bannerColor)
+    {
+        this.bannerColor = bannerColor;
         return this;
     }
 

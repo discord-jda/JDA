@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Contract;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -97,6 +98,22 @@ public class UserById implements User
     @Nullable
     @Override
     public String getAvatarId()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getBannerId()
+    {
+        unsupported();
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Color getBannerColor()
     {
         unsupported();
         return null;

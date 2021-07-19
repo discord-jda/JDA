@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -84,6 +85,8 @@ public interface User extends IMentionable
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
     /** Template for {@link #getDefaultAvatarUrl()} */
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
+    /** Template for {@link #getBannerUrl()} */
+    String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
 
     /**
      * Creates a User instance which only wraps an ID.
@@ -161,6 +164,19 @@ public interface User extends IMentionable
      */
     @Nullable
     String getAvatarId();
+
+    @Nullable
+    String getBannerId();
+
+    @Nullable
+    Color getBannerColor();
+
+    @Nullable
+    default String getBannerUrl()
+    {
+        String bannerId = getBannerId();
+        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+    }
 
     /**
      * The URL for the user's avatar image.
