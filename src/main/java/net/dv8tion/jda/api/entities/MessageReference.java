@@ -100,7 +100,8 @@ public class MessageReference
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link net.dv8tion.jda.api.entities.Message}
      */
     @Nonnull
-    public RestAction<Message> resolve() {
+    public RestAction<Message> resolve()
+    {
         return resolve(true);
     }
 
