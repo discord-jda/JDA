@@ -165,19 +165,6 @@ public interface User extends IMentionable
     @Nullable
     String getAvatarId();
 
-    @Nullable
-    String getBannerId();
-
-    @Nullable
-    Color getBannerColor();
-
-    @Nullable
-    default String getBannerUrl()
-    {
-        String bannerId = getBannerId();
-        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
-    }
-
     /**
      * The URL for the user's avatar image.
      * If the user has not set an image, this will return null.
@@ -235,6 +222,50 @@ public interface User extends IMentionable
         String avatarUrl = getAvatarUrl();
         return avatarUrl == null ? getDefaultAvatarUrl() : avatarUrl;
     }
+
+    /**
+     * The Discord Id for this user's banner image.
+     * If the user has not set a banner, this will return null.
+     * If the user has not been retrieved using {@link JDA#retrieveUserById(long)}, this will return null.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} banner id.
+     */
+    @Nullable
+    String getBannerId();
+
+    /**
+     * The URL for the user's banner image.
+     * If the user has not set a banner, this will return null.
+     * If the user has not been retrieved using {@link JDA#retrieveUserById(long)}, this will return null.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} banner url.
+     */
+    @Nullable
+    default String getBannerUrl()
+    {
+        String bannerId = getBannerId();
+        return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+    }
+
+    /**
+     * The Color for this user's banner.
+     * If the user has not set a banner color, this will return null. The automatically calculated color is not returned.
+     * If the user has set a banner, this color will not be shown.
+     * If the user has not been retrieved using {@link JDA#retrieveUserById(long)}, this will return null.
+     *
+     * @throws UnsupportedOperationException
+     *         If this User was created with {@link #fromId(long)}
+     *
+     * @return Possibly-null {@link java.awt.Color} containing the {@link net.dv8tion.jda.api.entities.User User} banner color.
+     */
+    @Nullable
+    Color getBannerColor();
 
     /**
      * The "tag" for this user
