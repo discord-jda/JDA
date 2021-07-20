@@ -62,6 +62,12 @@ public class EmbedBuilder
      */
     public EmbedBuilder() { }
 
+    /**
+     * Creates an EmbedBuilder using fields from an existing builder
+     *
+     * @param  builder
+     *         the existing builder
+     */
     public EmbedBuilder(@Nullable EmbedBuilder builder)
     {
         reset(builder);
