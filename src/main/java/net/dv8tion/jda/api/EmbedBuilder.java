@@ -137,7 +137,7 @@ public class EmbedBuilder
      * @param  builder
      *         the existing builder
      */
-    public void reset(EmbedBuilder builder)
+    public void reset(@Nullable EmbedBuilder builder)
     {
         if (builder != null)
         {
@@ -161,7 +161,7 @@ public class EmbedBuilder
      * @param  embed
      *         the existing embed
      */
-    public void reset(MessageEmbed embed)
+    public void reset(@Nullable MessageEmbed embed)
     {
         if(embed != null)
         {
