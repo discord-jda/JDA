@@ -54,7 +54,7 @@ public class Command implements ISnowflake
 
     private final JDAImpl api;
     private final Guild guild;
-    private final String name, description;
+    private final String name, description, version;
     private final List<Option> options;
     private final List<SubcommandGroup> groups;
     private final List<Subcommand> subcommands;
@@ -74,6 +74,7 @@ public class Command implements ISnowflake
         this.options = parseOptions(json, OPTION_TEST, Option::new);
         this.groups = parseOptions(json, GROUP_TEST, SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
+        this.version = json.getString("version");
     }
 
     protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -308,6 +309,17 @@ public class Command implements ISnowflake
     public String getApplicationId()
     {
         return Long.toUnsignedString(applicationId);
+    }
+
+    /**
+     * The version of this command.
+     * This will change after a command has been modified.
+     * @return The version
+     */
+    @Nonnull
+    public String getVersion()
+    {
+        return version;
     }
 
     @Override
