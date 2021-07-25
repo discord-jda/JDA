@@ -57,11 +57,11 @@ public class Command implements ISnowflake
 
     private final JDAImpl api;
     private final Guild guild;
-    private final String name, description, version;
+    private final String name, description;
     private final List<Option> options;
     private final List<SubcommandGroup> groups;
     private final List<Subcommand> subcommands;
-    private final long id, guildId, applicationId;
+    private final long id, guildId, applicationId, version;
     private final boolean defaultEnabled;
 
     public Command(JDAImpl api, Guild guild, DataObject json)
@@ -77,7 +77,7 @@ public class Command implements ISnowflake
         this.options = parseOptions(json, OPTION_TEST, Option::new);
         this.groups = parseOptions(json, GROUP_TEST, SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
-        this.version = json.getString("version");
+        this.version = json.getUnsignedLong("version");
     }
 
     protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
@@ -321,22 +321,9 @@ public class Command implements ISnowflake
      *
      * @return The version
      */
-    @Nonnull
-    public String getVersion()
+    public long getVersion()
     {
         return version;
-    }
-
-    /**
-     * The version of this command.
-     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(String) editCommandById}
-     * <br>Useful for checking if command cache is outdated
-     *
-     * @return The version
-     */
-    public long getVersionLong()
-    {
-        return Long.parseLong(version);
     }
 
     /**
@@ -344,12 +331,12 @@ public class Command implements ISnowflake
      *
      * @return Time this command was updated last.
      *
-     * @see #getVersionLong()
+     * @see #getVersion()
      */
     @Nonnull
     public OffsetDateTime getTimeModified()
     {
-        return TimeUtil.getTimeCreated(getVersionLong());
+        return TimeUtil.getTimeCreated(getVersion());
     }
 
     @Override
