@@ -142,6 +142,7 @@ public class EmbedBuilder
         if (builder != null)
         {
             setDescription(builder.description.toString());
+            this.clearFields();
             this.fields.addAll(builder.fields);
             this.url = builder.url;
             this.title = builder.title;
@@ -175,7 +176,10 @@ public class EmbedBuilder
             this.footer = embed.getFooter();
             this.image = embed.getImage();
             if (embed.getFields() != null)
+            {
+                this.clearFields();
                 fields.addAll(embed.getFields());
+            }
         }
     }
 
