@@ -19,9 +19,11 @@ package net.dv8tion.jda.api.interactions.commands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
@@ -33,6 +35,7 @@ import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -313,13 +316,40 @@ public class Command implements ISnowflake
 
     /**
      * The version of this command.
-     * This will change after a command has been modified.
+     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(String) editCommandById}
+     * <br>Useful for checking if command cache is outdated
+     *
      * @return The version
      */
     @Nonnull
     public String getVersion()
     {
         return version;
+    }
+
+    /**
+     * The version of this command.
+     * <br>This changes when a command is updated through {@link JDA#upsertCommand(CommandData) upsertCommand}, {@link JDA#updateCommands() updateCommands}, or {@link JDA#editCommandById(String) editCommandById}
+     * <br>Useful for checking if command cache is outdated
+     *
+     * @return The version
+     */
+    public long getVersionLong()
+    {
+        return Long.parseLong(version);
+    }
+
+    /**
+     * The time this command was updated last.
+     *
+     * @return Time this command was updated last.
+     *
+     * @see #getVersionLong()
+     */
+    @Nonnull
+    public OffsetDateTime getTimeModified()
+    {
+        return TimeUtil.getTimeCreated(getVersionLong());
     }
 
     @Override
