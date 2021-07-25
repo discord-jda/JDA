@@ -167,6 +167,8 @@ public class EmbedBuilder
         if(embed != null)
         {
             setDescription(embed.getDescription());
+            this.clearFields();
+            this.fields.addAll(embed.getFields());
             this.url = embed.getUrl();
             this.title = embed.getTitle();
             this.timestamp = embed.getTimestamp();
@@ -175,11 +177,6 @@ public class EmbedBuilder
             this.author = embed.getAuthor();
             this.footer = embed.getFooter();
             this.image = embed.getImage();
-            if (embed.getFields() != null)
-            {
-                this.clearFields();
-                fields.addAll(embed.getFields());
-            }
         }
     }
 
