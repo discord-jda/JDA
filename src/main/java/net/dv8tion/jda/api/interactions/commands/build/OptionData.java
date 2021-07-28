@@ -163,6 +163,8 @@ public class OptionData implements SerializableData
                 {
                     if (entry.getValue() instanceof String)
                         return new Command.Choice(entry.getKey(), entry.getValue().toString());
+                    else if (entry.getValue() instanceof Double)
+                        return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).doubleValue());
                     return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
                 })
                 .collect(Collectors.toList());
@@ -226,6 +228,33 @@ public class OptionData implements SerializableData
         return this;
     }
 
+    /**
+     * Add a predefined choice for this option.
+     * <br>The user can only provide one of the choices and cannot specify any other value.
+     * 
+     * @param  name
+     *         The name used in the client
+     * @param  value
+     *         The value received in {@link net.dv8tion.jda.api.interactions.commands.OptionMapping OptionMapping}
+     * 
+     * @throws IllegalArgumentException
+     *         If the name is null, empty or longer than 100 Characters.
+     *         Also thrown if this is not an option of type {@link OptionType#NUMBER} or more than 25 choices are provided.
+     * 
+     * @return The OptionData instance, for chaining
+     */
+    @Nonnull
+    public OptionData addChoice(@Nonnull String name, double value)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 100, "Name");
+        Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
+        if (type != OptionType.NUMBER)
+            throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
+        choices.put(name, value);
+        return this;
+    }
+    
     /**
      * Add a predefined choice for this option.
      * <br>The user can only provide one of the choices and cannot specify any other value.
@@ -308,6 +337,8 @@ public class OptionData implements SerializableData
                 addChoice(choice.getName(), (int) choice.getAsLong());
             else if (type == OptionType.STRING)
                 addChoice(choice.getName(), choice.getAsString());
+            else if (type == OptionType.NUMBER)
+                addChoice(choice.getName(), choice.getAsDouble());
             else
                 throw new IllegalArgumentException("Cannot add choice for type " + type);
         }
@@ -380,7 +411,7 @@ public class OptionData implements SerializableData
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
                     Object value = o.get("value");
-                    if (value instanceof Number)
+                    if (value instanceof Number) // TODO: Find a way to also include double.
                         option.addChoice(o.getString("name"), ((Number) value).intValue());
                     else
                         option.addChoice(o.getString("name"), value.toString());

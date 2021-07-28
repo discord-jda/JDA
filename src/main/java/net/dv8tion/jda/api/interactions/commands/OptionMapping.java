@@ -132,6 +132,7 @@ public class OptionMapping
             default:
                 throw new IllegalStateException("Cannot convert option of type " + type + " to double");
             case STRING:
+            case INTEGER:
             case NUMBER:
                 return data.getDouble("value");
         }

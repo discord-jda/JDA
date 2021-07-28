@@ -348,6 +348,7 @@ public class Command implements ISnowflake
     {
         private final String name;
         private final long intValue;
+        private final double doubleValue;
         private final String stringValue;
 
         /**
@@ -363,6 +364,23 @@ public class Command implements ISnowflake
             this.name = name;
             this.intValue = value;
             this.stringValue = Long.toString(value);
+            this.doubleValue = 0.0d;
+        }
+
+        /**
+         * Create a Choice tuple
+         * 
+         * @param name
+         *        The display name of this choice
+         * @param value
+         *        The double value you receive in a command option
+         */
+        public Choice(@Nonnull String name, double value)
+        {
+            this.name = name;
+            this.intValue = 0;
+            this.stringValue = Double.toString(value);
+            this.doubleValue = value;
         }
 
         /**
@@ -378,6 +396,7 @@ public class Command implements ISnowflake
             this.name = name;
             this.intValue = 0;
             this.stringValue = value;
+            this.doubleValue = 0.0d;
         }
 
         /**
@@ -397,11 +416,19 @@ public class Command implements ISnowflake
             this.name = json.getString("name");
             if (json.isType("value", DataType.INT))
             {
+                this.doubleValue = 0.0d;
                 this.intValue = json.getLong("value");
                 this.stringValue = Long.toString(intValue); // does this make sense?
             }
+            else if (json.isType("value", DataType.FLOAT))
+            {
+                this.doubleValue = json.getDouble("value");
+                this.intValue = 0;
+                this.stringValue = Double.toString(doubleValue);
+            }
             else
             {
+                this.doubleValue = 0.0d;
                 this.intValue = 0;
                 this.stringValue = json.getString("value");
             }
@@ -419,6 +446,16 @@ public class Command implements ISnowflake
             return name;
         }
 
+        /**
+         * The value of this choice.
+         * 
+         * @return The double value
+         */
+        public double getAsDouble()
+        {
+            return doubleValue;
+        }
+        
         /**
          * The value of this choice.
          *
