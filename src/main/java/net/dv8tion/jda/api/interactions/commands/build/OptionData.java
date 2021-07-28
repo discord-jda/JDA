@@ -248,8 +248,8 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
-        Checks.check(value > (-2^53), "Double cannot be lower than 2^53");
-        Checks.check(value < (2^53), "Double cannot be larger than 2^53");
+        Checks.check(value >= -0x1.0p53, "Double value may not be lower than -2^53");
+        Checks.check(value <= 0x1.0p53, "Double value may not be larger than 2^53");
         Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
