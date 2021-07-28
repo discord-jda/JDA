@@ -320,6 +320,8 @@ public class Command implements ISnowflake
      * <br>Useful for checking if command cache is outdated
      *
      * @return The version of the command as a snowflake id.
+     *
+     * @see #getTimeModified()
      */
     public long getVersion()
     {
