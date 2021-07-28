@@ -248,6 +248,8 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
+        Checks.check(value > (-2^53), "Double cannot be lower than 2^53");
+        Checks.check(value < (2^53), "Double cannot be larger than 2^53");
         Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
@@ -411,8 +413,10 @@ public class OptionData implements SerializableData
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
                     Object value = o.get("value");
-                    if (value instanceof Number) // TODO: Find a way to also include double.
+                    if (value instanceof Long)
                         option.addChoice(o.getString("name"), ((Number) value).intValue());
+                    else if (value instanceof Double)
+                        option.addChoice(o.getString("name"), ((Number) value).doubleValue());
                     else
                         option.addChoice(o.getString("name"), value.toString());
                 })
