@@ -75,6 +75,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final TLongSet mentionedUsers;
     protected final TLongSet mentionedRoles;
     protected final int flags;
+    protected final Message.Interaction interaction;
 
     protected InteractionHook interactionHook = null; // late-init
 
@@ -93,7 +94,7 @@ public class ReceivedMessage extends AbstractMessage
         long id, MessageChannel channel, MessageType type, Message referencedMessage,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
         String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
-        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags)
+        List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags, Message.Interaction interaction)
     {
         super(content, nonce, tts);
         this.id = id;
@@ -116,6 +117,7 @@ public class ReceivedMessage extends AbstractMessage
         this.mentionedUsers = mentionedUsers;
         this.mentionedRoles = mentionedRoles;
         this.flags = flags;
+        this.interaction = interaction;
     }
 
     public ReceivedMessage withHook(InteractionHook hook)
@@ -298,6 +300,13 @@ public class ReceivedMessage extends AbstractMessage
     public MessageType getType()
     {
         return type;
+    }
+
+    @Nullable
+    @Override
+    public Interaction getInteraction()
+    {
+        return interaction;
     }
 
     @Override
