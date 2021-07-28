@@ -319,7 +319,7 @@ public class Command implements ISnowflake
      * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandData) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands}, or {@link net.dv8tion.jda.api.JDA#editCommandById(String) editCommandById}
      * <br>Useful for checking if command cache is outdated
      *
-     * @return The version
+     * @return The version of the command as a snowflake id.
      */
     public long getVersion()
     {
