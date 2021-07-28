@@ -124,6 +124,18 @@ public class OptionMapping
                 return data.getLong("value");
         }
     }
+    
+    public double getAsDouble()
+    {
+        switch (type)
+        {
+            default:
+                throw new IllegalStateException("Cannot convert option of type " + type + " to double");
+            case STRING:
+            case NUMBER:
+                return data.getDouble("value");
+        }
+    }
 
     /**
      * The resolved {@link IMentionable} instance for this option value.
