@@ -629,6 +629,7 @@ public class DataObject implements SerializableData
 
     /**
      * Resolves a double to a key.
+     *
      * @param  key
      *         The key to check for a value
      * @param  defaultValue

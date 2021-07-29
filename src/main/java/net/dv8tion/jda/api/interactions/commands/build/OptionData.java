@@ -174,7 +174,7 @@ public class OptionData implements SerializableData
                     if (entry.getValue() instanceof String)
                         return new Command.Choice(entry.getKey(), entry.getValue().toString());
                     else if (entry.getValue() instanceof Double)
-                        return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).doubleValue());
+                        return new Command.Choice(entry.getKey(), (Double) entry.getValue());
                     return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
                 })
                 .collect(Collectors.toList());
@@ -427,7 +427,7 @@ public class OptionData implements SerializableData
                     if (value instanceof Long)
                         option.addChoice(o.getString("name"), ((Number) value).intValue());
                     else if (value instanceof Double)
-                        option.addChoice(o.getString("name"), ((Number) value).doubleValue());
+                        option.addChoice(o.getString("name"), (Double) value);
                     else
                         option.addChoice(o.getString("name"), value.toString());
                 })
