@@ -360,7 +360,7 @@ public class MessageEmbed implements SerializableData
             if (title != null)
                 length += Helpers.codePointLength(title);
             if (description != null)
-                length += Helpers.codePointLength(description);
+                length += Helpers.codePointLength(description.toString().trim());
             if (author != null)
                 length += Helpers.codePointLength(author.getName());
             if (footer != null)
