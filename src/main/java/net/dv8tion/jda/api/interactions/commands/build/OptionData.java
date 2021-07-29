@@ -164,7 +164,7 @@ public class OptionData implements SerializableData
                     if (entry.getValue() instanceof String)
                         return new Command.Choice(entry.getKey(), entry.getValue().toString());
                     else if (entry.getValue() instanceof Double)
-                        return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).doubleValue());
+                        return new Command.Choice(entry.getKey(), (Double) entry.getValue());
                     return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
                 })
                 .collect(Collectors.toList());
