@@ -124,7 +124,17 @@ public class OptionMapping
                 return data.getLong("value");
         }
     }
-    
+
+    /**
+     * The double value for this option.
+     * 
+     * @throws IllegalStateException
+     *         If this option {@link #getType() type} cannot be converted to a double
+     * @throws NumberFormatException
+     *         If this option is of type {@link OptionType#STRING STRING} and could not be parsed to a valid double value
+     * 
+     * @return The double value
+     */
     public double getAsDouble()
     {
         switch (type)

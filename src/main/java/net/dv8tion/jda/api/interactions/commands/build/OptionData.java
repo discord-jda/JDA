@@ -32,6 +32,16 @@ import java.util.stream.Collectors;
  */
 public class OptionData implements SerializableData
 {
+    /**
+     * The maximum positive amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
+     */
+    public static final double MAX_POSITIVE_NUMBER = 0x1.0p53;
+    
+    /**
+     * The maximum negative amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
+     */
+    public static final double MAX_NEGATIVE_NUMBER = -0x1.0p53;
+    
     private final OptionType type;
     private String name, description;
     private boolean isRequired;
@@ -239,7 +249,8 @@ public class OptionData implements SerializableData
      * 
      * @throws IllegalArgumentException
      *         If the name is null, empty or longer than 100 Characters.
-     *         Also thrown if this is not an option of type {@link OptionType#NUMBER} or more than 25 choices are provided.
+     *         Also thrown if this is not an option of type {@link OptionType#NUMBER}, the double is smaller than
+     *         {@link #MAX_NEGATIVE_NUMBER} or higher than {@link #MAX_POSITIVE_NUMBER}, or more than 25 choices are provided.
      * 
      * @return The OptionData instance, for chaining
      */
@@ -248,8 +259,8 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
-        Checks.check(value >= -0x1.0p53, "Double value may not be lower than -2^53");
-        Checks.check(value <= 0x1.0p53, "Double value may not be larger than 2^53");
+        Checks.check(value >= MAX_NEGATIVE_NUMBER, "Double value may not be lower than %f", MAX_NEGATIVE_NUMBER);
+        Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);

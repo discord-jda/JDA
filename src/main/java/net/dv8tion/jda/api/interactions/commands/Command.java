@@ -347,9 +347,9 @@ public class Command implements ISnowflake
     public static class Choice
     {
         private final String name;
-        private final long intValue;
-        private final double doubleValue;
-        private final String stringValue;
+        private long intValue = 0;
+        private double doubleValue = 0.0;
+        private String stringValue = null;
 
         /**
          * Create a Choice tuple
@@ -362,9 +362,7 @@ public class Command implements ISnowflake
         public Choice(@Nonnull String name, long value)
         {
             this.name = name;
-            this.intValue = value;
-            this.stringValue = Long.toString(value);
-            this.doubleValue = 0.0d;
+            setIntValue(value);
         }
 
         /**
@@ -378,9 +376,7 @@ public class Command implements ISnowflake
         public Choice(@Nonnull String name, double value)
         {
             this.name = name;
-            this.intValue = 0;
-            this.stringValue = Double.toString(value);
-            this.doubleValue = value;
+            setDoubleValue(value);
         }
 
         /**
@@ -394,9 +390,7 @@ public class Command implements ISnowflake
         public Choice(@Nonnull String name, @Nonnull String value)
         {
             this.name = name;
-            this.intValue = 0;
-            this.stringValue = value;
-            this.doubleValue = 0.0d;
+            setStringValue(value);
         }
 
         /**
@@ -416,21 +410,15 @@ public class Command implements ISnowflake
             this.name = json.getString("name");
             if (json.isType("value", DataType.INT))
             {
-                this.doubleValue = 0.0d;
-                this.intValue = json.getLong("value");
-                this.stringValue = Long.toString(intValue); // does this make sense?
+                setIntValue(json.getLong("value"));
             }
             else if (json.isType("value", DataType.FLOAT))
             {
-                this.doubleValue = json.getDouble("value");
-                this.intValue = 0;
-                this.stringValue = Double.toString(doubleValue);
+                setDoubleValue(json.getDouble("value"));
             }
             else
             {
-                this.doubleValue = 0.0d;
-                this.intValue = 0;
-                this.stringValue = json.getString("value");
+                setStringValue(json.getString("value"));
             }
         }
 
@@ -496,6 +484,27 @@ public class Command implements ISnowflake
         public String toString()
         {
             return "Choice(" + name + "," + stringValue + ")";
+        }
+        
+        private void setIntValue(long value)
+        {
+            this.doubleValue = value;
+            this.intValue = value;
+            this.stringValue = Long.toString(value);
+        }
+        
+        private void setDoubleValue(double value)
+        {
+            this.doubleValue = value;
+            this.intValue = (int) value;
+            this.stringValue = Double.toString(value);
+        }
+        
+        private void setStringValue(@Nonnull String value)
+        {
+            this.doubleValue = Double.NaN;
+            this.intValue = 0;
+            this.stringValue = value;
         }
     }
 
