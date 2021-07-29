@@ -348,7 +348,7 @@ public class Command implements ISnowflake
     {
         private final String name;
         private long intValue = 0;
-        private double doubleValue = 0.0;
+        private double doubleValue = Double.NaN;
         private String stringValue = null;
 
         /**
