@@ -234,8 +234,9 @@ public interface Message extends ISnowflake, Formattable
      *
      * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
      *
-     * @see #getMessageReference()
      * @return The referenced message, or null
+     *
+     * @see #getMessageReference()
      */
     @Nullable
     default Message getReferencedMessage()
