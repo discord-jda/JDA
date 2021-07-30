@@ -70,7 +70,7 @@ public class MessageReference
 
     /**
      * Retrieves the referenced message for this message.
-     * If the message already exists, it will be returned immediately.
+     * <br>If the message already exists, it will be returned immediately.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -91,7 +91,7 @@ public class MessageReference
      * </ul>
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *          If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
+     *         If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -110,7 +110,7 @@ public class MessageReference
 
     /**
      * Retrieves the referenced message for this message.
-     * If the message already exists, it will be returned immediately.
+     * <br>If the message already exists, it will be returned immediately.
      *
      * <p>The following {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} are possible:
      * <ul>
@@ -130,10 +130,11 @@ public class MessageReference
      *     <br>The request was attempted after the channel was deleted.</li>
      * </ul>
      *
-     * @param update Whether to update the already stored message
+     * @param  update
+     *         Whether to update the already stored message
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *          If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
+     *         If this reference refers to a {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} and the logged in account does not have
      *         <ul>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ}</li>
      *             <li>{@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}</li>
@@ -173,7 +174,6 @@ public class MessageReference
      * <p>This will have different meaning depending on the {@link Message#getType() type} of message.
      * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
      * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
-     * @see #resolve()
      *
      * @return The referenced message, or null if this is not available
      *
@@ -290,12 +290,12 @@ public class MessageReference
 
     private void checkPermission(Permission permission)
     {
-        if (guild == null) return;
+        if (guild == null || !(channel instanceof GuildChannel)) return;
 
         Member selfMember = guild.getSelfMember();
         GuildChannel guildChannel = (GuildChannel) channel;
 
-        if (!selfMember.hasPermission(guildChannel, Permission.VIEW_CHANNEL))
+        if (!selfMember.hasAccess(guildChannel))
             throw new MissingAccessException(guildChannel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasPermission(permission))
             throw new InsufficientPermissionException(guildChannel, permission);
