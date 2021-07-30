@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 public class OptionData implements SerializableData
 {
     /**
-     * The maximum positive amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
+     * The highest positive amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
     public static final double MAX_POSITIVE_NUMBER = 0x1.0p53;
     
@@ -174,8 +175,8 @@ public class OptionData implements SerializableData
                     if (entry.getValue() instanceof String)
                         return new Command.Choice(entry.getKey(), entry.getValue().toString());
                     else if (entry.getValue() instanceof Double)
-                        return new Command.Choice(entry.getKey(), (Double) entry.getValue());
-                    return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
+                        return new Command.Choice(entry.getKey(), (double) entry.getValue());
+                    return new Command.Choice(entry.getKey(), (long) entry.getValue());
                 })
                 .collect(Collectors.toList());
     }
@@ -423,13 +424,12 @@ public class OptionData implements SerializableData
         json.optArray("choices").ifPresent(choices1 ->
                 choices1.stream(DataArray::getObject).forEach(o ->
                 {
-                    Object value = o.get("value");
-                    if (value instanceof Long)
-                        option.addChoice(o.getString("name"), ((Number) value).intValue());
-                    else if (value instanceof Double)
-                        option.addChoice(o.getString("name"), (Double) value);
+                    if (o.isType("value", DataType.FLOAT))
+                        option.addChoice(o.getString("name"), o.getDouble("value"));
+                    else if (o.isType("value", DataType.INT))
+                        option.addChoice(o.getString("name"), o.getLong("value"));
                     else
-                        option.addChoice(o.getString("name"), value.toString());
+                        option.addChoice(o.getString("name"), o.get("value").toString());
                 })
         );
         return option;

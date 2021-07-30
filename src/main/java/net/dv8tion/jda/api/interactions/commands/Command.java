@@ -496,7 +496,7 @@ public class Command implements ISnowflake
         private void setDoubleValue(double value)
         {
             this.doubleValue = value;
-            this.intValue = (int) value;
+            this.intValue = (long) value;
             this.stringValue = Double.toString(value);
         }
         
