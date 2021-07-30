@@ -437,7 +437,7 @@ public class Command implements ISnowflake
         /**
          * The value of this choice.
          * 
-         * @return The double value
+         * @return The double value, or NaN if this is not a numeric choice value
          */
         public double getAsDouble()
         {
