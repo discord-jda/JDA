@@ -1259,6 +1259,21 @@ public class EntityBuilder
             }
         }
 
+        MessageReference messageReference = null;
+
+        if (!jsonObject.isNull("message_reference")) // always contains the channel + message id for a referenced message
+        {                                                // used for when referenced_message is not provided
+            DataObject messageReferenceJson = jsonObject.getObject("message_reference");
+
+            messageReference = new MessageReference(
+                    messageReferenceJson.getLong("message_id", 0),
+                    messageReferenceJson.getLong("channel_id", 0),
+                    messageReferenceJson.getLong("guild_id", 0),
+                    referencedMessage,
+                    api
+            );
+        }
+
         List<ActionRow> components = Collections.emptyList();
         Optional<DataArray> componentsArrayOpt = jsonObject.optArray("components");
         if (componentsArrayOpt.isPresent())
@@ -1274,13 +1289,13 @@ public class EntityBuilder
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         if (!type.isSystem())
         {
-            message = new ReceivedMessage(id, channel, type, referencedMessage, fromWebhook,
+            message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags);
         }
         else
         {
-            message = new SystemMessage(id, channel, type, fromWebhook,
+            message = new SystemMessage(id, channel, type, messageReference, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
                     content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, flags);
             return message; // We don't need to parse mentions for system messages, they are always empty anyway
