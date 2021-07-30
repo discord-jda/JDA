@@ -28,6 +28,7 @@ import net.dv8tion.jda.internal.utils.Helpers;
 import org.apache.commons.collections4.Bag;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.OffsetDateTime;
@@ -103,6 +104,14 @@ public abstract class AbstractMessage implements Message
         {
             throw new UncheckedIOException(e);
         }
+    }
+
+    @Nullable
+    @Override
+    public MessageReference getMessageReference()
+    {
+        unsupported();
+        return null;
     }
 
     @Override
