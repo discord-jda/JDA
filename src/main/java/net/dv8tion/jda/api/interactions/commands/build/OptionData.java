@@ -260,7 +260,7 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 100, "Name");
-        Checks.check(value >= MAX_NEGATIVE_NUMBER, "Double value may not be lower than %f", MAX_NEGATIVE_NUMBER);
+        Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.NUMBER)
