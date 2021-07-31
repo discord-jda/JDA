@@ -114,12 +114,6 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
-    @Override
-    public Message getReferencedMessage()
-    {
-        return null;
-    }
-
     @Nonnull
     @Override
     public Bag<User> getMentionedUsersBag()
