@@ -251,7 +251,7 @@ public class OptionData implements SerializableData
      * @throws IllegalArgumentException
      *         If the name is null, empty or longer than 100 Characters.
      *         Also thrown if this is not an option of type {@link OptionType#NUMBER}, the double is smaller than
-     *         {@link #MAX_NEGATIVE_NUMBER} or higher than {@link #MAX_POSITIVE_NUMBER}, or more than 25 choices are provided.
+     *         {@link #MIN_NEGATIVE_NUMBER} or greater than {@link #MAX_POSITIVE_NUMBER}, or more than 25 choices are provided.
      * 
      * @return The OptionData instance, for chaining
      */
