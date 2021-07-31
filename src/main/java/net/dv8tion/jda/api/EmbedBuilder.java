@@ -156,7 +156,7 @@ public class EmbedBuilder
      */
     public boolean isEmpty()
     {
-        return title == null
+        return (title == null || title.trim().isEmpty())
             && timestamp == null
             && thumbnail == null
             && author == null
@@ -175,7 +175,7 @@ public class EmbedBuilder
      */
     public int length()
     {
-        int length = description.length();
+        int length = description.toString().trim().length();
         synchronized (fields)
         {
             length = fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
