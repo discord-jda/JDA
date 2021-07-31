@@ -41,7 +41,7 @@ public class OptionData implements SerializableData
     /**
      * The smallest negative amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
-    public static final double MAX_NEGATIVE_NUMBER = -0x1.0p53;
+    public static final double MIN_NEGATIVE_NUMBER = -0x1.0p53;
     
     private final OptionType type;
     private String name, description;
