@@ -16,14 +16,17 @@
 
 package net.dv8tion.jda.api.events.message.priv.react;
 
+import javax.annotation.CheckReturnValue;
+
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.MessageReaction;
-import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.priv.GenericPrivateMessageEvent;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import net.dv8tion.jda.api.requests.RestAction;
+import net.dv8tion.jda.internal.requests.CompletedRestAction;
 
 /**
  * Indicates that a {@link net.dv8tion.jda.api.entities.MessageReaction MessageReaction} was added or removed.
@@ -72,6 +75,8 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
      * <br>This might be missing if the user was not cached.
      *
      * @return The reacting user
+     *
+     * @see #retrieveUser()
      */
     @Nullable
     public User getUser()
@@ -102,5 +107,40 @@ public class GenericPrivateMessageReactionEvent extends GenericPrivateMessageEve
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();
+    }
+
+    /**
+     * Retrieves the {@link User} who owns the reaction.
+     * <br>If a user is known, this will return {@link #getUser()}.
+     *
+     * @return {@link RestAction} - Type: {@link User}
+     *
+     * @since  4.3.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<User> retrieveUser()
+    {
+        User user = getUser();
+        if (user != null)
+            return new CompletedRestAction<>(getJDA(), user);
+        return getJDA().retrieveUserById(getUserIdLong());
+    }
+
+    /**
+     * Retrieves the message for this reaction event.
+     * <br>Simple shortcut for {@code getChannel().retrieveMessageById(getMessageId())}.
+     *
+     * <p>The {@link Message#getMember() Message.getMember()} method will always return null for the resulting message.
+     *
+     * @return {@link RestAction} - Type: {@link Message}
+     *
+     * @since  4.3.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    public RestAction<Message> retrieveMessage()
+    {
+        return getChannel().retrieveMessageById(getMessageId());
     }
 }
