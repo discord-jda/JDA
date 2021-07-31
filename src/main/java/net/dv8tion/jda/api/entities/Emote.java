@@ -132,7 +132,7 @@ public interface Emote extends IMentionable
      * 
      * <p>If an emote is added to the guild when the boost tier allows for more than 50 normal and 50 animated emotes
      * (BoostTier is at least {@link net.dv8tion.jda.api.entities.Guild.BoostTier#TIER_1 TIER_1}) and the emote is at least
-     * the 51st one added, then the emote becomes unavaiable when the BoostTier drops below a level that allows those emotes
+     * the 51st one added, then the emote becomes unavailable when the BoostTier drops below a level that allows those emotes
      * to be used.
      * <br>Emotes that where added as part of a lower BoostTier (i.e. the 51st emote on BoostTier 2) will remain available,
      * as long as the BoostTier stays above the required level.
