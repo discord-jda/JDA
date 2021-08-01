@@ -289,7 +289,7 @@ public class MessageReference
 
         if (!selfMember.hasAccess(guildChannel))
             throw new MissingAccessException(guildChannel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasPermission(permission))
+        if (!selfMember.hasPermission(guildChannel, permission))
             throw new InsufficientPermissionException(guildChannel, permission);
     }
 }
