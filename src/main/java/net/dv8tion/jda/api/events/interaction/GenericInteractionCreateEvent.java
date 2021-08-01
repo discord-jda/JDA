@@ -26,6 +26,8 @@ import net.dv8tion.jda.api.events.Event;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -42,11 +44,13 @@ import javax.annotation.Nullable;
 public class GenericInteractionCreateEvent extends Event implements Interaction
 {
     private final Interaction interaction;
+    private final DataObject data;
 
     public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
     {
         super(api, responseNumber);
         this.interaction = interaction;
+        this.data = getData();
     }
 
     /**
@@ -86,6 +90,13 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public AbstractChannel getChannel()
     {
         return interaction.getChannel();
+    }
+
+    @NotNull
+    @Override
+    public DataObject getData()
+    {
+        return data;
     }
 
     @Nonnull

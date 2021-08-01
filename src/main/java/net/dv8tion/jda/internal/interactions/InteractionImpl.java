@@ -39,9 +39,11 @@ public class InteractionImpl implements Interaction
     protected final User user;
     protected final AbstractChannel channel;
     protected final JDAImpl api;
+    protected final DataObject data;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
     {
+        this.data = data;
         this.api = jda;
         this.id = data.getUnsignedLong("id");
         this.token = data.getString("token");
@@ -73,7 +75,7 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, AbstractChannel channel)
+    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, AbstractChannel channel, DataObject data)
     {
         this.id = id;
         this.type = type;
@@ -83,6 +85,7 @@ public class InteractionImpl implements Interaction
         this.user = user;
         this.channel = channel;
         this.api = (JDAImpl) user.getJDA();
+        this.data = data;
         this.hook = new InteractionHookImpl(this, api);
     }
 
@@ -151,5 +154,12 @@ public class InteractionImpl implements Interaction
     public ReplyActionImpl deferReply()
     {
         return new ReplyActionImpl(this.hook);
+    }
+
+    @Nonnull
+    @Override
+    public DataObject getData()
+    {
+        return data;
     }
 }

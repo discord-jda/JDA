@@ -19,6 +19,7 @@ package net.dv8tion.jda.api.interactions;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
+import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -128,6 +129,14 @@ public interface Interaction extends ISnowflake
      */
     @Nullable
     AbstractChannel getChannel();
+
+    /**
+     * The {@link DataObject} connected to this {@link Interaction}
+     *
+     * @return The DataObject
+     */
+    @Nonnull
+    DataObject getData();
 
     /**
      * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
