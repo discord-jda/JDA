@@ -30,6 +30,21 @@ import javax.annotation.Nullable;
  */
 public class SelectOption implements SerializableData
 {
+    /**
+     * The maximum length a select option label can have
+     */
+    public static final int LABEL_MAX_LENGTH = 25;
+
+    /**
+     * The maximum length a select option value can have
+     */
+    public static final int VALUE_MAX_LENGTH = 100;
+
+    /**
+     * The maximum length a select option description can have
+     */
+    public static final int DESCRIPTION_MAX_LENGTH = 50;
+
     private final String label, value;
     private final String description;
     private final boolean isDefault;
@@ -72,10 +87,10 @@ public class SelectOption implements SerializableData
     {
         Checks.notEmpty(label, "Label");
         Checks.notEmpty(value, "Value");
-        Checks.notLonger(label, 25, "Label");
-        Checks.notLonger(value, 100, "Value");
+        Checks.notLonger(label, LABEL_MAX_LENGTH, "Label");
+        Checks.notLonger(value, VALUE_MAX_LENGTH, "Value");
         if (description != null)
-            Checks.notLonger(description, 50, "Description");
+            Checks.notLonger(description, DESCRIPTION_MAX_LENGTH, "Description");
         this.label = label;
         this.value = value;
         this.description = description;
