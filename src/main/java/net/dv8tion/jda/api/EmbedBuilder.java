@@ -131,7 +131,7 @@ public class EmbedBuilder
     }
 
     /**
-     * Resets this builder to the state of the given builder.
+     * Copies the data from the given builder into this builder.
      * <br>All the parts of the given builder will be applied to this one.
      *
      * @param  builder
@@ -156,7 +156,7 @@ public class EmbedBuilder
     }
 
     /**
-     * Resets this builder to the state of the given embed.
+     * Copies the data from the given embed into this builder.
      * <br>All the parts of the given embed will be applied to this builder.
      *
      * @param  embed
