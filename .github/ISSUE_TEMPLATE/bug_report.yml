@@ -46,7 +46,7 @@ body:
       Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if this isn't affected by the JDABuilder/DefaultShardManagerBuilder setup.
     render: java
-    placeholder: "JDA jda = JDABuilder.createDefault("token").build();"
+    placeholder: 'JDA jda = JDABuilder.createDefault("token").build();'
 - type: textarea
   attributes:
     label: "Exception or Error"
