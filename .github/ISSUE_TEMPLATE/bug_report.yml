@@ -45,6 +45,8 @@ body:
       Please provide the code used to create your JDA or ShardManager instance.  
       Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if this isn't affected by the JDABuilder/DefaultShardManagerBuilder setup.
+      
+      The provided text will be rendered as Java code, so you don't have to provide a Code block for it.
     render: java
     placeholder: 'JDA jda = JDABuilder.createDefault("token").build();'
 - type: textarea
@@ -54,5 +56,7 @@ body:
       Share any Exception or Error you encountered.  
       Make sure to put it into a code block for better formatting.
       Leave this blank or put "N/A" if you don't have an Exception or Error.
+      
+      The provided text will be rendered as code, so you don't have to provide a Code block for it.
     render: yesyes # Unknown code-names = no highlighting.
     placeholder: "java.lang.NullPointerException: null"
