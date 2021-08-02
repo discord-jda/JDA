@@ -33,6 +33,8 @@ body:
       Please add the code you use to reproduce this problem.  
       Make sure to remove or replace any sensitive data like your Bot's token.
       Leave this empty or put "N/A" if you don't have a reproducible setup.
+      
+      The provided text will be rendered as Java code, so you don't have to provide a Code block for it.
     render: java
     placeholder: |-
       public void causeError() {
