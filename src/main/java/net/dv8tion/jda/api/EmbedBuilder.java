@@ -70,7 +70,7 @@ public class EmbedBuilder
      */
     public EmbedBuilder(@Nullable EmbedBuilder builder)
     {
-        reset(builder);
+        copyFrom(builder);
     }
     
     /**
@@ -81,7 +81,7 @@ public class EmbedBuilder
      */
     public EmbedBuilder(@Nullable MessageEmbed embed)
     {
-        reset(embed);
+        copyFrom(embed);
     }
 
     /**
@@ -137,7 +137,7 @@ public class EmbedBuilder
      * @param  builder
      *         the existing builder
      */
-    public void reset(@Nullable EmbedBuilder builder)
+    public void copyFrom(@Nullable EmbedBuilder builder)
     {
         if (builder != null)
         {
@@ -162,7 +162,7 @@ public class EmbedBuilder
      * @param  embed
      *         the existing embed
      */
-    public void reset(@Nullable MessageEmbed embed)
+    public void copyFrom(@Nullable MessageEmbed embed)
     {
         if(embed != null)
         {
