@@ -29,6 +29,9 @@ body:
 - type: textarea
   attributes:
     label: "Example Use-Case"
-    description: "Provide some code or describe a possible use-case for this feature."
+    description: |-
+      Provide some code or describe a possible use-case for this feature.
+      
+      The provided text will be rendered as Java code, so you don't have to provide a Code block for it.
     placeholder: "public void newAwesomeMethod(){}"
     render: java
