@@ -189,6 +189,76 @@ public class MarkdownSanitizer
     }
 
     /**
+     * Escapes every single markdown formatting token found in the provided string.
+     * <br>Example: {@code escape("**Hello _World_", true)}
+     *
+     * @param sequence
+     *        The string to sanitize
+     * @param single
+     *        Whether it should scape single tokens or not.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         If provided with null sequence
+     *
+     * @return The string with escaped markdown
+     */
+    @Nonnull
+    public static String escape(@Nonnull String sequence, boolean single)
+    {
+        Checks.notNull(sequence, "Input");
+        if(single)
+        {
+            StringBuilder builder = new StringBuilder();
+            boolean escaped = false;
+            for (int i = 0; i < sequence.length(); i++)
+            {
+                char current = sequence.charAt(i);
+                if(!escaped)
+                {
+                    switch (current)
+                    {
+                    case '*':
+                        builder.append("\\*");
+                        break;
+                    case '_':
+                        builder.append("\\_");
+                        break;
+                    case '`':
+                        builder.append("\\`");
+                        break;
+                    case '|':
+                        builder.append("\\|");
+                        break;
+                    case '~':
+                        builder.append("\\~");
+                        break;
+                    case '>':
+                        builder.append("\\>");
+                        break;
+                    case '\\':
+                        builder.append(current);
+                        escaped = true;
+                        break;
+                    default:
+                        builder.append(current);
+                    }
+                }
+                else
+                {
+                    builder.append(current);
+                    escaped = false;
+                }
+
+            }
+            return builder.toString();
+        }
+        else
+        {
+            return escape(sequence);
+        }
+    }
+
+    /**
      * Switches the used {@link net.dv8tion.jda.api.utils.MarkdownSanitizer.SanitizationStrategy}.
      *
      * @param  strategy
