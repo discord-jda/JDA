@@ -188,7 +188,7 @@ public interface Button extends Component
      *         The label to use
      *
      * @throws IllegalArgumentException
-     *         If the label is not between 1-80 characters
+     *         If the label is null, empty, or longer than {@value #LABEL_MAX_LENGTH} characters
      *
      * @return New button with the changed label
      */
@@ -208,7 +208,7 @@ public interface Button extends Component
      *         The id to use
      *
      * @throws IllegalArgumentException
-     *         If the id is not between 1-100 characters
+     *         If the id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return New button with the changed id
      */
@@ -228,7 +228,7 @@ public interface Button extends Component
      *         The url to use
      *
      * @throws IllegalArgumentException
-     *         If the url is null, empty, or longer than 512 characters
+     *         If the url is null, empty, or longer than {@value #URL_MAX_LENGTH} characters
      *
      * @return New button with the changed url
      */
@@ -278,7 +278,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
+     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -305,7 +305,7 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than 100 characters
+     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -329,7 +329,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
+     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -356,7 +356,7 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than 100 characters
+     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -380,7 +380,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
+     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -407,7 +407,7 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than 100 characters
+     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -431,7 +431,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than 80 characters, or the id is longer than 100 characters
+     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -458,7 +458,7 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than 100 characters
+     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -485,7 +485,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than 80 characters, or the url is longer than 512 characters
+     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the url is longer than {@value #URL_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -515,7 +515,7 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the url is longer than 512 characters
+     *         If any argument is empty or null or the url is longer than {@value #URL_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -543,7 +543,7 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than 80 characters, the id is longer than 100 characters, or the url is longer than 512 characters
+     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, the id is longer than {@value #ID_MAX_LENGTH} characters, or the url is longer than {@value #URL_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -576,7 +576,7 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the id is longer than 100 characters, or the url is longer than 512 characters
+     *         If any argument is empty or null, the id is longer than {@value #ID_MAX_LENGTH} characters, or the url is longer than {@value #URL_MAX_LENGTH} characters
      *
      * @return The button instance
      */
@@ -613,8 +613,8 @@ public interface Button extends Component
      *         If any of the following scenarios occurs:
      *         <ul>
      *             <li>The style is null</li>
-     *             <li>You provide a URL that is null, empty or longer than 512 characters, or you provide an ID that is null, empty or longer than 100 characters</li>
-     *             <li>The label is non-null and longer than 80 characters</li>
+     *             <li>You provide a URL that is null, empty or longer than {@value #URL_MAX_LENGTH} characters, or you provide an ID that is null, empty or longer than {@value #ID_MAX_LENGTH} characters</li>
+     *             <li>The label is non-null and longer than {@value #LABEL_MAX_LENGTH} characters</li>
      *             <li>The label is null/empty, and the emoji is also null</li>
      *         </ul>
      *
