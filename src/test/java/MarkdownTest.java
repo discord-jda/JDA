@@ -391,3 +391,71 @@ class EscapeMarkdownTest
         Assertions.assertEquals("\\> \\_Hello \n\\> World\\_", markdown.compute("> _Hello \n> World_"));
     }
 }
+
+class EscapeMarkdownAllTest
+{
+    @Test
+    public void testAsterisk()
+    {
+
+        Assertions.assertEquals("Hello\\*World",MarkdownSanitizer.escape("Hello*World",true));
+        Assertions.assertEquals("Hello\\*\\*World",MarkdownSanitizer.escape("Hello**World",true));
+        Assertions.assertEquals("Hello\\*\\*\\*World",MarkdownSanitizer.escape("Hello***World",true));
+
+        Assertions.assertEquals("Hello\\*World",MarkdownSanitizer.escape("Hello\\*World",true));
+        Assertions.assertEquals("Hello\\*\\*World",MarkdownSanitizer.escape("Hello\\*\\*World",true));
+        Assertions.assertEquals("Hello\\*\\*\\*World",MarkdownSanitizer.escape("Hello\\*\\*\\*World",true));
+    }
+
+    @Test
+    public void testUnderscore()
+    {
+        Assertions.assertEquals("Hello\\_World",MarkdownSanitizer.escape("Hello_World",true));
+        Assertions.assertEquals("Hello\\_\\_World",MarkdownSanitizer.escape("Hello__World",true));
+        Assertions.assertEquals("Hello\\_\\_\\_World",MarkdownSanitizer.escape("Hello___World",true));
+
+        Assertions.assertEquals("Hello\\_World",MarkdownSanitizer.escape("Hello\\_World",true));
+        Assertions.assertEquals("Hello\\_\\_World",MarkdownSanitizer.escape("Hello\\_\\_World",true));
+        Assertions.assertEquals("Hello\\_\\_\\_World",MarkdownSanitizer.escape("Hello\\_\\_\\_World",true));
+    }
+
+    @Test
+    public void testBackQuote()
+    {
+        Assertions.assertEquals("Hello\\`World",MarkdownSanitizer.escape("Hello`World",true));
+        Assertions.assertEquals("Hello\\`\\`World",MarkdownSanitizer.escape("Hello``World",true));
+        Assertions.assertEquals("Hello\\`\\`\\`World",MarkdownSanitizer.escape("Hello```World",true));
+
+        Assertions.assertEquals("Hello\\`World",MarkdownSanitizer.escape("Hello\\`World",true));
+        Assertions.assertEquals("Hello\\`\\`World",MarkdownSanitizer.escape("Hello\\`\\`World",true));
+        Assertions.assertEquals("Hello\\`\\`\\`World",MarkdownSanitizer.escape("Hello\\`\\`\\`World",true));
+    }
+
+    @Test
+    public void testPipe()
+    {
+        Assertions.assertEquals("Hello\\|\\|World",MarkdownSanitizer.escape("Hello||World",true));
+        Assertions.assertEquals("Hello\\|World",MarkdownSanitizer.escape("Hello|World",true));
+
+        Assertions.assertEquals("Hello\\|\\|World",MarkdownSanitizer.escape("Hello\\|\\|World",true));
+        Assertions.assertEquals("Hello\\|World",MarkdownSanitizer.escape("Hello\\|World",true));
+    }
+
+    @Test
+    public void testTilde()
+    {
+        Assertions.assertEquals("Hello\\~\\~World",MarkdownSanitizer.escape("Hello~~World",true));
+
+        Assertions.assertEquals("Hello\\~\\~World",MarkdownSanitizer.escape("Hello\\~\\~World",true));
+    }
+
+    @Test
+    public void testAngle()
+    {
+        Assertions.assertEquals("\\> Hello World",MarkdownSanitizer.escape("> Hello World",true));
+        Assertions.assertEquals("\\>\\>\\> Hello World",MarkdownSanitizer.escape(">>> Hello World",true));
+
+        Assertions.assertEquals("\\> Hello World",MarkdownSanitizer.escape("\\> Hello World",true));
+        Assertions.assertEquals("\\>\\>\\> Hello World",MarkdownSanitizer.escape("\\>\\>\\> Hello World",true));
+    }
+}
