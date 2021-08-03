@@ -120,6 +120,12 @@ public enum MessageType
     APPLICATION_COMMAND(20, false),
 
     /**
+     * This message is the first message you see in a Thread
+     * <br> It only contains a {@link MessageReference MessageReference} that points to the message the thread is started from.
+     */
+    THREAD_STARTER_MESSAGE(21, false),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1);
