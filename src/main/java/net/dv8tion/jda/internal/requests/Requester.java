@@ -40,7 +40,6 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Locale;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
@@ -244,7 +243,7 @@ public class Requester
         catch (UnknownHostException e)
         {
             LOG.error("DNS resolution failed: {}", e.getMessage());
-            apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            apiRequest.handleResponse(new Response(e, rays));
             return null;
         }
         catch (IOException e)
@@ -252,13 +251,13 @@ public class Requester
             if (retryOnTimeout && !retried && isRetry(e))
                 return execute(apiRequest, true, handleOnRatelimit);
             LOG.error("There was an I/O error while executing a REST request: {}", e.getMessage());
-            apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            apiRequest.handleResponse(new Response(e, rays));
             return null;
         }
         catch (Exception e)
         {
             LOG.error("There was an unexpected error while executing a REST request", e);
-            apiRequest.handleResponse(new Response(lastResponse, e, rays));
+            apiRequest.handleResponse(new Response(e, rays));
             return null;
         }
         finally
