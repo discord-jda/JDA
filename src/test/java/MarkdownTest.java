@@ -453,7 +453,10 @@ class EscapeMarkdownAllTest
     public void testAngle()
     {
         Assertions.assertEquals("\\> Hello World",MarkdownSanitizer.escape("> Hello World",true));
+        Assertions.assertEquals(">Hello World",MarkdownSanitizer.escape(">Hello World",true));
         Assertions.assertEquals("\\>\\>\\> Hello World",MarkdownSanitizer.escape(">>> Hello World",true));
+        Assertions.assertEquals(">>>Hello World",MarkdownSanitizer.escape(">>>Hello World",true));
+        Assertions.assertEquals("\\>\\>\\> Hello > World\n\\> Hello >>> World\n<@12345> > Hello\n \\> Hello world",MarkdownSanitizer.escape(">>> Hello > World\n> Hello >>> World\n<@12345> > Hello\n > Hello world",true));
 
         Assertions.assertEquals("\\> Hello World",MarkdownSanitizer.escape("\\> Hello World",true));
         Assertions.assertEquals("\\>\\>\\> Hello World",MarkdownSanitizer.escape("\\>\\>\\> Hello World",true));

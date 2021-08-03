@@ -210,9 +210,48 @@ public class MarkdownSanitizer
         {
             StringBuilder builder = new StringBuilder();
             boolean escaped = false;
+            boolean newline = true;
             for (int i = 0; i < sequence.length(); i++)
             {
                 char current = sequence.charAt(i);
+                if(newline)
+                {
+                    if(current == '>')
+                    {
+                        if(i+1 < sequence.length())
+                        {
+                            if(sequence.charAt(i+1) == ' ')
+                            {
+                                builder.append("\\>");
+                            }
+                            else
+                            {
+                                if(i + 3 < sequence.length())
+                                {
+                                    if(sequence.startsWith(">>> ", i))
+                                    {
+                                        builder.append("\\>\\>\\> ");
+                                        i += 3;
+                                        newline = false;
+                                        continue;
+                                    }
+                                }
+                                builder.append(current);
+                            }
+                            newline = false;
+                            continue;
+                        }
+                        else
+                            escaped = true;
+                    }
+                    else if(current == ' ')
+                    {
+                        builder.append(current);
+                        continue;
+                    }
+                    newline=false;
+                }
+
                 if(!escaped)
                 {
                     switch (current)
@@ -232,12 +271,13 @@ public class MarkdownSanitizer
                     case '~':
                         builder.append("\\~");
                         break;
-                    case '>':
-                        builder.append("\\>");
-                        break;
                     case '\\':
                         builder.append(current);
                         escaped = true;
+                        break;
+                    case '\n':
+                        builder.append(current);
+                        newline = true;
                         break;
                     default:
                         builder.append(current);
