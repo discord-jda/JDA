@@ -188,7 +188,11 @@ public interface Button extends Component
      *         The label to use
      *
      * @throws IllegalArgumentException
-     *         If the label is null, empty, or longer than {@value #LABEL_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If the provided {@code label} is null or empty.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return New button with the changed label
      */
@@ -208,7 +212,11 @@ public interface Button extends Component
      *         The id to use
      *
      * @throws IllegalArgumentException
-     *         If the id is null, empty, or longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If the provided {@code id} is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return New button with the changed id
      */
@@ -228,7 +236,11 @@ public interface Button extends Component
      *         The url to use
      *
      * @throws IllegalArgumentException
-     *         If the url is null, empty, or longer than {@value #URL_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If the provided {@code url} is null or empty.</li>
+     *             <li>If the character limit for {@code url}, defined by {@link #URL_MAX_LENGTH} as {@value #URL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return New button with the changed url
      */
@@ -250,7 +262,10 @@ public interface Button extends Component
      *         The style to use
      *
      * @throws IllegalArgumentException
-     *         If the style is null or tries to change whether this button is a LINK button
+     *         <ul>
+     *             <li>If the provided {@code style} is null.</li>
+     *             <li>If the provided {@code style} tries to change whether this button is a {@link ButtonStyle#LINK LINK} button.</li>
+     *         </ul>
      *
      * @return New button with the changed style
      */
@@ -278,7 +293,13 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -305,7 +326,11 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -329,7 +354,13 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -356,7 +387,11 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -380,7 +415,13 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -407,7 +448,11 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -431,7 +476,13 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -458,7 +509,11 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the id is longer than {@value #ID_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code id}, defined by {@link #ID_MAX_LENGTH} as {@value #ID_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -485,7 +540,13 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, or the url is longer than {@value #URL_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code url}, defined by {@link #URL_MAX_LENGTH} as {@value #URL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -515,7 +576,11 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null or the url is longer than {@value #URL_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the character limit for {@code url}, defined by {@link #URL_MAX_LENGTH} as {@value #URL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -543,7 +608,13 @@ public interface Button extends Component
      *         The text to display on the button
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the label is longer than {@value #LABEL_MAX_LENGTH} characters, the id is longer than {@value #ID_MAX_LENGTH} characters, or the url is longer than {@value #URL_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the id is longer than {@value #ID_MAX_LENGTH}, as defined by {@link #ID_MAX_LENGTH}.</li>
+     *             <li>If the url is longer than {@value #URL_MAX_LENGTH}, as defined by {@link #URL_MAX_LENGTH}.</li>
+     *             <li>If the character limit for {@code label}, defined by {@link #LABEL_MAX_LENGTH} as {@value #LABEL_MAX_LENGTH},
+     *             is exceeded.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -576,7 +647,11 @@ public interface Button extends Component
      *         The emoji to use as the button label
      *
      * @throws IllegalArgumentException
-     *         If any argument is empty or null, the id is longer than {@value #ID_MAX_LENGTH} characters, or the url is longer than {@value #URL_MAX_LENGTH} characters
+     *         <ul>
+     *             <li>If any provided argument is null or empty.</li>
+     *             <li>If the id is longer than {@value #ID_MAX_LENGTH}, as defined by {@link #ID_MAX_LENGTH}.</li>
+     *             <li>If the url is longer than {@value #URL_MAX_LENGTH}, as defined by {@link #URL_MAX_LENGTH}.</li>
+     *         </ul>
      *
      * @return The button instance
      */
@@ -613,9 +688,10 @@ public interface Button extends Component
      *         If any of the following scenarios occurs:
      *         <ul>
      *             <li>The style is null</li>
-     *             <li>You provide a URL that is null, empty or longer than {@value #URL_MAX_LENGTH} characters, or you provide an ID that is null, empty or longer than {@value #ID_MAX_LENGTH} characters</li>
-     *             <li>The label is non-null and longer than {@value #LABEL_MAX_LENGTH} characters</li>
-     *             <li>The label is null/empty, and the emoji is also null</li>
+     *             <li>You provide a URL that is null, empty or longer than {@value #URL_MAX_LENGTH} characters, as defined by {@link #URL_MAX_LENGTH}
+     *             or you provide an ID that is null, empty or longer than {@value #ID_MAX_LENGTH} characters, as defined by {@link #ID_MAX_LENGTH}.</li>
+     *             <li>The {@code label} is non-null and longer than {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}.</li>
+     *             <li>The {@code label} is null/empty, and the {@code emoji} is also null.</li>
      *         </ul>
      *
      * @return The button instance

@@ -54,9 +54,10 @@ public class SelectOption implements SerializableData
      * Creates a new SelectOption instance
      *
      * @param  label
-     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters
+     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to {@value #VALUE_MAX_LENGTH} characters
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
      *         If the null is provided, or any of the individual parameter requirements are violated.
@@ -70,11 +71,12 @@ public class SelectOption implements SerializableData
      * Creates a new SelectOption instance
      *
      * @param  label
-     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters
+     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to {@value #VALUE_MAX_LENGTH} characters
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      * @param  description
-     *         The description explaining the meaning of this option in more detail, up to {@value #DESCRIPTION_MAX_LENGTH} characters
+     *         The description explaining the meaning of this option in more detail, up to {@value #DESCRIPTION_MAX_LENGTH} characters, as defined by {@link #DESCRIPTION_MAX_LENGTH}
      * @param  isDefault
      *         Whether this option is selected by default
      * @param  emoji
@@ -103,9 +105,10 @@ public class SelectOption implements SerializableData
      * <br>You can further configure this with the various setters that return new instances.
      *
      * @param  label
-     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters
+     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to {@value #VALUE_MAX_LENGTH} characters
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
      *         If the null is provided, or any of the individual parameter requirements are violated.
@@ -123,7 +126,7 @@ public class SelectOption implements SerializableData
      * Returns a copy of this select option with the changed label.
      *
      * @param  label
-     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters
+     *         The label for the option, up to {@value #LABEL_MAX_LENGTH} characters, as defined by {@link #LABEL_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
      *         If the label is null, empty, or longer than {@value #LABEL_MAX_LENGTH} characters
@@ -141,7 +144,8 @@ public class SelectOption implements SerializableData
      * Returns a copy of this select option with the changed value.
      *
      * @param  value
-     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to {@value #VALUE_MAX_LENGTH} characters
+     *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()},
+     *         up to {@value #VALUE_MAX_LENGTH} characters, as defined by {@link #VALUE_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
      *         If the label is null, empty, or longer than {@value #VALUE_MAX_LENGTH} characters
@@ -160,7 +164,8 @@ public class SelectOption implements SerializableData
      * <br>Default: {@code null}
      *
      * @param  description
-     *         The new description or null to have no description, up to {@value #DESCRIPTION_MAX_LENGTH} characters
+     *         The new description or null to have no description,
+     *         up to {@value #DESCRIPTION_MAX_LENGTH} characters, as defined by {@link #DESCRIPTION_MAX_LENGTH}
      *
      * @throws IllegalArgumentException
      *         If the provided description is longer than {@value #DESCRIPTION_MAX_LENGTH} characters
