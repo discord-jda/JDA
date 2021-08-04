@@ -18,6 +18,9 @@ package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.Interaction;
+import net.dv8tion.jda.internal.entities.MemberImpl;
+import net.dv8tion.jda.internal.entities.RoleImpl;
+import net.dv8tion.jda.internal.entities.UserImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -221,28 +224,30 @@ public interface CommandInteraction extends Interaction
             builder.append(" ").append(getSubcommandName());
         for (OptionMapping o : getOptions())
         {
-            builder.append(" ").append(o.getName()).append(":");
+            builder.append(" ").append(o.getName()).append(": ");
             switch (o.getType())
             {
             case CHANNEL:
-                builder.append(" ").append("#").append(o.getAsGuildChannel().getName());
+                builder.append("#").append(o.getAsGuildChannel().getName());
                 break;
             case USER:
-                builder.append(" ").append("@").append(o.getAsUser().getName());
+                builder.append("@").append(o.getAsUser().getName());
                 break;
             case ROLE:
-                builder.append(" ").append("@").append(o.getAsRole().getName());
+                builder.append("@").append(o.getAsRole().getName());
                 break;
-            case MENTIONABLE: //client only allows user or role mentionable
-                if (o instanceof Role)
-                    builder.append(" ").append("@").append(o.getAsRole().getName());
-                else if (o instanceof User)
-                    builder.append(" ").append("@").append(o.getAsUser().getName());
+            case MENTIONABLE: //client only allows user or role mentionable as of Aug 4, 2021
+                if (o.getAsMentionable() instanceof RoleImpl)
+                    builder.append("@").append(((RoleImpl) o.getAsMentionable()).getName());
+                else if (o.getAsMentionable() instanceof MemberImpl)
+                    builder.append("@").append(((MemberImpl) o.getAsMentionable()).getEffectiveName());
+                else if (o.getAsMentionable() instanceof UserImpl)
+                    builder.append("@").append(((UserImpl) o.getAsMentionable()).getName());
                 else
-                    builder.append(" ").append("@").append(o.getAsMentionable().getIdLong());
+                    builder.append("@").append(o.getAsMentionable().getIdLong());
                 break;
             default:
-                builder.append(" ").append(o.getAsString());
+                builder.append(o.getAsString());
                 break;
             }
         }
