@@ -219,11 +219,9 @@ public interface CommandInteraction extends Interaction
             builder.append(" ").append(getSubcommandGroup());
         if (getSubcommandName() != null)
             builder.append(" ").append(getSubcommandName());
-        builder.append(" ");
-        //build options (formatted appropriately)
         for (OptionMapping o : getOptions())
         {
-            builder.append(o.getName()).append(":");
+            builder.append(" ").append(o.getName()).append(":");
             switch (o.getType())
             {
             case CHANNEL:
@@ -248,6 +246,6 @@ public interface CommandInteraction extends Interaction
                 break;
             }
         }
-        return builder.toString().trim();
+        return builder.toString();
     }
 }
