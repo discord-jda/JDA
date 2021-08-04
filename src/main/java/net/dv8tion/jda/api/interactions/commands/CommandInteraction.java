@@ -216,35 +216,35 @@ public interface CommandInteraction extends Interaction
         StringBuilder builder = new StringBuilder();
         builder.append("/").append(getName());
         if (getSubcommandGroup() != null)
-            builder.append(getSubcommandGroup()).append(" ");
+            builder.append(" ").append(getSubcommandGroup());
         if (getSubcommandName() != null)
-            builder.append(getSubcommandName()).append(" ");
+            builder.append(" ").append(getSubcommandName());
         builder.append(" ");
         //build options (formatted appropriately)
         for (OptionMapping o : getOptions())
         {
-            builder.append(o.getName()).append(": ");
+            builder.append(o.getName()).append(":");
             switch (o.getType())
             {
             case CHANNEL:
-                builder.append("#").append(o.getAsGuildChannel().getName()).append(" ");
+                builder.append(" ").append("#").append(o.getAsGuildChannel().getName());
                 break;
             case USER:
-                builder.append("@").append(o.getAsUser().getName()).append(" ");
+                builder.append(" ").append("@").append(o.getAsUser().getName());
                 break;
             case ROLE:
-                builder.append("@").append(o.getAsRole().getName()).append(" ");
+                builder.append(" ").append("@").append(o.getAsRole().getName());
                 break;
             case MENTIONABLE: //client only allows user or role mentionable
                 if (o instanceof Role)
-                    builder.append("@").append(o.getAsRole().getName()).append(" ");
+                    builder.append(" ").append("@").append(o.getAsRole().getName());
                 else if (o instanceof User)
-                    builder.append("@").append(o.getAsUser().getName()).append(" ");
+                    builder.append(" ").append("@").append(o.getAsUser().getName());
                 else
-                    builder.append("@").append(o.getAsMentionable().getIdLong()).append(" ");
+                    builder.append(" ").append("@").append(o.getAsMentionable().getIdLong());
                 break;
             default:
-                builder.append(o.getAsString()).append(" ");
+                builder.append(" ").append(o.getAsString());
                 break;
             }
         }
