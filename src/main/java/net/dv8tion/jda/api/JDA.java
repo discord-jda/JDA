@@ -19,6 +19,7 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
@@ -591,6 +592,38 @@ public interface JDA
     }
 
     /**
+     * Creates or updates a global command.
+     * <br>If a command with the same name exists, it will be replaced.
+     *
+     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
+     * For testing, it is recommended to use a test guild with guild commands.
+     *
+     * @param commandType
+     *         The type of command
+     * @param name
+     *         The name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name/description do not meet the requirements.
+     *         Also, if the command being created is of type {@link CommandType#SLASH}
+     *
+     * @return {@link CommandCreateAction}
+     *
+     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(String, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction upsertCommand(CommandType commandType, @Nonnull String name)
+    {
+        Checks.check(commandType != CommandType.SLASH, "This command may not be of type slash command");
+        return upsertCommand(new CommandData(commandType, name));
+    }
+
+    /**
      * Configures the complete list of global commands.
      * <br>This will replace the existing command list for this bot. You should only use this once on startup!
      *
@@ -618,7 +651,7 @@ public interface JDA
     CommandListUpdateAction updateCommands();
 
     /**
-     * Edit an existing global command by id.
+     * Edit an existing global slash command by id.
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
@@ -626,8 +659,10 @@ public interface JDA
      * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
      * For testing, it is recommended to use a test guild with guild commands.
      *
+     * If attempting to edit an incorrect command with this method, (i.e. Context Menus), you may encounter issues
+     *
      * @param  id
-     *         The id of the command to edit
+     *         The id of the slash command to edit
      *
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
@@ -636,10 +671,10 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction editCommandById(@Nonnull String id);
+    CommandEditAction editSlashCommandById(@Nonnull String id);
 
     /**
-     * Edit an existing global command by id.
+     * Edit an existing global slash command by id.
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
@@ -647,16 +682,64 @@ public interface JDA
      * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
      * For testing, it is recommended to use a test guild with guild commands.
      *
+     * If attempting to edit an incorrect command with this method, (i.e. Context Menus), you may encounter issues
+     *
      * @param  id
-     *         The id of the command to edit
+     *         The id of the slash command to edit
      *
      * @return {@link CommandEditAction} used to edit the command
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction editCommandById(long id)
+    default CommandEditAction editSlashCommandById(long id)
     {
-        return editCommandById(Long.toUnsignedString(id));
+        return editSlashCommandById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Edit an existing global context menu command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
+     * For testing, it is recommended to use a test guild with guild commands.
+     *
+     * If attempting to edit an incorrect command with this method, (i.e. Slash Commands), you may encounter issues
+     *
+     * @param  id
+     *         The id of the context menu command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction editContextMenuById(@Nonnull String id);
+
+    /**
+     * Edit an existing global context menu command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
+     * For testing, it is recommended to use a test guild with guild commands.
+     *
+     * If attempting to edit an incorrect command with this method, (i.e. Slash Commands), you may encounter issues
+     *
+     * @param  id
+     *         The id of the context menu command to edit
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandEditAction editContextMenuById(long id)
+    {
+        return editContextMenuById(Long.toUnsignedString(id));
     }
 
     /**

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -81,7 +81,30 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
     {
         Checks.noneNull(commands, "Command");
-        Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");
+
+        int slashCommandCount = 0;
+        long userCommandCount = 0;
+        long messageCommandCount = 0;
+
+        List<CommandData> tempCommandsList = new ArrayList<>(this.commands);
+        tempCommandsList.addAll(commands);
+        for(CommandData data : tempCommandsList) {
+            switch (data.getCommandType()) {
+            case SLASH:
+                slashCommandCount++;
+                break;
+            case USER_CONTEXT:
+                userCommandCount++;
+                break;
+            case MESSAGE_CONTEXT:
+                messageCommandCount++;
+                break;
+            }
+        }
+
+        Checks.check(slashCommandCount <= CommandData.SLASH_COMMAND_LIMIT, "Cannot have more than 100 slash commands! Try using subcommands instead.");
+        Checks.check(userCommandCount <= CommandData.USER_COMMAND_LIMIT, "Cannot have more than 5 user context menu commands!");
+        Checks.check(messageCommandCount <= CommandData.MESSAGE_COMMAND_LIMIT, "Cannot have more than 5 message context menu commands!");
         this.commands.addAll(commands);
         return this;
     }
@@ -98,7 +121,19 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     protected void handleSuccess(Response response, Request<List<Command>> request)
     {
         List<Command> commands = response.getArray().stream(DataArray::getObject)
-                .map(obj -> new Command(api, guild, obj))
+                .map(obj ->
+                {
+                    switch (CommandType.fromKey(obj.getInt("type"))) {
+                    case SLASH:
+                        return new SlashCommand(api, guild, obj);
+                    case USER_CONTEXT:
+                        return new UserCommand(api, guild, obj);
+                    case MESSAGE_CONTEXT:
+                        return new MessageCommand(api, guild, obj);
+                    default:
+                        return new Command(api, guild, obj);
+                    }
+                })
                 .collect(Collectors.toList());
         request.onSuccess(commands);
     }

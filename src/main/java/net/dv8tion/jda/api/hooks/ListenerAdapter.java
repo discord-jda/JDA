@@ -74,6 +74,10 @@ import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.interaction.*;
+import net.dv8tion.jda.api.events.interaction.commands.GenericCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.guild.*;
 import net.dv8tion.jda.api.events.message.guild.react.*;
@@ -196,6 +200,8 @@ public abstract class ListenerAdapter implements EventListener
 
     //Interaction Events
     public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
+    public void onUserContextCommand(@Nonnull UserContextCommandEvent event) {}
+    public void onMessageContextCommand(@Nonnull MessageContextCommandEvent event) {}
     public void onButtonClick(@Nonnull ButtonClickEvent event) {}
     public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
 
@@ -461,6 +467,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
+    public void onGenericCommand(@Nonnull GenericCommandEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();

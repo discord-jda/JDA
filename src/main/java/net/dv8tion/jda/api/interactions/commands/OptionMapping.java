@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions.commands;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
@@ -25,13 +26,13 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 
 /**
- * Name/Value pair for a {@link CommandInteraction} option.
+ * Name/Value pair for a {@link SlashCommandInteraction} option.
  *
  * <p>Since values for command options are a union-type you can use this class to coerce the values to the desired target type.
  * <br>You can use {@link #getType()} to do dynamic handling as well. Each getter documents the conditions and coercion rules for the specific types.
  *
- * @see CommandInteraction#getOption(String)
- * @see CommandInteraction#getOptions()
+ * @see SlashCommandInteraction#getOption(String)
+ * @see SlashCommandInteraction#getOptions()
  */
 public class OptionMapping
 {

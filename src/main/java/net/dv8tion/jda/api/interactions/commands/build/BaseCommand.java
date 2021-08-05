@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -30,15 +31,20 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
+    protected final CommandType commandType;
 
-    public BaseCommand(@Nonnull String name, @Nonnull String description)
+    public BaseCommand(CommandType commandType, @Nonnull String name, String description)
     {
+        this.commandType = commandType;
         Checks.notEmpty(name, "Name");
-        Checks.notEmpty(description, "Description");
         Checks.notLonger(name, 32, "Name");
-        Checks.notLonger(description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
+
+        if(commandType == CommandType.SLASH) {
+            Checks.check(description.length() > 0, "Description");
+            Checks.notLonger(description, 100, "Description");
+            Checks.isLowercase(name, "Name");
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        }
         this.name = name;
         this.description = description;
     }
@@ -47,10 +53,22 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      * Configure the name
      *
      * @param  name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters.
+     *         If the command is not of type {@link CommandType#SLASH}, the name may be non-alphanumeric and capitalized
      *
      * @throws IllegalArgumentException
-     *         If the name is null, not alphanumeric, or not between 1-32 characters
+     *         <p>If the command is of type {@link CommandType#SLASH}:
+     *             <ul>
+     *                 <li>The name is null</li>
+     *                 <li>The name is not alphanumeric</li>
+     *                 <li>The name is not between 1-32 characters</li>
+     *             </ul>
+     *         </p>
+     *         <p>If the command is of type {@link CommandType#USER_CONTEXT} or {@link CommandType#MESSAGE_CONTEXT}:
+     *             <ul>
+     *                 <li>The name is null</li>
+     *                 <li>The name is not between 1-32 characters</li>
+     *             </ul>
      *
      * @return The builder, for chaining
      */
@@ -60,8 +78,12 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
-        Checks.isLowercase(name, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        // If the description is null it means it's not a slash command
+        if(commandType == CommandType.SLASH)
+        {
+            Checks.isLowercase(name, "Name");
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        }
         this.name = name;
         return (T) this;
     }
@@ -73,7 +95,8 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *         The description, 1-100 characters
      *
      * @throws IllegalArgumentException
-     *         If the name is null or not between 1-100 characters
+     *         If the name is null or not between 1-100 characters.
+     *         Also, if the command is not of type {@link CommandType#SLASH}
      *
      * @return The builder, for chaining
      */
@@ -81,6 +104,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @SuppressWarnings("unchecked")
     public T setDescription(@Nonnull String description)
     {
+        Checks.check(commandType == CommandType.SLASH, "You cannot modify this command's description");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;
@@ -106,7 +130,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @Nonnull
     public String getDescription()
     {
-        return description;
+        return description == null ? "" : description;
     }
 
     /**
@@ -129,7 +153,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     {
         return DataObject.empty()
                 .put("name", name)
-                .put("description", description)
+                .put("description", description == null ? "" : description)
                 .put("options", options);
     }
 }

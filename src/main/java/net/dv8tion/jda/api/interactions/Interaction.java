@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.interactions;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
@@ -30,7 +31,7 @@ import java.util.Collection;
 
 /**
  * Abstract representation for any kind of Discord interaction.
- * <br>This includes things such as {@link net.dv8tion.jda.api.interactions.commands.CommandInteraction Slash-Commands} or {@link ComponentInteraction Buttons}.
+ * <br>This includes things such as {@link SlashCommandInteraction Slash-Commands} or {@link ComponentInteraction Buttons}.
  *
  * <p>To properly handle an interaction you must acknowledge it.
  * This means you need to use either {@link #reply(String)}, {@link #deferReply()}, or another similar method for other interactions.

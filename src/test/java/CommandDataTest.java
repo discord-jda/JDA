@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
@@ -176,11 +176,11 @@ public class CommandDataTest
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalidName", "Valid description"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("valid_name", ""));
 
-        List<Command.Choice> choices = new ArrayList<>();
+        List<SlashCommand.Choice> choices = new ArrayList<>();
         for (int i = 0; i < 25; i++)
         {
             option.addChoice("choice_" + i, i);
-            choices.add(new Command.Choice("choice_" + i, i));
+            choices.add(new SlashCommand.Choice("choice_" + i, i));
         }
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("name", 100));
         Assertions.assertEquals(25, option.getChoices().size());

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.events.interaction;
+package net.dv8tion.jda.api.events.interaction.commands;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
+import net.dv8tion.jda.internal.interactions.commands.SlashCommandInteractionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,28 +33,14 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SlashCommandEvent extends GenericInteractionCreateEvent implements CommandInteraction
+public class SlashCommandEvent extends GenericCommandEvent implements SlashCommandInteraction
 {
-    private final CommandInteractionImpl commandInteraction;
+    private final SlashCommandInteractionImpl commandInteraction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteractionImpl interaction)
+    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteractionImpl interaction)
     {
         super(api, responseNumber, interaction);
         this.commandInteraction = interaction;
-    }
-
-    @Nonnull
-    @Override
-    public MessageChannel getChannel()
-    {
-        return commandInteraction.getChannel();
-    }
-
-    @Nonnull
-    @Override
-    public String getName()
-    {
-        return commandInteraction.getName();
     }
 
     @Nullable
@@ -69,12 +55,6 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
     public String getSubcommandGroup()
     {
         return commandInteraction.getSubcommandGroup();
-    }
-
-    @Override
-    public long getCommandIdLong()
-    {
-        return commandInteraction.getCommandIdLong();
     }
 
     @Nonnull

@@ -28,7 +28,7 @@ public enum InteractionType
 {
     UNKNOWN(-1),
     PING(1),
-    SLASH_COMMAND(2),
+    COMMAND(2),
     COMPONENT(3),
     ;
 
@@ -53,7 +53,7 @@ public enum InteractionType
         case 1:
             return PING;
         case 2:
-            return SLASH_COMMAND;
+            return COMMAND;
         case 3:
             return COMPONENT;
         default:

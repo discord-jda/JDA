@@ -16,7 +16,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -105,6 +105,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only set the description of slash commands!");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
@@ -115,6 +116,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addOptions(@Nonnull OptionData... options)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only add options to slash commands!");
         data.addOptions(options);
         return this;
     }
@@ -123,6 +125,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addSubcommands(@Nonnull SubcommandData... subcommand)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only add subcommands to slash commands!");
         data.addSubcommands(subcommand);
         return this;
     }
@@ -131,6 +134,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData... group)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only add subcommand groups to slash commands!");
         data.addSubcommandGroups(group);
         return this;
     }
@@ -145,6 +149,15 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     protected void handleSuccess(Response response, Request<Command> request)
     {
         DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        switch (CommandType.fromKey(json.getInt("type"))) {
+        case SLASH:
+            request.onSuccess(new SlashCommand(api, guild, json));
+        case USER_CONTEXT:
+            request.onSuccess(new UserCommand(api, guild, json));
+        case MESSAGE_CONTEXT:
+            request.onSuccess(new MessageCommand(api, guild, json));
+        default:
+            request.onSuccess(new Command(api, guild, json));
+        }
     }
 }

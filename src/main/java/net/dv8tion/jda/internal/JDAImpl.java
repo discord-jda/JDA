@@ -34,7 +34,7 @@ import net.dv8tion.jda.api.exceptions.RateLimitedException;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
@@ -859,7 +859,18 @@ public class JDAImpl implements JDA
             (response, request) ->
                 response.getArray()
                         .stream(DataArray::getObject)
-                        .map(json -> new Command(this, null, json))
+                        .map(json -> {
+                            switch (CommandType.fromKey(json.getInt("type"))) {
+                            case SLASH:
+                                return new SlashCommand(this, null, json);
+                            case USER_CONTEXT:
+                                return new UserCommand(this, null, json);
+                            case MESSAGE_CONTEXT:
+                                return new MessageCommand(this, null, json);
+                            default:
+                                return new Command(this, null, json);
+                            }
+                        })
                         .collect(Collectors.toList()));
     }
 
@@ -869,7 +880,19 @@ public class JDAImpl implements JDA
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
-        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+        return new RestActionImpl<>(this, route, (response, request) -> {
+            DataObject json = response.getObject();
+            switch (CommandType.fromKey(json.getInt("type"))) {
+            case SLASH:
+                return new SlashCommand(this, null, json);
+            case USER_CONTEXT:
+                return new UserCommand(this, null, json);
+            case MESSAGE_CONTEXT:
+                return new MessageCommand(this, null, json);
+            default:
+                return new Command(this, null, json);
+            }
+        });
     }
 
     @Nonnull
@@ -890,10 +913,18 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(@Nonnull String id)
+    public CommandEditAction editSlashCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id);
+        return new CommandEditActionImpl(this, id, CommandType.SLASH);
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction editContextMenuById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new CommandEditActionImpl(this, id, CommandType.USER_CONTEXT);
     }
 
     @Nonnull
