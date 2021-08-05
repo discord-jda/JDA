@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -148,13 +148,13 @@ public class OptionData implements SerializableData
      * The choices for this option.
      * <br>This is empty by default and can only be configured for specific option types.
      *
-     * @return Immutable list of {@link net.dv8tion.jda.api.interactions.commands.Command.Choice Choices}
+     * @return Immutable list of {@link SlashCommand.Choice Choices}
      *
      * @see #addChoice(String, int)
      * @see #addChoice(String, String)
      */
     @Nonnull
-    public List<Command.Choice> getChoices()
+    public List<SlashCommand.Choice> getChoices()
     {
         if (choices == null || choices.isEmpty())
             return Collections.emptyList();
@@ -162,8 +162,8 @@ public class OptionData implements SerializableData
                 .map(entry ->
                 {
                     if (entry.getValue() instanceof String)
-                        return new Command.Choice(entry.getKey(), entry.getValue().toString());
-                    return new Command.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
+                        return new SlashCommand.Choice(entry.getKey(), entry.getValue().toString());
+                    return new SlashCommand.Choice(entry.getKey(), ((Number) entry.getValue()).longValue());
                 })
                 .collect(Collectors.toList());
     }
@@ -296,13 +296,13 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoices(@Nonnull Command.Choice... choices)
+    public OptionData addChoices(@Nonnull SlashCommand.Choice... choices)
     {
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
         Checks.check(choices.length + this.choices.size() <= 25, "Cannot have more than 25 choices for one option!");
-        for (Command.Choice choice : choices)
+        for (SlashCommand.Choice choice : choices)
         {
             if (type == OptionType.INTEGER)
                 addChoice(choice.getName(), (int) choice.getAsLong());
@@ -328,10 +328,10 @@ public class OptionData implements SerializableData
      * @return The OptionData instance, for chaining
      */
     @Nonnull
-    public OptionData addChoices(@Nonnull Collection<? extends Command.Choice> choices)
+    public OptionData addChoices(@Nonnull Collection<? extends SlashCommand.Choice> choices)
     {
         Checks.noneNull(choices, "Choices");
-        return addChoices(choices.toArray(new Command.Choice[0]));
+        return addChoices(choices.toArray(new SlashCommand.Choice[0]));
     }
 
     @Nonnull

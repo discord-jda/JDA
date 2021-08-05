@@ -19,7 +19,7 @@ package net.dv8tion.jda.api.interactions.commands;
 import javax.annotation.Nonnull;
 
 /**
- * The available types for {@link Command} options.
+ * The available types for {@link SlashCommand} options.
  */
 public enum OptionType
 {
