@@ -33,7 +33,7 @@ public class SelectOption implements SerializableData
     /**
      * The maximum length a select option label can have
      */
-    public static final int LABEL_MAX_LENGTH = 25;
+    public static final int LABEL_MAX_LENGTH = 100;
 
     /**
      * The maximum length a select option value can have
@@ -43,7 +43,7 @@ public class SelectOption implements SerializableData
     /**
      * The maximum length a select option description can have
      */
-    public static final int DESCRIPTION_MAX_LENGTH = 50;
+    public static final int DESCRIPTION_MAX_LENGTH = 100;
 
     private final String label, value;
     private final String description;
