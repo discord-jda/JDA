@@ -393,7 +393,7 @@ public interface SelectionMenu extends Component
          * Adds up to 25 possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to 100 characters
          * @param  value
          *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
          *
@@ -412,7 +412,7 @@ public interface SelectionMenu extends Component
          * Adds up to 25 possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to 100 characters
          * @param  value
          *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
          * @param  emoji
@@ -433,11 +433,11 @@ public interface SelectionMenu extends Component
          * Adds up to 25 possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to 100 characters
          * @param  value
          *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
          * @param  description
-         *         The description explaining the meaning of this option in more detail, up to 50 characters
+         *         The description explaining the meaning of this option in more detail, up to 100 characters
          *
          * @throws IllegalArgumentException
          *         If the total amount of options is greater than 25, invalid null is provided, or any of the individual parameter requirements are violated.
@@ -454,11 +454,11 @@ public interface SelectionMenu extends Component
          * Adds up to 25 possible options to this selection menu.
          *
          * @param  label
-         *         The label for the option, up to 25 characters
+         *         The label for the option, up to 100 characters
          * @param  value
          *         The value for the option used to indicate which option was selected with {@link SelectionMenuInteraction#getValues()}, up to 100 characters
          * @param  description
-         *         The description explaining the meaning of this option in more detail, up to 50 characters
+         *         The description explaining the meaning of this option in more detail, up to 100 characters
          * @param  emoji
          *         The {@link Emoji} shown next to this option, or null
          *
