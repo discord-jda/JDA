@@ -62,21 +62,15 @@ public class EmbedBuilder
      */
     public EmbedBuilder() { }
 
+    /**
+     * Creates an EmbedBuilder using fields from an existing builder
+     *
+     * @param  builder
+     *         the existing builder
+     */
     public EmbedBuilder(@Nullable EmbedBuilder builder)
     {
-        if (builder != null)
-        {
-            setDescription(builder.description.toString());
-            this.fields.addAll(builder.fields);
-            this.url = builder.url;
-            this.title = builder.title;
-            this.timestamp = builder.timestamp;
-            this.color = builder.color;
-            this.thumbnail = builder.thumbnail;
-            this.author = builder.author;
-            this.footer = builder.footer;
-            this.image = builder.image;
-        }
+        copyFrom(builder);
     }
     
     /**
@@ -87,20 +81,7 @@ public class EmbedBuilder
      */
     public EmbedBuilder(@Nullable MessageEmbed embed)
     {
-        if(embed != null)
-        {
-            setDescription(embed.getDescription());
-            this.url = embed.getUrl();
-            this.title = embed.getTitle();
-            this.timestamp = embed.getTimestamp();
-            this.color = embed.getColorRaw();
-            this.thumbnail = embed.getThumbnail();
-            this.author = embed.getAuthor();
-            this.footer = embed.getFooter();
-            this.image = embed.getImage();
-            if (embed.getFields() != null)
-                fields.addAll(embed.getFields());
-        }
+        copyFrom(embed);
     }
 
     /**
@@ -147,6 +128,56 @@ public class EmbedBuilder
         footer = null;
         image = null;
         return this;
+    }
+
+    /**
+     * Copies the data from the given builder into this builder.
+     * <br>All the parts of the given builder will be applied to this one.
+     *
+     * @param  builder
+     *         the existing builder
+     */
+    public void copyFrom(@Nullable EmbedBuilder builder)
+    {
+        if (builder != null)
+        {
+            setDescription(builder.description.toString());
+            this.clearFields();
+            this.fields.addAll(builder.fields);
+            this.url = builder.url;
+            this.title = builder.title;
+            this.timestamp = builder.timestamp;
+            this.color = builder.color;
+            this.thumbnail = builder.thumbnail;
+            this.author = builder.author;
+            this.footer = builder.footer;
+            this.image = builder.image;
+        }
+    }
+
+    /**
+     * Copies the data from the given embed into this builder.
+     * <br>All the parts of the given embed will be applied to this builder.
+     *
+     * @param  embed
+     *         the existing embed
+     */
+    public void copyFrom(@Nullable MessageEmbed embed)
+    {
+        if(embed != null)
+        {
+            setDescription(embed.getDescription());
+            this.clearFields();
+            this.fields.addAll(embed.getFields());
+            this.url = embed.getUrl();
+            this.title = embed.getTitle();
+            this.timestamp = embed.getTimestamp();
+            this.color = embed.getColorRaw();
+            this.thumbnail = embed.getThumbnail();
+            this.author = embed.getAuthor();
+            this.footer = embed.getFooter();
+            this.image = embed.getImage();
+        }
     }
 
     /**
