@@ -10,4 +10,26 @@ public class UserCommand extends Command
     {
         super(api, guild, json);
     }
+
+    @Override
+    public String toString()
+    {
+        return "UC:" + getName() + "(" + getId() + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof Command))
+            return false;
+        return getIdLong() == ((UserCommand) obj).getIdLong();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(getIdLong());
+    }
 }

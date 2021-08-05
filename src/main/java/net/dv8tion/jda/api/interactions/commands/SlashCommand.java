@@ -122,7 +122,7 @@ public class SlashCommand extends Command
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof SlashCommand))
+        if (!(obj instanceof Command))
             return false;
         return getIdLong() == ((SlashCommand) obj).getIdLong();
     }

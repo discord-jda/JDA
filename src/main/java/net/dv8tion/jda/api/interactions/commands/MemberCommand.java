@@ -10,4 +10,26 @@ public class MemberCommand extends Command
     {
         super(api, guild, json);
     }
+
+    @Override
+    public String toString()
+    {
+        return "MC:" + getName() + "(" + getId() + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj == this)
+            return true;
+        if (!(obj instanceof Command))
+            return false;
+        return getIdLong() == ((MemberCommand) obj).getIdLong();
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.hashCode(getIdLong());
+    }
 }
