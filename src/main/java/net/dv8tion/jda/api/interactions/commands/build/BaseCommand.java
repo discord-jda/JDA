@@ -31,6 +31,16 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     protected final DataArray options = DataArray.empty();
     protected String name, description;
 
+    protected BaseCommand(@Nonnull String name)
+    {
+        Checks.notEmpty(name, "Name");
+        Checks.notLonger(name, 32, "Name");
+        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        Checks.isLowercase(name, "Name");
+        this.name = name;
+        this.description = "";
+    }
+
     public BaseCommand(@Nonnull String name, @Nonnull String description)
     {
         Checks.notEmpty(name, "Name");

@@ -58,7 +58,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      */
     public CommandData(CommandType commandType, @Nonnull String name)
     {
-        super(name, "");
+        super(name);
         Checks.check(commandType != CommandType.SLASH_COMMAND, "You cannot create a slash command using this constructor.");
         this.commandType = commandType;
     }
