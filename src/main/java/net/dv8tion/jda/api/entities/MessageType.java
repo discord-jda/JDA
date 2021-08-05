@@ -135,6 +135,11 @@ public enum MessageType
     THREAD_STARTER_MESSAGE(21),
 
     /**
+     * The "Invite your friends" messages that are sent to guild owners in new servers.
+     */
+    GUILD_INVITE_REMINDER(22),
+
+    /**
      * Unknown MessageType.
      */
     UNKNOWN(-1);
