@@ -2,12 +2,26 @@ package net.dv8tion.jda.api.interactions.commands;
 
 import javax.annotation.Nonnull;
 
+/**
+ * The available types of {@link Command Commands}
+ */
 public enum CommandType
 {
     /** Placeholder for future option types */
     UNKNOWN(-1),
+    /**
+     * A slash command is the default command that appears once a user types "/"
+     */
     SLASH_COMMAND(1),
+
+    /**
+     * A user command, also known as a "User Context Menu Command", appears when opening a context menu on a user
+     */
     USER_COMMAND(2),
+
+    /**
+     * A message command, also known as a "Message Context Menu Command", appears when opening a context menu on a message
+     */
     MESSAGE_COMMAND(3),
     ;
 

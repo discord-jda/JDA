@@ -17,6 +17,7 @@
 package net.dv8tion.jda.api.interactions.commands.build;
 
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -31,22 +32,12 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     protected final DataArray options = DataArray.empty();
     protected String name, description;
 
-    protected BaseCommand(@Nonnull String name)
+    public BaseCommand(@Nonnull String name, String description)
     {
         Checks.notEmpty(name, "Name");
+        Checks.check(description == null || description.length() > 0, "Description");
         Checks.notLonger(name, 32, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
-        this.name = name;
-        this.description = "";
-    }
-
-    public BaseCommand(@Nonnull String name, @Nonnull String description)
-    {
-        Checks.notEmpty(name, "Name");
-        Checks.notEmpty(description, "Description");
-        Checks.notLonger(name, 32, "Name");
-        Checks.notLonger(description, 100, "Description");
+        Checks.notLonger(description == null ? "" : description, 100, "Description");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         Checks.isLowercase(name, "Name");
         this.name = name;
@@ -83,7 +74,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *         The description, 1-100 characters
      *
      * @throws IllegalArgumentException
-     *         If the name is null or not between 1-100 characters
+     *         If the name is null or not between 1-100 characters. Also, if the command is not of type {@link CommandType#SLASH_COMMAND}
      *
      * @return The builder, for chaining
      */
@@ -91,6 +82,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @SuppressWarnings("unchecked")
     public T setDescription(@Nonnull String description)
     {
+        Checks.check(this.description != null, "You cannot modify this command's description");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;
@@ -139,7 +131,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     {
         return DataObject.empty()
                 .put("name", name)
-                .put("description", description)
+                .put("description", description == null ? "" : description)
                 .put("options", options);
     }
 }

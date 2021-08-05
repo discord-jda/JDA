@@ -17,6 +17,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -105,6 +106,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction setDescription(@Nonnull String description)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only set the description of slash commands!");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         data.setDescription(description);
@@ -115,6 +117,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addOptions(@Nonnull OptionData... options)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add options to slash commands!");
         data.addOptions(options);
         return this;
     }
@@ -123,6 +126,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommand)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands!");
         data.addSubcommands(subcommand);
         return this;
     }
@@ -131,6 +135,7 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData group)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands!");
         data.addSubcommandGroups(group);
         return this;
     }

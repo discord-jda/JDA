@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -123,6 +124,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction setDescription(@Nullable String description)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only set the description of slash commands");
         if (description == null)
         {
             mask &= ~DESCRIPTION_SET;
@@ -146,6 +148,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction addOptions(@Nonnull OptionData... options)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add options to slash commands");
         data.addOptions(options);
         mask |= OPTIONS_SET;
         return this;
@@ -155,6 +158,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands");
         data.addSubcommands(subcommands);
         mask |= OPTIONS_SET;
         return this;
@@ -164,6 +168,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
+        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands");
         data.addSubcommandGroups(groups);
         mask |= OPTIONS_SET;
         return this;

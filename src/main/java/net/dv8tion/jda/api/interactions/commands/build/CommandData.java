@@ -58,7 +58,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      */
     public CommandData(CommandType commandType, @Nonnull String name)
     {
-        super(name);
+        super(name, null);
         Checks.check(commandType != CommandType.SLASH_COMMAND, "You cannot create a slash command using this constructor.");
         this.commandType = commandType;
     }
@@ -104,8 +104,17 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData(CommandType commandType, @Nonnull String name, @Nonnull String description)
     {
         super(name, description);
-        Checks.check(description.length() > 0 && commandType != CommandType.SLASH_COMMAND, "");
+        Checks.check(description.length() > 0 && commandType == CommandType.SLASH_COMMAND, "");
         this.commandType = commandType;
+    }
+
+    /**
+     * The {@link CommandType}
+     *
+     * @return The type of command
+     */
+    public CommandType getCommandType() {
+        return commandType;
     }
 
     @Nonnull
@@ -192,7 +201,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOptions(@Nonnull OptionData... options)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
@@ -231,7 +240,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOptions(@Nonnull Collection<? extends OptionData> options)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
         Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
     }
@@ -265,7 +274,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
 
@@ -297,7 +306,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
         return addOption(type, name, description, false);
     }
 
@@ -320,7 +329,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands.");
         Checks.noneNull(subcommands, "Subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -350,7 +359,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands.");
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
@@ -374,7 +383,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands.");
         Checks.noneNull(groups, "SubcommandGroups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -404,7 +413,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands.");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands.");
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
     }
@@ -430,7 +439,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
         CommandType commandType = CommandType.fromKey(object.getInt("type"));
-        if(commandType != CommandType.SLASH_COMMAND)
+        if(commandType == CommandType.SLASH_COMMAND)
             return new CommandData(commandType, name);
 
         String description = object.getString("description");
