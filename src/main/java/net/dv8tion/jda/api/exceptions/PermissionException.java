@@ -16,6 +16,9 @@
 package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.internal.utils.Checks;
+
+import javax.annotation.Nonnull;
 
 /**
  * Indicates that the currently logged in account does not meet the specified {@link net.dv8tion.jda.api.Permission Permission}
@@ -42,7 +45,7 @@ public class PermissionException extends RuntimeException
      * @param permission
      *        The required {@link net.dv8tion.jda.api.Permission Permission}
      */
-    protected PermissionException(Permission permission)
+    protected PermissionException(@Nonnull Permission permission)
     {
         this(permission, "Cannot perform action due to a lack of Permission. Missing permission: " + permission.toString());
     }
@@ -55,9 +58,10 @@ public class PermissionException extends RuntimeException
      * @param reason
      *        The reason for this Exception
      */
-    protected PermissionException(Permission permission, String reason)
+    protected PermissionException(@Nonnull Permission permission, String reason)
     {
         super(reason);
+        Checks.notNull(permission, "permission");
         this.permission = permission;
     }
 
@@ -69,6 +73,7 @@ public class PermissionException extends RuntimeException
      *
      * @return The required {@link net.dv8tion.jda.api.Permission Permission}
      */
+    @Nonnull
     public Permission getPermission()
     {
         return permission;
