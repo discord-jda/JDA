@@ -131,14 +131,6 @@ public interface Interaction extends ISnowflake
     AbstractChannel getChannel();
 
     /**
-     * The {@link DataObject} connected to this {@link Interaction}
-     *
-     * @return The DataObject
-     */
-    @Nonnull
-    DataObject getData();
-
-    /**
      * The {@link InteractionHook} which can be used to send deferred replies or followup messages.
      *
      * @throws UnsupportedOperationException

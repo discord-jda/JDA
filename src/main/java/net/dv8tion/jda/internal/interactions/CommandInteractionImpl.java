@@ -30,7 +30,6 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.entities.UserImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     private final String name;
     private String subcommand;
     private String group;
-    private final DataObject data;
 
     public CommandInteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -53,7 +51,6 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
         DataObject commandData = data.getObject("data");
         this.commandId = commandData.getUnsignedLong("id");
         this.name = commandData.getString("name");
-        this.data = data;
 
         DataArray options = commandData.optArray("options").orElseGet(DataArray::empty);
         DataObject resolveJson = commandData.optObject("resolved").orElseGet(DataObject::empty);
@@ -164,12 +161,5 @@ public class CommandInteractionImpl extends InteractionImpl implements CommandIn
     public List<OptionMapping> getOptions()
     {
         return options;
-    }
-
-    @NotNull
-    @Override
-    public DataObject getData()
-    {
-        return data;
     }
 }

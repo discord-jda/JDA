@@ -44,13 +44,11 @@ import javax.annotation.Nullable;
 public class GenericInteractionCreateEvent extends Event implements Interaction
 {
     private final Interaction interaction;
-    private final DataObject data;
 
     public GenericInteractionCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Interaction interaction)
     {
         super(api, responseNumber);
         this.interaction = interaction;
-        this.data = getData();
     }
 
     /**
@@ -90,13 +88,6 @@ public class GenericInteractionCreateEvent extends Event implements Interaction
     public AbstractChannel getChannel()
     {
         return interaction.getChannel();
-    }
-
-    @NotNull
-    @Override
-    public DataObject getData()
-    {
-        return data;
     }
 
     @Nonnull
