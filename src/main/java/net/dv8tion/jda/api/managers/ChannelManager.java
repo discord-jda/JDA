@@ -236,8 +236,8 @@ public interface ChannelManager extends Manager<ChannelManager>
     }
 
     /**
-     * Adds an override for the specified role with the provided raw bitmasks as allowed and denied permissions. If the
-     * role already had an override on this channel it will be replaced instead.
+     * Adds an override for the specified role with the provided raw bitmasks as allowed and denied permissions.
+     * If the role already had an override on this channel it will be replaced instead.
      *
      * @param  roleId
      *         The ID of the role to set permissions for
@@ -260,8 +260,8 @@ public interface ChannelManager extends Manager<ChannelManager>
     ChannelManager putRolePermissionOverride(long roleId, long allow, long deny);
 
     /**
-     * Adds an override for the specified role with the provided permission sets as allowed and denied permissions. If
-     * the role already had an override on this channel it will be replaced instead.
+     * Adds an override for the specified role with the provided permission sets as allowed and denied permissions.
+     * If the role already had an override on this channel it will be replaced instead.
      *
      * @param  roleId
      *         The ID of the role to set permissions for
@@ -281,15 +281,16 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelManager putRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
+    default ChannelManager putRolePermissionOverride(long roleId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
         long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
         return putRolePermissionOverride(roleId, allowRaw, denyRaw);
     }
 
     /**
-     * Adds an override for the specified member with the provided raw bitmasks as allowed and denied permissions. If the
-     * member already had an override on this channel it will be replaced instead.
+     * Adds an override for the specified member with the provided raw bitmasks as allowed and denied permissions.
+     * If the member already had an override on this channel it will be replaced instead.
      *
      * @param  memberId
      *         The ID of the member to set permissions for
@@ -312,8 +313,8 @@ public interface ChannelManager extends Manager<ChannelManager>
     ChannelManager putMemberPermissionOverride(long memberId, long allow, long deny);
 
     /**
-     * Adds an override for the specified member with the provided permission sets as allowed and denied permissions. If
-     * the member already had an override on this channel it will be replaced instead.
+     * Adds an override for the specified member with the provided permission sets as allowed and denied permissions.
+     * If the member already had an override on this channel it will be replaced instead.
      *
      * @param  memberId
      *         The ID of the member to set permissions for
@@ -333,7 +334,8 @@ public interface ChannelManager extends Manager<ChannelManager>
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelManager putMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny) {
+    default ChannelManager putMemberPermissionOverride(long memberId, @Nullable Collection<Permission> allow, @Nullable Collection<Permission> deny)
+    {
         long allowRaw = allow == null ? 0 : Permission.getRaw(allow);
         long denyRaw  = deny  == null ? 0 : Permission.getRaw(deny);
         return putMemberPermissionOverride(memberId, allowRaw, denyRaw);
