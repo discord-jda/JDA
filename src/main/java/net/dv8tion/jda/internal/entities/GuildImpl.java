@@ -24,7 +24,7 @@ import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -131,7 +131,18 @@ public class GuildImpl implements Guild
                 (response, request) ->
                         response.getArray()
                                 .stream(DataArray::getObject)
-                                .map(json -> new Command(getJDA(), this, json))
+                                .map(json -> {
+                                    switch (CommandType.fromKey(json.getInt("type"))) {
+                                        case SLASH_COMMAND:
+                                            return new SlashCommand(getJDA(), this, json);
+                                        case USER_COMMAND:
+                                            return new UserCommand(getJDA(), this, json);
+                                        case MESSAGE_COMMAND:
+                                            return new MessageCommand(getJDA(), this, json);
+                                        default:
+                                            return new Command(getJDA(), this, json);
+                                    }
+                                })
                                 .collect(Collectors.toList()));
     }
 
@@ -141,7 +152,19 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject json = response.getObject();
+            switch (CommandType.fromKey(json.getInt("type"))) {
+            case SLASH_COMMAND:
+                return new SlashCommand(getJDA(), this, json);
+            case USER_COMMAND:
+                return new UserCommand(getJDA(), this, json);
+            case MESSAGE_COMMAND:
+                return new MessageCommand(getJDA(), this, json);
+            default:
+                return new Command(getJDA(), this, json);
+            }
+        });
     }
 
     @Nonnull

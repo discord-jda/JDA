@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.templates.Template;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -166,6 +167,35 @@ public interface Guild extends ISnowflake
     default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
     {
         return upsertCommand(new CommandData(name, description));
+    }
+
+    /**
+     * Creates or updates a command.
+     * <br>If a command with the same name exists, it will be replaced.
+     *
+     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
+     *
+     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
+     *
+     * @param commandType
+     *         The type of command
+     * @param name
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided or the name/description do not meet the requirements.
+     *         Also, if the command being created is of type {@link CommandType#SLASH_COMMAND}
+     *
+     * @return {@link CommandCreateAction}
+     *
+     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(String, String)
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction upsertCommand(CommandType commandType, @Nonnull String name)
+    {
+        Checks.check(commandType != CommandType.SLASH_COMMAND, "This command may not be of type slash command");
+        return upsertCommand(new CommandData(commandType, name));
     }
 
     /**

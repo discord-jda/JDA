@@ -44,14 +44,14 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * Create a command builder.
      *
      * @param commandType
-     *        The type of command
+     *        Either a command of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}
      * @param name
      *        The command name, 1-32 lowercase alphanumeric characters
      *
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
      *         <ul>
-     *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
+     *             <li>The name must be alphanumeric (with dash), 1-32 characters long</li>
      *             <li>The description must be 1-100 characters long</li>
      *             <li>The command is not of type {@link CommandType#SLASH_COMMAND}</li>
      *         </ul>

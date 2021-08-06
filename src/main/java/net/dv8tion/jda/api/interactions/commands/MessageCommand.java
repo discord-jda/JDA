@@ -4,9 +4,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
-public class MemberCommand extends Command
+public class MessageCommand extends Command
 {
-    public MemberCommand(JDAImpl api, Guild guild, DataObject json)
+    public MessageCommand(JDAImpl api, Guild guild, DataObject json)
     {
         super(api, guild, json);
     }
@@ -24,7 +24,7 @@ public class MemberCommand extends Command
             return true;
         if (!(obj instanceof Command))
             return false;
-        return getIdLong() == ((MemberCommand) obj).getIdLong();
+        return getIdLong() == ((MessageCommand) obj).getIdLong();
     }
 
     @Override

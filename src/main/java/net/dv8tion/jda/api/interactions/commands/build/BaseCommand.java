@@ -35,11 +35,15 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     public BaseCommand(@Nonnull String name, String description)
     {
         Checks.notEmpty(name, "Name");
-        Checks.check(description == null || description.length() > 0, "Description");
         Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description == null ? "" : description, 100, "Description");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
-        Checks.isLowercase(name, "Name");
+
+        // If the description is null it means it's not a slash command
+        if(description != null) {
+            Checks.check(description.length() > 0, "Description");
+            Checks.isLowercase(name, "Name");
+        }
         this.name = name;
         this.description = description;
     }
@@ -48,7 +52,8 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      * Configure the name
      *
      * @param  name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *         The lowercase alphanumeric (with dash) name, 1-32 characters.
+     *         If the command is not of type {@link CommandType#SLASH_COMMAND}, the name may be capitalized
      *
      * @throws IllegalArgumentException
      *         If the name is null, not alphanumeric, or not between 1-32 characters
@@ -61,7 +66,9 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
-        Checks.isLowercase(name, "Name");
+        // If the description is null it means it's not a slash command
+        if(description != null)
+            Checks.isLowercase(name, "Name");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         this.name = name;
         return (T) this;
@@ -74,7 +81,8 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *         The description, 1-100 characters
      *
      * @throws IllegalArgumentException
-     *         If the name is null or not between 1-100 characters. Also, if the command is not of type {@link CommandType#SLASH_COMMAND}
+     *         If the name is null or not between 1-100 characters.
+     *         Also, if the command is not of type {@link CommandType#SLASH_COMMAND}
      *
      * @return The builder, for chaining
      */
