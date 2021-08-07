@@ -856,9 +856,8 @@ public class JDAImpl implements JDA
                             case SLASH_COMMAND:
                                 return new SlashCommand(this, null, json);
                             case USER_COMMAND:
-                                return new UserCommand(this, null, json);
                             case MESSAGE_COMMAND:
-                                return new MessageCommand(this, null, json);
+                                return new ContextMenuCommand(this, null, json);
                             default:
                                 return new Command(this, null, json);
                             }
@@ -878,9 +877,8 @@ public class JDAImpl implements JDA
             case SLASH_COMMAND:
                 return new SlashCommand(this, null, json);
             case USER_COMMAND:
-                return new UserCommand(this, null, json);
             case MESSAGE_COMMAND:
-                return new MessageCommand(this, null, json);
+                return new ContextMenuCommand(this, null, json);
             default:
                 return new Command(this, null, json);
             }

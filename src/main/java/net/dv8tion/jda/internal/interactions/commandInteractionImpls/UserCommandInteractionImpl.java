@@ -5,15 +5,14 @@ import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.commandInteractions.UserCommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.entities.MemberImpl;
-import net.dv8tion.jda.internal.entities.UserImpl;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 public class UserCommandInteractionImpl extends CommandInteractionImpl implements UserCommandInteraction
 {
     protected final long targetID;
+    protected User targetUser;
     protected Member targetMember;
 
     public UserCommandInteractionImpl(JDAImpl jda, DataObject data)
@@ -22,8 +21,24 @@ public class UserCommandInteractionImpl extends CommandInteractionImpl implement
         DataObject commandData = data.getObject("data");
 
         this.targetID = commandData.getLong("target_id");
-        this.targetMember =
-                (MemberImpl) Arrays.stream(resolved.values()).filter(value -> value instanceof MemberImpl).collect(Collectors.toList()).get(0);
+
+        Optional<Object> memberOptional =
+                Arrays.stream(resolved.values())
+                        .filter(value -> value instanceof Member)
+                        .findFirst();
+
+        targetMember = (Member) memberOptional.orElse(null);
+
+        // Since the user is upgraded to a member, it won't exist
+        if(targetMember != null)
+            return;
+
+        Optional<Object> userOptional =
+                Arrays.stream(resolved.values())
+                        .filter(value -> value instanceof User)
+                        .findFirst();
+
+        targetUser = (User) userOptional.orElse(null);
     }
 
 
@@ -36,7 +51,7 @@ public class UserCommandInteractionImpl extends CommandInteractionImpl implement
     @Override
     public User getTargetUser()
     {
-        return targetMember.getUser();
+        return targetUser == null ? member.getUser() : targetUser;
     }
 
     @Override

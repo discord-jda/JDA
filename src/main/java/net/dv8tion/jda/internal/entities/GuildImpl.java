@@ -136,9 +136,8 @@ public class GuildImpl implements Guild
                                         case SLASH_COMMAND:
                                             return new SlashCommand(getJDA(), this, json);
                                         case USER_COMMAND:
-                                            return new UserCommand(getJDA(), this, json);
                                         case MESSAGE_COMMAND:
-                                            return new MessageCommand(getJDA(), this, json);
+                                            return new ContextMenuCommand(getJDA(), this, json);
                                         default:
                                             return new Command(getJDA(), this, json);
                                     }
@@ -158,9 +157,8 @@ public class GuildImpl implements Guild
             case SLASH_COMMAND:
                 return new SlashCommand(getJDA(), this, json);
             case USER_COMMAND:
-                return new UserCommand(getJDA(), this, json);
             case MESSAGE_COMMAND:
-                return new MessageCommand(getJDA(), this, json);
+                return new ContextMenuCommand(getJDA(), this, json);
             default:
                 return new Command(getJDA(), this, json);
             }

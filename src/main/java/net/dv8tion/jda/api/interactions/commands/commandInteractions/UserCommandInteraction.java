@@ -16,7 +16,7 @@ public interface UserCommandInteraction extends ContextMenuInteraction
     /**
      * Gets the targeted member
      *
-     * @return The targeted member
+     * @return The targeted member. If the command was not run in a guild, the member will return as null
      */
     Member getTargetMember();
 }
