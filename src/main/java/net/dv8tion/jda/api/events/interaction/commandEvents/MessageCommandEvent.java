@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class MessageCommandEvent extends CommandEvent implements MessageCommandInteraction
+public class MessageCommandEvent extends GenericCommandEvent implements MessageCommandInteraction
 {
     private final MessageCommandInteractionImpl commandInteraction;
 

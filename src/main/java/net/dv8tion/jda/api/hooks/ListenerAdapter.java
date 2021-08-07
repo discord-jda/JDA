@@ -70,7 +70,7 @@ import net.dv8tion.jda.api.events.guild.update.*;
 import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.interaction.*;
-import net.dv8tion.jda.api.events.interaction.commandEvents.CommandEvent;
+import net.dv8tion.jda.api.events.interaction.commandEvents.GenericCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commandEvents.MessageCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commandEvents.SlashCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commandEvents.UserCommandEvent;
@@ -195,7 +195,6 @@ public abstract class ListenerAdapter implements EventListener
     public void onException(@Nonnull ExceptionEvent event) {}
 
     //Interaction Events
-    public void onCommand(@Nonnull CommandEvent event) {}
     public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
     public void onUserCommand(@Nonnull UserCommandEvent event) {}
     public void onMessageCommand(@Nonnull MessageCommandEvent event) {}
@@ -445,6 +444,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericEmote(@Nonnull GenericEmoteEvent event) {}
     public void onGenericEmoteUpdate(@Nonnull GenericEmoteUpdateEvent event) {}
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
+    public void onGenericCommand(@Nonnull GenericCommandEvent event) {}
 
     private static final MethodHandles.Lookup lookup = MethodHandles.lookup();
     private static final ConcurrentMap<Class<?>, MethodHandle> methods = new ConcurrentHashMap<>();
