@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.ContextMenuCommand;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -198,6 +200,14 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     protected void handleSuccess(Response response, Request<Command> request)
     {
         DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        switch (CommandType.fromKey(json.getInt("type"))) {
+        case SLASH_COMMAND:
+            request.onSuccess(new SlashCommand(api, guild, json));
+        case USER_COMMAND:
+        case MESSAGE_COMMAND:
+            request.onSuccess(new ContextMenuCommand(api, guild, json));
+        default:
+            request.onSuccess(new Command(api, guild, json));
+        }
     }
 }

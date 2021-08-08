@@ -18,6 +18,9 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.ContextMenuCommand;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -98,7 +101,18 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     protected void handleSuccess(Response response, Request<List<Command>> request)
     {
         List<Command> commands = response.getArray().stream(DataArray::getObject)
-                .map(obj -> new Command(api, guild, obj))
+                .map(obj ->
+                {
+                    switch (CommandType.fromKey(obj.getInt("type"))) {
+                    case SLASH_COMMAND:
+                        return new SlashCommand(api, guild, obj);
+                    case USER_COMMAND:
+                    case MESSAGE_COMMAND:
+                        return new ContextMenuCommand(api, guild, obj);
+                    default:
+                        return new Command(api, guild, obj);
+                    }
+                })
                 .collect(Collectors.toList());
         request.onSuccess(commands);
     }
