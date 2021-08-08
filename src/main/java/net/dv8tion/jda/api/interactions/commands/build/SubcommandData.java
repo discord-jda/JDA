@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
@@ -49,7 +50,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      */
     public SubcommandData(@Nonnull String name, @Nonnull String description)
     {
-        super(name, description);
+        super(CommandType.SLASH_COMMAND, name, description);
     }
 
     /**

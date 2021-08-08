@@ -31,14 +31,16 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
 {
     protected final DataArray options = DataArray.empty();
     protected String name, description;
+    protected final CommandType commandType;
 
-    public BaseCommand(@Nonnull String name, String description)
+    public BaseCommand(CommandType commandType, @Nonnull String name, String description)
     {
+        this.commandType = commandType;
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
 
         // If the description is null it means it's not a slash command
-        if(description != null) {
+        if(commandType == CommandType.SLASH_COMMAND) {
             Checks.check(description.length() > 0, "Description");
             Checks.notLonger(description, 100, "Description");
             Checks.isLowercase(name, "Name");
@@ -67,9 +69,11 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
         // If the description is null it means it's not a slash command
-        if(description != null)
+        if(commandType == CommandType.SLASH_COMMAND)
+        {
             Checks.isLowercase(name, "Name");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
+        }
         this.name = name;
         return (T) this;
     }
@@ -90,7 +94,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @SuppressWarnings("unchecked")
     public T setDescription(@Nonnull String description)
     {
-        Checks.check(this.description != null, "You cannot modify this command's description");
+        Checks.check(commandType == CommandType.SLASH_COMMAND, "You cannot modify this command's description");
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
         this.description = description;

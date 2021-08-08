@@ -38,7 +38,6 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     private boolean allowOption = true;
     private boolean defaultPermissions = true; // whether the command uses default_permissions (blacklist/whitelist)
     private boolean allowRequired = true;
-    private final CommandType commandType;
 
     /**
      * Create a command builder.
@@ -58,9 +57,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      */
     public CommandData(CommandType commandType, @Nonnull String name)
     {
-        super(name, null);
+        super(commandType, name, null);
         Checks.check(commandType != CommandType.SLASH_COMMAND, "You cannot create a slash command using this constructor.");
-        this.commandType = commandType;
     }
 
     /**
@@ -80,8 +78,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      */
     public CommandData(@Nonnull String name, @Nonnull String description)
     {
-        super(name, description);
-        this.commandType = CommandType.SLASH_COMMAND;
+        super(CommandType.SLASH_COMMAND, name, description);
     }
 
     /**
@@ -103,9 +100,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      */
     public CommandData(CommandType commandType, @Nonnull String name, @Nonnull String description)
     {
-        super(name, description);
+        super(commandType, name, description);
         Checks.check(description.length() > 0 && commandType == CommandType.SLASH_COMMAND, "");
-        this.commandType = commandType;
     }
 
     /**
