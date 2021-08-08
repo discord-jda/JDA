@@ -7,6 +7,8 @@ import net.dv8tion.jda.api.interactions.commands.commandInteractions.MessageComm
 import net.dv8tion.jda.internal.interactions.commandInteractionImpls.MessageCommandInteractionImpl;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a message command was used in a {@link MessageChannel}.
  *
@@ -31,6 +33,7 @@ public class MessageCommandEvent extends GenericCommandEvent implements MessageC
     }
 
     @Override
+    @Nonnull
     public Message getTargetMessage()
     {
         return commandInteraction.getTargetMessage();

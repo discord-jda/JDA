@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.interactions.commands.commandInteractions.MessageComm
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
+import javax.annotation.Nonnull;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ public class MessageCommandInteractionImpl extends CommandInteractionImpl implem
     }
 
     @Override
+    @Nonnull
     public Message getTargetMessage()
     {
         return targetMessage;

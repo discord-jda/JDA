@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.interactions.commands.commandInteractions.UserCommand
 import net.dv8tion.jda.internal.interactions.commandInteractionImpls.UserCommandInteractionImpl;
 import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nonnull;
+
 /**
  * Indicates that a user command was used in a {@link MessageChannel}.
  *
@@ -32,6 +34,7 @@ public class UserCommandEvent extends GenericCommandEvent implements UserCommand
     }
 
     @Override
+    @Nonnull
     public User getTargetUser()
     {
         return commandInteraction.getTargetUser();
