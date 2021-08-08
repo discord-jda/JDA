@@ -36,13 +36,13 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
-        Checks.notLonger(description == null ? "" : description, 100, "Description");
-        Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
 
         // If the description is null it means it's not a slash command
         if(description != null) {
             Checks.check(description.length() > 0, "Description");
+            Checks.notLonger(description, 100, "Description");
             Checks.isLowercase(name, "Name");
+            Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         }
         this.name = name;
         this.description = description;
