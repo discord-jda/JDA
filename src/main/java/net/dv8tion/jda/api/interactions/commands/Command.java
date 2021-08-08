@@ -21,11 +21,11 @@ import java.util.List;
 
 public class Command implements ISnowflake
 {
-    private final JDAImpl api;
-    private final Guild guild;
-    private final String name;
-    private final long id, guildId, applicationId;
-    private final boolean defaultEnabled;
+    protected final JDAImpl api;
+    protected final Guild guild;
+    protected final String name;
+    protected final long id, guildId, applicationId;
+    protected final boolean defaultEnabled;
 
     public Command(JDAImpl api, Guild guild, DataObject json) {
         this.api = api;
@@ -76,7 +76,9 @@ public class Command implements ISnowflake
     {
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot edit a command from another bot!");
-        return guild == null ? new CommandEditActionImpl(api, getId()) : new CommandEditActionImpl(guild, getId());
+        return guild == null ?
+                new CommandEditActionImpl(api, getId(), CommandType.SLASH_COMMAND) :
+                new CommandEditActionImpl(guild, getId(), CommandType.SLASH_COMMAND);
     }
 
     /**

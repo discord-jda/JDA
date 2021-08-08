@@ -101,7 +101,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData(CommandType commandType, @Nonnull String name, @Nonnull String description)
     {
         super(commandType, name, description);
-        Checks.check(description.length() > 0 && commandType == CommandType.SLASH_COMMAND, "");
+        if(commandType == CommandType.SLASH_COMMAND)
+            Checks.notEmpty(description, "The description may not be empty");
     }
 
     /**

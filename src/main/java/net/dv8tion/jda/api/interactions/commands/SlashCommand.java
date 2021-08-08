@@ -17,10 +17,12 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.JDAImpl;
+import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;

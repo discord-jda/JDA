@@ -48,17 +48,19 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     private static final int OPTIONS_SET     = 1 << 2;
     private final Guild guild;
     private int mask = 0;
-    private CommandData data = new CommandData(UNDEFINED, UNDEFINED);
+    private CommandData data;
 
-    public CommandEditActionImpl(JDA api, String id)
+    public CommandEditActionImpl(JDA api, String id, CommandType type)
     {
         super(api, Route.Interactions.EDIT_COMMAND.compile(api.getSelfUser().getApplicationId(), id));
+        data = new CommandData(type, UNDEFINED, type == CommandType.SLASH_COMMAND ? UNDEFINED : "");
         this.guild = null;
     }
 
-    public CommandEditActionImpl(Guild guild, String id)
+    public CommandEditActionImpl(Guild guild, String id, CommandType type)
     {
         super(guild.getJDA(), Route.Interactions.EDIT_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId(), id));
+        data = new CommandData(type, UNDEFINED, type == CommandType.SLASH_COMMAND ? UNDEFINED : "");
         this.guild = guild;
     }
 

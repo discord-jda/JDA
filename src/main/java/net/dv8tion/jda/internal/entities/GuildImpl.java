@@ -186,7 +186,7 @@ public class GuildImpl implements Guild
     public CommandEditAction editCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id);
+        return new CommandEditActionImpl(this, id, CommandType.SLASH_COMMAND);
     }
 
     @Nonnull
