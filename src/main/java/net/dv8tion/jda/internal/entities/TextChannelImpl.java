@@ -190,7 +190,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         {
             for (Message m : messages)
             {
-                if (m.getAuthor().equals(getJDA().getSelfUser()))
+                if (m.getUser().equals(getJDA().getSelfUser()))
                     continue;
                 throw new InsufficientPermissionException(this, Permission.MESSAGE_MANAGE, "Cannot delete messages of other users");
             }

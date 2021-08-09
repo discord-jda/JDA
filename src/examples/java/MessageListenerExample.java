@@ -84,7 +84,7 @@ public class MessageListenerExample extends ListenerAdapter
         long responseNumber = event.getResponseNumber();//The amount of discord events that JDA has received since the last reconnect.
 
         //Event specific information
-        User author = event.getAuthor();                //The user that sent the message
+        User author = event.getUser();                //The user that sent the message
         Message message = event.getMessage();           //The message that was received.
         MessageChannel channel = event.getChannel();    //This is the MessageChannel that the message was sent to.
                                                         //  This could be a TextChannel, PrivateChannel, or Group!

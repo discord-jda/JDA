@@ -499,7 +499,7 @@ public interface Message extends ISnowflake, Formattable
      * @return Message author
      */
     @Nonnull
-    User getAuthor();
+    User getUser();
 
     /**
      * Returns the author of this Message as a {@link net.dv8tion.jda.api.entities.Member member}.

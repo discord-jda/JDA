@@ -64,9 +64,9 @@ public class GuildMessageReceivedEvent extends GenericGuildMessageEvent
      * @see    #isWebhookMessage()
      */
     @Nonnull
-    public User getAuthor()
+    public User getUser()
     {
-        return message.getAuthor();
+        return message.getUser();
     }
 
     /**

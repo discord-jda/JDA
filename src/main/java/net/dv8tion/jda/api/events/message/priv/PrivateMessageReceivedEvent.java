@@ -59,8 +59,8 @@ public class PrivateMessageReceivedEvent extends GenericPrivateMessageEvent
      * @see    net.dv8tion.jda.api.entities.User User
      */
     @Nonnull
-    public User getAuthor()
+    public User getUser()
     {
-        return message.getAuthor();
+        return message.getUser();
     }
 }

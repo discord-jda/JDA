@@ -62,7 +62,7 @@ public class ReceivedMessage extends AbstractMessage
     protected final boolean fromWebhook;
     protected final boolean mentionsEveryone;
     protected final boolean pinned;
-    protected final User author;
+    protected final User user;
     protected final Member member;
     protected final MessageActivity activity;
     protected final OffsetDateTime editedTime;
@@ -91,7 +91,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type, Message referencedMessage,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
-        String content, String nonce, User author, Member member, MessageActivity activity, OffsetDateTime editTime,
+        String content, String nonce, User user, Member member, MessageActivity activity, OffsetDateTime editTime,
         List<MessageReaction> reactions, List<Attachment> attachments, List<MessageEmbed> embeds, List<MessageSticker> stickers, List<ActionRow> components, int flags)
     {
         super(content, nonce, tts);
@@ -103,7 +103,7 @@ public class ReceivedMessage extends AbstractMessage
         this.fromWebhook = fromWebhook;
         this.mentionsEveryone = mentionsEveryone;
         this.pinned = pinned;
-        this.author = author;
+        this.user = user;
         this.member = member;
         this.activity = activity;
         this.editedTime = editTime;
@@ -578,9 +578,9 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
-    public User getAuthor()
+    public User getUser()
     {
-        return author;
+        return user;
     }
 
     @Override
@@ -838,7 +838,7 @@ public class ReceivedMessage extends AbstractMessage
 
     private void checkUser()
     {
-        if (!getJDA().getSelfUser().equals(getAuthor()))
+        if (!getJDA().getSelfUser().equals(getUser()))
             throw new IllegalStateException("Attempted to update message that was not sent by this account. You cannot modify other User's messages!");
     }
 
@@ -846,7 +846,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public AuditableRestAction<Void> delete()
     {
-        if (!getJDA().getSelfUser().equals(getAuthor()))
+        if (!getJDA().getSelfUser().equals(getUser()))
         {
             if (isFromType(ChannelType.PRIVATE))
                 throw new IllegalStateException("Cannot delete another User's messages in a PrivateChannel.");
@@ -863,7 +863,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
     {
-        if (!getJDA().getSelfUser().equals(getAuthor()))
+        if (!getJDA().getSelfUser().equals(getUser()))
         {
             if (isFromType(ChannelType.PRIVATE))
                 throw new PermissionException("Cannot suppress embeds of others in a PrivateChannel.");
@@ -890,7 +890,7 @@ public class ReceivedMessage extends AbstractMessage
         TextChannel textChannel = getTextChannel();
         if (!getGuild().getSelfMember().hasAccess(textChannel))
             throw new MissingAccessException(textChannel, Permission.VIEW_CHANNEL);
-        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_MANAGE))
+        if (!getUser().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_MANAGE))
             throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_MANAGE);
         return textChannel.crosspostMessageById(getId());
     }
@@ -928,8 +928,8 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String toString()
     {
-        return author != null
-            ? String.format("M:%#s:%.20s(%s)", author, this, getId())
+        return user != null
+            ? String.format("M:%#s:%.20s(%s)", user, this, getId())
             : String.format("M:%.20s", this); // this message was made using MessageBuilder
     }
 

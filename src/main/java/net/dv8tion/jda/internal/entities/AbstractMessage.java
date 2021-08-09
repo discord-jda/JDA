@@ -212,7 +212,7 @@ public abstract class AbstractMessage implements Message
 
     @Nonnull
     @Override
-    public User getAuthor()
+    public User getUser()
     {
         unsupported();
         return null;

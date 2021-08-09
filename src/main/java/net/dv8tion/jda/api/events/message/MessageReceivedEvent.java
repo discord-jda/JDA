@@ -70,9 +70,9 @@ public class MessageReceivedEvent extends GenericMessageEvent
      * @see #isWebhookMessage()
      */
     @Nonnull
-    public User getAuthor()
+    public User getUser()
     {
-        return message.getAuthor();
+        return message.getUser();
     }
 
     /**

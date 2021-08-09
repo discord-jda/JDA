@@ -65,7 +65,7 @@ public class AudioEchoExample extends ListenerAdapter
     public void onGuildMessageReceived(GuildMessageReceivedEvent event)
     {
         Message message = event.getMessage();
-        User author = message.getAuthor();
+        User author = message.getUser();
         String content = message.getContentRaw();
         Guild guild = event.getGuild();
 

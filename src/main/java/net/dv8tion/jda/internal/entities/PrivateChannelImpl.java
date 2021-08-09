@@ -113,7 +113,7 @@ public class PrivateChannelImpl implements PrivateChannel
             return Collections.emptyList();
         for (Message m : messages)
         {
-            if (m.getAuthor().equals(getJDA().getSelfUser()))
+            if (m.getUser().equals(getJDA().getSelfUser()))
                 continue;
             throw new IllegalArgumentException("Cannot delete messages of other users in a private channel");
         }
