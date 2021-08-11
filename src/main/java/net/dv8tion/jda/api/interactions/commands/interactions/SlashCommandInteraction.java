@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.interactions.commands.interactions;
 
-import net.dv8tion.jda.api.events.interaction.commandEvents.SlashCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.internal.utils.Checks;

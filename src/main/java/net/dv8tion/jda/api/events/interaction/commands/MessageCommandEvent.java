@@ -1,4 +1,4 @@
-package net.dv8tion.jda.api.events.interaction.commandEvents;
+package net.dv8tion.jda.api.events.interaction.commands;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
