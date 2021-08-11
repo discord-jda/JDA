@@ -180,7 +180,7 @@ public interface Guild extends ISnowflake
      * @param commandType
      *         The type of command
      * @param name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters
+     *         The name, 1-32 characters
      *
      * @throws IllegalArgumentException
      *         If null is provided or the name/description do not meet the requirements.

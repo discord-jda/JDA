@@ -47,16 +47,15 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * Create a command builder.
      *
      * @param commandType
-     *        Either a command of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}
+     *        The type of command
      * @param name
      *        The command name, 1-32 characters
      *
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
      *         <ul>
-     *             <li>The name must be alphanumeric (with dash), 1-32 characters long</li>
-     *             <li>The description must be 1-100 characters long</li>
-     *             <li>The command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>The command is not of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}</li>
+     *             <li>The name must be 1-32 characters long</li>
      *         </ul>
      */
     public CommandData(CommandType commandType, @Nonnull String name)
@@ -83,32 +82,6 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     public CommandData(@Nonnull String name, @Nonnull String description)
     {
         super(CommandType.SLASH_COMMAND, name, description);
-    }
-
-    /**
-     * Create a command builder.
-     *
-     * @param commandType
-     *        The type of command
-     * @param name
-     *        The command name, 1-32 lowercase alphanumeric characters
-     * @param description
-     *        The command description, 1-100 characters
-     *
-     * @throws IllegalArgumentException
-     *         If any of the following requirements are not met
-     *         <ul>
-     *             <li>The name must be lowercase alphanumeric (with dash), 1-32 characters long</li>
-     *             <li>The description must be 1-100 characters long</li>
-     *         </ul>
-     */
-    public CommandData(CommandType commandType, @Nonnull String name, @Nonnull String description)
-    {
-        super(commandType, name, description);
-        if(commandType == CommandType.SLASH_COMMAND)
-            Checks.notEmpty(description, "The description may not be empty");
-        else
-            Checks.check(description.length() == 0, "You can only set descriptions on slash commands");
     }
 
     /**

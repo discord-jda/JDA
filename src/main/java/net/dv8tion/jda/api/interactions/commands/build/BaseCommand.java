@@ -55,10 +55,13 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *
      * @param  name
      *         The lowercase alphanumeric (with dash) name, 1-32 characters.
-     *         If the command is not of type {@link CommandType#SLASH_COMMAND}, the name may be capitalized
+     *         If the command is not of type {@link CommandType#SLASH_COMMAND}, the name may be non-alphanumeric and capitalized
      *
      * @throws IllegalArgumentException
-     *         If the name is null, not alphanumeric, or not between 1-32 characters
+     *         If the command is of type {@link CommandType#SLASH_COMMAND} and the name is null, not alphanumeric,
+     *         or not between 1-32 characters.
+     *         If the command is of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}
+     *         and the name is null or not between 1-32 characters
      *
      * @return The builder, for chaining
      */
