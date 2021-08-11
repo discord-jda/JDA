@@ -4,8 +4,8 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.UserCommandInteraction;
-import net.dv8tion.jda.internal.interactions.commandInteractionImpls.UserCommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.interactions.UserCommandInteraction;
+import net.dv8tion.jda.internal.interactions.commands.UserCommandInteractionImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;

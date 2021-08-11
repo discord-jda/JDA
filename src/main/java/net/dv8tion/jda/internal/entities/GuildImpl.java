@@ -136,8 +136,9 @@ public class GuildImpl implements Guild
                                         case SLASH_COMMAND:
                                             return new SlashCommand(getJDA(), this, json);
                                         case USER_COMMAND:
+                                            return new UserCommand(getJDA(), this, json);
                                         case MESSAGE_COMMAND:
-                                            return new ContextMenuCommand(getJDA(), this, json);
+                                            return new MessageCommand(getJDA(), this, json);
                                         default:
                                             return new Command(getJDA(), this, json);
                                     }
@@ -157,8 +158,9 @@ public class GuildImpl implements Guild
             case SLASH_COMMAND:
                 return new SlashCommand(getJDA(), this, json);
             case USER_COMMAND:
+                return new UserCommand(getJDA(), this, json);
             case MESSAGE_COMMAND:
-                return new ContextMenuCommand(getJDA(), this, json);
+                return new MessageCommand(getJDA(), this, json);
             default:
                 return new Command(getJDA(), this, json);
             }
@@ -183,10 +185,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(@Nonnull String id)
+    public CommandEditAction editSlashCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
         return new CommandEditActionImpl(this, id, CommandType.SLASH_COMMAND);
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction editContextMenuById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new CommandEditActionImpl(this, id, CommandType.USER_COMMAND);
     }
 
     @Nonnull

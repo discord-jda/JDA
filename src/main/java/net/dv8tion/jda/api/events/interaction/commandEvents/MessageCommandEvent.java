@@ -3,8 +3,8 @@ package net.dv8tion.jda.api.events.interaction.commandEvents;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.MessageCommandInteraction;
-import net.dv8tion.jda.internal.interactions.commandInteractionImpls.MessageCommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.interactions.MessageCommandInteraction;
+import net.dv8tion.jda.internal.interactions.commands.MessageCommandInteractionImpl;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;

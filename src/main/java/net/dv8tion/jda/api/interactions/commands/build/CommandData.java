@@ -33,6 +33,10 @@ import java.util.stream.Collectors;
  */
 public class CommandData extends BaseCommand<CommandData> implements SerializableData
 {
+    public static final int SLASH_COMMAND_LIMIT = 100;
+    public static final int USER_COMMAND_LIMIT = 5;
+    public static final int MESSAGE_COMMAND_LIMIT = 5;
+
     private boolean allowSubcommands = true;
     private boolean allowGroups = true;
     private boolean allowOption = true;
@@ -45,7 +49,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @param commandType
      *        Either a command of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}
      * @param name
-     *        The command name, 1-32 lowercase alphanumeric characters
+     *        The command name, 1-32 characters
      *
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
@@ -103,6 +107,8 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
         super(commandType, name, description);
         if(commandType == CommandType.SLASH_COMMAND)
             Checks.notEmpty(description, "The description may not be empty");
+        else
+            Checks.check(description.length() == 0, "You can only set descriptions on slash commands");
     }
 
     /**
@@ -436,7 +442,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
         CommandType commandType = CommandType.fromKey(object.getInt("type"));
-        if(commandType == CommandType.SLASH_COMMAND)
+        if(commandType != CommandType.SLASH_COMMAND)
             return new CommandData(commandType, name);
 
         String description = object.getString("description");

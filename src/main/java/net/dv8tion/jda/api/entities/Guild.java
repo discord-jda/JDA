@@ -223,13 +223,15 @@ public interface Guild extends ISnowflake
     CommandListUpdateAction updateCommands();
 
     /**
-     * Edit an existing command by id.
+     * Edit an existing slash command by id.
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
+     * If attempting to edit an incorrect command with this method, (i.e. Context Menus), you may encounter issues
+     *
      * @param  id
-     *         The id of the command to edit
+     *         The id of the slash command to edit
      *
      * @throws IllegalArgumentException
      *         If the provided id is not a valid snowflake
@@ -238,24 +240,66 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction editCommandById(@Nonnull String id);
+    CommandEditAction editSlashCommandById(@Nonnull String id);
 
     /**
-     * Edit an existing command by id.
+     * Edit an existing slash command by id.
      *
      * <p>If there is no command with the provided ID,
      * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
      *
+     * If attempting to edit an incorrect command with this method, (i.e. Context Menus), you may encounter issues
+     *
      * @param  id
-     *         The id of the command to edit
+     *         The id of the slash command to edit
      *
      * @return {@link CommandEditAction} used to edit the command
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction editCommandById(long id)
+    default CommandEditAction editSlashCommandById(long id)
     {
-        return editCommandById(Long.toUnsignedString(id));
+        return editSlashCommandById(Long.toUnsignedString(id));
+    }
+
+    /**
+     * Edit an existing context menu command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * If attempting to edit an incorrect command with this method, (i.e. Slash Commands), you may encounter issues
+     *
+     * @param  id
+     *         The id of the context menu command to edit
+     *
+     * @throws IllegalArgumentException
+     *         If the provided id is not a valid snowflake
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    CommandEditAction editContextMenuById(@Nonnull String id);
+
+    /**
+     * Edit an existing context menu command by id.
+     *
+     * <p>If there is no command with the provided ID,
+     * this RestAction fails with {@link net.dv8tion.jda.api.requests.ErrorResponse#UNKNOWN_COMMAND ErrorResponse.UNKNOWN_COMMAND}
+     *
+     * If attempting to edit an incorrect command with this method, (i.e. Slash Commands), you may encounter issues
+     *
+     * @param  id
+     *         The id of the context menu command to edit
+     *
+     * @return {@link CommandEditAction} used to edit the command
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandEditAction editContextMenuById(long id)
+    {
+        return editContextMenuById(Long.toUnsignedString(id));
     }
 
     /**

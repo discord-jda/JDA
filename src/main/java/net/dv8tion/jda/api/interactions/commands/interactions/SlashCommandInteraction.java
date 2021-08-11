@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands.commandInteractions;
+package net.dv8tion.jda.api.interactions.commands.interactions;
 
 import net.dv8tion.jda.api.events.interaction.commandEvents.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;

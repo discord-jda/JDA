@@ -1,12 +1,13 @@
-package net.dv8tion.jda.internal.interactions.commandInteractionImpls;
+package net.dv8tion.jda.internal.interactions.commands;
 
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.UserCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.interactions.UserCommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -57,6 +58,7 @@ public class UserCommandInteractionImpl extends CommandInteractionImpl implement
     }
 
     @Override
+    @Nullable
     public Member getTargetMember()
     {
         return targetMember;

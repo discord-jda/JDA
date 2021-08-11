@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.internal.interactions.commandInteractionImpls;
+package net.dv8tion.jda.internal.interactions.commands;
 
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;

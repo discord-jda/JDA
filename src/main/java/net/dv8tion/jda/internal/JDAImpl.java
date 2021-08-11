@@ -856,8 +856,9 @@ public class JDAImpl implements JDA
                             case SLASH_COMMAND:
                                 return new SlashCommand(this, null, json);
                             case USER_COMMAND:
+                                return new UserCommand(this, null, json);
                             case MESSAGE_COMMAND:
-                                return new ContextMenuCommand(this, null, json);
+                                return new MessageCommand(this, null, json);
                             default:
                                 return new Command(this, null, json);
                             }
@@ -877,8 +878,9 @@ public class JDAImpl implements JDA
             case SLASH_COMMAND:
                 return new SlashCommand(this, null, json);
             case USER_COMMAND:
+                return new UserCommand(this, null, json);
             case MESSAGE_COMMAND:
-                return new ContextMenuCommand(this, null, json);
+                return new MessageCommand(this, null, json);
             default:
                 return new Command(this, null, json);
             }
@@ -903,10 +905,18 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(@Nonnull String id)
+    public CommandEditAction editSlashCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
         return new CommandEditActionImpl(this, id, CommandType.SLASH_COMMAND);
+    }
+
+    @Nonnull
+    @Override
+    public CommandEditAction editContextMenuById(@Nonnull String id)
+    {
+        Checks.isSnowflake(id);
+        return new CommandEditActionImpl(this, id, CommandType.USER_COMMAND);
     }
 
     @Nonnull

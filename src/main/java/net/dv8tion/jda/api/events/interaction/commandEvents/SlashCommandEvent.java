@@ -19,8 +19,8 @@ package net.dv8tion.jda.api.events.interaction.commandEvents;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.SlashCommandInteraction;
-import net.dv8tion.jda.internal.interactions.commandInteractionImpls.SlashCommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
+import net.dv8tion.jda.internal.interactions.commands.SlashCommandInteractionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

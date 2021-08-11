@@ -1,12 +1,11 @@
-package net.dv8tion.jda.internal.interactions.commandInteractionImpls;
+package net.dv8tion.jda.internal.interactions.commands;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.CommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.interactions.CommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.EntityBuilder;

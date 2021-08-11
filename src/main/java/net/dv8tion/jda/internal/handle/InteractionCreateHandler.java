@@ -28,11 +28,11 @@ import net.dv8tion.jda.api.interactions.components.Component;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.interactions.ButtonInteractionImpl;
-import net.dv8tion.jda.internal.interactions.commandInteractionImpls.MessageCommandInteractionImpl;
-import net.dv8tion.jda.internal.interactions.commandInteractionImpls.SlashCommandInteractionImpl;
+import net.dv8tion.jda.internal.interactions.commands.MessageCommandInteractionImpl;
+import net.dv8tion.jda.internal.interactions.commands.SlashCommandInteractionImpl;
 import net.dv8tion.jda.internal.interactions.InteractionImpl;
 import net.dv8tion.jda.internal.interactions.SelectionMenuInteractionImpl;
-import net.dv8tion.jda.internal.interactions.commandInteractionImpls.UserCommandInteractionImpl;
+import net.dv8tion.jda.internal.interactions.commands.UserCommandInteractionImpl;
 import net.dv8tion.jda.internal.requests.WebSocketClient;
 
 public class InteractionCreateHandler extends SocketHandler

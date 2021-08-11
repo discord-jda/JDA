@@ -16,10 +16,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandType;
-import net.dv8tion.jda.api.interactions.commands.ContextMenuCommand;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -156,8 +153,9 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
         case SLASH_COMMAND:
             request.onSuccess(new SlashCommand(api, guild, json));
         case USER_COMMAND:
+            request.onSuccess(new UserCommand(api, guild, json));
         case MESSAGE_COMMAND:
-            request.onSuccess(new ContextMenuCommand(api, guild, json));
+            request.onSuccess(new MessageCommand(api, guild, json));
         default:
             request.onSuccess(new Command(api, guild, json));
         }

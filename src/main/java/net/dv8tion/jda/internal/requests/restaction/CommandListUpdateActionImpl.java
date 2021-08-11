@@ -17,10 +17,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.CommandType;
-import net.dv8tion.jda.api.interactions.commands.ContextMenuCommand;
-import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
@@ -84,8 +81,29 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
     {
         Checks.noneNull(commands, "Command");
-        Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");
+
+        int slashCommandCount = 0;
+        long userCommandCount = 0;
+        long messageCommandCount = 0;
+
         this.commands.addAll(commands);
+        for(CommandData data : this.commands) {
+            switch (data.getCommandType()) {
+            case SLASH_COMMAND:
+                slashCommandCount++;
+                break;
+            case USER_COMMAND:
+                userCommandCount++;
+                break;
+            case MESSAGE_COMMAND:
+                messageCommandCount++;
+                break;
+            }
+        }
+
+        Checks.check(slashCommandCount <= CommandData.SLASH_COMMAND_LIMIT, "Cannot have more than 100 slash commands! Try using subcommands instead.");
+        Checks.check(userCommandCount <= CommandData.USER_COMMAND_LIMIT, "Cannot have more than 5 user context menu commands!");
+        Checks.check(messageCommandCount <= CommandData.MESSAGE_COMMAND_LIMIT, "Cannot have more than 5 message context menu commands!");
         return this;
     }
 
@@ -107,8 +125,9 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
                     case SLASH_COMMAND:
                         return new SlashCommand(api, guild, obj);
                     case USER_COMMAND:
+                        return new UserCommand(api, guild, obj);
                     case MESSAGE_COMMAND:
-                        return new ContextMenuCommand(api, guild, obj);
+                        return new MessageCommand(api, guild, obj);
                     default:
                         return new Command(api, guild, obj);
                     }

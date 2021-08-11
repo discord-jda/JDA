@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.interactions.commands;
 
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.commands.commandInteractions.SlashCommandInteraction;
+import net.dv8tion.jda.api.interactions.commands.interactions.SlashCommandInteraction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 
 import javax.annotation.Nonnull;
