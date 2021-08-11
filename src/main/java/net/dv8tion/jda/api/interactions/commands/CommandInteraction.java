@@ -237,12 +237,12 @@ public interface CommandInteraction extends Interaction
                 builder.append("@").append(o.getAsRole().getName());
                 break;
             case MENTIONABLE: //client only allows user or role mentionable as of Aug 4, 2021
-                if (o.getAsMentionable() instanceof RoleImpl)
-                    builder.append("@").append(((RoleImpl) o.getAsMentionable()).getName());
-                else if (o.getAsMentionable() instanceof MemberImpl)
-                    builder.append("@").append(((MemberImpl) o.getAsMentionable()).getEffectiveName());
-                else if (o.getAsMentionable() instanceof UserImpl)
-                    builder.append("@").append(((UserImpl) o.getAsMentionable()).getName());
+                if (o.getAsMentionable() instanceof Role)
+                    builder.append("@").append(o.getAsRole().getName());
+                else if (o.getAsMentionable() instanceof Member)
+                    builder.append("@").append(o.getAsUser().getName());
+                else if (o.getAsMentionable() instanceof User)
+                    builder.append("@").append(o.getAsUser().getName());
                 else
                     builder.append("@").append(o.getAsMentionable().getIdLong());
                 break;
