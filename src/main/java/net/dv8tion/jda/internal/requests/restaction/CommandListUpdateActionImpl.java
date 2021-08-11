@@ -86,8 +86,9 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
         long userCommandCount = 0;
         long messageCommandCount = 0;
 
-        this.commands.addAll(commands);
-        for(CommandData data : this.commands) {
+        List<CommandData> tempCommandsList = new ArrayList<>(this.commands);
+        tempCommandsList.addAll(commands);
+        for(CommandData data : tempCommandsList) {
             switch (data.getCommandType()) {
             case SLASH_COMMAND:
                 slashCommandCount++;
@@ -104,6 +105,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
         Checks.check(slashCommandCount <= CommandData.SLASH_COMMAND_LIMIT, "Cannot have more than 100 slash commands! Try using subcommands instead.");
         Checks.check(userCommandCount <= CommandData.USER_COMMAND_LIMIT, "Cannot have more than 5 user context menu commands!");
         Checks.check(messageCommandCount <= CommandData.MESSAGE_COMMAND_LIMIT, "Cannot have more than 5 message context menu commands!");
+        this.commands.addAll(commands);
         return this;
     }
 
