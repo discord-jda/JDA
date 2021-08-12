@@ -959,12 +959,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         catch (ParsingException ex)
         {
-            LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\tJDA {}\n\t{}\n\t{} -> {}",
+            LOG.warn("Got an unexpected Json-parse error. Please redirect the following message to the devs:\n\tJDA {}\n\t{}\n\t{} -> {}",
                 JDAInfo.VERSION, ex.getMessage(), type, content, ex);
         }
         catch (Exception ex)
         {
-            LOG.error("Got an unexpected error. Please redirect following message to the devs:\n\tJDA {}\n\t{} -> {}",
+            LOG.error("Got an unexpected error. Please redirect the following message to the devs:\n\tJDA {}\n\t{} -> {}",
                 JDAInfo.VERSION, type, content, ex);
         }
 
