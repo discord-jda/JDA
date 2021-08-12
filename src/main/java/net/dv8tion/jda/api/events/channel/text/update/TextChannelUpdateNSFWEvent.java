@@ -46,7 +46,7 @@ public class TextChannelUpdateNSFWEvent extends GenericTextChannelUpdateEvent<Bo
         return getOldValue();
     }
     
-        /**
+     /**
      * Whether the channel was marked NSFW before
      *
      * @return False, if the channel was marked NSFW before
