@@ -171,14 +171,15 @@ public class ChannelUpdateHandler extends SocketHandler
                                     textChannel, oldSlowmode));
                 }
 
-                if (news != textChannel.isNews())
-                {
-                    textChannel.setNews(news);
-                    getJDA().handleEvent(
-                        new TextChannelUpdateNewsEvent(
-                            getJDA(), responseNumber,
-                            textChannel));
-                }
+                //TODO-v5: Address this event as TextChannels no longer have isNews on them.
+//                if (news != textChannel.isNews())
+//                {
+//                    textChannel.setNews(news);
+//                    getJDA().handleEvent(
+//                        new TextChannelUpdateNewsEvent(
+//                            getJDA(), responseNumber,
+//                            textChannel));
+//                }
 
                 applyPermissions(textChannel, permOverwrites);
                 break;  //Finish the TextChannelUpdate case

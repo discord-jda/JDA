@@ -897,12 +897,18 @@ public class ReceivedMessage extends AbstractMessage
     {
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
-        TextChannel textChannel = getTextChannel();
-        if (!getGuild().getSelfMember().hasAccess(textChannel))
-            throw new MissingAccessException(textChannel, Permission.VIEW_CHANNEL);
-        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(textChannel, Permission.MESSAGE_MANAGE))
-            throw new InsufficientPermissionException(textChannel, Permission.MESSAGE_MANAGE);
-        return textChannel.crosspostMessageById(getId());
+
+        //TODO-v5: Maybe we'll have a `getNewsChannel()` getter that will do this check there?
+        if (!(getChannel() instanceof NewsChannel))
+            throw new IllegalStateException("This message was not sent in a news channel");
+
+        //TODO-v5: Double check: Is this actually how we crosspost? This, to me, reads as "take the message we just received and crosspost it to the _same exact channel we just received it in_. Makes no sense.
+        NewsChannel newsChannel = (NewsChannel) getChannel();
+        if (!getGuild().getSelfMember().hasAccess(newsChannel))
+            throw new MissingAccessException(newsChannel, Permission.VIEW_CHANNEL);
+        if (!getAuthor().equals(getJDA().getSelfUser()) && !getGuild().getSelfMember().hasPermission(newsChannel, Permission.MESSAGE_MANAGE))
+            throw new InsufficientPermissionException(newsChannel, Permission.MESSAGE_MANAGE);
+        return newsChannel.crosspostMessageById(getId());
     }
 
     @Override

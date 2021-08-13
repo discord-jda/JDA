@@ -45,7 +45,7 @@ import java.util.function.BooleanSupplier;
  * @param <T>
  *        The type of channel to create
  */
-public interface ChannelAction<T extends StandardGuildChannel> extends AuditableRestAction<T>
+public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
 {
     @Nonnull
     @Override
@@ -190,27 +190,29 @@ public interface ChannelAction<T extends StandardGuildChannel> extends Auditable
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
 
-    /**
-     * Sets the news flag for the new TextChannel.
-     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
-     *
-     * @param  news
-     *         The news flag for the new GuildChannel
-     *
-     * @throws UnsupportedOperationException
-     *         If this ChannelAction is not for a TextChannel
-     * @throws java.lang.IllegalStateException
-     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
-     *
-     * @return The current ChannelAction, for chaining convenience
-     *
-     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
-     *
-     * @since  4.2.1
-     */
-    @Nonnull
-    @CheckReturnValue
-    ChannelAction<T> setNews(boolean news);
+    //TODO-v5: Introduce a way to create the new NewsChannel class.
+    //TODO-v5: Do we need to add a way to _convert_ TextChannel to NewsChannel because it seems people might have done that before.
+//    /**
+//     * Sets the news flag for the new TextChannel.
+//     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
+//     *
+//     * @param  news
+//     *         The news flag for the new GuildChannel
+//     *
+//     * @throws UnsupportedOperationException
+//     *         If this ChannelAction is not for a TextChannel
+//     * @throws java.lang.IllegalStateException
+//     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
+//     *
+//     * @return The current ChannelAction, for chaining convenience
+//     *
+//     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
+//     *
+//     * @since  4.2.1
+//     */
+//    @Nonnull
+//    @CheckReturnValue
+//    ChannelAction<T> setNews(boolean news);
 
     /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}

@@ -17,6 +17,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Region;
+import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
 import javax.annotation.Nonnull;
@@ -80,11 +81,16 @@ public interface VoiceChannel extends StandardGuildChannel
     @Nullable
     String getRegionRaw();
 
+    //TODO-v5: Once StageChannel no longer extends VoiceChanel, change "? extends VoiceChannel" to just VoiceChannel
     @Nonnull
     @Override
-    ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild);
+    ChannelAction<? extends VoiceChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
-    ChannelAction<VoiceChannel> createCopy();
+    ChannelAction<? extends VoiceChannel> createCopy();
+
+    @Nonnull
+    @Override
+    ChannelManager<? extends VoiceChannel> getManager();
 }

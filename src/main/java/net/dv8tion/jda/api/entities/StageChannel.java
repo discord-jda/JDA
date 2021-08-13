@@ -17,6 +17,8 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.managers.ChannelManager;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.StageInstanceAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -93,4 +95,16 @@ public interface StageChannel extends VoiceChannel
         Checks.notNull(member, "Member");
         return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
     }
+
+    @Nonnull
+    @Override
+    ChannelAction<StageChannel> createCopy(@Nonnull Guild guild);
+
+    @Nonnull
+    @Override
+    ChannelAction<StageChannel> createCopy();
+
+    @Nonnull
+    @Override
+    ChannelManager<StageChannel> getManager();
 }
