@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 
 //TODO-v5: Need Docs
 //TODO-v5: Should this actually be extending GuildChannel?
+//TODO-v5: Ensure all implementing channels Overrides to change ChannelAction<? extends GuildChannel> to ChannelAction<ActionType>
 public interface ICopyableChannel extends GuildChannel
 {
     /**
@@ -47,7 +48,7 @@ public interface ICopyableChannel extends GuildChannel
      */
     @Nonnull
     @CheckReturnValue
-    ChannelAction<? extends ICopyableChannel> createCopy(@Nonnull Guild guild);
+    ChannelAction<? extends GuildChannel> createCopy(@Nonnull Guild guild);
 
     /**
      * Creates a copy of the specified {@link StandardGuildChannel GuildChannel}.
@@ -79,7 +80,7 @@ public interface ICopyableChannel extends GuildChannel
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<? extends ICopyableChannel> createCopy()
+    default ChannelAction<? extends GuildChannel> createCopy()
     {
         return createCopy(getGuild());
     }
