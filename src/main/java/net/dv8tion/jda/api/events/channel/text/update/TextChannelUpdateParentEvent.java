@@ -36,7 +36,7 @@ public class TextChannelUpdateParentEvent extends GenericTextChannelUpdateEvent<
 
     public TextChannelUpdateParentEvent(@Nonnull JDA api, long responseNumber, @Nonnull TextChannel channel, @Nullable Category oldParent)
     {
-        super(api, responseNumber, channel, oldParent, channel.getParent(), IDENTIFIER);
+        super(api, responseNumber, channel, oldParent, channel.getParentCategory(), IDENTIFIER);
     }
 
     /**

@@ -1290,7 +1290,7 @@ public interface JDA
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1312,13 +1312,13 @@ public interface JDA
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull String id)
+    default StandardGuildChannel getGuildChannelById(@Nonnull String id)
     {
         return getGuildChannelById(MiscUtil.parseSnowflake(id));
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1335,9 +1335,9 @@ public interface JDA
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(long id)
+    default StandardGuildChannel getGuildChannelById(long id)
     {
-        GuildChannel channel = getTextChannelById(id);
+        StandardGuildChannel channel = getTextChannelById(id);
         if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
@@ -1348,7 +1348,7 @@ public interface JDA
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1375,13 +1375,13 @@ public interface JDA
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    default StandardGuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
     {
         return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
     }
 
     /**
-     * Get {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} for the provided ID.
+     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1404,7 +1404,7 @@ public interface JDA
      * @return The GuildChannel or null
      */
     @Nullable
-    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    default StandardGuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
     {
         Checks.notNull(type, "ChannelType");
         switch (type)

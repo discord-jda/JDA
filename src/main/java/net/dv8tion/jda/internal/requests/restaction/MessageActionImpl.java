@@ -490,7 +490,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     private long getMaxFileSize()
     {
         if (channel.getType().isGuild())
-            return ((GuildChannel) channel).getGuild().getMaxFileSize();
+            return ((StandardGuildChannel) channel).getGuild().getMaxFileSize();
         return getJDA().getSelfUser().getAllowedFileSize();
     }
 
@@ -589,7 +589,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     {
         if (!channel.getType().isGuild())
             return;
-        GuildChannel gc = (GuildChannel) channel;
+        StandardGuildChannel gc = (StandardGuildChannel) channel;
         if (!gc.getGuild().getSelfMember().hasAccess(gc))
             throw new MissingAccessException(gc, Permission.VIEW_CHANNEL);
         if (!hasPermission(perm))
@@ -612,8 +612,8 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
             return asMultipart();
         else if (!isEmpty())
             return asJSON();
-        else if (embeds != null && !embeds.isEmpty() && channel instanceof GuildChannel)
-            throw new InsufficientPermissionException((GuildChannel) channel, Permission.MESSAGE_EMBED_LINKS, "Cannot send message with only embeds without Permission.MESSAGE_EMBED_LINKS!");
+        else if (embeds != null && !embeds.isEmpty() && channel instanceof StandardGuildChannel)
+            throw new InsufficientPermissionException((StandardGuildChannel) channel, Permission.MESSAGE_EMBED_LINKS, "Cannot send message with only embeds without Permission.MESSAGE_EMBED_LINKS!");
         throw new IllegalStateException("Cannot build a message without content!");
     }
 

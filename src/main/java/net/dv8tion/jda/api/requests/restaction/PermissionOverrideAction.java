@@ -31,15 +31,15 @@ import java.util.function.BooleanSupplier;
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} specifically
  * designed to create a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
- * for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+ * for a {@link StandardGuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
  *
  * @see    net.dv8tion.jda.api.entities.PermissionOverride#getManager()
- * @see    net.dv8tion.jda.api.entities.GuildChannel#upsertPermissionOverride(IPermissionHolder)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#createPermissionOverride(IPermissionHolder)
- * @see    net.dv8tion.jda.api.entities.GuildChannel#putPermissionOverride(IPermissionHolder)
+ * @see    IPermissionContainer#upsertPermissionOverride(IPermissionHolder)
+ * @see    IPermissionContainer#createPermissionOverride(IPermissionHolder)
+ * @see    IPermissionContainer#putPermissionOverride(IPermissionHolder)
  */
 public interface PermissionOverrideAction extends AuditableRestAction<PermissionOverride>
 {
@@ -86,12 +86,12 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     PermissionOverrideAction resetDeny();
 
     /**
-     * The {@link GuildChannel} this will be created in
+     * The {@link StandardGuildChannel} this will be created in
      *
      * @return The channel
      */
     @Nonnull
-    GuildChannel getChannel();
+    StandardGuildChannel getChannel();
 
     /**
      * The {@link Role} for this override

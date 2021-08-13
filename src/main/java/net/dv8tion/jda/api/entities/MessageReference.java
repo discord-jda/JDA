@@ -282,10 +282,10 @@ public class MessageReference
 
     private void checkPermission(Permission permission)
     {
-        if (guild == null || !(channel instanceof GuildChannel)) return;
+        if (guild == null || !(channel instanceof StandardGuildChannel)) return;
 
         Member selfMember = guild.getSelfMember();
-        GuildChannel guildChannel = (GuildChannel) channel;
+        StandardGuildChannel guildChannel = (StandardGuildChannel) channel;
 
         if (!selfMember.hasAccess(guildChannel))
             throw new MissingAccessException(guildChannel, Permission.VIEW_CHANNEL);

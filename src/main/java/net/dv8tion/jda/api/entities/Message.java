@@ -747,7 +747,7 @@ public interface Message extends ISnowflake, Formattable
     /**
      * The {@link net.dv8tion.jda.api.entities.Category Category} this
      * message was sent in. This will always be {@code null} for DMs.
-     * <br>Equivalent to {@code getTextChannel().getParent()} if this was sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
+     * <br>Equivalent to {@code getTextChannel().getParentCategory()} if this was sent in a {@link net.dv8tion.jda.api.entities.TextChannel}.
      *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message

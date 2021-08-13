@@ -758,7 +758,7 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public Category getCategory()
     {
-        return isFromGuild() ? getTextChannel().getParent() : null;
+        return isFromGuild() ? getTextChannel().getParentCategory() : null;
     }
 
     @Nonnull

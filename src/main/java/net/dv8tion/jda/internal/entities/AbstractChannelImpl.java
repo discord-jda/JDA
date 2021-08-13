@@ -46,7 +46,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel
+public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M extends AbstractChannelImpl<T, M>> implements StandardGuildChannel
 {
     protected final long id;
     protected final JDAImpl api;
@@ -68,7 +68,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public int compareTo(@Nonnull GuildChannel o)
+    public int compareTo(@Nonnull StandardGuildChannel o)
     {
         Checks.notNull(o, "Channel");
         if (getType().getSortBucket() != o.getType().getSortBucket()) // if bucket matters
@@ -114,7 +114,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public Category getParent()
+    public Category getParentCategory()
     {
         return getGuild().getCategoriesView().get(parentId);
     }
@@ -168,7 +168,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     @Override
     public boolean isSynced()
     {
-        AbstractChannelImpl<?, ?> parent = (AbstractChannelImpl<?, ?>) getParent(); // We accept the unchecked cast here
+        AbstractChannelImpl<?, ?> parent = (AbstractChannelImpl<?, ?>) getParentCategory(); // We accept the unchecked cast here
         if (parent == null)
             return true; // Channels without a parent category are always considered synced. Also the case for categories.
         TLongObjectMap<PermissionOverride> parentOverrides = parent.getOverrideMap();
@@ -275,9 +275,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof GuildChannel))
+        if (!(obj instanceof StandardGuildChannel))
             return false;
-        GuildChannel channel = (GuildChannel) obj;
+        StandardGuildChannel channel = (StandardGuildChannel) obj;
         return channel.getIdLong() == getIdLong();
     }
 

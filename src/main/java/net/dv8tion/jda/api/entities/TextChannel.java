@@ -40,9 +40,9 @@ import java.util.List;
  * Represents a Discord Text GuildChannel.
  * <br>Adds additional functionality and information for text channels in Discord.
  *
- * <p>This is a {@link GuildChannel GuildChannel} capable of sending messages.
+ * <p>This is a {@link StandardGuildChannel GuildChannel} capable of sending messages.
  *
- * @see GuildChannel
+ * @see StandardGuildChannel
  * @see MessageChannel
  * @see VoiceChannel
  * @see Category
@@ -57,7 +57,7 @@ import java.util.List;
  * @see   JDA#getTextChannelsByName(String, boolean)
  * @see   JDA#getTextChannelById(long)
  */
-public interface TextChannel extends GuildChannel, MessageChannel
+public interface TextChannel extends StandardGuildChannel, MessageChannel
 {
     /**
      * The maximum duration of slowmode in seconds

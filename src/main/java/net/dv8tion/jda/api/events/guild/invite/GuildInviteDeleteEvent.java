@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.events.guild.invite;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
 
 import javax.annotation.Nonnull;
@@ -35,7 +35,7 @@ import javax.annotation.Nonnull;
  */
 public class GuildInviteDeleteEvent extends GenericGuildInviteEvent
 {
-    public GuildInviteDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)
+    public GuildInviteDeleteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull StandardGuildChannel channel)
     {
         super(api, responseNumber, code, channel);
     }
