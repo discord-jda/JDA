@@ -48,55 +48,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     Guild getGuild();
 
     /**
-     * Parent {@link net.dv8tion.jda.api.entities.Category Category} of this
-     * GuildChannel. Channels don't need to have a parent Category.
-     * <br>Note that a {@link net.dv8tion.jda.api.entities.Category Category} will
-     * always return {@code null} for this method as nested categories are not supported.
-     *
-     * @return Possibly-null {@link net.dv8tion.jda.api.entities.Category Category} for this GuildChannel
-     */
-    @Nullable
-    Category getParent();
-
-    /**
-     * A List of all {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel
-     * <br>For {@link net.dv8tion.jda.api.entities.TextChannel TextChannels},
-     * this returns all Members with the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ} Permission.
-     * <br>For {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
-     * this returns all Members that joined that VoiceChannel.
-     * <br>For {@link net.dv8tion.jda.api.entities.Category Categories},
-     * this returns all Members who are in its child channels.
-     *
-     * @return An immutable List of {@link net.dv8tion.jda.api.entities.Member Members} that are in this GuildChannel.
-     */
-    @Nonnull
-    List<Member> getMembers();
-
-    /**
-     * The position this GuildChannel is displayed at.
-     * <br>Higher values mean they are displayed lower in the Client. Position 0 is the top most GuildChannel
-     * Channels of a {@link net.dv8tion.jda.api.entities.Guild Guild} do not have to have continuous positions
-     *
-     * @throws IllegalStateException
-     *         If this channel is not in the guild cache
-     *
-     * @return Zero-based int of position of the GuildChannel.
-     */
-    int getPosition();
-
-    /**
-     * The actual position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} as stored and given by Discord.
-     * Channel positions are actually based on a pairing of the creation time (as stored in the snowflake id)
-     * and the position. If 2 or more channels share the same position then they are sorted based on their creation date.
-     * The more recent a channel was created, the lower it is in the hierarchy. This is handled by {@link #getPosition()}
-     * and it is most likely the method you want. If, for some reason, you want the actual position of the
-     * channel then this method will give you that value.
-     *
-     * @return The true, Discord stored, position of the {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
-     */
-    int getPositionRaw();
-
-    /**
      * The {@link PermissionOverride} relating to the specified {@link net.dv8tion.jda.api.entities.Member Member} or {@link net.dv8tion.jda.api.entities.Role Role}.
      * If there is no {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} for this {@link GuildChannel GuildChannel}
      * relating to the provided Member or Role, then this returns {@code null}.
@@ -153,19 +104,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      */
     @Nonnull
     List<PermissionOverride> getRolePermissionOverrides();
-
-    /**
-     * Whether or not this GuildChannel's {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} match
-     * those of {@link #getParent() its parent category}. If the channel doesn't have a parent category, this will return true.
-     *
-     * <p>This requires {@link net.dv8tion.jda.api.utils.cache.CacheFlag#MEMBER_OVERRIDES CacheFlag.MEMBER_OVERRIDES} to be enabled.
-     * <br>{@link net.dv8tion.jda.api.JDABuilder#createLight(String) createLight(String)} disables this CacheFlag by default.
-     *
-     * @return True, if this channel is synced with its parent category
-     *
-     * @since  4.2.1
-     */
-    boolean isSynced();
 
     /**
      * Creates a copy of the specified {@link GuildChannel GuildChannel}
