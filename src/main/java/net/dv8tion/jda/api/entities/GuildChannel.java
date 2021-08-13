@@ -259,6 +259,7 @@ public interface GuildChannel extends Channel, IMentionable, Comparable<GuildCha
     ChannelManager getManager();
 
     /**
+     * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.
      * Deletes this GuildChannel.
      *
      * <p>Possible ErrorResponses include:
@@ -280,6 +281,7 @@ public interface GuildChannel extends Channel, IMentionable, Comparable<GuildCha
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      */
+    @Override
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> delete();
