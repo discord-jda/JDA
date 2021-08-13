@@ -169,18 +169,19 @@ public class ChannelActionImpl<T extends StandardGuildChannel> extends Auditable
         return this;
     }
 
-    @Nonnull
-    @Override
-    @CheckReturnValue
-    public ChannelActionImpl<T> setNews(boolean news)
-    {
-        if (type != ChannelType.TEXT)
-            throw new UnsupportedOperationException("Can only set news for a TextChannel!");
-        if (news && !getGuild().getFeatures().contains("NEWS"))
-            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
-        this.news = news;
-        return this;
-    }
+    //TODO-v5: Determine how we are going to convert from TextChannel -> NextChannel
+//    @Nonnull
+//    @Override
+//    @CheckReturnValue
+//    public ChannelActionImpl<T> setNews(boolean news)
+//    {
+//        if (type != ChannelType.TEXT)
+//            throw new UnsupportedOperationException("Can only set news for a TextChannel!");
+//        if (news && !getGuild().getFeatures().contains("NEWS"))
+//            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
+//        this.news = news;
+//        return this;
+//    }
 
     @Nonnull
     @Override

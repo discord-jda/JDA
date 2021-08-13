@@ -26,6 +26,7 @@ public interface GuildChannel extends Channel
     @Nonnull
     Guild getGuild();
 
+    //TODO-v5: Ensure all implementers override to change ChannelManager<? extends GuildChannel> to ChannelManager<ActualType>
     /**
      * Returns the {@link ChannelManager ChannelManager} for this GuildChannel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
@@ -40,7 +41,7 @@ public interface GuildChannel extends Channel
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
-    ChannelManager getManager();
+    ChannelManager<? extends GuildChannel> getManager();
 
     /**
      * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.

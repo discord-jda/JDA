@@ -113,21 +113,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
-    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
-    {
-        Checks.notNull(targetChannelId, "Target Channel ID");
-        if (!isNews())
-            throw new IllegalStateException("Can only follow news channels!");
-        Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
-        DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
-        return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
-            DataObject json = response.getObject();
-            return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
-        });
-    }
-
-    @Nonnull
-    @Override
     public RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
@@ -279,12 +264,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     public boolean isNSFW()
     {
         return nsfw;
-    }
-
-    @Override
-    public boolean isNews()
-    {
-        return news && getGuild().getFeatures().contains("NEWS");
     }
 
     @Override
