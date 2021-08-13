@@ -1211,7 +1211,7 @@ public class EntityBuilder
         {
             DataObject memberJson = jsonObject.getObject("member");
             memberJson.put("user", author);
-            GuildChannel guildChannel = (GuildChannel) channel;
+            StandardGuildChannel guildChannel = (StandardGuildChannel) channel;
             Guild guild = guildChannel.getGuild();
             member = createMember((GuildImpl) guild, memberJson);
             if (modifyCache)
