@@ -24,17 +24,17 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link PermissionOverride} for a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} was created, deleted, or updated.
+ * Indicates that a {@link PermissionOverride} for a {@link StandardGuildChannel GuildChannel} was created, deleted, or updated.
  * <br>Every guild channel override event is a subclass of this event and can be casted
  *
  * <p>Can be used to detect that any guild channel override event was fired
  */
 public class GenericPermissionOverrideEvent extends GenericGuildEvent
 {
-    protected final GuildChannel channel;
+    protected final StandardGuildChannel channel;
     protected final PermissionOverride override;
 
-    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
+    public GenericPermissionOverrideEvent(@Nonnull JDA api, long responseNumber, @Nonnull StandardGuildChannel channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, channel.getGuild());
         this.channel = channel;
@@ -53,12 +53,12 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
     }
 
     /**
-     * The {@link GuildChannel} this override belongs to.
+     * The {@link StandardGuildChannel} this override belongs to.
      *
-     * @return The {@link GuildChannel}
+     * @return The {@link StandardGuildChannel}
      */
     @Nonnull
-    public GuildChannel getChannel()
+    public StandardGuildChannel getChannel()
     {
         return channel;
     }
@@ -122,7 +122,7 @@ public class GenericPermissionOverrideEvent extends GenericGuildEvent
 
     /**
      * The {@link Category} this override belongs to.
-     * <br>Note: This is not the same as {@code getChannel().getParent()}!
+     * <br>Note: This is not the same as {@code getChannel().getParentCategory()}!
      *
      * @throws IllegalStateException
      *         If the override does not belong to a Category

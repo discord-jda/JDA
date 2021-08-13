@@ -18,7 +18,7 @@ package net.dv8tion.jda.api.managers;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -95,7 +95,7 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
 
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} this Manager's
-     * {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} is in.
+     * {@link StandardGuildChannel GuildChannel} is in.
      * <br>This is logically the same as calling {@code getPermissionOverride().getGuild()}
      *
      * @return The parent {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -107,14 +107,14 @@ public interface PermOverrideManager extends Manager<PermOverrideManager>
     }
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} this Manager's
+     * The {@link StandardGuildChannel GuildChannel} this Manager's
      * {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride} is in.
      * <br>This is logically the same as calling {@code getPermissionOverride().getChannel()}
      *
-     * @return The parent {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}
+     * @return The parent {@link StandardGuildChannel GuildChannel}
      */
     @Nonnull
-    default GuildChannel getChannel()
+    default StandardGuildChannel getChannel()
     {
         return getPermissionOverride().getChannel();
     }

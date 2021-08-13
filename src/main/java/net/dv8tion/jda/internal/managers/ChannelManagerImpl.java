@@ -41,7 +41,7 @@ import java.util.EnumSet;
 
 public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements ChannelManager
 {
-    protected GuildChannel channel;
+    protected StandardGuildChannel channel;
 
     protected String name;
     protected String parent;
@@ -62,10 +62,10 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
      * Creates a new ChannelManager instance
      *
      * @param channel
-     *        {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel} that should be modified
+     *        {@link StandardGuildChannel GuildChannel} that should be modified
      *        <br>Either {@link net.dv8tion.jda.api.entities.VoiceChannel Voice}- or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
-    public ChannelManagerImpl(GuildChannel channel)
+    public ChannelManagerImpl(StandardGuildChannel channel)
     {
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
@@ -80,9 +80,9 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
 
     @Nonnull
     @Override
-    public GuildChannel getChannel()
+    public StandardGuildChannel getChannel()
     {
-        GuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        StandardGuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
         return channel;
@@ -230,7 +230,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl sync(@Nonnull GuildChannel syncSource)
+    public ChannelManagerImpl sync(@Nonnull StandardGuildChannel syncSource)
     {
         Checks.notNull(syncSource, "SyncSource");
         Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
@@ -451,7 +451,7 @@ public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements C
     protected boolean checkPermissions()
     {
         final Member selfMember = getGuild().getSelfMember();
-        GuildChannel channel = getChannel();
+        StandardGuildChannel channel = getChannel();
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasAccess(channel))

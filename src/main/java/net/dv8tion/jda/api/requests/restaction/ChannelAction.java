@@ -30,7 +30,7 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
- * designed to create a {@link net.dv8tion.jda.api.entities.GuildChannel GuildChannel}.
+ * designed to create a {@link StandardGuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
@@ -39,13 +39,13 @@ import java.util.function.BooleanSupplier;
  * @see    net.dv8tion.jda.api.entities.Guild#createTextChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createVoiceChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createCategory(String)
- * @see    GuildChannel#createCopy()
- * @see    GuildChannel#createCopy(Guild)
+ * @see    StandardGuildChannel#createCopy()
+ * @see    StandardGuildChannel#createCopy(Guild)
  *
  * @param <T>
  *        The type of channel to create
  */
-public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
+public interface ChannelAction<T extends StandardGuildChannel> extends AuditableRestAction<T>
 {
     @Nonnull
     @Override
@@ -60,7 +60,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> deadline(long timestamp);
 
     /**
-     * The guild to create this {@link GuildChannel} in
+     * The guild to create this {@link StandardGuildChannel} in
      *
      * @return The guild
      */

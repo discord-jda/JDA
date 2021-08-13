@@ -307,7 +307,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     {
         //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelsView because
         // getTextChannels does the sorting logic.
-        List<GuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
+        List<StandardGuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
         channels.addAll(getGuild().getStoreChannels());
         Collections.sort(channels);
         for (int i = 0; i < channels.size(); i++)
@@ -326,7 +326,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         ChannelAction<TextChannel> action = guild.createTextChannel(name).setNSFW(nsfw).setTopic(topic).setSlowmode(slowmode);
         if (guild.equals(getGuild()))
         {
-            Category parent = getParent();
+            Category parent = getParentCategory();
             if (parent != null)
                 action.setParent(parent);
             for (PermissionOverride o : overrides.valueCollection())

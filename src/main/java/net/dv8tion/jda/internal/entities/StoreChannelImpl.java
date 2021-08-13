@@ -55,7 +55,7 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
     @Override
     public int getPosition()
     {
-        List<GuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
+        List<StandardGuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
         channels.addAll(getGuild().getStoreChannels());
         Collections.sort(channels);
         for (int i = 0; i < channels.size(); i++)
