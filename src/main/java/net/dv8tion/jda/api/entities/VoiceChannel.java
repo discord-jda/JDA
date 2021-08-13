@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
  * Represents a Discord Voice GuildChannel.
  * <br>Adds additional information specific to voice channels in Discord.
  *
- * @see GuildChannel
+ * @see StandardGuildChannel
  * @see TextChannel
  * @see Category
  *
@@ -40,7 +40,7 @@ import javax.annotation.Nullable;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends GuildChannel
+public interface VoiceChannel extends StandardGuildChannel
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this

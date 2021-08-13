@@ -61,7 +61,7 @@ public class PermissionOverrideActionImpl
         this.id = override.getIdLong();
     }
 
-    public PermissionOverrideActionImpl(JDA api, GuildChannel channel, IPermissionHolder permissionHolder)
+    public PermissionOverrideActionImpl(JDA api, StandardGuildChannel channel, IPermissionHolder permissionHolder)
     {
         super(api, Route.Channels.CREATE_PERM_OVERRIDE.compile(channel.getId(), permissionHolder.getId()));
         this.channel = (AbstractChannelImpl<?, ?>) channel;
@@ -134,7 +134,7 @@ public class PermissionOverrideActionImpl
 
     @Nonnull
     @Override
-    public GuildChannel getChannel()
+    public StandardGuildChannel getChannel()
     {
         return channel;
     }

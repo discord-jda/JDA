@@ -37,14 +37,14 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final long id;
     private final boolean isRole;
     private final JDAImpl api;
-    private GuildChannel channel;
+    private StandardGuildChannel channel;
 
     protected PermissionOverrideAction manager;
 
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(GuildChannel channel, long id, boolean isRole)
+    public PermissionOverrideImpl(StandardGuildChannel channel, long id, boolean isRole)
     {
         this.isRole = isRole;
         this.api = (JDAImpl) channel.getJDA();
@@ -118,9 +118,9 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     @Nonnull
     @Override
-    public GuildChannel getChannel()
+    public StandardGuildChannel getChannel()
     {
-        GuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        StandardGuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
         return channel;
@@ -150,7 +150,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     public PermissionOverrideAction getManager()
     {
         Member selfMember = getGuild().getSelfMember();
-        GuildChannel channel = getChannel();
+        StandardGuildChannel channel = getChannel();
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasAccess(channel))
@@ -168,7 +168,7 @@ public class PermissionOverrideImpl implements PermissionOverride
     {
 
         Member selfMember = getGuild().getSelfMember();
-        GuildChannel channel = getChannel();
+        StandardGuildChannel channel = getChannel();
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasAccess(channel))

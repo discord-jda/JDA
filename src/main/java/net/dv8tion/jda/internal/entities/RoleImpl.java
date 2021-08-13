@@ -19,10 +19,7 @@ package net.dv8tion.jda.internal.entities;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.PermissionOverride;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.managers.RoleManager;
@@ -134,7 +131,7 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissions(@Nonnull GuildChannel channel)
+    public EnumSet<Permission> getPermissions(@Nonnull IPermissionContainer channel)
     {
         return Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, this));
     }
@@ -148,7 +145,7 @@ public class RoleImpl implements Role
 
     @Nonnull
     @Override
-    public EnumSet<Permission> getPermissionsExplicit(@Nonnull GuildChannel channel)
+    public EnumSet<Permission> getPermissionsExplicit(@Nonnull IPermissionContainer channel)
     {
         return Permission.getPermissions(PermissionUtil.getExplicitPermission(channel, this));
     }
@@ -193,7 +190,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Permission... permissions)
+    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Permission... permissions)
     {
         long effectivePerms = PermissionUtil.getEffectivePermission(channel, this);
         for (Permission perm : permissions)
@@ -206,7 +203,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean hasPermission(@Nonnull GuildChannel channel, @Nonnull Collection<Permission> permissions)
+    public boolean hasPermission(@Nonnull IPermissionContainer channel, @Nonnull Collection<Permission> permissions)
     {
         Checks.notNull(permissions, "Permission Collection");
 
@@ -214,7 +211,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel targetChannel, @Nonnull GuildChannel syncSource)
+    public boolean canSync(@Nonnull IPermissionContainer targetChannel, @Nonnull IPermissionContainer syncSource)
     {
         Checks.notNull(targetChannel, "Channel");
         Checks.notNull(syncSource, "Channel");
@@ -249,7 +246,7 @@ public class RoleImpl implements Role
     }
 
     @Override
-    public boolean canSync(@Nonnull GuildChannel channel)
+    public boolean canSync(@Nonnull IPermissionContainer channel)
     {
         Checks.notNull(channel, "Channel");
         Checks.check(channel.getGuild().equals(getGuild()), "Channels must be from the same guild!");

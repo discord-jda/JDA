@@ -42,7 +42,7 @@ import java.util.Set;
  * @see    #resolve(JDA, String, boolean)
  *
  * @see    net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild.retrieveInvites()
- * @see    GuildChannel#retrieveInvites()
+ * @see    StandardGuildChannel#retrieveInvites()
  */
 public interface Invite
 {
@@ -298,7 +298,7 @@ public interface Invite
      * Whether this Invite is expanded or not. Expanded invites contain more information, but they can only be
      * obtained by {@link net.dv8tion.jda.api.entities.Guild#retrieveInvites() Guild#retrieveInvites()} (requires
      * {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER Permission.MANAGE_SERVER}) or
-     * {@link net.dv8tion.jda.api.entities.GuildChannel#retrieveInvites() GuildChannel#retrieveInvites()} (requires
+     * {@link StandardGuildChannel#retrieveInvites() GuildChannel#retrieveInvites()} (requires
      * {@link net.dv8tion.jda.api.Permission#MANAGE_CHANNEL Permission.MANAGE_CHANNEL}).
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.

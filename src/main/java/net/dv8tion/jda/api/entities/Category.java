@@ -42,10 +42,10 @@ import java.util.List;
  * @see   JDA#getCategoriesByName(String, boolean)
  * @see   JDA#getCategoryById(long)
  */
-public interface Category extends GuildChannel
+public interface Category extends StandardGuildChannel
 {
     /**
-     * All {@link GuildChannel Channels} listed
+     * All {@link StandardGuildChannel Channels} listed
      * for this Category
      * <br>This may contain {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannels},
      * {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels},
@@ -54,7 +54,7 @@ public interface Category extends GuildChannel
      * @return Immutable list of all child channels
      */
     @Nonnull
-    List<GuildChannel> getChannels();
+    List<StandardGuildChannel> getChannels();
 
     /**
      * All {@link net.dv8tion.jda.api.entities.StoreChannel StoreChannels}
@@ -92,7 +92,7 @@ public interface Category extends GuildChannel
      *
      * <p>This will copy all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this Category!
      * Unless the bot is unable to sync it with this category due to permission escalation.
-     * See {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} for details.
+     * See {@link IPermissionHolder#canSync(StandardGuildChannel, StandardGuildChannel)} for details.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -129,7 +129,7 @@ public interface Category extends GuildChannel
      *
      * <p>This will copy all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this Category!
      * Unless the bot is unable to sync it with this category due to permission escalation.
-     * See {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} for details.
+     * See {@link IPermissionHolder#canSync(StandardGuildChannel, StandardGuildChannel)} for details.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -166,7 +166,7 @@ public interface Category extends GuildChannel
      *
      * <p>This will copy all {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides} of this Category!
      * Unless the bot is unable to sync it with this category due to permission escalation.
-     * See {@link IPermissionHolder#canSync(GuildChannel, GuildChannel)} for details.
+     * See {@link IPermissionHolder#canSync(StandardGuildChannel, StandardGuildChannel)} for details.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:

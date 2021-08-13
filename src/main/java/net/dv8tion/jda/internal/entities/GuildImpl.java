@@ -74,10 +74,10 @@ public class GuildImpl implements Guild
     private final long id;
     private final JDAImpl api;
 
-    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, StandardGuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, StandardGuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, StoreChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, StandardGuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<GuildThread> guildThreadsCache = new SnowflakeCacheViewImpl<>(GuildThread.class, GuildThread::getName);;
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
@@ -623,12 +623,12 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public List<GuildChannel> getChannels(boolean includeHidden)
+    public List<StandardGuildChannel> getChannels(boolean includeHidden)
     {
         Member self = getSelfMember();
-        Predicate<GuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
+        Predicate<StandardGuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
 
-        List<GuildChannel> channels;
+        List<StandardGuildChannel> channels;
         SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
@@ -658,14 +658,14 @@ public class GuildImpl implements Guild
             channels = new ArrayList<>((int) categoryView.size() + voiceChannels.size() + textChannels.size() + storeChannels.size());
         }
 
-        storeChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
-        textChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
+        storeChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
+        textChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
         Collections.sort(channels);
-        voiceChannels.stream().filter(it -> it.getParent() == null).forEach(channels::add);
+        voiceChannels.stream().filter(it -> it.getParentCategory() == null).forEach(channels::add);
 
         for (Category category : categories)
         {
-            List<GuildChannel> children;
+            List<StandardGuildChannel> children;
             if (includeHidden)
             {
                 children = category.getChannels();
