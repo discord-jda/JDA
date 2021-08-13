@@ -52,6 +52,20 @@ public class StoreChannelImpl extends AbstractChannelImpl<StoreChannel, StoreCha
         return Collections.emptyList();
     }
 
+    @Override
+    public int getPosition()
+    {
+        List<StandardGuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
+        channels.addAll(getGuild().getStoreChannels());
+        Collections.sort(channels);
+        for (int i = 0; i < channels.size(); i++)
+        {
+            if (equals(channels.get(i)))
+                return i;
+        }
+        throw new IllegalStateException("Somehow when determining position we never found the StoreChannel in the Guild's channels? wtf?");
+    }
+
     @Nonnull
     @Override
     public ChannelAction<StoreChannel> createCopy(@Nonnull Guild guild)

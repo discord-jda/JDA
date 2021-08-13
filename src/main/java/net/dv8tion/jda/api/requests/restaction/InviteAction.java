@@ -16,7 +16,7 @@
 
 package net.dv8tion.jda.api.requests.restaction;
 
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
 
 import javax.annotation.CheckReturnValue;
@@ -29,7 +29,7 @@ import java.util.function.BooleanSupplier;
  * {@link net.dv8tion.jda.api.entities.Invite Invite} Builder system created as an extension of {@link net.dv8tion.jda.api.requests.RestAction}
  * <br>Provides an easy way to gather and deliver information to Discord to create {@link net.dv8tion.jda.api.entities.Invite Invites}.
  *
- * @see GuildChannel#createInvite()
+ * @see StandardGuildChannel#createInvite()
  */
 public interface InviteAction extends AuditableRestAction<Invite>
 {

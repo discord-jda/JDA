@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
@@ -43,7 +43,7 @@ public class InviteDeleteHandler extends SocketHandler
             return null;
         }
         long channelId = content.getUnsignedLong("channel_id");
-        GuildChannel channel = guild.getGuildChannelById(channelId);
+        StandardGuildChannel channel = guild.getGuildChannelById(channelId);
         if (channel == null)
         {
             EventCache.LOG.debug("Caching INVITE_DELETE for unknown channel {} in guild {}", channelId, guildId);

@@ -113,6 +113,21 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    public RestAction<Webhook.WebhookReference> follow(@Nonnull String targetChannelId)
+    {
+        Checks.notNull(targetChannelId, "Target Channel ID");
+        if (!isNews())
+            throw new IllegalStateException("Can only follow news channels!");
+        Route.CompiledRoute route = Route.Channels.FOLLOW_CHANNEL.compile(getId());
+        DataObject body = DataObject.empty().put("webhook_channel_id", targetChannelId);
+        return new RestActionImpl<>(getJDA(), route, body, (response, request) -> {
+            DataObject json = response.getObject();
+            return new Webhook.WebhookReference(request.getJDA(), json.getUnsignedLong("webhook_id") , json.getUnsignedLong("channel_id"));
+        });
+    }
+
+    @Nonnull
+    @Override
     public RestAction<Void> deleteMessages(@Nonnull Collection<Message> messages)
     {
         Checks.notEmpty(messages, "Messages collection");
@@ -267,6 +282,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
     }
 
     @Override
+    public boolean isNews()
+    {
+        return news && getGuild().getFeatures().contains("NEWS");
+    }
+
+    @Override
     public int getSlowmode()
     {
         return slowmode;
@@ -279,6 +300,22 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
         return Collections.unmodifiableList(getGuild().getMembersView().stream()
                   .filter(m -> m.hasPermission(this, Permission.MESSAGE_READ))
                   .collect(Collectors.toList()));
+    }
+
+    @Override
+    public int getPosition()
+    {
+        //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelsView because
+        // getTextChannels does the sorting logic.
+        List<StandardGuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
+        channels.addAll(getGuild().getStoreChannels());
+        Collections.sort(channels);
+        for (int i = 0; i < channels.size(); i++)
+        {
+            if (equals(channels.get(i)))
+                return i;
+        }
+        throw new IllegalStateException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
     }
 
     @Nonnull

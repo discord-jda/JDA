@@ -38,7 +38,7 @@ import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
+public class ChannelActionImpl<T extends StandardGuildChannel> extends AuditableRestActionImpl<T> implements ChannelAction<T>
 {
     protected final TLongObjectMap<PermOverrideData> overrides = new TLongObjectHashMap<>();
     protected final Guild guild;
@@ -351,7 +351,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     protected void handleSuccess(Response response, Request<T> request)
     {
         EntityBuilder builder = api.getEntityBuilder();
-        GuildChannel channel;
+        StandardGuildChannel channel;
         switch (type)
         {
             case STAGE:

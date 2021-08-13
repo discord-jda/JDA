@@ -18,14 +18,14 @@ package net.dv8tion.jda.api.requests.restaction.order;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
 
 import javax.annotation.Nonnull;
 import java.util.EnumSet;
 
 /**
  * Implementation of {@link OrderAction OrderAction}
- * to modify the order of {@link GuildChannel Channels} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
+ * to modify the order of {@link StandardGuildChannel Channels} for a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  * <br>To apply the changes you must finish the {@link net.dv8tion.jda.api.requests.RestAction RestAction}.
  *
  * <p>Before you can use any of the {@code move} methods
@@ -39,7 +39,7 @@ import java.util.EnumSet;
  * @see   net.dv8tion.jda.api.entities.Guild#modifyCategoryPositions()
  * @see   CategoryOrderAction
  */
-public interface ChannelOrderAction extends OrderAction<GuildChannel, ChannelOrderAction>
+public interface ChannelOrderAction extends OrderAction<StandardGuildChannel, ChannelOrderAction>
 {
     /**
      * The {@link net.dv8tion.jda.api.entities.Guild Guild} which holds

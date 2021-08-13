@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends Channel, Comparable<GuildChannel>
+public interface GuildChannel extends Channel
 {
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.
@@ -40,7 +40,7 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
      * @return The ChannelManager of this GuildChannel
      */
     @Nonnull
-    ChannelManager<? extends GuildChannel> getManager();
+    ChannelManager getManager();
 
     /**
      * TODO-v5: this override might not be needed anymore if we remove AuditableRestAction and instead place auditable hooks onto RestAction itself.

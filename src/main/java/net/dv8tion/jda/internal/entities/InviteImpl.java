@@ -117,8 +117,7 @@ public class InviteImpl implements Invite
 
         Route.CompiledRoute route;
 
-        //TODO-v5: There are more than Text and Voice channels now. Revisit this.
-        final IPermissionContainer channel = this.channel.getType() == ChannelType.TEXT
+        final StandardGuildChannel channel = this.channel.getType() == ChannelType.TEXT
                 ? guild.getTextChannelById(this.channel.getIdLong())
                 : guild.getVoiceChannelById(this.channel.getIdLong());
 
@@ -289,7 +288,7 @@ public class InviteImpl implements Invite
             this.type = type;
         }
 
-        public ChannelImpl(final GuildChannel channel)
+        public ChannelImpl(final StandardGuildChannel channel)
         {
             this(channel.getIdLong(), channel.getName(), channel.getType());
         }

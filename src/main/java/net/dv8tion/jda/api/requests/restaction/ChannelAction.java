@@ -30,7 +30,7 @@ import java.util.function.BooleanSupplier;
 
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.RestAction RestAction} specifically
- * designed to create a {@link GuildChannel GuildChannel}.
+ * designed to create a {@link StandardGuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
@@ -39,13 +39,13 @@ import java.util.function.BooleanSupplier;
  * @see    net.dv8tion.jda.api.entities.Guild#createTextChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createVoiceChannel(String)
  * @see    net.dv8tion.jda.api.entities.Guild#createCategory(String)
- * @see    GuildChannel#createCopy()
- * @see    GuildChannel#createCopy(Guild)
+ * @see    StandardGuildChannel#createCopy()
+ * @see    StandardGuildChannel#createCopy(Guild)
  *
  * @param <T>
  *        The type of channel to create
  */
-public interface ChannelAction<T extends GuildChannel> extends AuditableRestAction<T>
+public interface ChannelAction<T extends StandardGuildChannel> extends AuditableRestAction<T>
 {
     @Nonnull
     @Override
@@ -60,7 +60,7 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     ChannelAction<T> deadline(long timestamp);
 
     /**
-     * The guild to create this {@link GuildChannel} in
+     * The guild to create this {@link StandardGuildChannel} in
      *
      * @return The guild
      */
@@ -190,29 +190,27 @@ public interface ChannelAction<T extends GuildChannel> extends AuditableRestActi
     @CheckReturnValue
     ChannelAction<T> setSlowmode(int slowmode);
 
-    //TODO-v5: Introduce a way to create the new NewsChannel class.
-    //TODO-v5: Do we need to add a way to _convert_ TextChannel to NewsChannel because it seems people might have done that before.
-//    /**
-//     * Sets the news flag for the new TextChannel.
-//     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
-//     *
-//     * @param  news
-//     *         The news flag for the new GuildChannel
-//     *
-//     * @throws UnsupportedOperationException
-//     *         If this ChannelAction is not for a TextChannel
-//     * @throws java.lang.IllegalStateException
-//     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
-//     *
-//     * @return The current ChannelAction, for chaining convenience
-//     *
-//     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
-//     *
-//     * @since  4.2.1
-//     */
-//    @Nonnull
-//    @CheckReturnValue
-//    ChannelAction<T> setNews(boolean news);
+    /**
+     * Sets the news flag for the new TextChannel.
+     * Announcement-/News-Channels can be used to crosspost messages to other guilds.
+     *
+     * @param  news
+     *         The news flag for the new GuildChannel
+     *
+     * @throws UnsupportedOperationException
+     *         If this ChannelAction is not for a TextChannel
+     * @throws java.lang.IllegalStateException
+     *         If {@code news} is {@code true} and the guild doesn't have the NEWS feature
+     *
+     * @return The current ChannelAction, for chaining convenience
+     *
+     * @see    net.dv8tion.jda.api.entities.TextChannel#isNews()
+     *
+     * @since  4.2.1
+     */
+    @Nonnull
+    @CheckReturnValue
+    ChannelAction<T> setNews(boolean news);
 
     /**
      * Adds a new Role or Member {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}

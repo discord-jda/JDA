@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction.order;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.requests.restaction.order.ChannelOrderAction;
@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 public class ChannelOrderActionImpl
-    extends OrderActionImpl<GuildChannel, ChannelOrderAction>
+    extends OrderActionImpl<StandardGuildChannel, ChannelOrderAction>
     implements ChannelOrderAction
 {
     protected final Guild guild;
@@ -56,7 +56,7 @@ public class ChannelOrderActionImpl
     /**
      * Creates a new ChannelOrderAction instance using the provided
      * {@link net.dv8tion.jda.api.entities.Guild Guild}, as well as the provided
-     * list of {@link GuildChannel Channels}.
+     * list of {@link StandardGuildChannel Channels}.
      *
      * @param  guild
      *         The target {@link net.dv8tion.jda.api.entities.Guild Guild}
@@ -64,7 +64,7 @@ public class ChannelOrderActionImpl
      * @param  bucket
      *         The sorting bucket
      * @param  channels
-     *         The {@link GuildChannel Channels} to order, all of which
+     *         The {@link StandardGuildChannel Channels} to order, all of which
      *         are on the same Guild specified, and all of which are of the same generic type of GuildChannel
      *         corresponding to the the ChannelType specified.
      *
@@ -73,7 +73,7 @@ public class ChannelOrderActionImpl
      *         or any of them do not have the same ChannelType as the one
      *         provided.
      */
-    public ChannelOrderActionImpl(Guild guild, int bucket, Collection<? extends GuildChannel> channels)
+    public ChannelOrderActionImpl(Guild guild, int bucket, Collection<? extends StandardGuildChannel> channels)
     {
         super(guild.getJDA(), Route.Guilds.MODIFY_CHANNELS.compile(guild.getId()));
 
@@ -111,7 +111,7 @@ public class ChannelOrderActionImpl
         DataArray array = DataArray.empty();
         for (int i = 0; i < orderList.size(); i++)
         {
-            GuildChannel chan = orderList.get(i);
+            StandardGuildChannel chan = orderList.get(i);
             array.add(DataObject.empty()
                     .put("id", chan.getId())
                     .put("position", i));
@@ -121,13 +121,13 @@ public class ChannelOrderActionImpl
     }
 
     @Override
-    protected void validateInput(GuildChannel entity)
+    protected void validateInput(StandardGuildChannel entity)
     {
         Checks.check(entity.getGuild().equals(guild), "Provided channel is not from this Guild!");
         Checks.check(orderList.contains(entity), "Provided channel is not in the list of orderable channels!");
     }
 
-    protected static Collection<GuildChannel> getChannelsOfType(Guild guild, int bucket)
+    protected static Collection<StandardGuildChannel> getChannelsOfType(Guild guild, int bucket)
     {
         return guild.getChannels().stream()
             .filter(it -> it.getType().getSortBucket() == bucket)

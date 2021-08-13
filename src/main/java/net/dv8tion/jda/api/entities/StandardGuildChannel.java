@@ -13,24 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
 
 /**
- * Represents a Discord Store GuildChannel.
+ * TODO-v5: Revisit these docs as they're identical to GuildChannel's
+ * Represents a {@link net.dv8tion.jda.api.entities.Guild Guild} channel.
  *
- * @since  4.0.0
+ * @see Guild#getGuildChannelById(long)
+ * @see Guild#getGuildChannelById(ChannelType, long)
  *
- * @see   Guild#getStoreChannelCache()
- * @see   Guild#getStoreChannels()
- * @see   Guild#getStoreChannelsByName(String, boolean)
- * @see   Guild#getStoreChannelById(long)
- *
- * @see   JDA#getStoreChannelCache()
- * @see   JDA#getStoreChannels()
- * @see   JDA#getStoreChannelsByName(String, boolean)
- * @see   JDA#getStoreChannelById(long)
+ * @see JDA#getGuildChannelById(long)
+ * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface StoreChannel extends StandardGuildChannel {}
+public interface StandardGuildChannel extends GuildChannel, IMemberContainer, IPermissionContainer, ICopyableChannel, IPositionableChannel, ICategorizableChannel, IInviteContainer, Comparable<StandardGuildChannel>
+{
+    //No methods should be included here. This is suppose to be a collective interface for simplifying aspects of the API
+    // when multiple interfaces are expected.
+}

@@ -17,7 +17,7 @@
 package net.dv8tion.jda.internal.handle;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.StandardGuildChannel;
 import net.dv8tion.jda.api.entities.Invite;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent;
@@ -50,7 +50,7 @@ public class InviteCreateHandler extends SocketHandler
         }
 
         long channelId = content.getUnsignedLong("channel_id");
-        GuildChannel realChannel = realGuild.getGuildChannelById(channelId);
+        StandardGuildChannel realChannel = realGuild.getGuildChannelById(channelId);
         if (realChannel == null)
         {
             EventCache.LOG.debug("Caching INVITE_CREATE for unknown channel with id {} in guild with id {}", channelId, guildId);

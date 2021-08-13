@@ -44,15 +44,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel, IPositionableChannel, IInviteContainer, ICopyableChannel, ICategorizableChannel, IMemberContainer, IPermissionContainer
+public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M extends AbstractChannelImpl<T, M>> implements StandardGuildChannel
 {
     protected final long id;
     protected final JDAImpl api;
 
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
-    protected ChannelManager<T> manager;
+    protected ChannelManager manager;
 
     protected GuildImpl guild;
     protected long parentId;
@@ -67,24 +68,14 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     }
 
     @Override
-    public int compareTo(@Nonnull GuildChannel o)
+    public int compareTo(@Nonnull StandardGuildChannel o)
     {
         Checks.notNull(o, "Channel");
-
-        // if bucket matters
-        if (getType().getSortBucket() != o.getType().getSortBucket())
+        if (getType().getSortBucket() != o.getType().getSortBucket()) // if bucket matters
             return Integer.compare(getType().getSortBucket(), o.getType().getSortBucket());
-
-        // if position matters
-        if (o instanceof IPositionableChannel) {
-            IPositionableChannel oPositionableChannel = (IPositionableChannel) o;
-            if (getPositionRaw() != oPositionableChannel.getPositionRaw()) {
-                return Integer.compare(getPositionRaw(), oPositionableChannel.getPositionRaw());
-            }
-        }
-
-        // last resort by id
-        return Long.compareUnsigned(id, o.getIdLong());
+        if (getPositionRaw() != o.getPositionRaw())                   // if position matters
+            return Integer.compare(getPositionRaw(), o.getPositionRaw());
+        return Long.compareUnsigned(id, o.getIdLong());               // last resort by id
     }
 
     @Nonnull
@@ -96,12 +87,11 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    //TODO-v5; These are untyped for now. We're likely removing this class so maybe nbd.
-    public abstract ChannelAction createCopy(@Nonnull Guild guild);
+    public abstract ChannelAction<T> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
-    public ChannelAction createCopy()
+    public ChannelAction<T> createCopy()
     {
         return createCopy(getGuild());
     }
@@ -157,6 +147,24 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
 
+    @Nonnull
+    @Override
+    public List<PermissionOverride> getMemberPermissionOverrides()
+    {
+        return Collections.unmodifiableList(getPermissionOverrides().stream()
+                .filter(PermissionOverride::isMemberOverride)
+                .collect(Collectors.toList()));
+    }
+
+    @Nonnull
+    @Override
+    public List<PermissionOverride> getRolePermissionOverrides()
+    {
+        return Collections.unmodifiableList(getPermissionOverrides().stream()
+                .filter(PermissionOverride::isRoleOverride)
+                .collect(Collectors.toList()));
+    }
+
     @Override
     public boolean isSynced()
     {
@@ -183,7 +191,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
-    public ChannelManager<T> getManager()
+    public ChannelManager getManager()
     {
         if (manager == null)
             return manager = new ChannelManagerImpl(this);
@@ -198,6 +206,17 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
+    }
+
+    @Nonnull
+    @Override
+    public PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    {
+        Checks.notNull(permissionHolder, "PermissionHolder");
+        if (getPermissionOverride(permissionHolder) != null)
+            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
+
+        return putPermissionOverride(permissionHolder);
     }
 
     @Nonnull
@@ -256,9 +275,9 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof GuildChannel))
+        if (!(obj instanceof StandardGuildChannel))
             return false;
-        GuildChannel channel = (GuildChannel) obj;
+        StandardGuildChannel channel = (StandardGuildChannel) obj;
         return channel.getIdLong() == getIdLong();
     }
 

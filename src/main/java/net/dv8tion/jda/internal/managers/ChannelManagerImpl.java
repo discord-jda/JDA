@@ -39,9 +39,9 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.EnumSet;
 
-public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<ChannelManager<T>> implements ChannelManager<T>
+public class ChannelManagerImpl extends ManagerBase<ChannelManager> implements ChannelManager
 {
-    protected T channel;
+    protected StandardGuildChannel channel;
 
     protected String name;
     protected String parent;
@@ -62,10 +62,10 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
      * Creates a new ChannelManager instance
      *
      * @param channel
-     *        {@link GuildChannel GuildChannel} that should be modified
+     *        {@link StandardGuildChannel GuildChannel} that should be modified
      *        <br>Either {@link net.dv8tion.jda.api.entities.VoiceChannel Voice}- or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
-    public ChannelManagerImpl(T channel)
+    public ChannelManagerImpl(StandardGuildChannel channel)
     {
         super(channel.getJDA(),
               Route.Channels.MODIFY_CHANNEL.compile(channel.getId()));
@@ -80,9 +80,9 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
 
     @Nonnull
     @Override
-    public T getChannel()
+    public StandardGuildChannel getChannel()
     {
-        T realChannel = (T) api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        StandardGuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
         return channel;
@@ -91,7 +91,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> reset(long fields)
+    public ChannelManagerImpl reset(long fields)
     {
         super.reset(fields);
         if ((fields & NAME) == NAME)
@@ -118,7 +118,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> reset(long... fields)
+    public ChannelManagerImpl reset(long... fields)
     {
         super.reset(fields);
         return this;
@@ -127,7 +127,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> reset()
+    public ChannelManagerImpl reset()
     {
         super.reset();
         this.name = null;
@@ -146,7 +146,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> clearOverridesAdded()
+    public ChannelManagerImpl clearOverridesAdded()
     {
         withLock(lock, (lock) ->
         {
@@ -160,7 +160,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> clearOverridesRemoved()
+    public ChannelManagerImpl clearOverridesRemoved()
     {
         withLock(lock, (lock) ->
         {
@@ -174,34 +174,27 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny)
+    public ChannelManagerImpl putPermissionOverride(@Nonnull IPermissionHolder permHolder, long allow, long deny)
     {
-        if (!(channel instanceof IPermissionContainer))
-        {
-            throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
-        }
-
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
         Member selfMember = getGuild().getSelfMember();
-
         if (isPermissionChecksEnabled() && !selfMember.hasPermission(Permission.ADMINISTRATOR))
         {
-            IPermissionContainer permChannel = (IPermissionContainer) channel;
-            if (!selfMember.hasPermission(permChannel, Permission.MANAGE_ROLES))
-                throw new InsufficientPermissionException(permChannel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
+            if (!selfMember.hasPermission(channel, Permission.MANAGE_ROLES))
+                throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS); // We can't manage permissions at all!
 
             // Check on channel level to make sure we are actually able to set all the permissions!
-            long channelPermissions = PermissionUtil.getExplicitPermission(permChannel, selfMember, false);
+            long channelPermissions = PermissionUtil.getExplicitPermission(channel, selfMember, false);
             if ((channelPermissions & Permission.MANAGE_PERMISSIONS.getRawValue()) == 0) // This implies we can only set permissions the bot also has in the channel!
             {
                 //You can only set MANAGE_ROLES if you have ADMINISTRATOR or MANAGE_PERMISSIONS as an override on the channel
                 // That is why we explicitly exclude it here!
                 // This is by far the most complex and weird permission logic in the entire API...
-                long botPerms = PermissionUtil.getEffectivePermission(permChannel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
+                long botPerms = PermissionUtil.getEffectivePermission(channel, selfMember) & ~Permission.MANAGE_ROLES.getRawValue();
                 EnumSet<Permission> missing = Permission.getPermissions((allow | deny) & ~botPerms);
                 if (!missing.isEmpty())
-                    throw new InsufficientPermissionException(permChannel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
+                    throw new InsufficientPermissionException(channel, Permission.MANAGE_PERMISSIONS, "You must have Permission.MANAGE_PERMISSIONS on the channel explicitly in order to set permissions you don't already have!");
             }
         }
         final long id = getId(permHolder);
@@ -218,16 +211,11 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> removePermissionOverride(@Nonnull IPermissionHolder permHolder)
+    public ChannelManagerImpl removePermissionOverride(@Nonnull IPermissionHolder permHolder)
     {
-        if (!(channel instanceof IPermissionContainer))
-        {
-            throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
-        }
-
         Checks.notNull(permHolder, "PermissionHolder");
         Checks.check(permHolder.getGuild().equals(getGuild()), "PermissionHolder is not from the same Guild!");
-        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission((IPermissionContainer) getChannel(), Permission.MANAGE_PERMISSIONS))
+        if (isPermissionChecksEnabled() && !getGuild().getSelfMember().hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
             throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
         final long id = getId(permHolder);
         withLock(lock, (lock) ->
@@ -242,25 +230,21 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> sync(@Nonnull IPermissionContainer syncSource)
+    public ChannelManagerImpl sync(@Nonnull StandardGuildChannel syncSource)
     {
-        if (!(channel instanceof IPermissionContainer))
-            throw new IllegalStateException("Can only set permissions on Channels that implement IPermissionContainer");
-
         Checks.notNull(syncSource, "SyncSource");
         Checks.check(getGuild().equals(syncSource.getGuild()), "Sync only works for channels of same guild");
 
-        IPermissionContainer permChannel = (IPermissionContainer) channel;
         if (syncSource.equals(getChannel()))
             return this;
 
         if (isPermissionChecksEnabled())
         {
             Member selfMember = getGuild().getSelfMember();
-            if (!selfMember.hasPermission(permChannel, Permission.MANAGE_PERMISSIONS))
+            if (!selfMember.hasPermission(getChannel(), Permission.MANAGE_PERMISSIONS))
                 throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS);
 
-            if (!selfMember.canSync(permChannel, syncSource))
+            if (!selfMember.canSync(channel, syncSource))
                 throw new InsufficientPermissionException(getChannel(), Permission.MANAGE_PERMISSIONS,
                     "Cannot sync channel with parent due to permission escalation issues. " +
                     "One of the overrides would set MANAGE_PERMISSIONS or a permission that the bot does not have. " +
@@ -274,7 +258,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
             this.overridesAdd.clear();
 
             //set all current overrides to-be-removed
-            permChannel.getPermissionOverrides()
+            getChannel().getPermissionOverrides()
                 .stream()
                 .mapToLong(PermissionOverride::getIdLong)
                 .forEach(overridesRem::add);
@@ -296,7 +280,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setName(@Nonnull String name)
+    public ChannelManagerImpl setName(@Nonnull String name)
     {
         Checks.notBlank(name, "Name");
         name = name.trim();
@@ -310,7 +294,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setRegion(@Nonnull Region region)
+    public ChannelManagerImpl setRegion(@Nonnull Region region)
     {
         Checks.notNull(region, "Region");
         if (!getType().isAudio())
@@ -324,7 +308,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setParent(Category category)
+    public ChannelManagerImpl setParent(Category category)
     {
         if (category != null)
         {
@@ -340,7 +324,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setPosition(int position)
+    public ChannelManagerImpl setPosition(int position)
     {
         this.position = position;
         set |= POSITION;
@@ -350,7 +334,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setTopic(String topic)
+    public ChannelManagerImpl setTopic(String topic)
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set topic on text channels");
@@ -364,7 +348,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setNSFW(boolean nsfw)
+    public ChannelManagerImpl setNSFW(boolean nsfw)
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set nsfw on text channels");
@@ -376,7 +360,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setSlowmode(int slowmode)
+    public ChannelManagerImpl setSlowmode(int slowmode)
     {
         if (getType() != ChannelType.TEXT)
             throw new IllegalStateException("Can only set slowmode on text channels");
@@ -389,7 +373,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setUserLimit(int userLimit)
+    public ChannelManagerImpl setUserLimit(int userLimit)
     {
         if (getType() != ChannelType.VOICE)
             throw new IllegalStateException("Can only set userlimit on voice channels");
@@ -403,7 +387,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Nonnull
     @Override
     @CheckReturnValue
-    public ChannelManagerImpl<T> setBitrate(int bitrate)
+    public ChannelManagerImpl setBitrate(int bitrate)
     {
         if (!getType().isAudio())
             throw new IllegalStateException("Can only set bitrate on voice channels");
@@ -415,20 +399,19 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
         return this;
     }
 
-    //TODO-v5: Determine how we are going to convert from TextChannel -> NextChannel
-//    @Nonnull
-//    @Override
-//    @CheckReturnValue
-//    public ChannelManagerImpl<T> setNews(boolean news)
-//    {
-//        if (getType() != ChannelType.TEXT)
-//            throw new IllegalStateException("Can only set channel as news on text channels");
-//        if (news && !getGuild().getFeatures().contains("NEWS"))
-//            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
-//        this.news = news;
-//        set |= NEWS;
-//        return this;
-//    }
+    @Nonnull
+    @Override
+    @CheckReturnValue
+    public ChannelManagerImpl setNews(boolean news)
+    {
+        if (getType() != ChannelType.TEXT)
+            throw new IllegalStateException("Can only set channel as news on text channels");
+        if (news && !getGuild().getFeatures().contains("NEWS"))
+            throw new IllegalStateException("Can only set channel as news for guilds with NEWS feature");
+        this.news = news;
+        set |= NEWS;
+        return this;
+    }
 
     @Override
     protected RequestBody finalizeData()
@@ -468,17 +451,13 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     protected boolean checkPermissions()
     {
         final Member selfMember = getGuild().getSelfMember();
-
-        if (getChannel() instanceof IPermissionContainer) {
-            IPermissionContainer permChannel = (IPermissionContainer) getChannel();
-            if (!selfMember.hasPermission(permChannel, Permission.VIEW_CHANNEL))
-                throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
-            if (!selfMember.hasAccess(permChannel))
-                throw new MissingAccessException(permChannel, Permission.VOICE_CONNECT);
-            if (!selfMember.hasPermission(permChannel, Permission.MANAGE_CHANNEL))
-                throw new InsufficientPermissionException(permChannel, Permission.MANAGE_CHANNEL);
-        }
-
+        StandardGuildChannel channel = getChannel();
+        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
+            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
+        if (!selfMember.hasAccess(channel))
+            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
+        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
+            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
         return super.checkPermissions();
     }
 

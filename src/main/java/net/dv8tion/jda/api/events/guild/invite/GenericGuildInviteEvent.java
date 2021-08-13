@@ -36,9 +36,9 @@ import javax.annotation.Nonnull;
 public class GenericGuildInviteEvent extends GenericGuildEvent
 {
     private final String code;
-    private final GuildChannel channel;
+    private final StandardGuildChannel channel;
 
-    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull GuildChannel channel)
+    public GenericGuildInviteEvent(@Nonnull JDA api, long responseNumber, @Nonnull String code, @Nonnull StandardGuildChannel channel)
     {
         super(api, responseNumber, channel.getGuild());
         this.code = code;
@@ -70,12 +70,12 @@ public class GenericGuildInviteEvent extends GenericGuildEvent
     }
 
     /**
-     * The {@link GuildChannel} this invite points to.
+     * The {@link StandardGuildChannel} this invite points to.
      *
-     * @return {@link GuildChannel}
+     * @return {@link StandardGuildChannel}
      */
     @Nonnull
-    public GuildChannel getChannel()
+    public StandardGuildChannel getChannel()
     {
         return channel;
     }

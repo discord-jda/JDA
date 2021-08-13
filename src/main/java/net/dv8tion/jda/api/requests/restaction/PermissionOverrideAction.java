@@ -31,7 +31,7 @@ import java.util.function.BooleanSupplier;
 /**
  * Extension of {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} specifically
  * designed to create a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
- * for a {@link GuildChannel GuildChannel}.
+ * for a {@link StandardGuildChannel GuildChannel}.
  * This extension allows setting properties before executing the action.
  *
  * @since  3.0
@@ -85,14 +85,13 @@ public interface PermissionOverrideAction extends AuditableRestAction<Permission
     @Nonnull
     PermissionOverrideAction resetDeny();
 
-    //TODO-v5: Should probably be IPermissionContainer?
     /**
-     * The {@link GuildChannel} this will be created in
+     * The {@link StandardGuildChannel} this will be created in
      *
      * @return The channel
      */
     @Nonnull
-    GuildChannel getChannel();
+    StandardGuildChannel getChannel();
 
     /**
      * The {@link Role} for this override
