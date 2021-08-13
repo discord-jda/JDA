@@ -37,7 +37,7 @@ public class InteractionImpl implements Interaction
     protected final Guild guild;
     protected final Member member;
     protected final User user;
-    protected final AbstractChannel channel;
+    protected final Channel channel;
     protected final JDAImpl api;
 
     public InteractionImpl(JDAImpl jda, DataObject data)
@@ -73,7 +73,7 @@ public class InteractionImpl implements Interaction
         }
     }
 
-    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, AbstractChannel channel)
+    public InteractionImpl(long id, int type, String token, Guild guild, Member member, User user, Channel channel)
     {
         this.id = id;
         this.type = type;
@@ -114,7 +114,7 @@ public class InteractionImpl implements Interaction
 
     @Nullable
     @Override
-    public AbstractChannel getChannel()
+    public Channel getChannel()
     {
         return channel;
     }

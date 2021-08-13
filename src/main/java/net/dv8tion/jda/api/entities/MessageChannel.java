@@ -82,7 +82,7 @@ import java.util.stream.Collectors;
  * @see TextChannel
  * @see PrivateChannel
  */
-public interface MessageChannel extends AbstractChannel, Formattable
+public interface MessageChannel extends Channel, Formattable
 {
     /**
      * The id for the most recent message sent
