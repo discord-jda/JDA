@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 /**
  * Abstract Channel interface for all {@link ChannelType ChannelTypes}.
  */
-public interface Channel extends ISnowflake
+public interface Channel extends IMentionable
 {
     /**
      * The human readable name of this channel.
