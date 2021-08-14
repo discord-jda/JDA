@@ -32,7 +32,9 @@ import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Checks;
+import net.dv8tion.jda.internal.utils.JDALogger;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.slf4j.Logger;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
@@ -55,6 +57,7 @@ import java.util.*;
 public class MessageHistory
 {
     protected final MessageChannel channel;
+    protected static final Logger LOG = JDALogger.getLog(MessageHistory.class);
 
     protected final ListOrderedMap<Long, Message> history = new ListOrderedMap<>();
 
@@ -196,7 +199,16 @@ public class MessageHistory
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
+            {
+                try
+                {
+                    messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
+                }
+                catch (Exception e)
+                {
+                    LOG.warn("Encountered exception when retrieving messages ", e);
+                }
+            }
 
             messages.forEach(msg -> history.put(msg.getIdLong(), msg));
             return messages;
@@ -265,7 +277,16 @@ public class MessageHistory
             DataArray historyJson = response.getArray();
 
             for (int i = 0; i < historyJson.length(); i++)
-                messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
+            {
+                try
+                {
+                    messages.add(builder.createMessage(historyJson.getObject(i), channel, false));
+                }
+                catch (Exception e)
+                {
+                    LOG.warn("Encountered exception when retrieving messages ", e);
+                }
+            }
 
             for (Iterator<Message> it = messages.descendingIterator(); it.hasNext();)
             {
@@ -581,7 +602,7 @@ public class MessageHistory
                     DataObject obj = array.getObject(i);
                     result.history.put(obj.getLong("id"), builder.createMessage(obj, channel, false));
                 }
-                catch (UncheckedIOException | NullPointerException e)
+                catch (Exception e)
                 {
                     LOG.warn("Encountered exception in MessagePagination", e);
                 }
