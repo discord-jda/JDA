@@ -96,13 +96,14 @@ public interface StageChannel extends VoiceChannel
         return member.hasPermission(this, Permission.MANAGE_CHANNEL, Permission.VOICE_MUTE_OTHERS, Permission.VOICE_MOVE_OTHERS);
     }
 
-    @Nonnull
-    @Override
-    ChannelAction<StageChannel> createCopy(@Nonnull Guild guild);
-
-    @Nonnull
-    @Override
-    ChannelAction<StageChannel> createCopy();
+    //TODO-v5: Once StageChannel and VoiceChannel are split, reintroduce these methods.
+//    @Nonnull
+//    @Override
+//    ChannelAction<StageChannel> createCopy(@Nonnull Guild guild);
+//
+//    @Nonnull
+//    @Override
+//    ChannelAction<StageChannel> createCopy();
 
     @Nonnull
     @Override
