@@ -57,6 +57,11 @@ public class OptionData implements SerializableData
      * The highest length the {@link #addChoice(String, String) String value} of a Choice can be.
      */
     public static final int MAX_VALUE_LENGTH = 100;
+
+    /**
+     * The total amount of {@link #getChoices() choices} you can set.
+     */
+    public static final int MAX_CHOICES = 25;
     
     private final OptionType type;
     private String name, description;
@@ -272,7 +277,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_NAME_LENGTH} characters long</li>
      *             <li>{@code value} is not less than {@link #MIN_NEGATIVE_NUMBER} and not larger than {@link #MAX_POSITIVE_NUMBER}</li>
-     *             <li>There is less than 25 choices set already</li>
+     *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#NUMBER}</li>
      *         </ul>
      * 
@@ -285,7 +290,7 @@ public class OptionData implements SerializableData
         Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
-        Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.NUMBER)
             throw new IllegalArgumentException("Cannot add double choice for OptionType." + type);
         choices.put(name, value);
@@ -305,7 +310,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_NAME_LENGTH} characters long</li>
-     *             <li>There is less than 25 choices set already</li>
+     *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#INTEGER}</li>
      *         </ul>
      *
@@ -316,7 +321,7 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
-        Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.INTEGER)
             throw new IllegalArgumentException("Cannot add int choice for OptionType." + type);
         choices.put(name, value);
@@ -337,7 +342,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_NAME_LENGTH} characters long</li>
      *             <li>{@code value} is not null, empty and less or equal to {@value #MAX_VALUE_LENGTH} characters long</li>
-     *             <li>There is less than 25 choices set already</li>
+     *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#STRING}</li>
      *         </ul>
      *
@@ -350,7 +355,7 @@ public class OptionData implements SerializableData
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_VALUE_LENGTH, "Value");
-        Checks.check(choices.size() < 25, "Cannot have more than 25 choices for an option!");
+        Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
         choices.put(name, value);
@@ -369,7 +374,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>The {@link OptionType} does {@link OptionType#canSupportChoices() support choices}</li>
      *             <li>The provided {@code choices} are not null</li>
-     *             <li>The amount of {@code choices} provided is smaller than 25 when combined with already set choices</li>
+     *             <li>The amount of {@code choices} provided is smaller than {@link #MAX_CHOICES} when combined with already set choices</li>
      *             <li>The {@link OptionType} of the choices is either {@link OptionType#INTEGER}, {@link OptionType#STRING} or {@link OptionType#NUMBER}</li>
      *         </ul>
      *
@@ -381,7 +386,7 @@ public class OptionData implements SerializableData
         if (this.choices == null)
             throw new IllegalStateException("Cannot add choices for an option of type " + type);
         Checks.noneNull(choices, "Choices");
-        Checks.check(choices.length + this.choices.size() <= 25, "Cannot have more than 25 choices for one option!");
+        Checks.check(choices.length + this.choices.size() <= MAX_CHOICES, "Cannot have more than 25 choices for one option!");
         for (Command.Choice choice : choices)
         {
             if (type == OptionType.INTEGER)
@@ -408,7 +413,7 @@ public class OptionData implements SerializableData
      *         <ul>
      *             <li>The {@link OptionType} does {@link OptionType#canSupportChoices() support choices}</li>
      *             <li>The provided {@code choices} are not null</li>
-     *             <li>The amount of {@code choices} provided is smaller than 25 when combined with already set choices</li>
+     *             <li>The amount of {@code choices} provided is smaller than {@link #MAX_CHOICES} when combined with already set choices</li>
      *             <li>The {@link OptionType} of the choices is either {@link OptionType#INTEGER}, {@link OptionType#STRING} or {@link OptionType#NUMBER}</li>
      *         </ul>
      *
@@ -420,7 +425,7 @@ public class OptionData implements SerializableData
         Checks.noneNull(choices, "Choices");
         return addChoices(choices.toArray(new Command.Choice[0]));
     }
-
+    
     @Nonnull
     @Override
     public DataObject toData()
