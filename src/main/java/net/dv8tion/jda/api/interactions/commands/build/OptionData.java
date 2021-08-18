@@ -49,7 +49,7 @@ public class OptionData implements SerializableData
     public static final int MAX_NAME_LENGTH = 32;
 
     /**
-     * The highest length the description of an option can be.
+     * The maximum length the description of an option can be.
      */
     public static final int MAX_DESCRIPTION_LENGTH = 100;
 
