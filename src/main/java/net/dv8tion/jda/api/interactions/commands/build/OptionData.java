@@ -54,7 +54,7 @@ public class OptionData implements SerializableData
     public static final int MAX_DESCRIPTION_LENGTH = 100;
 
     /**
-     * The total length a String value for a choice can be.
+     * The maximum length a {@link OptionType#STRING String value} for a choice can be.
      */
     public static final int MAX_CHOICE_VALUE_LENGTH = 100;
 
