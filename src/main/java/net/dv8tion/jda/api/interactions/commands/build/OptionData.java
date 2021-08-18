@@ -39,7 +39,7 @@ public class OptionData implements SerializableData
     public static final double MAX_POSITIVE_NUMBER = (1L << 53) - 1; // 1L << 53 is non-inclusive for Discord
     
     /**
-     * The smallest negative amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
+     * The largest negative amount Discord allows the {@link OptionType#NUMBER NUMBER} type to be.
      */
     public static final double MIN_NEGATIVE_NUMBER = -(1L << 53) + 1; // 1L << 53 is non-inclusive for Discord
 
