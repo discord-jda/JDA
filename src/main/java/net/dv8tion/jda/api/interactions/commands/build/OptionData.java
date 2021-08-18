@@ -54,9 +54,9 @@ public class OptionData implements SerializableData
     public static final int MAX_DESCRIPTION_LENGTH = 100;
 
     /**
-     * The highest length the {@link #addChoice(String, String) String value} of a Choice can be.
+     * The total length a String value for a choice can be.
      */
-    public static final int MAX_VALUE_LENGTH = 100;
+    public static final int MAX_CHOICE_VALUE_LENGTH = 100;
 
     /**
      * The total amount of {@link #getChoices() choices} you can set.
@@ -341,7 +341,7 @@ public class OptionData implements SerializableData
      *         If any of the following checks fail
      *         <ul>
      *             <li>{@code name} is not null, empty and less or equal to {@value #MAX_NAME_LENGTH} characters long</li>
-     *             <li>{@code value} is not null, empty and less or equal to {@value #MAX_VALUE_LENGTH} characters long</li>
+     *             <li>{@code value} is not null, empty and less or equal to {@value #MAX_CHOICE_VALUE_LENGTH} characters long</li>
      *             <li>The amount of already set choices is less than {@link #MAX_CHOICES}</li>
      *             <li>The {@link OptionType} is {@link OptionType#STRING}</li>
      *         </ul>
@@ -354,7 +354,7 @@ public class OptionData implements SerializableData
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(value, "Value");
         Checks.notLonger(name, MAX_NAME_LENGTH, "Name");
-        Checks.notLonger(value, MAX_VALUE_LENGTH, "Value");
+        Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.STRING)
             throw new IllegalArgumentException("Cannot add string choice for OptionType." + type);
