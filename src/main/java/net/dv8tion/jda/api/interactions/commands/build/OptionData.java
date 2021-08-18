@@ -44,7 +44,7 @@ public class OptionData implements SerializableData
     public static final double MIN_NEGATIVE_NUMBER = -(1L << 53);
 
     /**
-     * The highest length the name of an option can be.
+     * The maximum length the name of an option can be.
      */
     public static final int MAX_NAME_LENGTH = 32;
 
