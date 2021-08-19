@@ -71,9 +71,9 @@ import net.dv8tion.jda.api.events.guild.voice.*;
 import net.dv8tion.jda.api.events.http.HttpRequestEvent;
 import net.dv8tion.jda.api.events.interaction.*;
 import net.dv8tion.jda.api.events.interaction.commands.GenericCommandEvent;
-import net.dv8tion.jda.api.events.interaction.commands.MessageCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-import net.dv8tion.jda.api.events.interaction.commands.UserCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.api.events.message.*;
 import net.dv8tion.jda.api.events.message.guild.*;
 import net.dv8tion.jda.api.events.message.guild.react.*;
@@ -196,8 +196,8 @@ public abstract class ListenerAdapter implements EventListener
 
     //Interaction Events
     public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
-    public void onUserCommand(@Nonnull UserCommandEvent event) {}
-    public void onMessageCommand(@Nonnull MessageCommandEvent event) {}
+    public void onUserContextCommand(@Nonnull UserContextCommandEvent event) {}
+    public void onMessageContextCommand(@Nonnull MessageContextCommandEvent event) {}
     public void onButtonClick(@Nonnull ButtonClickEvent event) {}
     public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
 

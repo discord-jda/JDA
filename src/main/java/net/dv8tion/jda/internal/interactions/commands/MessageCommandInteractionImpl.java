@@ -24,7 +24,7 @@ public class MessageCommandInteractionImpl extends CommandInteractionImpl implem
         Optional<Object> messageOptional = Arrays.stream(resolved.values()).findFirst();
         
         //Assigning null would break @Nonnull in #getTargetMessage, this should be a discord bug if there's no target message
-        this.targetMessage = (Message) messageOptional.orElseThrow();
+        this.targetMessage = (Message) messageOptional.orElseThrow(() -> new NullPointerException("Target message does not exist"));
     }
 
 

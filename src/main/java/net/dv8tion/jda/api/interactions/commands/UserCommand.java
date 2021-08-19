@@ -21,8 +21,8 @@ public class UserCommand extends Command
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot edit a command from another bot!");
         return guild == null ?
-                new CommandEditActionImpl(api, getId(), CommandType.USER_COMMAND) :
-                new CommandEditActionImpl(guild, getId(), CommandType.USER_COMMAND);
+                new CommandEditActionImpl(api, getId(), CommandType.USER_CONTEXT) :
+                new CommandEditActionImpl(guild, getId(), CommandType.USER_CONTEXT);
     }
 
     @Override

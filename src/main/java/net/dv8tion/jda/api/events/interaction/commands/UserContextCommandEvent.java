@@ -18,11 +18,11 @@ import javax.annotation.Nullable;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class UserCommandEvent extends GenericCommandEvent implements UserCommandInteraction
+public class UserContextCommandEvent extends GenericCommandEvent implements UserCommandInteraction
 {
     private final UserCommandInteractionImpl commandInteraction;
 
-    public UserCommandEvent(@NotNull JDA api, long responseNumber, @NotNull UserCommandInteractionImpl interaction)
+    public UserContextCommandEvent(@NotNull JDA api, long responseNumber, @NotNull UserCommandInteractionImpl interaction)
     {
         super(api, responseNumber, interaction);
         this.commandInteraction = interaction;

@@ -853,11 +853,11 @@ public class JDAImpl implements JDA
                         .stream(DataArray::getObject)
                         .map(json -> {
                             switch (CommandType.fromKey(json.getInt("type"))) {
-                            case SLASH_COMMAND:
+                            case SLASH:
                                 return new SlashCommand(this, null, json);
-                            case USER_COMMAND:
+                            case USER_CONTEXT:
                                 return new UserCommand(this, null, json);
-                            case MESSAGE_COMMAND:
+                            case MESSAGE_CONTEXT:
                                 return new MessageCommand(this, null, json);
                             default:
                                 return new Command(this, null, json);
@@ -875,11 +875,11 @@ public class JDAImpl implements JDA
         return new RestActionImpl<>(this, route, (response, request) -> {
             DataObject json = response.getObject();
             switch (CommandType.fromKey(json.getInt("type"))) {
-            case SLASH_COMMAND:
+            case SLASH:
                 return new SlashCommand(this, null, json);
-            case USER_COMMAND:
+            case USER_CONTEXT:
                 return new UserCommand(this, null, json);
-            case MESSAGE_COMMAND:
+            case MESSAGE_CONTEXT:
                 return new MessageCommand(this, null, json);
             default:
                 return new Command(this, null, json);
@@ -908,7 +908,7 @@ public class JDAImpl implements JDA
     public CommandEditAction editSlashCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id, CommandType.SLASH_COMMAND);
+        return new CommandEditActionImpl(this, id, CommandType.SLASH);
     }
 
     @Nonnull
@@ -916,7 +916,7 @@ public class JDAImpl implements JDA
     public CommandEditAction editContextMenuById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id, CommandType.USER_COMMAND);
+        return new CommandEditActionImpl(this, id, CommandType.USER_CONTEXT);
     }
 
     @Nonnull

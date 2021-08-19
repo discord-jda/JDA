@@ -19,9 +19,9 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.events.interaction.ButtonClickEvent;
 import net.dv8tion.jda.api.events.interaction.GenericInteractionCreateEvent;
 import net.dv8tion.jda.api.events.interaction.SelectionMenuEvent;
-import net.dv8tion.jda.api.events.interaction.commands.MessageCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.MessageContextCommandEvent;
 import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
-import net.dv8tion.jda.api.events.interaction.commands.UserCommandEvent;
+import net.dv8tion.jda.api.events.interaction.commands.UserContextCommandEvent;
 import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.components.Component;
@@ -79,19 +79,19 @@ public class InteractionCreateHandler extends SocketHandler
     {
         switch (CommandType.fromKey(content.getObject("data").getInt("type")))
         {
-        case SLASH_COMMAND:
+        case SLASH:
             api.handleEvent(
                     new SlashCommandEvent(api, responseNumber,
                             new SlashCommandInteractionImpl(api, content)));
             break;
-        case USER_COMMAND:
+        case USER_CONTEXT:
             api.handleEvent(
-                    new UserCommandEvent(api, responseNumber,
+                    new UserContextCommandEvent(api, responseNumber,
                             new UserCommandInteractionImpl(api, content)));
             break;
-        case MESSAGE_COMMAND:
+        case MESSAGE_CONTEXT:
             api.handleEvent(
-                    new MessageCommandEvent(api, responseNumber,
+                    new MessageContextCommandEvent(api, responseNumber,
                             new MessageCommandInteractionImpl(api, content)));
             break;
         }

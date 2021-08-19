@@ -133,11 +133,11 @@ public class GuildImpl implements Guild
                                 .stream(DataArray::getObject)
                                 .map(json -> {
                                     switch (CommandType.fromKey(json.getInt("type"))) {
-                                        case SLASH_COMMAND:
+                                        case SLASH:
                                             return new SlashCommand(getJDA(), this, json);
-                                        case USER_COMMAND:
+                                        case USER_CONTEXT:
                                             return new UserCommand(getJDA(), this, json);
-                                        case MESSAGE_COMMAND:
+                                        case MESSAGE_CONTEXT:
                                             return new MessageCommand(getJDA(), this, json);
                                         default:
                                             return new Command(getJDA(), this, json);
@@ -155,11 +155,11 @@ public class GuildImpl implements Guild
         return new RestActionImpl<>(getJDA(), route, (response, request) -> {
             DataObject json = response.getObject();
             switch (CommandType.fromKey(json.getInt("type"))) {
-            case SLASH_COMMAND:
+            case SLASH:
                 return new SlashCommand(getJDA(), this, json);
-            case USER_COMMAND:
+            case USER_CONTEXT:
                 return new UserCommand(getJDA(), this, json);
-            case MESSAGE_COMMAND:
+            case MESSAGE_CONTEXT:
                 return new MessageCommand(getJDA(), this, json);
             default:
                 return new Command(getJDA(), this, json);
@@ -188,7 +188,7 @@ public class GuildImpl implements Guild
     public CommandEditAction editSlashCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id, CommandType.SLASH_COMMAND);
+        return new CommandEditActionImpl(this, id, CommandType.SLASH);
     }
 
     @Nonnull
@@ -196,7 +196,7 @@ public class GuildImpl implements Guild
     public CommandEditAction editContextMenuById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id, CommandType.USER_COMMAND);
+        return new CommandEditActionImpl(this, id, CommandType.USER_CONTEXT);
     }
 
     @Nonnull

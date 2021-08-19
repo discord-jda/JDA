@@ -21,8 +21,8 @@ public class MessageCommand extends Command
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot edit a command from another bot!");
         return guild == null ?
-                new CommandEditActionImpl(api, getId(), CommandType.MESSAGE_COMMAND) :
-                new CommandEditActionImpl(guild, getId(), CommandType.MESSAGE_COMMAND);
+                new CommandEditActionImpl(api, getId(), CommandType.MESSAGE_CONTEXT) :
+                new CommandEditActionImpl(guild, getId(), CommandType.MESSAGE_CONTEXT);
     }
 
     @Override

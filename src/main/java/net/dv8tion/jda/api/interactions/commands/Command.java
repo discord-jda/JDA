@@ -108,8 +108,8 @@ public class Command implements ISnowflake
         if (applicationId != api.getSelfUser().getApplicationIdLong())
             throw new IllegalStateException("Cannot edit a command from another bot!");
         return guild == null ?
-                new CommandEditActionImpl(api, getId(), CommandType.SLASH_COMMAND) :
-                new CommandEditActionImpl(guild, getId(), CommandType.SLASH_COMMAND);
+                new CommandEditActionImpl(api, getId(), CommandType.SLASH) :
+                new CommandEditActionImpl(guild, getId(), CommandType.SLASH);
     }
 
     /**

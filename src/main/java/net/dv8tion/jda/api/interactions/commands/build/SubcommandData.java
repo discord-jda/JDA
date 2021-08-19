@@ -50,7 +50,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
      */
     public SubcommandData(@Nonnull String name, @Nonnull String description)
     {
-        super(CommandType.SLASH_COMMAND, name, description);
+        super(CommandType.SLASH, name, description);
     }
 
     /**

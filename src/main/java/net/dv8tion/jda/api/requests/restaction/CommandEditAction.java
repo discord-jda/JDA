@@ -109,7 +109,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         If the name is null or not between 1-100 characters.
-     *         Also, if the command is not of type {@link CommandType#SLASH_COMMAND}
+     *         Also, if the command is not of type {@link CommandType#SLASH}
      *
      * @return The CommandEditAction instance, for chaining
      */
@@ -137,7 +137,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -162,7 +162,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -197,7 +197,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -229,7 +229,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -255,7 +255,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 subcommands are provided.</li>
@@ -277,7 +277,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 subcommands are provided.</li>
@@ -303,7 +303,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 subcommands are provided.</li>
@@ -325,7 +325,7 @@ public interface CommandEditAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
      *             <li>If more than 25 subcommands are provided.</li>

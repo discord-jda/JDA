@@ -44,7 +44,7 @@ public class UserCommandInteractionImpl extends CommandInteractionImpl implement
                         .findFirst();
 
         //Assigning null would break @Nonnull in #getTargetUser, this should be a discord bug if there's no target user
-        targetUser = (User) userOptional.orElseThrow();
+        targetUser = (User) userOptional.orElseThrow(() -> new NullPointerException("Target user does not exist"));
     }
 
 

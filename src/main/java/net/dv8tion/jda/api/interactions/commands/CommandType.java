@@ -12,17 +12,17 @@ public enum CommandType
     /**
      * A slash command is the default command that appears once a user types "/"
      */
-    SLASH_COMMAND(1),
+    SLASH(1),
 
     /**
      * A user command, also known as a "User Context Menu Command", appears when opening a context menu on a user
      */
-    USER_COMMAND(2),
+    USER_CONTEXT(2),
 
     /**
      * A message command, also known as a "Message Context Menu Command", appears when opening a context menu on a message
      */
-    MESSAGE_COMMAND(3),
+    MESSAGE_CONTEXT(3),
     ;
 
     private final int raw;

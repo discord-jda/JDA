@@ -609,7 +609,7 @@ public interface JDA
      *
      * @throws IllegalArgumentException
      *         If null is provided or the name/description do not meet the requirements.
-     *         Also, if the command being created is of type {@link CommandType#SLASH_COMMAND}
+     *         Also, if the command being created is of type {@link CommandType#SLASH}
      *
      * @return {@link CommandCreateAction}
      *
@@ -619,7 +619,7 @@ public interface JDA
     @CheckReturnValue
     default CommandCreateAction upsertCommand(CommandType commandType, @Nonnull String name)
     {
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "This command may not be of type slash command");
+        Checks.check(commandType != CommandType.SLASH, "This command may not be of type slash command");
         return upsertCommand(new CommandData(commandType, name));
     }
 

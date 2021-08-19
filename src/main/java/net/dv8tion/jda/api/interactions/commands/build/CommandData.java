@@ -54,18 +54,18 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
      *         <ul>
-     *             <li>The command is of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}</li>
+     *             <li>The command is of type {@link CommandType#USER_CONTEXT} or {@link CommandType#MESSAGE_CONTEXT}</li>
      *             <li>The name must be 1-32 characters long</li>
      *         </ul>
      */
     public CommandData(CommandType commandType, @Nonnull String name)
     {
         super(commandType, name, null);
-        Checks.check(commandType != CommandType.SLASH_COMMAND, "You cannot create a slash command using this constructor.");
+        Checks.check(commandType != CommandType.SLASH, "You cannot create a slash command using this constructor.");
     }
 
     /**
-     * Create a command builder. This will default to a {@link CommandType#SLASH_COMMAND}
+     * Create a command builder. This will default to a {@link CommandType#SLASH}
      *
      * @param name
      *        The command name, 1-32 lowercase alphanumeric characters
@@ -81,7 +81,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      */
     public CommandData(@Nonnull String name, @Nonnull String description)
     {
-        super(CommandType.SLASH_COMMAND, name, description);
+        super(CommandType.SLASH, name, description);
     }
 
     /**
@@ -164,7 +164,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>The command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>The command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -177,7 +177,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOptions(@Nonnull OptionData... options)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add options to slash commands.");
         Checks.noneNull(options, "Option");
         Checks.check(options.length + this.options.length() <= 25, "Cannot have more than 25 options for a command!");
         Checks.check(allowOption, "You cannot mix options with subcommands/groups.");
@@ -203,7 +203,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>The command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>The command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -216,7 +216,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOptions(@Nonnull Collection<? extends OptionData> options)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add options to slash commands.");
         Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
     }
@@ -237,7 +237,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>The command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>The command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -250,7 +250,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add options to slash commands.");
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
 
@@ -269,7 +269,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>The command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>The command is not of type {@link CommandType#SLASH}</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -282,7 +282,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add options to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add options to slash commands.");
         return addOption(type, name, description, false);
     }
 
@@ -294,7 +294,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If null is provided</li>
      *             <li>If more than 25 subcommands are provided</li>
      *             <li>If Subcommands/options/groups are mixed in one command</li>
@@ -305,7 +305,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add subcommands to slash commands.");
         Checks.noneNull(subcommands, "Subcommands");
         if (!allowSubcommands)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -324,7 +324,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If null is provided</li>
      *             <li>If more than 25 subcommands are provided</li>
      *             <li>If Subcommands/options/groups are mixed in one command</li>
@@ -335,7 +335,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add subcommands to slash commands.");
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
     }
@@ -348,7 +348,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If null is provided</li>
      *             <li>If more than 25 subcommands are provided</li>
      *             <li>If Subcommands/options/groups are mixed in one command</li>
@@ -359,7 +359,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add subcommand groups to slash commands.");
         Checks.noneNull(groups, "SubcommandGroups");
         if (!allowGroups)
             throw new IllegalArgumentException("You cannot mix options with subcommands/groups.");
@@ -378,7 +378,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      *
      * @throws IllegalArgumentException
      *         <ul>
-     *             <li>If the command is not of type {@link CommandType#SLASH_COMMAND}</li>
+     *             <li>If the command is not of type {@link CommandType#SLASH}</li>
      *             <li>If null is provided</li>
      *             <li>If more than 25 subcommands are provided</li>
      *             <li>If Subcommands/options/groups are mixed in one command</li>
@@ -389,13 +389,13 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
     @Nonnull
     public CommandData addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
     {
-        Checks.check(commandType == CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands.");
+        Checks.check(commandType == CommandType.SLASH, "You can only add subcommand groups to slash commands.");
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
     }
 
     /**
-     * Parses the provided serialization back into an CommandData instance. If the command is not of type {@link CommandType#SLASH_COMMAND},
+     * Parses the provided serialization back into an CommandData instance. If the command is not of type {@link CommandType#SLASH},
      * everything will be ignored except the name and type
      * <br>This is the reverse function for {@link #toData()}.
      *
@@ -415,7 +415,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
         Checks.notNull(object, "DataObject");
         String name = object.getString("name");
         CommandType commandType = CommandType.fromKey(object.getInt("type"));
-        if(commandType != CommandType.SLASH_COMMAND)
+        if(commandType != CommandType.SLASH)
             return new CommandData(commandType, name);
 
         String description = object.getString("description");

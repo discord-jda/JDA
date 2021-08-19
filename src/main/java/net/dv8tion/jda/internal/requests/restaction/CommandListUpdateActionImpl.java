@@ -90,13 +90,13 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
         tempCommandsList.addAll(commands);
         for(CommandData data : tempCommandsList) {
             switch (data.getCommandType()) {
-            case SLASH_COMMAND:
+            case SLASH:
                 slashCommandCount++;
                 break;
-            case USER_COMMAND:
+            case USER_CONTEXT:
                 userCommandCount++;
                 break;
-            case MESSAGE_COMMAND:
+            case MESSAGE_CONTEXT:
                 messageCommandCount++;
                 break;
             }
@@ -124,11 +124,11 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
                 .map(obj ->
                 {
                     switch (CommandType.fromKey(obj.getInt("type"))) {
-                    case SLASH_COMMAND:
+                    case SLASH:
                         return new SlashCommand(api, guild, obj);
-                    case USER_COMMAND:
+                    case USER_CONTEXT:
                         return new UserCommand(api, guild, obj);
-                    case MESSAGE_COMMAND:
+                    case MESSAGE_CONTEXT:
                         return new MessageCommand(api, guild, obj);
                     default:
                         return new Command(api, guild, obj);

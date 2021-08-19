@@ -50,7 +50,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditActionImpl(JDA api, String id, CommandType type)
     {
         super(api, Route.Interactions.EDIT_COMMAND.compile(api.getSelfUser().getApplicationId(), id));
-        if(type == CommandType.SLASH_COMMAND)
+        if(type == CommandType.SLASH)
             data = new CommandData(UNDEFINED, UNDEFINED);
         else
             data = new CommandData(type, UNDEFINED);
@@ -61,7 +61,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     public CommandEditActionImpl(Guild guild, String id, CommandType type)
     {
         super(guild.getJDA(), Route.Interactions.EDIT_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId(), id));
-        if(type == CommandType.SLASH_COMMAND)
+        if(type == CommandType.SLASH)
             data = new CommandData(UNDEFINED, UNDEFINED);
         else
             data = new CommandData(type, UNDEFINED);
@@ -132,7 +132,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction setDescription(@Nullable String description)
     {
-        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only set the description of slash commands");
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only set the description of slash commands");
         if (description == null)
         {
             mask &= ~DESCRIPTION_SET;
@@ -156,7 +156,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction addOptions(@Nonnull OptionData... options)
     {
-        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add options to slash commands");
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only add options to slash commands");
         data.addOptions(options);
         mask |= OPTIONS_SET;
         return this;
@@ -166,7 +166,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add subcommands to slash commands");
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only add subcommands to slash commands");
         data.addSubcommands(subcommands);
         mask |= OPTIONS_SET;
         return this;
@@ -176,7 +176,7 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     @Override
     public CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
-        Checks.check(data.getCommandType() == CommandType.SLASH_COMMAND, "You can only add subcommand groups to slash commands");
+        Checks.check(data.getCommandType() == CommandType.SLASH, "You can only add subcommand groups to slash commands");
         data.addSubcommandGroups(groups);
         mask |= OPTIONS_SET;
         return this;
@@ -207,11 +207,11 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
     {
         DataObject json = response.getObject();
         switch (CommandType.fromKey(json.getInt("type"))) {
-        case SLASH_COMMAND:
+        case SLASH:
             request.onSuccess(new SlashCommand(api, guild, json));
-        case USER_COMMAND:
+        case USER_CONTEXT:
             request.onSuccess(new UserCommand(api, guild, json));
-        case MESSAGE_COMMAND:
+        case MESSAGE_CONTEXT:
             request.onSuccess(new MessageCommand(api, guild, json));
         default:
             request.onSuccess(new Command(api, guild, json));
