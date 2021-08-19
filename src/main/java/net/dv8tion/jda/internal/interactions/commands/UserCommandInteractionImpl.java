@@ -14,8 +14,8 @@ import java.util.Optional;
 public class UserCommandInteractionImpl extends CommandInteractionImpl implements UserCommandInteraction
 {
     protected final long targetID;
-    protected User targetUser;
-    protected Member targetMember;
+    protected final User targetUser;
+    protected final Member targetMember;
 
     public UserCommandInteractionImpl(JDAImpl jda, DataObject data)
     {
@@ -32,15 +32,19 @@ public class UserCommandInteractionImpl extends CommandInteractionImpl implement
         targetMember = (Member) memberOptional.orElse(null);
 
         // Since the user is upgraded to a member, it won't exist
-        if(targetMember != null)
+        if(targetMember != null) 
+        {
+            targetUser = targetMember.getUser();
             return;
+        }
 
         Optional<Object> userOptional =
                 Arrays.stream(resolved.values())
                         .filter(value -> value instanceof User)
                         .findFirst();
 
-        targetUser = (User) userOptional.orElse(null);
+        //Assigning null would break @Nonnull in #getTargetUser, this should be a discord bug if there's no target user
+        targetUser = (User) userOptional.orElseThrow();
     }
 
 
@@ -54,7 +58,7 @@ public class UserCommandInteractionImpl extends CommandInteractionImpl implement
     @Nonnull
     public User getTargetUser()
     {
-        return targetUser == null ? member.getUser() : targetUser;
+        return targetUser;
     }
 
     @Override
