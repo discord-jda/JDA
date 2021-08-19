@@ -12,7 +12,7 @@ import java.util.Optional;
 public class MessageCommandInteractionImpl extends CommandInteractionImpl implements MessageCommandInteraction
 {
     protected final long targetID;
-    protected Message targetMessage;
+    protected final Message targetMessage;
 
     public MessageCommandInteractionImpl(JDAImpl jda, DataObject data)
     {
