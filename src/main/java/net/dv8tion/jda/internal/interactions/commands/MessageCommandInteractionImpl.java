@@ -22,7 +22,9 @@ public class MessageCommandInteractionImpl extends CommandInteractionImpl implem
         this.targetID = commandData.getLong("target_id");
 
         Optional<Object> messageOptional = Arrays.stream(resolved.values()).findFirst();
-        this.targetMessage = (Message) messageOptional.orElse(null);
+        
+        //Assigning null would break @Nonnull in #getTargetMessage, this should be a discord bug if there's no target message
+        this.targetMessage = (Message) messageOptional.orElseThrow();
     }
 
 
