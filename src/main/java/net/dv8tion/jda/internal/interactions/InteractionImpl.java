@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -24,6 +25,7 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -151,5 +153,12 @@ public class InteractionImpl implements Interaction
     public ReplyActionImpl deferReply()
     {
         return new ReplyActionImpl(this.hook);
+    }
+
+    @NotNull
+    @Override
+    public JDA getJDA()
+    {
+        return api;
     }
 }
