@@ -17,12 +17,10 @@
 package net.dv8tion.jda.api.interactions.commands;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.DataType;
 import net.dv8tion.jda.internal.JDAImpl;
-import net.dv8tion.jda.internal.requests.restaction.CommandEditActionImpl;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -137,15 +135,16 @@ public class SlashCommand extends Command
 
     /**
      * Predefined choice used for options.
-     * 
+     *
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(SlashCommand.Choice...)
      * @see net.dv8tion.jda.api.interactions.commands.build.OptionData#addChoices(Collection)
      */
     public static class Choice
     {
         private final String name;
-        private final long intValue;
-        private final String stringValue;
+        private long intValue = 0;
+        private double doubleValue = Double.NaN;
+        private String stringValue = null;
 
         /**
          * Create a Choice tuple
@@ -158,8 +157,21 @@ public class SlashCommand extends Command
         public Choice(@Nonnull String name, long value)
         {
             this.name = name;
-            this.intValue = value;
-            this.stringValue = Long.toString(value);
+            setIntValue(value);
+        }
+
+        /**
+         * Create a Choice tuple
+         *
+         * @param name
+         *        The display name of this choice
+         * @param value
+         *        The double value you receive in a command option
+         */
+        public Choice(@Nonnull String name, double value)
+        {
+            this.name = name;
+            setDoubleValue(value);
         }
 
         /**
@@ -173,8 +185,7 @@ public class SlashCommand extends Command
         public Choice(@Nonnull String name, @Nonnull String value)
         {
             this.name = name;
-            this.intValue = 0;
-            this.stringValue = value;
+            setStringValue(value);
         }
 
         /**
@@ -194,13 +205,15 @@ public class SlashCommand extends Command
             this.name = json.getString("name");
             if (json.isType("value", DataType.INT))
             {
-                this.intValue = json.getLong("value");
-                this.stringValue = Long.toString(intValue); // does this make sense?
+                setIntValue(json.getLong("value"));
+            }
+            else if (json.isType("value", DataType.FLOAT))
+            {
+                setDoubleValue(json.getDouble("value"));
             }
             else
             {
-                this.intValue = 0;
-                this.stringValue = json.getString("value");
+                setStringValue(json.getString("value"));
             }
         }
 
@@ -214,6 +227,16 @@ public class SlashCommand extends Command
         public String getName()
         {
             return name;
+        }
+
+        /**
+         * The value of this choice.
+         *
+         * @return The double value, or NaN if this is not a numeric choice value
+         */
+        public double getAsDouble()
+        {
+            return doubleValue;
         }
 
         /**
@@ -257,6 +280,27 @@ public class SlashCommand extends Command
         {
             return "Choice(" + name + "," + stringValue + ")";
         }
+
+        private void setIntValue(long value)
+        {
+            this.doubleValue = value;
+            this.intValue = value;
+            this.stringValue = Long.toString(value);
+        }
+
+        private void setDoubleValue(double value)
+        {
+            this.doubleValue = value;
+            this.intValue = (long) value;
+            this.stringValue = Double.toString(value);
+        }
+
+        private void setStringValue(@Nonnull String value)
+        {
+            this.doubleValue = Double.NaN;
+            this.intValue = 0;
+            this.stringValue = value;
+        }
     }
 
     /**
@@ -276,8 +320,8 @@ public class SlashCommand extends Command
             this.type = json.getInt("type");
             this.required = json.getBoolean("required");
             this.choices = json.optArray("choices")
-                .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
-                .orElse(Collections.emptyList());
+                    .map(it -> it.stream(DataArray::getObject).map(Choice::new).collect(Collectors.toList()))
+                    .orElse(Collections.emptyList());
         }
 
         /**
@@ -358,9 +402,9 @@ public class SlashCommand extends Command
             if (!(obj instanceof Option)) return false;
             Option other = (Option) obj;
             return Objects.equals(other.name, name)
-                && Objects.equals(other.description, description)
-                && Objects.equals(other.choices, choices)
-                && other.type == type;
+                    && Objects.equals(other.description, description)
+                    && Objects.equals(other.choices, choices)
+                    && other.type == type;
         }
 
         @Override
@@ -431,8 +475,8 @@ public class SlashCommand extends Command
             if (!(obj instanceof Subcommand)) return false;
             Subcommand other = (Subcommand) obj;
             return Objects.equals(other.name, name)
-                && Objects.equals(other.description, description)
-                && Objects.equals(other.options, options);
+                    && Objects.equals(other.description, description)
+                    && Objects.equals(other.options, options);
         }
 
         @Override

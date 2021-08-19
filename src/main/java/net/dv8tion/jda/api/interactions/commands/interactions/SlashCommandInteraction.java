@@ -16,10 +16,12 @@
 
 package net.dv8tion.jda.api.interactions.commands.interactions;
 
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.events.interaction.commands.SlashCommandEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.entities.*;
-import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -163,6 +165,7 @@ public interface SlashCommandInteraction extends CommandInteraction
         List<OptionMapping> options = getOptionsByName(name);
         return options.isEmpty() ? null : options.get(0);
     }
+
 
     /**
      * Gets the slash command String for this slash command.

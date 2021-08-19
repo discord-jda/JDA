@@ -9,6 +9,7 @@ import net.dv8tion.jda.internal.interactions.commands.UserCommandInteractionImpl
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Indicates that a user command was used in a {@link MessageChannel}.
@@ -41,6 +42,7 @@ public class UserCommandEvent extends GenericCommandEvent implements UserCommand
     }
 
     @Override
+    @Nullable
     public Member getTargetMember()
     {
         return commandInteraction.getTargetMember();
