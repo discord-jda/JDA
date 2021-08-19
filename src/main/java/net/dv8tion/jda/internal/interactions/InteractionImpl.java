@@ -25,7 +25,6 @@ import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.entities.GuildImpl;
 import net.dv8tion.jda.internal.entities.MemberImpl;
 import net.dv8tion.jda.internal.requests.restaction.interactions.ReplyActionImpl;
-import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -155,7 +154,7 @@ public class InteractionImpl implements Interaction
         return new ReplyActionImpl(this.hook);
     }
 
-    @NotNull
+    @Nonnull
     @Override
     public JDA getJDA()
     {
