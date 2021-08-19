@@ -219,7 +219,6 @@ public class Command implements ISnowflake
         return name;
     }
 
-
     /**
      * Whether this command is enabled for everyone by default.
      *

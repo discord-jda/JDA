@@ -16,8 +16,8 @@
 
 package net.dv8tion.jda.api.interactions.commands.build;
 
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -39,7 +39,6 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
 
-        // If the description is null it means it's not a slash command
         if(commandType == CommandType.SLASH_COMMAND) {
             Checks.check(description.length() > 0, "Description");
             Checks.notLonger(description, 100, "Description");
@@ -58,10 +57,18 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
      *         If the command is not of type {@link CommandType#SLASH_COMMAND}, the name may be non-alphanumeric and capitalized
      *
      * @throws IllegalArgumentException
-     *         If the command is of type {@link CommandType#SLASH_COMMAND} and the name is null, not alphanumeric,
-     *         or not between 1-32 characters.
-     *         If the command is of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}
-     *         and the name is null or not between 1-32 characters
+     *         <p>If the command is of type {@link CommandType#SLASH_COMMAND}:
+     *             <ul>
+     *                 <li>The name is null</li>
+     *                 <li>The name is not alphanumeric</li>
+     *                 <li>The name is not between 1-32 characters</li>
+     *             </ul>
+     *         </p>
+     *         <p>If the command is of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}:
+     *             <ul>
+     *                 <li>The name is null</li>
+     *                 <li>The name is not between 1-32 characters</li>
+     *             </ul>
      *
      * @return The builder, for chaining
      */
@@ -123,7 +130,7 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @Nonnull
     public String getDescription()
     {
-        return description;
+        return description == null ? "" : description;
     }
 
     /**

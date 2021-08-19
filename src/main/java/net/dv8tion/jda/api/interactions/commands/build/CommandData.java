@@ -54,7 +54,7 @@ public class CommandData extends BaseCommand<CommandData> implements Serializabl
      * @throws IllegalArgumentException
      *         If any of the following requirements are not met
      *         <ul>
-     *             <li>The command is not of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}</li>
+     *             <li>The command is of type {@link CommandType#USER_COMMAND} or {@link CommandType#MESSAGE_COMMAND}</li>
      *             <li>The name must be 1-32 characters long</li>
      *         </ul>
      */
