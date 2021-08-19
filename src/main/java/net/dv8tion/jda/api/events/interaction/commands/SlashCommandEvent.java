@@ -63,4 +63,11 @@ public class SlashCommandEvent extends GenericCommandEvent implements SlashComma
     {
         return commandInteraction.getOptions();
     }
+
+    @Nonnull
+    @Override
+    public String getCommandString()
+    {
+        return commandInteraction.getCommandString();
+    }
 }
