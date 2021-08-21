@@ -310,12 +310,17 @@ public interface Invite
     boolean isExpanded();
 
     /**
-     * Whether this Invite grants only temporary access or not
+     * Whether this Invite grants only temporary access or not.
+     *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws IllegalStateException
      *         if this invite is not expanded
      *
-     * @return Whether is invite expanded or not
+     * @return Whether is invite temporary or not
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     boolean isTemporary();
 
