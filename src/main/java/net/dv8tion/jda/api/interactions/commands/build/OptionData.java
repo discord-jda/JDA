@@ -474,7 +474,7 @@ public class OptionData implements SerializableData
                     if (o.isType("value", DataType.FLOAT))
                         option.addChoice(o.getString("name"), o.getDouble("value"));
                     else if (o.isType("value", DataType.INT))
-                        option.addChoice(o.getString("name"), o.getLong("value"));
+                        option.addChoice(o.getString("name"), (int) o.getLong("value"));
                     else
                         option.addChoice(o.getString("name"), o.get("value").toString());
                 })
