@@ -984,9 +984,10 @@ public class EntityBuilder
                 UnlockHook vlock = guildVoiceView.writeLock();
                 UnlockHook jlock = voiceView.writeLock())
             {
-                if (json.getInt("type") == ChannelType.STAGE.getId())
-                    channel = new StageChannelImpl(id, guild);
-                else
+                //TODO-v5: Re-enable creation of StageChannels
+//                if (json.getInt("type") == ChannelType.STAGE.getId())
+//                    channel = new StageChannelImpl(id, guild);
+//                else
                     channel = new VoiceChannelImpl(id, guild);
                 guildVoiceView.getMap().put(id, channel);
                 playbackCache = voiceView.getMap().put(id, channel) == null;

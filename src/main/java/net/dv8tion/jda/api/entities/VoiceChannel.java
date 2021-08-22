@@ -41,56 +41,26 @@ import javax.annotation.Nullable;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends StandardGuildChannel
+public interface VoiceChannel extends StandardGuildChannel, AudioChannel
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this
      * {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel} at once.
      * <br>0 - No limit
      *
-     * <p>This is meaningless for {@link StageChannel StageChannels}.
-     *
      * @return The maximum amount of members allowed in this channel at once.
      */
     int getUserLimit();
 
-    /**
-     * The audio bitrate of the voice audio that is transmitted in this channel. While higher bitrates can be sent to
-     * this channel, it will be scaled down by the client.
-     * <br>Default and recommended value is 64000
-     *
-     * @return The audio bitrate of this voice channel.
-     */
-    int getBitrate();
-
-    /**
-     * The {@link net.dv8tion.jda.api.Region Region} of this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * <br>This will return {@link Region#AUTOMATIC} if the region of this channel is set to Automatic.
-     *
-     * @return the {@link net.dv8tion.jda.api.Region Region} of this channel.
-     */
-    @Nonnull
-    Region getRegion();
-
-    /**
-     * The raw region name for this {@link net.dv8tion.jda.api.entities.VoiceChannel VoiceChannel}.
-     * This will return null if the region is set to Automatic.
-     *
-     * @return Raw region name
-     */
-    @Nullable
-    String getRegionRaw();
-
-    //TODO-v5: Once StageChannel no longer extends VoiceChanel, change "? extends VoiceChannel" to just VoiceChannel
     @Nonnull
     @Override
-    ChannelAction<? extends VoiceChannel> createCopy(@Nonnull Guild guild);
+    ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
-    ChannelAction<? extends VoiceChannel> createCopy();
+    ChannelAction<VoiceChannel> createCopy();
 
     @Nonnull
     @Override
-    ChannelManager<? extends VoiceChannel> getManager();
+    ChannelManager<VoiceChannel> getManager();
 }
