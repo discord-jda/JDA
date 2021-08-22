@@ -281,22 +281,6 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
                   .collect(Collectors.toList()));
     }
 
-    @Override
-    public int getPosition()
-    {
-        //We call getTextChannels instead of directly accessing the GuildImpl.getTextChannelsView because
-        // getTextChannels does the sorting logic.
-        List<StandardGuildChannel> channels = new ArrayList<>(getGuild().getTextChannels());
-        channels.addAll(getGuild().getStoreChannels());
-        Collections.sort(channels);
-        for (int i = 0; i < channels.size(); i++)
-        {
-            if (equals(channels.get(i)))
-                return i;
-        }
-        throw new IllegalStateException("Somehow when determining position we never found the TextChannel in the Guild's channels? wtf?");
-    }
-
     @Nonnull
     @Override
     public ChannelAction<TextChannel> createCopy(@Nonnull Guild guild)

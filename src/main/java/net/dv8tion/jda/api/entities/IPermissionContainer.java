@@ -1,11 +1,30 @@
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.restaction.PermissionOverrideAction;
+import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 //TODO-v5: Need Docs
 //TODO-v5: Should this actually be extending GuildChannel?
@@ -56,7 +75,12 @@ public interface IPermissionContainer extends GuildChannel
      *         for this {@link StandardGuildChannel GuildChannel}.
      */
     @Nonnull
-    List<PermissionOverride> getMemberPermissionOverrides();
+    default List<PermissionOverride> getMemberPermissionOverrides()
+    {
+        return Collections.unmodifiableList(getPermissionOverrides().stream()
+                .filter(PermissionOverride::isMemberOverride)
+                .collect(Collectors.toList()));
+    }
 
     /**
      * Gets all of the {@link net.dv8tion.jda.api.entities.Role Role} {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverrides}
@@ -67,7 +91,12 @@ public interface IPermissionContainer extends GuildChannel
      *         for this {@link StandardGuildChannel GuildChannel}.
      */
     @Nonnull
-    List<PermissionOverride> getRolePermissionOverrides();
+    default List<PermissionOverride> getRolePermissionOverrides()
+    {
+        return Collections.unmodifiableList(getPermissionOverrides().stream()
+                .filter(PermissionOverride::isRoleOverride)
+                .collect(Collectors.toList()));
+    }
 
     /**
      * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}
@@ -99,7 +128,14 @@ public interface IPermissionContainer extends GuildChannel
      */
     @Nonnull
     @CheckReturnValue
-    PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder);
+    default PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
+    {
+        Checks.notNull(permissionHolder, "PermissionHolder");
+        if (getPermissionOverride(permissionHolder) != null)
+            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
+
+        return putPermissionOverride(permissionHolder);
+    }
 
     /**
      * Creates a {@link net.dv8tion.jda.api.entities.PermissionOverride PermissionOverride}

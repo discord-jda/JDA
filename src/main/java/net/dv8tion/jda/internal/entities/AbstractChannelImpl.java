@@ -147,24 +147,6 @@ public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M exte
         return Arrays.asList(overrides.values(new PermissionOverride[overrides.size()]));
     }
 
-    @Nonnull
-    @Override
-    public List<PermissionOverride> getMemberPermissionOverrides()
-    {
-        return Collections.unmodifiableList(getPermissionOverrides().stream()
-                .filter(PermissionOverride::isMemberOverride)
-                .collect(Collectors.toList()));
-    }
-
-    @Nonnull
-    @Override
-    public List<PermissionOverride> getRolePermissionOverrides()
-    {
-        return Collections.unmodifiableList(getPermissionOverrides().stream()
-                .filter(PermissionOverride::isRoleOverride)
-                .collect(Collectors.toList()));
-    }
-
     @Override
     public boolean isSynced()
     {
@@ -206,17 +188,6 @@ public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M exte
 
         Route.CompiledRoute route = Route.Channels.DELETE_CHANNEL.compile(getId());
         return new AuditableRestActionImpl<>(getJDA(), route);
-    }
-
-    @Nonnull
-    @Override
-    public PermissionOverrideAction createPermissionOverride(@Nonnull IPermissionHolder permissionHolder)
-    {
-        Checks.notNull(permissionHolder, "PermissionHolder");
-        if (getPermissionOverride(permissionHolder) != null)
-            throw new IllegalStateException("Provided member already has a PermissionOverride in this channel!");
-
-        return putPermissionOverride(permissionHolder);
     }
 
     @Nonnull

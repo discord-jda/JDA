@@ -67,13 +67,6 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return ChannelType.VOICE;
     }
 
-    @Nonnull
-    @Override
-    public Region getRegion()
-    {
-        return region == null ? Region.AUTOMATIC : Region.fromKey(region);
-    }
-
     @Nullable
     @Override
     public String getRegionRaw()
@@ -88,23 +81,12 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
         return Collections.unmodifiableList(new ArrayList<>(getConnectedMembersMap().valueCollection()));
     }
 
-    @Override
-    public int getPosition()
-    {
-        List<VoiceChannel> channels = getGuild().getVoiceChannels();
-        for (int i = 0; i < channels.size(); i++)
-        {
-            if (equals(channels.get(i)))
-                return i;
-        }
-        throw new IllegalStateException("Somehow when determining position we never found the VoiceChannel in the Guild's channels? wtf?");
-    }
-
     @Nonnull
     @Override
     public ChannelAction<VoiceChannel> createCopy(@Nonnull Guild guild)
     {
         Checks.notNull(guild, "Guild");
+        //TODO-v5: .setRegion here?
         ChannelAction<VoiceChannel> action = guild.createVoiceChannel(name).setBitrate(bitrate).setUserlimit(userLimit);
         if (guild.equals(getGuild()))
         {
