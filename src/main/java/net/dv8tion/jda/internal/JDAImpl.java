@@ -35,7 +35,9 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandDataBase;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SlashCommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.requests.GatewayIntent;
@@ -851,7 +853,7 @@ public class JDAImpl implements JDA
             (response, request) ->
                 response.getArray()
                         .stream(DataArray::getObject)
-                        .map(json -> new Command(this, null, json))
+                        .map(json -> CommandType.fromKey(json.getInt("type", 1)).create(this, null, json))
                         .collect(Collectors.toList()));
     }
 
@@ -861,12 +863,15 @@ public class JDAImpl implements JDA
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
-        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+        return new RestActionImpl<>(this, route, (response, request) -> {
+            DataObject obj = response.getObject();
+            return CommandType.fromKey(obj.getInt("type", 1)).create(this, null, obj);
+        });
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
+    public CommandCreateAction upsertCommand(@Nonnull CommandDataBase<?> command)
     {
         Checks.notNull(command, "CommandData");
         return new CommandCreateActionImpl(this, command);

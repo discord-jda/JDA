@@ -19,7 +19,7 @@ package net.dv8tion.jda.api;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.CommandDataBase;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.DirectAudioController;
 import net.dv8tion.jda.api.managers.Presence;
@@ -547,48 +547,18 @@ public interface JDA
      * For testing, it is recommended to use a test guild with guild commands.
      *
      * @param  command
-     *         The {@link CommandData} for the command
+     *         The {@link CommandDataBase} for the command
      *
      * @throws IllegalArgumentException
      *         If null is provided
      *
      * @return {@link CommandCreateAction}
      *
-     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(CommandData)
+     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(CommandDataBase)
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull CommandData command);
-
-    /**
-     * Creates or updates a global command.
-     * <br>If a command with the same name exists, it will be replaced.
-     *
-     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
-     *
-     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
-     * @param  name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters
-     * @param  description
-     *         The description for the command, 1-100 characters
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or the name/description do not meet the requirements
-     *
-     * @return {@link CommandCreateAction}
-     *
-     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(String, String)  
-     */
-    @Nonnull
-    @CheckReturnValue
-    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
-    {
-        return upsertCommand(new CommandData(name, description));
-    }
+    CommandCreateAction upsertCommand(@Nonnull CommandDataBase<?> command);
 
     /**
      * Configures the complete list of global commands.

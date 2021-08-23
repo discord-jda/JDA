@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandGroupData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import org.junit.jupiter.api.Assertions;
@@ -28,12 +28,12 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CommandDataTest
+public class SlashCommandDataTest
 {
     @Test
     public void testNormal()
     {
-        CommandData command = new CommandData("ban", "Ban a user from this server")
+        SlashCommandData command = new SlashCommandData("ban", "Ban a user from this server")
                 .setDefaultEnabled(false)
                 .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
@@ -65,7 +65,7 @@ public class CommandDataTest
     @Test
     public void testSubcommand()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
+        SlashCommandData command = new SlashCommandData("mod", "Moderation commands")
                 .setDefaultEnabled(true)
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -102,7 +102,7 @@ public class CommandDataTest
     @Test
     public void testSubcommandGroup()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
+        SlashCommandData command = new SlashCommandData("mod", "Moderation commands")
                 .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
                     .addSubcommands(new SubcommandData("add", "Ban a user from this server")
                         .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -142,7 +142,7 @@ public class CommandDataTest
     @Test
     public void testRequiredThrows()
     {
-        CommandData command = new CommandData("ban", "Simple ban command");
+        SlashCommandData command = new SlashCommandData("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
@@ -155,9 +155,9 @@ public class CommandDataTest
     @Test
     public void testNameChecks()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("valid_name", ""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new SlashCommandData("invalid name", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new SlashCommandData("invalidName", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new SlashCommandData("valid_name", ""));
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalid name", "Valid description"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalidName", "Valid description"));
@@ -176,11 +176,11 @@ public class CommandDataTest
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalidName", "Valid description"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("valid_name", ""));
 
-        List<Command.Choice> choices = new ArrayList<>();
+        List<SlashCommand.Choice> choices = new ArrayList<>();
         for (int i = 0; i < 25; i++)
         {
             option.addChoice("choice_" + i, i);
-            choices.add(new Command.Choice("choice_" + i, i));
+            choices.add(new SlashCommand.Choice("choice_" + i, i));
         }
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("name", 100));
         Assertions.assertEquals(25, option.getChoices().size());

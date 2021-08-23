@@ -17,27 +17,32 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.UserCommandInteraction;
 import net.dv8tion.jda.internal.interactions.SlashCommandInteractionImpl;
+import net.dv8tion.jda.internal.interactions.UserCommandInteractionImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.List;
 
 /**
- * Indicates that a slash command was used in a {@link MessageChannel}.
+ * Indicates that a user command was used on an {@link net.dv8tion.jda.api.entities.User} in a {@link MessageChannel}.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SlashCommandEvent extends GenericInteractionCreateEvent implements SlashCommandInteraction
+public class UserCommandEvent extends GenericInteractionCreateEvent implements UserCommandInteraction
 {
-    private final SlashCommandInteractionImpl commandInteraction;
+    private final UserCommandInteractionImpl commandInteraction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteractionImpl interaction)
+    public UserCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull UserCommandInteractionImpl interaction)
     {
         super(api, responseNumber, interaction);
         this.commandInteraction = interaction;
@@ -57,37 +62,23 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
         return commandInteraction.getName();
     }
 
-    @Nullable
+    @NotNull
     @Override
-    public String getSubcommandName()
+    public User getTargetUser()
     {
-        return commandInteraction.getSubcommandName();
+        return commandInteraction.getTargetUser();
     }
 
     @Nullable
     @Override
-    public String getSubcommandGroup()
+    public Member getTargetMember()
     {
-        return commandInteraction.getSubcommandGroup();
+        return commandInteraction.getTargetMember();
     }
 
     @Override
     public long getCommandIdLong()
     {
         return commandInteraction.getCommandIdLong();
-    }
-
-    @Nonnull
-    @Override
-    public List<OptionMapping> getOptions()
-    {
-        return commandInteraction.getOptions();
-    }
-
-    @Nonnull
-    @Override
-    public String getCommandString()
-    {
-        return commandInteraction.getCommandString();
     }
 }

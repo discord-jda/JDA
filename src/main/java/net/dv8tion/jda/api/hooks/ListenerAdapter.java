@@ -192,6 +192,8 @@ public abstract class ListenerAdapter implements EventListener
 
     //Interaction Events
     public void onSlashCommand(@Nonnull SlashCommandEvent event) {}
+    public void onUserCommand(@Nonnull UserCommandEvent event) {}
+    public void onMessageCommand(@Nonnull MessageCommandEvent event) {}
     public void onButtonClick(@Nonnull ButtonClickEvent event) {}
     public void onSelectionMenu(@Nonnull SelectionMenuEvent event) {}
 

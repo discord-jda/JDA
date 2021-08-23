@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands.build;
+package net.dv8tion.jda.api.interactions.commands.build.slash;
 
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
-import net.dv8tion.jda.api.utils.data.SerializableData;
 import net.dv8tion.jda.internal.utils.Checks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class BaseCommand<T extends BaseCommand<T>> implements SerializableData
+public abstract class BaseCommand<T extends BaseCommand<T>> extends CommandData
 {
     protected final DataArray options = DataArray.empty();
-    protected String name, description;
+    protected String description;
 
     public BaseCommand(@Nonnull String name, @Nonnull String description)
     {
-        Checks.notEmpty(name, "Name");
+        super(name);
         Checks.notEmpty(description, "Description");
-        Checks.notLonger(name, 32, "Name");
         Checks.notLonger(description, 100, "Description");
         Checks.matches(name, Checks.ALPHANUMERIC_WITH_DASH, "Name");
         Checks.isLowercase(name, "Name");
@@ -87,12 +88,8 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
         return (T) this;
     }
 
-    /**
-     * The configured name
-     *
-     * @return The name
-     */
     @Nonnull
+    @Override
     public String getName()
     {
         return name;
@@ -127,9 +124,15 @@ public abstract class BaseCommand<T extends BaseCommand<T>> implements Serializa
     @Override
     public DataObject toData()
     {
-        return DataObject.empty()
-                .put("name", name)
+        return super.toData()
                 .put("description", description)
                 .put("options", options);
+    }
+
+    @NotNull
+    @Override
+    public CommandType getCommandType()
+    {
+        return CommandType.CHAT_INPUT;
     }
 }

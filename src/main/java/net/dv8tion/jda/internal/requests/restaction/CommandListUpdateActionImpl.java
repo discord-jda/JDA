@@ -18,7 +18,10 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SlashCommandData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
@@ -41,6 +44,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
 {
     private final List<CommandData> commands = new ArrayList<>();
     private final GuildImpl guild;
+    private int slashCommands = 0, userCommands = 0, messageCommands = 0;
 
     public CommandListUpdateActionImpl(JDA api, GuildImpl guild, Route.CompiledRoute route)
     {
@@ -80,8 +84,25 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     @Override
     public CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands)
     {
+        int slashCommands = 0, userCommands = 0, messageCommands = 0;
+        for (CommandData command : commands)
+        {
+            switch (command.getCommandType())
+            {
+            case CHAT_INPUT: slashCommands++; break;
+            case USER: userCommands++; break;
+            case MESSAGE: messageCommands++; break;
+            }
+        }
+
         Checks.noneNull(commands, "Command");
-        Checks.check(this.commands.size() + commands.size() <= 100, "Cannot have more than 100 commands! Try using subcommands instead.");
+        Checks.check(this.slashCommands + slashCommands <= 100, "Cannot have more than 100 slash-commands! Try using subcommands instead.");
+        Checks.check(this.userCommands + userCommands <= 5, "Cannot have more than 5 user-commands!");
+        Checks.check(this.messageCommands + messageCommands <= 5, "Cannot have more than 5 message-commands!");
+        this.slashCommands += slashCommands;
+        this.userCommands += userCommands;
+        this.messageCommands += messageCommands;
+
         this.commands.addAll(commands);
         return this;
     }
@@ -98,7 +119,7 @@ public class CommandListUpdateActionImpl extends RestActionImpl<List<Command>> i
     protected void handleSuccess(Response response, Request<List<Command>> request)
     {
         List<Command> commands = response.getArray().stream(DataArray::getObject)
-                .map(obj -> new Command(api, guild, obj))
+                .map(obj -> CommandType.fromKey(obj.getInt("type", 1)).create(api, guild, obj))
                 .collect(Collectors.toList());
         request.onSuccess(commands);
     }

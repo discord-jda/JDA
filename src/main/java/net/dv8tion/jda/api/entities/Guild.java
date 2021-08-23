@@ -26,6 +26,7 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.CommandDataBase;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
@@ -132,7 +133,7 @@ public interface Guild extends ISnowflake
      * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
      *
      * @param  command
-     *         The {@link CommandData} for the command
+     *         The {@link CommandDataBase<?>} for the command
      *
      * @throws IllegalArgumentException
      *         If null is provided
@@ -141,32 +142,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull CommandData command);
-
-    /**
-     * Creates or updates a command.
-     * <br>If a command with the same name exists, it will be replaced.
-     *
-     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
-     *
-     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
-     *
-     * @param  name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters
-     * @param  description
-     *         The description for the command, 1-100 characters
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or the name/description do not meet the requirements
-     *
-     * @return {@link CommandCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
-    {
-        return upsertCommand(new CommandData(name, description));
-    }
+    CommandCreateAction upsertCommand(@Nonnull CommandDataBase<?> command);
 
     /**
      * Configures the complete list of guild commands.

@@ -19,6 +19,7 @@ package net.dv8tion.jda.internal.handle;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.application.ApplicationCommandUpdateEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 
@@ -43,8 +44,8 @@ public class ApplicationCommandUpdateHandler extends SocketHandler
             api.getEventCache().cache(EventCache.Type.GUILD, guildId, responseNumber, allContent, this::handle);
             return null;
         }
-
-        Command command = new Command(api, guild, content);
+        DataObject data = content.getObject("data");
+        Command command = CommandType.fromKey(data.getInt("type", 1)).create(api, guild, data);
         api.handleEvent(
             new ApplicationCommandUpdateEvent(api, responseNumber,
                 command, guild));

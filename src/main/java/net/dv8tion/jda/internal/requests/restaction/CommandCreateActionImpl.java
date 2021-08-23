@@ -17,10 +17,14 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.CommandDataBase;
+import net.dv8tion.jda.api.interactions.commands.build.slash.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.Request;
 import net.dv8tion.jda.api.requests.Response;
 import net.dv8tion.jda.api.requests.restaction.CommandCreateAction;
@@ -38,16 +42,16 @@ import java.util.function.BooleanSupplier;
 public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
 {
     private final Guild guild;
-    private CommandData data;
+    private final CommandDataBase<?> data;
 
-    public CommandCreateActionImpl(JDAImpl api, CommandData command)
+    public CommandCreateActionImpl(JDAImpl api, CommandDataBase<?> command)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
         this.data = command;
     }
 
-    public CommandCreateActionImpl(Guild guild, CommandData command)
+    public CommandCreateActionImpl(Guild guild, CommandDataBase<?> command)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
@@ -107,7 +111,10 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     {
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
-        data.setDescription(description);
+        if(data instanceof SlashCommandData)
+            ((SlashCommandData) data).setDescription(description);
+        else
+            throw new IllegalArgumentException("Command is not a slash-command");
         return this;
     }
 
@@ -115,7 +122,10 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addOptions(@Nonnull OptionData... options)
     {
-        data.addOptions(options);
+        if(data instanceof SlashCommandData)
+            ((SlashCommandData) data).addOptions(options);
+        else
+            throw new IllegalArgumentException("Command is not a slash-command");
         return this;
     }
 
@@ -123,7 +133,10 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommand)
     {
-        data.addSubcommands(subcommand);
+        if(data instanceof SlashCommandData)
+            ((SlashCommandData) data).addSubcommands(subcommand);
+        else
+            throw new IllegalArgumentException("Command is not a slash-command");
         return this;
     }
 
@@ -131,20 +144,23 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     @Override
     public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData group)
     {
-        data.addSubcommandGroups(group);
+        if(data instanceof SlashCommandData)
+            ((SlashCommandData) data).addSubcommandGroups(group);
+        else
+            throw new IllegalArgumentException("Command is not a slash-command");
         return this;
     }
 
     @Override
     public RequestBody finalizeData()
     {
-        return getRequestBody(data.toData());
+        return getRequestBody(((CommandData) data).toData());
     }
 
     @Override
     protected void handleSuccess(Response response, Request<Command> request)
     {
         DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        request.onSuccess(CommandType.fromKey(json.getInt("type", 1)).create(api, guild, json));
     }
 }

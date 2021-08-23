@@ -18,6 +18,7 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SlashCommandData;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -57,7 +58,7 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
      * <p>When a command is not listed in this request, it will be deleted.
      *
      * @param  commands
-     *         The {@link CommandData commands} to add
+     *         The {@link SlashCommandData commands} to add
      *
      * @throws IllegalArgumentException
      *         If null or more than 100 commands are provided
@@ -73,7 +74,7 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
      * <p>When a command is not listed in this request, it will be deleted.
      *
      * @param  commands
-     *         The {@link CommandData commands} to add
+     *         The {@link SlashCommandData commands} to add
      *
      * @throws IllegalArgumentException
      *         If null or more than 100 commands are provided

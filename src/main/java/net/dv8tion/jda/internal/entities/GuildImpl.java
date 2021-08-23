@@ -25,7 +25,9 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.CommandType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandDataBase;
+import net.dv8tion.jda.api.interactions.commands.build.UserCommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.GuildManager;
@@ -131,7 +133,7 @@ public class GuildImpl implements Guild
                 (response, request) ->
                         response.getArray()
                                 .stream(DataArray::getObject)
-                                .map(json -> new Command(getJDA(), this, json))
+                                .map(json -> CommandType.fromKey(json.getInt("type", 1)).create(getJDA(), this, json))
                                 .collect(Collectors.toList()));
     }
 
@@ -141,12 +143,15 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> {
+            DataObject obj = response.getObject();
+            return CommandType.fromKey(obj.getInt("type", 1)).create(getJDA(), this, obj);
+        });
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
+    public CommandCreateAction upsertCommand(@Nonnull CommandDataBase<?> command)
     {
         Checks.notNull(command, "CommandData");
         return new CommandCreateActionImpl(this, command);

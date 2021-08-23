@@ -18,10 +18,10 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SlashCommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -58,9 +58,9 @@ public interface CommandEditAction extends RestAction<Command>
     CommandEditAction deadline(long timestamp);
 
     /**
-     * Replace the command with the provided {@link CommandData}.
+     * Replace the command with the provided {@link SlashCommandData}.
      *
-     * @param  commandData
+     * @param  slashCommandData
      *         The data for the command
      *
      * @throws IllegalArgumentException
@@ -70,7 +70,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction apply(@Nonnull CommandData commandData);
+    CommandEditAction apply(@Nonnull SlashCommandData slashCommandData);
 
     /**
      * Whether this command is available to everyone by default.

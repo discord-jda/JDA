@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.requests.restaction;
 
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.slash.SubcommandGroupData;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.internal.utils.Checks;
 
@@ -85,11 +85,16 @@ public interface CommandCreateAction extends RestAction<Command>
      * Change the description of the command.
      * <br>This is visible to the user in the client and should give a meaningful description of this command.
      *
+     * <p>Only intended for slash-commands.
+     *
      * @param  description
      *         The description, 1-100 characters
      *
      * @throws IllegalArgumentException
-     *         If the name is not lowercase, alphanumeric (with dash), or 1-32 characters long
+     *         <ul>
+     *             <li>If the command is not a slash-command</li>
+     *             <li>If the name is not lowercase, alphanumeric (with dash), or 1-32 characters long</li>
+     *         </ul>
      *
      * @return The CommandCreateAction instance, for chaining
      */
@@ -100,6 +105,8 @@ public interface CommandCreateAction extends RestAction<Command>
     /**
      * Add up to 25 options to this command.
      *
+     * <p>Only intended for slash-commands.
+     *
      * <p>Required options must be added before non-required options!
      *
      * @param  options
@@ -107,6 +114,7 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
+     *             <li>If the command is not a slash-command</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -123,6 +131,8 @@ public interface CommandCreateAction extends RestAction<Command>
     /**
      * Add up to 25 options to this command.
      *
+     * <p>Only intended for slash-commands.
+     *
      * <p>Required options must be added before non-required options!
      *
      * @param  options
@@ -130,6 +140,7 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
+     *             <li>If the command is not a slash-command</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -148,7 +159,9 @@ public interface CommandCreateAction extends RestAction<Command>
     }
 
     /**
-     * Add one option to this command.
+     * Add up to 25 options to this command.
+     *
+     * <p>Only intended for slash-commands.
      *
      * <p>Required options must be added before non-required options!
      *
@@ -163,6 +176,7 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
+     *             <li>If the command is not a slash-command</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -183,6 +197,8 @@ public interface CommandCreateAction extends RestAction<Command>
      * Add one option to this command.
      * <br>The option is set to be non-required! You can use {@link #addOption(OptionType, String, String, boolean)} to add a required option instead.
      *
+     * <p>Only intended for slash-commands.
+     *
      * <p>Required options must be added before non-required options!
      *
      * @param  type
@@ -194,6 +210,7 @@ public interface CommandCreateAction extends RestAction<Command>
      *
      * @throws IllegalArgumentException
      *         <ul>
+     *             <li>If the command is not a slash-command</li>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
      *             <li>If the option type is {@link OptionType#SUB_COMMAND} or {@link OptionType#SUB_COMMAND_GROUP}.</li>
      *             <li>If this option is required and you already added a non-required option.</li>
@@ -213,12 +230,19 @@ public interface CommandCreateAction extends RestAction<Command>
     /**
      * Add up to 25 {@link SubcommandData Subcommands} to this command.
      *
+     * <p>Only intended for slash-commands.
+     *
      * @param  subcommands
      *         The subcommands to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommands are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         <ui>
+     *             <li>If the command is not a slash-command</li>
+     *             <li>
+     *                 If null is provided, or more than 25 subcommands are provided.
+     *                 Also throws if you try to mix subcommands/options/groups in one command.
+     *             </li>
+     *         </ui>
      *
      * @return The CommandCreateAction instance, for chaining
      */
@@ -229,12 +253,19 @@ public interface CommandCreateAction extends RestAction<Command>
     /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
      *
+     * <p>Only intended for slash-commands.
+     *
      * @param  groups
      *         The subcommand groups to add
      *
      * @throws IllegalArgumentException
-     *         If null is provided, or more than 25 subcommand groups are provided.
-     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *         <ui>
+     *             <li>If the command is not a slash-command</li>
+     *             <li>
+     *                 If null is provided, or more than 25 subcommands are provided.
+     *                 Also throws if you try to mix subcommands/options/groups in one command.
+     *             </li>
+     *         </ui>
      *
      * @return The CommandCreateAction instance, for chaining
      */

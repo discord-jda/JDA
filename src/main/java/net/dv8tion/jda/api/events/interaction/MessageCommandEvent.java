@@ -17,27 +17,26 @@
 package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.internal.interactions.SlashCommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.MessageCommandInteraction;
+import net.dv8tion.jda.internal.interactions.MessageCommandInteractionImpl;
+import net.dv8tion.jda.internal.interactions.UserCommandInteractionImpl;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.List;
 
 /**
- * Indicates that a slash command was used in a {@link MessageChannel}.
+ * Indicates that a message command was used on an {@link Message} in a {@link MessageChannel}.
  *
  * <h2>Requirements</h2>
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SlashCommandEvent extends GenericInteractionCreateEvent implements SlashCommandInteraction
+public class MessageCommandEvent extends GenericInteractionCreateEvent implements MessageCommandInteraction
 {
-    private final SlashCommandInteractionImpl commandInteraction;
+    private final MessageCommandInteractionImpl commandInteraction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteractionImpl interaction)
+    public MessageCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull MessageCommandInteractionImpl interaction)
     {
         super(api, responseNumber, interaction);
         this.commandInteraction = interaction;
@@ -57,37 +56,16 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
         return commandInteraction.getName();
     }
 
-    @Nullable
+    @Nonnull
     @Override
-    public String getSubcommandName()
+    public Message getTargetMessage()
     {
-        return commandInteraction.getSubcommandName();
-    }
-
-    @Nullable
-    @Override
-    public String getSubcommandGroup()
-    {
-        return commandInteraction.getSubcommandGroup();
+        return commandInteraction.getTargetMessage();
     }
 
     @Override
     public long getCommandIdLong()
     {
         return commandInteraction.getCommandIdLong();
-    }
-
-    @Nonnull
-    @Override
-    public List<OptionMapping> getOptions()
-    {
-        return commandInteraction.getOptions();
-    }
-
-    @Nonnull
-    @Override
-    public String getCommandString()
-    {
-        return commandInteraction.getCommandString();
     }
 }

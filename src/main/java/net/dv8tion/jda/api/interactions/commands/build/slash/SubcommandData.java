@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.api.interactions.commands.build;
+package net.dv8tion.jda.api.interactions.commands.build.slash;
 
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.utils.data.DataArray;
@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * Builder for a Slash-Command subcommand.
  */
-public class SubcommandData extends BaseCommand<CommandData> implements SerializableData
+public class SubcommandData extends BaseCommand<SlashCommandData> implements SerializableData
 {
     private boolean allowRequired = true;
 
@@ -170,7 +170,7 @@ public class SubcommandData extends BaseCommand<CommandData> implements Serializ
     @Override
     public DataObject toData()
     {
-        return super.toData().put("type", OptionType.SUB_COMMAND.getKey());
+        return super.toData().put("type", OptionType.SUB_COMMAND.getKey()); // The type key from BaseCommand will be overwritten
     }
 
     /**
