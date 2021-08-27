@@ -609,6 +609,44 @@ public class DataObject implements SerializableData
     }
 
     /**
+     * Resolves a double to a key.
+     * 
+     * @param  key
+     *         The key to check for a value
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is missing, null, or of the wrong type
+     * 
+     * @return The double value for the key
+     */
+    public double getDouble(@Nonnull String key)
+    {
+        Double value = get(Double.class, key, Double::parseDouble, Number::doubleValue);
+        if(value == null)
+            throw valueError(key, "double");
+        return value;
+    }
+
+    /**
+     * Resolves a double to a key.
+     *
+     * @param  key
+     *         The key to check for a value
+     * @param  defaultValue
+     *         Alternative value to use when no value or null value is associated with the key
+     * 
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the value is of the wrong type
+     * 
+     * @return The double value for the key
+     */
+    public double getDouble(@Nonnull String key, double defaultValue)
+    {
+        Double value = get(Double.class, key, Double::parseDouble, Number::doubleValue);
+        return value == null ? defaultValue : value;
+    }
+
+    /**
      * Removes the value associated with the specified key.
      * If no value is associated with the key, this does nothing.
      *
