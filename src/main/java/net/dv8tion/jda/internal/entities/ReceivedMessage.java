@@ -919,6 +919,12 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    public boolean isEphemeral()
+    {
+        return (this.flags & MessageFlag.EPHEMERAL.getValue()) > 0;
+    }
+
+    @Override
     public boolean equals(Object o)
     {
         if (o == this)

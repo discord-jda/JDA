@@ -2477,6 +2477,15 @@ public interface Message extends ISnowflake, Formattable
     EnumSet<MessageFlag> getFlags();
 
     /**
+     * Whether this message is ephemeral
+     * <br>The message being ephemeral means it is only visible to the bot and the interacting user
+     * <br>This is a shortcut method for checking is {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL MessageFlag#EPHEMERAL}
+     * 
+     * @return Whether the message is ephemeral
+     */
+    boolean isEphemeral();
+
+    /**
      * This specifies the {@link net.dv8tion.jda.api.entities.MessageType MessageType} of this Message.
      *
      * <p>Messages can represent more than just simple text sent by Users, they can also be special messages that
@@ -2583,7 +2592,16 @@ public interface Message extends ISnowflake, Formattable
         /**
          * Indicates, that this Message came from the urgent message system
          */
-        URGENT(4);
+        URGENT(4),
+        /**
+         * Indicates, that this Message is ephemeral, the Message is only visible to the bot and the interacting user
+         * @see Message#isEphemeral
+         */
+        EPHEMERAL(6),
+        /**
+         * Indicates, that this Message is an interaction response and the bot is "thinking"
+         */
+        LOADING(7);
 
         private final int value;
 
