@@ -597,6 +597,13 @@ public abstract class AbstractMessage implements Message
         return null;
     }
 
+    @Override
+    public boolean isEphemeral()
+    {
+        unsupported();
+        return false;
+    }
+
     @Nonnull
     @Override
     public MessageType getType()
