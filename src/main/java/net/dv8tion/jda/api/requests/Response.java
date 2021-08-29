@@ -47,9 +47,9 @@ public class Response implements Closeable
     private boolean attemptedParsing = false;
     private Exception exception;
 
-    public Response(@Nullable final okhttp3.Response response, @Nonnull final Exception exception, @Nonnull final Set<String> cfRays)
+    public Response(@Nonnull final Exception exception, @Nonnull final Set<String> cfRays)
     {
-        this(response, response != null ? response.code() : ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
+        this(null, ERROR_CODE, ERROR_MESSAGE, -1, cfRays);
         this.exception = exception;
     }
 
