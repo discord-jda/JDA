@@ -44,9 +44,9 @@ import java.util.stream.Collectors;
  *   SelectionMenu menu = SelectionMenu.create("menu:class")
  *     .setPlaceholder("Choose your class") // shows the placeholder indicating what this menu is for
  *     .setRequireRange(1, 1) // only one can be selected
- *     .addOption("mage-arcane", "Arcane Mage")
- *     .addOption("mage-fire", "Fire Mage")
- *     .addOption("mage-frost", "Frost Mage")
+ *     .addOption("Arcane Mage", "mage-arcane")
+ *     .addOption("Fire Mage", "mage-fire")
+ *     .addOption("Frost Mage", "mage-frost")
  *     .build();
  *
  *   event.reply("Please pick your class below")
