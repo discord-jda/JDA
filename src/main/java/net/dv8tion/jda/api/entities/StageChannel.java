@@ -31,7 +31,7 @@ import javax.annotation.Nullable;
  *
  * <p>This is a specialized AudioChannel that can be used to host events with speakers and listeners.
  */
-public interface StageChannel extends StandardGuildChannel, AudioChannel
+public interface StageChannel extends GuildChannel, AudioChannel, ICategorizableChannel, ICopyableChannel, IPositionableChannel, IPermissionContainer, IMemberContainer, IInviteContainer
 {
     /**
      * {@link StageInstance} attached to this stage channel.

@@ -18,7 +18,6 @@ package net.dv8tion.jda.api.audit;
 
 import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.StandardGuildChannel;
 
 /**
  * ActionTypes for {@link net.dv8tion.jda.api.audit.AuditLogEntry AuditLogEntry} instances

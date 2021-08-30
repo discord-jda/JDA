@@ -797,7 +797,7 @@ public interface ShardManager
     }
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -819,13 +819,13 @@ public interface ShardManager
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(@Nonnull String id)
+    default GuildChannel getGuildChannelById(@Nonnull String id)
     {
         return getGuildChannelById(MiscUtil.parseSnowflake(id));
     }
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -842,9 +842,9 @@ public interface ShardManager
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(long id)
+    default GuildChannel getGuildChannelById(long id)
     {
-        StandardGuildChannel channel;
+        GuildChannel channel;
         for (JDA shard : getShards())
         {
             channel = shard.getGuildChannelById(id);
@@ -856,7 +856,7 @@ public interface ShardManager
     }
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -883,13 +883,13 @@ public interface ShardManager
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
     {
         return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
     }
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -912,10 +912,10 @@ public interface ShardManager
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
     {
         Checks.notNull(type, "ChannelType");
-        StandardGuildChannel channel;
+        GuildChannel channel;
         for (JDA shard : getShards())
         {
             channel = shard.getGuildChannelById(type, id);

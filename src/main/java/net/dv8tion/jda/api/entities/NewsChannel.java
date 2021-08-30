@@ -14,7 +14,7 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 //TODO-v5: Docs
-public interface NewsChannel extends StandardGuildMessageChannel
+public interface NewsChannel extends BaseGuildMessageChannel
 {
     /**
      * Subscribes to the crossposted messages in this channel.

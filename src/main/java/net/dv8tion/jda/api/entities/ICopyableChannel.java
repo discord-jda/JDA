@@ -64,10 +64,10 @@ public interface ICopyableChannel extends GuildChannel
      */
     @Nonnull
     @CheckReturnValue
-    ChannelAction<? extends GuildChannel> createCopy(@Nonnull Guild guild);
+    ChannelAction<? extends ICopyableChannel> createCopy(@Nonnull Guild guild);
 
     /**
-     * Creates a copy of the specified {@link StandardGuildChannel GuildChannel}.
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}.
      *
      * <p>This copies the following elements:
      * <ol>
@@ -96,7 +96,7 @@ public interface ICopyableChannel extends GuildChannel
      */
     @Nonnull
     @CheckReturnValue
-    default ChannelAction<? extends GuildChannel> createCopy()
+    default ChannelAction<? extends ICopyableChannel> createCopy()
     {
         return createCopy(getGuild());
     }

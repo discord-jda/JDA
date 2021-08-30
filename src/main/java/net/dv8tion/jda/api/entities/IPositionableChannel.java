@@ -39,7 +39,7 @@ public interface IPositionableChannel extends GuildChannel
     default int getPosition()
     {
         int sortBucket = getType().getSortBucket();
-        List<StandardGuildChannel> channels = getGuild().getChannels().stream()
+        List<GuildChannel> channels = getGuild().getChannels().stream()
             .filter(chan -> chan.getType().getSortBucket() == sortBucket)
             .sorted()
             .collect(Collectors.toList());
