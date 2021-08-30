@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 //TODO-v5: Need Docs
-//TODO-v5: Should this actually be extending GuildChannel?
 public interface IPositionableChannel extends GuildChannel
 {
     //TODO-v5: We should probably reconsider how getPosition is calculated as it isn't particularly useful anymore...

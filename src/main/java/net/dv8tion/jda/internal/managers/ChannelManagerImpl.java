@@ -82,8 +82,6 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     @Override
     public T getChannel()
     {
-        //TODO-v5: This needs to be looked at again once we have a global lookup of GuildChannels instead of StandardGuildChannels.
-        //TODO-v5-categories: This will break when Category isn't a StandardGuildChannel anymore.
         T realChannel = (T) api.getGuildChannelById(channel.getType(), channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;

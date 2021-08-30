@@ -24,7 +24,6 @@ import javax.annotation.Nonnull;
 import java.util.List;
 
 //TODO-v5: Need Docs
-//TODO-v5: Should this actually be extending GuildChannel?
 public interface IInviteContainer extends GuildChannel
 {
     /**
