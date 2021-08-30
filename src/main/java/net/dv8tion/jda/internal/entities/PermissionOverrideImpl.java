@@ -37,14 +37,14 @@ public class PermissionOverrideImpl implements PermissionOverride
     private final long id;
     private final boolean isRole;
     private final JDAImpl api;
-    private StandardGuildChannel channel;
+    private IPermissionContainer channel;
 
     protected PermissionOverrideAction manager;
 
     private long allow;
     private long deny;
 
-    public PermissionOverrideImpl(StandardGuildChannel channel, long id, boolean isRole)
+    public PermissionOverrideImpl(IPermissionContainer channel, long id, boolean isRole)
     {
         this.isRole = isRole;
         this.api = (JDAImpl) channel.getJDA();
@@ -118,9 +118,9 @@ public class PermissionOverrideImpl implements PermissionOverride
 
     @Nonnull
     @Override
-    public StandardGuildChannel getChannel()
+    public IPermissionContainer getChannel()
     {
-        StandardGuildChannel realChannel = api.getGuildChannelById(channel.getType(), channel.getIdLong());
+        IPermissionContainer realChannel = (IPermissionContainer) api.getGuildChannelById(channel.getType(), channel.getIdLong());
         if (realChannel != null)
             channel = realChannel;
         return channel;
@@ -150,7 +150,9 @@ public class PermissionOverrideImpl implements PermissionOverride
     public PermissionOverrideAction getManager()
     {
         Member selfMember = getGuild().getSelfMember();
-        StandardGuildChannel channel = getChannel();
+        IPermissionContainer channel = getChannel();
+
+        //TODO-v5: These perms appear to be duplicated with #delete()
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasAccess(channel))
@@ -166,9 +168,8 @@ public class PermissionOverrideImpl implements PermissionOverride
     @Override
     public AuditableRestAction<Void> delete()
     {
-
         Member selfMember = getGuild().getSelfMember();
-        StandardGuildChannel channel = getChannel();
+        IPermissionContainer channel = getChannel();
         if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
             throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
         if (!selfMember.hasAccess(channel))

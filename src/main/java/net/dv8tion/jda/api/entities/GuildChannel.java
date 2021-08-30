@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
  * @see JDA#getGuildChannelById(long)
  * @see JDA#getGuildChannelById(ChannelType, long)
  */
-public interface GuildChannel extends Channel
+public interface GuildChannel extends Channel, Comparable<GuildChannel>
 {
     /**
      * Returns the {@link net.dv8tion.jda.api.entities.Guild Guild} that this GuildChannel is part of.

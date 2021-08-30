@@ -50,7 +50,7 @@ public interface ICopyableChannel extends GuildChannel
     ChannelAction<? extends ICopyableChannel> createCopy(@Nonnull Guild guild);
 
     /**
-     * Creates a copy of the specified {@link StandardGuildChannel GuildChannel}.
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}.
      *
      * <p>This copies the following elements:
      * <ol>
