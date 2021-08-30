@@ -2481,6 +2481,8 @@ public interface Message extends ISnowflake, Formattable
      * <br>The message being ephemeral means it is only visible to the bot and the interacting user
      * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}
      * 
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
      * @return Whether the message is ephemeral
      */
     boolean isEphemeral();
