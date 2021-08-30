@@ -2477,6 +2477,16 @@ public interface Message extends ISnowflake, Formattable
     EnumSet<MessageFlag> getFlags();
 
     /**
+     * Returns the raw message flags of this message
+     * 
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     * @return The raw message flags
+     * @see    #getFlags()
+     */
+    long getFlagsRaw();
+
+    /**
      * Whether this message is ephemeral.
      * <br>The message being ephemeral means it is only visible to the bot and the interacting user
      * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}

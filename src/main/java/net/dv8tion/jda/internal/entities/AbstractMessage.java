@@ -598,6 +598,13 @@ public abstract class AbstractMessage implements Message
     }
 
     @Override
+    public long getFlagsRaw()
+    {
+        unsupported();
+        return 0;
+    }
+
+    @Override
     public boolean isEphemeral()
     {
         unsupported();

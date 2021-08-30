@@ -967,6 +967,12 @@ public class ReceivedMessage extends AbstractMessage
     }
 
     @Override
+    public long getFlagsRaw()
+    {
+        return flags;
+    }
+
+    @Override
     public boolean isEphemeral()
     {
         return (this.flags & MessageFlag.EPHEMERAL.getValue()) != 0;
