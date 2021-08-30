@@ -21,7 +21,6 @@ import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.StandardGuildChannel;
 import net.dv8tion.jda.internal.utils.Checks;
 
 import javax.annotation.Nonnull;
@@ -90,7 +89,7 @@ public class InsufficientPermissionException extends PermissionException
     }
 
     /**
-     * The id for the responsible {@link StandardGuildChannel} instance.
+     * The id for the responsible {@link GuildChannel} instance.
      *
      * @return The ID as a long or 0
      *
@@ -137,7 +136,7 @@ public class InsufficientPermissionException extends PermissionException
     }
 
     /**
-     * The {@link StandardGuildChannel} instance for the {@link #getChannelId() channel id}.
+     * The {@link GuildChannel} instance for the {@link #getChannelId() channel id}.
      *
      * @param  api
      *         The shard to perform the lookup in
@@ -150,7 +149,7 @@ public class InsufficientPermissionException extends PermissionException
      * @return The GuildChannel instance or null
      */
     @Nullable
-    public StandardGuildChannel getChannel(@Nonnull JDA api)
+    public GuildChannel getChannel(@Nonnull JDA api)
     {
         Checks.notNull(api, "JDA");
         return api.getGuildChannelById(channelType, channelId);

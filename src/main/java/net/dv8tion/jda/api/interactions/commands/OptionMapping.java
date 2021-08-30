@@ -203,21 +203,21 @@ public class OptionMapping
     }
 
     /**
-     * The resolved {@link StandardGuildChannel} for this option value.
+     * The resolved {@link GuildChannel} for this option value.
      * <br>Note that {@link OptionType#CHANNEL OptionType.CHANNEL} can accept channels of any type!
      *
      * @throws IllegalStateException
      *         If this option is not of type {@link OptionType#CHANNEL CHANNEL}
      *         or could not be resolved for unexpected reasons
      *
-     * @return The resolved {@link StandardGuildChannel}
+     * @return The resolved {@link GuildChannel}
      */
     @Nonnull
-    public StandardGuildChannel getAsGuildChannel()
+    public GuildChannel getAsGuildChannel()
     {
         Channel value = getAsChannel();
-        if (value instanceof StandardGuildChannel)
-            return (StandardGuildChannel) value;
+        if (value instanceof GuildChannel)
+            return (GuildChannel) value;
         throw new IllegalStateException("Could not resolve GuildChannel!");
     }
 

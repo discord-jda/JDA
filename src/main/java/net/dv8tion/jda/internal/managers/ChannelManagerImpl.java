@@ -62,7 +62,7 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
      * Creates a new ChannelManager instance
      *
      * @param channel
-     *        {@link StandardGuildChannel GuildChannel} that should be modified
+     *        {@link GuildChannel GuildChannel} that should be modified
      *        <br>Either {@link net.dv8tion.jda.api.entities.VoiceChannel Voice}- or {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}
      */
     public ChannelManagerImpl(T channel)
@@ -471,14 +471,16 @@ public class ChannelManagerImpl<T extends GuildChannel> extends ManagerBase<Chan
     {
         final Member selfMember = getGuild().getSelfMember();
 
-        //TODO-v5: re-evaluate this casting once we re-eval the implementation of getChannel
-        StandardGuildChannel channel = (StandardGuildChannel) getChannel();
-        if (!selfMember.hasPermission(channel, Permission.VIEW_CHANNEL))
-            throw new MissingAccessException(channel, Permission.VIEW_CHANNEL);
-        if (!selfMember.hasAccess(channel))
-            throw new MissingAccessException(channel, Permission.VOICE_CONNECT);
-        if (!selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL))
-            throw new InsufficientPermissionException(channel, Permission.MANAGE_CHANNEL);
+        if (getChannel() instanceof IPermissionContainer) {
+            IPermissionContainer permChannel = (IPermissionContainer) getChannel();
+            if (!selfMember.hasPermission(permChannel, Permission.VIEW_CHANNEL))
+                throw new MissingAccessException(permChannel, Permission.VIEW_CHANNEL);
+            if (!selfMember.hasAccess(permChannel))
+                throw new MissingAccessException(permChannel, Permission.VOICE_CONNECT);
+            if (!selfMember.hasPermission(permChannel, Permission.MANAGE_CHANNEL))
+                throw new InsufficientPermissionException(permChannel, Permission.MANAGE_CHANNEL);
+        }
+
         return super.checkPermissions();
     }
 

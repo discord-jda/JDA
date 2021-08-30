@@ -23,7 +23,7 @@ import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Icon;
-import net.dv8tion.jda.api.entities.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -153,7 +153,7 @@ public interface GuildAction extends RestAction<Void>
     GuildAction setExplicitContentLevel(@Nullable Guild.ExplicitContentLevel level);
 
     /**
-     * Adds a {@link StandardGuildChannel GuildChannel} to the resulting
+     * Adds a {@link GuildChannel GuildChannel} to the resulting
      * Guild. This cannot be of type {@link net.dv8tion.jda.api.entities.ChannelType#CATEGORY CATEGORY}!
      *
      * @param  channel
@@ -505,7 +505,7 @@ public interface GuildAction extends RestAction<Void>
     }
 
     /**
-     * GuildChannel information used for the creation of {@link StandardGuildChannel Channels} within
+     * GuildChannel information used for the creation of {@link GuildChannel Channels} within
      * the construction of a {@link net.dv8tion.jda.api.entities.Guild Guild} via GuildAction.
      *
      * <p>Use with {@link #addChannel(ChannelData) GuildAction.addChannel(ChannelData)}.
@@ -527,7 +527,7 @@ public interface GuildAction extends RestAction<Void>
 
         /**
          * Constructs a data object containing information on
-         * a {@link StandardGuildChannel GuildChannel} to be used in the construction
+         * a {@link GuildChannel GuildChannel} to be used in the construction
          * of a {@link net.dv8tion.jda.api.entities.Guild Guild}!
          *
          * @param  type

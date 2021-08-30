@@ -138,15 +138,15 @@ public interface PermissionOverride extends ISnowflake
     Role getRole();
 
     /**
-     * The {@link StandardGuildChannel GuildChannel} that this PermissionOverride affects.
+     * The {@link IPermissionContainer GuildChannel} that this PermissionOverride affects.
      *
-     * @return Never-null related {@link StandardGuildChannel GuildChannel} that this override is part of.
+     * @return Never-null related {@link IPermissionContainer GuildChannel} that this override is part of.
      */
     @Nonnull
-    StandardGuildChannel getChannel();
+    IPermissionContainer getChannel();
 
     /**
-     * The {@link net.dv8tion.jda.api.entities.Guild Guild} that the {@link StandardGuildChannel GuildChannel}
+     * The {@link net.dv8tion.jda.api.entities.Guild Guild} that the {@link GuildChannel GuildChannel}
      * returned from {@link net.dv8tion.jda.api.entities.PermissionOverride#getChannel()} is a part of.
      * By inference, this is the {@link net.dv8tion.jda.api.entities.Guild Guild} that this PermissionOverride is part of.
      *

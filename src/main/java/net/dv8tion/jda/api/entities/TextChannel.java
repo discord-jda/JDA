@@ -16,34 +16,21 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
-import net.dv8tion.jda.api.exceptions.MissingAccessException;
 import net.dv8tion.jda.api.managers.ChannelManager;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 import net.dv8tion.jda.api.utils.MiscUtil;
-import net.dv8tion.jda.internal.requests.RestActionImpl;
-import net.dv8tion.jda.internal.requests.Route;
-import net.dv8tion.jda.internal.utils.Checks;
 
-import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.FormattableFlags;
 import java.util.Formatter;
-import java.util.List;
 
 /**
  * Represents a Discord Text GuildChannel.
  * <br>Adds additional functionality and information for text channels in Discord.
  *
- * <p>This is a {@link StandardGuildChannel GuildChannel} capable of sending messages.
+ * <p>This is a {@link GuildChannel GuildChannel} capable of sending messages.
  *
- * @see StandardGuildChannel
+ * @see GuildChannel
  * @see MessageChannel
  * @see VoiceChannel
  * @see Category
@@ -58,7 +45,7 @@ import java.util.List;
  * @see   JDA#getTextChannelsByName(String, boolean)
  * @see   JDA#getTextChannelById(long)
  */
-public interface TextChannel extends StandardGuildMessageChannel
+public interface TextChannel extends BaseGuildMessageChannel
 {
     /**
      * The maximum duration of slowmode in seconds

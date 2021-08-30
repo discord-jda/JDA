@@ -74,10 +74,10 @@ public class GuildImpl implements Guild
     private final long id;
     private final JDAImpl api;
 
-    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, StandardGuildChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, StandardGuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<Category> categoryCache = new SortedSnowflakeCacheViewImpl<>(Category.class, GuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SortedSnowflakeCacheViewImpl<>(VoiceChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<StoreChannel> storeChannelCache = new SortedSnowflakeCacheViewImpl<>(StoreChannel.class, StoreChannel::getName, Comparator.naturalOrder());
-    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, StandardGuildChannel::getName, Comparator.naturalOrder());
+    private final SortedSnowflakeCacheViewImpl<TextChannel> textChannelCache = new SortedSnowflakeCacheViewImpl<>(TextChannel.class, GuildChannel::getName, Comparator.naturalOrder());
     private final SortedSnowflakeCacheViewImpl<Role> roleCache = new SortedSnowflakeCacheViewImpl<>(Role.class, Role::getName, Comparator.reverseOrder());
     private final SnowflakeCacheViewImpl<GuildThread> guildThreadsCache = new SnowflakeCacheViewImpl<>(GuildThread.class, GuildThread::getName);;
     private final SnowflakeCacheViewImpl<Emote> emoteCache = new SnowflakeCacheViewImpl<>(Emote.class, Emote::getName);
@@ -623,12 +623,18 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public List<StandardGuildChannel> getChannels(boolean includeHidden)
+    public List<GuildChannel> getChannels(boolean includeHidden)
     {
         Member self = getSelfMember();
-        Predicate<StandardGuildChannel> filterHidden = it -> self.hasPermission(it, Permission.VIEW_CHANNEL);
+        Predicate<GuildChannel> filterHidden = it -> {
+            //TODO-v5: Do we need to if-protected cast here? If the channel _isnt_ a IPermissionContainer, then would we even be using this filter on it?
+            if (it instanceof IPermissionContainer) {
+                self.hasPermission((IPermissionContainer) it, Permission.VIEW_CHANNEL);
+            }
+            return false;
+        };
 
-        List<StandardGuildChannel> channels;
+        List<GuildChannel> channels;
         SnowflakeCacheViewImpl<Category> categoryView = getCategoriesView();
         SnowflakeCacheViewImpl<VoiceChannel> voiceView = getVoiceChannelsView();
         SnowflakeCacheViewImpl<TextChannel> textView = getTextChannelsView();
@@ -665,7 +671,7 @@ public class GuildImpl implements Guild
 
         for (Category category : categories)
         {
-            List<StandardGuildChannel> children;
+            List<GuildChannel> children;
             if (includeHidden)
             {
                 children = category.getChannels();

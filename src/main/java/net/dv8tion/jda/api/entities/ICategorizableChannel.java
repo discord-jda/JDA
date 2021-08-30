@@ -19,7 +19,6 @@ package net.dv8tion.jda.api.entities;
 import javax.annotation.Nullable;
 
 //TODO-v5: Need Docs
-//TODO-v5: Should this actually be extending GuildChannel?
 public interface ICategorizableChannel extends GuildChannel
 {
     /**
