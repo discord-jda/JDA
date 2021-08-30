@@ -2477,7 +2477,7 @@ public interface Message extends ISnowflake, Formattable
     EnumSet<MessageFlag> getFlags();
 
     /**
-     * Whether this message is ephemeral
+     * Whether this message is ephemeral.
      * <br>The message being ephemeral means it is only visible to the bot and the interacting user
      * <br>This is a shortcut method for checking if {@link #getFlags()} contains {@link MessageFlag#EPHEMERAL}
      * 
