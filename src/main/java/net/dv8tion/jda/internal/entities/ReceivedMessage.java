@@ -149,7 +149,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> pin()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot pin this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot pin ephemeral messages.");
         
         return channel.pinMessageById(getId());
     }
@@ -159,7 +159,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> unpin()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot unpin this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot unpin ephemeral messages.");
         
         return channel.unpinMessageById(getId());
     }
@@ -169,7 +169,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> addReaction(@Nonnull Emote emote)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot add reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot add reactions for ephemeral messages.");
         
         Checks.notNull(emote, "Emote");
 
@@ -191,7 +191,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> addReaction(@Nonnull String unicode)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot react on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot react on ephemeral messages.");
         
         return channel.addReactionById(getId(), unicode);
     }
@@ -201,7 +201,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> clearReactions()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot clear reactions on ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId());
@@ -212,7 +212,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> clearReactions(@Nonnull String unicode)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot clear reactions on ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), unicode);
@@ -223,7 +223,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> clearReactions(@Nonnull Emote emote)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot clear reactions on ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), emote);
@@ -234,7 +234,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
         
         return channel.removeReactionById(getId(), emote);
     }
@@ -246,7 +246,7 @@ public class ReceivedMessage extends AbstractMessage
         Checks.notNull(user, "User");  // to prevent NPEs
 
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
         
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
@@ -263,7 +263,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(@Nonnull String unicode)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
         
         return channel.removeReactionById(getId(), unicode);
     }
@@ -277,7 +277,7 @@ public class ReceivedMessage extends AbstractMessage
             return channel.removeReactionById(getIdLong(), unicode);
 
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
         return getTextChannel().removeReactionById(getId(), unicode, user);
@@ -288,7 +288,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull Emote emote)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot retrieve reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
         
         return channel.retrieveReactionUsersById(id, emote);
     }
@@ -298,7 +298,7 @@ public class ReceivedMessage extends AbstractMessage
     public ReactionPaginationAction retrieveReactionUsers(@Nonnull String unicode)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot retrieve reactions on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot retrieve reactions on ephemeral messages.");
         
         return channel.retrieveReactionUsersById(id, unicode);
     }
@@ -348,7 +348,7 @@ public class ReceivedMessage extends AbstractMessage
     public String getJumpUrl()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot get the jump URL on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot get the jump URL from ephemeral messages.");
         
         return String.format("https://discord.com/channels/%s/%s/%s", isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
     }
@@ -896,7 +896,7 @@ public class ReceivedMessage extends AbstractMessage
     public AuditableRestAction<Void> delete()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot delete this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot delete ephemeral messages.");
         
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
@@ -916,7 +916,7 @@ public class ReceivedMessage extends AbstractMessage
     public AuditableRestAction<Void> suppressEmbeds(boolean suppressed)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot suppress embeds on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot suppress embeds on ephemeral messages.");
         
         if (!getJDA().getSelfUser().equals(getAuthor()))
         {
@@ -941,7 +941,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Message> crosspost()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot suppress embeds on this message as it is ephemeral.");
+            throw new IllegalStateException("Cannot suppress embeds on ephemeral messages.");
         
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
