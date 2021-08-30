@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.internal.interactions;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.Interaction;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -151,5 +152,12 @@ public class InteractionImpl implements Interaction
     public ReplyActionImpl deferReply()
     {
         return new ReplyActionImpl(this.hook);
+    }
+
+    @Nonnull
+    @Override
+    public JDA getJDA()
+    {
+        return api;
     }
 }
