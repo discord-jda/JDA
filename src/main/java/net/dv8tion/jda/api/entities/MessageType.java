@@ -30,11 +30,13 @@ public enum MessageType
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been added to the Group.
+     * Also used in message threads to indicate a member has joined that thread.
      */
     RECIPIENT_ADD(1),
 
     /**
      * Specialized messages used for Groups as a System-Message showing that a new User has been removed from the Group.
+     * Also used in message threads to indicate a member has left that thread.
      */
     RECIPIENT_REMOVE(2),
 
@@ -45,6 +47,7 @@ public enum MessageType
 
     /**
      * Specialized message used for Groups as a System-Message showing that the name of the Group was changed.
+     * Also used in message threads to indicate the name of that thread has changed.
      */
     CHANNEL_NAME_CHANGE(4),
 
@@ -109,6 +112,12 @@ public enum MessageType
     GUILD_DISCOVERY_GRACE_PERIOD_FINAL_WARNING(17),
 
     /**
+     * This is sent to a TextChannel when a message thread is created if the message from which the thread was started is "old".
+     * The definition of "old" is loose, but is currently a very liberal definition.
+     */
+    THREAD_CREATED(18),
+
+    /**
      * Reply to another message. This usually comes with a {@link Message#getReferencedMessage() referenced message}.
      */
     INLINE_REPLY(19, false),
@@ -118,6 +127,17 @@ public enum MessageType
      * <br>Most commonly this type will appear as a {@link Message#getReferencedMessage() referenced message}.
      */
     APPLICATION_COMMAND(20, false),
+
+    /**
+     * A new message sent as the first message in threads that are started from an existing message in the parent channel.
+     * It only contains a message reference field that points to the message from which the thread was started.
+     */
+    THREAD_STARTER_MESSAGE(21),
+
+    /**
+     * The "Invite your friends" messages that are sent to guild owners in new servers.
+     */
+    GUILD_INVITE_REMINDER(22),
 
     /**
      * Unknown MessageType.

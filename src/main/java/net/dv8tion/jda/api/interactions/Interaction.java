@@ -16,6 +16,7 @@
 
 package net.dv8tion.jda.api.interactions;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.interactions.components.ComponentInteraction;
 import net.dv8tion.jda.api.requests.restaction.interactions.ReplyAction;
@@ -483,4 +484,13 @@ public interface Interaction extends ISnowflake
             return (PrivateChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to PrivateChannel");
     }
+
+    /**
+     * Returns the {@link net.dv8tion.jda.api.JDA JDA} instance of this interaction
+     *
+     * @return the corresponding JDA instance
+     */
+    @Nonnull
+    JDA getJDA();
+
 }

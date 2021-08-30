@@ -45,6 +45,7 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     private boolean guildDeafened = false;
     private boolean suppressed = false;
     private boolean stream = false;
+    private boolean video = false;
 
     public GuildVoiceStateImpl(Member member)
     {
@@ -173,6 +174,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
     }
 
     @Override
+    public boolean isSendingVideo()
+    {
+        return video;
+    }
+
+    @Override
     public VoiceChannel getChannel()
     {
         return connectedChannel;
@@ -283,6 +290,12 @@ public class GuildVoiceStateImpl implements GuildVoiceState
         return this;
     }
 
+    public GuildVoiceStateImpl setVideo(boolean video)
+    {
+        this.video = video;
+        return this;
+    }
+    
     public GuildVoiceStateImpl setRequestToSpeak(OffsetDateTime timestamp)
     {
         this.requestToSpeak = timestamp == null ? 0L : timestamp.toInstant().toEpochMilli();
