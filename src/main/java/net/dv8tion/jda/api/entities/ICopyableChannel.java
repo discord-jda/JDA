@@ -22,8 +22,6 @@ import javax.annotation.CheckReturnValue;
 import javax.annotation.Nonnull;
 
 //TODO-v5: Need Docs
-//TODO-v5: Should this actually be extending GuildChannel?
-//TODO-v5: Ensure all implementing channels Overrides to change ChannelAction<? extends GuildChannel> to ChannelAction<ActionType>
 public interface ICopyableChannel extends GuildChannel
 {
     /**

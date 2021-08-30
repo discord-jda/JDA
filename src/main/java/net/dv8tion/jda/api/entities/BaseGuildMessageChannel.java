@@ -2,6 +2,7 @@ package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import net.dv8tion.jda.api.requests.restaction.WebhookAction;
 
 import javax.annotation.CheckReturnValue;
@@ -114,4 +115,10 @@ public interface BaseGuildMessageChannel extends GuildMessageChannel, GuildChann
     @Nonnull
     @CheckReturnValue
     AuditableRestAction<Void> deleteWebhookById(@Nonnull String id);
+
+    @Override
+    ChannelAction<? extends BaseGuildMessageChannel> createCopy(@Nonnull Guild guild);
+
+    @Override
+    ChannelAction<? extends BaseGuildMessageChannel> createCopy();
 }

@@ -26,7 +26,6 @@ public interface GuildChannel extends Channel, Comparable<GuildChannel>
     @Nonnull
     Guild getGuild();
 
-    //TODO-v5: Ensure all implementers override to change ChannelManager<? extends GuildChannel> to ChannelManager<ActualType>
     /**
      * Returns the {@link ChannelManager ChannelManager} for this GuildChannel.
      * <br>In the ChannelManager, you can modify the name, topic and position of this GuildChannel.
