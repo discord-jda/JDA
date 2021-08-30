@@ -204,6 +204,7 @@ public class EntityBuilder
         final int verificationLevel = guildJson.getInt("verification_level", 0);
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
+        final int nsfwLevel = guildJson.getInt("nsfw_level", 0);
 
         guildObj.setAvailable(true)
                 .setName(name)
@@ -224,7 +225,8 @@ public class EntityBuilder
                 .setLocale(locale)
                 .setBoostCount(boostCount)
                 .setBoostTier(boostTier)
-                .setMemberCount(memberCount);
+                .setMemberCount(memberCount)
+                .setNSFWLevel(Guild.NSFWLevel.fromKey(nsfwLevel));
 
         SnowflakeCacheViewImpl<Guild> guildView = getJDA().getGuildsView();
         try (UnlockHook hook = guildView.writeLock())

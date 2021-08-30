@@ -108,6 +108,7 @@ public class GuildImpl implements Guild
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
+    private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private boolean available;
     private boolean canSendVerification = false;
     private int memberCount;
@@ -1943,6 +1944,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
+    {
+        this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
@@ -1978,6 +1985,13 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    @Nonnull
+    @Override
+    public NSFWLevel getNSFWLevel()
+    {
+        return nsfwLevel;
     }
 
     @Nullable
