@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
-//TODO-v5: Should this actually implement IMemberContainer? it.. doesn't actually contain members. Only the StageInstance does.
 public class StageChannelImpl extends AbstractChannelImpl<StageChannel, StageChannelImpl> implements StageChannel
 {
     private final TLongObjectMap<Member> connectedMembers = MiscUtil.newLongMap();

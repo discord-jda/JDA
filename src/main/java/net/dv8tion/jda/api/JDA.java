@@ -1409,6 +1409,7 @@ public interface JDA
         Checks.notNull(type, "ChannelType");
         switch (type)
         {
+            //TODO-v5: Add support for NEWS and THREAD here
         case TEXT:
             return getTextChannelById(id);
         case VOICE:

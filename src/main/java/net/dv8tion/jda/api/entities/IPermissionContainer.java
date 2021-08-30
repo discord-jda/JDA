@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 //TODO-v5: Need Docs
-//TODO-v5: Should this actually be extending GuildChannel?
 public interface IPermissionContainer extends GuildChannel
 {
     /**
