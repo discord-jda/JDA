@@ -17,19 +17,19 @@
 package net.dv8tion.jda.api.events.guild.override;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.PermissionOverride;
 
 import javax.annotation.Nonnull;
 
 /**
- * Indicates that a {@link PermissionOverride} of a {@link StandardGuildChannel} has been created.
+ * Indicates that a {@link PermissionOverride} of a {@link GuildChannel} has been created.
  *
  * <p>Can be used to retrieve the new override.
  */
 public class PermissionOverrideCreateEvent extends GenericPermissionOverrideEvent
 {
-    public PermissionOverrideCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull StandardGuildChannel channel, @Nonnull PermissionOverride override)
+    public PermissionOverrideCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull GuildChannel channel, @Nonnull PermissionOverride override)
     {
         super(api, responseNumber, channel, override);
     }

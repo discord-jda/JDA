@@ -396,20 +396,20 @@ public interface Interaction extends ISnowflake
     }
 
     /**
-     * The {@link StandardGuildChannel} this interaction happened in.
+     * The {@link GuildChannel} this interaction happened in.
      * <br>If {@link #getChannelType()} is not a guild type, this throws {@link IllegalStateException}!
      *
      * @throws IllegalStateException
      *         If {@link #getChannel()} is not a guild channel
      *
-     * @return The {@link StandardGuildChannel}
+     * @return The {@link GuildChannel}
      */
     @Nonnull
-    default StandardGuildChannel getGuildChannel()
+    default GuildChannel getGuildChannel()
     {
         Channel channel = getChannel();
-        if (channel instanceof StandardGuildChannel)
-            return (StandardGuildChannel) channel;
+        if (channel instanceof GuildChannel)
+            return (GuildChannel) channel;
         throw new IllegalStateException("Cannot convert channel of type " + getChannelType() + " to GuildChannel");
     }
 
