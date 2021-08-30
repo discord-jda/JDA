@@ -17,7 +17,7 @@
 package net.dv8tion.jda.api.exceptions;
 
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.StandardGuildChannel;
+import net.dv8tion.jda.api.entities.GuildChannel;
 
 import javax.annotation.Nonnull;
 
@@ -25,18 +25,18 @@ import javax.annotation.Nonnull;
  * Indicates that the user is missing the {@link Permission#VIEW_CHANNEL VIEW_CHANNEL}
  * or {@link Permission#VOICE_CONNECT VOICE_CONNECT} permission.
  *
- * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasAccess(StandardGuildChannel)
+ * @see   net.dv8tion.jda.api.entities.IPermissionHolder#hasAccess(GuildChannel)
  *
  * @since 4.2.1
  */
 public class MissingAccessException extends InsufficientPermissionException
 {
-    public MissingAccessException(@Nonnull StandardGuildChannel channel, @Nonnull Permission permission)
+    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission)
     {
         super(channel, permission);
     }
 
-    public MissingAccessException(@Nonnull StandardGuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
+    public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission, @Nonnull String reason)
     {
         super(channel, permission, reason);
     }

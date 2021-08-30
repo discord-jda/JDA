@@ -16,18 +16,16 @@
 package net.dv8tion.jda.api.entities;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.Region;
 import net.dv8tion.jda.api.managers.ChannelManager;
 import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * Represents a Discord Voice GuildChannel.
  * <br>Adds additional information specific to voice channels in Discord.
  *
- * @see StandardGuildChannel
+ * @see GuildChannel
  * @see TextChannel
  * @see Category
  *
@@ -41,7 +39,7 @@ import javax.annotation.Nullable;
  * @see   JDA#getVoiceChannelsByName(String, boolean)
  * @see   JDA#getVoiceChannelById(long)
  */
-public interface VoiceChannel extends StandardGuildChannel, AudioChannel
+public interface VoiceChannel extends GuildChannel, AudioChannel, ICategorizableChannel, ICopyableChannel, IPermissionContainer, IPositionableChannel, IMemberContainer, IInviteContainer
 {
     /**
      * The maximum amount of {@link net.dv8tion.jda.api.entities.Member Members} that can be in this

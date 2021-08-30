@@ -33,4 +33,6 @@ import net.dv8tion.jda.api.JDA;
  * @see   JDA#getStoreChannelsByName(String, boolean)
  * @see   JDA#getStoreChannelById(long)
  */
-public interface StoreChannel extends StandardGuildChannel {}
+//TODO-v5: We're probably going to remove this entity as Discord has deprecated it.
+public interface StoreChannel extends GuildChannel, ICategorizableChannel, IPositionableChannel, ICopyableChannel, IPermissionContainer, IMemberContainer
+{}

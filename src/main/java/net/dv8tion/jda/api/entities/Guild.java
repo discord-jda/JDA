@@ -1408,7 +1408,7 @@ public interface Guild extends ISnowflake
     MemberCacheView getMemberCache();
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1430,13 +1430,13 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(@Nonnull String id)
+    default GuildChannel getGuildChannelById(@Nonnull String id)
     {
         return getGuildChannelById(MiscUtil.parseSnowflake(id));
     }
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      * <br>This checks if any of the channel types in this guild have the provided ID and returns the first match.
      *
      * <br>To get more specific channel types you can use one of the following:
@@ -1453,9 +1453,9 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(long id)
+    default GuildChannel getGuildChannelById(long id)
     {
-        StandardGuildChannel channel = getTextChannelById(id);
+        GuildChannel channel = getTextChannelById(id);
         if (channel == null)
             channel = getVoiceChannelById(id);
         if (channel == null)
@@ -1466,7 +1466,7 @@ public interface Guild extends ISnowflake
     }
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1491,13 +1491,13 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, @Nonnull String id)
     {
         return getGuildChannelById(type, MiscUtil.parseSnowflake(id));
     }
 
     /**
-     * Get {@link StandardGuildChannel GuildChannel} for the provided ID.
+     * Get {@link GuildChannel GuildChannel} for the provided ID.
      *
      * <br>This is meant for systems that use a dynamic {@link net.dv8tion.jda.api.entities.ChannelType} and can
      * profit from a simple function to get the channel instance.
@@ -1517,7 +1517,7 @@ public interface Guild extends ISnowflake
      * @return The GuildChannel or null
      */
     @Nullable
-    default StandardGuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
+    default GuildChannel getGuildChannelById(@Nonnull ChannelType type, long id)
     {
         Checks.notNull(type, "ChannelType");
         switch (type)
@@ -1974,7 +1974,7 @@ public interface Guild extends ISnowflake
     SortedSnowflakeCacheView<VoiceChannel> getVoiceChannelCache();
 
     /**
-     * Populated list of {@link StandardGuildChannel channels} for this guild.
+     * Populated list of {@link GuildChannel channels} for this guild.
      * This includes all types of channels, such as category/voice/text.
      * <br>This includes hidden channels by default.
      *
@@ -1995,13 +1995,13 @@ public interface Guild extends ISnowflake
      * @see    #getChannels(boolean)
      */
     @Nonnull
-    default List<StandardGuildChannel> getChannels()
+    default List<GuildChannel> getChannels()
     {
         return getChannels(true);
     }
 
     /**
-     * Populated list of {@link StandardGuildChannel channels} for this guild.
+     * Populated list of {@link GuildChannel channels} for this guild.
      * This includes all types of channels, such as category/voice/text.
      *
      * <p>The returned list is ordered in the same fashion as it would be by the official discord client.
@@ -2025,7 +2025,7 @@ public interface Guild extends ISnowflake
      * @see    #getChannels()
      */
     @Nonnull
-    List<StandardGuildChannel> getChannels(boolean includeHidden);
+    List<GuildChannel> getChannels(boolean includeHidden);
 
     /**
      * Gets a {@link net.dv8tion.jda.api.entities.Role Role} from this guild that has the same id as the
@@ -2776,8 +2776,8 @@ public interface Guild extends ISnowflake
      * <br>Requires {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this guild.
      * Will throw an {@link net.dv8tion.jda.api.exceptions.InsufficientPermissionException InsufficientPermissionException} otherwise.
      *
-     * <p>To get all invites for a {@link StandardGuildChannel GuildChannel}
-     * use {@link StandardGuildChannel#retrieveInvites() GuildChannel.retrieveInvites()}
+     * <p>To get all invites for a {@link GuildChannel GuildChannel}
+     * use {@link IInviteContainer#retrieveInvites() GuildChannel.retrieveInvites()}
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         if the account does not have {@link net.dv8tion.jda.api.Permission#MANAGE_SERVER MANAGE_SERVER} in this Guild.
@@ -2785,7 +2785,7 @@ public interface Guild extends ISnowflake
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List{@literal <}{@link net.dv8tion.jda.api.entities.Invite Invite}{@literal >}
      *         <br>The list of expanded Invite objects
      *
-     * @see     StandardGuildChannel#retrieveInvites()
+     * @see     IInviteContainer#retrieveInvites()
      */
     @Nonnull
     @CheckReturnValue
@@ -5264,7 +5264,7 @@ public interface Guild extends ISnowflake
     ChannelAction<Category> createCategory(@Nonnull String name);
 
     /**
-     * Creates a copy of the specified {@link StandardGuildChannel GuildChannel}
+     * Creates a copy of the specified {@link GuildChannel GuildChannel}
      * in this {@link net.dv8tion.jda.api.entities.Guild Guild}.
      * <br>The provided channel need not be in the same Guild for this to work!
      *
@@ -5290,7 +5290,7 @@ public interface Guild extends ISnowflake
      * @param  <T>
      *         The channel type
      * @param  channel
-     *         The {@link StandardGuildChannel GuildChannel} to use for the copy template
+     *         The {@link GuildChannel GuildChannel} to use for the copy template
      *
      * @throws java.lang.IllegalArgumentException
      *         If the provided channel is {@code null}
@@ -5309,7 +5309,7 @@ public interface Guild extends ISnowflake
     @Nonnull
     @CheckReturnValue
     @SuppressWarnings("unchecked") // we need to do an unchecked cast for the channel type here
-    default <T extends StandardGuildChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
+    default <T extends ICopyableChannel> ChannelAction<T> createCopyOfChannel(@Nonnull T channel)
     {
         Checks.notNull(channel, "Channel");
         return (ChannelAction<T>) channel.createCopy(this);

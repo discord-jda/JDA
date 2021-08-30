@@ -44,9 +44,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M extends AbstractChannelImpl<T, M>> implements StandardGuildChannel
+public abstract class AbstractChannelImpl<T extends GuildChannel, M extends AbstractChannelImpl<T, M>> implements GuildChannel, IPositionableChannel, IInviteContainer, ICopyableChannel, ICategorizableChannel, IMemberContainer, IPermissionContainer
 {
     protected final long id;
     protected final JDAImpl api;
@@ -68,14 +67,24 @@ public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M exte
     }
 
     @Override
-    public int compareTo(@Nonnull StandardGuildChannel o)
+    public int compareTo(@Nonnull GuildChannel o)
     {
         Checks.notNull(o, "Channel");
-        if (getType().getSortBucket() != o.getType().getSortBucket()) // if bucket matters
+
+        // if bucket matters
+        if (getType().getSortBucket() != o.getType().getSortBucket())
             return Integer.compare(getType().getSortBucket(), o.getType().getSortBucket());
-        if (getPositionRaw() != o.getPositionRaw())                   // if position matters
-            return Integer.compare(getPositionRaw(), o.getPositionRaw());
-        return Long.compareUnsigned(id, o.getIdLong());               // last resort by id
+
+        // if position matters
+        if (o instanceof IPositionableChannel) {
+            IPositionableChannel oPositionableChannel = (IPositionableChannel) o;
+            if (getPositionRaw() != oPositionableChannel.getPositionRaw()) {
+                return Integer.compare(getPositionRaw(), oPositionableChannel.getPositionRaw());
+            }
+        }
+
+        // last resort by id
+        return Long.compareUnsigned(id, o.getIdLong());
     }
 
     @Nonnull
@@ -87,11 +96,12 @@ public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M exte
 
     @Nonnull
     @Override
-    public abstract ChannelAction<T> createCopy(@Nonnull Guild guild);
+    //TODO-v5; These are untyped for now. We're likely removing this class so maybe nbd.
+    public abstract ChannelAction createCopy(@Nonnull Guild guild);
 
     @Nonnull
     @Override
-    public ChannelAction<T> createCopy()
+    public ChannelAction createCopy()
     {
         return createCopy(getGuild());
     }
@@ -173,7 +183,7 @@ public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M exte
 
     @Nonnull
     @Override
-    public ChannelManager getManager()
+    public ChannelManager<T> getManager()
     {
         if (manager == null)
             return manager = new ChannelManagerImpl(this);
@@ -246,9 +256,9 @@ public abstract class AbstractChannelImpl<T extends StandardGuildChannel, M exte
     {
         if (obj == this)
             return true;
-        if (!(obj instanceof StandardGuildChannel))
+        if (!(obj instanceof GuildChannel))
             return false;
-        StandardGuildChannel channel = (StandardGuildChannel) obj;
+        GuildChannel channel = (GuildChannel) obj;
         return channel.getIdLong() == getIdLong();
     }
 
