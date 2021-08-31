@@ -307,7 +307,7 @@ public interface Activity
     }
 
     /**
-     * The type game being played, differentiating between a game and stream types.
+     * The activity being executed, differentiating between, amongst others, playing, listening and streaming.
      */
     enum ActivityType
     {
@@ -317,8 +317,8 @@ public interface Activity
          */
         PLAYING(0),
         /**
-         * Used to indicate that the {@link Activity Activity} is a stream
-         * <br>This type is displayed as "Streaming" in the discord client.
+         * Used to indicate that the {@link Activity Activity} is a stream and should be displayed
+         * as {@code Streaming...} in the official client.
          */
         STREAMING(1),
         /**
