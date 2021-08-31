@@ -244,10 +244,8 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(@Nonnull Emote emote, @Nonnull User user)
     {
         Checks.notNull(user, "User");  // to prevent NPEs
-
         if (isEphemeral())
             throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
-        
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
