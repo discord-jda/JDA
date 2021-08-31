@@ -191,7 +191,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> addReaction(@Nonnull String unicode)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot react on ephemeral messages.");
+            throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
         
         return channel.addReactionById(getId(), unicode);
     }
