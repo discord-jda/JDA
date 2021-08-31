@@ -37,7 +37,7 @@ public enum Permission
     MESSAGE_ADD_REACTION( 6, true, true, "Add Reactions"),
     VIEW_AUDIT_LOGS(      7, true, false, "View Audit Logs"),
     PRIORITY_SPEAKER(     8, true, true, "Priority Speaker"),
-    VIEW_GUILD_INSIGHTS(19, true, false, "View Server Insights"),
+    VIEW_GUILD_INSIGHTS( 19, true, false, "View Server Insights"),
 
     // Applicable to all channel types
     VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
@@ -51,7 +51,7 @@ public enum Permission
     MESSAGE_HISTORY(         16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
-    USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
+    USE_APPLICATION_COMMANDS(31, true, true, "Use Application Commands"),
 
     MANAGE_THREADS(     34, true, true, "Manage Threads"),
     USE_PUBLIC_THREADS( 35, true, true, "Use Public Threads"),
@@ -107,7 +107,7 @@ public enum Permission
     public static final long ALL_TEXT_PERMISSIONS
             = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS,
                                 MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_SLASH_COMMANDS,
+                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_APPLICATION_COMMANDS,
                                 MANAGE_THREADS, USE_PUBLIC_THREADS, USE_PRIVATE_THREADS);
 
     /**
