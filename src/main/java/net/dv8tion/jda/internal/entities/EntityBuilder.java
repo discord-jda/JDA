@@ -733,12 +733,12 @@ public class EntityBuilder
         try
         {
             type = gameJson.isNull("type")
-                ? Activity.ActivityType.DEFAULT
+                ? Activity.ActivityType.PLAYING
                 : Activity.ActivityType.fromKey(Integer.parseInt(gameJson.get("type").toString()));
         }
         catch (NumberFormatException e)
         {
-            type = Activity.ActivityType.DEFAULT;
+            type = Activity.ActivityType.PLAYING;
         }
 
         RichPresence.Timestamps timestamps = null;
