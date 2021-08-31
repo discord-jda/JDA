@@ -169,7 +169,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> addReaction(@Nonnull Emote emote)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot add reactions for ephemeral messages.");
+            throw new IllegalStateException("Cannot add reactions to ephemeral messages.");
         
         Checks.notNull(emote, "Emote");
 
