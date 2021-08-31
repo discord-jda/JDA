@@ -345,9 +345,6 @@ public class ReceivedMessage extends AbstractMessage
     @Override
     public String getJumpUrl()
     {
-        if (isEphemeral())
-            throw new IllegalStateException("Cannot get the jump URL from ephemeral messages.");
-        
         return String.format("https://discord.com/channels/%s/%s/%s", isFromGuild() ? getGuild().getId() : "@me", getChannel().getId(), getId());
     }
 
