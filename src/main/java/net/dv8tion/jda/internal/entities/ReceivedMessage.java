@@ -201,7 +201,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> clearReactions()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions on ephemeral messages.");
+            throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId());
@@ -212,7 +212,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> clearReactions(@Nonnull String unicode)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions on ephemeral messages.");
+            throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), unicode);
@@ -223,7 +223,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> clearReactions(@Nonnull Emote emote)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot clear reactions on ephemeral messages.");
+            throw new IllegalStateException("Cannot clear reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot clear reactions from a message in a Group or PrivateChannel.");
         return getTextChannel().clearReactionsById(getId(), emote);
@@ -234,7 +234,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(@Nonnull Emote emote)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
+            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         
         return channel.removeReactionById(getId(), emote);
     }
@@ -245,7 +245,7 @@ public class ReceivedMessage extends AbstractMessage
     {
         Checks.notNull(user, "User");  // to prevent NPEs
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
+            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         // check if the passed user is the SelfUser, then the ChannelType doesn't matter and
         // we can safely remove that
         if (user.equals(getJDA().getSelfUser()))
@@ -261,7 +261,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Void> removeReaction(@Nonnull String unicode)
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
+            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         
         return channel.removeReactionById(getId(), unicode);
     }
@@ -275,7 +275,7 @@ public class ReceivedMessage extends AbstractMessage
             return channel.removeReactionById(getIdLong(), unicode);
 
         if (isEphemeral())
-            throw new IllegalStateException("Cannot remove reactions on ephemeral messages.");
+            throw new IllegalStateException("Cannot remove reactions from ephemeral messages.");
         if (!isFromGuild())
             throw new IllegalStateException("Cannot remove reactions of others from a message in a Group or PrivateChannel.");
         return getTextChannel().removeReactionById(getId(), unicode, user);
@@ -939,7 +939,7 @@ public class ReceivedMessage extends AbstractMessage
     public RestAction<Message> crosspost()
     {
         if (isEphemeral())
-            throw new IllegalStateException("Cannot suppress embeds on ephemeral messages.");
+            throw new IllegalStateException("Cannot crosspost ephemeral messages.");
         
         if (getFlags().contains(MessageFlag.CROSSPOSTED))
             return new CompletedRestAction<>(getJDA(), this);
