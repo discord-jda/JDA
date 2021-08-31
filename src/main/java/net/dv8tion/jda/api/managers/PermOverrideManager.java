@@ -33,7 +33,7 @@ import java.util.Collection;
  * <p><b>Example</b>
  * <pre>{@code
  * manager.setDenied(Permission.MESSAGE_WRITE)
- *        .setAllowed(Permission.MESSAGE_READ)
+ *        .setAllowed(Permission.VIEW_CHANNEL)
  *        .queue();
  * manager.reset(PermOverrideManager.DENIED | PermOverrideManager.ALLOWED)
  *        .grant(Permission.MESSAGE_WRITE)

@@ -807,7 +807,7 @@ public class GuildImpl implements Guild
     {
         final Role role = getPublicRole();
         return getTextChannelsView().stream()
-                                    .filter(c -> role.hasPermission(c, Permission.MESSAGE_READ))
+                                    .filter(c -> role.hasPermission(c, Permission.VIEW_CHANNEL))
                                     .min(Comparator.naturalOrder()).orElse(null);
     }
 

@@ -43,7 +43,6 @@ public enum Permission
     VIEW_CHANNEL(            10, true, true, "Read Text Channels & See Voice Channels"),
 
     // Text Permissions
-    MESSAGE_READ(            10, true, true, "Read Messages"),
     MESSAGE_WRITE(           11, true, true, "Send Messages"),
     MESSAGE_TTS(             12, true, true, "Send TTS Messages"),
     MESSAGE_MANAGE(          13, true, true, "Manage Messages"),
@@ -280,7 +279,7 @@ public enum Permission
     /**
      * This is effectively the opposite of {@link #getPermissions(long)}, this takes a Collection of {@link net.dv8tion.jda.api.Permission Permissions}
      * and returns the raw offset {@code long} representation of the permissions.
-     * <br>Example: {@code getRaw(EnumSet.of(Permission.MESSAGE_READ, Permission.MESSAGE_WRITE))}
+     * <br>Example: {@code getRaw(EnumSet.of(Permission.VIEW_CHANNEL, Permission.MESSAGE_WRITE))}
      *
      * @param  permissions
      *         The Collection of permissions of which to form into the raw long representation.

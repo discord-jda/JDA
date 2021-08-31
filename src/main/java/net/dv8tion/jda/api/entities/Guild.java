@@ -2599,7 +2599,7 @@ public interface Guild extends ISnowflake
      * that is not directed at a specific {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
      *
      * <p>Note: This channel is the first channel in the guild (ordered by position) that the {@link #getPublicRole()}
-     * has the {@link net.dv8tion.jda.api.Permission#MESSAGE_READ Permission.MESSAGE_READ} in.
+     * has the {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in.
      *
      * @return The {@link net.dv8tion.jda.api.entities.TextChannel TextChannel} representing the default channel for this guild
      */
