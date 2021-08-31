@@ -1436,9 +1436,8 @@ public class GuildImpl implements Guild
         {
             if (voiceState.getChannel() == null)
                 throw new IllegalStateException("Can only mute members who are currently in a voice channel");
-            if (voiceState.isGuildMuted() == mute)
-                if (mute || !voiceState.isSuppressed())
-                    return new CompletedRestAction<>(getJDA(), null);
+            if (voiceState.isGuildMuted() == mute && (mute || !voiceState.isSuppressed()))
+                return new CompletedRestAction<>(getJDA(), null);
         }
 
         DataObject body = DataObject.empty().put("mute", mute);
