@@ -1615,8 +1615,11 @@ public interface Message extends ISnowflake, Formattable
      *         does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE} in
      *         the channel.
      * @throws java.lang.IllegalStateException
-     *         If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.
+     *         <ul>
+     *              <li>If this Message was not sent by the currently logged in account and it was <b>not</b> sent in a
+     *              {@link net.dv8tion.jda.api.entities.TextChannel TextChannel}.</li>
+     *              <li>If this Message is ephemeral</li>
+     *         </ul>
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction}
      *
@@ -1680,6 +1683,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>Missing {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1719,6 +1724,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>Missing {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}.
      *             <br>Required to actually pin the Message.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1781,6 +1788,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1850,6 +1859,8 @@ public interface Message extends ISnowflake, Formattable
      *         </ul>
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1888,8 +1899,11 @@ public interface Message extends ISnowflake, Formattable
      *         and the currently logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_MANAGE Permission.MESSAGE_MANAGE}
      *         in the channel.
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         <ul>
+     *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
+     *             <li>If this message is ephemeral</li>
+     *         </ul>
+     *         
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      */
@@ -1937,8 +1951,11 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         <ul>
+     *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
+     *             <li>If this message is ephemeral</li>
+     *         </ul>
+     *         
      *
      * @return {@link RestAction}
      *
@@ -1976,8 +1993,10 @@ public interface Message extends ISnowflake, Formattable
      * @throws IllegalArgumentException
      *         If provided with null
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}.
+     *         <ul>
+     *             <li>If this message was <b>not</b> sent in a {@link net.dv8tion.jda.api.entities.Guild Guild}.</li>
+     *             <li>If this message is ephemeral</li>
+     *         </ul>
      *
      * @return {@link RestAction}
      *
@@ -2027,6 +2046,8 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} cannot be used in the current channel.
      *                 See {@link Emote#canInteract(User, MessageChannel)} or {@link Emote#canInteract(Member)} for more information.</li>
      *         </ul>
+     * @throws IllegalStateException
+     *         If this is an ephemeral message
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2086,9 +2107,13 @@ public interface Message extends ISnowflake, Formattable
      *             <li>If the provided user is null</li>
      *         </ul>
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
+     * <ul>
+     *     <li>If this message was <b>not</b> sent in a
      *         {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
+     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
+     *     <li>If this message is ephemeral</li>
+     * </ul>
+     *        
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2146,6 +2171,8 @@ public interface Message extends ISnowflake, Formattable
      *         and the logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY}
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
+     * @throws IllegalStateException
+     *         If this is an ephemeral message
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2206,9 +2233,14 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty or if the provided user is null.
      * @throws java.lang.IllegalStateException
-     *         If this message was <b>not</b> sent in a
-     *         {@link net.dv8tion.jda.api.entities.Guild Guild}
-     *         <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.
+     *         If this message:
+     *         <ul>
+     *             <li>Was <b>not</b> sent in a
+     *                 {@link net.dv8tion.jda.api.entities.Guild Guild}
+     *                 <b>and</b> the given user is <b>not</b> the {@link net.dv8tion.jda.api.entities.SelfUser SelfUser}.</li>
+     *             <li>Is ephemeral</li>
+     *         </ul>
+     *         
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: {@link java.lang.Void}
      *
@@ -2250,7 +2282,8 @@ public interface Message extends ISnowflake, Formattable
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided {@link net.dv8tion.jda.api.entities.Emote Emote} is null.
-     *
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emote's users.
      *
      * @since  4.1.0
@@ -2293,7 +2326,8 @@ public interface Message extends ISnowflake, Formattable
      *         logged in account does not have {@link net.dv8tion.jda.api.Permission#MESSAGE_HISTORY Permission.MESSAGE_HISTORY} in the channel.
      * @throws java.lang.IllegalArgumentException
      *         If the provided unicode emoji is null or empty.
-     *
+     * @throws IllegalStateException
+     *         If this Message is ephemeral
      * @return The {@link net.dv8tion.jda.api.requests.restaction.pagination.ReactionPaginationAction ReactionPaginationAction} of the emoji's users.
      *
      * @since  4.1.0
@@ -2403,6 +2437,8 @@ public interface Message extends ISnowflake, Formattable
      * @throws net.dv8tion.jda.api.exceptions.PermissionException
      *         If the MessageChannel this message was sent in was a {@link net.dv8tion.jda.api.entities.PrivateChannel PrivateChannel}
      *         and the message was not sent by the currently logged in account.
+     * @throws IllegalStateException 
+     *         If this Message is ephemeral
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link java.lang.Void}
      * @see    #isSuppressedEmbeds()
      */
@@ -2438,7 +2474,10 @@ public interface Message extends ISnowflake, Formattable
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      * @throws IllegalStateException
-     *         If the channel is not a text or news channel. See {@link TextChannel#isNews()}.
+     *         <ul>
+     *             <li>If the channel is not a text or news channel. See {@link TextChannel#isNews()}.</li>
+     *             <li>If the message is ephemeral.</li>
+     *         </ul>
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
      *         If the currently logged in account does not have
      *         {@link net.dv8tion.jda.api.Permission#VIEW_CHANNEL Permission.VIEW_CHANNEL} in this channel
