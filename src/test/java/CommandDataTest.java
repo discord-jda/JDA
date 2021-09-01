@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.exceptions.ParsingException;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -33,7 +34,7 @@ public class CommandDataTest
     @Test
     public void testNormal()
     {
-        CommandData command = new CommandData("ban", "Ban a user from this server")
+        CommandData.SlashCommand command = new CommandData.SlashCommand("ban", "Ban a user from this server")
                 .setDefaultEnabled(false)
                 .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
                 .addOption(OptionType.STRING, "reason", "The ban reason") // test that default is false
@@ -43,6 +44,7 @@ public class CommandDataTest
         Assertions.assertEquals("ban", data.getString("name"));
         Assertions.assertEquals("Ban a user from this server", data.getString("description"));
         Assertions.assertFalse(data.getBoolean("default_permission"));
+        Assertions.assertEquals(1, data.getInt("type"));
 
         DataArray options = data.getArray("options");
 
@@ -65,7 +67,7 @@ public class CommandDataTest
     @Test
     public void testSubcommand()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
+        CommandData.SlashCommand command = new CommandData.SlashCommand("mod", "Moderation commands")
                 .setDefaultEnabled(true)
                 .addSubcommands(new SubcommandData("ban", "Ban a user from this server")
                     .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -102,7 +104,7 @@ public class CommandDataTest
     @Test
     public void testSubcommandGroup()
     {
-        CommandData command = new CommandData("mod", "Moderation commands")
+        CommandData.SlashCommand command = new CommandData.SlashCommand("mod", "Moderation commands")
                 .addSubcommandGroups(new SubcommandGroupData("ban", "Ban or unban a user from this server")
                     .addSubcommands(new SubcommandData("add", "Ban a user from this server")
                         .addOption(OptionType.USER, "user", "The user to ban", true) // required before non-required
@@ -142,7 +144,7 @@ public class CommandDataTest
     @Test
     public void testRequiredThrows()
     {
-        CommandData command = new CommandData("ban", "Simple ban command");
+        CommandData.SlashCommand command = new CommandData.SlashCommand("ban", "Simple ban command");
         command.addOption(OptionType.STRING, "opt", "desc");
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> command.addOption(OptionType.STRING, "other", "desc", true));
@@ -155,9 +157,9 @@ public class CommandDataTest
     @Test
     public void testNameChecks()
     {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalid name", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("invalidName", "Valid description"));
-        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData("valid_name", ""));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData.SlashCommand("invalid name", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData.SlashCommand("invalidName", "Valid description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData.SlashCommand("valid_name", ""));
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalid name", "Valid description"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> new SubcommandData("invalidName", "Valid description"));
@@ -176,14 +178,38 @@ public class CommandDataTest
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("invalidName", "Valid description"));
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("valid_name", ""));
 
-        List<Command.Choice> choices = new ArrayList<>();
+        List<SlashCommand.Choice> choices = new ArrayList<>();
         for (int i = 0; i < 25; i++)
         {
             option.addChoice("choice_" + i, i);
-            choices.add(new Command.Choice("choice_" + i, i));
+            choices.add(new SlashCommand.Choice("choice_" + i, i));
         }
         Assertions.assertThrows(IllegalArgumentException.class, () -> option.addChoice("name", 100));
         Assertions.assertEquals(25, option.getChoices().size());
         Assertions.assertEquals(choices, option.getChoices());
+    }
+
+    @Test
+    public void testUserCommand() {
+        CommandData.UserCommand data = new CommandData.UserCommand("test");
+        DataObject object = data.toData();
+
+        Assertions.assertEquals("test", object.getString("name"));
+        Assertions.assertEquals(2, object.getInt("type"));
+
+        Assertions.assertThrows(ParsingException.class, () -> object.getString("description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData.UserCommand("tewowpoegjwjegwjegopwjegpjwegjowejgpwejpwegjwejggjwegpgj"));
+    }
+
+    @Test
+    public void testMessageCommand() {
+        CommandData.MessageCommand data = new CommandData.MessageCommand("test");
+        DataObject object = data.toData();
+
+        Assertions.assertEquals("test", object.getString("name"));
+        Assertions.assertEquals(3, object.getInt("type"));
+
+        Assertions.assertThrows(ParsingException.class, () -> object.getString("description"));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new CommandData.UserCommand("tewowpoegjwjegwjegopwjegpjwegjowejgpwejpwegjwejggjwegpgj"));
     }
 }
