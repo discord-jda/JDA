@@ -18,7 +18,7 @@ package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -37,15 +37,16 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class CommandEditActionImpl extends RestActionImpl<Command> implements CommandEditAction
+public class CommandEditActionImpl<T extends Command> extends RestActionImpl<T> implements CommandEditAction<T>
 {
     private static final String UNDEFINED = "undefined";
-    private static final int NAME_SET        = 1 << 0;
+    private static final int NAME_SET = 1 << 0;
     private static final int DESCRIPTION_SET = 1 << 1;
-    private static final int OPTIONS_SET     = 1 << 2;
+    private static final int OPTIONS_SET = 1 << 2;
+
     private final Guild guild;
     private int mask = 0;
-    private CommandData data = new CommandData(UNDEFINED, UNDEFINED);
+    private CommandData<? extends CommandData<?>> data = new CommandData<>(UNDEFINED, UNDEFINED, CommandType.UNKNOWN);
 
     public CommandEditActionImpl(JDA api, String id)
     {
@@ -61,21 +62,21 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setCheck(BooleanSupplier checks)
+    public CommandEditAction<T> setCheck(BooleanSupplier checks)
     {
-        return (CommandEditAction) super.setCheck(checks);
+        return (CommandEditAction<T>) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction deadline(long timestamp)
+    public CommandEditAction<T> deadline(long timestamp)
     {
-        return (CommandEditAction) super.deadline(timestamp);
+        return (CommandEditAction<T>) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction apply(@Nonnull CommandData commandData)
+    public CommandEditAction<T> apply(@Nonnull CommandData<? extends CommandData<?>> commandData)
     {
         Checks.notNull(commandData, "Command Data");
         this.mask = NAME_SET | DESCRIPTION_SET | OPTIONS_SET;
@@ -85,29 +86,33 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setDefaultEnabled(boolean enabled)
+    public CommandEditAction<T> setDefaultEnabled(boolean enabled)
     {
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only set the default enabled for a SlashCommand!");
+        }
         data.setDefaultEnabled(enabled);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addCheck(@Nonnull BooleanSupplier checks)
+    public CommandEditAction<T> addCheck(@Nonnull BooleanSupplier checks)
     {
-        return (CommandEditAction) super.addCheck(checks);
+        return (CommandEditAction<T>) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public CommandEditAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
     {
-        return (CommandEditAction) super.timeout(timeout, unit);
+        return (CommandEditAction<T>) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public CommandEditAction setName(@Nullable String name)
+    public CommandEditAction<T> setName(@Nullable String name)
     {
         if (name == null)
         {
@@ -121,50 +126,70 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
 
     @Nonnull
     @Override
-    public CommandEditAction setDescription(@Nullable String description)
+    public CommandEditAction<T> setDescription(@Nullable String description)
     {
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only set the description for a SlashCommand!");
+        }
         if (description == null)
         {
             mask &= ~DESCRIPTION_SET;
             return this;
         }
-        data.setDescription(description);
+        ((CommandData.SlashCommand) data).setDescription(description);
         mask |= DESCRIPTION_SET;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction clearOptions()
+    public CommandEditAction<T> clearOptions()
     {
-        data = new CommandData(data.getName(), data.getDescription());
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only clear options for a SlashCommand!");
+        }
+        data = new CommandData.SlashCommand(data.getName(), data.getDescription());
         mask &= ~OPTIONS_SET;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addOptions(@Nonnull OptionData... options)
+    public CommandEditAction<T> addOptions(@Nonnull OptionData... options)
     {
-        data.addOptions(options);
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only add options to a SlashCommand!");
+        }
+        ((CommandData.SlashCommand) data).addOptions(options);
         mask |= OPTIONS_SET;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands)
+    public CommandEditAction<T> addSubcommands(@Nonnull SubcommandData... subcommands)
     {
-        data.addSubcommands(subcommands);
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only add subcommands to a SlashCommand!");
+        }
+        ((CommandData.SlashCommand) data).addSubcommands(subcommands);
         mask |= OPTIONS_SET;
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
+    public CommandEditAction<T> addSubcommandGroups(@Nonnull SubcommandGroupData... groups)
     {
-        data.addSubcommandGroups(groups);
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only add subcommand groups to a SlashCommand!");
+        }
+        ((CommandData.SlashCommand) data).addSubcommandGroups(groups);
         mask |= OPTIONS_SET;
         return this;
     }
@@ -185,14 +210,30 @@ public class CommandEditActionImpl extends RestActionImpl<Command> implements Co
         if (isUnchanged(OPTIONS_SET))
             json.remove("options");
         mask = 0;
-        data = new CommandData(UNDEFINED, UNDEFINED);
+        data = new CommandData<>(UNDEFINED, UNDEFINED, CommandType.UNKNOWN);
         return getRequestBody(json);
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Command> request)
+    protected void handleSuccess(Response response, Request<T> request)
     {
-        DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        DataObject obj = response.getObject();
+        T command;
+        switch (data.getType())
+        {
+        case SLASH:
+            command = (T) new SlashCommand(api, guild, obj);
+            break;
+        case USER:
+            command = (T) new UserCommand(api, guild, obj);
+            break;
+        case MESSAGE:
+            command = (T) new MessageCommand(api, guild, obj);
+            break;
+        default:
+            request.onFailure(new IllegalStateException("Edited command of unknown type!"));
+            return;
+        }
+        request.onSuccess(command);
     }
 }

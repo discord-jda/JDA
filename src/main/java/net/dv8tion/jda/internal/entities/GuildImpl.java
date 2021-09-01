@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.exceptions.HierarchyException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.managers.AudioManager;
@@ -131,7 +132,7 @@ public class GuildImpl implements Guild
                 (response, request) ->
                         response.getArray()
                                 .stream(DataArray::getObject)
-                                .map(json -> new Command(getJDA(), this, json))
+                                .map(json -> new SlashCommand(getJDA(), this, json))
                                 .collect(Collectors.toList()));
     }
 
@@ -141,15 +142,15 @@ public class GuildImpl implements Guild
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_GUILD_COMMAND.compile(getJDA().getSelfUser().getApplicationId(), getId(), id);
-        return new RestActionImpl<>(getJDA(), route, (response, request) -> new Command(getJDA(), this, response.getObject()));
+        return new RestActionImpl<>(getJDA(), route, (response, request) -> new SlashCommand(getJDA(), this, response.getObject()));
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
+    public CommandCreateAction<Command> upsertCommand(@Nonnull CommandData<? extends CommandData<?>> command)
     {
         Checks.notNull(command, "CommandData");
-        return new CommandCreateActionImpl(this, command);
+        return new CommandCreateActionImpl<>(this, command);
     }
 
     @Nonnull
@@ -162,10 +163,10 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(@Nonnull String id)
+    public CommandEditAction<Command> editCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id);
+        return new CommandEditActionImpl<>(this, id);
     }
 
     @Nonnull

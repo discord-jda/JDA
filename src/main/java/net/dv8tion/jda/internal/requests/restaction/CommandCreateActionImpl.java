@@ -16,7 +16,7 @@
 package net.dv8tion.jda.internal.requests.restaction;
 
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.*;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -35,19 +35,19 @@ import javax.annotation.Nonnull;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
-public class CommandCreateActionImpl extends RestActionImpl<Command> implements CommandCreateAction
+public class CommandCreateActionImpl<T extends Command> extends RestActionImpl<T> implements CommandCreateAction<T>
 {
     private final Guild guild;
-    private CommandData data;
+    private final CommandData<? extends CommandData<?>> data;
 
-    public CommandCreateActionImpl(JDAImpl api, CommandData command)
+    public CommandCreateActionImpl(JDAImpl api, CommandData<? extends CommandData<?>> command)
     {
         super(api, Route.Interactions.CREATE_COMMAND.compile(api.getSelfUser().getApplicationId()));
         this.guild = null;
         this.data = command;
     }
 
-    public CommandCreateActionImpl(Guild guild, CommandData command)
+    public CommandCreateActionImpl(Guild guild, CommandData<? extends CommandData<?>> command)
     {
         super(guild.getJDA(), Route.Interactions.CREATE_GUILD_COMMAND.compile(guild.getJDA().getSelfUser().getApplicationId(), guild.getId()));
         this.guild = guild;
@@ -56,43 +56,47 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction addCheck(@Nonnull BooleanSupplier checks)
+    public CommandCreateAction<T> addCheck(@Nonnull BooleanSupplier checks)
     {
-        return (CommandCreateAction) super.addCheck(checks);
+        return (CommandCreateAction<T>) super.addCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setCheck(BooleanSupplier checks)
+    public CommandCreateAction<T> setCheck(BooleanSupplier checks)
     {
-        return (CommandCreateAction) super.setCheck(checks);
+        return (CommandCreateAction<T>) super.setCheck(checks);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction deadline(long timestamp)
+    public CommandCreateAction<T> deadline(long timestamp)
     {
-        return (CommandCreateAction) super.deadline(timestamp);
+        return (CommandCreateAction<T>) super.deadline(timestamp);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setDefaultEnabled(boolean enabled)
+    public CommandCreateAction<T> setDefaultEnabled(boolean enabled)
     {
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only set the default enabled for a SlashCommand!");
+        }
         data.setDefaultEnabled(enabled);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit)
+    public CommandCreateAction<T> timeout(long timeout, @Nonnull TimeUnit unit)
     {
-        return (CommandCreateAction) super.timeout(timeout, unit);
+        return (CommandCreateAction<T>) super.timeout(timeout, unit);
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction setName(@Nonnull String name)
+    public CommandCreateAction<T> setName(@Nonnull String name)
     {
         Checks.notEmpty(name, "Name");
         Checks.notLonger(name, 32, "Name");
@@ -103,35 +107,51 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
 
     @Nonnull
     @Override
-    public CommandCreateAction setDescription(@Nonnull String description)
+    public CommandCreateAction<T> setDescription(@Nonnull String description)
     {
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only set the description for a SlashCommand!");
+        }
         Checks.notEmpty(description, "Description");
         Checks.notLonger(description, 100, "Description");
-        data.setDescription(description);
+        ((CommandData.SlashCommand) data).setDescription(description);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction addOptions(@Nonnull OptionData... options)
+    public CommandCreateAction<T> addOptions(@Nonnull OptionData... options)
     {
-        data.addOptions(options);
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only add options to a SlashCommand!");
+        }
+        ((CommandData.SlashCommand) data).addOptions(options);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommand)
+    public CommandCreateAction<T> addSubcommands(@Nonnull SubcommandData subcommand)
     {
-        data.addSubcommands(subcommand);
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only add subcommands to a SlashCommand!");
+        }
+        ((CommandData.SlashCommand) data).addSubcommands(subcommand);
         return this;
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData group)
+    public CommandCreateAction<T> addSubcommandGroups(@Nonnull SubcommandGroupData group)
     {
-        data.addSubcommandGroups(group);
+        if (data.getType() != CommandType.SLASH)
+        {
+            throw new UnsupportedOperationException("Can only add subcommand groups to a SlashCommand!");
+        }
+        ((CommandData.SlashCommand) data).addSubcommandGroups(group);
         return this;
     }
 
@@ -142,9 +162,25 @@ public class CommandCreateActionImpl extends RestActionImpl<Command> implements 
     }
 
     @Override
-    protected void handleSuccess(Response response, Request<Command> request)
+    protected void handleSuccess(Response response, Request<T> request)
     {
-        DataObject json = response.getObject();
-        request.onSuccess(new Command(api, guild, json));
+        DataObject obj = response.getObject();
+        T command;
+        switch (data.getType())
+        {
+        case SLASH:
+            command = (T) new SlashCommand(api, guild, obj);
+            break;
+        case USER:
+            command = (T) new UserCommand(api, guild, obj);
+            break;
+        case MESSAGE:
+            command = (T) new MessageCommand(api, guild, obj);
+            break;
+        default:
+            request.onFailure(new IllegalStateException("Created command of unknown type!"));
+            return;
+        }
+        request.onSuccess(command);
     }
 }

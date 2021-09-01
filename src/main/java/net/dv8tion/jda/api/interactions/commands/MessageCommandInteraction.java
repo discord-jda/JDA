@@ -6,10 +6,28 @@ import javax.annotation.Nonnull;
 
 public interface MessageCommandInteraction extends CommandInteraction
 {
+
     /**
-     * The message clicked on.
+     * The id of the message clicked on.
      *
-     * @return The message clicked on
+     * @return The id
+     */
+    long getInteractedIdLong();
+
+    /**
+     * The id of the message clicked on.
+     *
+     * @return The id
+     */
+    @Nonnull
+    default String getInteractedId() {
+        return Long.toUnsignedString(getInteractedIdLong());
+    }
+
+    /**
+     * The {@link Message} clicked on.
+     *
+     * @return The {@link Message} clicked on
      */
     @Nonnull
     Message getInteractedMessage();

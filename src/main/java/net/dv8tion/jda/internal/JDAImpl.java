@@ -35,6 +35,7 @@ import net.dv8tion.jda.api.hooks.IEventManager;
 import net.dv8tion.jda.api.hooks.InterfacedEventManager;
 import net.dv8tion.jda.api.hooks.VoiceDispatchInterceptor;
 import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.managers.Presence;
@@ -851,7 +852,7 @@ public class JDAImpl implements JDA
             (response, request) ->
                 response.getArray()
                         .stream(DataArray::getObject)
-                        .map(json -> new Command(this, null, json))
+                        .map(json -> new SlashCommand(this, null, json))
                         .collect(Collectors.toList()));
     }
 
@@ -861,15 +862,15 @@ public class JDAImpl implements JDA
     {
         Checks.isSnowflake(id);
         Route.CompiledRoute route = Route.Interactions.GET_COMMAND.compile(getSelfUser().getApplicationId(), id);
-        return new RestActionImpl<>(this, route, (response, request) -> new Command(this, null, response.getObject()));
+        return new RestActionImpl<>(this, route, (response, request) -> new SlashCommand(this, null, response.getObject()));
     }
 
     @Nonnull
     @Override
-    public CommandCreateAction upsertCommand(@Nonnull CommandData command)
+    public CommandCreateAction<Command> upsertCommand(@Nonnull CommandData<? extends CommandData<?>> command)
     {
         Checks.notNull(command, "CommandData");
-        return new CommandCreateActionImpl(this, command);
+        return new CommandCreateActionImpl<>(this, command);
     }
 
     @Nonnull
@@ -882,10 +883,10 @@ public class JDAImpl implements JDA
 
     @Nonnull
     @Override
-    public CommandEditAction editCommandById(@Nonnull String id)
+    public CommandEditAction<Command> editCommandById(@Nonnull String id)
     {
         Checks.isSnowflake(id);
-        return new CommandEditActionImpl(this, id);
+        return new CommandEditActionImpl<>(this, id);
     }
 
     @Nonnull
