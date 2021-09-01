@@ -70,7 +70,7 @@ public interface CommandEditAction<T extends Command> extends RestAction<T>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction<T> apply(@Nonnull CommandData<? extends CommandData> commandData);
+    CommandEditAction<T> apply(@Nonnull CommandData<? extends CommandData<?>> commandData);
 
     /**
      * Whether this command is available to everyone by default.
