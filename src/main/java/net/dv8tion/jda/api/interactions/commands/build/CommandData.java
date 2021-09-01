@@ -59,7 +59,7 @@ public class CommandData<T extends CommandData<T>> implements SerializableData
     {
         setName(name);
         Checks.notNull(type, "Type");
-        Checks.check(type == CommandType.UNKNOWN, "Type cannot be UNKNOWN!");
+        Checks.check(type != CommandType.UNKNOWN, "Type cannot be UNKNOWN!");
         this.type = type;
     }
 
@@ -124,7 +124,8 @@ public class CommandData<T extends CommandData<T>> implements SerializableData
         return DataObject.empty()
                 .put("name", name)
                 .put("type", type.getId())
-                .put("description", description);
+                .put("description", description)
+                .put("default_permission", defaultPermissions);
     }
 
     /**
@@ -504,9 +505,7 @@ public class CommandData<T extends CommandData<T>> implements SerializableData
         @Override
         public @NotNull DataObject toData()
         {
-            return DataObject.empty()
-                    .put("name", name)
-                    .put("type", getType());
+            return super.toData().remove("description");
         }
     }
 
@@ -530,9 +529,7 @@ public class CommandData<T extends CommandData<T>> implements SerializableData
         @Override
         public @NotNull DataObject toData()
         {
-            return DataObject.empty()
-                    .put("name", name)
-                    .put("type", getType());
+            return super.toData().remove("description");
         }
     }
 
