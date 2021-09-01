@@ -145,6 +145,111 @@ public class CommandData<T extends CommandData<T>> implements SerializableData
     }
 
 
+    /**
+     * Parses the provided serialization back into an CommandData instance.
+     * <br>This is the reverse function for {@link #toData()}.
+     *
+     * @param  object
+     *         The serialized {@link DataObject} representing the command
+     *
+     * @throws ParsingException
+     *         If the serialized object is missing required fields
+     * @throws IllegalArgumentException
+     *         If any of the values are failing the respective checks such as length or command type
+     *
+     * @return The parsed CommandData instance, which can be further configured through setters
+     */
+    @Nonnull
+    public static CommandData<? extends CommandData<?>> fromData(@Nonnull DataObject object)
+    {
+        Checks.notNull(object, "DataObject");
+        CommandData<? extends CommandData<?>> command = null;
+        switch (CommandType.fromId(object.getInt("type")))
+        {
+        case SLASH:
+            command = slashCommandFromData(object);
+            break;
+        case USER:
+            command = new UserCommand(object.getString("name"));
+            break;
+        case MESSAGE:
+            command = new MessageCommand(object.getString("name"));
+            break;
+        default:
+            throw new IllegalArgumentException("Uknown command type!");
+        }
+
+        return command;
+    }
+
+    private static SlashCommand slashCommandFromData(DataObject object)
+    {
+        String name = object.getString("name");
+        String description = object.getString("description");
+        DataArray options = object.optArray("options").orElseGet(DataArray::empty);
+        SlashCommand command = new SlashCommand(name, description);
+        options.stream(DataArray::getObject).forEach(opt ->
+        {
+            OptionType type = OptionType.fromKey(opt.getInt("type"));
+            switch (type)
+            {
+            case SUB_COMMAND:
+                command.addSubcommands(SubcommandData.fromData(opt));
+                break;
+            case SUB_COMMAND_GROUP:
+                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
+                break;
+            default:
+                command.addOptions(OptionData.fromData(opt));
+            }
+        });
+        return command;
+    }
+
+    /**
+     * Parses the provided serialization back into an CommandData instance.
+     * <br>This is the reverse function for {@link #toData()}.
+     *
+     * @param  array
+     *         Array of serialized {@link DataObject} representing the commands
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the serialized object is missing required fields
+     * @throws IllegalArgumentException
+     *         If any of the values are failing the respective checks such as length
+     *
+     * @return The parsed CommandData instances, which can be further configured through setters
+     */
+    @Nonnull
+    public static List<CommandData<? extends CommandData<?>>> fromList(@Nonnull DataArray array)
+    {
+        Checks.notNull(array, "DataArray");
+        return array.stream(DataArray::getObject)
+                .map(CommandData::fromData)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Parses the provided serialization back into an CommandData instance.
+     * <br>This is the reverse function for {@link #toData()}.
+     *
+     * @param  collection
+     *         Collection of serialized {@link DataObject} representing the commands
+     *
+     * @throws net.dv8tion.jda.api.exceptions.ParsingException
+     *         If the serialized object is missing required fields
+     * @throws IllegalArgumentException
+     *         If any of the values are failing the respective checks such as length
+     *
+     * @return The parsed CommandData instances, which can be further configured through setters
+     */
+    @Nonnull
+    public static List<CommandData<? extends CommandData<?>>> fromList(@Nonnull Collection<? extends DataObject> collection)
+    {
+        Checks.noneNull(collection, "CommandData");
+        return fromList(DataArray.fromCollection(collection));
+    }
+
     public static class SlashCommand extends CommandData<SlashCommand>
     {
 
@@ -531,110 +636,5 @@ public class CommandData<T extends CommandData<T>> implements SerializableData
         {
             return super.toData().remove("description");
         }
-    }
-
-    /**
-     * Parses the provided serialization back into an CommandData instance.
-     * <br>This is the reverse function for {@link #toData()}.
-     *
-     * @param  object
-     *         The serialized {@link DataObject} representing the command
-     *
-     * @throws ParsingException
-     *         If the serialized object is missing required fields
-     * @throws IllegalArgumentException
-     *         If any of the values are failing the respective checks such as length or command type
-     *
-     * @return The parsed CommandData instance, which can be further configured through setters
-     */
-    @Nonnull
-    public static CommandData<? extends CommandData<?>> fromData(@Nonnull DataObject object)
-    {
-        Checks.notNull(object, "DataObject");
-        CommandData<? extends CommandData<?>> command = null;
-        switch (CommandType.fromId(object.getInt("type")))
-        {
-        case SLASH:
-            command = slashCommandFromData(object);
-            break;
-        case USER:
-            command = new UserCommand(object.getString("name"));
-            break;
-        case MESSAGE:
-            command = new MessageCommand(object.getString("name"));
-            break;
-        default:
-            throw new IllegalArgumentException("Uknown command type!");
-        }
-
-        return command;
-    }
-
-    private static SlashCommand slashCommandFromData(DataObject object)
-    {
-        String name = object.getString("name");
-        String description = object.getString("description");
-        DataArray options = object.optArray("options").orElseGet(DataArray::empty);
-        SlashCommand command = new SlashCommand(name, description);
-        options.stream(DataArray::getObject).forEach(opt ->
-        {
-            OptionType type = OptionType.fromKey(opt.getInt("type"));
-            switch (type)
-            {
-            case SUB_COMMAND:
-                command.addSubcommands(SubcommandData.fromData(opt));
-                break;
-            case SUB_COMMAND_GROUP:
-                command.addSubcommandGroups(SubcommandGroupData.fromData(opt));
-                break;
-            default:
-                command.addOptions(OptionData.fromData(opt));
-            }
-        });
-        return command;
-    }
-
-    /**
-     * Parses the provided serialization back into an CommandData instance.
-     * <br>This is the reverse function for {@link #toData()}.
-     *
-     * @param  array
-     *         Array of serialized {@link DataObject} representing the commands
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the serialized object is missing required fields
-     * @throws IllegalArgumentException
-     *         If any of the values are failing the respective checks such as length
-     *
-     * @return The parsed CommandData instances, which can be further configured through setters
-     */
-    @Nonnull
-    public static List<CommandData<? extends CommandData<?>>> fromList(@Nonnull DataArray array)
-    {
-        Checks.notNull(array, "DataArray");
-        return array.stream(DataArray::getObject)
-                .map(CommandData::fromData)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Parses the provided serialization back into an CommandData instance.
-     * <br>This is the reverse function for {@link #toData()}.
-     *
-     * @param  collection
-     *         Collection of serialized {@link DataObject} representing the commands
-     *
-     * @throws net.dv8tion.jda.api.exceptions.ParsingException
-     *         If the serialized object is missing required fields
-     * @throws IllegalArgumentException
-     *         If any of the values are failing the respective checks such as length
-     *
-     * @return The parsed CommandData instances, which can be further configured through setters
-     */
-    @Nonnull
-    public static List<CommandData<? extends CommandData<?>>> fromList(@Nonnull Collection<? extends DataObject> collection)
-    {
-        Checks.noneNull(collection, "CommandData");
-        return fromList(DataArray.fromCollection(collection));
     }
 }
