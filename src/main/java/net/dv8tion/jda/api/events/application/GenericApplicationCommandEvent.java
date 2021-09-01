@@ -19,13 +19,13 @@ package net.dv8tion.jda.api.events.application;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.Event;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link Command} event was fired.
+ * Indicates that a {@link SlashCommand} event was fired.
  * <br>Every ApplicationCommandEvent extends this event and can be casted.
  *
  * <p>This is fired for commands from any application.
@@ -34,10 +34,10 @@ import javax.annotation.Nullable;
  */
 public abstract class GenericApplicationCommandEvent extends Event
 {
-    private final Command command;
+    private final SlashCommand command;
     private final Guild guild;
 
-    public GenericApplicationCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)
+    public GenericApplicationCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommand command, @Nullable Guild guild)
     {
         super(api, responseNumber);
         this.command = command;
@@ -47,10 +47,10 @@ public abstract class GenericApplicationCommandEvent extends Event
     /**
      * The affected command and its new data.
      *
-     * @return The {@link Command}
+     * @return The {@link SlashCommand}
      */
     @Nonnull
-    public Command getCommand()
+    public SlashCommand getCommand()
     {
         return command;
     }

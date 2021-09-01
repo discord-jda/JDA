@@ -28,7 +28,7 @@ import java.util.Collection;
 /**
  * Builder for a Slash-Command subcommand.
  */
-public class SubcommandData extends BaseCommand<CommandData> implements SerializableData
+public class SubcommandData extends CommandData.SlashCommand implements SerializableData
 {
     private boolean allowRequired = true;
 

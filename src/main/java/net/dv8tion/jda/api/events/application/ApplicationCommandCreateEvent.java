@@ -18,19 +18,19 @@ package net.dv8tion.jda.api.events.application;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link Command} was created.
+ * Indicates that a {@link SlashCommand} was created.
  *
  * <p>This is fired for commands from any application.
  */
 public class ApplicationCommandCreateEvent extends GenericApplicationCommandEvent
 {
-    public ApplicationCommandCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)
+    public ApplicationCommandCreateEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommand command, @Nullable Guild guild)
     {
         super(api, responseNumber, command, guild);
     }

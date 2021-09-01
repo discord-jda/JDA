@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 import net.dv8tion.jda.api.utils.MiscUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.api.utils.data.SerializableData;
@@ -33,13 +33,13 @@ import java.util.Map;
 /**
  * Privilege used to restrict access to a command within a {@link net.dv8tion.jda.api.entities.Guild Guild}.
  *
- * <p>If the command is {@link Command#isDefaultEnabled() enabled by default}, these can be used to blacklist users or roles from using the command.
+ * <p>If the command is {@link SlashCommand#isDefaultEnabled() enabled by default}, these can be used to blacklist users or roles from using the command.
  * On the other hand if it is disabled by default, this can be used to whitelist users or roles instead.
  *
  * @see Guild#retrieveCommandPrivileges()
  * @see Guild#updateCommandPrivilegesById(String, Collection)
  * @see Guild#updateCommandPrivileges(Map)
- * @see Command#isDefaultEnabled()
+ * @see SlashCommand#isDefaultEnabled()
  */
 public class CommandPrivilege implements ISnowflake, SerializableData
 {

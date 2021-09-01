@@ -18,13 +18,13 @@ package net.dv8tion.jda.api.events.application;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.interactions.commands.Command;
+import net.dv8tion.jda.api.interactions.commands.SlashCommand;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Indicates that a {@link Command} was updated.
+ * Indicates that a {@link SlashCommand} was updated.
  *
  * <p>You cannot get the old command information from this event.
  *
@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
  */
 public class ApplicationCommandUpdateEvent extends GenericApplicationCommandEvent
 {
-    public ApplicationCommandUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull Command command, @Nullable Guild guild)
+    public ApplicationCommandUpdateEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommand command, @Nullable Guild guild)
     {
         super(api, responseNumber, command, guild);
     }

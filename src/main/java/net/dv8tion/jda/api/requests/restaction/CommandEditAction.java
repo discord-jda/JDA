@@ -35,27 +35,27 @@ import java.util.function.BooleanSupplier;
 /**
  * Specialized {@link RestAction} used to edit an existing command.
  */
-public interface CommandEditAction extends RestAction<Command>
+public interface CommandEditAction<T extends Command> extends RestAction<T>
 {
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandEditAction setCheck(@Nullable BooleanSupplier checks);
+    CommandEditAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandEditAction addCheck(@Nonnull BooleanSupplier checks);
+    CommandEditAction<T> addCheck(@Nonnull BooleanSupplier checks);
 
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandEditAction timeout(long timeout, @Nonnull TimeUnit unit);
+    CommandEditAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
     @CheckReturnValue
-    CommandEditAction deadline(long timestamp);
+    CommandEditAction<T> deadline(long timestamp);
 
     /**
      * Replace the command with the provided {@link CommandData}.
@@ -70,7 +70,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction apply(@Nonnull CommandData commandData);
+    CommandEditAction<T> apply(@Nonnull CommandData<? extends CommandData> commandData);
 
     /**
      * Whether this command is available to everyone by default.
@@ -79,11 +79,14 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  enabled
      *         True, if this command is enabled by default for everyone. (Default: true)
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
+     *
      * @return The CommandEditAction instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction setDefaultEnabled(boolean enabled);
+    CommandEditAction<T> setDefaultEnabled(boolean enabled);
 
     /**
      * Configure the name
@@ -98,7 +101,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction setName(@Nullable String name);
+    CommandEditAction<T> setName(@Nullable String name);
 
     /**
      * Configure the description
@@ -106,6 +109,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  description
      *         The description, 1-100 characters. Use null to keep the current description.
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         If the name is null or not between 1-100 characters
      *
@@ -113,16 +118,19 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction setDescription(@Nullable String description);
+    CommandEditAction<T> setDescription(@Nullable String description);
 
     /**
      * Removes all existing options/subcommands/groups from this command.
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
+     *
      * @return The CommandEditAction instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction clearOptions();
+    CommandEditAction<T> clearOptions();
 
     /**
      * Adds up to 25 options to this command.
@@ -133,6 +141,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  options
      *         The {@link OptionData Options} to add
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
@@ -146,7 +156,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction addOptions(@Nonnull OptionData... options);
+    CommandEditAction<T> addOptions(@Nonnull OptionData... options);
 
     /**
      * Adds up to 25 options to this command.
@@ -157,6 +167,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  options
      *         The {@link OptionData Options} to add
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
@@ -170,7 +182,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOptions(@Nonnull Collection<? extends OptionData> options)
+    default CommandEditAction<T> addOptions(@Nonnull Collection<? extends OptionData> options)
     {
         Checks.noneNull(options, "Options");
         return addOptions(options.toArray(new OptionData[0]));
@@ -191,6 +203,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  required
      *         Whether this option is required (See {@link OptionData#setRequired(boolean)})
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
@@ -204,7 +218,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    default CommandEditAction<T> addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
@@ -222,6 +236,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  description
      *         The option description, 1-100 characters
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         <ul>
      *             <li>If you try to mix subcommands/options/groups in one command.</li>
@@ -235,7 +251,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    default CommandEditAction<T> addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
         return addOption(type, name, description, false);
     }
@@ -247,6 +263,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  subcommands
      *         The subcommands to add
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         If null is provided, or more than 25 subcommands are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
@@ -255,7 +273,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction addSubcommands(@Nonnull SubcommandData... subcommands);
+    CommandEditAction<T> addSubcommands(@Nonnull SubcommandData... subcommands);
 
     /**
      * Add up to 25 {@link SubcommandData Subcommands} to this command.
@@ -264,6 +282,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  subcommands
      *         The subcommands to add
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         If null is provided, or more than 25 subcommands are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
@@ -272,7 +292,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
+    default CommandEditAction<T> addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
     {
         Checks.noneNull(subcommands, "Subcommands");
         return addSubcommands(subcommands.toArray(new SubcommandData[0]));
@@ -285,6 +305,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  groups
      *         The subcommand groups to add
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         If null is provided, or more than 25 subcommand groups are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
@@ -293,7 +315,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
+    CommandEditAction<T> addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
 
     /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
@@ -302,6 +324,8 @@ public interface CommandEditAction extends RestAction<Command>
      * @param  groups
      *         The subcommand groups to add
      *
+     * @throws UnsupportedOperationException
+     *         If this CommandEditAction is not for a SlashCommand
      * @throws IllegalArgumentException
      *         If null is provided, or more than 25 subcommand groups are provided.
      *         Also throws if you try to mix subcommands/options/groups in one command.
@@ -310,7 +334,7 @@ public interface CommandEditAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
+    default CommandEditAction<T> addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
     {
         Checks.noneNull(groups, "SubcommandGroups");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));

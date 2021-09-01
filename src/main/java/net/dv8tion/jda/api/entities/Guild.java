@@ -141,32 +141,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull CommandData command);
-
-    /**
-     * Creates or updates a command.
-     * <br>If a command with the same name exists, it will be replaced.
-     *
-     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
-     *
-     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
-     *
-     * @param  name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters
-     * @param  description
-     *         The description for the command, 1-100 characters
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or the name/description do not meet the requirements
-     *
-     * @return {@link CommandCreateAction}
-     */
-    @Nonnull
-    @CheckReturnValue
-    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
-    {
-        return upsertCommand(new CommandData(name, description));
-    }
+    CommandCreateAction<Command> upsertCommand(@Nonnull CommandData<? extends CommandData<?>> command);
 
     /**
      * Configures the complete list of guild commands.
@@ -208,7 +183,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction editCommandById(@Nonnull String id);
+    CommandEditAction<Command> editCommandById(@Nonnull String id);
 
     /**
      * Edit an existing command by id.
@@ -223,7 +198,7 @@ public interface Guild extends ISnowflake
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction editCommandById(long id)
+    default CommandEditAction<Command> editCommandById(long id)
     {
         return editCommandById(Long.toUnsignedString(id));
     }

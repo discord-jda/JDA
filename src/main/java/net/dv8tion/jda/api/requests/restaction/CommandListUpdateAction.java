@@ -53,36 +53,40 @@ public interface CommandListUpdateAction extends RestAction<List<Command>>
     CommandListUpdateAction addCheck(@Nonnull BooleanSupplier checks);
 
     /**
-     * Adds up to 100 commands.
+     * Adds up to 100 {@link net.dv8tion.jda.api.interactions.commands.SlashCommand Slash Commands},
+     * 5 {@link net.dv8tion.jda.api.interactions.commands.UserCommand User Commands},
+     * and 5 {@link net.dv8tion.jda.api.interactions.commands.MessageCommand Message Commands}.
      * <p>When a command is not listed in this request, it will be deleted.
      *
      * @param  commands
      *         The {@link CommandData commands} to add
      *
      * @throws IllegalArgumentException
-     *         If null or more than 100 commands are provided
+     *         If null or more than 100 Slash Commands or 5 User/Message commands are provided
      *
-     * @return The CommandUpdateAction instance, for chaining
+     * @return The CommandListUpdateAction instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
-    CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData> commands);
+    CommandListUpdateAction addCommands(@Nonnull Collection<? extends CommandData<?>> commands);
 
     /**
-     * Adds up to 100 commands.
+     * Adds up to 100 {@link net.dv8tion.jda.api.interactions.commands.SlashCommand Slash Commands},
+     *      * 5 {@link net.dv8tion.jda.api.interactions.commands.UserCommand User Commands},
+     *      * and 5 {@link net.dv8tion.jda.api.interactions.commands.MessageCommand Message Commands}.
      * <p>When a command is not listed in this request, it will be deleted.
      *
      * @param  commands
      *         The {@link CommandData commands} to add
      *
      * @throws IllegalArgumentException
-     *         If null or more than 100 commands are provided
+     *         If null or more than 100 Slash Commands or 5 User/Message commands are provided
      *
-     * @return The CommandUpdateAction instance, for chaining
+     * @return The CommandListUpdateAction instance, for chaining
      */
     @Nonnull
     @CheckReturnValue
-    default CommandListUpdateAction addCommands(@Nonnull CommandData... commands)
+    default CommandListUpdateAction addCommands(@Nonnull CommandData<?>... commands)
     {
         Checks.noneNull(commands, "Command");
         return addCommands(Arrays.asList(commands));

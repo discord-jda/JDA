@@ -558,37 +558,7 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction upsertCommand(@Nonnull CommandData command);
-
-    /**
-     * Creates or updates a global command.
-     * <br>If a command with the same name exists, it will be replaced.
-     *
-     * <p>To specify a complete list of all commands you can use {@link #updateCommands()} instead.
-     *
-     * <p>You need the OAuth2 scope {@code "applications.commands"} in order to add commands to a guild.
-     *
-     * <p><b>Global commands can take up to <u>1 hour</u> to propagate to the clients.</b>
-     * For testing, it is recommended to use a test guild with guild commands.
-     *
-     * @param  name
-     *         The lowercase alphanumeric (with dash) name, 1-32 characters
-     * @param  description
-     *         The description for the command, 1-100 characters
-     *
-     * @throws IllegalArgumentException
-     *         If null is provided or the name/description do not meet the requirements
-     *
-     * @return {@link CommandCreateAction}
-     *
-     * @see net.dv8tion.jda.api.entities.Guild#upsertCommand(String, String)  
-     */
-    @Nonnull
-    @CheckReturnValue
-    default CommandCreateAction upsertCommand(@Nonnull String name, @Nonnull String description)
-    {
-        return upsertCommand(new CommandData(name, description));
-    }
+    CommandCreateAction<Command> upsertCommand(@Nonnull CommandData<? extends CommandData<?>> command);
 
     /**
      * Configures the complete list of global commands.
@@ -636,7 +606,7 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    CommandEditAction editCommandById(@Nonnull String id);
+    CommandEditAction<Command> editCommandById(@Nonnull String id);
 
     /**
      * Edit an existing global command by id.
@@ -654,7 +624,7 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
-    default CommandEditAction editCommandById(long id)
+    default CommandEditAction<Command> editCommandById(long id)
     {
         return editCommandById(Long.toUnsignedString(id));
     }

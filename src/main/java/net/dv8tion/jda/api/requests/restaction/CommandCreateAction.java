@@ -35,23 +35,23 @@ import java.util.function.BooleanSupplier;
  * Specialized {@link RestAction} used to create or update commands.
  * <br>If a command with the specified name already exists, it will be replaced!
  */
-public interface CommandCreateAction extends RestAction<Command>
+public interface CommandCreateAction<T extends Command> extends RestAction<T>
 {
     @Nonnull
     @Override
-    CommandCreateAction setCheck(@Nullable BooleanSupplier checks);
+    CommandCreateAction<T> setCheck(@Nullable BooleanSupplier checks);
 
     @Nonnull
     @Override
-    CommandCreateAction addCheck(@Nonnull BooleanSupplier checks);
+    CommandCreateAction<T> addCheck(@Nonnull BooleanSupplier checks);
 
     @Nonnull
     @Override
-    CommandCreateAction timeout(long timeout, @Nonnull TimeUnit unit);
+    CommandCreateAction<T> timeout(long timeout, @Nonnull TimeUnit unit);
 
     @Nonnull
     @Override
-    CommandCreateAction deadline(long timestamp);
+    CommandCreateAction<T> deadline(long timestamp);
 
     /**
      * Whether this command is available to everyone by default.
@@ -64,7 +64,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction setDefaultEnabled(boolean enabled);
+    CommandCreateAction<T> setDefaultEnabled(boolean enabled);
 
     /**
      * Change the name of the command to the provided name.
@@ -79,7 +79,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction setName(@Nonnull String name);
+    CommandCreateAction<T> setName(@Nonnull String name);
 
     /**
      * Change the description of the command.
@@ -95,7 +95,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction setDescription(@Nonnull String description);
+    CommandCreateAction<T> setDescription(@Nonnull String description);
 
     /**
      * Add up to 25 options to this command.
@@ -118,7 +118,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction addOptions(@Nonnull OptionData... options);
+    CommandCreateAction<T> addOptions(@Nonnull OptionData... options);
 
     /**
      * Add up to 25 options to this command.
@@ -141,7 +141,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addOptions(@Nonnull Collection<? extends OptionData> options)
+    default CommandCreateAction<T> addOptions(@Nonnull Collection<? extends OptionData> options)
     {
         Checks.noneNull(options, "Option");
         return addOptions(options.toArray(new OptionData[0]));
@@ -174,7 +174,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
+    default CommandCreateAction<T> addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description, boolean required)
     {
         return addOptions(new OptionData(type, name, description).setRequired(required));
     }
@@ -205,7 +205,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
+    default CommandCreateAction<T> addOption(@Nonnull OptionType type, @Nonnull String name, @Nonnull String description)
     {
         return addOption(type, name, description, false);
     }
@@ -224,7 +224,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommands);
+    CommandCreateAction<T> addSubcommands(@Nonnull SubcommandData subcommands);
 
     /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
@@ -240,5 +240,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData groups);
+    CommandCreateAction<T> addSubcommandGroups(@Nonnull SubcommandGroupData groups);
+
+
 }

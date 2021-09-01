@@ -18,9 +18,9 @@ package net.dv8tion.jda.api.events.interaction;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.interactions.commands.CommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.internal.interactions.CommandInteractionImpl;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
+import net.dv8tion.jda.internal.interactions.SlashCommandInteractionImpl;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,11 +33,11 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SlashCommandEvent extends GenericInteractionCreateEvent implements CommandInteraction
+public class SlashCommandEvent extends GenericInteractionCreateEvent implements SlashCommandInteraction
 {
-    private final CommandInteractionImpl commandInteraction;
+    private final SlashCommandInteractionImpl commandInteraction;
 
-    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull CommandInteractionImpl interaction)
+    public SlashCommandEvent(@Nonnull JDA api, long responseNumber, @Nonnull SlashCommandInteractionImpl interaction)
     {
         super(api, responseNumber, interaction);
         this.commandInteraction = interaction;
