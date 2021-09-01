@@ -33,7 +33,7 @@ import java.util.List;
  * To receive these events, you must unset the <b>Interactions Endpoint URL</b> in your application dashboard.
  * You can simply remove the URL for this endpoint in your settings at the <a href="https://discord.com/developers/applications" target="_blank">Discord Developers Portal</a>.
  */
-public class SlashCommandEvent extends GenericInteractionCreateEvent implements SlashCommandInteraction
+public class SlashCommandEvent extends GenericCommandEvent implements SlashCommandInteraction
 {
     private final SlashCommandInteractionImpl commandInteraction;
 
@@ -48,13 +48,6 @@ public class SlashCommandEvent extends GenericInteractionCreateEvent implements 
     public MessageChannel getChannel()
     {
         return commandInteraction.getChannel();
-    }
-
-    @Nonnull
-    @Override
-    public String getName()
-    {
-        return commandInteraction.getName();
     }
 
     @Nullable

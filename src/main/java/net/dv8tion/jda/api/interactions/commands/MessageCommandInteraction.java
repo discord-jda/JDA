@@ -1,5 +1,6 @@
 package net.dv8tion.jda.api.interactions.commands;
 
+import net.dv8tion.jda.api.entities.AbstractChannel;
 import net.dv8tion.jda.api.entities.Message;
 
 import javax.annotation.Nonnull;
@@ -31,4 +32,8 @@ public interface MessageCommandInteraction extends CommandInteraction
      */
     @Nonnull
     Message getInteractedMessage();
+
+    @Nonnull
+    @Override
+    AbstractChannel getChannel();
 }
