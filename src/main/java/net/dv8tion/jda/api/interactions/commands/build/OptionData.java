@@ -49,7 +49,7 @@ public class OptionData implements SerializableData
     public static final int MAX_NAME_LENGTH = 32;
     
     /**
-     * The maximum length of the name of some OptionData names
+     * The maximum length of the name of Command Option Choice names
      */
     public static final int MAX_CHOICE_NAME_LENGTH = 100;
 
