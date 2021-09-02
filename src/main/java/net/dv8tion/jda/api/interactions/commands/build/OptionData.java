@@ -51,7 +51,7 @@ public class OptionData implements SerializableData
     /**
      * The maximum length of the name of some OptionData names
      */
-    public static final int MAX_NAME_OPTION_LENGTH = 100;
+    public static final int MAX_CHOICE_NAME_LENGTH = 100;
 
     /**
      * The maximum length the description of an option can be.
@@ -292,7 +292,7 @@ public class OptionData implements SerializableData
     public OptionData addChoice(@Nonnull String name, double value)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, MAX_NAME_OPTION_LENGTH, "Name");
+        Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(value >= MIN_NEGATIVE_NUMBER, "Double value may not be lower than %f", MIN_NEGATIVE_NUMBER);
         Checks.check(value <= MAX_POSITIVE_NUMBER, "Double value may not be larger than %f", MAX_POSITIVE_NUMBER);
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
@@ -325,7 +325,7 @@ public class OptionData implements SerializableData
     public OptionData addChoice(@Nonnull String name, int value)
     {
         Checks.notEmpty(name, "Name");
-        Checks.notLonger(name, MAX_NAME_OPTION_LENGTH, "Name");
+        Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.INTEGER)
             throw new IllegalArgumentException("Cannot add int choice for OptionType." + type);
@@ -358,7 +358,7 @@ public class OptionData implements SerializableData
     {
         Checks.notEmpty(name, "Name");
         Checks.notEmpty(value, "Value");
-        Checks.notLonger(name, MAX_NAME_OPTION_LENGTH, "Name");
+        Checks.notLonger(name, MAX_CHOICE_NAME_LENGTH, "Name");
         Checks.notLonger(value, MAX_CHOICE_VALUE_LENGTH, "Value");
         Checks.check(choices.size() < MAX_CHOICES, "Cannot have more than 25 choices for an option!");
         if (type != OptionType.STRING)
