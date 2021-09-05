@@ -74,7 +74,7 @@ public enum Permission
     MANAGE_ROLES(      28, true,  false, "Manage Roles"),
     MANAGE_PERMISSIONS(28, false, true,  "Manage Permissions"),
     MANAGE_WEBHOOKS(   29, true,  true,  "Manage Webhooks"),
-    MANAGE_EMOTES(     30, true,  false, "Manage Emojis"),
+    MANAGE_EMOTES(     30, true,  false, "Manage Emojis and Stickers"),
 
     REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
 
