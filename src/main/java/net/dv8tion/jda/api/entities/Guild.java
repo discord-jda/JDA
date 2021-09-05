@@ -2465,8 +2465,8 @@ public interface Guild extends ISnowflake
 
     /**
      * Retrieves a {@link net.dv8tion.jda.api.entities.Guild.Ban Ban} of the provided ID
-     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int)} ban(id, int)} or
-     * {@link #unban(String)} unban(id)}.
+     * <br>If you wish to ban or unban a user, use either {@link #ban(String, int) ban(id, int)} or
+     * {@link #unban(String) unban(id)}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
