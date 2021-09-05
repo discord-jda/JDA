@@ -72,7 +72,7 @@ public class GenericComponentInteractionCreateEvent extends GenericInteractionCr
         return interaction.getComponent();
     }
 
-    @Nullable
+    @Nonnull
     @Override
     public Message getMessage()
     {
