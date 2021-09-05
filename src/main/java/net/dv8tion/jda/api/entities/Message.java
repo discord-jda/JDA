@@ -3073,7 +3073,6 @@ public interface Message extends ISnowflake, Formattable
      */
     class Interaction implements ISnowflake
     {
-
         private final long id;
         private final int type;
         private final String name;
