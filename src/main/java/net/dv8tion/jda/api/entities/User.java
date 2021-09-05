@@ -85,9 +85,7 @@ public interface User extends IMentionable
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
     /** Template for {@link #getDefaultAvatarUrl()} */
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
-    /**
-     * Template for {@link #getBannerUrl()}
-     * */
+    /** Template for {@link #getBannerUrl()} */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
 
     /** Used to keep consistency between color values used in the API */
