@@ -105,6 +105,7 @@ public class GuildImpl implements Guild
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
+    private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
@@ -1943,6 +1944,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setNSFWLevel(NSFWLevel nsfwLevel)
+    {
+        this.nsfwLevel = nsfwLevel;
+        return this;
+    }
+
     // -- Map getters --
 
     public SortedSnowflakeCacheViewImpl<Category> getCategoriesView()
@@ -1978,6 +1985,13 @@ public class GuildImpl implements Guild
     public MemberCacheViewImpl getMembersView()
     {
         return memberCache;
+    }
+
+    @Nonnull
+    @Override
+    public NSFWLevel getNSFWLevel()
+    {
+        return nsfwLevel;
     }
 
     @Nullable
