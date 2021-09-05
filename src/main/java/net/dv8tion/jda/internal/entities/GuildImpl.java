@@ -723,7 +723,7 @@ public class GuildImpl implements Guild
             if (emote != null)
             {
                 ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
                     return listedEmote;
             }
             return null;
@@ -1658,7 +1658,7 @@ public class GuildImpl implements Guild
     @Override
     public AuditableRestAction<Emote> createEmote(@Nonnull String name, @Nonnull Icon icon, @Nonnull Role... roles)
     {
-        checkPermission(Permission.MANAGE_EMOTES);
+        checkPermission(Permission.MANAGE_EMOTES_AND_STICKERS);
         Checks.inRange(name, 2, 32, "Emote name");
         Checks.notNull(icon, "Emote icon");
         Checks.notNull(roles, "Roles");

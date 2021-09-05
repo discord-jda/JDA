@@ -2335,7 +2335,7 @@ public interface Guild extends ISnowflake
      * Retrieves an immutable list of emotes together with their respective creators.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * @return {@link net.dv8tion.jda.api.requests.RestAction RestAction} - Type: List of {@link net.dv8tion.jda.api.entities.ListedEmote ListedEmote}
      *
@@ -2350,7 +2350,7 @@ public interface Guild extends ISnowflake
      * <br><b>This does not include unicode emoji.</b>
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2377,7 +2377,7 @@ public interface Guild extends ISnowflake
      * Retrieves a listed emote together with its respective creator.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2404,7 +2404,7 @@ public interface Guild extends ISnowflake
      * Retrieves a listed emote together with its respective creator.
      *
      * <p>Note that {@link ListedEmote#getUser()} is only available if the currently
-     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES Permission.MANAGE_EMOTES}.
+     * logged in account has {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS Permission.MANAGE_EMOTES_AND_STICKERS}.
      *
      * <p>Possible {@link net.dv8tion.jda.api.requests.ErrorResponse ErrorResponses} caused by
      * the returned {@link net.dv8tion.jda.api.requests.RestAction RestAction} include the following:
@@ -2434,7 +2434,7 @@ public interface Guild extends ISnowflake
             if (emote instanceof ListedEmote)
             {
                 ListedEmote listedEmote = (ListedEmote) emote;
-                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES))
+                if (listedEmote.hasUser() || !getSelfMember().hasPermission(Permission.MANAGE_EMOTES_AND_STICKERS))
                     return listedEmote;
             }
             return null;
@@ -5381,7 +5381,7 @@ public interface Guild extends ISnowflake
     /**
      * Creates a new {@link net.dv8tion.jda.api.entities.Emote Emote} in this Guild.
      * <br>If one or more Roles are specified the new Emote will only be available to Members with any of the specified Roles (see {@link Member#canInteract(Emote)})
-     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission.
+     * <br>For this to be successful, the logged in account has to have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission.
      *
      * <p><b><u>Unicode emojis are not included as {@link net.dv8tion.jda.api.entities.Emote Emote}!</u></b>
      *
@@ -5406,7 +5406,7 @@ public interface Guild extends ISnowflake
      *         <br>If no roles are provided the Emote will be available to all Members of this Guild
      *
      * @throws net.dv8tion.jda.api.exceptions.InsufficientPermissionException
-     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES MANAGE_EMOTES} Permission
+     *         If the logged in account does not have the {@link net.dv8tion.jda.api.Permission#MANAGE_EMOTES_AND_STICKERS MANAGE_EMOTES_AND_STICKERS} Permission
      *
      * @return {@link net.dv8tion.jda.api.requests.restaction.AuditableRestAction AuditableRestAction} - Type: {@link net.dv8tion.jda.api.entities.Emote Emote}
      */

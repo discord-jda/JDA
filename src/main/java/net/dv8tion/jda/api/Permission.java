@@ -69,10 +69,10 @@ public enum Permission
     NICKNAME_CHANGE(26, true, false, "Change Nickname"),
     NICKNAME_MANAGE(27, true, false, "Manage Nicknames"),
 
-    MANAGE_ROLES(      28, true,  false, "Manage Roles"),
-    MANAGE_PERMISSIONS(28, false, true,  "Manage Permissions"),
-    MANAGE_WEBHOOKS(   29, true,  true,  "Manage Webhooks"),
-    MANAGE_EMOTES(     30, true,  false, "Manage Emojis"),
+    MANAGE_ROLES(              28, true,  false, "Manage Roles"),
+    MANAGE_PERMISSIONS(        28, false, true,  "Manage Permissions"),
+    MANAGE_WEBHOOKS(           29, true,  true,  "Manage Webhooks"),
+    MANAGE_EMOTES_AND_STICKERS(30, true,  false, "Manage Emojis and Stickers"),
 
     REQUEST_TO_SPEAK(  32, true, true, "Request to Speak"),
 
