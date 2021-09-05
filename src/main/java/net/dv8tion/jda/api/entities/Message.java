@@ -2492,6 +2492,14 @@ public interface Message extends ISnowflake, Formattable
     @Nonnull
     MessageType getType();
 
+    /**
+     * This is sent on the message object when the message is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} without an existing message.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     */
     @Nullable
     Interaction getInteraction();
 
@@ -3060,6 +3068,9 @@ public interface Message extends ISnowflake, Formattable
 
     }
 
+    /**
+     * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     */
     class Interaction implements ISnowflake
     {
 
@@ -3084,29 +3095,56 @@ public interface Message extends ISnowflake, Formattable
             return id;
         }
 
+        /**
+         * The raw interaction type.
+         * <br>It is recommended to use {@link #getType()} instead.
+         *
+         * @return The raw interaction type
+         */
         public int getTypeRaw()
         {
             return type;
         }
 
+        /**
+         * The {@link net.dv8tion.jda.api.interactions.InteractionType} for this interaction.
+         *
+         * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
+         */
         @Nonnull
         public InteractionType getType()
         {
             return InteractionType.fromKey(getTypeRaw());
         }
 
+        /**
+         * The command name.
+         *
+         * @return The command name
+         */
         @Nonnull
         public String getName()
         {
             return name;
         }
 
+        /**
+         * The {@link User} who caused this interaction.
+         *
+         * @return The {@link User}
+         */
         @Nonnull
         public User getUser()
         {
             return user;
         }
 
+        /**
+         * The {@link Member} who caused this interaction.
+         * <br>This is null if the interaction is not from a guild.
+         *
+         * @return The {@link Member}
+         */
         @Nullable
         public Member getMember()
         {
