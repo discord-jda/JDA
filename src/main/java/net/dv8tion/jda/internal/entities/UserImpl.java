@@ -27,9 +27,9 @@ import net.dv8tion.jda.internal.requests.DeferredRestAction;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
 import net.dv8tion.jda.internal.utils.Helpers;
-import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.EnumSet;
 import java.util.FormattableFlags;
@@ -88,7 +88,13 @@ public class UserImpl extends UserById implements User
     @Override
     public Color getAccentColor()
     {
-        return accentColor == -1 ? null : new Color(accentColor);
+        return accentColor == User.DEFAULT_ACCENT_COLOR_RAW ? null : new Color(accentColor);
+    }
+
+    @Override
+    public int getAccentColorRaw()
+    {
+        return accentColor;
     }
 
     @Nonnull

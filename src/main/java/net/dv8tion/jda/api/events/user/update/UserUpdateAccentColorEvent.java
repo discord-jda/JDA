@@ -1,3 +1,19 @@
+/*
+ * Copyright 2015 Austin Keener, Michael Ritter, Florian Spieß, and the JDA contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package net.dv8tion.jda.api.events.user.update;
 
 import net.dv8tion.jda.api.JDA;
@@ -29,22 +45,47 @@ public class UserUpdateAccentColorEvent extends GenericUserUpdateEvent<Color>
     }
 
     /**
-     * The old banner color
+     * The old accent color
      *
-     * @return The old banner color, null if previously unknown or unset.
+     * @return The old accent color, null if previously unknown or unset.
      */
+    @Nullable
     public Color getOldAccentColor()
     {
         return getOldValue();
     }
 
     /**
-     * The new banner color
+     * The old accent color as a raw RGB integer
      *
-     * @return The new banner color
+     * @return The old accent color as a raw RGB integer,
+     * or {@link net.dv8tion.jda.api.entities.User#DEFAULT_ACCENT_COLOR_RAW} if previously unknown or unset.
      */
+    public int getOldAccentColorRaw()
+    {
+        Color color = getOldAccentColor();
+        return color == null ? User.DEFAULT_ACCENT_COLOR_RAW : color.getRGB();
+    }
+
+    /**
+     * The new accent color
+     *
+     * @return The new accent color, null if the user has removed their color.
+     */
+    @Nullable
     public Color getNewAccentColor()
     {
         return getNewValue();
+    }
+
+    /**
+     * The new accent color as a raw RGB integer
+     *
+     * @return The new accent color as a raw RGB integer,
+     * or {@link net.dv8tion.jda.api.entities.User#DEFAULT_ACCENT_COLOR_RAW} if the user has removed their color.
+     */
+    public int getNewAccentColorRaw() {
+        Color color = getNewAccentColor();
+        return color == null ? User.DEFAULT_ACCENT_COLOR_RAW : color.getRGB();
     }
 }

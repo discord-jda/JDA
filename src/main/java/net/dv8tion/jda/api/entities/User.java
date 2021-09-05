@@ -85,8 +85,13 @@ public interface User extends IMentionable
     String AVATAR_URL = "https://cdn.discordapp.com/avatars/%s/%s.%s";
     /** Template for {@link #getDefaultAvatarUrl()} */
     String DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/%s.png";
-    /** Template for {@link #getBannerUrl()} */
+    /**
+     * Template for {@link #getBannerUrl()}
+     * */
     String BANNER_URL = "https://cdn.discordapp.com/banners/%s/%s.%s";
+
+    /** Used to keep consistency between color values used in the API */
+    int DEFAULT_ACCENT_COLOR_RAW = 0x1FFFFFFF; // java.awt.Color fills the MSB with FF, we just use 1F to provide better consistency
 
     /**
      * Creates a User instance which only wraps an ID.
@@ -245,6 +250,8 @@ public interface User extends IMentionable
      *         If this User was created with {@link #fromId(long)}
      *
      * @return Possibly-null String containing the {@link net.dv8tion.jda.api.entities.User User} banner url.
+     *
+     * @see User#BANNER_URL
      */
     @Nullable
     default String getBannerUrl()
@@ -256,8 +263,8 @@ public interface User extends IMentionable
     /**
      * The user's accent color.
      * If the user has not set an accent color, this will return null. The automatically calculated color is not returned.
-     * If the user has set a banner, this accent color will not be shown.
-     * If the user has not been retrieved using {@link JDA#retrieveUserById(long)}, this will return null.
+     * The accent color is not shown in the client if the user has set a banner.
+     * Unless the user has been retrieved using {@link JDA#retrieveUserById(long)}, the accent color will be null.
      *
      * @throws UnsupportedOperationException
      *         If this User was created with {@link #fromId(long)}
@@ -266,6 +273,14 @@ public interface User extends IMentionable
      */
     @Nullable
     Color getAccentColor();
+
+    /**
+     * The raw RGB value of this user's accent color.
+     * <br>Defaults to {@link #DEFAULT_ACCENT_COLOR_RAW} if this user's banner color is not available.
+     *
+     * @return The raw RGB color value or default
+     */
+    int getAccentColorRaw();
 
     /**
      * The "tag" for this user

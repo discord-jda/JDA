@@ -128,7 +128,7 @@ public class EntityBuilder
                 .setDiscriminator(self.getString("discriminator"))
                 .setAvatarId(self.getString("avatar", null))
                 .setBannerId(self.getString("banner", null))
-                .setAccentColor(self.getInt("accent_color", -1))
+                .setAccentColor(self.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
                 .setBot(self.getBoolean("bot"))
                 .setSystem(false);
 
@@ -339,7 +339,7 @@ public class EntityBuilder
                    .setDiscriminator(user.get("discriminator").toString())
                    .setAvatarId(user.getString("avatar", null))
                    .setBannerId(user.getString("banner", null))
-                   .setAccentColor(user.getInt("accent_color", -1))
+                   .setAccentColor(user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW))
                    .setBot(user.getBoolean("bot"))
                    .setSystem(user.getBoolean("system"))
                    .setFlags(user.getInt("public_flags", 0));
@@ -363,9 +363,9 @@ public class EntityBuilder
         String newAvatar = user.getString("avatar", null);
         String oldBanner = userObj.getBannerId();
         String newBanner = user.hasKey("banner") ? user.getString("banner", null) : "";
-        // -1 = unset, -2 = unknown
-        int oldAccentColor = userObj.getAccentColor() == null ? -1 : userObj.getAccentColor().getRGB();
-        int newAccentColor = user.hasKey("accent_color") ? user.getInt("accent_color", -1) : -2;
+        // User.DEFAULT_ACCENT_COLOR_RAW = unset, -1 = unknown
+        int oldAccentColor = userObj.getAccentColorRaw();
+        int newAccentColor = user.hasKey("accent_color") ? user.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW) : -1;
         int oldFlags = userObj.getFlagsRaw();
         int newFlags = user.getInt("public_flags", 0);
 
@@ -406,7 +406,7 @@ public class EntityBuilder
                             jda, responseNumber,
                             userObj, oldBanner));
         }
-        if (oldAccentColor != newAccentColor && newAccentColor != -2)
+        if (oldAccentColor != newAccentColor && newAccentColor != -1)
         {
             userObj.setAccentColor(newAccentColor);
             jda.handleEvent(

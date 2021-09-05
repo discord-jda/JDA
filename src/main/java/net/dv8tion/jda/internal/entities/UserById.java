@@ -119,6 +119,13 @@ public class UserById implements User
         return null;
     }
 
+    @Override
+    public int getAccentColorRaw()
+    {
+        unsupported();
+        return 0;
+    }
+
     @Nonnull
     @Override
     public String getDefaultAvatarId()
