@@ -77,7 +77,7 @@ public class Command implements ISnowflake
         this.options = parseOptions(json, OPTION_TEST, Option::new);
         this.groups = parseOptions(json, GROUP_TEST, SubcommandGroup::new);
         this.subcommands = parseOptions(json, SUBCOMMAND_TEST, Subcommand::new);
-        this.version = json.getUnsignedLong("version");
+        this.version = json.getUnsignedLong("version", id);
     }
 
     protected static <T> List<T> parseOptions(DataObject json, Predicate<DataObject> test, Function<DataObject, T> transform)
