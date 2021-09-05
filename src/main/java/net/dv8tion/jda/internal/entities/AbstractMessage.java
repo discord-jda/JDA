@@ -618,4 +618,12 @@ public abstract class AbstractMessage implements Message
         unsupported();
         return null;
     }
+
+    @Nullable
+    @Override
+    public Message.Interaction getInteraction()
+    {
+        unsupported();
+        return null;
+    }
 }

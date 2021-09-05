@@ -52,6 +52,7 @@ public enum Permission
     MESSAGE_HISTORY(         16, true, true, "Read History"),
     MESSAGE_MENTION_EVERYONE(17, true, true, "Mention Everyone"),
     MESSAGE_EXT_EMOJI(       18, true, true, "Use External Emojis"),
+    MESSAGE_EXT_STICKER(     37, true, true, "Use External Stickers"),
     USE_SLASH_COMMANDS(      31, true, true, "Use Slash Commands"),
 
     MANAGE_THREADS(     34, true, true, "Manage Threads"),
@@ -106,10 +107,10 @@ public enum Permission
      * All text channel specific permissions which are only available in text channel permission overrides
      */
     public static final long ALL_TEXT_PERMISSIONS
-            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS,
-                                MESSAGE_MANAGE, MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES,
-                                MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE, USE_SLASH_COMMANDS,
-                                MANAGE_THREADS, USE_PUBLIC_THREADS, USE_PRIVATE_THREADS);
+            = Permission.getRaw(MESSAGE_ADD_REACTION, MESSAGE_WRITE, MESSAGE_TTS, MESSAGE_MANAGE,
+                                MESSAGE_EMBED_LINKS, MESSAGE_ATTACH_FILES, MESSAGE_EXT_STICKER,
+                                MESSAGE_EXT_EMOJI, MESSAGE_HISTORY, MESSAGE_MENTION_EVERYONE,
+                                USE_SLASH_COMMANDS, MANAGE_THREADS, USE_PUBLIC_THREADS, USE_PRIVATE_THREADS);
 
     /**
      * All voice channel specific permissions which are only available in voice channel permission overrides
