@@ -257,7 +257,8 @@ public class Command implements ISnowflake
 
     /**
      * The version of this command.
-     * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandData) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands}, or {@link net.dv8tion.jda.api.JDA#editCommandById(String) editCommandById}
+     * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandData) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands},
+     * {@link net.dv8tion.jda.api.JDA#editSlashCommandById(String) editSlashCommandById}, or {@link net.dv8tion.jda.api.JDA#editContextMenuById(String) editContextMenuById}
      * <br>Useful for checking if command cache is outdated
      *
      * @return The version of the command as a snowflake id.
