@@ -2495,6 +2495,8 @@ public interface Message extends ISnowflake, Formattable
     /**
      * This is sent on the message object when the message is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} without an existing message.
      *
+     * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
+     *
      * @throws java.lang.UnsupportedOperationException
      *         If this is a system message
      *
