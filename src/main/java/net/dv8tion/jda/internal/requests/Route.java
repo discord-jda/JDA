@@ -217,8 +217,8 @@ public class Route
         public static final Route GET_PERM_OVERRIDE =    new Route(GET,    "channels/{channel_id}/permissions/{permoverride_id}");
         public static final Route FOLLOW_CHANNEL =       new Route(POST,   "channels/{channel_id}/followers");
 
-        public static final Route START_THREAD_WITH_MESSAGE =               new Route(POST,     "channels/{channel_id}/messages/{message_id}/threads");
-        public static final Route START_THREAD_WITHOUT_MESSAGE =            new Route(POST,     "channels/{channel_id}/threads");
+        public static final Route CREATE_THREAD_WITH_MESSAGE =               new Route(POST,     "channels/{channel_id}/messages/{message_id}/threads");
+        public static final Route CREATE_THREAD_WITHOUT_MESSAGE =            new Route(POST,     "channels/{channel_id}/threads");
         public static final Route JOIN_THREAD =                             new Route(PUT,      "channels/{channel_id}/thread-members/@me");
         public static final Route ADD_THREAD_MEMBER =                       new Route(PUT,      "channels/{channel.id}/thread-members/{user.id}");
         public static final Route LEAVE_THREAD =                            new Route(DELETE,   "channels/{channel_id}/thread-members/@me");
