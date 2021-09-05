@@ -303,19 +303,24 @@ public interface Invite
      *
      * <p>There is a convenience method {@link #expand()} to get the expanded invite for an unexpanded one.
      *
-     * @return Whether is invite expanded or not
+     * @return Whether this invite is expanded or not
      *
      * @see    #expand()
      */
     boolean isExpanded();
 
     /**
-     * Whether this Invite grants only temporary access or not
+     * Whether this Invite grants only temporary access or not.
+     *
+     * <p>This works only for expanded invites and will throw a {@link IllegalStateException} otherwise!
      *
      * @throws IllegalStateException
      *         if this invite is not expanded
      *
-     * @return Whether is invite expanded or not
+     * @return Whether this invite is temporary or not
+     *
+     * @see    #expand()
+     * @see    #isExpanded()
      */
     boolean isTemporary();
 
