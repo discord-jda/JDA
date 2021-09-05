@@ -106,9 +106,11 @@ public abstract class AbstractMessage implements Message
         }
     }
 
+    @Nullable
     @Override
-    public Message getReferencedMessage()
+    public MessageReference getMessageReference()
     {
+        unsupported();
         return null;
     }
 

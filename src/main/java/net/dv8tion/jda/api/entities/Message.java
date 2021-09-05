@@ -217,16 +217,36 @@ public interface Message extends ISnowflake, Formattable
             Pattern.CASE_INSENSITIVE);
 
     /**
+     * Returns the {@link MessageReference} for this Message. This will be null if this Message has no reference.
+     *
+     * <p>You can access all the information about a reference through this object.
+     * Additionally, you can retrieve the referenced Message if discord did not load it in time. This can be done with {@link MessageReference#resolve()}.
+     *
+     * @return The message reference, or null.
+     */
+    @Nullable
+    MessageReference getMessageReference();
+
+    /**
      * Referenced message.
      *
      * <p>This will have different meaning depending on the {@link #getType() type} of message.
      * Usually, this is a {@link MessageType#INLINE_REPLY INLINE_REPLY} reference.
      * This can be null even if the type is {@link MessageType#INLINE_REPLY INLINE_REPLY}, when the message it references doesn't exist or discord wasn't able to resolve it in time.
      *
+     * <p>This differs from a {@link MessageReference}, which contains the raw IDs attached to the reference, and allows you to retrieve the referenced message
+     *
      * @return The referenced message, or null
+     *
+     * @see #getMessageReference()
      */
     @Nullable
-    Message getReferencedMessage();
+    default Message getReferencedMessage()
+    {
+        return getMessageReference() != null
+                ? getMessageReference().getMessage()
+                : null;
+    }
 
     /**
      * An immutable list of all mentioned {@link net.dv8tion.jda.api.entities.User Users}.
