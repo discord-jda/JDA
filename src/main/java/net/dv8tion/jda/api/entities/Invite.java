@@ -655,7 +655,8 @@ public interface Invite
          * @return The TargetType that is referred to by the provided key. If the id key is unknown, {@link #UNKNOWN} is returned.
          */
         @Nonnull
-        public static TargetType fromId(int id) {
+        public static TargetType fromId(int id)
+        {
             for (TargetType type : values())
             {
                 if (type.id == id)
