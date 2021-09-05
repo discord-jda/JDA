@@ -105,10 +105,10 @@ public class GuildImpl implements Guild
     private NotificationLevel defaultNotificationLevel = NotificationLevel.UNKNOWN;
     private MFALevel mfaLevel = MFALevel.UNKNOWN;
     private ExplicitContentLevel explicitContentLevel = ExplicitContentLevel.UNKNOWN;
+    private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private Timeout afkTimeout;
     private BoostTier boostTier = BoostTier.NONE;
     private Locale preferredLocale = Locale.ENGLISH;
-    private NSFWLevel nsfwLevel = NSFWLevel.UNKNOWN;
     private boolean available;
     private boolean canSendVerification = false;
     private int memberCount;

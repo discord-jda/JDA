@@ -204,7 +204,7 @@ public class EntityBuilder
         final int verificationLevel = guildJson.getInt("verification_level", 0);
         final int notificationLevel = guildJson.getInt("default_message_notifications", 0);
         final int explicitContentLevel = guildJson.getInt("explicit_content_filter", 0);
-        final int nsfwLevel = guildJson.getInt("nsfw_level", 0);
+        final int nsfwLevel = guildJson.getInt("nsfw_level", -1);
 
         guildObj.setAvailable(true)
                 .setName(name)

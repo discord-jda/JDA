@@ -315,7 +315,7 @@ public class GuildUpdateHandler extends SocketHandler
                             getJDA(), responseNumber,
                             guild, oldCommunityUpdatesChannel));
         }
-        if (!Objects.equals(nsfwLevel, guild.getNSFWLevel()))
+        if (content.hasKey("nsfw_level") && nsfwLevel != guild.getNSFWLevel())
         {
             Guild.NSFWLevel oldNSFWLevel = guild.getNSFWLevel();
             guild.setNSFWLevel(nsfwLevel);
