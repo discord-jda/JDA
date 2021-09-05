@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.exceptions.HttpException;
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException;
+import net.dv8tion.jda.api.interactions.InteractionType;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.Button;
 import net.dv8tion.jda.api.interactions.components.ComponentLayout;
@@ -2552,6 +2553,19 @@ public interface Message extends ISnowflake, Formattable
     MessageType getType();
 
     /**
+     * This is sent on the message object when the message is a response to an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} without an existing message.
+     *
+     * <p>This means responses to Message Components do not include this property, instead including a message reference object as components always exist on preexisting messages.
+     *
+     * @throws java.lang.UnsupportedOperationException
+     *         If this is a system message
+     *
+     * @return The {@link net.dv8tion.jda.api.entities.Message.Interaction Interaction} of this message.
+     */
+    @Nullable
+    Interaction getInteraction();
+
+    /**
      * Mention constants, useful for use with {@link java.util.regex.Pattern Patterns}
      */
     enum MentionType
@@ -3123,5 +3137,88 @@ public interface Message extends ISnowflake, Formattable
             return getFileName().startsWith("SPOILER_");
         }
 
+    }
+
+    /**
+     * Represents an {@link net.dv8tion.jda.api.interactions.Interaction Interaction} provided with a {@link net.dv8tion.jda.api.entities.Message Message}.
+     */
+    class Interaction implements ISnowflake
+    {
+        private final long id;
+        private final int type;
+        private final String name;
+        private final User user;
+        private final Member member;
+
+        public Interaction(long id, int type, String name, User user, Member member)
+        {
+            this.id = id;
+            this.type = type;
+            this.name = name;
+            this.user = user;
+            this.member = member;
+        }
+
+        @Override
+        public long getIdLong()
+        {
+            return id;
+        }
+
+        /**
+         * The raw interaction type.
+         * <br>It is recommended to use {@link #getType()} instead.
+         *
+         * @return The raw interaction type
+         */
+        public int getTypeRaw()
+        {
+            return type;
+        }
+
+        /**
+         * The {@link net.dv8tion.jda.api.interactions.InteractionType} for this interaction.
+         *
+         * @return The {@link net.dv8tion.jda.api.interactions.InteractionType} or {@link net.dv8tion.jda.api.interactions.InteractionType#UNKNOWN}
+         */
+        @Nonnull
+        public InteractionType getType()
+        {
+            return InteractionType.fromKey(getTypeRaw());
+        }
+
+        /**
+         * The command name.
+         *
+         * @return The command name
+         */
+        @Nonnull
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * The {@link User} who caused this interaction.
+         *
+         * @return The {@link User}
+         */
+        @Nonnull
+        public User getUser()
+        {
+            return user;
+        }
+
+        /**
+         * The {@link Member} who caused this interaction.
+         * <br>This is null if the interaction is not from a guild.
+         *
+         * @return The {@link Member}
+         */
+        @Nullable
+        public Member getMember()
+        {
+            return member;
+        }
     }
 }

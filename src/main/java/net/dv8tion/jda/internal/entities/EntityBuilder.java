@@ -1287,13 +1287,24 @@ public class EntityBuilder
                     .collect(Collectors.toList());
         }
 
+        Message.Interaction messageInteraction = null;
+        if (!jsonObject.isNull("interaction"))
+        {
+            GuildImpl guild = null;
+            if (channel instanceof GuildChannel)
+            {
+                guild = (GuildImpl) ((GuildChannel) (channel)).getGuild();
+            }
+            messageInteraction = createMessageInteraction(guild, jsonObject.getObject("interaction"));
+        }
+
         if (type == MessageType.UNKNOWN)
             throw new IllegalArgumentException(UNKNOWN_MESSAGE_TYPE);
         if (!type.isSystem())
         {
             message = new ReceivedMessage(id, channel, type, messageReference, fromWebhook,
                     mentionsEveryone, mentionedUsers, mentionedRoles, tts, pinned,
-                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags);
+                    content, nonce, user, member, activity, editTime, reactions, attachments, embeds, stickers, components, flags, messageInteraction);
         }
         else
         {
@@ -1536,6 +1547,29 @@ public class EntityBuilder
             tags = Collections.unmodifiableSet(tmp);
         }
         return new MessageSticker(id, name, description, packId, asset, format, tags);
+    }
+
+    public Message.Interaction createMessageInteraction(GuildImpl guildImpl, DataObject content)
+    {
+        final long id = content.getLong("id");
+        final int type = content.getInt("type");
+        final String name = content.getString("name");
+        DataObject userJson = content.getObject("user");
+        User user = null;
+        MemberImpl member = null;
+        if (!content.isNull("member") && guildImpl != null)
+        {
+            DataObject memberJson = content.getObject("member");
+            memberJson.put("user", userJson);
+            member = createMember(guildImpl, memberJson);
+            user = member.getUser();
+        }
+        else
+        {
+            user = createUser(userJson);
+        }
+
+        return new Message.Interaction(id, type, name, user, member);
     }
 
     @Nullable
