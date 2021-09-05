@@ -19,9 +19,11 @@ package net.dv8tion.jda.api.interactions.commands;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.ISnowflake;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.privileges.CommandPrivilege;
 import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.requests.restaction.CommandEditAction;
+import net.dv8tion.jda.api.utils.TimeUtil;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.JDAImpl;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
@@ -35,6 +37,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.time.OffsetDateTime;
 import java.util.function.Predicate;
 
 /**
@@ -54,7 +57,7 @@ public class Command implements ISnowflake
     protected final JDAImpl api;
     protected final Guild guild;
     protected final String name;
-    protected final long id, guildId, applicationId;
+    protected final long id, guildId, applicationId, version;
     protected final boolean defaultEnabled;
 
     public Command(JDAImpl api, Guild guild, DataObject json)
@@ -66,6 +69,7 @@ public class Command implements ISnowflake
         this.defaultEnabled = json.getBoolean("default_permission");
         this.guildId = guild != null ? guild.getIdLong() : 0L;
         this.applicationId = json.getUnsignedLong("application_id", api.getSelfUser().getApplicationIdLong());
+        this.version = json.getUnsignedLong("version", id);
     }
 
     /**
@@ -249,6 +253,33 @@ public class Command implements ISnowflake
     public String getApplicationId()
     {
         return Long.toUnsignedString(applicationId);
+    }
+
+    /**
+     * The version of this command.
+     * <br>This changes when a command is updated through {@link net.dv8tion.jda.api.JDA#upsertCommand(CommandData) upsertCommand}, {@link net.dv8tion.jda.api.JDA#updateCommands() updateCommands}, or {@link net.dv8tion.jda.api.JDA#editCommandById(String) editCommandById}
+     * <br>Useful for checking if command cache is outdated
+     *
+     * @return The version of the command as a snowflake id.
+     *
+     * @see #getTimeModified()
+     */
+    public long getVersion()
+    {
+        return version;
+    }
+
+    /**
+     * The time this command was updated last.
+     *
+     * @return Time this command was updated last.
+     *
+     * @see #getVersion()
+     */
+    @Nonnull
+    public OffsetDateTime getTimeModified()
+    {
+        return TimeUtil.getTimeCreated(getVersion());
     }
 
     @Override
