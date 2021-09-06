@@ -116,7 +116,7 @@ import java.util.stream.Collectors;
  * @see MessageChannel#deleteMessageById(String)
  * @see MessageChannel#editMessageById(String, CharSequence)
  */
-public interface Message extends ISnowflake, Formattable
+public interface Message extends ISnowflake, Formattable, PartialMessage
 {
     /**
      * The maximum sendable file size (8 MiB)

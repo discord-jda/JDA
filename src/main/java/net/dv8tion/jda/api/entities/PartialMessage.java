@@ -103,9 +103,9 @@ public interface PartialMessage
     boolean isWebhook();
 
     @NotNull
-    ChannelType getType();
+    MessageType getType();
 
-    @NotNull
+    @Nullable
     OffsetDateTime getTimeEdited();
 
     @NotNull
