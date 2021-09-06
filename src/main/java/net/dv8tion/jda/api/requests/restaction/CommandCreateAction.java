@@ -224,7 +224,7 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction addSubcommands(@Nonnull SubcommandData subcommands);
+    CommandCreateAction addSubcommands(@Nonnull SubcommandData... subcommands);
 
     /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
@@ -240,5 +240,5 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData groups);
+    CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
 }
