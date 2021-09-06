@@ -276,7 +276,8 @@ public interface CommandCreateAction extends RestAction<Command>
      */
     @Nonnull
     @CheckReturnValue
-    default CommandCreateAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups) {
+    default CommandCreateAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups)
+    {
         Checks.noneNull(groups, "Subcommand group");
         return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
     }
