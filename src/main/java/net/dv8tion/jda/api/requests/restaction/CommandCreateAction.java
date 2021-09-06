@@ -227,6 +227,26 @@ public interface CommandCreateAction extends RestAction<Command>
     CommandCreateAction addSubcommands(@Nonnull SubcommandData... subcommands);
 
     /**
+     * Add up to 25 {@link SubcommandData Subcommands} to this command.
+     *
+     * @param  subcommands
+     *         The subcommands to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or more than 25 subcommands are provided.
+     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *
+     * @return The CommandCreateAction instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction addSubcommands(@Nonnull Collection<? extends SubcommandData> subcommands)
+    {
+        Checks.noneNull(subcommands, "Subcommand");
+        return addSubcommands(subcommands.toArray(new SubcommandData[0]));
+    }
+
+    /**
      * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
      *
      * @param  groups
@@ -241,4 +261,23 @@ public interface CommandCreateAction extends RestAction<Command>
     @Nonnull
     @CheckReturnValue
     CommandCreateAction addSubcommandGroups(@Nonnull SubcommandGroupData... groups);
+
+    /**
+     * Add up to 25 {@link SubcommandGroupData Subcommand-Groups} to this command.
+     *
+     * @param  groups
+     *         The subcommand groups to add
+     *
+     * @throws IllegalArgumentException
+     *         If null is provided, or more than 25 subcommand groups are provided.
+     *         Also throws if you try to mix subcommands/options/groups in one command.
+     *
+     * @return The CommandCreateAction instance, for chaining
+     */
+    @Nonnull
+    @CheckReturnValue
+    default CommandCreateAction addSubcommandGroups(@Nonnull Collection<? extends SubcommandGroupData> groups) {
+        Checks.noneNull(groups, "Subcommand group");
+        return addSubcommandGroups(groups.toArray(new SubcommandGroupData[0]));
+    }
 }
