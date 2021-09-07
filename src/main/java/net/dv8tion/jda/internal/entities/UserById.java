@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.entities.PrivateChannel;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.requests.RestAction;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -124,6 +125,14 @@ public class UserById implements User
     {
         unsupported();
         return 0;
+    }
+
+    @NotNull
+    @Override
+    public RestAction<Profile> retrieveProfile()
+    {
+        unsupported();
+        return null;
     }
 
     @Nonnull

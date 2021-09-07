@@ -99,6 +99,21 @@ public class UserImpl extends UserById implements User
 
     @Nonnull
     @Override
+    public RestAction<Profile> retrieveProfile()
+    {
+        Route.CompiledRoute route = Route.Users.GET_USER.compile(getId());
+        return new RestActionImpl<Profile>(getJDA(), route, (response, request) -> {
+            DataObject json = response.getObject();
+
+            String bannerId = json.getString("banner");
+            int accentColor = json.getInt("accent_color", User.DEFAULT_ACCENT_COLOR_RAW);
+
+            return new Profile(getIdLong(), bannerId, accentColor);
+        });
+    }
+
+    @Nonnull
+    @Override
     public String getDefaultAvatarId()
     {
         return String.valueOf(discriminator % 5);

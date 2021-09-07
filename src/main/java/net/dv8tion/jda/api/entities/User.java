@@ -258,6 +258,10 @@ public interface User extends IMentionable
         return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
     }
 
+    @Nonnull
+    @CheckReturnValue
+    RestAction<Profile> retrieveProfile();
+
     /**
      * The user's accent color.
      * If the user has not set an accent color, this will return null. The automatically calculated color is not returned.
@@ -403,6 +407,40 @@ public interface User extends IMentionable
      * @return bitmask representation of the user's flags.
      */
     int getFlagsRaw();
+
+    class Profile
+    {
+        private final long userId;
+        private final String bannerId;
+        private final int accentColor;
+
+        public Profile(long userId, String bannerId, int accentColor)
+        {
+            this.userId = userId;
+            this.bannerId = bannerId;
+            this.accentColor = accentColor;
+        }
+
+        public String getBannerId()
+        {
+            return bannerId;
+        }
+
+        public String getBannerUrl()
+        {
+            return String.format(BANNER_URL, Long.toString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
+        }
+
+        public int getAccentColorRaw()
+        {
+            return accentColor;
+        }
+
+        public Color getAccentColor()
+        {
+            return accentColor == DEFAULT_ACCENT_COLOR_RAW ? null : new Color(accentColor);
+        }
+    }
 
     /**
      * Represents the bit offsets used by Discord for public flags
