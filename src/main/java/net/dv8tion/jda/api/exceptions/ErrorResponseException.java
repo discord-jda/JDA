@@ -190,6 +190,11 @@ public class ErrorResponseException extends RuntimeException
         // check what kind of errors we are dealing with
         for (String name : errors.keys())
         {
+            if (name.equals("_errors"))
+            {
+                schemaErrors.add(parseSchemaError(currentLocation, errors));
+                continue;
+            }
             DataObject schemaError = errors.getObject(name);
             if (!schemaError.isNull("_errors"))
             {
