@@ -401,27 +401,15 @@ public class EntityBuilder
         if (!Objects.equals(oldBanner, newBanner) && !Objects.equals(newBanner, ""))
         {
             userObj.setBannerId(newBanner);
-            jda.handleEvent(
-                    new UserUpdateBannerEvent(
-                            jda, responseNumber,
-                            userObj, oldBanner));
         }
         if (oldAccentColor != newAccentColor && newAccentColor != -1)
         {
             userObj.setAccentColor(newAccentColor);
-            jda.handleEvent(
-                    new UserUpdateAccentColorEvent(
-                            jda, responseNumber,
-                            userObj, oldAccentColor == -1 ? null : new Color(oldAccentColor)));
         }
 
         if (oldFlags != newFlags)
         {
             userObj.setFlags(newFlags);
-            jda.handleEvent(
-                    new UserUpdateFlagsEvent(
-                        jda, responseNumber,
-                        userObj, User.UserFlag.getFlags(oldFlags)));
         }
     }
 
