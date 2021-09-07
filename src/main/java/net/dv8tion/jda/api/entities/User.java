@@ -258,6 +258,13 @@ public interface User extends IMentionable
         return bannerId == null ? null : String.format(BANNER_URL, getId(), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
     }
 
+    /**
+     * Loads the user's {@link User.Profile} data.
+     *
+     * @return {@link RestAction} - Type: {@link User.Profile}
+     *
+     * @since 4.3.0
+     */
     @Nonnull
     @CheckReturnValue
     RestAction<Profile> retrieveProfile();
@@ -408,6 +415,11 @@ public interface User extends IMentionable
      */
     int getFlagsRaw();
 
+    /**
+     * Represents the information contained in a {@link User User}'s profile.
+     *
+     * @since 4.3.0
+     */
     class Profile
     {
         private final long userId;
@@ -421,21 +433,49 @@ public interface User extends IMentionable
             this.accentColor = accentColor;
         }
 
+        /**
+         * The Discord Id for this user's banner image.
+         * If the user has not set a banner, this will return null.
+         *
+         * @return Possibly-null String containing the {@link User User} banner id.
+         */
         public String getBannerId()
         {
             return bannerId;
         }
 
+        /**
+         * The URL for the user's banner image.
+         * If the user has not set a banner, this will return null.
+         *
+         * @return Possibly-null String containing the {@link User User} banner url.
+         *
+         * @see User#BANNER_URL
+         */
         public String getBannerUrl()
         {
             return String.format(BANNER_URL, Long.toString(userId), bannerId, bannerId.startsWith("a_") ? "gif" : "png");
         }
 
+        /**
+         * The raw RGB value of this user's accent color.
+         * <br>Defaults to {@link #DEFAULT_ACCENT_COLOR_RAW} if this user's banner color is not available.
+         *
+         * @return The raw RGB color value or {@link User#DEFAULT_ACCENT_COLOR_RAW}
+         */
         public int getAccentColorRaw()
         {
             return accentColor;
         }
 
+        /**
+         * The user's accent color.
+         * If the user has not set an accent color, this will return null.
+         * The automatically calculated color is not returned.
+         * The accent color is not shown in the client if the user has set a banner.
+         *
+         * @return Possibly-null {@link java.awt.Color} containing the {@link User User} accent color.
+         */
         public Color getAccentColor()
         {
             return accentColor == DEFAULT_ACCENT_COLOR_RAW ? null : new Color(accentColor);
